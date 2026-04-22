@@ -3578,7 +3578,7 @@ html = f'''<!doctype html>
 
       <div class="footer">
         <p>📊 生成时间：{DATE} 收盘{' · 自动回退交易日' if DATE_NOTE else ''}</p>
-        <p>数据来源：爬虫计划 | Claw Daily v7</p>
+        <p>数据来源：风中一刀的主升浪丨</p>
         <p>K线为王 · 数据即事实 · 零ST · 不编造不猜测</p>
       </div>
     </div>

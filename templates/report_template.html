@@ -258,23 +258,7 @@
       .index-card.idx-down { box-shadow: inset 0 0 0 1px rgba(16, 185, 129, 0.30); }
       .index-card.idx-flat { box-shadow: inset 0 0 0 1px rgba(245, 158, 11, 0.28); }
 
-      /* 用一个小色块做“涨跌提示”，避免整张卡被红/绿染色导致数值不清 */
-      .index-card.idx-up::after,
-      .index-card.idx-down::after,
-      .index-card.idx-flat::after {
-        content: "";
-        position: absolute;
-        left: 10px;
-        top: 10px;
-        width: 10px;
-        height: 10px;
-        border-radius: 6px;
-        opacity: 0.95;
-        z-index: 2;
-      }
-      .index-card.idx-up::after { background: rgba(239, 68, 68, 0.95); box-shadow: 0 0 0 6px rgba(239, 68, 68, 0.14); }
-      .index-card.idx-down::after { background: rgba(16, 185, 129, 0.95); box-shadow: 0 0 0 6px rgba(16, 185, 129, 0.14); }
-      .index-card.idx-flat::after { background: rgba(245, 158, 11, 0.95); box-shadow: 0 0 0 6px rgba(245, 158, 11, 0.14); }
+      /* 指数卡片不显示左上角提示点（保持更干净的头部） */
 
       /* highlight 只增强边框/阴影，不用大红底 */
       .index-card.highlight { box-shadow: 0 10px 28px rgba(239, 68, 68, 0.12); border-color: rgba(239, 68, 68, 0.26); }
@@ -390,80 +374,166 @@
       .insight-meter { margin-top: 12px; height: 10px; border-radius: 999px; background: rgba(148, 163, 184, 0.16); overflow: hidden; }
       .insight-meter-fill { height: 100%; border-radius: inherit; background: linear-gradient(90deg, var(--theme-accent-2) 0%, var(--theme-accent) 100%); }
       .heatmap-shell { margin-top: 16px; }
-      /* 情绪热力图：3×2 */
+      /* 情绪热力图：更“终端风”的模块化网格（更清晰、更有层次） */
       .heatmap-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
-      @media (max-width: 900px) { .heatmap-shell { overflow-x: auto; -webkit-overflow-scrolling: touch; } .heatmap-grid { min-width: 840px; } }
-      .heatmap-cell {
+      @media (max-width: 900px) { .heatmap-shell { overflow-x: auto; -webkit-overflow-scrolling: touch; } .heatmap-grid { min-width: 900px; } }
+
+      .heatmap-cell{
+        --hm-accent: rgba(245,158,11,0.92);
         position: relative;
-        min-height: 148px;
-        border-radius: var(--radius-md);
-        padding: 18px;
-        border: 1px solid var(--border);
+        min-height: 156px;
+        border-radius: 16px;
+        padding: 16px 16px 14px;
+        border: 1px solid rgba(148,163,184,0.20);
+        background: rgba(255,255,255,0.72);
         overflow: hidden;
-        display: flex;
-        flex-direction: column;
-        justify-content: flex-end;
-        background: var(--bg-elevated);
+        transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
         isolation: isolate;
       }
-      .heatmap-cell::before {
-        content: "";
-        position: absolute;
-        inset: 0;
-        background:
-          radial-gradient(circle at top right, rgba(255,255,255,0.35), transparent 34%),
-          linear-gradient(135deg, rgba(255,255,255,0.18), transparent 55%);
-        z-index: -1;
+      [data-theme="dark"] .heatmap-cell{
+        background: rgba(15,23,42,0.62);
+        border-color: rgba(148,163,184,0.22);
       }
-      .heatmap-cell.level-1 { background: linear-gradient(135deg, rgba(224, 242, 254, 0.88), rgba(248, 250, 252, 0.98)); }
-      .heatmap-cell.level-2 { background: linear-gradient(135deg, rgba(186, 230, 253, 0.92), rgba(240, 249, 255, 0.98)); }
-      .heatmap-cell.level-3 { background: linear-gradient(135deg, rgba(254, 240, 138, 0.82), rgba(255, 247, 237, 0.98)); }
-      .heatmap-cell.level-4 { background: linear-gradient(135deg, rgba(253, 186, 116, 0.86), rgba(255, 237, 213, 0.98)); }
-      .heatmap-cell.level-5 { background: linear-gradient(135deg, rgba(252, 165, 165, 0.9), rgba(254, 226, 226, 0.98)); }
-      [data-theme="dark"] .heatmap-cell.level-1 { background: linear-gradient(135deg, rgba(14, 116, 144, 0.55), rgba(15, 23, 42, 0.92)); }
-      [data-theme="dark"] .heatmap-cell.level-2 { background: linear-gradient(135deg, rgba(3, 105, 161, 0.6), rgba(15, 23, 42, 0.92)); }
-      [data-theme="dark"] .heatmap-cell.level-3 { background: linear-gradient(135deg, rgba(161, 98, 7, 0.62), rgba(30, 41, 59, 0.94)); }
-      [data-theme="dark"] .heatmap-cell.level-4 { background: linear-gradient(135deg, rgba(194, 65, 12, 0.68), rgba(51, 65, 85, 0.94)); }
-      [data-theme="dark"] .heatmap-cell.level-5 { background: linear-gradient(135deg, rgba(185, 28, 28, 0.72), rgba(69, 10, 10, 0.92)); }
-      .heatmap-rank { position: absolute; top: 14px; right: 14px; font-size: 11px; font-weight: 800; color: rgba(15, 23, 42, 0.62); }
-      [data-theme="dark"] .heatmap-rank { color: rgba(241, 245, 249, 0.78); }
+      .heatmap-cell::before{
+        content:"";
+        position:absolute;
+        inset:0;
+        background:
+          radial-gradient(220px 140px at 12% 8%, rgba(255,255,255,0.42), rgba(255,255,255,0.02) 62%),
+          radial-gradient(240px 160px at 92% 12%, rgba(255,255,255,0.26), rgba(255,255,255,0.00) 58%);
+        z-index:-1;
+        pointer-events:none;
+      }
+      [data-theme="dark"] .heatmap-cell::before{
+        background:
+          radial-gradient(220px 140px at 12% 8%, rgba(255,255,255,0.10), rgba(255,255,255,0.00) 60%),
+          radial-gradient(240px 160px at 92% 12%, rgba(255,255,255,0.06), rgba(255,255,255,0.00) 58%);
+      }
+      .heatmap-cell::after{
+        content:"";
+        position:absolute;
+        left:0; top:0; bottom:0;
+        width: 6px;
+        background: linear-gradient(180deg, var(--hm-accent), rgba(255,255,255,0));
+        opacity: 0.95;
+      }
+      .heatmap-cell:hover{
+        transform: translateY(-2px);
+        border-color: rgba(37,99,235,0.26);
+        box-shadow: 0 16px 40px rgba(2,6,23,0.10);
+      }
+      [data-theme="dark"] .heatmap-cell:hover{ box-shadow: 0 18px 44px rgba(0,0,0,0.40); }
+
+      /* level -> accent */
+      .heatmap-cell.level-1{ --hm-accent: rgba(14,165,233,0.92); }
+      .heatmap-cell.level-2{ --hm-accent: rgba(59,130,246,0.92); }
+      .heatmap-cell.level-3{ --hm-accent: rgba(245,158,11,0.92); }
+      .heatmap-cell.level-4{ --hm-accent: rgba(249,115,22,0.92); }
+      .heatmap-cell.level-5{ --hm-accent: rgba(239,68,68,0.92); }
+
+      .heatmap-top{
+        display:flex;
+        align-items:flex-start;
+        justify-content: space-between;
+        gap: 10px;
+        margin-bottom: 10px;
+      }
+      .heatmap-title{
+        font-size: 12px;
+        font-weight: 950;
+        letter-spacing: 0.35px;
+        color: var(--text-primary);
+        display:flex;
+        align-items:center;
+        gap: 8px;
+      }
+      .heatmap-title .dot{
+        width: 8px; height: 8px; border-radius: 99px;
+        background: var(--hm-accent);
+        box-shadow: 0 0 0 6px rgba(239,68,68,0.10);
+      }
+      .heatmap-rank{
+        font-size: 10px;
+        font-weight: 950;
+        padding: 4px 8px;
+        border-radius: 999px;
+        color: rgba(15,23,42,0.72);
+        background: rgba(255,255,255,0.60);
+        border: 1px solid rgba(148,163,184,0.18);
+        backdrop-filter: blur(10px);
+        white-space: nowrap;
+      }
+      [data-theme="dark"] .heatmap-rank{
+        color: rgba(241,245,249,0.82);
+        background: rgba(15,23,42,0.44);
+        border-color: rgba(148,163,184,0.22);
+      }
+
+      .heatmap-mid{
+        display:flex;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: 12px;
+      }
+      .heatmap-value{
+        font-size: 34px;
+        line-height: 1;
+        font-weight: 1000;
+        color: var(--text-primary);
+        font-variant-numeric: tabular-nums;
+      }
       .heatmap-signal{
-        position: absolute;
-        top: 14px;
-        left: 14px;
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
+        font-size: 11px;
+        font-weight: 950;
         padding: 6px 10px;
         border-radius: 999px;
-        font-size: 11px;
-        font-weight: 900;
-        border: 1px solid var(--border);
-        background: rgba(255,255,255,0.55);
-        backdrop-filter: blur(8px);
+        border: 1px solid rgba(148,163,184,0.20);
+        background: rgba(255,255,255,0.70);
+        backdrop-filter: blur(10px);
+        white-space: nowrap;
       }
-      [data-theme="dark"] .heatmap-signal{ background: rgba(15,23,42,0.55); }
-      .heatmap-signal.sig-good { color: var(--success); border-color: rgba(16,185,129,0.22); }
+      [data-theme="dark"] .heatmap-signal{ background: rgba(15,23,42,0.48); border-color: rgba(148,163,184,0.22); }
+      /* 注意：这里沿用你系统的“红涨绿跌”语义：good=强（红），bad=弱（绿） */
+      .heatmap-signal.sig-good { color: var(--danger); border-color: rgba(239,68,68,0.22); }
       .heatmap-signal.sig-warn { color: var(--warning); border-color: rgba(245,158,11,0.22); }
-      .heatmap-signal.sig-bad { color: var(--danger); border-color: rgba(239,68,68,0.22); }
-      .heatmap-title { font-size: 12px; font-weight: 800; color: var(--text-muted); margin-bottom: 8px; }
-      .heatmap-value { font-size: 30px; line-height: 1.1; font-weight: 900; color: var(--text-primary); }
-      .heatmap-note { margin-top: 8px; font-size: 11px; line-height: 1.6; color: var(--text-secondary); max-width: 88%; }
-      .heatmap-legend {
-        display: flex;
-        align-items: center;
-        gap: 12px;
+      .heatmap-signal.sig-bad { color: var(--success); border-color: rgba(16,185,129,0.22); }
+
+      .heatmap-note{
+        margin-top: 10px;
+        font-size: 11px;
+        line-height: 1.65;
+        color: var(--text-secondary);
+        max-width: 96%;
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+      }
+      .heatmap-legend{
+        display:flex;
+        align-items:center;
+        justify-content: space-between;
+        gap: 10px;
         margin-top: 12px;
+      }
+      .heatmap-legend-left{
         font-size: 11px;
         color: var(--text-muted);
-        font-weight: 700;
+        font-weight: 850;
+        white-space: nowrap;
       }
-      .heatmap-legend-bar {
+      .heatmap-legend-bar{
         flex: 1;
         height: 10px;
         border-radius: 999px;
-        background: linear-gradient(90deg, #bae6fd 0%, #fef08a 50%, #fca5a5 100%);
-        border: 1px solid rgba(148, 163, 184, 0.18);
+        background: linear-gradient(90deg,
+          rgba(14,165,233,0.92),
+          rgba(59,130,246,0.92),
+          rgba(245,158,11,0.92),
+          rgba(249,115,22,0.92),
+          rgba(239,68,68,0.92)
+        );
+        border: 1px solid rgba(148, 163, 184, 0.20);
       }
 
       /* Effect Grid */
@@ -637,8 +707,40 @@
 
       /* Sector List */
       .sector-list { list-style: none; }
-      .sector-item { display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; border-radius: var(--radius-md); margin-bottom: 8px; background: var(--bg-elevated); border: 1px solid transparent; transition: all 0.2s; }
-      .sector-item:hover { background: var(--bg-card); border-color: var(--primary); transform: translateX(4px); }
+      /* 板块卡片：更像“榜单条目”，提高信息密度与可读性 */
+      .sector-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 12px 14px;
+        border-radius: 16px;
+        margin-bottom: 10px;
+        background: rgba(255,255,255,0.55);
+        border: 1px solid rgba(148,163,184,0.20);
+        transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
+        position: relative;
+        overflow: hidden;
+      }
+      [data-theme="dark"] .sector-item{
+        background: rgba(15,23,42,0.55);
+        border-color: rgba(148,163,184,0.22);
+      }
+      .sector-item::before{
+        content:"";
+        position:absolute;
+        inset:0;
+        background:
+          radial-gradient(200px 90px at 12% 30%, rgba(255,255,255,0.18), rgba(255,255,255,0.00) 60%),
+          linear-gradient(135deg, rgba(255,255,255,0.06), rgba(255,255,255,0.00));
+        pointer-events:none;
+      }
+      [data-theme="dark"] .sector-item::before{
+        background:
+          radial-gradient(200px 90px at 12% 30%, rgba(255,255,255,0.06), rgba(255,255,255,0.00) 60%),
+          linear-gradient(135deg, rgba(255,255,255,0.03), rgba(255,255,255,0.00));
+      }
+      .sector-item:hover { transform: translateY(-2px); border-color: rgba(37,99,235,0.26); box-shadow: 0 16px 40px rgba(2,6,23,0.10); }
       .sector-rank { width: 28px; height: 28px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 900; color: #fff; flex-shrink: 0; }
       .rank-1 { background: linear-gradient(135deg, #fbbf24, #f59e0b); }
       .rank-2 { background: linear-gradient(135deg, #94a3b8, #64748b); }
@@ -705,6 +807,68 @@
       .chart-legend { display: none; } /* ECharts has its own legend or we use custom one */
       .radar-chart-container { width: 100%; height: 300px; }
       .theme-trend-chart-container { width: 100%; height: 280px; margin-top: 12px; }
+
+      /* ───────────────────────────────
+       * Mobile 优化（手机阅读复盘）
+       * 目标：减少留白、降低信息滚动成本、保证表格/图表可用
+       * ─────────────────────────────── */
+      @media (max-width: 520px){
+        body{ padding: 14px 10px 48px; }
+        .container{ max-width: 100%; }
+
+        .hero{ padding: 18px 16px; border-radius: 18px; margin-bottom: 14px; }
+        .cycle-tag{ font-size: 11px; }
+        .hero-date{ font-size: 18px; }
+        .hero-subtitle{ font-size: 11px; opacity: 0.92; }
+
+        /* 指数卡片：固定 3 列，减少纵向占用 */
+        .index-row{ display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; margin-top: 14px; }
+        .index-card{ min-width: 0; padding: 12px 10px; }
+        .index-name{ font-size: 11px; margin-bottom: 4px; }
+        .index-val{ font-size: 16px; }
+        .index-pct{ font-size: 12px; }
+
+        /* Tabs：更紧凑 */
+        .tabbar{ padding: 8px 8px; gap: 8px; }
+        .tab-btn{ padding: 8px 10px; font-size: 12px; }
+
+        /* Summary：改成 2 列，避免文字挤压 */
+        .summarybar{ padding: 12px 12px; }
+        .summarybar-grid{ grid-template-columns: repeat(2, minmax(0, 1fr)) !important; gap: 8px; }
+        .summary-item{ padding: 9px 10px; min-height: 56px; }
+        .summary-v{ font-size: 14px; }
+        .summary-sub{ font-size: 11px; }
+
+        /* 卡片间距/内边距降低 */
+        .card{ padding: 16px; border-radius: 18px; margin-bottom: 14px; }
+        .card-title{ font-size: 15px; }
+
+        /* 图表高度调低，避免占屏 */
+        .chart-container{ height: 200px; }
+        .radar-chart-container{ height: 250px; }
+        .theme-trend-chart-container{ height: 240px; }
+
+        /* 情绪热力图：手机用 2 列布局，避免横向滚动 */
+        .heatmap-shell{ overflow-x: visible !important; }
+        .heatmap-grid{ min-width: 0 !important; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+        .heatmap-cell{ min-height: 148px; }
+        .heatmap-value{ font-size: 30px; }
+
+        /* 表格：允许横向滑动 */
+        .ladder-table{ display: block; overflow-x: auto; -webkit-overflow-scrolling: touch; white-space: nowrap; }
+        .ladder-table thead, .ladder-table tbody, .ladder-table tr{ width: 100%; }
+
+        /* 板块榜单：减少占用 */
+        .sector-item{ padding: 11px 12px; }
+        .sector-name{ font-size: 13px; }
+        .sector-detail{ font-size: 11px; }
+        .sector-pct{ font-size: 14px; min-width: 44px; }
+      }
+
+      /* 更小屏（窄屏手机）：指数卡片 2 列兜底 */
+      @media (max-width: 360px){
+        .index-row{ grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      }
 
       /* Verdict Box */
       .verdict-box { border-radius: var(--radius-md); padding: 18px; font-size: 13.5px; line-height: 1.75; margin-top: 14px; }
@@ -1014,7 +1178,7 @@
         <div class="hero-top">
           <div class="cycle-tag"><span class="cycle-dot"></span>短线复盘 · 情绪监控</div>
           <div class="hero-date">__REPORT_DATE_CN__收盘简报</div>
-          <div class="hero-subtitle">数据来源：实时API | 自动生成报告</div>
+          <div class="hero-subtitle">数据来源：风中一刀的主升浪丨</div>
           <div class="hero-subtitle" v-if="marketData.meta">
             数据更新时间：指数 {{ marketData.meta?.asOf?.indices || '-' }}
             ｜全景 {{ marketData.meta?.asOf?.pools || '-' }}
@@ -1575,12 +1739,21 @@
           </div>
           <div class="heatmap-grid">
             <div class="heatmap-cell" v-for="(cell, i) in (marketData.heatmap?.cells || [])" :key="'hm-'+i" :class="'level-' + cell.level">
-              <div class="heatmap-signal" :class="'sig-' + (cell.signalClass || 'warn')">{{ cell.signalIcon }} {{ cell.signalText }}</div>
-              <div class="heatmap-rank">{{ cell.tag }}</div>
-              <div class="heatmap-title">{{ cell.title }}</div>
-              <div class="heatmap-value">{{ cell.value }}</div>
+              <div class="heatmap-top">
+                <div class="heatmap-title"><span class="dot"></span>{{ cell.title }}</div>
+                <div class="heatmap-rank">{{ cell.tag }}</div>
+              </div>
+              <div class="heatmap-mid">
+                <div class="heatmap-value">{{ cell.value }}</div>
+                <div class="heatmap-signal" :class="'sig-' + (cell.signalClass || 'warn')">{{ cell.signalIcon }} {{ cell.signalText }}</div>
+              </div>
               <div class="heatmap-note">{{ cell.note }}</div>
             </div>
+          </div>
+          <div class="heatmap-legend">
+            <div class="heatmap-legend-left">冷 ←</div>
+            <div class="heatmap-legend-bar"></div>
+            <div class="heatmap-legend-left">→ 热</div>
           </div>
         </div>
       </div>
@@ -1849,21 +2022,21 @@
         <div class="tier-grid">
           <div class="tier-card">
             <div class="tier-label">涨停主线 TOP3</div>
-            <div v-for="(t, i) in marketData.themePanels.ztTop" :key="'zt-'+i" style="margin-top:8px;">
+            <div v-for="(t, i) in (marketData.themePanels?.ztTop || [])" :key="'zt-'+i" style="margin-top:8px;">
               <div class="tier-title">{{ t.name }} <span style="color:var(--text-muted);font-size:12px;">({{ t.count }}只)</span></div>
               <div class="tier-desc">{{ t.examples }}</div>
             </div>
           </div>
           <div class="tier-card">
             <div class="tier-label">炸板主杀 TOP3</div>
-            <div v-for="(t, i) in marketData.themePanels.zbTop" :key="'zb-'+i" style="margin-top:8px;">
+            <div v-for="(t, i) in (marketData.themePanels?.zbTop || [])" :key="'zb-'+i" style="margin-top:8px;">
               <div class="tier-title">{{ t.name }} <span style="color:var(--text-muted);font-size:12px;">({{ t.count }}只)</span></div>
               <div class="tier-desc">{{ t.examples }}</div>
             </div>
           </div>
           <div class="tier-card">
             <div class="tier-label">跌停风险 TOP3</div>
-            <div v-for="(t, i) in marketData.themePanels.dtTop" :key="'dt-'+i" style="margin-top:8px;">
+            <div v-for="(t, i) in (marketData.themePanels?.dtTop || [])" :key="'dt-'+i" style="margin-top:8px;">
               <div class="tier-title">{{ t.name }} <span style="color:var(--text-muted);font-size:12px;">({{ t.count }}只)</span></div>
               <div class="tier-desc">{{ t.examples }}</div>
             </div>
@@ -1882,7 +2055,7 @@
               </tr>
             </thead>
             <tbody>
-              <tr v-for="(r, idx) in marketData.themePanels.strengthRows" :key="'ts-'+idx">
+              <tr v-for="(r, idx) in (marketData.themePanels?.strengthRows || [])" :key="'ts-'+idx">
                 <td class="stock-name-cell">{{ r.name }}</td>
                 <td>{{ r.zt }}</td>
                 <td>{{ r.zb }}</td>
@@ -1897,9 +2070,12 @@
         </div>
         <div class="summary-box" style="margin-top: 12px;">
           <div class="summary-text">
-            🔎 主线/杀跌重叠度：<span class="summary-highlight">{{ marketData.themePanels.overlap.score }}</span>
-            <span style="color:var(--text-muted);font-size:12px;">（{{ marketData.themePanels.overlap.themes.join('、') || '无' }}）</span>
-            <div style="margin-top:6px;color:var(--text-muted);font-size:12px;">{{ marketData.themePanels.overlap.note }}</div>
+            🔎 主线/杀跌重叠度：
+            <span class="summary-highlight">{{ marketData.themePanels?.overlap?.score || '-' }}</span>
+            <span style="color:var(--text-muted);font-size:12px;">
+              （{{ (marketData.themePanels?.overlap?.themes || []).join('、') || '无' }}）
+            </span>
+            <div style="margin-top:6px;color:var(--text-muted);font-size:12px;">{{ marketData.themePanels?.overlap?.note || '' }}</div>
           </div>
         </div>
       </div>
@@ -2044,8 +2220,8 @@
           </div>
         </div>
         <p>📊 生成时间：__REPORT_DATE__ 收盘</p>
-        <p>数据来源：爬虫计划 | Claw Daily v7</p>
-        <p>K线为王 · 数据即事实 · 非ST · 不虚构不猜测</p>
+        <p>数据来源：风中一刀的主升浪丨</p>
+        <p>K线为王 · 数据先行 · 不虚构不猜测</p>
       </div>
     </div>
 
