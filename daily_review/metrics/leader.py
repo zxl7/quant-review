@@ -213,6 +213,10 @@ def pick_primary_theme(
     3) 再兜底用行业 hy
     """
     themes = code2themes.get(code) or []
+    # 加权：如果该股命中 CPO/光模块，优先用它作为“主归因题材”
+    pri = _pick_priority_theme_from_list([str(x) for x in themes if x])
+    if pri:
+        return pri
     hot_names = [str(s.get("name") or "") for s in (hot_sectors or []) if str(s.get("name") or "").strip()]
     for name in hot_names:
         if name in themes:
@@ -220,6 +224,50 @@ def pick_primary_theme(
     if themes:
         return str(themes[0])
     return fallback_industry or "其他"
+
+def _theme_priority(name: str) -> int:
+    """
+    纯函数：题材权重/优先级定义（数值越小优先级越高）。
+
+    用户规则：
+    - 一级：光模块、商业航天、锂电池、储能
+    - 其他：二级
+    """
+    s = str(name or "").strip()
+    if not s:
+        return 999
+    up = s.upper()
+    # 1) 一级：光模块（含 CPO/光通信/高速互联 等常见别名）
+    if ("光模块" in s) or ("光通信" in s) or ("高速互联" in s) or ("CPO" in up):
+        return 1
+    # 2) 一级：商业航天
+    if ("商业航天" in s) or ("航天" in s and "商业" in s):
+        return 2
+    # 3) 一级：锂电池
+    if ("锂电" in s) or ("锂电池" in s) or ("动力电池" in s):
+        return 3
+    # 4) 一级：储能
+    if ("储能" in s):
+        return 4
+    # 二级：其他
+    return 100
+
+
+def _is_tier1_theme(name: str) -> bool:
+    """纯函数：是否一级题材。"""
+    return _theme_priority(name) <= 4
+
+
+def _pick_priority_theme_from_list(themes: list[str]) -> str | None:
+    """
+    纯函数：在多题材里优先挑“一级题材”（用户指定加权）。
+    优先级顺序：光模块 > 商业航天 > 锂电池 > 储能。
+    """
+    cand = [( _theme_priority(t), t) for t in themes if t]
+    cand.sort(key=lambda x: x[0])
+    if cand and cand[0][0] <= 4:
+        return cand[0][1]
+    return None
 
 
 def score_ignition(
@@ -363,6 +411,9 @@ def score_explosion(
     spread_score = _clamp(spread_min / 240.0, 0.0, 1.0)  # 4小时打满
 
     score = 40.0 * _clamp(cnt_norm * 0.55 + follow_ratio * 0.30 + spread_score * 0.15, 0.0, 1.0)
+    # 题材加权：一级题材轻微放大（避免过拟合）
+    if _is_tier1_theme(theme):
+        score = min(40.0, score * 1.10)
     return (
         round(score, 2),
         {
@@ -372,6 +423,7 @@ def score_explosion(
             "follow": follow,
             "followRatio": round(follow_ratio, 3),
             "spreadMin": round(spread_min, 1),
+            "boost": "一级题材" if _is_tier1_theme(theme) else "",
         },
     )
 
@@ -480,7 +532,15 @@ def pick_leaders(
         exp, exp_r = score_explosion(theme=theme, theme_stats=theme_stats, leader_fbt=fbt)
         lead, lead_r = score_leadership(fbt=fbt, theme_first_fbt=theme_first_fbt.get(theme))
 
-        score = ign + exp + lead
+        # 题材偏好加分：一级题材更容易顶出来（光模块优先级最高）
+        pr = _theme_priority(theme)
+        if pr == 1:
+            theme_bonus = 4.0
+        elif pr <= 4:
+            theme_bonus = 2.5
+        else:
+            theme_bonus = 0.0
+        score = ign + exp + lead + theme_bonus
         tags: list[str] = []
         if ign_r.get("strictOneWord"):
             tags.append("一字板")
@@ -492,6 +552,10 @@ def pick_leaders(
             tags.append("先发")
         if _to_float(ign_r.get("spaceScore"), 0.0) >= 6:
             tags.append("空间")
+        if theme_bonus > 0:
+            tags.append("一级题材")
+            if pr == 1:
+                tags.append("光模块优先")
 
         picks.append(
             LeaderPick(
@@ -499,7 +563,14 @@ def pick_leaders(
                 name=name,
                 theme=theme,
                 score=round(score, 2),
-                reason={"ignition": ign_r, "explosion": exp_r, "lead": lead_r, "tags": tags},
+                reason={
+                    "ignition": ign_r,
+                    "explosion": exp_r,
+                    "lead": lead_r,
+                    "tags": tags,
+                    "themeBonus": theme_bonus,
+                    "themeTier": 1 if pr <= 4 else 2,
+                },
             )
         )
 

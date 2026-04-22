@@ -95,11 +95,9 @@ render_offline() {
 
   [[ -f "${market_json}" ]] || die "未找到 ${market_json}，请先执行：./qr.sh fetch ${date10}"
 
-  PYTHONPATH=. python3 daily_review/render/render_html.py \
-    --template "${template}" \
-    --market-data-json "${market_json}" \
-    --out "${out_html}" \
-    --date "${date10}"
+  # 收口阶段：离线渲染前先跑一遍 v2 pipeline 重建 market_data（不请求接口）
+  # 这样你改算法/模块后，render 会直接反映最新结果。
+  PYTHONPATH=. python3 -m daily_review.cli --date "${date10}" --rebuild
 
   echo "✅ 离线渲染完成: ${out_html}"
 }
@@ -108,16 +106,18 @@ cmd_fetch() {
   load_dotenv_if_needed
   ensure_token
 
-  info "在线取数 + 生成报告（会请求接口，有成本）"
+  info "在线取数生成缓存（会请求接口，有成本） -> 离线 pipeline 重建 -> 输出 tab-v1"
   if [[ -n "${DATE_ARG}" ]]; then
-    python3 gen_report_v4.py "${DATE_ARG}"
+    # 只负责“抓取 + 落缓存”
+    cmd_gen
+    # 最终产物统一由 pipeline 生成（render_offline 内部会 --rebuild）
     render_offline "${DATE_ARG}"
     cleanup_timestamp_html "$(date10_to_date8 "${DATE_ARG}")"
     return 0
   fi
 
-  # 不指定日期：gen_report_v4.py 内部会自动回退到最近交易日
-  python3 gen_report_v4.py
+  # 不指定日期：gen_report_v4.py 内部会自动回退到最近交易日（只落缓存）
+  cmd_gen
 
   # 用缓存里最新的 market_data-*.json 再离线渲染一份 v1（不再取数）
   local d8 d10
@@ -132,11 +132,11 @@ cmd_gen() {
   # - 会请求接口
   # - 会生成 cache/market_data-YYYYMMDD.json
   # - 以及 html/复盘日记-YYYYMMDD-HHMMSS.html（留档）
-  # 用途：你在本地调试“取数/计算”时，想跳过离线渲染流程。
+  # 用途：你在本地调试“取数/落缓存”时，想跳过离线重建（pipeline）与渲染流程。
   load_dotenv_if_needed
   ensure_token
 
-  info "仅在线取数并生成缓存（不做离线渲染）"
+  info "仅在线取数并生成缓存（不做离线 pipeline 重建/渲染）"
   if [[ -n "${DATE_ARG}" ]]; then
     python3 gen_report_v4.py "${DATE_ARG}"
   else

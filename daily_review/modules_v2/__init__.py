@@ -1,2 +1,31 @@
 """modules_v2：基于 pipeline.Module 协议的新模块实现（逐步迁移）。"""
 
+from .mood import MOOD_MODULE
+from .style_radar import STYLE_RADAR_MODULE
+from .leader import LEADER_MODULE
+from .panorama import PANORAMA_MODULE
+from .ladder import LADDER_MODULE
+from .theme_panels import THEME_PANELS_MODULE
+from .volume import VOLUME_MODULE
+from .height_trend import HEIGHT_TREND_MODULE
+from .ztgc import ZTGC_MODULE
+from .top10 import TOP10_MODULE
+from .action_guide import ACTION_GUIDE_MODULE
+from .summary3 import SUMMARY3_MODULE
+from .learning_notes import LEARNING_NOTES_MODULE
+
+ALL_MODULES = [
+    PANORAMA_MODULE,
+    LADDER_MODULE,
+    ZTGC_MODULE,
+    THEME_PANELS_MODULE,
+    VOLUME_MODULE,
+    HEIGHT_TREND_MODULE,
+    TOP10_MODULE,
+    MOOD_MODULE,
+    STYLE_RADAR_MODULE,
+    LEADER_MODULE,
+    ACTION_GUIDE_MODULE,
+    SUMMARY3_MODULE,
+    LEARNING_NOTES_MODULE,
+]
