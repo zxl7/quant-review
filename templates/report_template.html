@@ -1707,22 +1707,22 @@
         <div class="fear-grid">
 
           <div class="fear-card">
-            <div class="fear-val red-text">0只</div>
+            <div class="fear-val red-text">{{ getMoodInput('qs_extreme_up', 0) }}只</div>
             <div class="fear-label">强延续</div>
             <div class="fear-note">昨日强势股中今日涨幅 >= 5%</div>
           </div>
           <div class="fear-card">
-            <div class="fear-val orange-text">0只</div>
+            <div class="fear-val orange-text">{{ getMoodInput('qs_positive', 0) }}只</div>
             <div class="fear-label">温和盈利</div>
             <div class="fear-note">昨日强势股中今日收红但未大涨</div>
           </div>
           <div class="fear-card">
-            <div class="fear-val blue-text">0只</div>
+            <div class="fear-val blue-text">{{ getMoodInput('qs_negative', 0) }}只</div>
             <div class="fear-label">小幅负反馈</div>
             <div class="fear-note">昨日强势股中今日小幅回落</div>
           </div>
           <div class="fear-card">
-            <div class="fear-val green-text">0只</div>
+            <div class="fear-val green-text">{{ getMoodInput('qs_extreme_down', 0) }}只</div>
             <div class="fear-label">大面 / 核按钮</div>
             <div class="fear-note">昨日强势股中今日跌幅 <= -5%</div>
           </div>

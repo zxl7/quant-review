@@ -311,7 +311,11 @@ def run_fetch_and_rebuild(date: str | None) -> int:
     mood_inputs = build_mood_inputs(pools=raw_pools)
     market_data["features"]["mood_inputs"] = mood_inputs
     market_data["features"]["chart_palette"] = default_chart_palette()
-    market_data["features"]["style_inputs"] = build_style_inputs(mood_inputs=mood_inputs, theme_panels=market_data.get("themePanels") or {})
+    market_data["features"]["style_inputs"] = build_style_inputs(
+        mood_inputs=mood_inputs,
+        theme_panels=market_data.get("themePanels") or {},
+        ztgc=[x for x in (raw_pools.get("ztgc") or []) if isinstance(x, dict)],
+    )
 
     # 写 market_data 缓存（供 rebuild/partial 使用）
     date_compact = actual_date.replace("-", "")
@@ -402,7 +406,9 @@ def run_rebuild(date: str, modules: list[str] | None = None) -> int:
         feats = market_data.get("features") or {}
         mi = feats.get("mood_inputs") or {}
         tp = market_data.get("themePanels") or {}
-        feats["style_inputs"] = build_style_inputs(mood_inputs=mi, theme_panels=tp)
+        pools = (market_data.get("raw") or {}).get("pools") or {}
+        ztgc = pools.get("ztgc") or []
+        feats["style_inputs"] = build_style_inputs(mood_inputs=mi, theme_panels=tp, ztgc=[x for x in (ztgc or []) if isinstance(x, dict)])
         market_data["features"] = feats
         # 重新生成 styleRadar（纯函数，安全）
         market_data["styleRadar"] = rebuild_style_radar(market_data)["styleRadar"]

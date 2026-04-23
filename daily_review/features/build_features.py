@@ -80,11 +80,13 @@ def build_mood_inputs(*, pools: Mapping[str, Any]) -> Dict[str, Any]:
     zb = pools.get("zbgc") or []
     dt = pools.get("dtgc") or []
     yest_zt = pools.get("yest_ztgc") or []
+    qsgc = pools.get("qsgc") or []
 
     zt = zt if isinstance(zt, list) else []
     zb = zb if isinstance(zb, list) else []
     dt = dt if isinstance(dt, list) else []
     yest_zt = yest_zt if isinstance(yest_zt, list) else []
+    qsgc = qsgc if isinstance(qsgc, list) else []
 
     zt_count = len(zt)
     zb_count = len(zb)
@@ -144,32 +146,73 @@ def build_mood_inputs(*, pools: Mapping[str, Any]) -> Dict[str, Any]:
     tier_integrity_score = max(0, min(100, tier_score))
     tier_integrity_low = 1 if tier_integrity_score < 50 else 0
 
-    # 昨日连板结构（用于晋级率/断板率）
-    yest_lbs = [_lbc_of(s) for s in yest_zt]
-    yest_lb_count = len([lb for lb in yest_lbs if lb >= 2])
-    yest_2b_count = len([lb for lb in yest_lbs if lb == 2])
-    yest_3b_count = len([lb for lb in yest_lbs if lb == 3])
+    # ===== 昨日→今日：用“代码匹配”计算晋级/断板（对齐直觉口径）=====
+    def _code6(s: Mapping[str, Any]) -> str:
+        dm = str(s.get("dm") or s.get("code") or "")
+        digits = "".join([c for c in dm if c.isdigit()])
+        return digits[-6:] if len(digits) >= 6 else digits
 
-    # 今日晋级：昨日2板 -> 今日3板+；昨日3板 -> 今日4板+
-    today_3p = len([_lbc_of(s) for s in zt if _lbc_of(s) >= 3])
-    today_4p = len([_lbc_of(s) for s in zt if _lbc_of(s) >= 4])
-    succ_2to3 = len([s for s in zt if _lbc_of(s) >= 3 and _lbc_of(s) - 1 == 2])
-    succ_3to4 = len([s for s in zt if _lbc_of(s) >= 4 and _lbc_of(s) - 1 == 3])
+    today_map = {_code6(s): _lbc_of(s) for s in zt if isinstance(s, dict) and _code6(s)}
+    yest_map = {_code6(s): _lbc_of(s) for s in yest_zt if isinstance(s, dict) and _code6(s)}
+
+    yest_lb_codes = [c for c, lb in yest_map.items() if lb >= 2]
+    yest_2b_codes = [c for c, lb in yest_map.items() if lb == 2]
+    yest_3b_codes = [c for c, lb in yest_map.items() if lb == 3]
+
+    yest_lb_count = len(yest_lb_codes)
+    yest_2b_count = len(yest_2b_codes)
+    yest_3b_count = len(yest_3b_codes)
+
+    succ_2to3 = sum(1 for c in yest_2b_codes if today_map.get(c, 0) >= 3)
+    succ_3to4 = sum(1 for c in yest_3b_codes if today_map.get(c, 0) >= 4)
     rate_2to3 = (succ_2to3 / yest_2b_count * 100.0) if yest_2b_count else 0.0
     rate_3to4 = (succ_3to4 / yest_3b_count * 100.0) if yest_3b_count else 0.0
 
-    # 简化版晋级率：晋级 = 今日连板且昨日存在（粗略）
-    jj_rate = (len([s for s in zt if _lbc_of(s) >= 2]) / max(yest_lb_count, 1) * 100.0) if yest_lb_count else 0.0
-    duanban_count = max(0, yest_lb_count - len([s for s in zt if _lbc_of(s) >= 2 and (_lbc_of(s) - 1) >= 1]))
+    duanban_count = sum(1 for c in yest_lb_codes if c not in today_map)
     broken_lb_rate = (duanban_count / yest_lb_count * 100.0) if yest_lb_count else 0.0
+    jj_rate = ((yest_lb_count - duanban_count) / yest_lb_count * 100.0) if yest_lb_count else 0.0
 
     # 小票活跃度：lt<50亿
     smallcap = [s for s in zt if (_to_float(s.get("lt"), 0.0) / 1e8) < 50]
     smallcap_cnt = len(smallcap)
     smallcap_ratio = (smallcap_cnt / zt_count * 100.0) if zt_count else 0.0
 
-    # bf_count（大面/负反馈）数据源不稳定：先用 dt_count 近似兜底
-    bf_count = dt_count
+    # bf_count（大面/负反馈）：对齐 gen_report_v4 口径（跌停池 + 强势股池中 <= -5%）
+    big_face = []
+    for s in dt:
+        if not isinstance(s, dict):
+            continue
+        zf = _to_float(s.get("zf"), 0.0)
+        if zf <= -5:
+            big_face.append((_code6(s), str(s.get("mc") or "")))
+    for s in qsgc:
+        if not isinstance(s, dict):
+            continue
+        zf = _to_float(s.get("zf"), 0.0)
+        if zf <= -5:
+            big_face.append((_code6(s), str(s.get("mc") or "")))
+    # 去重
+    seen = set()
+    big_face_names = []
+    for c, n in big_face:
+        if not c or c in seen:
+            continue
+        seen.add(c)
+        if n:
+            big_face_names.append(n)
+    bf_count = len(seen)
+
+    # 昨日强势反馈（qs_*）：如果 qsgc 提供 zf，则可直接统计
+    qs_all = [s for s in qsgc if isinstance(s, dict)]
+    qs_zfs = [(float(s.get("zf", 0) or 0), str(s.get("mc") or "")) for s in qs_all]
+    qs_zfs.sort(key=lambda x: x[0], reverse=True)
+    qs_avg_zf = (sum(z for z, _ in qs_zfs) / len(qs_zfs)) if qs_zfs else 0.0
+    qs_best_zf, qs_best_name = (qs_zfs[0][0], qs_zfs[0][1]) if qs_zfs else (0.0, "—")
+    qs_worst_zf, qs_worst_name = (qs_zfs[-1][0], qs_zfs[-1][1]) if qs_zfs else (0.0, "—")
+    qs_extreme_up = len([1 for z, _ in qs_zfs if z >= 5])
+    qs_positive = len([1 for z, _ in qs_zfs if 0 <= z < 5])
+    qs_negative = len([1 for z, _ in qs_zfs if -5 < z < 0])
+    qs_extreme_down = len([1 for z, _ in qs_zfs if z <= -5])
 
     # 风险突刺（最小可用版）：用于更快识别“转弱/退潮确认”
     # 注：后续若补齐 delta_*（昨日变化）可把规则改成“突刺=变化共振”
@@ -181,6 +224,7 @@ def build_mood_inputs(*, pools: Mapping[str, Any]) -> Dict[str, Any]:
         "zb_rate": round(zb_rate, 1),
         "dt_count": int(dt_count),
         "bf_count": int(bf_count),
+        "bf_names": "、".join(big_face_names[:3]) if big_face_names else "无",
         "zt_count": int(zt_count),
         "zb_count": int(zb_count),
         "zt_early_ratio": round(zt_early_ratio, 1),
@@ -229,15 +273,45 @@ def build_mood_inputs(*, pools: Mapping[str, Any]) -> Dict[str, Any]:
         "hist_fb_rate": [],
         "hist_jj_rate": [],
         "hist_broken_lb_rate": [],
+        "qs_avg_zf": round(qs_avg_zf, 2),
+        "qs_best_name": qs_best_name or "—",
+        "qs_best_zf": round(qs_best_zf, 2),
+        "qs_worst_name": qs_worst_name or "—",
+        "qs_worst_zf": round(qs_worst_zf, 2),
+        "qs_extreme_up": int(qs_extreme_up),
+        "qs_positive": int(qs_positive),
+        "qs_negative": int(qs_negative),
+        "qs_extreme_down": int(qs_extreme_down),
     }
 
 
-def build_style_inputs(*, mood_inputs: Mapping[str, Any], theme_panels: Mapping[str, Any] | None = None) -> Dict[str, Any]:
+def build_style_inputs(
+    *,
+    mood_inputs: Mapping[str, Any],
+    theme_panels: Mapping[str, Any] | None = None,
+    ztgc: list[dict[str, Any]] | None = None,
+) -> Dict[str, Any]:
     """
     尽量对齐 gen_report_v4 的 style_inputs，但只依赖现有数据。
     """
     zt_count = int(mood_inputs.get("zt_count", 0) or 0)
     max_lb = int(mood_inputs.get("max_lb", 0) or 0)
+    ztgc = ztgc if isinstance(ztgc, list) else []
+
+    def _lbc(s: Mapping[str, Any]) -> int:
+        try:
+            return int(s.get("lbc", 1) or 1)
+        except Exception:
+            return 1
+
+    first_board_count = len([s for s in ztgc if isinstance(s, dict) and _lbc(s) == 1])
+    gem_today = [s for s in ztgc if isinstance(s, dict) and str(s.get("dm", "")).startswith("300")]
+    gem_today_count = len(gem_today)
+    gem_height = max((_lbc(s) for s in gem_today), default=0)
+
+    high_level_ratio = 0.0
+    if zt_count:
+        high_level_ratio = len([s for s in ztgc if isinstance(s, dict) and _lbc(s) >= 5]) / zt_count * 100.0
     top3_ratio = 0.0
     if theme_panels and isinstance(theme_panels, dict):
         try:
@@ -248,13 +322,13 @@ def build_style_inputs(*, mood_inputs: Mapping[str, Any], theme_panels: Mapping[
             top3_ratio = 0.0
     return {
         "jj_rate": float(mood_inputs.get("jj_rate", 0) or 0),
-        "first_board_count": 0,
+        "first_board_count": int(first_board_count),
         "zt_count": zt_count,
-        "gem_today_count": 0,
-        "gem_height": 0,
+        "gem_today_count": int(gem_today_count),
+        "gem_height": int(gem_height),
         "top3_theme_ratio": round(top3_ratio, 1),
         "top10_concentration": 0,
-        "high_level_ratio": 0,
+        "high_level_ratio": round(high_level_ratio, 1),
         "max_lb": max_lb,
     }
 

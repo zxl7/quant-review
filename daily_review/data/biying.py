@@ -19,15 +19,30 @@ from typing import Any, Dict, List, Optional, Sequence, Tuple
 from daily_review.http import HttpClient
 
 
-def _extract_dates(items: Any) -> list[str]:
+def _extract_trade_dates(items: Any) -> list[str]:
+    """
+    从指数K线条目提取“真实交易日”列表。
+    过滤规则：
+    - sf=1：占位/停牌/未收盘
+    - a<=0 或 v<=0：无成交的占位数据
+    """
     out: list[str] = []
-    if isinstance(items, list):
-        for it in items:
-            if not isinstance(it, dict):
-                continue
-            t = it.get("t", "")
-            if isinstance(t, str) and len(t) >= 10:
-                out.append(t[:10])
+    if not isinstance(items, list):
+        return out
+    for it in items:
+        if not isinstance(it, dict):
+            continue
+        t = it.get("t", "")
+        if not (isinstance(t, str) and len(t) >= 10):
+            continue
+        sf = int(it.get("sf", 0) or 0)
+        a = float(it.get("a", 0) or 0)
+        v = float(it.get("v", 0) or 0)
+        if sf == 1:
+            continue
+        if a <= 0 or v <= 0:
+            continue
+        out.append(t[:10])
     return out
 
 
@@ -38,7 +53,7 @@ def get_recent_trade_dates(client: HttpClient, *, n: int = 15) -> list[str]:
     try:
         url = f"{client.base_url}/hsindex/latest/000001.SH/d/{client.token}?lt={max(n, 12)}"
         data = client.get_json(url)
-        uniq = sorted(set(_extract_dates(data)))
+        uniq = sorted(set(_extract_trade_dates(data)))
         return uniq[-n:] if len(uniq) >= n else uniq
     except Exception:
         return []
@@ -128,14 +143,14 @@ def get_trading_days_from_index_k(client: HttpClient, *, date: str, n: int = 7) 
     if n <= 5:
         sh = fetch_index_latest_k(client, code="000001.SH", lt=n)
         sz = fetch_index_latest_k(client, code="399001.SZ", lt=n)
-        uniq = sorted(set(_extract_dates(sh) + _extract_dates(sz)))
+        uniq = sorted(set(_extract_trade_dates(sh) + _extract_trade_dates(sz)))
         return uniq[-n:] if len(uniq) >= n else uniq
 
     et = date.replace("-", "")
     st_dt = (_dt.datetime.strptime(date, "%Y-%m-%d") - _dt.timedelta(days=40)).strftime("%Y%m%d")
     sh = fetch_index_history_k(client, code="000001.SH", st=st_dt, et=et)
     sz = fetch_index_history_k(client, code="399001.SZ", st=st_dt, et=et)
-    uniq = sorted(set(_extract_dates(sh) + _extract_dates(sz)))
+    uniq = sorted(set(_extract_trade_dates(sh) + _extract_trade_dates(sz)))
     uniq = [d for d in uniq if d <= date]
     return uniq[-n:] if len(uniq) >= n else uniq
 
@@ -155,4 +170,3 @@ def fetch_stock_themes(client: HttpClient, *, code6: str) -> list[dict[str, Any]
     url = f"{client.base_url}/hszg/zg/{code6}/{client.token}"
     data = client.get_json(url)
     return data if isinstance(data, list) else []
-
