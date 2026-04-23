@@ -11,10 +11,10 @@ on:
   schedule:
     # 说明：GitHub Actions 的 cron 只支持 UTC，不能直接写“北京时间”。
     # 北京时间（UTC+8）：
-    # - 11:30 -> UTC 03:30
-    # - 15:00 -> UTC 07:00
-    - cron: "30 3 * * 1-5"
-    - cron: "0 7 * * 1-5"
+    # - 11:31 -> UTC 03:31
+    # - 15:01 -> UTC 07:01
+    - cron: "31 3 * * 1-5"
+    - cron: "1 7 * * 1-5"
 
 permissions:
   contents: read
@@ -40,12 +40,12 @@ jobs:
           now_bj="$(TZ=Asia/Shanghai date +'%H:%M')"
           echo "beijing_now=${now_bj}"
           # 双时点触发：11:30 / 15:00（北京时间）
-          if [ "${now_bj}" != "11:30" ] && [ "${now_bj}" != "15:00" ]; then
+          if [ "${now_bj}" != "11:31" ] && [ "${now_bj}" != "15:01" ]; then
             echo "skip=true" >> "$GITHUB_OUTPUT"
-            echo "Not target time (11:30/15:00), skip."
+            echo "Not target time (11:31/15:01), skip."
           else
             echo "skip=false" >> "$GITHUB_OUTPUT"
-            echo "Target time hit (11:30/15:00), continue."
+            echo "Target time hit (11:31/15:01), continue."
           fi
 
       - name: Setup Python
