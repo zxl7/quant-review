@@ -2363,6 +2363,19 @@
       };
 
       /**
+       * 同步市场主题色（bull/mixed/bear）
+       * - bull：偏强/修复（暖色）
+       * - bear：退潮/偏弱（冷色）
+       * - mixed：分歧/震荡（中性）
+       */
+      const syncMarketTone = () => {
+        const t = marketData?.moodStage?.type || 'warn';
+        const tone = (t === 'good') ? 'bull' : ((t === 'fire') ? 'bear' : 'mixed');
+        document.body.setAttribute('data-market-tone', tone);
+      };
+      syncMarketTone();
+
+      /**
        * Vue 应用：只负责把 marketData 渲染到 DOM（列表 / 表格 / 行动指南）
        * 说明：图表仍由原有 ECharts 函数渲染，避免一次性改动过大。
        */
@@ -2816,7 +2829,14 @@
         if (!chartDom) return;
         if (heightChart) heightChart.dispose();
         heightChart = echarts.init(chartDom, document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : null);
-        const colors = data.palette?.length ? data.palette : ['#ef4444', '#f59e0b', '#94a3b8'];
+        // 高度趋势颜色：跟随市场主题色（退潮用冷色，避免“退潮还一片红”的割裂感）
+        const themeTone = document.body.getAttribute('data-market-tone') || 'mixed';
+        const tonePalette = (themeTone === 'bull')
+          ? ['#ef4444', '#f59e0b', '#94a3b8']     // 暖色：红/橙/灰
+          : (themeTone === 'bear')
+            ? ['#0ea5e9', '#10b981', '#94a3b8']  // 冷色：蓝/绿/灰
+            : ['#f59e0b', '#ef4444', '#2563eb']; // 中性：橙/红/蓝
+        const colors = (data.palette?.length ? data.palette : tonePalette);
 
         const option = {
           backgroundColor: 'transparent',

@@ -222,12 +222,16 @@ def run_fetch_and_rebuild(date: str | None) -> int:
     }
 
     # market_data 初始化骨架（保证模板字段存在）
+    import datetime as _dt
+    gen_time = _dt.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
     market_data: dict = {
         "date": actual_date,
         "dateNote": date_note,
         "meta": {
-            "asOf": {"indices": indices_asof, "pools": "", "themes": "", "generatedAt": ""},
+            "asOf": {"indices": indices_asof, "pools": gen_time[11:19], "themes": gen_time[11:19]},
             "version": "1.0",
+            "generatedAt": gen_time,
         },
         "indices": [
             {"name": i["name"], "val": f"{float(i['val']):.2f}", "chg": f"{float(i['chg']):+.2f}%"}
