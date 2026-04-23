@@ -225,16 +225,29 @@
       .hero-date { font-size: 26px; font-weight: 800; letter-spacing: 0.5px; }
       .hero-subtitle { opacity: 0.8; font-size: 13px; margin-top: 6px; font-weight: 500; }
 
-      .index-row { display: flex; gap: 12px; margin-top: 24px; position: relative; z-index: 1; flex-wrap: wrap; }
+      /* 指数区：用“磨砂容器 + 磨砂卡片”，避免出现突兀的纯白底 */
+      .index-row {
+        display: flex;
+        gap: 12px;
+        margin-top: 24px;
+        position: relative;
+        z-index: 1;
+        flex-wrap: wrap;
+        padding: 10px;
+        border-radius: calc(var(--radius-lg) + 2px);
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.14);
+        backdrop-filter: blur(12px);
+      }
       .index-card {
         flex: 1; min-width: 120px;
-        /* 更亮的玻璃卡片：让“红字/绿字”在红色 Hero 背景上也清晰 */
-        background: rgba(255, 255, 255, 0.42);
+        /* 磨砂卡片：降低白度，融入 Hero 渐变背景 */
+        background: rgba(255, 255, 255, 0.14);
         border-radius: var(--radius-md);
         padding: 16px 12px;
         text-align: center;
         backdrop-filter: blur(14px);
-        border: 1px solid rgba(255, 255, 255, 0.28);
+        border: 1px solid rgba(255, 255, 255, 0.18);
         transition: transform 0.2s, background 0.2s;
         position: relative;
         overflow: hidden;
@@ -286,6 +299,10 @@
       .flat { color: var(--warning) !important; }
 
       /* 深色模式：指数卡片改为暗玻璃底，红绿字保持清晰 */
+      [data-theme="dark"] .index-row{
+        background: rgba(2, 6, 23, 0.26);
+        border-color: rgba(148, 163, 184, 0.16);
+      }
       [data-theme="dark"] .index-card{
         background: rgba(15, 23, 42, 0.55);
         border-color: rgba(148, 163, 184, 0.22);
