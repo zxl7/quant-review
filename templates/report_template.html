@@ -3035,6 +3035,36 @@
         if (!container) return;
         const summaryEl = document.getElementById("ladderSummary");
 
+        // 兜底：若当天没有 2 板及以上（或数据缺失），给明确提示，避免误以为渲染失败
+        if (!Array.isArray(data) || data.length === 0) {
+          if (summaryEl) {
+            summaryEl.innerHTML = `
+              <div class="ladder-summary-item">
+                <div class="ladder-summary-k"><span class="ladder-summary-icon">🪫</span>连板结构</div>
+                <div class="ladder-summary-v">暂无 2 板+</div>
+                <div class="ladder-summary-sub">可能处于低位试错 / 结构重置期</div>
+              </div>
+              <div class="ladder-summary-item">
+                <div class="ladder-summary-k"><span class="ladder-summary-icon">📌</span>建议</div>
+                <div class="ladder-summary-v">看主线低位</div>
+                <div class="ladder-summary-sub">优先观察主线首板/回封确认</div>
+              </div>
+              <div class="ladder-summary-item">
+                <div class="ladder-summary-k"><span class="ladder-summary-icon">🧭</span>提示</div>
+                <div class="ladder-summary-v">非脚本故障</div>
+                <div class="ladder-summary-sub">当天确实可能出现“无连板”</div>
+              </div>
+            `;
+          }
+          container.innerHTML = `
+            <div class="tier-card" style="margin-top: 6px;">
+              <div class="tier-title">—</div>
+              <div class="tier-desc">今日暂无 2 板及以上连板数据（或接口未返回连板字段）。</div>
+            </div>
+          `;
+          return;
+        }
+
         const groups = [...data.reduce((acc, row) => {
           const next = new Map(acc);
           const group = next.get(row.badge) || [];
