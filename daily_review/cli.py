@@ -191,17 +191,17 @@ def run_fetch_and_rebuild(date: str | None) -> int:
 
     write_json(theme_trend_path, {"version": 1, "as_of": actual_date, "by_day": by_day})
 
-    # index_kline_cache.json：缓存最近 N 根（日K）
-    # 说明：部分接口会返回“下一交易日占位条目”（sf=1, a=0）。
-    # 为保证 volume/趋势类模块仍能拿到足够的有效样本，这里多取一些（默认 8）。
+    # index_kline_cache.json：缓存最近 5 根（日K）
+    # 说明：hsindex/latest 接口 lt 最大支持 5；且可能包含“下一交易日占位条目”（sf=1, a=0）。
+    # volume 等模块会自行过滤占位条目。
     index_k_path = cache_dir / "index_kline_cache.json"
     idx_disk = read_json(index_k_path, default={})
     codes_entry = (idx_disk.get("codes") or {}) if isinstance(idx_disk, dict) else {}
     if not isinstance(codes_entry, dict):
         codes_entry = {}
-    for code in ("000001.SH", "399001.SZ"):
-        items = fetch_index_latest_k(client, code=code, lt=8)
-        codes_entry[code] = {"as_of": actual_date, "items": items[-8:] if isinstance(items, list) else []}
+    for code in ("000001.SH", "399001.SZ", "399006.SZ"):
+        items = fetch_index_latest_k(client, code=code, lt=5)
+        codes_entry[code] = {"as_of": actual_date, "items": items[-5:] if isinstance(items, list) else []}
     write_json(index_k_path, {"version": 1, "codes": codes_entry})
 
     # height_trend_cache.json：近 7 日高度趋势（只缓存历史日，不缓存当天）
@@ -243,11 +243,34 @@ def run_fetch_and_rebuild(date: str | None) -> int:
             ht_days[d] = calc_height_trend_row(d, [x for x in day_data if isinstance(x, dict)])
     write_json(ht_path, {"version": 1, "days": ht_days})
 
-    # indices（实时）
+    # indices（实时）：仅用于 asOf 展示（HH:MM:SS）
     indices_rt, indices_asof = fetch_indices_realtime(
         client,
         codes=[("000001.SH", "上证指数"), ("399001.SZ", "深证成指"), ("399006.SZ", "创业板指")],
     )
+    # indices（报告口径）：用指数日K按“收盘价 vs 前收”计算，确保与 actual_date 一致
+    def _kline_index(code: str) -> tuple[float, float] | None:
+        items = (codes_entry.get(code) or {}).get("items") or []
+        if not isinstance(items, list):
+            return None
+        for it in items:
+            if not isinstance(it, dict):
+                continue
+            t = str(it.get("t") or "")
+            if len(t) >= 10 and t[:10] == actual_date and int(it.get("sf", 0) or 0) != 1:
+                c = float(it.get("c", 0) or 0)
+                pc = float(it.get("pc", 0) or 0)
+                return (c, pc)
+        return None
+
+    indices_for_report = []
+    for code, name in [("000001.SH", "上证指数"), ("399001.SZ", "深证成指"), ("399006.SZ", "创业板指")]:
+        r = _kline_index(code)
+        if not r:
+            continue
+        c, pc = r
+        chg = ((c - pc) / pc * 100.0) if pc else 0.0
+        indices_for_report.append({"name": name, "val": f"{c:.2f}", "chg": f"{chg:+.2f}%"})
 
     # 构造 raw.pools（给 pipeline 使用）
     yest = trade_days[-2] if len(trade_days) >= 2 else ""
@@ -274,9 +297,8 @@ def run_fetch_and_rebuild(date: str | None) -> int:
             "version": "1.0",
             "generatedAt": gen_time,
         },
-        "indices": [
-            {"name": i["name"], "val": f"{float(i['val']):.2f}", "chg": f"{float(i['chg']):+.2f}%"}
-            for i in (indices_rt or [])
+        "indices": indices_for_report or [
+            {"name": i["name"], "val": f"{float(i['val']):.2f}", "chg": f"{float(i['chg']):+.2f}%"} for i in (indices_rt or [])
         ],
         "panorama": {},
         "volume": {},
@@ -367,6 +389,46 @@ def run_rebuild(date: str, modules: list[str] | None = None) -> int:
     ctx.raw["index_klines"] = _load_index_klines_cache(root)
     ctx.raw["height_trend_cache"] = _load_height_trend_cache(root)
     ctx.raw["theme_trend_cache"] = _load_theme_trend_cache(root)
+
+    # 修复：三大指数涨幅在离线重建中可能残留为 +0.00%
+    # 这里用指数日K缓存按“报告日收盘价 vs 前收”重算，确保与报告日期一致。
+    try:
+        codes = ((ctx.raw.get("index_klines") or {}).get("codes") or {}) if isinstance(ctx.raw, dict) else {}
+        if isinstance(codes, dict) and date:
+            def _pick_exact(code: str) -> tuple[float, float] | None:
+                items = (codes.get(code) or {}).get("items") or []
+                if not isinstance(items, list):
+                    return None
+                for it in items:
+                    if not isinstance(it, dict):
+                        continue
+                    t = str(it.get("t") or "")
+                    if len(t) >= 10 and t[:10] == date and int(it.get("sf", 0) or 0) != 1:
+                        c = float(it.get("c", 0) or 0)
+                        pc = float(it.get("pc", 0) or 0)  # 前收
+                        return (c, pc)
+                return None
+
+            mapping = [("000001.SH", "上证指数"), ("399001.SZ", "深证成指"), ("399006.SZ", "创业板指")]
+            inds = []
+            for code, name in mapping:
+                r = _pick_exact(code)
+                if not r:
+                    continue
+                c, pc = r
+                chg = ((c - pc) / pc * 100.0) if pc else 0.0
+                inds.append({"name": name, "val": f"{c:.2f}", "chg": f"{chg:+.2f}%"})
+            if inds:
+                ctx.market_data["indices"] = inds
+                meta = ctx.market_data.get("meta") if isinstance(ctx.market_data.get("meta"), dict) else {}
+                if isinstance(meta, dict):
+                    asof = meta.get("asOf") if isinstance(meta.get("asOf"), dict) else {}
+                    if isinstance(asof, dict):
+                        asof["indices"] = "收盘"
+                        meta["asOf"] = asof
+                        ctx.market_data["meta"] = meta
+    except Exception:
+        pass
 
     # === 关键：离线重建时同步重算 features（避免缓存字段缺失导致页面“—/0”）===
     # features 应由 raw 推导，不能长期依赖旧 cache/market_data 里残留的 features。
@@ -580,6 +642,38 @@ def run_partial(date: str, modules: list[str]) -> int:
 
     # 注入题材持续性缓存：供 theme_trend 模块离线重算
     ctx.raw["theme_trend_cache"] = _load_theme_trend_cache(root)
+
+    # partial 同样用指数日K修正三大指数涨幅（与报告日一致）
+    try:
+        codes = ((ctx.raw.get("index_klines") or {}).get("codes") or {}) if isinstance(ctx.raw, dict) else {}
+        if isinstance(codes, dict) and date:
+            def _pick_exact(code: str) -> tuple[float, float] | None:
+                items = (codes.get(code) or {}).get("items") or []
+                if not isinstance(items, list):
+                    return None
+                for it in items:
+                    if not isinstance(it, dict):
+                        continue
+                    t = str(it.get("t") or "")
+                    if len(t) >= 10 and t[:10] == date and int(it.get("sf", 0) or 0) != 1:
+                        c = float(it.get("c", 0) or 0)
+                        pc = float(it.get("pc", 0) or 0)
+                        return (c, pc)
+                return None
+
+            mapping = [("000001.SH", "上证指数"), ("399001.SZ", "深证成指"), ("399006.SZ", "创业板指")]
+            inds = []
+            for code, name in mapping:
+                r = _pick_exact(code)
+                if not r:
+                    continue
+                c, pc = r
+                chg = ((c - pc) / pc * 100.0) if pc else 0.0
+                inds.append({"name": name, "val": f"{c:.2f}", "chg": f"{chg:+.2f}%"})
+            if inds:
+                ctx.market_data["indices"] = inds
+    except Exception:
+        pass
 
     # partial 同样重算 features（至少 mood_inputs/style_inputs），避免局部更新时 UI 读到旧/缺字段
     try:

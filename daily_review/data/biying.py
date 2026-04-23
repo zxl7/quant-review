@@ -100,12 +100,27 @@ def fetch_indices_realtime(client: HttpClient, codes: Sequence[tuple[str, str]])
         t = str(rt.get("t", "") or "")
         if t:
             as_of = t
+
+        # 兼容口径：部分接口字段含义容易混淆
+        # - p: 当前价
+        # - yc: 昨收
+        # - ud: 涨跌额
+        # - pc: 涨跌幅（有些数据源也可能返回 0/缺失）
+        p = float(rt.get("p", 0) or 0)
+        yc = float(rt.get("yc", 0) or 0)
+        ud = float(rt.get("ud", 0) or 0)
+        pc = rt.get("pc", None)
+        try:
+            pc = float(pc) if pc is not None else None
+        except Exception:
+            pc = None
+        chg_pct = ((p - yc) / yc * 100.0) if yc > 0 else (pc if pc is not None else (ud / p * 100.0 if p else 0.0))
         out.append(
             {
                 "name": name,
                 "code": code,
-                "val": float(rt.get("p", 0) or 0),
-                "chg": float(rt.get("pc", 0) or 0),  # %
+                "val": p,
+                "chg": chg_pct,  # %
                 "cje": float(rt.get("cje", 0) or 0),  # 元
                 "t": t,
             }
