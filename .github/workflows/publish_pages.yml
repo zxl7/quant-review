@@ -10,9 +10,11 @@ on:
   # 定时触发（可按需调整；cron 为 UTC）
   schedule:
     # 说明：GitHub Actions 的 cron 只支持 UTC，不能直接写“北京时间”。
-    # 这里选择“每个工作日每小时的第 1 分钟触发一次”，再在脚本里用北京时间判断：
-    # - 仅当北京时间 == 15:01 才继续执行
-    - cron: "1 * * * 1-5"
+    # 北京时间（UTC+8）：
+    # - 11:30 -> UTC 03:30
+    # - 15:00 -> UTC 07:00
+    - cron: "30 3 * * 1-5"
+    - cron: "0 7 * * 1-5"
 
 permissions:
   contents: read
@@ -36,14 +38,14 @@ jobs:
         run: |
           set -euo pipefail
           now_bj="$(TZ=Asia/Shanghai date +'%H:%M')"
-          target="15:01"
           echo "beijing_now=${now_bj}"
-          if [ "${now_bj}" != "${target}" ]; then
+          # 双时点触发：11:30 / 15:00（北京时间）
+          if [ "${now_bj}" != "11:30" ] && [ "${now_bj}" != "15:00" ]; then
             echo "skip=true" >> "$GITHUB_OUTPUT"
-            echo "Not target time (${target}), skip."
+            echo "Not target time (11:30/15:00), skip."
           else
             echo "skip=false" >> "$GITHUB_OUTPUT"
-            echo "Target time hit (${target}), continue."
+            echo "Target time hit (11:30/15:00), continue."
           fi
 
       - name: Setup Python
@@ -57,7 +59,7 @@ jobs:
         run: |
           chmod +x ./qr.sh || true
 
-      - name: Generate latest report (online, costs API)
+      - name: Generate latest report (online fetch -> offline pipeline rebuild)
         if: ${{ github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true' }}
         env:
           BIYING_TOKEN: ${{ secrets.BIYING_TOKEN }}
@@ -67,6 +69,7 @@ jobs:
             echo "Missing secrets.BIYING_TOKEN"
             exit 2
           fi
+          # qr.sh fetch：仅在线取数落缓存（有成本）→ 再用 v2 pipeline 离线重建 → 输出 html/*tab-v1.html
           ./qr.sh fetch
 
       - name: Prepare Pages site (html/ as site root)
