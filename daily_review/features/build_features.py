@@ -126,6 +126,24 @@ def build_mood_inputs(*, pools: Mapping[str, Any]) -> Dict[str, Any]:
     second_lb = int(lbs[1]) if len(lbs) >= 2 else int(lbs[0]) if lbs else 0
     height_gap = int(max(0, max_lb - second_lb))
 
+    # 梯队结构（2板/3板/4+ /5+）
+    lb_2 = len([s for s in zt if _lbc_of(s) == 2])
+    lb_3 = len([s for s in zt if _lbc_of(s) == 3])
+    lb_4p = len([s for s in zt if _lbc_of(s) >= 4])
+    lb_5p = len([s for s in zt if _lbc_of(s) >= 5])
+
+    # 梯队完整性评分（0~100）：最小可用版
+    # - 有高度锚（5+ 或 4+）加分
+    # - 3板/2板梯队足够加分
+    # - 极端“只有最高板、下面断层”会显著扣分
+    tier_score = 0
+    tier_score += 25 if lb_5p >= 1 else (15 if lb_4p >= 1 else 0)
+    tier_score += 25 if (lb_3 >= 2) else (15 if lb_3 >= 1 else 0)
+    tier_score += 25 if (lb_2 >= 4) else (15 if lb_2 >= 2 else 0)
+    tier_score += 25 if zt_count >= 40 else (15 if zt_count >= 30 else 0)
+    tier_integrity_score = max(0, min(100, tier_score))
+    tier_integrity_low = 1 if tier_integrity_score < 50 else 0
+
     # 昨日连板结构（用于晋级率/断板率）
     yest_lbs = [_lbc_of(s) for s in yest_zt]
     yest_lb_count = len([lb for lb in yest_lbs if lb >= 2])
@@ -153,6 +171,10 @@ def build_mood_inputs(*, pools: Mapping[str, Any]) -> Dict[str, Any]:
     # bf_count（大面/负反馈）数据源不稳定：先用 dt_count 近似兜底
     bf_count = dt_count
 
+    # 风险突刺（最小可用版）：用于更快识别“转弱/退潮确认”
+    # 注：后续若补齐 delta_*（昨日变化）可把规则改成“突刺=变化共振”
+    risk_spike = 1 if (zb_rate >= 35.0 and dt_count >= 8 and broken_lb_rate >= 30.0) else 0
+
     return {
         "fb_rate": round(fb_rate, 1),
         "jj_rate": round(jj_rate, 1),
@@ -176,6 +198,13 @@ def build_mood_inputs(*, pools: Mapping[str, Any]) -> Dict[str, Any]:
         "max_lb": int(max_lb),
         "second_lb": int(second_lb),
         "height_gap": int(height_gap),
+        "lb_2": int(lb_2),
+        "lb_3": int(lb_3),
+        "lb_4p": int(lb_4p),
+        "lb_5p": int(lb_5p),
+        "tier_integrity_score": int(tier_integrity_score),
+        "tier_integrity_low": int(tier_integrity_low),
+        "risk_spike": int(risk_spike),
         "zb_high_ratio": round(zb_high_ratio, 1),
         "zb_high_count": int(zb_high_count),
         "zb_high_names": zb_high_names,
@@ -232,4 +261,3 @@ def build_style_inputs(*, mood_inputs: Mapping[str, Any], theme_panels: Mapping[
 
 def default_chart_palette() -> list[str]:
     return ["#ef4444", "#f97316", "#f59e0b", "#fb7185"]
-

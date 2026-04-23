@@ -14,6 +14,7 @@ from __future__ import annotations
 from typing import Any, Dict, List
 
 from .scoring import HeatRiskScore, calc_heat_risk
+from daily_review.rules.shortline import ACTION_TEMPLATES, STAGE_CN, STAGE_RULES, STAGE_TO_TYPE
 
 
 def class_for_good_rate(rate: float, hi: float = 60, mid: float = 40) -> str:
@@ -59,6 +60,81 @@ def calc_stage(*, heat_score: float, risk_score: float, inputs: Dict[str, Any]) 
     delta_loss = float(inputs.get("delta_loss", 0) or 0)
     jj_1b_rate = float(inputs.get("jj_1b_rate_adj", inputs.get("jj_1b_rate", 0)) or 0)
 
+    def infer_cycle_stage() -> str:
+        """
+        情绪周期四阶段（最小可用版）：
+        - ICE / START / FERMENT / CLIMAX
+        """
+        max_lb = int(inputs.get("max_lb", 0) or 0)
+        zt_cnt = int(inputs.get("zt_count", 0) or 0)
+        zb = float(inputs.get("zb_rate", 0) or 0)
+        dt = int(inputs.get("dt_count", 0) or 0)
+
+        # 先判最极端（高潮/冰点）
+        if max_lb >= (STAGE_RULES["CLIMAX"].get("max_lb_ge") or 6) and zt_cnt >= (STAGE_RULES["CLIMAX"].get("zt_count_ge") or 80) and zb <= (STAGE_RULES["CLIMAX"].get("zb_rate_le") or 20):
+            return "CLIMAX"
+        if max_lb <= (STAGE_RULES["ICE"].get("max_lb_le") or 3) and zt_cnt < (STAGE_RULES["ICE"].get("zt_count_lt") or 30) and zb >= (STAGE_RULES["ICE"].get("zb_rate_ge") or 40) and dt >= (STAGE_RULES["ICE"].get("dt_count_ge") or 10):
+            return "ICE"
+        # 再判发酵/启动
+        if max_lb >= (STAGE_RULES["FERMENT"].get("max_lb_ge") or 4) and zt_cnt >= (STAGE_RULES["FERMENT"].get("zt_count_ge") or 50) and zb <= (STAGE_RULES["FERMENT"].get("zb_rate_le") or 30):
+            return "FERMENT"
+        if max_lb >= (STAGE_RULES["START"].get("max_lb_ge") or 2) and zt_cnt >= (STAGE_RULES["START"].get("zt_count_ge") or 30):
+            return "START"
+        # 兜底：高度太低且涨停偏少时倾向 ICE，否则 START
+        return "ICE" if (max_lb <= 2 and zt_cnt < 30) else "START"
+
+    cycle = infer_cycle_stage()
+
+    def decorate(out: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        将“旧的当日态判定”与“新的周期阶段”融合输出：
+        - title：{周期}·{当日态}
+        - type：与周期映射对齐（ICE 更偏 fire，CLIMAX 更偏 good）
+        - 附带 stance/mode 供 actionGuide/learningNotes 复用
+        """
+        base_title = str(out.get("title") or "-")
+        # 当日态：从旧 title 粗映射（尽量不破坏原算法）
+        if base_title in ("退潮", "冰点"):
+            day_state = "退潮确认"
+        elif base_title in ("高潮", "强修复"):
+            day_state = "一致"
+        elif base_title == "分歧":
+            day_state = "分歧"
+        else:
+            day_state = "震荡"
+
+        cycle_cn = STAGE_CN.get(cycle, "启动")
+        title = f"{cycle_cn}·{day_state}"
+
+        # type 对齐：周期优先，日态做修正
+        t = str(out.get("type") or "warn")
+        if day_state == "退潮确认":
+            t = "fire"
+        else:
+            # 让周期决定主色
+            t = STAGE_TO_TYPE.get(cycle, t) or t
+
+        tpl = ACTION_TEMPLATES.get(cycle, {})
+        stance = str(tpl.get("stance") or "")
+        mode2 = str(tpl.get("mode") or "")
+
+        detail = str(out.get("detail") or "").strip()
+        if detail:
+            detail = f"周期：{cycle_cn}｜{detail}"
+        else:
+            detail = f"周期：{cycle_cn}｜按{stance or '策略'}执行，重点看承接/分歧信号。"
+
+        return {
+            **out,
+            "title": title,
+            "type": t,
+            "detail": detail,
+            "cycle": cycle,
+            "dayState": day_state,
+            "stance": stance,
+            "mode": mode2,
+        }
+
     # 周期趋势（近 5~7 日）：更贴近“情绪周期上升/下降”的定义
     # 上升：连板高度↑ + 封板成功率↑ + 晋级承接↑
     trend_max_lb = float(inputs.get("trend_max_lb", 0) or 0)
@@ -70,22 +146,22 @@ def calc_stage(*, heat_score: float, risk_score: float, inputs: Dict[str, Any]) 
         # 周期上升：即便当日有分歧，也倾向按“强修复/向上周期”处理（更激进）
         if trend_max_lb >= 1 and trend_fb >= 4 and trend_jj >= 4 and heat_score >= 60 and risk_score < 75 and dt_count <= 10:
             if heat_score >= 82 and max_lb >= 6:
-                return {"title": "高潮", "type": "good", "detail": "周期上升（高度/封板/承接同步走强），且空间打开，按高潮处理：聚焦主线核心，警惕分化回撤。"}
-            return {"title": "强修复", "type": "good", "detail": "周期上升（高度/封板/承接同步走强），即使盘中分歧也按强修复对待：低位/核心优先。"}
+                return decorate({"title": "高潮", "type": "good", "detail": "周期上升（高度/封板/承接同步走强），且空间打开，按高潮处理：聚焦主线核心，警惕分化回撤。"})
+            return decorate({"title": "强修复", "type": "good", "detail": "周期上升（高度/封板/承接同步走强），即使盘中分歧也按强修复对待：低位/核心优先。"})
 
         # 周期下降：提前防守（更早识别退潮）
         if trend_max_lb <= -1 and trend_fb <= -4 and trend_jj <= -4 and risk_score >= 55:
-            return {"title": "退潮", "type": "fire", "detail": "周期下降（高度/封板/承接同步走弱），提前防守：减仓、少做接力，等待修复信号。"}
+            return decorate({"title": "退潮", "type": "fire", "detail": "周期下降（高度/封板/承接同步走弱），提前防守：减仓、少做接力，等待修复信号。"})
 
         # 早确认强修复：热度明显上升 + 风险明显下降 + 首板晋级开始修复
         if delta_heat >= 8 and delta_risk <= -6 and jj_1b_rate >= 18 and zt_early_ratio >= 45 and dt_count <= 8:
-            return {"title": "强修复", "type": "good", "detail": "热度上升且风险下降，首板晋级修复，按强修复对待：围绕主线核心做低位/回封确认。"}
+            return decorate({"title": "强修复", "type": "good", "detail": "热度上升且风险下降，首板晋级修复，按强修复对待：围绕主线核心做低位/回封确认。"})
         # 早确认高潮：热度高位继续抬升 + 空间打开 + 承接不差
         if heat_score >= 82 and delta_heat >= 6 and max_lb >= 6 and (jj_rate >= 40 or rate_2to3 >= 45) and risk_score <= 70:
-            return {"title": "高潮", "type": "good", "detail": "热度继续抬升且空间打开，情绪一致性强，注意高潮次日分化与高位回撤。"}
+            return decorate({"title": "高潮", "type": "good", "detail": "热度继续抬升且空间打开，情绪一致性强，注意高潮次日分化与高位回撤。"})
         # 早确认退潮：风险快速抬升 + 亏钱效应扩大（loss↑）
         if risk_score >= 70 and delta_risk >= 8 and delta_loss >= 5 and delta_heat <= 0:
-            return {"title": "退潮", "type": "fire", "detail": "风险快速上升且亏钱效应扩散，按退潮处理：减仓防守，少做情绪接力。"}
+            return decorate({"title": "退潮", "type": "fire", "detail": "风险快速上升且亏钱效应扩散，按退潮处理：减仓防守，少做情绪接力。"})
 
     # 风险/退潮信号
     risk_hits = 0
@@ -130,27 +206,27 @@ def calc_stage(*, heat_score: float, risk_score: float, inputs: Dict[str, Any]) 
         strong_hits += 1 if delta_jj >= 5 else 0
 
     if heat_score <= 35 or (fb_rate < 55 and dt_count >= 15) or risk_score >= 80:
-        return {"title": "冰点", "type": "fire", "detail": "跌停与断板压力大，短线生态偏弱，等待情绪修复信号。"}
+        return decorate({"title": "冰点", "type": "fire", "detail": "跌停与断板压力大，短线生态偏弱，等待情绪修复信号。"})
 
     # 赚钱效应兜底：如果“赚钱效应”模块明确给出 good，则情绪阶段不应过弱
     # 目的：避免出现“赚钱效应极好，但情绪阶段却偏弱”的割裂感（你反馈的场景）
     if effect_verdict_type == "good" and dt_count <= 5 and risk_score < 60:
         if zt_count >= 70 and max_lb >= 6:
-            return {"title": "高潮", "type": "good", "detail": "赚钱效应强且空间打开，注意高潮次日分化与高位回撤。"}
-        return {"title": "强修复", "type": "good", "detail": "赚钱效应良好，封板与承接偏强，适合围绕主线做低位/核心。"}
+            return decorate({"title": "高潮", "type": "good", "detail": "赚钱效应强且空间打开，注意高潮次日分化与高位回撤。"})
+        return decorate({"title": "强修复", "type": "good", "detail": "赚钱效应良好，封板与承接偏强，适合围绕主线做低位/核心。"})
     if risk_hits >= 3 and strong_hits <= 1:
-        return {"title": "退潮", "type": "fire", "detail": "高位/连板承接走弱，风险信号集中，优先防守，少做接力。"}
+        return decorate({"title": "退潮", "type": "fire", "detail": "高位/连板承接走弱，风险信号集中，优先防守，少做接力。"})
     if strong_hits >= 4 and risk_hits <= 1:
         if heat_score >= 85 and (risk_score >= 45 or height_gap >= 3 or zb_rate >= 22):
-            return {"title": "高潮", "type": "good", "detail": "一致性强但易分化，注意高潮次日回撤与高位炸板风险。"}
-        return {"title": "强修复", "type": "good", "detail": "封板与晋级偏强，短线生态健康，低位与核心接力都有机会。"}
+            return decorate({"title": "高潮", "type": "good", "detail": "一致性强但易分化，注意高潮次日回撤与高位炸板风险。"})
+        return decorate({"title": "强修复", "type": "good", "detail": "封板与晋级偏强，短线生态健康，低位与核心接力都有机会。"})
     # 中间态：分歧/弱修复
     # 规则：当“封板/早封”很强，但“晋级/断板/大面”偏差时，本质是结构性分歧，不应落到“弱修复”
     if risk_hits >= 2 and strong_hits >= 2:
-        return {"title": "分歧", "type": "warn", "detail": "封板不差但结构承接偏弱（晋级/断板/大面其一走坏），按分歧处理：降低仓位，做回封与低位确定性。"}
+        return decorate({"title": "分歧", "type": "warn", "detail": "封板不差但结构承接偏弱（晋级/断板/大面其一走坏），按分歧处理：降低仓位，做回封与低位确定性。"})
     if strong_hits >= 3 and (broken_lb_rate >= 45 or jj_rate <= 35):
-        return {"title": "分歧", "type": "warn", "detail": "一致性偏强但晋级/断板不跟随，属于“强分歧”：只做确认，不做情绪硬接力。"}
-    return {"title": "弱修复", "type": "warn", "detail": "有修复但承接一般（晋级偏弱），适合轻仓试错，重点观察晋级率与断板率是否改善。"}
+        return decorate({"title": "分歧", "type": "warn", "detail": "一致性偏强但晋级/断板不跟随，属于“强分歧”：只做确认，不做情绪硬接力。"})
+    return decorate({"title": "弱修复", "type": "warn", "detail": "有修复但承接一般（晋级偏弱），适合轻仓试错，重点观察晋级率与断板率是否改善。"})
 
 
 def build_cards(inputs: Dict[str, Any]) -> List[Dict[str, Any]]:

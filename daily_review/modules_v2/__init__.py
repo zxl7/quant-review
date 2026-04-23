@@ -10,6 +10,7 @@ from .volume import VOLUME_MODULE
 from .height_trend import HEIGHT_TREND_MODULE
 from .ztgc import ZTGC_MODULE
 from .top10 import TOP10_MODULE
+from .theme_trend import THEME_TREND_MODULE
 from .action_guide import ACTION_GUIDE_MODULE
 from .summary3 import SUMMARY3_MODULE
 from .learning_notes import LEARNING_NOTES_MODULE
@@ -19,6 +20,7 @@ ALL_MODULES = [
     LADDER_MODULE,
     ZTGC_MODULE,
     THEME_PANELS_MODULE,
+    THEME_TREND_MODULE,
     VOLUME_MODULE,
     HEIGHT_TREND_MODULE,
     TOP10_MODULE,

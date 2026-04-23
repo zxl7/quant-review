@@ -166,8 +166,13 @@ def build_action_guide_v2(market_data: Dict[str, Any]) -> Dict[str, Any]:
     top_duanban_is_high = int(to_num(mi.get("top_duanban_is_high"), 0) or 0) == 1
     second_lb = int(to_num(mi.get("second_lb"), 0) or 0)
 
-    stage = (market_data.get("moodStage") or {}).get("title") or "-"
-    stage_type = (market_data.get("moodStage") or {}).get("type") or "warn"
+    mood_stage = (market_data.get("moodStage") or {})
+    stage = mood_stage.get("title") or "-"
+    stage_type = mood_stage.get("type") or "warn"
+    cycle = str(mood_stage.get("cycle") or "")
+    cycle_cn = str(mood_stage.get("detail") or "")
+    stance_from_stage = str(mood_stage.get("stance") or "")
+    mode_from_stage = str(mood_stage.get("mode") or "")
     theme = pick_theme()
     leader = pick_leader(prefer_theme=str(theme.get("name") or ""))
     theme_row = pick_theme_strength(str(theme.get("name") or ""))
@@ -246,6 +251,9 @@ def build_action_guide_v2(market_data: Dict[str, Any]) -> Dict[str, Any]:
         stance = "进攻"
     elif risk >= 60 or loss >= 10 or fb <= 55:
         stance = "防守"
+    # 若 moodStage 已给出“周期建议立场”，优先用它（更贴近你的短线框架）
+    if stance_from_stage:
+        stance = stance_from_stage
 
     # 模式选择（4态）：接力 / 套利 / 低位试错 / 休息
     # 你的要求：默认偏“进攻”，只有出现明确的风险/失效信号才降级
@@ -254,7 +262,7 @@ def build_action_guide_v2(market_data: Dict[str, Any]) -> Dict[str, Any]:
     risk_trend_up = (dzb >= 1.0) or (dloss >= 2)
     strong_divergence = (zbc_ge3_ratio >= 18) or (avg_zbc >= 1.8)
 
-    mode = "接力"  # 默认进攻
+    mode = "接力"  # 默认进攻（旧逻辑）
     # 1) 先判“必须休息”的情形
     if stage_type == "fire" or stance == "防守" or overlap_score >= 75 or risk >= 70 or loss >= 15:
         mode = "休息"
@@ -265,7 +273,25 @@ def build_action_guide_v2(market_data: Dict[str, Any]) -> Dict[str, Any]:
     elif theme_net < 9 or fb < 55 or jj < 25:
         mode = "低位试错"
 
-    meta_title = f"🧩 盘面基调：{regime}｜主线：{theme.get('name','主线')}｜模式：{mode}（默认进攻）｜建议：{stance}"
+    # 周期模板模式（新逻辑）：让“阶段→策略”更直观
+    def _short_mode(m: str) -> str:
+        if not m:
+            return ""
+        if "休息" in m:
+            return "休息"
+        if "低位" in m:
+            return "低位试错"
+        if "兑现" in m:
+            return "兑现"
+        if "接力" in m:
+            return "接力"
+        return m
+
+    mode_tpl = _short_mode(mode_from_stage)
+    mode_show = mode_tpl or mode
+    tag_stage = f"{stage}" if stage else "-"
+
+    meta_title = f"🧩 盘面基调：{tag_stage}｜主线：{theme.get('name','主线')}｜模式：{mode_show}｜建议：{stance}"
     meta_detail = (
         f"涨停{zt_cnt}，封板{fb:.1f}%（早封{early:.1f}%），晋级{jj:.1f}%；"
         f"炸板{zb:.1f}%、扩散{int(loss)}；量能{vol_chg:+.2f}%；"
@@ -418,7 +444,12 @@ def build_learning_notes(*, market_data: Dict[str, Any], cache_dir: Path) -> Dic
     - 可随盘面阶段动态切换语气（更贴合每日复盘）。
     """
     date = str(market_data.get("date") or "").strip() or "unknown-date"
-    stage_type = ((market_data.get("moodStage") or {}).get("type") or "warn").strip()
+    mood_stage = (market_data.get("moodStage") or {})
+    stage_type = (mood_stage.get("type") or "warn").strip()
+    cycle = str(mood_stage.get("cycle") or "").strip()
+    mi = ((market_data.get("features") or {}).get("mood_inputs") or {})
+    risk_spike = int(mi.get("risk_spike", 0) or 0)
+    tier_integrity_low = int(mi.get("tier_integrity_low", 0) or 0)
 
     def _norm_line(s: str) -> str:
         s = s.strip()
@@ -609,6 +640,50 @@ def build_learning_notes(*, market_data: Dict[str, Any], cache_dir: Path) -> Dic
     tip_id, tip_txt = pick_one(tip_pool, tip_used, f"{date}:{stage_type}:tip")
     quote_id, quote_txt = pick_one(quote_pool, quote_used, f"{date}:{stage_type}:quote")
 
+    # === 结构化卡片（阶段/触发信号）===
+    # 每天输出 2~3 条：阶段卡 + 触发卡 + 1 条通用提醒
+    try:
+        from daily_review.rules.shortline import NOTE_CARDS
+    except Exception:
+        NOTE_CARDS = []
+
+    def card_hit(card: dict) -> bool:
+        when = card.get("when") or {}
+        if not isinstance(when, dict):
+            return False
+        if "cycle" in when:
+            cs = when.get("cycle") or []
+            if isinstance(cs, list) and cycle and cycle not in cs:
+                return False
+        if "risk_spike" in when:
+            vs = when.get("risk_spike") or []
+            if isinstance(vs, list) and risk_spike not in vs:
+                return False
+        if "tier_integrity_low" in when:
+            vs = when.get("tier_integrity_low") or []
+            if isinstance(vs, list) and tier_integrity_low not in vs:
+                return False
+        return True
+
+    picked_cards: list[str] = []
+    for c in NOTE_CARDS:
+        if not isinstance(c, dict):
+            continue
+        if card_hit(c):
+            txt = str(c.get("text") or "").strip()
+            if txt:
+                picked_cards.append(txt)
+        if len(picked_cards) >= 2:
+            break
+
+    tips: list[str] = []
+    for t in picked_cards:
+        if t not in tips:
+            tips.append(t)
+    if tip_txt and tip_txt not in tips:
+        tips.append(tip_txt)
+    tips = tips[:3]
+
     # 更新历史（同一天重复渲染不重复追加）
     try:
         if history.get("last_date") != date:
@@ -621,7 +696,7 @@ def build_learning_notes(*, market_data: Dict[str, Any], cache_dir: Path) -> Dic
     except Exception:
         pass
 
-    return {"tips": [tip_txt] if tip_txt else [], "quotes": [quote_txt] if quote_txt else []}
+    return {"tips": tips, "quotes": [quote_txt] if quote_txt else []}
 
 
 if __name__ == "__main__":

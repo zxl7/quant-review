@@ -152,6 +152,44 @@ def run_fetch_and_rebuild(date: str | None) -> int:
         codes_map[code6] = uniq
     write_json(themes_path, {"version": 1, "codes": codes_map})
 
+    # theme_trend_cache.json：主线题材近 5 日持续性（只用已缓存的 code2themes，不额外请求）
+    theme_trend_path = cache_dir / "theme_trend_cache.json"
+    trend_disk = read_json(theme_trend_path, default={})
+    by_day = (trend_disk.get("by_day") or {}) if isinstance(trend_disk, dict) else {}
+    if not isinstance(by_day, dict):
+        by_day = {}
+
+    def count_day_themes(day_rows: list[dict[str, Any]]) -> dict[str, int]:
+        cnt: dict[str, int] = {}
+        for s in day_rows or []:
+            code6 = normalize_stock_code(str(s.get("dm") or s.get("code") or ""))
+            if not code6:
+                continue
+            ths = codes_map.get(code6) or []
+            if not isinstance(ths, list):
+                continue
+            for t in ths:
+                name = str(t or "").strip()
+                if not name:
+                    continue
+                cnt[name] = cnt.get(name, 0) + 1
+        return cnt
+
+    # 仅更新最近 5 个交易日（含当天），避免文件无限增长
+    last5 = trade_days[-5:] if len(trade_days) >= 5 else trade_days
+    for d in last5:
+        rows = pools.get("ztgc", {}).get(d) or []
+        rows = rows if isinstance(rows, list) else []
+        by_day[d] = count_day_themes([x for x in rows if isinstance(x, dict)])
+
+    # 裁剪：只保留最近 30 天
+    keep_days = set(trade_days)
+    for k in sorted(list(by_day.keys())):
+        if isinstance(k, str) and k not in keep_days and len(by_day) > 40:
+            by_day.pop(k, None)
+
+    write_json(theme_trend_path, {"version": 1, "as_of": actual_date, "by_day": by_day})
+
     # index_kline_cache.json：缓存最近 5 根（日K）
     index_k_path = cache_dir / "index_kline_cache.json"
     idx_disk = read_json(index_k_path, default={})
@@ -241,6 +279,7 @@ def run_fetch_and_rebuild(date: str | None) -> int:
         "volume": {},
         "sectors": [],
         "themePanels": {},
+        "themeTrend": {"dates": [], "series": [], "palette": default_chart_palette()},
         "heightTrend": {},
         "ladder": [],
         "top10": [],
@@ -263,6 +302,7 @@ def run_fetch_and_rebuild(date: str | None) -> int:
         "pools": raw_pools,
         "themes": {"code2themes": codes_map},
         "index_klines": {"codes": codes_entry},
+        "theme_trend_cache": {"as_of": actual_date, "by_day": by_day},
     }
 
     # features：最小可用版
@@ -319,6 +359,7 @@ def run_rebuild(date: str, modules: list[str] | None = None) -> int:
     ctx.raw["themes"]["code2themes"] = _load_theme_cache(root)
     ctx.raw["index_klines"] = _load_index_klines_cache(root)
     ctx.raw["height_trend_cache"] = _load_height_trend_cache(root)
+    ctx.raw["theme_trend_cache"] = _load_theme_trend_cache(root)
 
     runner = Runner(ALL_MODULES)
     runner.run(ctx, targets=(modules or None))
@@ -412,6 +453,18 @@ def _load_height_trend_cache(root: Path) -> dict:
     except Exception:
         return {}
 
+def _load_theme_trend_cache(root: Path) -> dict:
+    """
+    读取本地 cache/theme_trend_cache.json（主线题材近5日持续性缓存）。
+    """
+    p = root / "cache" / "theme_trend_cache.json"
+    if not p.exists():
+        return {}
+    try:
+        return json.loads(p.read_text(encoding="utf-8"))
+    except Exception:
+        return {}
+
 
 def _prev_trade_date(all_dates: list[str], date: str) -> str | None:
     """
@@ -468,6 +521,9 @@ def run_partial(date: str, modules: list[str]) -> int:
 
     # 注入高度趋势缓存：供 height_trend 模块离线重算
     ctx.raw["height_trend_cache"] = _load_height_trend_cache(root)
+
+    # 注入题材持续性缓存：供 theme_trend 模块离线重算
+    ctx.raw["theme_trend_cache"] = _load_theme_trend_cache(root)
 
     runner = Runner(ALL_MODULES)
     runner.run(ctx, targets=modules)
