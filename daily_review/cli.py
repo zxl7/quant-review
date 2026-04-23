@@ -33,6 +33,7 @@ from daily_review.data.biying import (
 )
 from daily_review.features.build_features import build_mood_inputs, build_style_inputs, default_chart_palette
 from daily_review.modules.style_radar import rebuild_style_radar
+from daily_review.metrics.style_radar import calc_style_strengths
 
 
 def _workspace_root() -> Path:
@@ -367,6 +368,24 @@ def run_rebuild(date: str, modules: list[str] | None = None) -> int:
     ctx.raw["height_trend_cache"] = _load_height_trend_cache(root)
     ctx.raw["theme_trend_cache"] = _load_theme_trend_cache(root)
 
+    # === 关键：离线重建时同步重算 features（避免缓存字段缺失导致页面“—/0”）===
+    # features 应由 raw 推导，不能长期依赖旧 cache/market_data 里残留的 features。
+    try:
+        pools_for_feat = ctx.raw.get("pools") or {}
+        mood_inputs = build_mood_inputs(pools=pools_for_feat)
+        feats = ctx.market_data.get("features") if isinstance(ctx.market_data.get("features"), dict) else {}
+        if not isinstance(feats, dict):
+            feats = {}
+        feats["mood_inputs"] = mood_inputs
+        feats.setdefault("chart_palette", default_chart_palette())
+        ztgc = [x for x in (pools_for_feat.get("ztgc") or []) if isinstance(x, dict)]
+        feats["style_inputs"] = build_style_inputs(mood_inputs=mood_inputs, theme_panels=ctx.market_data.get("themePanels") or {}, ztgc=ztgc)
+        feats["style_strengths"] = calc_style_strengths(feats.get("style_inputs") or {})
+        ctx.market_data["features"] = feats
+        ctx.features = feats  # runner 使用 ctx.features 读取 features.*
+    except Exception:
+        pass
+
     runner = Runner(ALL_MODULES)
     runner.run(ctx, targets=(modules or None))
     market_data = ctx.market_data
@@ -561,6 +580,23 @@ def run_partial(date: str, modules: list[str]) -> int:
 
     # 注入题材持续性缓存：供 theme_trend 模块离线重算
     ctx.raw["theme_trend_cache"] = _load_theme_trend_cache(root)
+
+    # partial 同样重算 features（至少 mood_inputs/style_inputs），避免局部更新时 UI 读到旧/缺字段
+    try:
+        pools_for_feat = ctx.raw.get("pools") or {}
+        mood_inputs = build_mood_inputs(pools=pools_for_feat)
+        feats = ctx.market_data.get("features") if isinstance(ctx.market_data.get("features"), dict) else {}
+        if not isinstance(feats, dict):
+            feats = {}
+        feats["mood_inputs"] = mood_inputs
+        feats.setdefault("chart_palette", default_chart_palette())
+        ztgc = [x for x in (pools_for_feat.get("ztgc") or []) if isinstance(x, dict)]
+        feats["style_inputs"] = build_style_inputs(mood_inputs=mood_inputs, theme_panels=ctx.market_data.get("themePanels") or {}, ztgc=ztgc)
+        feats["style_strengths"] = calc_style_strengths(feats.get("style_inputs") or {})
+        ctx.market_data["features"] = feats
+        ctx.features = feats
+    except Exception:
+        pass
 
     runner = Runner(ALL_MODULES)
     runner.run(ctx, targets=modules)
