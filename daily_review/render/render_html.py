@@ -302,6 +302,27 @@ def build_action_guide_v2(market_data: Dict[str, Any]) -> Dict[str, Any]:
     def bar(*parts: str) -> str:
         return "｜".join([p for p in parts if p])
 
+    def desc_short(s: str, *, limit: int = 60) -> str:
+        """
+        行动指南压缩版描述：用于“单行展示”，避免占用过多高度。
+        - 保留数字与关键字段
+        - 去掉重复标签/括号注释
+        """
+        x = str(s or "").strip()
+        if not x:
+            return x
+        # 去掉括号内补充说明（例如：拥挤(重叠) / 休息阈值）
+        x = re.sub(r"（[^）]*）", "", x)
+        x = x.replace("承接：", "").replace("分歧：", "")
+        x = x.replace("拥挤(重叠)", "拥挤").replace("拥挤", "拥挤")
+        x = x.replace("保留底线：", "").replace("保留底线", "")
+        x = x.replace("封板", "封").replace("晋级", "晋").replace("早封", "早")
+        x = x.replace("炸板", "炸").replace("均开板", "均开").replace("≥3开板", "≥3开")
+        x = re.sub(r"\s+", " ", x).strip()
+        if len(x) > limit:
+            x = x[: limit - 1] + "…"
+        return x
+
     main_name = str(theme.get("name") or "主线")
     main_examples = str(theme.get("examples") or "—")
     main_str = f"{main_name}（样本：{main_examples}）"
@@ -375,6 +396,13 @@ def build_action_guide_v2(market_data: Dict[str, Any]) -> Dict[str, Any]:
             "看点：反抽无力/继续走弱 → 次高板更难晋级；强修复回封 → 梯队回暖",
         )
         retreat[1]["tags"] = [tag("先看反馈", "ladder-chip-warn orange-text")]
+
+    # 给前端一个“单行展示”的压缩字段（保留完整 desc 供 hover/展开）
+    for it in (confirm + retreat):
+        try:
+            it["descShort"] = desc_short(str(it.get("desc") or ""))
+        except Exception:
+            it["descShort"] = str(it.get("desc") or "")
 
     return {
         "meta": {"title": meta_title, "detail": meta_detail, "type": verdict_type},

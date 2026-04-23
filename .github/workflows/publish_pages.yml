@@ -25,12 +25,16 @@ concurrency:
   group: "pages"
   cancel-in-progress: false
 
+env:
+  # 提前切到 Node.js 24 执行 JavaScript actions，避免 2026-06-02 默认切换后踩坑
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Check Beijing time (schedule only)
         id: timecheck
@@ -49,7 +53,7 @@ jobs:
           fi
 
       - name: Setup Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         if: ${{ github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true' }}
         with:
           python-version: "3.11"
@@ -86,12 +90,12 @@ jobs:
           echo "site=index.html from: ${report_html}"
 
       - name: Upload Pages artifact
-        uses: actions/upload-pages-artifact@v3
+        uses: actions/upload-pages-artifact@v5
         if: ${{ github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true' }}
         with:
           path: ./html
 
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@v5
         if: ${{ github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true' }}

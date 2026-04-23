@@ -225,7 +225,7 @@
       .hero-date { font-size: 26px; font-weight: 800; letter-spacing: 0.5px; }
       .hero-subtitle { opacity: 0.8; font-size: 13px; margin-top: 6px; font-weight: 500; }
 
-      /* 指数区：用“磨砂容器 + 磨砂卡片”，避免出现突兀的纯白底 */
+      /* 指数区：只做“磨砂卡片”，容器不再铺底（避免出现一整块突兀底色） */
       .index-row {
         display: flex;
         gap: 12px;
@@ -233,21 +233,23 @@
         position: relative;
         z-index: 1;
         flex-wrap: wrap;
-        padding: 10px;
-        border-radius: calc(var(--radius-lg) + 2px);
-        background: rgba(255, 255, 255, 0.08);
-        border: 1px solid rgba(255, 255, 255, 0.14);
-        backdrop-filter: blur(12px);
+        padding: 0;
+        border-radius: 0;
+        background: transparent;
+        border: none;
+        backdrop-filter: none;
       }
       .index-card {
         flex: 1; min-width: 120px;
-        /* 磨砂卡片：降低白度，融入 Hero 渐变背景 */
-        background: rgba(255, 255, 255, 0.14);
+        /* 磨砂卡片：更轻的玻璃感（减少“灰块”观感） */
+        background: rgba(255, 255, 255, 0.10);
         border-radius: var(--radius-md);
         padding: 16px 12px;
         text-align: center;
         backdrop-filter: blur(14px);
-        border: 1px solid rgba(255, 255, 255, 0.18);
+        -webkit-backdrop-filter: blur(14px);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        box-shadow: 0 10px 26px rgba(0,0,0,0.10);
         transition: transform 0.2s, background 0.2s;
         position: relative;
         overflow: hidden;
@@ -258,8 +260,8 @@
         position:absolute;
         inset:0;
         background:
-          radial-gradient(120px 70px at 50% 35%, rgba(255,255,255,0.38), rgba(255,255,255,0.02) 70%),
-          linear-gradient(135deg, rgba(255,255,255,0.10), rgba(255,255,255,0.00));
+          radial-gradient(140px 90px at 50% 35%, rgba(255,255,255,0.22), rgba(255,255,255,0.00) 70%),
+          linear-gradient(135deg, rgba(255,255,255,0.06), rgba(255,255,255,0.00));
         pointer-events:none;
       }
       .index-card > *{ position: relative; z-index: 1; }
@@ -299,18 +301,15 @@
       .flat { color: var(--warning) !important; }
 
       /* 深色模式：指数卡片改为暗玻璃底，红绿字保持清晰 */
-      [data-theme="dark"] .index-row{
-        background: rgba(2, 6, 23, 0.26);
-        border-color: rgba(148, 163, 184, 0.16);
-      }
       [data-theme="dark"] .index-card{
-        background: rgba(15, 23, 42, 0.55);
-        border-color: rgba(148, 163, 184, 0.22);
+        background: rgba(15, 23, 42, 0.50);
+        border-color: rgba(148, 163, 184, 0.18);
+        box-shadow: 0 10px 26px rgba(0,0,0,0.28);
       }
       [data-theme="dark"] .index-card::before{
         background:
-          radial-gradient(120px 70px at 50% 35%, rgba(255,255,255,0.10), rgba(255,255,255,0.00) 70%),
-          linear-gradient(135deg, rgba(255,255,255,0.04), rgba(255,255,255,0.00));
+          radial-gradient(140px 90px at 50% 35%, rgba(255,255,255,0.10), rgba(255,255,255,0.00) 70%),
+          linear-gradient(135deg, rgba(255,255,255,0.03), rgba(255,255,255,0.00));
       }
       [data-theme="dark"] .index-val{
         text-shadow:
@@ -804,19 +803,47 @@
 
       /* Action List */
       .action-list { list-style: none; }
-      .action-item { display: flex; gap: 14px; padding: 14px 0; border-bottom: 1px solid var(--border); }
+      /* 单行紧凑版：减少高度与信息噪音（详情用 hover/title 看完整 desc） */
+      .action-item { display: flex; gap: 10px; padding: 8px 0; border-bottom: 1px solid var(--border); }
       .action-item:last-child { border: none; }
-      .action-dot { width: 10px; height: 10px; border-radius: 50%; margin-top: 6px; flex-shrink: 0; }
+      .action-dot { width: 8px; height: 8px; border-radius: 50%; margin-top: 6px; flex-shrink: 0; }
       .dot-key { background: var(--primary); box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15); }
       .dot-risk { background: var(--danger); box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.15); }
       .dot-watch { background: var(--warning); box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.15); }
       .dot-safe { background: var(--success); box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.15); }
       .action-text { font-size: 13.5px; color: var(--text-secondary); line-height: 1.65; font-weight: 500; }
       .action-body{ flex: 1; min-width: 0; }
-      .action-title{ font-size: 13.5px; color: var(--text-primary); font-weight: 900; }
-      .action-desc{ margin-top: 4px; font-size: 13px; color: var(--text-secondary); line-height: 1.65; font-weight: 520; }
-      .action-tags{ margin-top: 8px; display:flex; gap: 6px; flex-wrap: wrap; }
-      .action-tags .ladder-chip{ padding: 2px 8px; }
+      .action-line{
+        display:flex;
+        align-items:center;
+        gap: 10px;
+        min-width: 0;
+      }
+      .action-title{
+        font-size: 13px;
+        color: var(--text-primary);
+        font-weight: 950;
+        white-space: nowrap;
+      }
+      .action-desc{
+        flex: 1;
+        min-width: 0;
+        font-size: 12px;
+        color: var(--text-secondary);
+        font-weight: 600;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .action-tags{
+        display:flex;
+        gap: 6px;
+        flex-wrap: nowrap;
+        flex-shrink: 0;
+        max-width: 42%;
+        overflow: hidden;
+      }
+      .action-tags .ladder-chip{ padding: 1px 6px; font-size: 11px; }
       /* 明日计划：已取消折叠（只保留 2+2 核心条目） */
 
       /* Chart */
@@ -830,7 +857,8 @@
        * 目标：减少留白、降低信息滚动成本、保证表格/图表可用
        * ─────────────────────────────── */
       @media (max-width: 520px){
-        body{ padding: 14px 10px 48px; }
+        /* 预留底部空间给 iOS 工具栏/手势区域 */
+        body{ padding: 14px 10px 58px; }
         .container{ max-width: 100%; }
 
         .hero{ padding: 18px 16px; border-radius: 18px; margin-bottom: 14px; }
@@ -839,15 +867,31 @@
         .hero-subtitle{ font-size: 11px; opacity: 0.92; }
 
         /* 指数卡片：固定 3 列，减少纵向占用 */
-        .index-row{ display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; margin-top: 14px; }
+        .index-row{
+          display: grid;
+          grid-template-columns: repeat(3, minmax(0, 1fr));
+          gap: 8px;
+          margin-top: 14px;
+          padding: 0;
+          border-radius: 0;
+          background: transparent;
+        }
         .index-card{ min-width: 0; padding: 12px 10px; }
         .index-name{ font-size: 11px; margin-bottom: 4px; }
         .index-val{ font-size: 16px; }
         .index-pct{ font-size: 12px; }
 
-        /* Tabs：更紧凑 */
-        .tabbar{ padding: 8px 8px; gap: 8px; }
-        .tab-btn{ padding: 8px 10px; font-size: 12px; }
+        /* Tabs：更紧凑 + 更好点按 */
+        .tabbar{
+          padding: 8px 8px;
+          gap: 8px;
+          top: 8px;              /* sticky 更贴近顶部 */
+        }
+        .tab-btn{
+          padding: 9px 10px;
+          font-size: 12px;
+          min-height: 36px;
+        }
 
         /* Summary：改成 2 列，避免文字挤压 */
         .summarybar{ padding: 12px 12px; }
@@ -861,9 +905,20 @@
         .card-title{ font-size: 15px; }
 
         /* 图表高度调低，避免占屏 */
-        .chart-container{ height: 200px; }
-        .radar-chart-container{ height: 250px; }
-        .theme-trend-chart-container{ height: 240px; }
+        .chart-container{ height: 180px; margin-bottom: 12px; }
+        .radar-chart-container{ height: 220px; }
+        .theme-trend-chart-container{ height: 220px; }
+
+        /* 情绪横幅：单列布局，减少左右拥挤 */
+        .insight-banner{
+          grid-template-columns: 1fr !important;
+          gap: 10px !important;
+          padding: 12px 12px !important;
+        }
+        .insight-score{ display:none; } /* 手机优先“结论+关键数字”，隐藏大表盘 */
+        .insight-side{ display:none; }
+        .insight-desc{ font-size: 11px; line-height: 1.55; }
+        .insight-meter{ margin-top: 8px; height: 8px; }
 
         /* 情绪热力图：手机用 2 列布局，避免横向滚动 */
         .heatmap-shell{ overflow-x: visible !important; }
@@ -880,6 +935,26 @@
         .sector-name{ font-size: 13px; }
         .sector-detail{ font-size: 11px; }
         .sector-pct{ font-size: 14px; min-width: 44px; }
+
+        /* 明日行动指南：手机允许两行展示，tags 默认隐藏（减少噪音） */
+        .action-item{ padding: 10px 0; }
+        .action-line{
+          flex-wrap: wrap;
+          align-items: flex-start;
+          gap: 6px;
+        }
+        .action-title{ width: 100%; font-size: 13px; }
+        .action-desc{
+          width: 100%;
+          white-space: normal;
+          overflow: hidden;
+          display: -webkit-box;
+          -webkit-line-clamp: 2;
+          -webkit-box-orient: vertical;
+          font-size: 12px;
+          line-height: 1.45;
+        }
+        .action-tags{ display: none !important; }
       }
 
       /* 更小屏（窄屏手机）：指数卡片 2 列兜底 */
@@ -1372,76 +1447,6 @@
         </div>
       </div>
 
-      <!-- 市场量能 -->
-      <div class="card" data-page="sentiment" id="sec-volume">
-        <div class="card-header"><div class="card-title">市场量能</div></div>
-        <!-- 按你的要求：删除上面的数值条（volume-info-box），保留下面的模块内容 -->
-
-        <div class="chart-container">
-          <div id="volume-trend-echart" style="width: 100%; height: 100%;"></div>
-        </div>
-
-        <div class="section-header">资金抱团度</div>
-        <div class="fear-grid">
-
-          <div class="fear-card">
-            <div class="fear-val blue-text">1.5%</div>
-            <div class="fear-label">TOP10 成交集中度</div>
-            <div class="fear-note">成交额前十占两市总成交比例</div>
-          </div>
-          <div class="fear-card">
-            <div class="fear-val red-text">3.5%</div>
-            <div class="fear-label">涨停池吸金占比</div>
-            <div class="fear-note">涨停股成交额占两市总成交比例</div>
-          </div>
-          <div class="fear-card">
-            <div class="fear-val purple-text">分散轮动</div>
-            <div class="fear-label">资金风格</div>
-            <div class="fear-note">成交额 TOP10 占两市 1.5% ，涨停池吸金占比 3.5% 。</div>
-          </div>
-        </div>
-
-        <div class="summary-box">
-          <div class="summary-text" id="summaryText">
-            📊 涨停<span class="summary-highlight">{{ marketData.panorama?.limitUp ?? '-' }}家</span>、封板率<span class="summary-highlight">{{ marketData.panorama?.ratio ?? '-' }}</span>显示短线情绪<span class="summary-highlight">{{ marketData.moodStage?.title || '-' }}</span>。<br />
-            量能<span class="summary-highlight">{{ marketData.volume?.increase || '-' }}</span>(<span class="summary-highlight" :class="signedClass(marketData.volume?.change)">{{ marketData.volume?.change ?? '-' }}</span>)，增量资金有回流，但力度相对温和。
-            <div class="verdict-box" :class="'verdict-' + (marketData.effect?.verdictType || 'warn')" style="margin-top:10px;">
-              <strong>{{ marketData.effect?.verdict || '—' }}</strong>
-              {{ marketData.effect?.verdictDetail || '' }}
-            </div>
-            <div class="verdict-box" :class="'verdict-' + (marketData.moodStage?.type || 'warn')" style="margin-top:8px;">
-              <strong>🧭 情绪阶段：{{ marketData.moodStage?.title || '—' }}</strong>
-              {{ marketData.moodStage?.detail || '' }}
-            </div>
-          </div>
-          
-        </div>
-        <div class="section-header">承接</div>
-        <div class="fear-grid">
-          <div class="fear-card" v-for="(card, idx) in moodCardsBy('carry')" :key="'mood-carry-'+idx">
-            <div class="fear-val" :class="card.valueClass">{{ card.value }}</div>
-            <div class="fear-label">{{ card.label }}</div>
-            <div class="fear-note">{{ card.note }}</div>
-          </div>
-        </div>
-        <div class="section-header">一致性</div>
-        <div class="fear-grid">
-          <div class="fear-card" v-for="(card, idx) in moodCardsBy('cons')" :key="'mood-cons-'+idx">
-            <div class="fear-val" :class="card.valueClass">{{ card.value }}</div>
-            <div class="fear-label">{{ card.label }}</div>
-            <div class="fear-note">{{ card.note }}</div>
-          </div>
-        </div>
-        <div class="section-header">风险</div>
-        <div class="fear-grid">
-          <div class="fear-card" v-for="(card, idx) in moodCardsBy('risk')" :key="'mood-risk-'+idx">
-            <div class="fear-val" :class="card.valueClass">{{ card.value }}</div>
-            <div class="fear-label">{{ card.label }}</div>
-            <div class="fear-note">{{ card.note }}</div>
-          </div>
-        </div>
-      </div>
-
       <!-- 市场全景 -->
       <div class="card" data-page="sentiment" id="sec-panorama">
         <div class="card-header"><div class="card-title">全景 & 风险</div><div class="card-badge">非ST</div></div>
@@ -1580,6 +1585,76 @@
                 <div class="fear-note">{{ marketData.fear?.successNote || '' }}</div>
               </div>
             </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 市场量能 -->
+      <div class="card" data-page="sentiment" id="sec-volume">
+        <div class="card-header"><div class="card-title">市场量能</div></div>
+        <!-- 按你的要求：删除上面的数值条（volume-info-box），保留下面的模块内容 -->
+
+        <div class="chart-container">
+          <div id="volume-trend-echart" style="width: 100%; height: 100%;"></div>
+        </div>
+
+        <div class="section-header">资金抱团度</div>
+        <div class="fear-grid">
+
+          <div class="fear-card">
+            <div class="fear-val blue-text">1.5%</div>
+            <div class="fear-label">TOP10 成交集中度</div>
+            <div class="fear-note">成交额前十占两市总成交比例</div>
+          </div>
+          <div class="fear-card">
+            <div class="fear-val red-text">3.5%</div>
+            <div class="fear-label">涨停池吸金占比</div>
+            <div class="fear-note">涨停股成交额占两市总成交比例</div>
+          </div>
+          <div class="fear-card">
+            <div class="fear-val purple-text">分散轮动</div>
+            <div class="fear-label">资金风格</div>
+            <div class="fear-note">成交额 TOP10 占两市 1.5% ，涨停池吸金占比 3.5% 。</div>
+          </div>
+        </div>
+
+        <div class="summary-box">
+          <div class="summary-text" id="summaryText">
+            📊 涨停<span class="summary-highlight">{{ marketData.panorama?.limitUp ?? '-' }}家</span>、封板率<span class="summary-highlight">{{ marketData.panorama?.ratio ?? '-' }}</span>显示短线情绪<span class="summary-highlight">{{ marketData.moodStage?.title || '-' }}</span>。<br />
+            量能<span class="summary-highlight">{{ marketData.volume?.increase || '-' }}</span>(<span class="summary-highlight" :class="signedClass(marketData.volume?.change)">{{ marketData.volume?.change ?? '-' }}</span>)，增量资金有回流，但力度相对温和。
+            <div class="verdict-box" :class="'verdict-' + (marketData.effect?.verdictType || 'warn')" style="margin-top:10px;">
+              <strong>{{ marketData.effect?.verdict || '—' }}</strong>
+              {{ marketData.effect?.verdictDetail || '' }}
+            </div>
+            <div class="verdict-box" :class="'verdict-' + (marketData.moodStage?.type || 'warn')" style="margin-top:8px;">
+              <strong>🧭 情绪阶段：{{ marketData.moodStage?.title || '—' }}</strong>
+              {{ marketData.moodStage?.detail || '' }}
+            </div>
+          </div>
+          
+        </div>
+        <div class="section-header">承接</div>
+        <div class="fear-grid">
+          <div class="fear-card" v-for="(card, idx) in moodCardsBy('carry')" :key="'mood-carry-'+idx">
+            <div class="fear-val" :class="card.valueClass">{{ card.value }}</div>
+            <div class="fear-label">{{ card.label }}</div>
+            <div class="fear-note">{{ card.note }}</div>
+          </div>
+        </div>
+        <div class="section-header">一致性</div>
+        <div class="fear-grid">
+          <div class="fear-card" v-for="(card, idx) in moodCardsBy('cons')" :key="'mood-cons-'+idx">
+            <div class="fear-val" :class="card.valueClass">{{ card.value }}</div>
+            <div class="fear-label">{{ card.label }}</div>
+            <div class="fear-note">{{ card.note }}</div>
+          </div>
+        </div>
+        <div class="section-header">风险</div>
+        <div class="fear-grid">
+          <div class="fear-card" v-for="(card, idx) in moodCardsBy('risk')" :key="'mood-risk-'+idx">
+            <div class="fear-val" :class="card.valueClass">{{ card.value }}</div>
+            <div class="fear-label">{{ card.label }}</div>
+            <div class="fear-note">{{ card.note }}</div>
           </div>
         </div>
       </div>
@@ -2133,10 +2208,12 @@
           <li class="action-item" v-for="(item, idx) in (marketData.actionGuideV2?.confirm || [])" :key="'cf2-'+idx">
             <span class="action-dot" :class="item.dot"></span>
             <div class="action-body">
-              <div class="action-title">{{ item.title }}</div>
-              <div class="action-desc">{{ item.desc }}</div>
-              <div class="action-tags" v-if="item.tags && item.tags.length">
-                <span class="ladder-chip" v-for="(t, ti) in item.tags" :key="'cf2-tag-'+idx+'-'+ti" :class="t.cls">{{ t.text }}</span>
+              <div class="action-line" :title="item.desc">
+                <div class="action-title">{{ item.title }}</div>
+                <div class="action-desc">{{ item.descShort || item.desc }}</div>
+                <div class="action-tags" v-if="item.tags && item.tags.length">
+                  <span class="ladder-chip" v-for="(t, ti) in item.tags" :key="'cf2-tag-'+idx+'-'+ti" :class="t.cls">{{ t.text }}</span>
+                </div>
               </div>
             </div>
           </li>
@@ -2147,10 +2224,12 @@
           <li class="action-item" v-for="(item, idx) in (marketData.actionGuideV2?.retreat || [])" :key="'rt2-'+idx">
             <span class="action-dot" :class="item.dot"></span>
             <div class="action-body">
-              <div class="action-title">{{ item.title }}</div>
-              <div class="action-desc">{{ item.desc }}</div>
-              <div class="action-tags" v-if="item.tags && item.tags.length">
-                <span class="ladder-chip" v-for="(t, ti) in item.tags" :key="'rt2-tag-'+idx+'-'+ti" :class="t.cls">{{ t.text }}</span>
+              <div class="action-line" :title="item.desc">
+                <div class="action-title">{{ item.title }}</div>
+                <div class="action-desc">{{ item.descShort || item.desc }}</div>
+                <div class="action-tags" v-if="item.tags && item.tags.length">
+                  <span class="ladder-chip" v-for="(t, ti) in item.tags" :key="'rt2-tag-'+idx+'-'+ti" :class="t.cls">{{ t.text }}</span>
+                </div>
               </div>
             </div>
           </li>
@@ -2233,7 +2312,7 @@
             <li v-for="(t, i) in marketData.learningNotes.tips" :key="'tip-'+i">{{ t }}</li>
           </ul>
           <div class="footer-quotes" v-if="marketData.learningNotes.quotes && marketData.learningNotes.quotes.length">
-            <div class="footer-quote" v-for="(q, i) in marketData.learningNotes.quotes" :key="'q-'+i"><span>语录</span>{{ q }}</div>
+            <div class="footer-quote" v-for="(q, i) in marketData.learningNotes.quotes" :key="'q-'+i"><span>语录:</span>{{ q }}</div>
           </div>
         </div>
         <p>📊 生成时间：__REPORT_DATE__ 收盘</p>
@@ -2357,12 +2436,15 @@
       }; */
 
       // 默认值：模板单独打开时不展示任何“写死行情”
-      let marketData = __INJECTED_MARKET_DATA__ || {
+      // 注意：__INJECTED_MARKET_DATA__ 在“模板直接打开”场景下不存在，直接引用会触发 ReferenceError，
+      // 因此用 typeof 做兼容；渲染脚本会把 __INJECTED_MARKET_DATA__ 替换为实际的 Object 字面量。
+      const __injectedMarketData__ = (typeof __INJECTED_MARKET_DATA__ !== 'undefined') ? __INJECTED_MARKET_DATA__ : null;
+      let marketData = __injectedMarketData__ || {
         date: "__REPORT_DATE__",
         dateNote: "__DATE_NOTE__",
         indices: [],
         panorama: {},
-        volume: {},
+        volume: { dates: [], values: [] },
         mood: {},
         effect: {},
         fear: {},
@@ -2377,6 +2459,7 @@
         moodCards: [],
         actionGuideV2: { confirm: [], retreat: [] },
         ztAnalysis: { relay: [], watch: [] },
+        styleRadar: { indicators: [], values: [], palette: [] },
       };
 
       /**
@@ -2636,6 +2719,8 @@
       const renderVolumeTrend = (data) => {
         const chartDom = document.getElementById('volume-trend-echart');
         if (!chartDom) return;
+        data = data || {};
+        if (!Array.isArray(data.dates) || !Array.isArray(data.values) || data.dates.length < 2 || data.values.length < 2) return;
         if (volumeChart) volumeChart.dispose();
         volumeChart = echarts.init(chartDom, document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : null);
         
@@ -2844,6 +2929,15 @@
       const renderHeightTrend = (data) => {
         const chartDom = document.getElementById('height-trend-echart');
         if (!chartDom) return;
+        data = data || {};
+        const ok =
+          Array.isArray(data.dates) &&
+          Array.isArray(data.main) &&
+          Array.isArray(data.sub) &&
+          Array.isArray(data.gem) &&
+          data.dates.length >= 2;
+        if (!ok) return;
+        if (!data.labels) data.labels = { main: [], sub: [], gem: [] };
         if (heightChart) heightChart.dispose();
         heightChart = echarts.init(chartDom, document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : null);
         // 高度趋势颜色：跟随市场主题色（退潮用冷色，避免“退潮还一片红”的割裂感）
@@ -2955,6 +3049,8 @@
       const renderStyleRadar = (data) => {
         const chartDom = document.getElementById('style-radar-echart');
         if (!chartDom) return;
+        data = data || {};
+        if (!Array.isArray(data.indicators) || !Array.isArray(data.values) || data.indicators.length === 0 || data.values.length === 0) return;
         if (styleChart) styleChart.dispose();
         styleChart = echarts.init(chartDom, document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : null);
         const colors = data.palette?.length ? data.palette : ['#2563eb', '#60a5fa'];
