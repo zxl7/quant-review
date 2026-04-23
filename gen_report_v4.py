@@ -5,6 +5,23 @@
 严格按照 /Users/zxl/Desktop/短线复盘利器-优化版.html 模板结构输出
 """
 
+# ─────────────────────────────────────────────────────────────
+# 兼容壳（v1.0+）
+#
+# 说明：
+# - 新架构已迁移到 daily_review.cli（data/cache + v2 pipeline）
+# - 直接执行本文件时，优先转调新入口并退出，避免继续运行旧“巨石脚本”逻辑
+# - 保留旧代码仅用于历史参考（不再作为最终真相）
+# ─────────────────────────────────────────────────────────────
+if __name__ == "__main__":
+    import subprocess
+    import sys
+
+    cmd = [sys.executable, "-m", "daily_review.cli", "--fetch"]
+    if len(sys.argv) >= 2 and sys.argv[1]:
+        cmd += ["--date", sys.argv[1]]
+    raise SystemExit(subprocess.call(cmd))
+
 import json, urllib.request, time, sys, datetime, os
 from pathlib import Path
 from zoneinfo import ZoneInfo

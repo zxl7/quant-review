@@ -19,6 +19,20 @@ from daily_review.modules_v2 import ALL_MODULES
 from daily_review.pipeline.context import Context
 from daily_review.pipeline.runner import Runner
 from daily_review.render.render_html import render_html_template
+from daily_review.cache_io import read_json, write_json
+from daily_review.config import load_config_from_env
+from daily_review.config import DEFAULT_CONFIG
+from daily_review.data.biying import (
+    fetch_indices_realtime,
+    fetch_index_latest_k,
+    fetch_pool,
+    fetch_stock_themes,
+    get_trading_days_from_index_k,
+    normalize_stock_code,
+    resolve_trade_date,
+)
+from daily_review.features.build_features import build_mood_inputs, build_style_inputs, default_chart_palette
+from daily_review.modules.style_radar import rebuild_style_radar
 
 
 def _workspace_root() -> Path:
@@ -29,23 +43,198 @@ def _workspace_root() -> Path:
 def run_full(date: str | None) -> int:
     """
     全量更新（收口阶段）：
-    1) 仍复用 gen_report_v4.py 做在线取数与缓存落盘（有成本）
-    2) 然后离线跑 v2 pipeline 重建 market_data，并渲染 tab-v1 HTML
+    1) 在线取数（data 层）+ 落盘 raw/cache（有成本）
+    2) 生成 market_data 基础快照（含 raw + features）
+    3) 离线跑 v2 pipeline 重建 market_data，并渲染 tab-v1 HTML
     """
-    script = _workspace_root() / "gen_report_v4.py"
-    cmd = [sys.executable, str(script)]
-    if date:
-        cmd.append(date)
-    import subprocess
+    return run_fetch_and_rebuild(date)
 
-    rc = subprocess.call(cmd)
-    if rc != 0:
-        return rc
 
-    # gen_report_v4 会写入 cache/market_data-YYYYMMDD.json；统一再走一遍 pipeline 产出 tab-v1
-    if date:
-        return run_rebuild(date)
-    return 0
+def run_fetch_and_rebuild(date: str | None) -> int:
+    """
+    FULL 新入口：在线取数 + 生成 cache/market_data-YYYYMMDD.json + rebuild（离线）
+    """
+    root = _workspace_root()
+    cache_dir = root / "cache"
+    cache_dir.mkdir(parents=True, exist_ok=True)
+
+    cfg = load_config_from_env()
+    from daily_review.http import HttpClient
+
+    client = HttpClient(base_url=cfg.base_url, token=cfg.token, timeout=30)
+    req_date = date
+    actual_date, date_note = resolve_trade_date(client, req_date)
+
+    # 交易日序列（用于缓存裁剪/昨日）
+    trade_days = get_trading_days_from_index_k(client, date=actual_date, n=7) or [actual_date]
+    if actual_date not in trade_days:
+        trade_days = trade_days + [actual_date]
+    trade_days = sorted(set(trade_days))[-7:]
+
+    # pools_cache.json：预热历史 + 强制刷新当日
+    pools_path = cache_dir / "pools_cache.json"
+    pools_cache = read_json(pools_path, default={})
+    pools = (pools_cache.get("pools") or {}) if isinstance(pools_cache, dict) else {}
+    pools.setdefault("ztgc", {})
+    pools.setdefault("dtgc", {})
+    pools.setdefault("zbgc", {})
+    pools.setdefault("qsgc", {})
+
+    # 预热历史
+    for d in trade_days:
+        if d == actual_date:
+            continue
+        for pn in ("ztgc", "dtgc", "zbgc"):
+            if d not in (pools.get(pn) or {}):
+                rows = fetch_pool(client, pool_name=pn, date=d)
+                pools[pn][d] = rows
+
+    # 当日强制刷新（zt/dt/zb/qsgc）
+    for pn in ("ztgc", "dtgc", "zbgc", "qsgc"):
+        pools.setdefault(pn, {})
+        pools[pn][actual_date] = fetch_pool(client, pool_name=pn, date=actual_date)
+
+    # 裁剪
+    keep = set(trade_days)
+    for pn in ("ztgc", "dtgc", "zbgc", "qsgc"):
+        pools[pn] = {d: v for d, v in (pools.get(pn) or {}).items() if d in keep}
+    pools_cache = {"version": 1, "pools": pools}
+    write_json(pools_path, pools_cache)
+
+    # theme_cache.json：只补齐“当日出现的 code6”，避免无限增长
+    themes_path = cache_dir / "theme_cache.json"
+    theme_cache_disk = read_json(themes_path, default={})
+    codes_map = (theme_cache_disk.get("codes") or {}) if isinstance(theme_cache_disk, dict) else {}
+    if not isinstance(codes_map, dict):
+        codes_map = {}
+    today_zt = pools["ztgc"].get(actual_date) or []
+    today_zb = pools["zbgc"].get(actual_date) or []
+    today_dt = pools["dtgc"].get(actual_date) or []
+    all_today = []
+    for arr in (today_zt, today_zb, today_dt):
+        if isinstance(arr, list):
+            all_today.extend(arr)
+    for s in all_today:
+        code6 = normalize_stock_code(str(s.get("dm") or s.get("code") or ""))
+        if not code6 or code6 in codes_map:
+            continue
+        raw_list = fetch_stock_themes(client, code6=code6)
+        # 只做最轻的清洗：保留 name 字段
+        names = []
+        for it in raw_list:
+            if not isinstance(it, dict):
+                continue
+            nm = str(it.get("name") or "").strip()
+            if nm:
+                # 清洗：剔除噪音前缀与噪音题材（与 gen_report_v4 的口径一致）
+                if nm in DEFAULT_CONFIG.exclude_theme_names:
+                    continue
+                if nm in DEFAULT_CONFIG.noise_themes:
+                    continue
+                bad = False
+                for pfx in DEFAULT_CONFIG.noise_prefixes:
+                    if nm.startswith(pfx):
+                        bad = True
+                        break
+                if bad:
+                    continue
+                if nm.startswith("A股-热门概念-"):
+                    nm = nm.replace("A股-热门概念-", "")
+                names.append(nm)
+        # 去重保序
+        seen = set()
+        uniq = []
+        for nm in names:
+            if nm in seen:
+                continue
+            seen.add(nm)
+            uniq.append(nm)
+        codes_map[code6] = uniq
+    write_json(themes_path, {"version": 1, "codes": codes_map})
+
+    # index_kline_cache.json：缓存最近 5 根（日K）
+    index_k_path = cache_dir / "index_kline_cache.json"
+    idx_disk = read_json(index_k_path, default={})
+    codes_entry = (idx_disk.get("codes") or {}) if isinstance(idx_disk, dict) else {}
+    if not isinstance(codes_entry, dict):
+        codes_entry = {}
+    for code in ("000001.SH", "399001.SZ"):
+        items = fetch_index_latest_k(client, code=code, lt=5)
+        codes_entry[code] = {"as_of": actual_date, "items": items[-5:] if isinstance(items, list) else []}
+    write_json(index_k_path, {"version": 1, "codes": codes_entry})
+
+    # indices（实时）
+    indices_rt, indices_asof = fetch_indices_realtime(
+        client,
+        codes=[("000001.SH", "上证指数"), ("399001.SZ", "深证成指"), ("399006.SZ", "创业板指")],
+    )
+
+    # 构造 raw.pools（给 pipeline 使用）
+    yest = trade_days[-2] if len(trade_days) >= 2 else ""
+    raw_pools = {
+        "ztgc": pools["ztgc"].get(actual_date) or [],
+        "dtgc": pools["dtgc"].get(actual_date) or [],
+        "zbgc": pools["zbgc"].get(actual_date) or [],
+        "qsgc": pools["qsgc"].get(actual_date) or [],
+        "yest_ztgc": pools["ztgc"].get(yest) or [],
+        "yest_dtgc": pools["dtgc"].get(yest) or [],
+        "yest_zbgc": pools["zbgc"].get(yest) or [],
+        "yest_date": yest,
+    }
+
+    # market_data 初始化骨架（保证模板字段存在）
+    market_data: dict = {
+        "date": actual_date,
+        "dateNote": date_note,
+        "meta": {
+            "asOf": {"indices": indices_asof, "pools": "", "themes": "", "generatedAt": ""},
+            "version": "1.0",
+        },
+        "indices": [
+            {"name": i["name"], "val": f"{float(i['val']):.2f}", "chg": f"{float(i['chg']):+.2f}%"}
+            for i in (indices_rt or [])
+        ],
+        "panorama": {},
+        "volume": {},
+        "sectors": [],
+        "themePanels": {},
+        "heightTrend": {},
+        "ladder": [],
+        "top10": [],
+        "top10Summary": {},
+        "mood": {},
+        "moodStage": {},
+        "moodCards": [],
+        "actionGuideV2": {"confirm": [], "retreat": []},
+        "summary3": {},
+        "learningNotes": {},
+        "styleRadar": {},
+        "leaders": [],
+        "ztgc": [],
+        "zt_code_themes": {},
+        "features": {},
+        "raw": {},
+    }
+
+    market_data["raw"] = {
+        "pools": raw_pools,
+        "themes": {"code2themes": codes_map},
+        "index_klines": {"codes": codes_entry},
+    }
+
+    # features：最小可用版
+    mood_inputs = build_mood_inputs(pools=raw_pools)
+    market_data["features"]["mood_inputs"] = mood_inputs
+    market_data["features"]["chart_palette"] = default_chart_palette()
+    market_data["features"]["style_inputs"] = build_style_inputs(mood_inputs=mood_inputs, theme_panels=market_data.get("themePanels") or {})
+
+    # 写 market_data 缓存（供 rebuild/partial 使用）
+    date_compact = actual_date.replace("-", "")
+    market_path = cache_dir / f"market_data-{date_compact}.json"
+    write_json(market_path, market_data)
+
+    # 离线重建（pipeline）并渲染 tab-v1
+    return run_rebuild(actual_date)
 
 
 def run_rebuild(date: str, modules: list[str] | None = None) -> int:
@@ -91,6 +280,19 @@ def run_rebuild(date: str, modules: list[str] | None = None) -> int:
     runner = Runner(ALL_MODULES)
     runner.run(ctx, targets=(modules or None))
     market_data = ctx.market_data
+
+    # 后处理：features/style_inputs 依赖 themePanels，而 themePanels 由 pipeline 产出
+    # 为保证“主线集中度/风格雷达”一致性，rebuild 后再补一遍 style_inputs，并刷新 styleRadar。
+    try:
+        feats = market_data.get("features") or {}
+        mi = feats.get("mood_inputs") or {}
+        tp = market_data.get("themePanels") or {}
+        feats["style_inputs"] = build_style_inputs(mood_inputs=mi, theme_panels=tp)
+        market_data["features"] = feats
+        # 重新生成 styleRadar（纯函数，安全）
+        market_data["styleRadar"] = rebuild_style_radar(market_data)["styleRadar"]
+    except Exception:
+        pass
 
     # 写回缓存（让离线 render/partial 都读到最新重建结果）
     market_path.write_text(json.dumps(market_data, ensure_ascii=False, indent=2), encoding="utf-8")
@@ -250,6 +452,7 @@ def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--date", help="报告日期 YYYY-MM-DD（缺省则走全量模式的默认逻辑）")
     ap.add_argument("--rebuild", action="store_true", help="离线重建（不请求接口）：重算并输出 tab-v1 HTML")
+    ap.add_argument("--fetch", action="store_true", help="在线取数并生成缓存，然后离线重建输出 tab-v1（有成本）")
     ap.add_argument(
         "--only",
         nargs="+",
@@ -266,6 +469,9 @@ def main(argv: list[str] | None = None) -> int:
         if not args.date:
             raise SystemExit("--rebuild 模式必须指定 --date")
         return run_rebuild(args.date)
+
+    if args.fetch:
+        return run_fetch_and_rebuild(args.date)
 
     return run_full(args.date)
 
