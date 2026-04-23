@@ -52,11 +52,26 @@ def _compute(ctx: Context) -> Dict[str, Any]:
         cur = ctx.market_data.get("volume") or {}
         return {"marketData.volume": cur}
 
-    # 对齐日期：取两边交集的最后 5 天
+    report_day = str((ctx.meta.get("date") if isinstance(ctx.meta, dict) else "") or ctx.market_data.get("date") or "")
+
+    # 对齐日期：取两边交集的最后 5 天（且不超过报告日）
     sh_map = {_extract_date(it.get("t", "")): _to_float(it.get("a", 0.0)) for it in sh if isinstance(it, dict)}
     sz_map = {_extract_date(it.get("t", "")): _to_float(it.get("a", 0.0)) for it in sz if isinstance(it, dict)}
     days = sorted(set(sh_map.keys()) & set(sz_map.keys()))
     days = [d for d in days if d]
+    if report_day:
+        days = [d for d in days if d <= report_day]
+
+    # 过滤“占位日/未收盘日”：
+    # - 某些缓存会包含下一交易日的占位条目（a=0 或 sf=1）
+    # - 不过滤会导致 total=0、change=-100% 这类明显异常
+    sh_sf = {_extract_date(it.get("t", "")): int(it.get("sf", 0) or 0) for it in sh if isinstance(it, dict)}
+    sz_sf = {_extract_date(it.get("t", "")): int(it.get("sf", 0) or 0) for it in sz if isinstance(it, dict)}
+    days = [
+        d
+        for d in days
+        if (sh_map.get(d, 0.0) > 0 and sz_map.get(d, 0.0) > 0 and sh_sf.get(d, 0) != 1 and sz_sf.get(d, 0) != 1)
+    ]
     days = days[-5:]
     if len(days) < 2:
         cur = ctx.market_data.get("volume") or {}
@@ -89,4 +104,3 @@ VOLUME_MODULE = Module(
     provides=["marketData.volume"],
     compute=_compute,
 )
-

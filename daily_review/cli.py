@@ -190,15 +190,17 @@ def run_fetch_and_rebuild(date: str | None) -> int:
 
     write_json(theme_trend_path, {"version": 1, "as_of": actual_date, "by_day": by_day})
 
-    # index_kline_cache.json：缓存最近 5 根（日K）
+    # index_kline_cache.json：缓存最近 N 根（日K）
+    # 说明：部分接口会返回“下一交易日占位条目”（sf=1, a=0）。
+    # 为保证 volume/趋势类模块仍能拿到足够的有效样本，这里多取一些（默认 8）。
     index_k_path = cache_dir / "index_kline_cache.json"
     idx_disk = read_json(index_k_path, default={})
     codes_entry = (idx_disk.get("codes") or {}) if isinstance(idx_disk, dict) else {}
     if not isinstance(codes_entry, dict):
         codes_entry = {}
     for code in ("000001.SH", "399001.SZ"):
-        items = fetch_index_latest_k(client, code=code, lt=5)
-        codes_entry[code] = {"as_of": actual_date, "items": items[-5:] if isinstance(items, list) else []}
+        items = fetch_index_latest_k(client, code=code, lt=8)
+        codes_entry[code] = {"as_of": actual_date, "items": items[-8:] if isinstance(items, list) else []}
     write_json(index_k_path, {"version": 1, "codes": codes_entry})
 
     # height_trend_cache.json：近 7 日高度趋势（只缓存历史日，不缓存当天）
@@ -364,6 +366,35 @@ def run_rebuild(date: str, modules: list[str] | None = None) -> int:
     runner = Runner(ALL_MODULES)
     runner.run(ctx, targets=(modules or None))
     market_data = ctx.market_data
+
+    # 补齐元信息：避免页面“数据更新时间”显示为 00:00:00 / 空
+    try:
+        import datetime as _dt
+
+        meta = market_data.get("meta") if isinstance(market_data.get("meta"), dict) else {}
+        if not isinstance(meta, dict):
+            meta = {}
+        asof = meta.get("asOf") if isinstance(meta.get("asOf"), dict) else {}
+        if not isinstance(asof, dict):
+            asof = {}
+
+        # 生成时间：离线重建默认用当前时间（避免 '-'）
+        gen_time = _dt.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        meta.setdefault("generatedAt", gen_time)
+
+        # indices 的 asOf 若是日K占位“00:00:00”，更符合用户直觉的是“收盘”
+        idx = str(asof.get("indices") or "").strip()
+        if not idx or idx == "00:00:00":
+            asof["indices"] = "收盘"
+        # pools/themes 若缺失，用“收盘/缓存”占位，避免显示空
+        if not str(asof.get("pools") or "").strip():
+            asof["pools"] = "收盘"
+        if not str(asof.get("themes") or "").strip():
+            asof["themes"] = "收盘"
+        meta["asOf"] = asof
+        market_data["meta"] = meta
+    except Exception:
+        pass
 
     # 后处理：features/style_inputs 依赖 themePanels，而 themePanels 由 pipeline 产出
     # 为保证“主线集中度/风格雷达”一致性，rebuild 后再补一遍 style_inputs，并刷新 styleRadar。
