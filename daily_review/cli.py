@@ -163,6 +163,45 @@ def run_fetch_and_rebuild(date: str | None) -> int:
         codes_entry[code] = {"as_of": actual_date, "items": items[-5:] if isinstance(items, list) else []}
     write_json(index_k_path, {"version": 1, "codes": codes_entry})
 
+    # height_trend_cache.json：近 7 日高度趋势（只缓存历史日，不缓存当天）
+    # 口径对齐 gen_report_v4：main=最高板、sub=次高、gem=创业板最高（300*）
+    def calc_height_trend_row(day: str, day_data: list[dict[str, Any]]) -> dict:
+        data = day_data or []
+        lbs = [int((s.get("lbc", 1) or 1)) for s in data if isinstance(s, dict)]
+        main_max = max(lbs) if lbs else 0
+        gem_data = [s for s in data if str(s.get("dm", "")).startswith("300")]
+        gem_max = max((int((s.get("lbc", 1) or 1)) for s in gem_data), default=0)
+        sorted_lb = sorted(set(lbs), reverse=True)
+        sub_max = sorted_lb[1] if len(sorted_lb) > 1 else 0
+        top_stock = max(data, key=lambda x: int((x.get("lbc", 0) or 0)), default={})
+        top_name = (str(top_stock.get("mc", "") or "")[:4]).strip()
+        sub_stock = next((s for s in data if int((s.get("lbc", 0) or 0)) == sub_max), {})
+        sub_name = (str(sub_stock.get("mc", "") or "")[:4]).strip()
+        gem_stock = max(gem_data, key=lambda x: int((x.get("lbc", 0) or 0)), default={}) if gem_data else {}
+        gem_name = (str(gem_stock.get("mc", "") or "")[:4]).strip()
+        return {
+            "day": day,
+            "main": main_max,
+            "sub": sub_max,
+            "gem": gem_max,
+            "label_main": top_name if main_max >= 3 else "",
+            "label_sub": sub_name if sub_max >= 2 else "",
+            "label_gem": gem_name if gem_max >= 1 else "",
+        }
+
+    ht_path = cache_dir / "height_trend_cache.json"
+    ht_disk = read_json(ht_path, default={})
+    ht_days = (ht_disk.get("days") or {}) if isinstance(ht_disk, dict) else {}
+    if not isinstance(ht_days, dict):
+        ht_days = {}
+    for d in trade_days:
+        if d == actual_date:
+            continue
+        day_data = pools.get("ztgc", {}).get(d) or []
+        if isinstance(day_data, list):
+            ht_days[d] = calc_height_trend_row(d, [x for x in day_data if isinstance(x, dict)])
+    write_json(ht_path, {"version": 1, "days": ht_days})
+
     # indices（实时）
     indices_rt, indices_asof = fetch_indices_realtime(
         client,
