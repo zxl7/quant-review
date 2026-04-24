@@ -4,9 +4,9 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>A股收盘简报 | __REPORT_DATE__</title>
-    <!-- 本地 vendor 优先（离线可打开），CDN 作为 onerror 兜底（更稳，避免 document.write 在部分浏览器/场景下失效） -->
-    <script src="vendor/echarts.min.js" onerror="this.onerror=null;this.src='https://fastly.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js'"></script>
-    <script src="vendor/vue.global.prod.js" onerror="this.onerror=null;this.src='https://fastly.jsdelivr.net/npm/vue@3/dist/vue.global.prod.js'"></script>
+    <!-- 线上发布：使用 CDN 资源（无需 vendor 目录） -->
+    <script src="https://fastly.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+    <script src="https://fastly.jsdelivr.net/npm/vue@3/dist/vue.global.prod.js"></script>
     <script>
       // 预览兜底：某些“右侧预览/内置预览”会屏蔽脚本执行，导致 Vue 无法挂载。
       // 我们用一个 very-early 标记，让 v-cloak 仅在“脚本可运行”时才生效，避免预览里整页空白。
