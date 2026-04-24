@@ -178,7 +178,8 @@
         margin-bottom: 20px;
         position: relative;
         overflow: hidden;
-        box-shadow: var(--shadow-lg);
+        /* 更克制：减少“大片阴影” */
+        box-shadow: 0 16px 44px rgba(2, 6, 23, 0.14);
       }
       /* 轻量算法纹理：用 SVG turbulence 做“胶片颗粒/雾化层”，缓解大面积纯渐变的塑料感 */
       .hero-grain{
@@ -220,6 +221,97 @@
         50% { transform: translateY(-20px) scale(1.05); }
       }
       .hero-top { position: relative; z-index: 1; }
+      /* Hero（产品/研究简报）：封面式两栏结构 */
+      .hero-grid{
+        position: relative;
+        z-index: 1;
+        display: grid;
+        grid-template-columns: 1.55fr 1fr;
+        gap: 16px;
+        align-items: end;
+      }
+      @media (max-width: 720px){
+        .hero-grid{ grid-template-columns: 1fr; gap: 12px; }
+      }
+      .hero-brief{
+        margin-top: 10px;
+        font-size: 12px;
+        line-height: 1.55;
+        font-weight: 650;
+        color: rgba(255,255,255,0.92);
+      }
+      .hero-panel{
+        border-radius: 18px;
+        /* 发丝边 + 更低白度，像简报封面里的“信息框” */
+        border: 1px solid rgba(255,255,255,0.10);
+        background: rgba(255,255,255,0.06);
+        backdrop-filter: blur(14px);
+        -webkit-backdrop-filter: blur(14px);
+        padding: 12px 12px;
+        box-shadow: inset 0 1px 0 rgba(255,255,255,0.10);
+      }
+      .hero-panel-title{
+        display:flex;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: 10px;
+        font-size: 12px;
+        font-weight: 950;
+        letter-spacing: 0.2px;
+        color: rgba(255,255,255,0.92);
+      }
+      .hero-panel-sub{
+        margin-top: 2px;
+        font-size: 11px;
+        font-weight: 650;
+        color: rgba(255,255,255,0.78);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .hero-kpi-grid{
+        margin-top: 10px;
+        display:grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0;
+        border-radius: 14px;
+        overflow: hidden;
+        border: 1px solid rgba(255,255,255,0.10);
+        background: rgba(255,255,255,0.04);
+      }
+      .hero-kpi{
+        padding: 10px 10px;
+        min-width: 0;
+        position: relative;
+      }
+      .hero-kpi:nth-child(odd){ border-right: 1px solid rgba(255,255,255,0.10); }
+      .hero-kpi:nth-child(-n + 2){ border-bottom: 1px solid rgba(255,255,255,0.10); }
+      .hero-kpi .k{
+        font-size: 10.5px;
+        font-weight: 900;
+        color: rgba(255,255,255,0.76);
+        letter-spacing: 0.25px;
+      }
+      .hero-kpi .v{
+        margin-top: 4px;
+        font-size: 16px;
+        font-weight: 1000;
+        color: #fff;
+        line-height: 1.15;
+        font-variant-numeric: tabular-nums;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .hero-kpi .s{
+        margin-top: 4px;
+        font-size: 11px;
+        font-weight: 650;
+        color: rgba(255,255,255,0.78);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
       .hero-controls {
         position: absolute;
         top: 20px;
@@ -273,8 +365,8 @@
         display: flex;
         overflow: hidden;
         border-radius: 18px;
-        background: rgba(255, 255, 255, 0.08);
-        border: 1px solid rgba(255, 255, 255, 0.14);
+        background: rgba(255, 255, 255, 0.06);
+        border: 1px solid rgba(255, 255, 255, 0.10);
         backdrop-filter: blur(14px);
         -webkit-backdrop-filter: blur(14px);
       }
@@ -286,7 +378,7 @@
         position: relative;
       }
       .index-item + .index-item{
-        border-left: 1px solid rgba(255, 255, 255, 0.12);
+        border-left: 1px solid rgba(255, 255, 255, 0.10);
       }
       /* 仅用顶部细线提示涨跌，避免“彩色块/描边”抢戏 */
       .index-item.idx-up{ box-shadow: inset 0 2px 0 rgba(239, 68, 68, 0.65); }
@@ -634,6 +726,94 @@
       .fear-val { font-size: 20px; font-weight: 800; margin-bottom: 4px; }
       .fear-label { font-size: 11px; color: var(--text-muted); font-weight: 700; }
       .fear-note { font-size: 10px; color: var(--text-muted); margin-top: 4px; line-height: 1.3; }
+
+      /* Inset panel：让同一张 card 内出现“内嵌模块”，打破全是同一种卡片的单调感 */
+      .inset{
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        background: rgba(255,255,255,0.03);
+        padding: 12px 12px;
+      }
+      [data-theme="dark"] .inset{ background: rgba(15,23,42,0.25); }
+      .inset + .inset{ margin-top: 12px; }
+      .inset-head{
+        display:flex;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: 10px;
+        margin-bottom: 8px;
+      }
+      .inset-head .h{
+        font-size: 12px;
+        font-weight: 950;
+        color: var(--text-primary);
+        letter-spacing: 0.2px;
+      }
+      .inset-head .s{
+        font-size: 11px;
+        font-weight: 750;
+        color: var(--text-muted);
+        white-space: nowrap;
+      }
+
+      /* Metric rows：用“行式指标”替代部分 fear-card 网格（更像简报/终端） */
+      .metric-rows{
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        overflow: hidden;
+        background: rgba(255,255,255,0.03);
+      }
+      [data-theme="dark"] .metric-rows{ background: rgba(15,23,42,0.25); }
+      .metric-row{
+        display:flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 12px 14px;
+        border-bottom: 1px solid color-mix(in oklab, var(--border) 82%, transparent);
+      }
+      .metric-row:last-child{ border-bottom: none; }
+      .metric-left{ min-width: 0; }
+      .metric-k{
+        font-size: 12px;
+        font-weight: 950;
+        color: var(--text-primary);
+        letter-spacing: 0.15px;
+        display:flex;
+        align-items:center;
+        gap: 8px;
+      }
+      .metric-k::before{
+        content:"";
+        width: 6px;
+        height: 6px;
+        border-radius: 999px;
+        background: rgba(148,163,184,0.55);
+        flex: 0 0 auto;
+      }
+      .metric-note{
+        margin-top: 4px;
+        font-size: 11px;
+        font-weight: 650;
+        color: var(--text-muted);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 520px;
+      }
+      .metric-v{
+        font-size: 16px;
+        font-weight: 1000;
+        color: var(--text-primary);
+        font-variant-numeric: tabular-nums;
+        white-space: nowrap;
+        flex: 0 0 auto;
+      }
+      @media (max-width: 520px){
+        .metric-row{ flex-direction: column; align-items: flex-start; gap: 6px; }
+        .metric-note{ white-space: normal; }
+        .metric-v{ font-size: 18px; }
+      }
 
       /* Ladder Table */
       .ladder-table{
@@ -1561,17 +1741,67 @@
         <div class="hero-controls">
           <button class="theme-toggle" id="themeToggleBtn" onclick="toggleTheme()">🌙 深色</button>
         </div>
-        <div class="hero-top">
-          <div class="cycle-tag"><span class="cycle-dot"></span>短线复盘 · 情绪监控</div>
-          <div class="hero-date">__REPORT_DATE_CN__收盘简报</div>
-          <div class="hero-subtitle">数据来源：风中一刀的主升浪丨</div>
-          <div class="hero-subtitle" v-if="marketData.meta">
-            数据更新时间：指数 {{ marketData.meta?.asOf?.indices || '-' }}
-            ｜全景 {{ marketData.meta?.asOf?.pools || '-' }}
-            ｜题材 {{ marketData.meta?.asOf?.themes || '-' }}
-            ｜生成 {{ marketData.meta?.generatedAt || '-' }}
+        <div class="hero-grid">
+          <div class="hero-top">
+            <div class="cycle-tag"><span class="cycle-dot"></span>短线复盘 · 情绪监控</div>
+            <div class="hero-date">__REPORT_DATE_CN__收盘简报</div>
+            <div class="hero-subtitle">数据来源：风中一刀的主升浪丨</div>
+            <div class="hero-subtitle" v-if="marketData.meta">
+              数据更新时间：指数 {{ marketData.meta?.asOf?.indices || '-' }}
+              ｜全景 {{ marketData.meta?.asOf?.pools || '-' }}
+              ｜题材 {{ marketData.meta?.asOf?.themes || '-' }}
+              ｜生成 {{ marketData.meta?.generatedAt || '-' }}
+            </div>
+            <div class="hero-brief">
+              今日情绪 <strong>{{ marketData.moodStage?.title || '-' }}</strong>，
+              封板率 <strong>{{ marketData.panorama?.ratio ?? '-' }}</strong>，
+              晋级率 <strong>{{
+                (marketData.features?.mood_inputs?.jj_rate === undefined || marketData.features?.mood_inputs?.jj_rate === null)
+                  ? '-'
+                  : Number(marketData.features.mood_inputs.jj_rate).toFixed(1) + '%'
+              }}</strong>；
+              量能 <strong>{{ marketData.volume?.change ?? '-' }}</strong>，
+              最高板 <strong>{{ marketData.ladder?.[0]?.badge ?? '-' }}</strong>。
+            </div>
           </div>
-          
+
+          <div class="hero-panel">
+            <div class="hero-panel-title">
+              <span>今日概览</span>
+              <span style="opacity:.78; font-weight:900;">{{ marketData.mood?.score ?? '-' }} 分</span>
+            </div>
+            <div class="hero-panel-sub">一眼看清：阶段 · 热/险 · 量能 · 高度</div>
+            <div class="hero-kpi-grid">
+              <div class="hero-kpi">
+                <div class="k">情绪阶段</div>
+                <div class="v">{{ marketData.moodStage?.title || '-' }}</div>
+                <div class="s">{{ marketData.moodStage?.detail || '' }}</div>
+              </div>
+              <div class="hero-kpi">
+                <div class="k">热 / 险</div>
+                <div class="v">
+                  <span :class="heatClass(marketData.mood?.heat)">{{ marketData.mood?.heat ?? '-' }}</span>
+                  /
+                  <span :class="riskClass(marketData.mood?.risk)">{{ marketData.mood?.risk ?? '-' }}</span>
+                </div>
+                <div class="s">综合 {{ marketData.mood?.score ?? '-' }} 分</div>
+              </div>
+              <div class="hero-kpi">
+                <div class="k">量能（较昨）</div>
+                <div class="v">{{ marketData.volume?.change ?? '-' }}</div>
+                <div class="s">两市 {{ marketData.volume?.total ?? '-' }}</div>
+              </div>
+              <div class="hero-kpi">
+                <div class="k">高度 / 质量</div>
+                <div class="v">{{ marketData.ladder?.[0]?.badge ?? '-' }} 板</div>
+                <div class="s">封板 {{ marketData.panorama?.ratio ?? '-' }} · 晋级 {{
+                  (marketData.features?.mood_inputs?.jj_rate === undefined || marketData.features?.mood_inputs?.jj_rate === null)
+                    ? '-'
+                    : Number(marketData.features.mood_inputs.jj_rate).toFixed(1) + '%'
+                }}</div>
+              </div>
+            </div>
+          </div>
         </div>
         <div class="index-strip" role="group" aria-label="三大指数">
           <div
@@ -1888,14 +2118,19 @@
         <div class="card-header"><div class="card-title">市场量能</div></div>
         <!-- 按你的要求：删除上面的数值条（volume-info-box），保留下面的模块内容 -->
 
-        <div class="chart-container">
-          <div id="volume-trend-echart" style="width: 100%; height: 100%;"></div>
-        </div>
-
-        <div class="vol-strip">
-          <div class="vol-pill">两市成交 <strong>{{ marketData.volume?.total ?? '-' }}</strong></div>
-          <div class="vol-pill">增量 <strong>{{ marketData.volume?.increase ?? '-' }}</strong></div>
-          <div class="vol-pill">较昨 <span :class="signedClass(marketData.volume?.change)"><strong>{{ marketData.volume?.change ?? '-' }}</strong></span></div>
+        <div class="inset">
+          <div class="inset-head">
+            <div class="h">量能趋势</div>
+            <div class="s">近 5/7 日 · 量能回流强弱</div>
+          </div>
+          <div class="chart-container" style="margin-bottom:0;">
+            <div id="volume-trend-echart" style="width: 100%; height: 100%;"></div>
+          </div>
+          <div class="vol-strip">
+            <div class="vol-pill">两市成交 <strong>{{ marketData.volume?.total ?? '-' }}</strong></div>
+            <div class="vol-pill">增量 <strong>{{ marketData.volume?.increase ?? '-' }}</strong></div>
+            <div class="vol-pill">较昨 <span :class="signedClass(marketData.volume?.change)"><strong>{{ marketData.volume?.change ?? '-' }}</strong></span></div>
+          </div>
         </div>
 
         <div class="summary-box">
@@ -1913,28 +2148,34 @@
           </div>
           
         </div>
-        <div class="section-header">承接</div>
-        <div class="fear-grid">
-          <div class="fear-card" v-for="(card, idx) in moodCardsBy('carry')" :key="'mood-carry-'+idx">
-            <div class="fear-val" :class="card.valueClass">{{ card.value }}</div>
-            <div class="fear-label">{{ card.label }}</div>
-            <div class="fear-note">{{ card.note }}</div>
+        <div class="inset">
+          <div class="inset-head">
+            <div class="h">盘面三象限</div>
+            <div class="s">承接 · 一致性 · 风险</div>
           </div>
-        </div>
-        <div class="section-header">一致性</div>
-        <div class="fear-grid">
-          <div class="fear-card" v-for="(card, idx) in moodCardsBy('cons')" :key="'mood-cons-'+idx">
-            <div class="fear-val" :class="card.valueClass">{{ card.value }}</div>
-            <div class="fear-label">{{ card.label }}</div>
-            <div class="fear-note">{{ card.note }}</div>
+          <div class="section-header" style="margin-top:8px;">承接</div>
+          <div class="fear-grid" style="margin-bottom:10px;">
+            <div class="fear-card" v-for="(card, idx) in moodCardsBy('carry')" :key="'mood-carry-'+idx">
+              <div class="fear-val" :class="card.valueClass">{{ card.value }}</div>
+              <div class="fear-label">{{ card.label }}</div>
+              <div class="fear-note">{{ card.note }}</div>
+            </div>
           </div>
-        </div>
-        <div class="section-header">风险</div>
-        <div class="fear-grid">
-          <div class="fear-card" v-for="(card, idx) in moodCardsBy('risk')" :key="'mood-risk-'+idx">
-            <div class="fear-val" :class="card.valueClass">{{ card.value }}</div>
-            <div class="fear-label">{{ card.label }}</div>
-            <div class="fear-note">{{ card.note }}</div>
+          <div class="section-header" style="margin-top:6px;">一致性</div>
+          <div class="fear-grid" style="margin-bottom:10px;">
+            <div class="fear-card" v-for="(card, idx) in moodCardsBy('cons')" :key="'mood-cons-'+idx">
+              <div class="fear-val" :class="card.valueClass">{{ card.value }}</div>
+              <div class="fear-label">{{ card.label }}</div>
+              <div class="fear-note">{{ card.note }}</div>
+            </div>
+          </div>
+          <div class="section-header" style="margin-top:6px;">风险</div>
+          <div class="fear-grid" style="margin-bottom:0;">
+            <div class="fear-card" v-for="(card, idx) in moodCardsBy('risk')" :key="'mood-risk-'+idx">
+              <div class="fear-val" :class="card.valueClass">{{ card.value }}</div>
+              <div class="fear-label">{{ card.label }}</div>
+              <div class="fear-note">{{ card.note }}</div>
+            </div>
           </div>
         </div>
       </div>
@@ -1943,58 +2184,69 @@
       <div class="card" data-page="sentiment" id="sec-structure">
         <div class="card-title">短线结构拆解</div>
         <div class="section-header">涨停结构</div>
-        <div class="fear-grid">
-
-          <div class="fear-card">
-            <div class="fear-val red-text">{{ marketData.features?.style_inputs?.first_board_count ?? '-' }}只</div>
-            <div class="fear-label">首板</div>
-            <div class="fear-note">低位试错主战场</div>
+        <div class="metric-rows">
+          <div class="metric-row">
+            <div class="metric-left">
+              <div class="metric-k">首板</div>
+              <div class="metric-note">低位试错主战场</div>
+            </div>
+            <div class="metric-v red-text">{{ marketData.features?.style_inputs?.first_board_count ?? '-' }}只</div>
           </div>
-          <div class="fear-card">
-            <div class="fear-val orange-text">{{ (marketData.ladder || []).filter(x => Number(x.badge) === 2).length }}只</div>
-            <div class="fear-label">2板</div>
-            <div class="fear-note">次日接力核心池</div>
+          <div class="metric-row">
+            <div class="metric-left">
+              <div class="metric-k">2板</div>
+              <div class="metric-note">次日接力核心池</div>
+            </div>
+            <div class="metric-v orange-text">{{ (marketData.ladder || []).filter(x => Number(x.badge) === 2).length }}只</div>
           </div>
-          <div class="fear-card">
-            <div class="fear-val blue-text">{{ (marketData.ladder || []).filter(x => Number(x.badge) === 3).length }}只</div>
-            <div class="fear-label">3板</div>
-            <div class="fear-note">分歧后核心验证</div>
+          <div class="metric-row">
+            <div class="metric-left">
+              <div class="metric-k">3板</div>
+              <div class="metric-note">分歧后核心验证</div>
+            </div>
+            <div class="metric-v blue-text">{{ (marketData.ladder || []).filter(x => Number(x.badge) === 3).length }}只</div>
           </div>
-          <div class="fear-card">
-            <div class="fear-val purple-text">{{ (marketData.ladder || []).filter(x => Number(x.badge) >= 4).length }}只</div>
-            <div class="fear-label">4板+</div>
-            <div class="fear-note">高位抱团观察区</div>
+          <div class="metric-row">
+            <div class="metric-left">
+              <div class="metric-k">4板+</div>
+              <div class="metric-note">高位抱团观察区</div>
+            </div>
+            <div class="metric-v purple-text">{{ (marketData.ladder || []).filter(x => Number(x.badge) >= 4).length }}只</div>
           </div>
         </div>
         <div class="section-header">高位风险</div>
-        <div class="fear-grid">
-
-          <div class="fear-card">
-            <div class="fear-val red-text">{{ (marketData.ladder || []).filter(x => Number(x.badge) >= 5).length }}只</div>
-            <div class="fear-label">5板及以上</div>
-            <div class="fear-note">
-              5板及以上 {{ (marketData.ladder || []).filter(x => Number(x.badge) >= 5).length }}只 /
-              占比 {{ Number(marketData.rotation?.highLevelRatio ?? 0).toFixed(1) }}%
+        <div class="metric-rows">
+          <div class="metric-row">
+            <div class="metric-left">
+              <div class="metric-k">5板及以上</div>
+              <div class="metric-note">
+                占比 {{ Number(marketData.rotation?.highLevelRatio ?? 0).toFixed(1) }}%
+              </div>
             </div>
+            <div class="metric-v red-text">{{ (marketData.ladder || []).filter(x => Number(x.badge) >= 5).length }}只</div>
           </div>
-          <div class="fear-card">
-            <div class="fear-val blue-text">{{ Number(marketData.features?.mood_inputs?.jj_rate ?? 0).toFixed(1) }}%</div>
-            <div class="fear-label">连板晋级率</div>
-            <div class="fear-note">
-              昨日连板 {{ marketData.features?.mood_inputs?.yest_lb_count ?? '-' }} →
-              今存活 {{ (Number(marketData.features?.mood_inputs?.yest_lb_count ?? 0) - Number(marketData.features?.mood_inputs?.duanban_count ?? 0)) }}
+          <div class="metric-row">
+            <div class="metric-left">
+              <div class="metric-k">连板晋级率</div>
+              <div class="metric-note">
+                昨日连板 {{ marketData.features?.mood_inputs?.yest_lb_count ?? '-' }} →
+                今存活 {{ (Number(marketData.features?.mood_inputs?.yest_lb_count ?? 0) - Number(marketData.features?.mood_inputs?.duanban_count ?? 0)) }}
+              </div>
             </div>
+            <div class="metric-v blue-text">{{ Number(marketData.features?.mood_inputs?.jj_rate ?? 0).toFixed(1) }}%</div>
           </div>
-          <div class="fear-card">
-            <div class="fear-val green-text">
+          <div class="metric-row">
+            <div class="metric-left">
+              <div class="metric-k">风险判定</div>
+              <div class="metric-note">结合空间高度与断板数量综合判断</div>
+            </div>
+            <div class="metric-v green-text">
               {{
                 ((marketData.ladder || []).filter(x => Number(x.badge) >= 5).length <= 2)
                   ? '可控'
                   : (((marketData.ladder || []).filter(x => Number(x.badge) >= 5).length <= 5) ? '偏高' : '高')
               }}
             </div>
-            <div class="fear-label">高位风险</div>
-            <div class="fear-note">结合空间高度与断板数量综合判断</div>
           </div>
         </div>
         <div class="section-header">高低切换偏好</div>
