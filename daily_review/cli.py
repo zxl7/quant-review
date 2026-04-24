@@ -12,6 +12,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import sys
 from pathlib import Path
 
@@ -496,6 +497,14 @@ def run_rebuild(date: str, modules: list[str] | None = None) -> int:
     except Exception:
         pass
 
+    # 补齐“情绪周期趋势/昨日对比”所需数据（用于前端 sparkline、Δ、K线增强等）
+    # - 不请求网络；只读取本地 cache/market_data-*.json
+    # - 仅在字段缺失/为空时注入，避免覆盖后端已算出的更准口径
+    try:
+        _inject_mood_history_and_delta(root=root, date=date, market_data=market_data)
+    except Exception:
+        pass
+
     # 写回缓存（让离线 render/partial 都读到最新重建结果）
     market_path.write_text(json.dumps(market_data, ensure_ascii=False, indent=2), encoding="utf-8")
 
@@ -514,6 +523,156 @@ def run_rebuild(date: str, modules: list[str] | None = None) -> int:
     )
     print(f"✅ rebuild 输出: {out_path}")
     return 0
+
+
+def _inject_mood_history_and_delta(*, root: Path, date: str, market_data: dict) -> None:
+    """
+    离线增强（UI/图表需要）：
+    1) features.mood_inputs.hist_* / trend_*：用于 sparkline 与情绪K线
+    2) prev / delta：用于“vs昨日”对比箭头与 Δ badge
+    """
+
+    cache_dir = root / "cache"
+    date8 = date.replace("-", "")
+    if len(date8) != 8:
+        return
+
+    # 收集 <= date 的缓存文件（按日期排序）
+    items: list[tuple[str, Path]] = []
+    for fp in cache_dir.glob("market_data-*.json"):
+        stem = fp.stem  # market_data-YYYYMMDD
+        if not stem.startswith("market_data-"):
+            continue
+        d8 = stem.replace("market_data-", "")
+        if len(d8) != 8 or not d8.isdigit():
+            continue
+        if d8 <= date8:
+            items.append((d8, fp))
+    items.sort(key=lambda x: x[0])
+    if not items:
+        return
+
+    # ===== 1) hist_* / trend_* =====
+    feats = market_data.setdefault("features", {})
+    mi = feats.setdefault("mood_inputs", {})
+    hist_days = mi.get("hist_days")
+
+    need_hist = not (isinstance(hist_days, list) and len(hist_days) >= 2)
+    if need_hist:
+        try:
+            hist_n = int(os.getenv("MOOD_HIST_DAYS", "5") or "5")
+        except Exception:
+            hist_n = 5
+        hist_n = max(3, min(hist_n, 10))
+        slice_items = items[-hist_n:]
+
+        rows = []
+        for d8, fp in slice_items:
+            try:
+                snap = json.loads(fp.read_text(encoding="utf-8"))
+                s_feats = snap.get("features") or {}
+                s_mi = s_feats.get("mood_inputs") or {}
+                s_si = s_feats.get("style_inputs") or {}
+                # 兜底：max_lb 优先用 style_inputs，其次用 ladder 最高 badge 数字
+                max_lb = int(s_si.get("max_lb", 0) or 0)
+                if not max_lb:
+                    lbs = []
+                    for it in (snap.get("ladder") or []):
+                        try:
+                            lbs.append(int(str(it.get("badge", "")).replace("板", "").replace("板+", "")[:2] or 0))
+                        except Exception:
+                            pass
+                    max_lb = max(lbs) if lbs else 0
+
+                def _to_num(v, d=0.0):
+                    try:
+                        if v is None:
+                            return d
+                        if isinstance(v, str):
+                            v = v.replace("%", "").strip()
+                        return float(v)
+                    except Exception:
+                        return d
+
+                rows.append(
+                    {
+                        "date": f"{d8[0:4]}-{d8[4:6]}-{d8[6:8]}",
+                        "max_lb": max_lb,
+                        "fb_rate": _to_num(s_mi.get("fb_rate", 0), 0),
+                        "jj_rate": _to_num(s_mi.get("jj_rate_adj", s_mi.get("jj_rate", 0)), 0),
+                        "broken_lb_rate": _to_num(s_mi.get("broken_lb_rate_adj", s_mi.get("broken_lb_rate", 0)), 0),
+                        "zt": int(_to_num((snap.get("panorama") or {}).get("limitUp", 0), 0)),
+                        "dt": int(_to_num((snap.get("panorama") or {}).get("limitDown", 0), 0)),
+                    }
+                )
+            except Exception:
+                continue
+
+        if len(rows) >= 2:
+            first, last = rows[0], rows[-1]
+            mi["hist_days"] = [r["date"] for r in rows]
+            mi["hist_max_lb"] = [r["max_lb"] for r in rows]
+            mi["hist_fb_rate"] = [round(r["fb_rate"], 1) for r in rows]
+            mi["hist_jj_rate"] = [round(r["jj_rate"], 1) for r in rows]
+            mi["hist_broken_lb_rate"] = [round(r["broken_lb_rate"], 1) for r in rows]
+            mi["hist_zt"] = [int(r.get("zt", 0)) for r in rows]
+            mi["hist_dt"] = [int(r.get("dt", 0)) for r in rows]
+            mi["hist_zt_dt_spread"] = [int(r.get("zt", 0)) - int(r.get("dt", 0)) for r in rows]
+            mi["trend_max_lb"] = round(float(last["max_lb"]) - float(first["max_lb"]), 2)
+            mi["trend_fb_rate"] = round(float(last["fb_rate"]) - float(first["fb_rate"]), 2)
+            mi["trend_jj_rate"] = round(float(last["jj_rate"]) - float(first["jj_rate"]), 2)
+            mi["trend_broken_lb_rate"] = round(float(last["broken_lb_rate"]) - float(first["broken_lb_rate"]), 2)
+
+    # ===== 2) prev / delta =====
+    if len(items) < 2:
+        return
+
+    prev_fp = items[-2][1]
+    try:
+        prev_data = json.loads(prev_fp.read_text(encoding="utf-8"))
+    except Exception:
+        return
+
+    market_data["prev"] = {
+        "date": prev_data.get("date", ""),
+        "panorama": prev_data.get("panorama") or {},
+        "mood": prev_data.get("mood") or {},
+        "moodStage": prev_data.get("moodStage") or {},
+        "volume": prev_data.get("volume") or {},
+        "features": (prev_data.get("features") or {}),
+    }
+
+    def _num(v, d=0.0):
+        try:
+            if v is None:
+                return d
+            if isinstance(v, str):
+                v = v.replace("%", "").replace("亿", "").strip()
+            return float(v)
+        except Exception:
+            return d
+
+    cur_pan = market_data.get("panorama") or {}
+    prv_pan = (prev_data.get("panorama") or {}) if isinstance(prev_data, dict) else {}
+
+    cur_feats = market_data.get("features") or {}
+    cur_mi = cur_feats.get("mood_inputs") or {}
+    prv_feats = (prev_data.get("features") or {}) if isinstance(prev_data, dict) else {}
+    prv_mi = (prv_feats.get("mood_inputs") or {}) if isinstance(prv_feats, dict) else {}
+
+    # 用于 UI 的 Δ（单位由前端决定：pp/只）
+    market_data["delta"] = {
+        "zt": int(_num(cur_pan.get("limitUp"), 0) - _num(prv_pan.get("limitUp"), 0)),
+        "zb": int(_num(cur_pan.get("broken"), 0) - _num(prv_pan.get("broken"), 0)),
+        "dt": int(_num(cur_pan.get("limitDown"), 0) - _num(prv_pan.get("limitDown"), 0)),
+        "fb_rate": round(_num(cur_mi.get("fb_rate"), 0) - _num(prv_mi.get("fb_rate"), 0), 2),
+        "jj_rate": round(_num(cur_mi.get("jj_rate_adj", cur_mi.get("jj_rate")), 0) - _num(prv_mi.get("jj_rate_adj", prv_mi.get("jj_rate")), 0), 2),
+        "zb_rate": round(_num(cur_mi.get("zb_rate"), 0) - _num(prv_mi.get("zb_rate"), 0), 2),
+        "max_lb": round(_num(cur_mi.get("max_lb"), 0) - _num(prv_mi.get("max_lb"), 0), 2),
+        "bf_count": round(_num(cur_mi.get("bf_count"), 0) - _num(prv_mi.get("bf_count"), 0), 2),
+        "heat": round(_num((market_data.get("mood") or {}).get("heat"), 0) - _num((prev_data.get("mood") or {}).get("heat"), 0), 2),
+        "risk": round(_num((market_data.get("mood") or {}).get("risk"), 0) - _num((prev_data.get("mood") or {}).get("risk"), 0), 2),
+    }
 
 
 def _load_pools_for_date(root: Path, date: str) -> dict:

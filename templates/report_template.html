@@ -159,10 +159,26 @@
         color: var(--text-primary);
         line-height: var(--lh-body);
         font-size: var(--type-md);
-        padding: 24px 12px 60px;
+        font-variant-numeric: tabular-nums;
+        padding: 24px 12px calc(60px + env(safe-area-inset-bottom, 0px));
         transition:
           background 0.3s,
           color 0.3s;
+      }
+
+      /* Motion (subtle, only key blocks) */
+      .reveal{
+        opacity: 0;
+        transform: translateY(8px);
+        transition: opacity 520ms cubic-bezier(0.16, 1, 0.3, 1), transform 520ms cubic-bezier(0.16, 1, 0.3, 1);
+        will-change: opacity, transform;
+      }
+      .reveal.in{ opacity: 1; transform: translateY(0); }
+
+      @media (prefers-reduced-motion: reduce){
+        .reveal{ transition: none !important; transform: none !important; opacity: 1 !important; }
+        .heatmap-signal.pulse{ animation: none !important; }
+        .pulse{ animation: none !important; }
       }
       .container {
         max-width: 860px;
@@ -546,6 +562,13 @@
         transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
         isolation: isolate;
       }
+      /* 重要指标放大（封板率/晋级率） */
+      .heatmap-cell.big{
+        grid-column: span 2;
+        grid-row: span 2;
+        min-height: 210px;
+      }
+      .heatmap-cell.big .heatmap-value{ font-size: 42px; }
       [data-theme="dark"] .heatmap-cell{
         background: rgba(15,23,42,0.62);
         border-color: rgba(148,163,184,0.22);
@@ -647,12 +670,17 @@
         background: rgba(255,255,255,0.70);
         backdrop-filter: blur(10px);
         white-space: nowrap;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
       }
       [data-theme="dark"] .heatmap-signal{ background: rgba(15,23,42,0.48); border-color: rgba(148,163,184,0.22); }
       /* 注意：这里沿用你系统的“红涨绿跌”语义：good=强（红），bad=弱（绿） */
       .heatmap-signal.sig-good { color: var(--danger); border-color: rgba(239,68,68,0.22); }
       .heatmap-signal.sig-warn { color: var(--warning); border-color: rgba(245,158,11,0.22); }
       .heatmap-signal.sig-bad { color: var(--success); border-color: rgba(16,185,129,0.22); }
+      .heatmap-signal.pulse{ animation: hmPulse 2.2s ease-in-out infinite; }
+      @keyframes hmPulse{ 0%,100%{ transform: translateY(0); } 50%{ transform: translateY(-1px); } }
 
       .heatmap-note{
         margin-top: 10px;
@@ -1209,6 +1237,102 @@
       .chart-container { width: 100%; height: 220px; margin-bottom: 16px; position: relative; }
       .chart-legend { display: none; } /* ECharts has its own legend or we use custom one */
       .radar-chart-container { width: 100%; height: 300px; }
+      .mood-radar-shell{
+        margin-top: 12px;
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        padding: 12px 12px 10px;
+        background: rgba(255,255,255,0.03);
+      }
+      [data-theme="dark"] .mood-radar-shell{ background: rgba(15,23,42,0.25); }
+      .mood-radar-head{
+        display:flex;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: 10px;
+        margin-bottom: 8px;
+      }
+      .mood-radar-head .h{ font-size: 12px; font-weight: 950; color: var(--text-primary); }
+      .mood-radar-head .s{ font-size: 11px; font-weight: 750; color: var(--text-muted); white-space: nowrap; }
+
+      /* Mood Tri-Cards（赚/险/资） */
+      .tri-strip{
+        margin-top: 12px;
+        display: flex;
+        gap: 12px;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        padding-bottom: 2px;
+        scroll-snap-type: x mandatory;
+      }
+      .tri-card{
+        scroll-snap-align: start;
+        min-width: 260px;
+        flex: 0 0 auto;
+        border: 1px solid rgba(148,163,184,0.18);
+        border-radius: 16px;
+        padding: 12px 14px;
+        background: rgba(255,255,255,0.55);
+        position: relative;
+        overflow: hidden;
+      }
+      [data-theme="dark"] .tri-card{ background: rgba(15,23,42,0.45); border-color: rgba(148,163,184,0.22); }
+      .tri-card::before{
+        content:"";
+        position:absolute;
+        left: 0;
+        top: 12px;
+        bottom: 12px;
+        width: 3px;
+        border-radius: 3px;
+        background: rgba(148,163,184,0.45);
+      }
+      .tri-card.earn::before{ background: rgba(239,68,68,0.65); }
+      .tri-card.risk::before{ background: rgba(16,185,129,0.62); }
+      .tri-card.cash::before{ background: rgba(96,165,250,0.70); }
+      .tri-head{
+        display:flex;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: 10px;
+        margin-bottom: 8px;
+      }
+      .tri-title{
+        font-size: 12px;
+        font-weight: 950;
+        color: var(--text-primary);
+        letter-spacing: 0.2px;
+      }
+      .tri-badges{ display:flex; gap: 6px; align-items:center; flex-wrap: nowrap; }
+      .tri-value{
+        font-size: 26px;
+        font-weight: 1000;
+        line-height: 1.1;
+        font-variant-numeric: tabular-nums;
+        margin-bottom: 6px;
+      }
+      .tri-sub{
+        font-size: 11px;
+        font-weight: 650;
+        color: var(--text-muted);
+        line-height: 1.45;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .tri-spark{
+        margin-top: 10px;
+        height: 26px;
+        opacity: 0.95;
+      }
+      @media (min-width: 900px){
+        .tri-strip{
+          display:grid;
+          grid-template-columns: repeat(3, 1fr);
+          overflow: visible;
+        }
+        .tri-card{ min-width: 0; }
+      }
       .theme-trend-chart-container { width: 100%; height: 280px; margin-top: 12px; }
 
       /* ───────────────────────────────
@@ -1405,11 +1529,70 @@
         letter-spacing: 0.2px;
       }
       .hero-note { margin-top: 8px; font-size: 12px; color: rgba(255,255,255,0.86); font-weight: 600; }
-      .tier-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; }
-      .tier-card { background: var(--bg-elevated); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 14px 16px; }
-      .tier-label { font-size: 11px; font-weight: 800; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.6px; margin-bottom: 8px; }
-      .tier-title { font-size: 14px; font-weight: 800; color: var(--text-primary); line-height: 1.5; }
-      .tier-desc { margin-top: 6px; font-size: 12px; color: var(--text-secondary); line-height: 1.6; }
+      /* Tier：恢复“卡片网格”，但做出层级差异（更有感、不过分花） */
+      .tier-grid{
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 12px;
+      }
+      .tier-card{
+        background: var(--bg-elevated);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        padding: 14px 16px;
+        box-shadow: none;
+        position: relative;
+        overflow: hidden;
+      }
+      .tier-card::before{
+        content:"";
+        position:absolute;
+        left: 0;
+        top: 12px;
+        bottom: 12px;
+        width: 3px;
+        background: rgba(148,163,184,0.45);
+        border-radius: 3px;
+      }
+      .tier-label{
+        font-size: 11px;
+        font-weight: 950;
+        color: var(--text-muted);
+        letter-spacing: 0.25px;
+        margin-left: 10px;
+      }
+      .tier-title{
+        margin-top: 6px;
+        margin-left: 10px;
+        font-size: 14px;
+        font-weight: 950;
+        color: var(--text-primary);
+        line-height: 1.45;
+      }
+      .tier-desc{
+        margin-top: 6px;
+        margin-left: 10px;
+        font-size: 12px;
+        color: var(--text-secondary);
+        line-height: 1.6;
+        font-weight: 620;
+      }
+      /* 主线/支线/轮动线：做一个更有层级的“封面卡组” */
+      .tier-grid.layer-grid{
+        grid-template-columns: 1.2fr 1fr;
+      }
+      .tier-grid.layer-grid .tier-card:first-child{
+        grid-column: 1 / -1;
+        padding: 16px 18px;
+        background: color-mix(in oklab, var(--bg-elevated) 86%, var(--theme-soft) 14%);
+        border-color: color-mix(in oklab, var(--border) 75%, var(--theme-glow) 25%);
+      }
+      .tier-grid.layer-grid .tier-card:first-child::before{ background: rgba(37,99,235,0.55); }
+      .tier-grid.layer-grid .tier-card:nth-child(2)::before{ background: rgba(245,158,11,0.55); }
+      .tier-grid.layer-grid .tier-card:nth-child(3)::before{ background: rgba(16,185,129,0.55); }
+      @media (max-width: 720px){
+        .tier-grid.layer-grid{ grid-template-columns: 1fr; }
+      }
       .red-text { color: var(--danger); }
       .green-text { color: var(--success); }
       .orange-text { color: var(--warning); }
@@ -1638,6 +1821,69 @@
         stroke-linejoin: round;
         filter: drop-shadow(0 8px 12px rgba(0,0,0,0.10));
       }
+      .spark.mini{ height: 22px; opacity: 0.92; }
+
+      /* Hero Mood Badge */
+      .mood-badge{
+        display:inline-flex;
+        align-items:center;
+        gap: 10px;
+        padding: 8px 14px;
+        border-radius: 999px;
+        border: 1px solid rgba(255,255,255,0.14);
+        background: rgba(255,255,255,0.10);
+        box-shadow: inset 0 1px 0 rgba(255,255,255,0.12);
+      }
+      .mood-badge .badge-icon{ font-size: 14px; line-height: 1; }
+      .mood-badge.mood-good{ box-shadow: 0 0 0 6px rgba(239,68,68,0.10), inset 0 1px 0 rgba(255,255,255,0.12); }
+      .mood-badge.mood-warn{ box-shadow: 0 0 0 6px rgba(245,158,11,0.10), inset 0 1px 0 rgba(255,255,255,0.12); }
+      .mood-badge.mood-fire{ box-shadow: 0 0 0 6px rgba(14,165,233,0.10), inset 0 1px 0 rgba(255,255,255,0.12); }
+
+      /* Hero 双环仪表：热(外圈) + 险(内圈) */
+      .ring-pack{
+        margin-top: 2px;
+        display:flex;
+        align-items:center;
+        justify-content: space-between;
+        gap: 10px;
+      }
+      .ring{
+        width: 46px;
+        height: 46px;
+        flex: 0 0 auto;
+      }
+      .ring circle.track{
+        stroke: rgba(255,255,255,0.18);
+        stroke-width: 6;
+        fill: none;
+      }
+      .ring circle.arc{
+        stroke-width: 6;
+        fill: none;
+        stroke-linecap: round;
+        transform: rotate(-90deg);
+        transform-origin: 50% 50%;
+      }
+      .ring .heat{ stroke: rgba(96,165,250,0.95); }
+      .ring .risk{ stroke: rgba(239,68,68,0.92); }
+      .ring-center{
+        min-width: 0;
+      }
+      .ring-center .big{
+        font-size: 16px;
+        font-weight: 1000;
+        line-height: 1.05;
+        font-variant-numeric: tabular-nums;
+      }
+      .ring-center .small{
+        margin-top: 2px;
+        font-size: 11px;
+        font-weight: 750;
+        color: rgba(255,255,255,0.78);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
       .trend-delta{
         font-variant-numeric: tabular-nums;
         font-size: 12px;
@@ -1743,7 +1989,10 @@
         </div>
         <div class="hero-grid">
           <div class="hero-top">
-            <div class="cycle-tag"><span class="cycle-dot"></span>短线复盘 · 情绪监控</div>
+            <div class="cycle-tag mood-badge" :class="'mood-' + (marketData.moodStage?.type || 'warn')">
+              <span class="badge-icon">{{ marketData.moodStage?.type === 'good' ? '🔥' : (marketData.moodStage?.type === 'warn' ? '⚠' : '🧊') }}</span>
+              <span>短线复盘 · 情绪监控</span>
+            </div>
             <div class="hero-date">__REPORT_DATE_CN__收盘简报</div>
             <div class="hero-subtitle">数据来源：风中一刀的主升浪丨</div>
             <div class="hero-subtitle" v-if="marketData.meta">
@@ -1779,17 +2028,40 @@
               </div>
               <div class="hero-kpi">
                 <div class="k">热 / 险</div>
-                <div class="v">
-                  <span :class="heatClass(marketData.mood?.heat)">{{ marketData.mood?.heat ?? '-' }}</span>
-                  /
-                  <span :class="riskClass(marketData.mood?.risk)">{{ marketData.mood?.risk ?? '-' }}</span>
+                <div class="ring-pack">
+                  <svg class="ring" viewBox="0 0 60 60" aria-hidden="true">
+                    <!-- heat outer -->
+                    <circle class="track" cx="30" cy="30" r="22"></circle>
+                    <circle class="arc heat"
+                            cx="30" cy="30" r="22"
+                            :style="ringStyle(marketData.mood?.heat, 22)"></circle>
+                    <!-- risk inner -->
+                    <circle class="track" cx="30" cy="30" r="16" style="stroke-width:5;"></circle>
+                    <circle class="arc risk"
+                            cx="30" cy="30" r="16" style="stroke-width:5;"
+                            :style="ringStyle(marketData.mood?.risk, 16)"></circle>
+                  </svg>
+                  <div class="ring-center">
+                    <div class="big">
+                      <span :class="heatClass(marketData.mood?.heat)">{{ marketData.mood?.heat ?? '-' }}</span>
+                      /
+                      <span :class="riskClass(marketData.mood?.risk)">{{ marketData.mood?.risk ?? '-' }}</span>
+                    </div>
+                    <div class="small">综合 {{ marketData.mood?.score ?? '-' }} 分</div>
+                  </div>
                 </div>
-                <div class="s">综合 {{ marketData.mood?.score ?? '-' }} 分</div>
               </div>
               <div class="hero-kpi">
                 <div class="k">量能（较昨）</div>
                 <div class="v">{{ marketData.volume?.change ?? '-' }}</div>
                 <div class="s">两市 {{ marketData.volume?.total ?? '-' }}</div>
+                <svg class="spark mini" viewBox="0 0 100 28" preserveAspectRatio="none" aria-hidden="true"
+                     v-if="(marketData.volume?.values || []).length >= 2">
+                  <path class="grid" d="M0 27H100" />
+                  <polyline class="line"
+                            :stroke="'rgba(255,255,255,0.78)'"
+                            :points="sparklinePoints(marketData.volume?.values || [])" />
+                </svg>
               </div>
               <div class="hero-kpi">
                 <div class="k">高度 / 质量</div>
@@ -1799,6 +2071,13 @@
                     ? '-'
                     : Number(marketData.features.mood_inputs.jj_rate).toFixed(1) + '%'
                 }}</div>
+                <svg class="spark mini" viewBox="0 0 100 28" preserveAspectRatio="none" aria-hidden="true"
+                     v-if="(marketData.heightTrend?.main || []).length >= 2">
+                  <path class="grid" d="M0 27H100" />
+                  <polyline class="line"
+                            :stroke="'rgba(255,255,255,0.78)'"
+                            :points="sparklinePoints(marketData.heightTrend?.main || [])" />
+                </svg>
               </div>
             </div>
           </div>
@@ -2051,62 +2330,115 @@
             </div>
           </div>
         </div>
+
+            <div class="tri-strip reveal" aria-label="情绪三卡">
+              <div class="tri-card reveal"
+                   v-for="(c, i) in moodTriCards"
+                   :key="'tri-'+c.key+'-'+i"
+                   :class="c.cls">
+                <div class="tri-head">
+                  <div class="tri-title">{{ c.title }}</div>
+                  <div class="tri-badges" v-html="c.badges"></div>
+                </div>
+                <div class="tri-value" :class="c.valueClass">{{ c.value }}</div>
+                <div class="tri-sub">{{ c.sub }}</div>
+                <svg class="spark tri-spark" viewBox="0 0 100 28" preserveAspectRatio="none" aria-hidden="true"
+                     v-if="(c.spark || []).length >= 2">
+                  <path class="grid" d="M0 27H100" />
+                  <polyline class="line"
+                            :stroke="c.sparkStroke"
+                            :points="sparklinePoints(c.spark)" />
+                </svg>
+              </div>
+            </div>
+
+            <div class="mood-radar-shell reveal">
+              <div class="mood-radar-head">
+                <div class="h">情绪六维雷达</div>
+                <div class="s">强度 · 合力 · 赚钱 · 风险</div>
+              </div>
+              <div class="radar-chart-container" style="height: 260px;">
+                <div id="mood-radar-echart" style="width: 100%; height: 100%;"></div>
+              </div>
+            </div>
           </div>
 
           <div>
-            <div class="section-header">风险与亏钱扩散</div>
-            <div class="fear-grid">
-              <div class="fear-card">
-                <div class="fear-val red-text">{{ marketData.fear?.bigFace || '-' }}</div>
-                <div class="fear-label">大面股(-5%↓)</div>
-                <div class="fear-note">{{ marketData.fear?.bigFaceNote || '' }}</div>
+            <div class="inset">
+              <div class="inset-head">
+                <div class="h">风险与亏钱扩散</div>
+                <div class="s">亏钱面 · 跌停 · 扩散</div>
               </div>
-              <div class="fear-card">
-                <div class="fear-val green-text">{{ marketData.fear?.limitDown || '-' }}</div>
-                <div class="fear-label">非ST跌停</div>
-                <div class="fear-note">{{ marketData.fear?.limitDownNote || '' }}</div>
-              </div>
-              <div class="fear-card">
-                <div class="fear-val" :class="riskClass(marketData.mood?.risk)">{{ marketData.fear?.risk || '-' }}</div>
-                <div class="fear-label">亏钱效应</div>
-                <div class="fear-note">
-                  扩散 {{ (getMoodInput('bf_count',0) + getMoodInput('dt_count',0)) || '-' }} 只
-                  <span v-html="deltaBadge(delta.loss)"></span>
+              <div class="metric-rows">
+                <div class="metric-row">
+                  <div class="metric-left">
+                    <div class="metric-k">大面股（-5%↓）</div>
+                    <div class="metric-note">{{ marketData.fear?.bigFaceNote || '' }}</div>
+                  </div>
+                  <div class="metric-v red-text">{{ marketData.fear?.bigFace || '-' }}</div>
+                </div>
+                <div class="metric-row">
+                  <div class="metric-left">
+                    <div class="metric-k">非ST跌停</div>
+                    <div class="metric-note">{{ marketData.fear?.limitDownNote || '' }}</div>
+                  </div>
+                  <div class="metric-v green-text">{{ marketData.fear?.limitDown || '-' }}</div>
+                </div>
+                <div class="metric-row">
+                  <div class="metric-left">
+                    <div class="metric-k">亏钱效应</div>
+                    <div class="metric-note">
+                      扩散 {{ (getMoodInput('bf_count',0) + getMoodInput('dt_count',0)) || '-' }} 只
+                      <span v-html="deltaBadge(delta.loss)"></span>
+                    </div>
+                  </div>
+                  <div class="metric-v" :class="riskClass(marketData.mood?.risk)">{{ marketData.fear?.risk || '-' }}</div>
                 </div>
               </div>
             </div>
 
-            <div class="section-header">分歧与承接</div>
-            <div class="fear-grid">
-              <div class="fear-card">
-                <div class="fear-val orange-text">{{ marketData.fear?.broken || '-' }}</div>
-                <div class="fear-label">炸板率</div>
-                <div class="fear-note">
-                  {{ marketData.fear?.brokenNote || '' }}
-                  <span v-html="deltaBadge(delta.zb_rate,'pp')"></span>
-                </div>
+            <div class="inset">
+              <div class="inset-head">
+                <div class="h">分歧与承接</div>
+                <div class="s">炸板 · 晋级 · 封板</div>
               </div>
-          <div class="fear-card">
-            <div class="fear-val" :class="jjClass(marketData.features?.mood_inputs?.jj_rate ?? 0)">
-              {{ (marketData.features?.mood_inputs?.jj_rate === undefined || marketData.features?.mood_inputs?.jj_rate === null)
-                ? '-'
-                : Number(marketData.features.mood_inputs.jj_rate).toFixed(1) }}%
-            </div>
-            <div class="fear-label">连板晋级率</div>
-            <div class="fear-note">
-              昨连板 {{ marketData.features?.mood_inputs?.yest_lb_count ?? '-' }} →
-              今存活 {{
-                (marketData.features?.mood_inputs?.yest_lb_count ?? 0)
-                  ? Math.round(Number(marketData.features.mood_inputs.yest_lb_count) * (Number(marketData.features.mood_inputs.jj_rate ?? 0)/100))
-                  : '-'
-              }}
-              <span v-html="deltaBadge(delta.jj_rate,'pp')"></span>
-            </div>
-          </div>
-              <div class="fear-card">
-                <div class="fear-val" :class="boardRateClass(marketData.panorama?.ratio)">{{ marketData.fear?.success || '-' }}</div>
-                <div class="fear-label">封板成功率</div>
-                <div class="fear-note">{{ marketData.fear?.successNote || '' }}</div>
+              <div class="metric-rows">
+                <div class="metric-row">
+                  <div class="metric-left">
+                    <div class="metric-k">炸板率</div>
+                    <div class="metric-note">
+                      {{ marketData.fear?.brokenNote || '' }}
+                      <span v-html="deltaBadge(delta.zb_rate,'pp')"></span>
+                    </div>
+                  </div>
+                  <div class="metric-v orange-text">{{ marketData.fear?.broken || '-' }}</div>
+                </div>
+                <div class="metric-row">
+                  <div class="metric-left">
+                    <div class="metric-k">连板晋级率</div>
+                    <div class="metric-note">
+                      昨连板 {{ marketData.features?.mood_inputs?.yest_lb_count ?? '-' }} →
+                      今存活 {{
+                        (marketData.features?.mood_inputs?.yest_lb_count ?? 0)
+                          ? Math.round(Number(marketData.features.mood_inputs.yest_lb_count) * (Number(marketData.features.mood_inputs.jj_rate ?? 0)/100))
+                          : '-'
+                      }}
+                      <span v-html="deltaBadge(delta.jj_rate,'pp')"></span>
+                    </div>
+                  </div>
+                  <div class="metric-v" :class="jjClass(marketData.features?.mood_inputs?.jj_rate ?? 0)">
+                    {{ (marketData.features?.mood_inputs?.jj_rate === undefined || marketData.features?.mood_inputs?.jj_rate === null)
+                      ? '-'
+                      : Number(marketData.features.mood_inputs.jj_rate).toFixed(1) }}%
+                  </div>
+                </div>
+                <div class="metric-row">
+                  <div class="metric-left">
+                    <div class="metric-k">封板成功率</div>
+                    <div class="metric-note">{{ marketData.fear?.successNote || '' }}</div>
+                  </div>
+                  <div class="metric-v" :class="boardRateClass(marketData.panorama?.ratio)">{{ marketData.fear?.success || '-' }}</div>
+                </div>
               </div>
             </div>
           </div>
@@ -2269,7 +2601,7 @@
           </div>
         </div>
         <div class="section-header">主线 / 支线 / 轮动线</div>
-        <div class="tier-grid">
+        <div class="tier-grid layer-grid">
           <div class="tier-card" v-for="(it, i) in (marketData.themeLayers || [])" :key="'layer-'+i">
             <div class="tier-label">{{ it.label || '-' }}</div>
             <div class="tier-title">{{ it.names || '-' }}</div>
@@ -2281,95 +2613,136 @@
       <!-- 赚钱效应四维判断 -->
       <div class="card" data-page="sentiment">
         <div class="card-title">赚钱效应综合判断</div>
-        <div class="section-header">接力承接质量</div>
-        <div class="fear-grid">
-
-          <div class="fear-card">
-            <div class="fear-val blue-text">62%</div>
-            <div class="fear-label">连板承接</div>
-            <div class="fear-note">昨日连板 8 只，今日晋级 5 只</div>
+        <div class="inset">
+          <div class="inset-head">
+            <div class="h">接力承接质量</div>
+            <div class="s">连板承接 · 低位转接 · 强势反馈</div>
           </div>
-          <div class="fear-card">
-            <div class="fear-val orange-text">11%</div>
-            <div class="fear-label">首板转二板</div>
-            <div class="fear-note">昨日首板 71 只，今日晋级 8 只</div>
-          </div>
-          <div class="fear-card">
-            <div class="fear-val" :class="signedClass(getMoodInput('qs_avg_zf', 0))">
-              {{ (Number(getMoodInput('qs_avg_zf',0))>=0?'+':'') + Number(getMoodInput('qs_avg_zf',0)).toFixed(2) }}%
+          <div class="metric-rows">
+            <div class="metric-row">
+              <div class="metric-left">
+                <div class="metric-k">连板承接</div>
+                <div class="metric-note">昨日连板 8 只，今日晋级 5 只</div>
+              </div>
+              <div class="metric-v blue-text">62%</div>
             </div>
-            <div class="fear-label">昨日强势反馈</div>
-            <div class="fear-note">强势股池均涨（用于判断次日正反馈强弱）</div>
-          </div>
-        </div>
-        <div class="section-header">昨日强势股反馈</div>
-        <div class="fear-grid">
-
-          <div class="fear-card">
-            <div class="fear-val" :class="signedClass(getMoodInput('qs_avg_zf', 0))">
-              {{ (Number(getMoodInput('qs_avg_zf',0))>=0?'+':'') + Number(getMoodInput('qs_avg_zf',0)).toFixed(2) }}%
+            <div class="metric-row">
+              <div class="metric-left">
+                <div class="metric-k">首板转二板</div>
+                <div class="metric-note">昨日首板 71 只，今日晋级 8 只</div>
+              </div>
+              <div class="metric-v orange-text">11%</div>
             </div>
-            <div class="fear-label">强势股均涨</div>
-            <div class="fear-note">昨日涨停 / 强势股的次日整体反馈</div>
-          </div>
-          <div class="fear-card">
-            <div class="fear-val red-text">{{ getMoodInput('qs_best_name', '—') }}</div>
-            <div class="fear-label">最佳反馈</div>
-            <div class="fear-note">
-              {{ (Number(getMoodInput('qs_best_zf',0))>=0?'+':'') + Number(getMoodInput('qs_best_zf',0)).toFixed(2) }}%
-            </div>
-          </div>
-          <div class="fear-card">
-            <div class="fear-val green-text">{{ getMoodInput('qs_worst_name', '—') }}</div>
-            <div class="fear-label">最弱反馈</div>
-            <div class="fear-note">
-              {{ (Number(getMoodInput('qs_worst_zf',0))>=0?'+':'') + Number(getMoodInput('qs_worst_zf',0)).toFixed(2) }}%
+            <div class="metric-row">
+              <div class="metric-left">
+                <div class="metric-k">昨日强势反馈</div>
+                <div class="metric-note">强势股池均涨（用于判断次日正反馈强弱）</div>
+              </div>
+              <div class="metric-v" :class="signedClass(getMoodInput('qs_avg_zf', 0))">
+                {{ (Number(getMoodInput('qs_avg_zf',0))>=0?'+':'') + Number(getMoodInput('qs_avg_zf',0)).toFixed(2) }}%
+              </div>
             </div>
           </div>
         </div>
-        <div class="section-header">昨日强势股四象限反馈</div>
-        <div class="fear-grid">
 
-          <div class="fear-card">
-            <div class="fear-val red-text">{{ getMoodInput('qs_extreme_up', 0) }}只</div>
-            <div class="fear-label">强延续</div>
-            <div class="fear-note">昨日强势股中今日涨幅 >= 5%</div>
+        <div class="inset">
+          <div class="inset-head">
+            <div class="h">昨日强势股反馈</div>
+            <div class="s">均值 · 最佳 · 最弱</div>
           </div>
-          <div class="fear-card">
-            <div class="fear-val orange-text">{{ getMoodInput('qs_positive', 0) }}只</div>
-            <div class="fear-label">温和盈利</div>
-            <div class="fear-note">昨日强势股中今日收红但未大涨</div>
+          <div class="metric-rows">
+            <div class="metric-row">
+              <div class="metric-left">
+                <div class="metric-k">强势股均涨</div>
+                <div class="metric-note">昨日涨停 / 强势股的次日整体反馈</div>
+              </div>
+              <div class="metric-v" :class="signedClass(getMoodInput('qs_avg_zf', 0))">
+                {{ (Number(getMoodInput('qs_avg_zf',0))>=0?'+':'') + Number(getMoodInput('qs_avg_zf',0)).toFixed(2) }}%
+              </div>
+            </div>
+            <div class="metric-row">
+              <div class="metric-left">
+                <div class="metric-k">最佳反馈</div>
+                <div class="metric-note">{{ (Number(getMoodInput('qs_best_zf',0))>=0?'+':'') + Number(getMoodInput('qs_best_zf',0)).toFixed(2) }}%</div>
+              </div>
+              <div class="metric-v red-text">{{ getMoodInput('qs_best_name', '—') }}</div>
+            </div>
+            <div class="metric-row">
+              <div class="metric-left">
+                <div class="metric-k">最弱反馈</div>
+                <div class="metric-note">{{ (Number(getMoodInput('qs_worst_zf',0))>=0?'+':'') + Number(getMoodInput('qs_worst_zf',0)).toFixed(2) }}%</div>
+              </div>
+              <div class="metric-v green-text">{{ getMoodInput('qs_worst_name', '—') }}</div>
+            </div>
           </div>
-          <div class="fear-card">
-            <div class="fear-val blue-text">{{ getMoodInput('qs_negative', 0) }}只</div>
-            <div class="fear-label">小幅负反馈</div>
-            <div class="fear-note">昨日强势股中今日小幅回落</div>
+        </div>
+
+        <div class="inset">
+          <div class="inset-head">
+            <div class="h">昨日强势股四象限反馈</div>
+            <div class="s">延续 · 盈利 · 回落 · 大面</div>
           </div>
-          <div class="fear-card">
-            <div class="fear-val green-text">{{ getMoodInput('qs_extreme_down', 0) }}只</div>
-            <div class="fear-label">大面 / 核按钮</div>
-            <div class="fear-note">昨日强势股中今日跌幅 <= -5%</div>
+          <div class="metric-rows">
+            <div class="metric-row">
+              <div class="metric-left">
+                <div class="metric-k">强延续</div>
+                <div class="metric-note">涨幅 ≥ 5%</div>
+              </div>
+              <div class="metric-v red-text">{{ getMoodInput('qs_extreme_up', 0) }}只</div>
+            </div>
+            <div class="metric-row">
+              <div class="metric-left">
+                <div class="metric-k">温和盈利</div>
+                <div class="metric-note">收红但未大涨</div>
+              </div>
+              <div class="metric-v orange-text">{{ getMoodInput('qs_positive', 0) }}只</div>
+            </div>
+            <div class="metric-row">
+              <div class="metric-left">
+                <div class="metric-k">小幅负反馈</div>
+                <div class="metric-note">小幅回落</div>
+              </div>
+              <div class="metric-v blue-text">{{ getMoodInput('qs_negative', 0) }}只</div>
+            </div>
+            <div class="metric-row">
+              <div class="metric-left">
+                <div class="metric-k">大面 / 核按钮</div>
+                <div class="metric-note">跌幅 ≤ -5%</div>
+              </div>
+              <div class="metric-v green-text">{{ getMoodInput('qs_extreme_down', 0) }}只</div>
+            </div>
           </div>
         </div>
         <div class="section-header">情绪热力图</div>
-        <div class="heatmap-shell">
+        <div class="heatmap-shell" v-if="(hm.cells || []).length">
           <div style="display:flex; justify-content:space-between; align-items:flex-end; gap:12px; margin-bottom:10px;">
             <div style="font-size:12px; font-weight:900; color:var(--text-secondary);">
-              总分 <span style="font-size:18px; font-weight:1000;" :class="heatClass(marketData.heatmap?.score)">{{ marketData.heatmap?.score ?? '-' }}</span>
+              总分 <span style="font-size:18px; font-weight:1000;" :class="heatClass(hm.score)">{{ hm.score ?? '-' }}</span>
+              <span style="margin-left:8px; font-size:11px; font-weight:900; color:var(--text-muted);" v-if="hm.trend">
+                {{ hm.trend.icon }} {{ hm.trend.text }}
+              </span>
             </div>
             <div style="font-size:11px; color:var(--text-muted); font-weight:750; text-align:right;">
-              {{ marketData.heatmap?.summary ?? '' }}
+              {{ hm.summary ?? '' }}
             </div>
           </div>
           <div class="heatmap-grid">
-            <div class="heatmap-cell" v-for="(cell, i) in (marketData.heatmap?.cells || [])" :key="'hm-'+i" :class="'level-' + cell.level">
+            <div class="heatmap-cell reveal"
+                 v-for="(cell, i) in (hm.cells || [])"
+                 :key="'hm-'+i"
+                 :class="['level-' + cell.level, heatmapCellClass(cell)]">
               <div class="heatmap-top">
                 <div class="heatmap-title"><span class="dot"></span>{{ cell.title }}</div>
                 <div class="heatmap-rank">{{ cell.tag }}</div>
               </div>
               <div class="heatmap-mid">
-                <div class="heatmap-value">{{ cell.value }}</div>
-                <div class="heatmap-signal" :class="'sig-' + (cell.signalClass || 'warn')">{{ cell.signalIcon }} {{ cell.signalText }}</div>
+                <div class="heatmap-value">
+                  {{ cell.value }}
+                  <span v-html="heatmapDeltaBadge(cell)"></span>
+                </div>
+                <div class="heatmap-signal" :class="['sig-' + (cell.signalClass || 'warn'), cell.pulse ? 'pulse' : '']">
+                  {{ cell.signalIcon }} {{ cell.signalText }}
+                </div>
               </div>
               <div class="heatmap-note">{{ cell.note }}</div>
             </div>
@@ -3041,7 +3414,7 @@
         if (!window.Vue) return;
         const { createApp } = window.Vue;
 
-        createApp({
+        const app = createApp({
           data() {
             return { marketData };
           },
@@ -3157,8 +3530,11 @@
               const n = Number(delta);
               if (!Number.isFinite(n)) return '';
               const cls = n > 0 ? 'red' : (n < 0 ? 'green' : 'muted');
-              const sign = n > 0 ? '+' : '';
-              return `<span class="delta-badge ${cls}">${sign}${n}${unit}</span>`;
+              if (Math.abs(n) < 1e-9) return `<span class="delta-badge muted">0${unit}</span>`;
+              const arrow = n > 0 ? '▲' : '▼';
+              const abs = Math.abs(n);
+              const v = (abs % 1 === 0) ? abs.toFixed(0) : abs.toFixed(2).replace(/0+$/,'').replace(/\.$/,'');
+              return `<span class="delta-badge ${cls}">${arrow}${v}${unit}</span>`;
             },
             /**
              * 纯函数：把数值格式化为带符号字符串（用于趋势Δ）
@@ -3190,6 +3566,202 @@
                 return `${x.toFixed(2)},${y.toFixed(2)}`;
               });
               return pts.join(' ');
+            },
+            clamp100(v) {
+              const n = Number(v);
+              if (!Number.isFinite(n)) return 0;
+              return Math.max(0, Math.min(100, n));
+            },
+            ringStyle(val, r) {
+              const rr = Number(r) || 18;
+              const c = 2 * Math.PI * rr;
+              const p = this.clamp100(val) / 100;
+              const dashoffset = c * (1 - p);
+              return { strokeDasharray: `${c.toFixed(2)} ${c.toFixed(2)}`, strokeDashoffset: `${dashoffset.toFixed(2)}` };
+            },
+            toNum(v, d = 0) {
+              try {
+                if (v === undefined || v === null || v === '') return d;
+                if (typeof v === 'string') return Number(String(v).replace('%', '').replace('亿', '').trim()) || d;
+                const n = Number(v);
+                return Number.isFinite(n) ? n : d;
+              } catch (e) {
+                return d;
+              }
+            },
+            buildHeatmap() {
+              const existing = this.marketData?.heatmap;
+              if (existing && Array.isArray(existing.cells) && existing.cells.length) return existing;
+
+              const mi = this.marketData?.features?.mood_inputs || {};
+              const pan = this.marketData?.panorama || {};
+              const fear = this.marketData?.fear || {};
+              const mood = this.marketData?.mood || {};
+              const d = this.delta || {};
+
+              const fb = this.toNum(mi.fb_rate, this.toNum(pan.ratio, 0));
+              const jj = this.toNum(mi.jj_rate_adj, this.toNum(mi.jj_rate, 0));
+              const zb = this.toNum(mi.zb_rate, 0);
+              const dt = this.toNum(pan.limitDown, 0);
+              const bf = this.toNum(mi.bf_count, this.toNum(fear.bigFace, 0));
+              const maxLb = this.toNum(mi.max_lb, this.toNum((this.marketData?.ladder?.[0] || {}).badge, 0));
+
+              const cell = (key, title, value, tag, note, level, signalClass, signalIcon, signalText, pulse = false) => ({
+                key, title, value, tag, note, level, signalClass, signalIcon, signalText, pulse,
+              });
+
+              // level: 1~5（冷→爆）；signalClass：good/warn/bad（强/中/弱）
+              const fbCell = (() => {
+                const lvl = fb >= 75 ? 5 : (fb >= 60 ? 4 : (fb >= 45 ? 3 : 2));
+                const sig = fb >= 70 ? ['good','🔥','强'] : (fb >= 55 ? ['warn','⚠','一般'] : ['bad','🧊','弱']);
+                return cell('fb_rate', '封板率', `${fb.toFixed(1)}%`, '关键', '封板质量决定次日承接空间', lvl, sig[0], sig[1], sig[2], true);
+              })();
+
+              const jjCell = (() => {
+                const lvl = jj >= 35 ? 5 : (jj >= 25 ? 4 : (jj >= 18 ? 3 : 2));
+                const sig = jj >= 30 ? ['good','🔥','强'] : (jj >= 20 ? ['warn','⚠','一般'] : ['bad','🧊','弱']);
+                return cell('jj_rate', '晋级率', `${jj.toFixed(1)}%`, '关键', '连板生存与高度延续的核心指标', lvl, sig[0], sig[1], sig[2], true);
+              })();
+
+              const zbCell = (() => {
+                const lvl = zb <= 25 ? 4 : (zb <= 40 ? 3 : 2);
+                const sig = zb <= 30 ? ['good','🔥','可控'] : (zb <= 45 ? ['warn','⚠','偏高'] : ['bad','🧊','高']);
+                return cell('zb_rate', '炸板率', `${zb.toFixed(1)}%`, '分歧', '分歧强度（高→承接变差/回封难）', lvl, sig[0], sig[1], sig[2], false);
+              })();
+
+              const dtCell = (() => {
+                const lvl = dt <= 3 ? 4 : (dt <= 10 ? 3 : 2);
+                const sig = dt <= 5 ? ['good','🔥','低'] : (dt <= 12 ? ['warn','⚠','中'] : ['bad','🧊','高']);
+                return cell('dt', '跌停数', `${dt}家`, '风险', '极端负反馈密度（低→可博弈修复）', lvl, sig[0], sig[1], sig[2], false);
+              })();
+
+              const bfCell = (() => {
+                const lvl = bf <= 10 ? 4 : (bf <= 25 ? 3 : 2);
+                const sig = bf <= 15 ? ['good','🔥','低'] : (bf <= 30 ? ['warn','⚠','中'] : ['bad','🧊','高']);
+                return cell('bf_count', '大面扩散', `${bf}只`, '亏钱', '亏钱效应与情绪退潮信号', lvl, sig[0], sig[1], sig[2], false);
+              })();
+
+              const hCell = (() => {
+                const lvl = maxLb >= 7 ? 5 : (maxLb >= 5 ? 4 : (maxLb >= 3 ? 3 : 2));
+                const sig = maxLb >= 6 ? ['good','🔥','高'] : (maxLb >= 4 ? ['warn','⚠','中'] : ['bad','🧊','低']);
+                return cell('max_lb', '高度', `${maxLb}板`, '空间', '空间高度（配合断板/大面判断风险）', lvl, sig[0], sig[1], sig[2], false);
+              })();
+
+              const trend = (() => {
+                const tFb = this.toNum(mi.trend_fb_rate, 0);
+                const tJj = this.toNum(mi.trend_jj_rate, 0);
+                const tHb = this.toNum(mi.trend_max_lb, 0);
+                const s = (tFb > 0) + (tJj > 0) + (tHb > 0) - ((tFb < 0) + (tJj < 0) + (tHb < 0));
+                if (s >= 2) return { icon: '↑↑', text: '升温' };
+                if (s <= -2) return { icon: '↓↓', text: '降温' };
+                return { icon: '→→', text: '稳定' };
+              })();
+
+              const score = this.toNum(mood.score, 0) || Math.round((fb * 0.4 + jj * 0.35 + (100 - zb) * 0.15 + (100 - dt) * 0.10));
+              const summary = `封板${fb.toFixed(1)} / 晋级${jj.toFixed(1)} / 炸板${zb.toFixed(1)}；跌停${dt}家`;
+
+              return { score, summary, trend, cells: [fbCell, jjCell, zbCell, dtCell, bfCell, hCell] };
+            },
+            moodIndexSeries(mi) {
+              mi = mi || {};
+              const days = Array.isArray(mi.hist_days) ? mi.hist_days : [];
+              const maxLb = (Array.isArray(mi.hist_max_lb) ? mi.hist_max_lb : []).map(v => Number(v));
+              const fb = (Array.isArray(mi.hist_fb_rate) ? mi.hist_fb_rate : []).map(v => Number(v));
+              const jj = (Array.isArray(mi.hist_jj_rate) ? mi.hist_jj_rate : []).map(v => Number(v));
+              const n = Math.min(days.length, maxLb.length, fb.length, jj.length);
+              if (n < 2) return [];
+              const clamp01 = (x) => Math.max(0, Math.min(1, x));
+              const clamp = (x, lo, hi) => Math.max(lo, Math.min(hi, x));
+              const heightScore = maxLb.slice(0, n).map(v => clamp01(clamp(v, 0, 10) / 10) * 100);
+              return Array.from({ length: n }).map((_, i) => {
+                const f = Number.isFinite(fb[i]) ? fb[i] : 0;
+                const j = Number.isFinite(jj[i]) ? jj[i] : 0;
+                const h = Number.isFinite(heightScore[i]) ? heightScore[i] : 0;
+                return clamp(0.45 * f + 0.35 * j + 0.20 * h, 0, 100);
+              });
+            },
+            buildMoodTriCards() {
+              const md = this.marketData || {};
+              const mi = md.features?.mood_inputs || {};
+              const pan = md.panorama || {};
+              const mood = md.mood || {};
+              const fear = md.fear || {};
+              const d = this.delta || {};
+
+              const fb = this.toNum(mi.fb_rate, this.toNum(pan.ratio, 0));
+              const jj = this.toNum(mi.jj_rate_adj, this.toNum(mi.jj_rate, 0));
+              const zb = this.toNum(mi.zb_rate, 0);
+              const risk = this.toNum(mood.risk, 0);
+              const heat = this.toNum(mood.heat, 0);
+              const score = (mood.score === undefined || mood.score === null) ? '' : String(mood.score);
+
+              const earnIdx = this.moodIndexSeries(mi);
+              const riskSeries = (Array.isArray(mi.hist_zt_dt_spread) ? mi.hist_zt_dt_spread : []);
+              const cashSeries = (Array.isArray(md.volume?.values) ? md.volume.values : []);
+
+              const earnBadges = [
+                this.deltaBadge(d.fb_rate, 'pp'),
+                this.deltaBadge(d.jj_rate, 'pp'),
+              ].filter(Boolean).join('');
+
+              const riskBadges = [
+                this.deltaBadge(d.dt),
+                this.deltaBadge(d.bf_count),
+              ].filter(Boolean).join('');
+
+              return [
+                {
+                  key: 'earn',
+                  cls: 'earn',
+                  title: '赚：承接强度',
+                  value: score ? `${score} 分` : `${(0.55 * fb + 0.45 * jj).toFixed(0)} 分`,
+                  valueClass: this.heatClass(heat),
+                  sub: `封板 ${fb.toFixed(1)}% · 晋级 ${jj.toFixed(1)}% · 炸板 ${zb.toFixed(1)}%`,
+                  badges: earnBadges,
+                  spark: earnIdx,
+                  sparkStroke: 'rgba(239,68,68,0.82)'
+                },
+                {
+                  key: 'risk',
+                  cls: 'risk',
+                  title: '险：亏钱扩散',
+                  value: `${risk}`,
+                  valueClass: this.riskClass(risk),
+                  sub: `跌停 ${pan.limitDown ?? '-'} · 大面 ${fear.bigFace ?? '-'} · 风险越高越谨慎`,
+                  badges: riskBadges,
+                  spark: riskSeries,
+                  sparkStroke: 'rgba(16,185,129,0.82)'
+                },
+                {
+                  key: 'cash',
+                  cls: 'cash',
+                  title: '资：量能回流',
+                  value: `${md.volume?.change ?? '-'}`,
+                  valueClass: this.signedClass(md.volume?.change),
+                  sub: `两市 ${md.volume?.total ?? '-'} · 增量 ${md.volume?.increase ?? '-'}`,
+                  badges: '',
+                  spark: cashSeries,
+                  sparkStroke: 'rgba(96,165,250,0.86)'
+                },
+              ];
+            },
+            heatmapCellClass(cell) {
+              const key = String(cell?.key || cell?.title || '');
+              if (key.includes('封板') || key.includes('fb_rate')) return 'big';
+              if (key.includes('晋级') || key.includes('jj_rate')) return 'big';
+              return '';
+            },
+            heatmapDeltaBadge(cell) {
+              const key = String(cell?.key || '');
+              const d = this.delta || {};
+              const get = (k) => (d && d[k] !== undefined && d[k] !== null) ? d[k] : null;
+              if (key === 'fb_rate') return this.deltaBadge(get('fb_rate'), 'pp');
+              if (key === 'jj_rate') return this.deltaBadge(get('jj_rate'), 'pp');
+              if (key === 'zb_rate') return this.deltaBadge(get('zb_rate'), 'pp');
+              if (key === 'dt') return this.deltaBadge(get('dt'));
+              if (key === 'bf_count') return this.deltaBadge(get('bf_count'));
+              if (key === 'max_lb') return this.deltaBadge(get('max_lb'));
+              return '';
             },
             moodGroup(label) {
               const carry = new Set(["连板晋级率","2进3成功率","3进4成功率","连板断板率"]);
@@ -3240,12 +3812,26 @@
             delta() { return this.marketData?.delta || {}; },
             prev() { return this.marketData?.prev || {}; },
             pos() { return this.positionAdvice(); },
+            hm() { return this.buildHeatmap(); },
+            moodTriCards() { return this.buildMoodTriCards(); },
           },
         }).mount('#app');
+
+        // 轻量入场动效：只对标记为 .reveal 的关键块做渐进出现（避免全站花）
+        requestAnimationFrame(() => {
+          const root = document.getElementById('app');
+          if (!root) return;
+          const els = Array.from(root.querySelectorAll('.reveal'));
+          els.forEach((el, i) => {
+            const delay = Math.min(220, i * 18);
+            setTimeout(() => el.classList.add('in'), delay);
+          });
+        });
+        return app;
       };
 
       // 核心图表实例
-      let volumeChart, heightChart, styleChart, themeTrendChart, moodKlineChart;
+      let volumeChart, heightChart, styleChart, themeTrendChart, moodKlineChart, moodRadarChart;
       let currentPage = document.body.getAttribute('data-page') || 'sentiment';
 
       /**
@@ -3266,11 +3852,13 @@
           renderVolumeTrend(marketData.volume);
           renderStyleRadar(marketData.styleRadar);
           renderMoodKline(marketData.features?.mood_inputs || {});
+          renderMoodRadar(buildMoodRadar(marketData));
         } else if (page === 'themes') {
           if (volumeChart) { volumeChart.dispose(); volumeChart = null; }
           if (heightChart) { heightChart.dispose(); heightChart = null; }
           if (styleChart) { styleChart.dispose(); styleChart = null; }
           if (moodKlineChart) { moodKlineChart.dispose(); moodKlineChart = null; }
+          if (moodRadarChart) { moodRadarChart.dispose(); moodRadarChart = null; }
           renderThemeTrend(marketData.themeTrend);
         } else if (page === 'ladder') {
           // 仅渲染天梯，其他图表实例释放（减少隐藏容器下的尺寸问题）
@@ -3278,6 +3866,7 @@
           if (volumeChart) { volumeChart.dispose(); volumeChart = null; }
           if (styleChart) { styleChart.dispose(); styleChart = null; }
           if (moodKlineChart) { moodKlineChart.dispose(); moodKlineChart = null; }
+          if (moodRadarChart) { moodRadarChart.dispose(); moodRadarChart = null; }
           renderHeightTrend(marketData.heightTrend);
           renderLadder(marketData.ladder);
         } else if (page === 'plan') {
@@ -3287,6 +3876,7 @@
           if (heightChart) { heightChart.dispose(); heightChart = null; }
           if (styleChart) { styleChart.dispose(); styleChart = null; }
           if (moodKlineChart) { moodKlineChart.dispose(); moodKlineChart = null; }
+          if (moodRadarChart) { moodRadarChart.dispose(); moodRadarChart = null; }
         }
       };
 
@@ -3404,6 +3994,9 @@
         const maxLb = (Array.isArray(mi?.hist_max_lb) ? mi.hist_max_lb : []).map(v => Number(v));
         const fb = (Array.isArray(mi?.hist_fb_rate) ? mi.hist_fb_rate : []).map(v => Number(v));
         const jj = (Array.isArray(mi?.hist_jj_rate) ? mi.hist_jj_rate : []).map(v => Number(v));
+        const spread = (Array.isArray(mi?.hist_zt_dt_spread) ? mi.hist_zt_dt_spread : []).map(v => Number(v));
+        const zt = (Array.isArray(mi?.hist_zt) ? mi.hist_zt : []).map(v => Number(v));
+        const dt = (Array.isArray(mi?.hist_dt) ? mi.hist_dt : []).map(v => Number(v));
         const n = Math.min(days.length, maxLb.length, fb.length, jj.length);
         if (n < 2) return;
 
@@ -3418,6 +4011,7 @@
           const h = Number.isFinite(heightScore[i]) ? heightScore[i] : 0;
           return clamp(0.45 * f + 0.35 * j + 0.20 * h, 0, 100);
         });
+        const idxMean = idx.reduce((a, b) => a + b, 0) / (idx.length || 1);
 
         // 生成 K线 OHLC（用“前一日指数”作为 open，用“当日指数”作为 close）
         const k = idx.map((close, i) => {
@@ -3449,29 +4043,49 @@
               msg.push(`<div style="font-size:12px;display:flex;justify-content:space-between;gap:12px"><span>高度(板)</span><span style="font-weight:900">${(maxLb[i]||0)}</span></div>`);
               msg.push(`<div style="font-size:12px;display:flex;justify-content:space-between;gap:12px"><span>封板率</span><span style="font-weight:900;color:#f59e0b">${(fb[i]||0).toFixed(1)}%</span></div>`);
               msg.push(`<div style="font-size:12px;display:flex;justify-content:space-between;gap:12px"><span>晋级率</span><span style="font-weight:900;color:#ef4444">${(jj[i]||0).toFixed(1)}%</span></div>`);
+              if (i < spread.length) {
+                const sp = Number.isFinite(spread[i]) ? spread[i] : 0;
+                msg.push(`<div style="font-size:12px;display:flex;justify-content:space-between;gap:12px"><span>涨停-跌停</span><span style="font-weight:900;${sp>=0?'color:#ef4444':'color:#10b981'}">${sp>=0?'+':''}${sp}</span></div>`);
+                if (i < zt.length && i < dt.length) {
+                  msg.push(`<div style="font-size:12px;opacity:0.9">涨停 ${zt[i]||0} · 跌停 ${dt[i]||0}</div>`);
+                }
+              }
               return msg.join('');
             }
           },
           legend: {
-            data: ['情绪K线', '封板率', '晋级率', '高度(归一)'],
+            data: ['情绪K线', '情绪指数', '封板率', '晋级率', '高度(归一)', '涨跌停差'],
             bottom: 0,
             textStyle: { color: 'var(--text-muted)', fontWeight: 700, fontSize: 11 },
             icon: 'circle'
           },
-          grid: { top: '10%', left: '3%', right: '5%', bottom: '20%', containLabel: true },
+          grid: { top: '10%', left: '3%', right: '5%', bottom: '24%', containLabel: true },
           xAxis: {
             type: 'category',
             data: days.slice(0, n),
             axisLine: { lineStyle: { color: 'var(--text-muted)' } },
             axisLabel: { color: 'var(--text-muted)', fontWeight: 700, fontSize: 10 }
           },
-          yAxis: {
-            type: 'value',
-            min: 0,
-            max: 100,
-            splitLine: { lineStyle: { type: 'dashed', color: 'var(--border)' } },
-            axisLabel: { color: 'var(--text-muted)', fontWeight: 700, fontSize: 10 }
-          },
+          yAxis: [
+            {
+              type: 'value',
+              min: 0,
+              max: 100,
+              splitLine: { lineStyle: { type: 'dashed', color: 'var(--border)' } },
+              axisLabel: { color: 'var(--text-muted)', fontWeight: 700, fontSize: 10 }
+            },
+            {
+              type: 'value',
+              min: (v) => Math.min(-20, (v.min || 0) - 6),
+              max: (v) => Math.max(20, (v.max || 0) + 6),
+              splitLine: { show: false },
+              axisLabel: { color: 'var(--text-muted)', fontWeight: 650, fontSize: 10 },
+            }
+          ],
+          dataZoom: [
+            { type: 'inside', xAxisIndex: 0, start: 0, end: 100 },
+            { type: 'slider', xAxisIndex: 0, height: 16, bottom: 8, start: 0, end: 100 }
+          ],
           series: [
             {
               name: '情绪K线',
@@ -3482,6 +4096,23 @@
                 color0: '#10b981',
                 borderColor: '#ef4444',
                 borderColor0: '#10b981'
+              }
+            },
+            {
+              name: '情绪指数',
+              type: 'line',
+              data: idx.slice(0, n),
+              smooth: true,
+              showSymbol: false,
+              lineStyle: { width: 2.2, color: '#60a5fa' },
+              markLine: {
+                symbol: 'none',
+                label: { color: 'var(--text-muted)', fontWeight: 800, fontSize: 10 },
+                lineStyle: { color: 'rgba(148,163,184,0.55)', type: 'dashed' },
+                data: [
+                  { yAxis: 50, name: '中性线' },
+                  { yAxis: Number.isFinite(idxMean) ? Number(idxMean.toFixed(1)) : 50, name: '均值' }
+                ]
               }
             },
             {
@@ -3507,6 +4138,19 @@
               smooth: true,
               showSymbol: false,
               lineStyle: { width: 2.2, color: '#8b5cf6' }
+            },
+            {
+              name: '涨跌停差',
+              type: 'bar',
+              yAxisIndex: 1,
+              data: Array.from({ length: n }).map((_, i) => {
+                const v = i < spread.length ? spread[i] : 0;
+                return {
+                  value: v,
+                  itemStyle: { color: (v >= 0) ? 'rgba(239,68,68,0.55)' : 'rgba(16,185,129,0.55)', borderRadius: [4,4,4,4] }
+                };
+              }),
+              barWidth: 10
             }
           ]
         };
@@ -3689,6 +4333,106 @@
           ]
         };
         styleChart.setOption(option);
+      };
+
+      /**
+       * 前端派生：情绪六维雷达（不改后端数据结构）
+       * - 数值统一映射到 0~100，越大越“强/稳/可交易”
+       * - “恐慌程度”使用 (100 - risk) 表示“冷静度”，低于 40 提示风险
+       */
+      const buildMoodRadar = (md) => {
+        md = md || {};
+        const mi = md.features?.mood_inputs || {};
+        const si = md.features?.style_inputs || {};
+        const pan = md.panorama || {};
+        const mood = md.mood || {};
+
+        const toNum = (v, d=0) => {
+          try{
+            if (v === undefined || v === null || v === '') return d;
+            if (typeof v === 'string') return Number(String(v).replace('%','').replace('亿','').trim()) || d;
+            const n = Number(v);
+            return Number.isFinite(n) ? n : d;
+          }catch(e){ return d; }
+        };
+        const clamp = (x) => Math.max(0, Math.min(100, x));
+
+        const fb = toNum(mi.fb_rate, toNum(pan.ratio, 0));                 // 0~100
+        const jj = toNum(mi.jj_rate_adj, toNum(mi.jj_rate, 0));           // 0~100
+        const heat = toNum(mood.heat, 0);                                 // 0~100
+        const risk = toNum(mood.risk, 0);                                 // 0~100（越高越危险）
+        const calm = clamp(100 - risk);
+        const top3 = clamp(toNum(si.top3_theme_ratio, 0));                // 0~100
+        const integ = clamp(toNum(mi.tier_integrity_score, 0));            // 0~100
+        const maxLb = clamp(toNum(si.max_lb, toNum(mi.max_lb, 0)) * 10);   // 0~10 -> 0~100
+
+        // 维度定义（尽量贴合你文档里的语义）
+        const indicators = ['价格强度', '资金认可', '地位稳固', '板块合力', '赚钱效应', '恐慌程度'];
+        const values = [
+          clamp(maxLb),                         // 价格强度：空间高度代理
+          clamp((heat * 0.55 + toNum(md.volume?.change, 0) * 2.5 + 40)),   // 资金认可：热度 + 量能变化（粗略映射）
+          clamp((fb * 0.55 + jj * 0.45)),       // 地位稳固：封板/晋级
+          clamp((top3 * 0.55 + integ * 0.45)),  // 板块合力：主线集中度 + 结构完整度
+          clamp((toNum(mood.score, 0) * 0.7 + heat * 0.3)),               // 赚钱效应：score + heat
+          clamp(calm),                           // 恐慌程度：冷静度
+        ].map(v => Math.round(v));
+
+        const highlights = [];
+        values.forEach((v, idx) => {
+          if (v < 40) highlights.push({ index: idx, reason: `${indicators[idx]}偏弱` });
+        });
+        return { indicators, values, highlights };
+      };
+
+      const renderMoodRadar = (data) => {
+        const chartDom = document.getElementById('mood-radar-echart');
+        if (!chartDom) return;
+        data = data || {};
+        if (!Array.isArray(data.indicators) || !Array.isArray(data.values) || data.indicators.length === 0) return;
+        if (moodRadarChart) moodRadarChart.dispose();
+        moodRadarChart = echarts.init(chartDom, document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : null);
+
+        const css = getComputedStyle(document.documentElement);
+        const textSecondary = (css.getPropertyValue('--text-secondary') || '#475569').trim();
+        const border = (css.getPropertyValue('--border') || 'rgba(148, 163, 184, 0.18)').trim();
+        const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+        const color = (css.getPropertyValue('--danger') || '#ef4444').trim();
+
+        const option = {
+          backgroundColor: 'transparent',
+          tooltip: { trigger: 'item' },
+          radar: {
+            radius: '62%',
+            splitNumber: 5,
+            indicator: data.indicators.map(name => ({ name, max: 100 })),
+            name: { color: textSecondary, fontSize: 12, fontWeight: 900 },
+            splitArea: {
+              areaStyle: {
+                color: isDark
+                  ? ['rgba(255, 255, 255, 0.02)', 'rgba(255, 255, 255, 0.04)']
+                  : ['rgba(239, 68, 68, 0.03)', 'rgba(239, 68, 68, 0.06)']
+              }
+            },
+            splitLine: { lineStyle: { color: border } },
+            axisLine: { lineStyle: { color: border } }
+          },
+          series: [
+            {
+              name: '情绪六维',
+              type: 'radar',
+              data: [
+                {
+                  value: data.values,
+                  areaStyle: { color: echarts.color.modifyAlpha(color, 0.20) },
+                  lineStyle: { color: color, width: 2.6 },
+                  itemStyle: { color: color },
+                  symbolSize: 6
+                }
+              ]
+            }
+          ]
+        };
+        moodRadarChart.setOption(option);
       };
 
       /**
