@@ -5,24 +5,25 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>A股收盘简报 | __REPORT_DATE__</title>
     <!-- 线上发布：使用 CDN 资源（无需 vendor 目录） -->
-    <script src="https://fastly.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
-    <script src="https://fastly.jsdelivr.net/npm/vue@3/dist/vue.global.prod.js"></script>
+    <script src="https://fastly.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"
+            onerror="this.onerror=null;this.src='https://cdnjs.cloudflare.com/ajax/libs/echarts/5.4.3/echarts.min.js'"></script>
+    <script src="https://fastly.jsdelivr.net/npm/vue@3/dist/vue.global.prod.js"
+            onerror="this.onerror=null;this.src='https://unpkg.com/vue@3/dist/vue.global.prod.js'"></script>
     <script>
-      // 预览兜底：某些“右侧预览/内置预览”会屏蔽脚本执行，导致 Vue 无法挂载。
-      // 我们用一个 very-early 标记，让 v-cloak 仅在“脚本可运行”时才生效，避免预览里整页空白。
-      document.documentElement.classList.add('js');
-      // 另外：如果脚本能运行但 Vue/CDN 仍加载失败，则 2 秒后解除 v-cloak，便于排查。
-      window.addEventListener('DOMContentLoaded', () => {
-        setTimeout(() => {
-          const app = document.getElementById('app');
-          if (app && app.hasAttribute('v-cloak') && !window.Vue) app.removeAttribute('v-cloak');
-        }, 2000);
-      });
+      // 预览兜底：
+      // 一些内置预览/文件预览会限制脚本或外链资源，导致 Vue 无法挂载。
+      // 为避免“整页空白”，我们不再依赖 v-cloak 隐藏页面，只在 Vue 缺失时主动移除 v-cloak，保证内容可见。
+      const uncloaker = () => {
+        const app = document.getElementById('app');
+        if (app && app.hasAttribute('v-cloak') && !window.Vue) app.removeAttribute('v-cloak');
+      };
+      setTimeout(uncloaker, 800);
+      window.addEventListener('DOMContentLoaded', () => setTimeout(uncloaker, 800));
+      window.addEventListener('load', () => setTimeout(uncloaker, 800));
     </script>
     <style>
-      /* v-cloak 只在“脚本可运行（.js class exists）”时隐藏，避免某些预览面板因禁用脚本导致整页空白 */
+      /* 不使用 v-cloak 隐藏，避免在受限预览环境出现“整页空白” */
       [v-cloak] { display: block; }
-      .js [v-cloak] { display: none; }
       :root {
         --primary: #2563eb;
         --success: #10b981;
@@ -60,6 +61,24 @@
         --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.04);
         --shadow-md: 0 4px 20px rgba(0, 0, 0, 0.05);
         --shadow-lg: 0 10px 40px rgba(0, 0, 0, 0.08);
+
+        /* Design System (Impeccable): spacing + type scale (mobile-first) */
+        --space-1: 4px;
+        --space-2: 8px;
+        --space-3: 12px;
+        --space-4: 16px;
+        --space-5: 20px;
+        --space-6: 28px;
+
+        --type-xs: 11px;
+        --type-sm: 12px;
+        --type-md: 13px;
+        --type-lg: 15px;
+        --type-xl: 18px;
+        --type-2xl: 22px;
+
+        --lh-tight: 1.25;
+        --lh-body: 1.6;
       }
 
       [data-theme="dark"] {
@@ -138,7 +157,8 @@
         font-family: -apple-system, "SF Pro Text", "Helvetica Neue", "PingFang SC", "Microsoft YaHei", sans-serif;
         background: var(--bg-base);
         color: var(--text-primary);
-        line-height: 1.6;
+        line-height: var(--lh-body);
+        font-size: var(--type-md);
         padding: 24px 12px 60px;
         transition:
           background 0.3s,
@@ -228,10 +248,10 @@
         gap: 8px;
         background: rgba(255, 255, 255, 0.18);
         backdrop-filter: blur(10px);
-        padding: 6px 16px;
+        padding: 6px 14px;
         border-radius: 30px;
-        font-size: 13px;
-        font-weight: 600;
+        font-size: clamp(11px, 1.4vw, 13px);
+        font-weight: 750;
         margin-bottom: 12px;
       }
       .cycle-dot {
@@ -242,8 +262,8 @@
         animation: pulse 2s infinite;
       }
       @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
-      .hero-date { font-size: 26px; font-weight: 800; letter-spacing: 0.5px; }
-      .hero-subtitle { opacity: 0.8; font-size: 13px; margin-top: 6px; font-weight: 500; }
+      .hero-date { font-size: clamp(18px, 2.4vw, 28px); font-weight: 950; letter-spacing: 0.2px; }
+      .hero-subtitle { opacity: 0.88; font-size: clamp(11px, 1.6vw, 13px); margin-top: 6px; font-weight: 650; }
 
       /* 指数区（品牌化/克制）：单条“Ticker Strip”，不再做 3 张分离卡片 */
       .index-strip{
@@ -309,24 +329,27 @@
       .card {
         background: var(--bg-card);
         border-radius: var(--radius-lg);
-        padding: 24px;
-        margin-bottom: 18px;
+        padding: clamp(16px, 2.2vw, 22px);
+        margin-bottom: 16px;
         box-shadow: var(--shadow-md);
         border: 1px solid var(--border);
         transition: background 0.3s, border-color 0.3s;
       }
-      .card-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+      .card-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
       .card-title {
         display: flex; align-items: center; gap: 10px;
-        font-size: 17px; font-weight: 800; color: var(--text-primary);
-        margin-bottom: 10px;
+        font-size: var(--type-xl);
+        font-weight: 900;
+        color: var(--text-primary);
+        margin-bottom: 8px;
+        letter-spacing: 0.2px;
       }
       .card-title::before {
         content: ""; display: inline-block;
-        width: 4px; height: 20px;
+        width: 3px; height: 18px;
         background: var(--primary); border-radius: 2px;
       }
-      .card-badge { font-size: 11px; padding: 4px 10px; border-radius: 20px; font-weight: 700; background: var(--bg-elevated); color: var(--text-muted); }
+      .card-badge { font-size: 11px; padding: 4px 10px; border-radius: 999px; font-weight: 800; background: var(--bg-elevated); color: var(--text-muted); }
 
       /* Panorama */
       .panorama-grid {
@@ -604,8 +627,8 @@
       /* Fear Grid */
       .fear-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 16px; }
       @media (max-width: 500px) { .fear-grid { grid-template-columns: 1fr; } }
-      .fear-card { background: var(--bg-elevated); border-radius: var(--radius-md); padding: 14px 10px; text-align: center; border: 1px solid var(--border); transition: all 0.2s; }
-      .fear-card:hover { border-color: var(--primary); transform: translateY(-1px); }
+      .fear-card { background: var(--bg-elevated); border-radius: var(--radius-md); padding: 14px 10px; text-align: center; border: 1px solid var(--border); transition: background 0.18s ease, border-color 0.18s ease; }
+      .fear-card:hover { background: rgba(255,255,255,0.04); border-color: rgba(148,163,184,0.32); }
       body[data-market-tone="bull"] .fear-card { box-shadow: inset 0 1px 0 rgba(255,255,255,0.25), 0 0 0 1px rgba(249, 115, 22, 0.05); }
       body[data-market-tone="bear"] .fear-card { box-shadow: inset 0 1px 0 rgba(255,255,255,0.18), 0 0 0 1px rgba(14, 165, 233, 0.05); }
       .fear-val { font-size: 20px; font-weight: 800; margin-bottom: 4px; }
@@ -613,12 +636,36 @@
       .fear-note { font-size: 10px; color: var(--text-muted); margin-top: 4px; line-height: 1.3; }
 
       /* Ladder Table */
-      .ladder-table { width: 100%; border-collapse: separate; border-spacing: 0 6px; font-size: 13.5px; }
-      .ladder-table th { padding: 10px 12px; text-align: center; font-weight: 700; color: var(--text-muted); font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; }
-      .ladder-table td { padding: 12px 12px; background: var(--bg-elevated); text-align: center; vertical-align: middle; transition: background 0.2s; }
-      .ladder-table tr:hover td { background: var(--bg-card); }
-      .ladder-table tr td:first-child { border-radius: var(--radius-sm) 0 0 var(--radius-sm); }
-      .ladder-table tr td:last-child { border-radius: 0 var(--radius-sm) var(--radius-sm) 0; }
+      .ladder-table{
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+        font-size: 13px;
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        overflow: hidden;
+        background: rgba(255,255,255,0.03);
+      }
+      .ladder-table th{
+        padding: 10px 12px;
+        text-align: center;
+        font-weight: 900;
+        color: var(--text-muted);
+        font-size: 11px;
+        letter-spacing: 0.25px;
+        background: color-mix(in oklab, var(--bg-elevated) 92%, var(--theme-soft) 8%);
+        border-bottom: 1px solid var(--border);
+      }
+      .ladder-table td{
+        padding: 11px 12px;
+        background: transparent;
+        text-align: center;
+        vertical-align: middle;
+        border-bottom: 1px solid color-mix(in oklab, var(--border) 82%, transparent);
+        transition: background 0.18s ease;
+      }
+      .ladder-table tbody tr:last-child td{ border-bottom: none; }
+      .ladder-table tbody tr:hover td{ background: rgba(255,255,255,0.05); }
       .ladder-badge { display: inline-block; padding: 4px 12px; border-radius: 8px; font-size: 12px; font-weight: 800; min-width: 45px; }
       .badge-6 { background: linear-gradient(135deg, #fee2e2, #fecaca); color: #b91c1c; }
       .badge-5 { background: linear-gradient(135deg, #fee2e2, #fecaca); color: #dc2626; }
@@ -640,11 +687,11 @@
         grid-template-columns: 128px 1fr;
         gap: 12px;
         align-items: start;
-        background: linear-gradient(135deg, var(--bg-elevated), rgba(255,255,255,0.04));
+        background: var(--bg-elevated);
         border: 1px solid var(--border);
         border-radius: var(--radius-md);
         padding: 12px 12px;
-        box-shadow: var(--shadow-sm);
+        box-shadow: none;
       }
       @media (max-width: 600px){
         .ladder-row { grid-template-columns: 108px 1fr; gap: 10px; padding: 10px 10px; }
@@ -747,50 +794,37 @@
       [data-theme="dark"] .tag-fire { background: rgba(239, 68, 68, 0.2); color: #fca5a5; }
 
       /* Sector List */
-      .sector-list { list-style: none; }
-      /* 板块卡片：更像“榜单条目”，提高信息密度与可读性 */
-      .sector-item {
+      .sector-list{
+        list-style: none;
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        overflow: hidden;
+        background: rgba(255,255,255,0.03);
+      }
+      /* 板块榜单：克制“条目列表”，不用卡片套卡片 */
+      .sector-item{
         display: flex;
         align-items: center;
         justify-content: space-between;
         gap: 12px;
         padding: 12px 14px;
-        border-radius: 16px;
-        margin-bottom: 10px;
-        background: rgba(255,255,255,0.55);
-        border: 1px solid rgba(148,163,184,0.20);
-        transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
-        position: relative;
-        overflow: hidden;
+        margin: 0;
+        background: transparent;
+        border: none;
+        border-bottom: 1px solid color-mix(in oklab, var(--border) 82%, transparent);
+        transition: background 0.18s ease;
       }
-      [data-theme="dark"] .sector-item{
-        background: rgba(15,23,42,0.55);
-        border-color: rgba(148,163,184,0.22);
-      }
-      .sector-item::before{
-        content:"";
-        position:absolute;
-        inset:0;
-        background:
-          radial-gradient(200px 90px at 12% 30%, rgba(255,255,255,0.18), rgba(255,255,255,0.00) 60%),
-          linear-gradient(135deg, rgba(255,255,255,0.06), rgba(255,255,255,0.00));
-        pointer-events:none;
-      }
-      [data-theme="dark"] .sector-item::before{
-        background:
-          radial-gradient(200px 90px at 12% 30%, rgba(255,255,255,0.06), rgba(255,255,255,0.00) 60%),
-          linear-gradient(135deg, rgba(255,255,255,0.03), rgba(255,255,255,0.00));
-      }
-      .sector-item:hover { transform: translateY(-2px); border-color: rgba(37,99,235,0.26); box-shadow: 0 16px 40px rgba(2,6,23,0.10); }
+      .sector-item:last-child{ border-bottom: none; }
+      .sector-item:hover { background: rgba(255,255,255,0.05); }
       .sector-rank { width: 28px; height: 28px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 900; color: #fff; flex-shrink: 0; }
       .rank-1 { background: linear-gradient(135deg, #fbbf24, #f59e0b); }
       .rank-2 { background: linear-gradient(135deg, #94a3b8, #64748b); }
       .rank-3 { background: linear-gradient(135deg, #d97706, #b45309); }
       .rank-n { background: var(--bg-card); color: var(--text-muted); }
       [data-theme="dark"] .rank-n { background: rgba(148, 163, 184, 0.2); }
-      .sector-info { flex: 1; margin-left: 14px; }
+      .sector-info { flex: 1; margin-left: 12px; min-width: 0; }
       .sector-name { font-weight: 700; font-size: 14px; color: var(--text-primary); }
-      .sector-detail { font-size: 11px; color: var(--text-muted); margin-top: 2px; font-weight: 500; }
+      .sector-detail { font-size: 11px; color: var(--text-muted); margin-top: 2px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
       .sector-pct { font-size: 15px; font-weight: 800; min-width: 55px; text-align: right; }
 
       /* 涨停个股分析 */
@@ -1158,8 +1192,38 @@
         color: var(--text-secondary);
       }
 
-      /* Section Header */
-      .section-header { font-size: 12px; font-weight: 800; color: var(--text-muted); margin: 16px 0 10px; padding-left: 10px; border-left: 3px solid var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
+      /* Volume strip：用可扫读的 3 个 pill 替代固定写死的“资金抱团度” */
+      .vol-strip{
+        margin: 10px 0 4px;
+        display:flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+      .vol-pill{
+        display:inline-flex;
+        align-items:center;
+        gap: 8px;
+        padding: 6px 10px;
+        border-radius: 999px;
+        border: 1px solid rgba(148,163,184,0.22);
+        background: rgba(255,255,255,0.04);
+        font-size: 12px;
+        font-weight: 850;
+        color: var(--text-primary);
+        white-space: nowrap;
+      }
+      [data-theme="dark"] .vol-pill{ background: rgba(15,23,42,0.35); border-color: rgba(148,163,184,0.18); }
+
+      /* Section Header（克制专业：不强制 uppercase，强调层级与节奏） */
+      .section-header {
+        font-size: 12px;
+        font-weight: 950;
+        color: var(--text-muted);
+        margin: 16px 0 10px;
+        padding-left: 10px;
+        border-left: 3px solid rgba(148,163,184,0.42);
+        letter-spacing: 0.2px;
+      }
       .hero-note { margin-top: 8px; font-size: 12px; color: rgba(255,255,255,0.86); font-weight: 600; }
       .tier-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; }
       .tier-card { background: var(--bg-elevated); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 14px 16px; }
@@ -1178,31 +1242,38 @@
         top: 10px;
         z-index: 10;
         display: flex;
-        gap: 10px;
+        gap: 6px;
         margin: 14px 0 16px;
-        padding: 10px;
-        background: rgba(255, 255, 255, 0.78);
-        border: 1px solid var(--border);
-        border-radius: var(--radius-lg);
+        padding: 6px;
+        background: color-mix(in oklab, var(--bg-card) 72%, var(--theme-soft) 28%);
+        border: 1px solid color-mix(in oklab, var(--border) 70%, var(--theme-glow) 30%);
+        border-radius: 999px;
         backdrop-filter: blur(12px);
         box-shadow: var(--shadow-sm);
       }
-      [data-theme="dark"] .tabbar { background: rgba(30, 41, 59, 0.55); }
+      [data-theme="dark"] .tabbar { background: rgba(30, 41, 59, 0.62); }
       .tab-btn {
         flex: 1;
         appearance: none;
-        border: 1px solid var(--border);
-        background: var(--bg-card);
+        border: 1px solid transparent;
+        background: transparent;
         color: var(--text-secondary);
         border-radius: 999px;
         padding: 10px 12px;
-        font-size: 13px;
-        font-weight: 800;
+        font-size: 12.5px;
+        font-weight: 900;
         cursor: pointer;
-        transition: all 0.18s ease;
+        transition: background 0.18s ease, transform 0.18s ease, color 0.18s ease;
       }
-      .tab-btn:hover { transform: translateY(-1px); border-color: rgba(37, 99, 235, 0.35); }
-      .tab-btn.active { color: var(--text-primary); border-color: rgba(37, 99, 235, 0.55); box-shadow: 0 0 0 3px rgba(37,99,235,0.12); }
+      .tab-btn:hover { background: rgba(255,255,255,0.18); }
+      [data-theme="dark"] .tab-btn:hover { background: rgba(148,163,184,0.12); }
+      .tab-btn.active {
+        color: var(--text-primary);
+        background: var(--bg-card);
+        border-color: rgba(148,163,184,0.18);
+        box-shadow: 0 10px 22px rgba(2,6,23,0.10);
+        transform: translateY(-0.5px);
+      }
 
       /* Page filtering：按 data-page 显示/隐藏模块卡片 */
       .card[data-page] { display: none; }
@@ -1821,24 +1892,10 @@
           <div id="volume-trend-echart" style="width: 100%; height: 100%;"></div>
         </div>
 
-        <div class="section-header">资金抱团度</div>
-        <div class="fear-grid">
-
-          <div class="fear-card">
-            <div class="fear-val blue-text">1.5%</div>
-            <div class="fear-label">TOP10 成交集中度</div>
-            <div class="fear-note">成交额前十占两市总成交比例</div>
-          </div>
-          <div class="fear-card">
-            <div class="fear-val red-text">3.5%</div>
-            <div class="fear-label">涨停池吸金占比</div>
-            <div class="fear-note">涨停股成交额占两市总成交比例</div>
-          </div>
-          <div class="fear-card">
-            <div class="fear-val purple-text">分散轮动</div>
-            <div class="fear-label">资金风格</div>
-            <div class="fear-note">成交额 TOP10 占两市 1.5% ，涨停池吸金占比 3.5% 。</div>
-          </div>
+        <div class="vol-strip">
+          <div class="vol-pill">两市成交 <strong>{{ marketData.volume?.total ?? '-' }}</strong></div>
+          <div class="vol-pill">增量 <strong>{{ marketData.volume?.increase ?? '-' }}</strong></div>
+          <div class="vol-pill">较昨 <span :class="signedClass(marketData.volume?.change)"><strong>{{ marketData.volume?.change ?? '-' }}</strong></span></div>
         </div>
 
         <div class="summary-box">
