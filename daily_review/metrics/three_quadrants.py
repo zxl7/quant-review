@@ -109,6 +109,73 @@ def _calc_volume_size(md: dict[str, Any]) -> float:
     return max(0.0, min(1.0, (v - lo) / span))
 
 
+def _analyze_trend(history: List[Dict[str, Any]]) -> Dict[str, Any]:
+    """
+    从历史轨迹中分析趋势方向。
+
+    返回：
+    - supportTrend: 承接趋势 ("up"/"down"/"flat")
+    - consistencyTrend: 一致性趋势
+    - riskTrend: 风险趋势
+    - verdict: 一句话总结
+    - arrows: 各轴的箭头符号
+    """
+    if len(history) < 3:
+        return {
+            "supportTrend": "flat", "consistencyTrend": "flat", "riskTrend": "flat",
+            "verdict": "数据不足，需积累更多交易日",
+            "arrows": {"x": "→", "y": "→", "z": "→"},
+        }
+
+    # 取最近3天的变化方向
+    recent = history[-3:]
+    
+    def _axis_trend(key: str) -> str:
+        vals = [(h.get(key)) for h in recent if h.get(key) is not None]
+        if len(vals) < 2:
+            return "flat"
+        # 简单判断：最近值 vs 最早值
+        if vals[-1] > vals[0] * 1.03:
+            return "up"
+        elif vals[-1] < vals[0] * 0.97:
+            return "down"
+        return "flat"
+
+    s_trend = _axis_trend("x")   # 承接
+    c_trend = _axis_trend("y")   # 一致性
+    r_trend = _axis_trend("z")   # 风险
+
+    arrow_map = {"up": "↗", "down": "↘", "flat": "→"}
+    arrows = {"x": arrow_map[s_trend], "y": arrow_map[c_trend], "z": arrow_map[r_trend]}
+
+    # 综合判定
+    parts = []
+    if s_trend == "up":
+        parts.append("承接在变好")
+    elif s_trend == "down":
+        parts.append("承接在走弱")
+
+    if c_trend == "up":
+        parts.append("一致性增强")
+    elif c_trend == "down":
+        parts.append("一致性下降")
+
+    if r_trend == "up":
+        parts.append("⚠️风险上升")
+    elif r_trend == "down":
+        parts.append("风险下降")
+
+    verdict = "，".join(parts) if parts else "整体平稳"
+
+    return {
+        "supportTrend": s_trend,
+        "consistencyTrend": c_trend,
+        "riskTrend": r_trend,
+        "verdict": verdict,
+        "arrows": arrows,
+    }
+
+
 def build_three_quadrants(market_data: dict[str, Any]) -> dict[str, Any]:
     md = market_data or {}
     mi = (md.get("features") or {}).get("mood_inputs") or {}
@@ -161,13 +228,6 @@ def build_three_quadrants(market_data: dict[str, Any]) -> dict[str, Any]:
         "history": history,
         "bubble": {"size": round(_calc_volume_size(md), 4)},
         "interpretation": {},
-        "meta": {
-            "precision": "strict",
-            "notes": [
-                "一致性=早封率（ztgc.fbt 9:30~10:00占比）",
-                "风险轴=高位>=5板涨停股中发生炸板(zbc>0)比例；zbgc 缺连板高度，无法精确分层高位未回封炸板率，已在 components 中提供 zbgcRatio 作为系统性分歧补充。",
-            ],
-        },
     }
 
     # quadrant & interpretation（可复算的规则）
@@ -187,5 +247,18 @@ def build_three_quadrants(market_data: dict[str, Any]) -> dict[str, Any]:
 
     out["position"]["quadrant"] = zone
     out["interpretation"] = {"zone": zone, "action": action, "warning": warn}
+
+    # 趋势分析：从历史轨迹判断各轴方向
+    trend = _analyze_trend(history)
+    out["trend"] = trend
+
+    # 简化 meta（去掉技术术语）
+    out["meta"] = {
+        "precision": "strict",
+        "notes": [
+            f"X轴=承接(晋级率){trend['arrows']['x']}  Y轴=一致性(早封率){trend['arrows']['y']}  Z轴=风险(高位炸板){trend['arrows']['z']}",
+            f"趋势总结: {trend['verdict']}",
+        ],
+    }
     return out
 

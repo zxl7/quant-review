@@ -10,7 +10,7 @@
 3) 替换 __REPORT_DATE__ / __DATE_NOTE__ 等占位符
 
 说明：
-- 该脚本只负责“渲染”，不负责任何数据抓取与指标计算。
+- 该脚本只负责「渲染」，不负责任何数据抓取与指标计算。
 - 这样可以保证原始 HTML/CSS/JS 结构不变，只替换数据，从而 1:1 保持视觉效果。
 """
 
@@ -73,7 +73,7 @@ def build_action_guide_v2(market_data: Dict[str, Any]) -> Dict[str, Any]:
     def pick_theme() -> Dict[str, Any]:
         """
         主线识别（复盘版）：
-        - 优先基于 strengthRows 的“净强-风险”来选主线（更稳，减少“涨停数虚胖”）
+        - 优先基于 strengthRows 的「净强-风险」来选主线（更稳，减少「涨停数虚胖」）
         - examples 优先从当日涨停池里抽样，确保举例与主线一致（避免不精准）
         """
         tp = market_data.get("themePanels") or {}
@@ -83,7 +83,7 @@ def build_action_guide_v2(market_data: Dict[str, Any]) -> Dict[str, Any]:
         for r in rows:
             net = to_num(r.get("net"), 0)
             risk = to_num(r.get("risk"), 0)
-            # 经验权重：净强优先，风险惩罚；避免“高净强但风险爆表”的误判
+            # 经验权重：净强优先，风险惩罚；避免「高净强但风险爆表」的误判
             score = net - risk * 0.6
             if score > best_score:
                 best_score = score
@@ -160,7 +160,7 @@ def build_action_guide_v2(market_data: Dict[str, Any]) -> Dict[str, Any]:
     mi = ((market_data.get("features") or {}).get("mood_inputs") or {})
     delta = market_data.get("delta") or {}
 
-    # 高位断板（断板最高板）——用于同步到“明日指南”
+    # 高位断板（断板最高板）——用于同步到「明日指南」
     top_duanban_name = str(mi.get("top_duanban_name") or "")
     top_duanban_lb = int(to_num(mi.get("top_duanban_lb"), 0) or 0)
     top_duanban_is_high = int(to_num(mi.get("top_duanban_is_high"), 0) or 0) == 1
@@ -235,7 +235,7 @@ def build_action_guide_v2(market_data: Dict[str, Any]) -> Dict[str, Any]:
             return f"{sign}{n:.{digits}f}{unit}"
         return f"{sign}{int(n) if float(n).is_integer() else n}{unit}"
 
-    # 盘面基调（给行动指南一个“像复盘”的总起）
+    # 盘面基调（给行动指南一个「像复盘」的总起）
     if stage_type == "good":
         regime = "强势偏高潮"
         verdict_type = "good"
@@ -251,29 +251,29 @@ def build_action_guide_v2(market_data: Dict[str, Any]) -> Dict[str, Any]:
         stance = "进攻"
     elif risk >= 60 or loss >= 10 or fb <= 55:
         stance = "防守"
-    # 若 moodStage 已给出“周期建议立场”，优先用它（更贴近你的短线框架）
+    # 若 moodStage 已给出「周期建议立场」，优先用它（更贴近你的短线框架）
     if stance_from_stage:
         stance = stance_from_stage
 
     # 模式选择（4态）：接力 / 套利 / 低位试错 / 休息
-    # 你的要求：默认偏“进攻”，只有出现明确的风险/失效信号才降级
+    # 你的要求：默认偏「进攻」，只有出现明确的风险/失效信号才降级
     dzb = to_num(delta.get("zb_rate"), 0) if delta else 0
     dloss = to_num(delta.get("loss"), 0) if delta else 0
     risk_trend_up = (dzb >= 1.0) or (dloss >= 2)
     strong_divergence = (zbc_ge3_ratio >= 18) or (avg_zbc >= 1.8)
 
     mode = "接力"  # 默认进攻（旧逻辑）
-    # 1) 先判“必须休息”的情形
+    # 1) 先判「必须休息」的情形
     if stage_type == "fire" or stance == "防守" or overlap_score >= 75 or risk >= 70 or loss >= 15:
         mode = "休息"
-    # 2) 再判“套利态”：强分歧或风险趋势上行，但还没到必须休息
+    # 2) 再判「套利态」：强分歧或风险趋势上行，但还没到必须休息
     elif strong_divergence or risk_trend_up or theme_risk >= 6:
         mode = "套利"
-    # 3) 最后判“低位试错”：主线净强不足/承接不足时，别硬接高位
+    # 3) 最后判「低位试错」：主线净强不足/承接不足时，别硬接高位
     elif theme_net < 9 or fb < 55 or jj < 25:
         mode = "低位试错"
 
-    # 周期模板模式（新逻辑）：让“阶段→策略”更直观
+    # 周期模板模式（新逻辑）：让「阶段→策略」更直观
     def _short_mode(m: str) -> str:
         if not m:
             return ""
@@ -304,7 +304,7 @@ def build_action_guide_v2(market_data: Dict[str, Any]) -> Dict[str, Any]:
 
     def desc_short(s: str, *, limit: int = 60) -> str:
         """
-        行动指南压缩版描述：用于“单行展示”，避免占用过多高度。
+        行动指南压缩版描述：用于「单行展示」，避免占用过多高度。
         - 保留数字与关键字段
         - 去掉重复标签/括号注释
         """
@@ -329,10 +329,10 @@ def build_action_guide_v2(market_data: Dict[str, Any]) -> Dict[str, Any]:
     leader_name = str(leader.get("names") or "龙头")
     leader_b = leader.get("maxB") or "-"
 
-    # 观察清单：你明确不需要（容易产生“滞后/空泛”观感），保持为空
+    # 观察清单：你明确不需要（容易产生「滞后/空泛」观感），保持为空
     observe: list[Dict[str, Any]] = []
 
-    # 开盘2条：纯数据 + 阈值（不写“建议/观察/优先”这类空话）
+    # 开盘2条：纯数据 + 阈值（不写「建议/观察/优先」这类空话）
     confirm = [
         {
             "dot": "dot-safe",
@@ -387,7 +387,7 @@ def build_action_guide_v2(market_data: Dict[str, Any]) -> Dict[str, Any]:
         },
     ]
 
-    # 若出现“高位断板”，把它作为明日盯盘重点：观察断板龙头的反馈是否压制次高板/梯队
+    # 若出现「高位断板」，把它作为明日盯盘重点：观察断板龙头的反馈是否压制次高板/梯队
     if top_duanban_is_high and top_duanban_name and top_duanban_lb >= 6:
         retreat[1]["title"] = "盯盘红灯② 高位断板反馈"
         retreat[1]["desc"] = bar(
@@ -397,7 +397,7 @@ def build_action_guide_v2(market_data: Dict[str, Any]) -> Dict[str, Any]:
         )
         retreat[1]["tags"] = [tag("先看反馈", "ladder-chip-warn orange-text")]
 
-    # 给前端一个“单行展示”的压缩字段（保留完整 desc 供 hover/展开）
+    # 给前端一个「单行展示」的压缩字段（保留完整 desc 供 hover/展开）
     for it in (confirm + retreat):
         try:
             it["descShort"] = desc_short(str(it.get("desc") or ""))
@@ -422,7 +422,7 @@ def build_summary3(*, market_data: Dict[str, Any]) -> Dict[str, Any]:
 
     # 2) 主线与龙头
     theme = ((market_data.get("actionGuideV2") or {}).get("meta") or {}).get("title", "")
-    # meta.title 内含“主线：xx”，这里再提取一次更直白
+    # meta.title 内含「主线：xx」，这里再提取一次更直白
     main = (market_data.get("themePanels") or {}).get("ztTop") or []
     main_name = ""
     if "主线：" in str(meta.get("title", "")):
@@ -504,7 +504,7 @@ def build_learning_notes(*, market_data: Dict[str, Any], cache_dir: Path) -> Dic
         """
         从工作区的 ocr_识别结果.md 中提炼候选：
         - 返回 (tips_add, quotes_add, fire_quotes_add)
-        说明：这里只做“短句提炼”，不搬运长段落；且不引用外部链接内容。
+        说明：这里只做「短句提炼」，不搬运长段落；且不引用外部链接内容。
         """
         workspace_root = cache_dir.parent
         md_path = workspace_root / "ocr_识别结果.md"
@@ -541,7 +541,7 @@ def build_learning_notes(*, market_data: Dict[str, Any], cache_dir: Path) -> Dic
         fire_quotes_add: list[tuple[str, str]] = []
         for s in cand:
             _id = "u" + hashlib.md5(s.encode("utf-8")).hexdigest()[:8]
-            # 归类：更短的当“语录”，稍长的当“提醒”
+            # 归类：更短的当「语录」，稍长的当「提醒」
             if len(s) <= 26:
                 # 退潮/防守类句子放到 fire_quotes
                 if any(k in s for k in ["止损", "亏损", "认赔", "危险", "躲开", "不摊", "不平摊", "保命"]):
@@ -557,7 +557,7 @@ def build_learning_notes(*, market_data: Dict[str, Any], cache_dir: Path) -> Dic
     # 候选池尽量丰富，避免两三天就重复
     tips_general = [
         ("t001", "先活下来：单笔/单日都要有可执行的止损与撤退点，回撤不可失控。"),
-        ("t002", "只做主线：分歧市做减法，优先“主线 + 辨识度 + 确认点”。"),
+        ("t002", "只做主线：分歧市做减法，优先「主线 + 辨识度 + 确认点」。"),
         ("t003", "先确认后加仓：不要用想象加仓，用回封/换手/承接数据加仓。"),
         ("t004", "轻仓试错，重仓在确定性：大赚来自少数几次，平时用小仓位换信息。"),
         ("t005", "复盘要可验证：写清入场理由、撤退条件、次日验证点，形成可复制模式。"),
@@ -565,12 +565,12 @@ def build_learning_notes(*, market_data: Dict[str, Any], cache_dir: Path) -> Dic
         ("t007", "一致与分歧要分开：一致吃溢价，分歧吃性价比，别混用打法。"),
         ("t008", "别拿消息当逻辑：题材只是壳，核心是强度、承接和情绪。"),
         ("t009", "仓位要跟随情绪：热度升、风险降才扩仓；反之先收缩。"),
-        ("t010", "交易日只做两件事：等信号、执行纪律；不做“临盘改剧本”。"),
+        ("t010", "交易日只做两件事：等信号、执行纪律；不做「临盘改剧本」。"),
         # 来自你上传内容的归纳（利弗莫尔/关键点体系）
         ("t011", "价位是确认信号的核心：不等关键价位被市场确认，不轻举妄动。"),
         ("t012", "频繁交易是失败者的玩法：当市场缺乏大好机会，应缩手不动。"),
         ("t013", "集中火力做领先股：先确认谁是领头股，再集中，而不是分散。"),
-        ("t014", "两股验证：用同题材两只辨识度相互印证，减少“单票误判”。"),
+        ("t014", "两股验证：用同题材两只辨识度相互印证，减少「单票误判」。"),
         ("t015", "先有盈利再加仓：没有浮盈，就不要谈格局与耐心。"),
         ("t016", "成交量是危险信号：放量不涨、趋势不延续，要优先防守。"),
         ("t017", "不靠消息下单：只看事实（强度、承接、联动、风险）。"),
@@ -624,7 +624,7 @@ def build_learning_notes(*, market_data: Dict[str, Any], cache_dir: Path) -> Dic
         ("qf07", "先躲开危险信号，机会永远会再来。"),
     ]
 
-    # 追加：从你维护的 ocr_识别结果.md 中提炼的“理念句子”
+    # 追加：从你维护的 ocr_识别结果.md 中提炼的「理念句子」
     user_tips_add, user_quotes_add, user_fire_quotes_add = _load_user_pool()
     if user_tips_add:
         tips_general = user_tips_add + tips_general
@@ -744,7 +744,7 @@ if __name__ == "__main__":
 
     market_data = json.loads(market_json_path.read_text(encoding="utf-8"))
 
-    # 离线增强：补齐“情绪周期趋势（近5/7日）”数据
+    # 离线增强：补齐「情绪周期趋势（近5/7日）」数据
     # 说明：
     # - 新版 gen_report_v4 会写入 features.mood_inputs.hist_* 与 trend_*
     # - 但如果你只离线 render（且缓存来自旧版本），这里会自动用本地 cache/market_data-*.json 补齐
@@ -807,7 +807,7 @@ if __name__ == "__main__":
     except Exception:
         pass
 
-    # 离线增强：把 pools_cache.json 中的当日涨停池注入到 market_data，供 HTML 做“涨停个股分析”
+    # 离线增强：把 pools_cache.json 中的当日涨停池注入到 market_data，供 HTML 做「涨停个股分析」
     # 注意：此处不做任何网络请求，只读取本地缓存文件
     try:
         pools_cache_path = market_json_path.parent / "pools_cache.json"
@@ -816,7 +816,7 @@ if __name__ == "__main__":
             ztgc = (((pools_cache.get("pools") or {}).get("ztgc") or {}).get(args.date)) or []
             # 为避免与其他字段冲突，使用 ztgc 作为当日涨停池明细
             market_data["ztgc"] = ztgc
-            # 同步注入题材映射（theme_cache.json）：为涨停个股分析提供“更细粒度题材”
+            # 同步注入题材映射（theme_cache.json）：为涨停个股分析提供「更细粒度题材」
             theme_cache_path = market_json_path.parent / "theme_cache.json"
             if theme_cache_path.exists():
                 theme_cache = json.loads(theme_cache_path.read_text(encoding="utf-8"))
@@ -832,7 +832,7 @@ if __name__ == "__main__":
         # 缓存缺失或格式异常时忽略，不影响主页面渲染
         pass
 
-    # 离线增强：用 Python 算法生成“明日计划”（避免前端出现“写死文案”的错觉）
+    # 离线增强：用 Python 算法生成「明日计划」（避免前端出现「写死文案」的错觉）
     try:
         market_data.setdefault("actionGuideV2", build_action_guide_v2(market_data))
     except Exception:

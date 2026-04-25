@@ -4,7 +4,7 @@
 """
 features.build_features：从 raw 提取可复用特征（供 modules 复用/partial 重算）
 
-当前实现为“最小可用版”，覆盖：
+当前实现为"最小可用版"，覆盖：
 - features.mood_inputs：情绪模块输入（mood）
 - features.style_inputs：风格雷达输入（style_radar）
 - features.chart_palette：图表配色
@@ -137,7 +137,7 @@ def build_mood_inputs(*, pools: Mapping[str, Any]) -> Dict[str, Any]:
     # 梯队完整性评分（0~100）：最小可用版
     # - 有高度锚（5+ 或 4+）加分
     # - 3板/2板梯队足够加分
-    # - 极端“只有最高板、下面断层”会显著扣分
+    # - 极端"只有最高板、下面断层"会显著扣分
     tier_score = 0
     tier_score += 25 if lb_5p >= 1 else (15 if lb_4p >= 1 else 0)
     tier_score += 25 if (lb_3 >= 2) else (15 if lb_3 >= 1 else 0)
@@ -146,7 +146,7 @@ def build_mood_inputs(*, pools: Mapping[str, Any]) -> Dict[str, Any]:
     tier_integrity_score = max(0, min(100, tier_score))
     tier_integrity_low = 1 if tier_integrity_score < 50 else 0
 
-    # ===== 昨日→今日：用“代码匹配”计算晋级/断板（对齐直觉口径）=====
+    # ===== 昨日→今日：用"代码匹配"计算晋级/断板（对齐直觉口径）=====
     def _code6(s: Mapping[str, Any]) -> str:
         dm = str(s.get("dm") or s.get("code") or "")
         digits = "".join([c for c in dm if c.isdigit()])
@@ -214,9 +214,54 @@ def build_mood_inputs(*, pools: Mapping[str, Any]) -> Dict[str, Any]:
     qs_negative = len([1 for z, _ in qs_zfs if -5 < z < 0])
     qs_extreme_down = len([1 for z, _ in qs_zfs if z <= -5])
 
-    # 风险突刺（最小可用版）：用于更快识别“转弱/退潮确认”
-    # 注：后续若补齐 delta_*（昨日变化）可把规则改成“突刺=变化共振”
+    # 风险突刺（最小可用版）：用于更快识别"转弱/退潮确认"
+    # 注：后续若补齐 delta_*（昨日变化）可把规则改成"突刺=变化共振"
     risk_spike = 1 if (zb_rate >= 35.0 and dt_count >= 8 and broken_lb_rate >= 30.0) else 0
+
+    # 昨日涨停今日平均涨跌幅：用于判断"真假修复"
+    # 匹配逻辑：用代码找到昨天涨停的票 → 看今天涨跌
+    yest_zt_chgs = []
+    for s in yest_zt:
+        if not isinstance(s, dict):
+            continue
+        code = _code6(s)
+        if not code:
+            continue
+        # 从今天的涨停池/炸板池/强势池找这只票的今日涨跌幅
+        found = False
+        zf = _to_float(s.get("zf"), None)  # 有些数据源自带今日涨跌
+        for pool in (zt, zb, dt, qsgc):
+            for t in pool:
+                if not isinstance(t, dict):
+                    continue
+                if _code6(t) == code:
+                    z = _to_float(t.get("zf"), None)
+                    if z is not None:
+                        yest_zt_chgs.append(z)
+                        found = True
+                        break
+            if found:
+                break
+        # 如果在所有池子里都找不到，但有自带zf就用自带的
+        if not found and zf is not None:
+            yest_zt_chgs.append(zf)
+
+    yest_zt_avg_chg = (sum(yest_zt_chgs) / len(yest_zt_chgs)) if yest_zt_chgs else 0.0
+
+    # 高位断板信息
+    duanban_lbs = [(today_map.get(c, 0), c) for c in yest_lb_codes if c not in today_map]
+    duanban_lbs.sort(reverse=True)
+    top_duanban_name = ""
+    top_duanban_lb = 0
+    top_duanban_is_high = 0
+    if duanban_lbs:
+        top_duanban_lb = duanban_lbs[0][0]
+        # 找断板股票名字
+        for s in yest_zt:
+            if _code6(s) == duanban_lbs[0][1]:
+                top_duanban_name = str(s.get("mc") or "")[:4]
+                break
+        top_duanban_is_high = 1 if top_duanban_lb >= 5 else 0
 
     return {
         "fb_rate": round(fb_rate, 1),
@@ -282,6 +327,12 @@ def build_mood_inputs(*, pools: Mapping[str, Any]) -> Dict[str, Any]:
         "qs_positive": int(qs_positive),
         "qs_negative": int(qs_negative),
         "qs_extreme_down": int(qs_extreme_down),
+        # 真假修复核心指标
+        "yest_zt_avg_chg": round(yest_zt_avg_chg, 2),
+        # 高位断板
+        "top_duanban_name": top_duanban_name,
+        "top_duanban_lb": top_duanban_lb,
+        "top_duanban_is_high": top_duanban_is_high,
     }
 
 

@@ -334,6 +334,77 @@ def build_cards(inputs: Dict[str, Any]) -> List[Dict[str, Any]]:
     ]
 
 
+def calc_stage_sublabel(*, stage_title: str, inputs: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    情绪阶段细分：判断"弱修复/分歧"是真是假。
+
+    核心逻辑：
+    - 弱修复 + 昨日涨停今赚钱 = 真修复（可以试错）
+    - 弱修复 + 昨日涨停今亏钱 = 假修复（别上当）
+    - 任何阶段 + 断板率极高 = 伪修复（诱多嫌疑）
+
+    返回：{sublabel, sublabelClass, sublabelDetail}
+    """
+    title = str(stage_title or "")
+
+    # 只对"模糊阶段"做细分，明确阶段不需要
+    if title in ("冰点", "高潮", "强修复", "退潮"):
+        return {"sublabel": "", "sublabelClass": "", "sublabelDetail": ""}
+
+    # 需要的数据
+    yest_zt_avg_chg = float(inputs.get("yest_zt_avg_chg", 0) or 0)
+    broken_lb_rate = float(inputs.get("broken_lb_rate", 0) or 0)
+    jj_rate = float(inputs.get("jj_rate", 0) or 0)
+    zb_rate = float(inputs.get("zb_rate", 0) or 0)
+    bf_count = int(inputs.get("bf_count", 0) or 0)
+
+    sublabel = ""
+    sublabel_class = ""
+    detail = ""
+
+    if title == "弱修复":
+        # 关键判断：昨天涨停的票今天平均涨多少？
+        # > 2% 说明资金真的在回流 → 真修复
+        # < -1% 说明昨天进去的都被埋了 → 假修复
+        if yest_zt_avg_chg >= 2.0:
+            sublabel = "真修复 ✓"
+            sublabel_class = "good"
+            detail = f"昨日涨停股今均涨{yest_zt_avg_chg:+.1f}%，资金在回流，可轻仓试错主线确认点。"
+        elif yest_zt_avg_chg <= -1.0:
+            sublabel = "假修复 ✗"
+            sublabel_class = "bad"
+            detail = f"昨日涨停股今均跌{yest_zt_avg_chg:+.1f}%，进去就被埋，别被表面修复骗了。"
+        elif broken_lb_rate >= 50:
+            sublabel = "伪修复 ⚠"
+            sublabel_class = "warn"
+            detail = f"连板断板率{broken_lb_rate:.0f}%太高，高位接力断层严重，观望为主。"
+        else:
+            sublabel = "一般"
+            sublabel_class = "warn"
+            detail = "有回暖迹象但力度不够，等更明确的信号再动手。"
+
+    elif title == "分歧":
+        # 分歧也分"良性分歧"和"恶性分歧"
+        if jj_rate >= 35 and zb_rate <= 25:
+            sublabel = "良性分歧"
+            sublabel_class = "good"
+            detail = "承接还行但炸板有分歧，属于正常换手，回封确认可以做。"
+        elif jj_rate <= 25 or zb_rate >= 35:
+            sublabel = "恶性分歧"
+            sublabel_class = "bad"
+            detail = "晋级太差或炸板太多，这不是分歧是走弱，先别接。"
+        else:
+            sublabel = "一般分歧"
+            sublabel_class = "warn"
+            detail = "多空拉锯中，不追高只做低位确认。"
+
+    return {
+        "sublabel": sublabel,
+        "sublabelClass": sublabel_class,
+        "sublabelDetail": detail,
+    }
+
+
 def rebuild_mood(inputs: Dict[str, Any]) -> Dict[str, Any]:
     """
     统一输出：
@@ -366,6 +437,13 @@ def rebuild_mood(inputs: Dict[str, Any]) -> Dict[str, Any]:
     stage_inputs["rate_3to4"] = float(inputs.get("rate_3to4_adj", inputs.get("rate_3to4", 0)) or 0)
     stage = calc_stage(heat_score=score.heat, risk_score=score.risk, inputs=stage_inputs)
     cards = build_cards(inputs)
+
+    # 情绪阶段细分（真假判断）
+    sub = calc_stage_sublabel(stage_title=stage.get("title", ""), inputs=inputs)
+    stage["sublabel"] = sub["sublabel"]
+    stage["sublabelClass"] = sub["sublabelClass"]
+    stage["sublabelDetail"] = sub["sublabelDetail"]
+
     return {
         "mood": {"heat": score.heat, "risk": score.risk, "score": score.sentiment},
         "moodStage": stage,

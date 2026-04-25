@@ -195,6 +195,6 @@ def build_structure_v2(market_data: dict[str, Any], *, date: str) -> dict[str, A
     return {
         "summary": summary,
         "evidence": evidence,
-        "meta": {"precision": "strict_with_sample", "asOf": date},
+        "meta": {"precision": "strict", "asOf": date},
     }
 

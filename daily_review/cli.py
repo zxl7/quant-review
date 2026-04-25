@@ -350,7 +350,197 @@ def run_fetch_and_rebuild(date: str | None) -> int:
     return run_rebuild(actual_date)
 
 
-def run_rebuild(date: str, modules: list[str] | None = None) -> int:
+def run_intraday_snapshot(date: str | None) -> int:
+    """
+    盘中快照模式：
+    - 数据截止"当前时刻"（API实时返回）
+    - 输出文件名带 -intraday 后缀
+    - 量能自动估算全天
+    - 部分指标标注"盘中估"
+    """
+    import datetime as _dt
+
+    root = _workspace_root()
+    cache_dir = root / "cache"
+
+    # 先跑一次 fetch（获取当前时刻数据）
+    # 复用 run_fetch_and_rebuild 的取数逻辑，但标记为 intraday
+    cfg = load_config_from_env()
+    from daily_review.http import HttpClient
+
+    client = HttpClient(base_url=cfg.base_url, token=cfg.token, timeout=30)
+    req_date = date
+    actual_date, date_note = resolve_trade_date(client, req_date)
+
+    # 当前时间（用于量能估算和标记）
+    now = _dt.datetime.now()
+    now_str = now.strftime("%H:%M:%S")
+
+    # 判断是否在交易时间内
+    is_trading_hour = (9 <= now.hour < 16) and not (
+        now.hour == 11 and now.minute >= 30 or now.hour == 12
+    )
+
+    if not is_trading_hour:
+        print(f"⚠️ 当前时间 {now_str} 不在交易时段内（9:00-15:30），数据可能为上一交易日收盘数据。")
+
+    # ===== 取数逻辑与 fetch 相同，但不强制刷新历史缓存 =====
+    trade_days = get_trading_days_from_index_k(client, date=actual_date, n=3) or [actual_date]
+    if actual_date not in trade_days:
+        trade_days = trade_days + [actual_date]
+    trade_days = sorted(set(trade_days))[-3:]
+
+    pools_path = cache_dir / "pools_cache.json"
+    pools_cache = read_json(pools_path, default={})
+    pools = (pools_cache.get("pools") or {}) if isinstance(pools_cache, dict) else {}
+    pools.setdefault("ztgc", {})
+    pools.setdefault("dtgc", {})
+    pools.setdefault("zbgc", {})
+    pools.setdefault("qsgc", {})
+
+    # 只取当日数据（不预取历史，加快速度）
+    for pn in ("ztgc", "dtgc", "zbgc", "qsgc"):
+        pools.setdefault(pn, {})
+        pools[pn][actual_date] = fetch_pool(client, pool_name=pn, date=actual_date)
+    write_json(pools_path, {"version": 1, "pools": pools})
+
+    # theme_cache：只处理当日涨停股
+    themes_path = cache_dir / "theme_cache.json"
+    theme_cache_disk = read_json(themes_path, default={})
+    codes_map = (theme_cache_disk.get("codes") or {}) if isinstance(theme_cache_disk, dict) else {}
+    today_zt = pools["ztgc"].get(actual_date) or []
+    today_zb = pools["zbgc"].get(actual_date) or []
+    today_dt = pools["dtgc"].get(actual_date) or []
+    all_today = []
+    for arr in (today_zt, today_zb, today_dt):
+        if isinstance(arr, list):
+            all_today.extend(arr)
+    for s in all_today:
+        code6 = normalize_stock_code(str(s.get("dm") or s.get("code") or ""))
+        if not code6 or code6 in codes_map:
+            continue
+        raw_list = fetch_stock_themes(client, code6=code6)
+        names = []
+        for it in raw_list:
+            if not isinstance(it, dict):
+                continue
+            nm = str(it.get("name") or "").strip()
+            if not nm:
+                continue
+            if nm in DEFAULT_CONFIG.exclude_theme_names:
+                continue
+            if nm in DEFAULT_CONFIG.noise_themes:
+                continue
+            bad = False
+            for pfx in DEFAULT_CONFIG.noise_prefixes:
+                if nm.startswith(pfx):
+                    bad = True
+                    break
+            if bad:
+                continue
+            if nm.startswith("A股-热门概念-"):
+                nm = nm.replace("A股-热门概念-", "")
+            names.append(nm)
+        seen = set()
+        uniq = []
+        for nm in names:
+            if nm in seen:
+                continue
+            seen.add(nm)
+            uniq.append(nm)
+        codes_map[code6] = uniq
+    write_json(themes_path, {"version": 1, "codes": codes_map})
+
+    # 构造 market_data 骨架（标记为 intraday 模式）
+    gen_time = now.strftime("%Y-%m-%d %H:%M:%S")
+    yest = actual_date  # 盘中时昨日用上一个交易日
+
+    raw_pools = {
+        "ztgc": pools["ztgc"].get(actual_date) or [],
+        "dtgc": pools["dtgc"].get(actual_date) or [],
+        "zbgc": pools["zbgc"].get(actual_date) or [],
+        "qsgc": pools["qsgc"].get(actual_date) or [],
+        "yest_ztgc": [],
+        "yest_dtgc": [],
+        "yest_zbgc": [],
+        "yest_date": "",
+    }
+
+    market_data: dict = {
+        "date": actual_date,
+        "dateNote": f"{date_note or ''} 【盘中快照 {now_str}】",
+        "meta": {
+            "asOf": {"indices": now_str, "pools": now_str, "themes": now_str},
+            "version": "1.0-intraday",
+            "mode": "intraday",
+            "generatedAt": gen_time,
+            "snapshotTime": now_str,
+        },
+        "indices": [],
+        "panorama": {},
+        "volume": {},
+        "sectors": [],
+        "themePanels": {},
+        "themeTrend": {"dates": [], "series": [], "palette": default_chart_palette()},
+        "heightTrend": {},
+        "ladder": [],
+        "top10": [],
+        "top10Summary": {},
+        "mood": {},
+        "moodStage": {},
+        "moodCards": [],
+        "actionGuideV2": {"confirm": [], "retreat": []},
+        "summary3": {},
+        "learningNotes": {},
+        "styleRadar": {},
+        "leaders": [],
+        "ztgc": [],
+        "zt_code_themes": {},
+        "features": {},
+        "raw": {},
+    }
+
+    market_data["raw"] = {
+        "pools": raw_pools,
+        "themes": {"code2themes": codes_map},
+        "index_klines": {"codes": {}},
+        "theme_trend_cache": {"as_of": actual_date, "by_day": {}},
+    }
+
+    mood_inputs = build_mood_inputs(pools=raw_pools)
+    market_data["features"]["mood_inputs"] = mood_inputs
+    market_data["features"]["chart_palette"] = default_chart_palette()
+    ztgc = [x for x in (raw_pools.get("ztgc") or []) if isinstance(x, dict)]
+    market_data["features"]["style_inputs"] = build_style_inputs(
+        mood_inputs=mood_inputs,
+        theme_panels=market_data.get("themePanels") or {},
+        ztgc=ztgc,
+    )
+
+    # 写缓存
+    date_compact = actual_date.replace("-", "")
+    market_path = cache_dir / f"market_data-{date_compact}-intraday.json"
+    write_json(market_path, market_data)
+
+    # 跑 pipeline + 渲染（复用 rebuild 的大部分逻辑）
+    result = run_rebuild(actual_date, suffix="intraday", source_market_path=market_path)
+
+    # 在输出 HTML 中注入盘中快照标记
+    out_dir = root / "html"
+    out_path = out_dir / f"复盘日记-{date_compact}-intra.html"
+    if out_path.exists():
+        content = out_path.read_text(encoding="utf-8")
+        content = content.replace(
+            "</title>",
+            f"</title><!-- INTRADAY_SNAPSHOT:{now_str} -->",
+        )
+        out_path.write_text(content, encoding="utf-8")
+        print(f"✅ 盘中快照输出: {out_path}")
+
+    return 0
+
+
+def run_rebuild(date: str, modules: list[str] | None = None, suffix: str = "", source_market_path: Path | None = None) -> int:
     """
     离线重建（不请求接口）：
     - 从 cache/market_data-YYYYMMDD.json 读取
@@ -361,7 +551,13 @@ def run_rebuild(date: str, modules: list[str] | None = None) -> int:
     root = _workspace_root()
     cache_dir = root / "cache"
     date_compact = date.replace("-", "")
-    market_path = cache_dir / f"market_data-{date_compact}.json"
+
+    # 如果指定了 source_market_path（盘中快照模式），直接用它
+    if source_market_path and source_market_path.exists():
+        market_path = source_market_path
+    else:
+        market_path = cache_dir / f"market_data-{date_compact}.json"
+
     if not market_path.exists():
         raise FileNotFoundError(f"找不到缓存 marketData：{market_path}（请先跑一次 ./qr.sh fetch {date}）")
 
@@ -520,7 +716,8 @@ def run_rebuild(date: str, modules: list[str] | None = None) -> int:
     template_path = root / "templates" / "report_template.html"
     out_dir = root / "html"
     out_dir.mkdir(parents=True, exist_ok=True)
-    out_path = out_dir / f"复盘日记-{date_compact}-tab-v1.html"
+    suffix_part = f"-{suffix}" if suffix else ""
+    out_path = out_dir / f"复盘日记-{date_compact}{suffix_part}-tab-v1.html"
 
     render_html_template(
         template_path=template_path,
@@ -696,6 +893,7 @@ def _inject_prd_v2_metrics(*, root: Path, date: str, market_data: dict) -> None:
     from daily_review.metrics.divergence import build_divergence_engine
     from daily_review.metrics.high_position_risk import build_high_position_risk
     from daily_review.metrics.structure_v2 import build_structure_v2
+    from daily_review.metrics.action_sheet import build_action_sheet
 
     # 1) sectorHeatmap（优先使用 python 统一口径）
     # - 若历史缓存已存在旧结构（无 meta），则刷新一次以补齐口径信息
@@ -774,6 +972,10 @@ def _inject_prd_v2_metrics(*, root: Path, date: str, market_data: dict) -> None:
     # 6) structureV2（结构拆解 v2：3结论卡 + 证据链）
     if not isinstance(market_data.get("structureV2"), dict):
         market_data["structureV2"] = build_structure_v2(market_data, date=date)
+
+    # 7) actionSheet（操作单：具体买卖条件，替代泛泛的行动指南）
+    if not isinstance(market_data.get("actionSheet"), dict):
+        market_data["actionSheet"] = build_action_sheet(market_data)
 
 
 def _load_pools_for_date(root: Path, date: str) -> dict:
@@ -984,7 +1186,17 @@ def main(argv: list[str] | None = None) -> int:
         nargs="+",
         help="部分更新：指定模块名，可选：panorama, ladder, ztgc, theme_panels, volume, height_trend, top10, mood, style_radar, leader, action_guide, summary3, learning_notes",
     )
+    ap.add_argument(
+        "--mode",
+        choices=["eod", "intraday"],
+        default="eod",
+        help="运行模式：eod=收盘版（默认），intraday=盘中快照版（数据截止当前时刻）",
+    )
     args = ap.parse_args(argv)
+
+    # 传递 mode 到全局上下文
+    if args.mode == "intraday":
+        os.environ["REPORT_MODE"] = "intraday"
 
     if args.only:
         if not args.date:
@@ -998,6 +1210,10 @@ def main(argv: list[str] | None = None) -> int:
 
     if args.fetch:
         return run_fetch_and_rebuild(args.date)
+
+    # 盘中快照模式
+    if args.mode == "intraday":
+        return run_intraday_snapshot(args.date)
 
     return run_full(args.date)
 

@@ -6,7 +6,7 @@
 
 用途：
 - 统一管理：情绪周期阶段阈值、阶段→策略模板、学习提醒卡片
-- 让“经验”变成可计算、可迭代的系统能力（避免散落在各模块里）
+- 让"经验"变成可计算、可迭代的系统能力（避免散落在各模块里）
 """
 
 from __future__ import annotations
@@ -60,33 +60,33 @@ STAGE_TO_TYPE: Dict[CycleStage, str] = {
 ACTION_TEMPLATES: Dict[CycleStage, Dict[str, Any]] = {
     "ICE": {
         "stance": "防守",
-        "mode": "休息/轻仓试错",
-        "core": ["不做接力", "只看首板/1进2确认", "亏钱扩散先保命"],
+        "mode": "休息",
+        "core": ["不做接力", "只看首板确认", "亏钱扩散先保命"],
     },
     "START": {
         "stance": "试错",
         "mode": "低位试错",
-        "core": ["关注1→2确认", "围绕新题材苗头", "不追高只做确认"],
+        "core": ["关注首板确认", "围绕新题材", "不追高只做确认"],
     },
     "FERMENT": {
         "stance": "进攻",
-        "mode": "接力/主线进攻",
-        "core": ["聚焦主线核心", "分歧转一致/回封加仓", "做辨识度与梯队"],
+        "mode": "接力",
+        "core": ["聚焦主线核心", "分歧转一致可加仓", "做辨识度"],
     },
     "CLIMAX": {
         "stance": "兑现",
-        "mode": "高位兑现/防分歧",
-        "core": ["不追一致末端", "警惕次日分化", "高位只做卖点/减仓"],
+        "mode": "高位减仓",
+        "core": ["不追一致末端", "警惕次日分化", "高位只卖不买"],
     },
 }
 
 
 NOTE_CARDS: List[Dict[str, Any]] = [
-    {"id": "ice_001", "when": {"cycle": ["ICE"]}, "text": "冰点/退潮期：不做接力，重点盯“首板→1进2”的确认信号。"},
-    {"id": "start_001", "when": {"cycle": ["START"]}, "text": "启动/试错期：最重要是1→2筛选关口，不追高只做确认。"},
-    {"id": "ferment_001", "when": {"cycle": ["FERMENT"]}, "text": "发酵/加速期：主线清晰后做核心辨识度，分歧转一致/回封是加仓点。"},
-    {"id": "climax_001", "when": {"cycle": ["CLIMAX"]}, "text": "高潮期：超级高手卖出龙头。不要追一致末端，准备兑现利润。"},
-    {"id": "risk_spike_001", "when": {"risk_spike": [1]}, "text": "风险突刺：炸板/跌停/断板共振时先保命，别硬接分歧。"},
-    {"id": "tier_break_001", "when": {"tier_integrity_low": [1]}, "text": "梯队断层：龙头有高度但缺中军/小弟，次日更易分歧，仓位要降级。"},
+    {"id": "ice_001", "when": {"cycle": ["ICE"]}, "text": "冰点期：不做接力，盯首板→1进2的确认信号。"},
+    {"id": "start_001", "when": {"cycle": ["START"]}, "text": "启动期：最重要是1→2筛选关口，不追高。"},
+    {"id": "ferment_001", "when": {"cycle": ["FERMENT"]}, "text": "加速期：主线清晰后做核心辨识度，回封是加仓点。"},
+    {"id": "climax_001", "when": {"cycle": ["CLIMAX"]}, "text": "高潮期：高手卖出龙头，不要追一致末端。"},
+    {"id": "risk_spike_001", "when": {"risk_spike": [1]}, "text": "风险突刺：炸板/跌停共振时先保命。"},
+    {"id": "tier_break_001", "when": {"tier_integrity_low": [1]}, "text": "梯队断层：龙头有高度但缺中军，仓位要降级。"},
 ]
 
