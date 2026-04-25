@@ -505,6 +505,14 @@ def run_rebuild(date: str, modules: list[str] | None = None) -> int:
     except Exception:
         pass
 
+    # PRD v2：核心派生字段（必须可复算）
+    # - sectorHeatmap（多板块情绪热力图）
+    # - threeQuadrants（盘面三象限）
+    try:
+        _inject_prd_v2_metrics(root=root, date=date, market_data=market_data)
+    except Exception:
+        pass
+
     # 写回缓存（让离线 render/partial 都读到最新重建结果）
     market_path.write_text(json.dumps(market_data, ensure_ascii=False, indent=2), encoding="utf-8")
 
@@ -673,6 +681,99 @@ def _inject_mood_history_and_delta(*, root: Path, date: str, market_data: dict) 
         "heat": round(_num((market_data.get("mood") or {}).get("heat"), 0) - _num((prev_data.get("mood") or {}).get("heat"), 0), 2),
         "risk": round(_num((market_data.get("mood") or {}).get("risk"), 0) - _num((prev_data.get("mood") or {}).get("risk"), 0), 2),
     }
+
+
+def _inject_prd_v2_metrics(*, root: Path, date: str, market_data: dict) -> None:
+    """
+    PRD v2 派生字段注入：
+    - 严格使用现有 marketData + raw.pools + 缓存历史文件复算
+    - 输出字段写入 market_data，供前端直接渲染
+    """
+
+    from daily_review.metrics.sector_heatmap import build_sector_heatmap
+    from daily_review.metrics.three_quadrants import build_three_quadrants
+    from daily_review.metrics.risk_diffusion import build_risk_engine
+    from daily_review.metrics.divergence import build_divergence_engine
+    from daily_review.metrics.high_position_risk import build_high_position_risk
+    from daily_review.metrics.structure_v2 import build_structure_v2
+
+    # 1) sectorHeatmap（优先使用 python 统一口径）
+    # - 若历史缓存已存在旧结构（无 meta），则刷新一次以补齐口径信息
+    sh = market_data.get("sectorHeatmap")
+    if (not isinstance(sh, dict)) or ("meta" not in sh):
+        market_data["sectorHeatmap"] = build_sector_heatmap(market_data)
+
+    # 2) threeQuadrants（含近5日轨迹）
+    tq = build_three_quadrants(market_data)
+
+    # 轨迹：读取 cache/market_data-*.json，取最近5个交易日
+    cache_dir = root / "cache"
+    date8 = date.replace("-", "")
+    items: list[tuple[str, Path]] = []
+    for fp in cache_dir.glob("market_data-*.json"):
+        stem = fp.stem
+        if not stem.startswith("market_data-"):
+            continue
+        d8 = stem.replace("market_data-", "")
+        if len(d8) != 8 or not d8.isdigit():
+            continue
+        if d8 <= date8:
+            items.append((d8, fp))
+    items.sort(key=lambda x: x[0])
+    hist = []
+    for d8, fp in items[-5:]:
+        try:
+            snap = json.loads(fp.read_text(encoding="utf-8"))
+            pt = build_three_quadrants(snap)
+            pos = pt.get("position") or {}
+            bub = pt.get("bubble") or {}
+            hist.append(
+                {
+                    "date": f"{d8[4:6]}-{d8[6:8]}",
+                    "x": pos.get("x"),
+                    "y": pos.get("y"),
+                    "z": pos.get("z"),
+                    "size": bub.get("size"),
+                    "zone": (pt.get("interpretation") or {}).get("zone", ""),
+                }
+            )
+        except Exception:
+            continue
+    if isinstance(tq.get("history"), list):
+        tq["history"] = hist
+    market_data["threeQuadrants"] = tq
+
+    # 3) riskEngine（风险与亏钱扩散）
+    if not isinstance(market_data.get("riskEngine"), dict):
+        market_data["riskEngine"] = build_risk_engine(market_data, date=date)
+
+    # 4) divergenceEngine（分歧与承接）— 资金维度需精确：调用资金流向接口（样本口径）
+    if not isinstance(market_data.get("divergenceEngine"), dict):
+        try:
+            from daily_review.config import load_config_from_env
+            from daily_review.http import HttpClient
+
+            cfg = load_config_from_env()
+            client = HttpClient(base_url=cfg.base_url, token=cfg.token, timeout=30)
+        except Exception:
+            client = None
+        market_data["divergenceEngine"] = build_divergence_engine(market_data, date=date, client=client)
+
+    # 5) highPositionRisk（高位风险预警）— 未触发也输出结构化结果
+    if not isinstance(market_data.get("highPositionRisk"), dict):
+        try:
+            from daily_review.config import load_config_from_env
+            from daily_review.http import HttpClient
+
+            cfg = load_config_from_env()
+            hp_client = HttpClient(base_url=cfg.base_url, token=cfg.token, timeout=30)
+        except Exception:
+            hp_client = None
+        market_data["highPositionRisk"] = build_high_position_risk(market_data, date=date, client=hp_client, trigger_lb=4)
+
+    # 6) structureV2（结构拆解 v2：3结论卡 + 证据链）
+    if not isinstance(market_data.get("structureV2"), dict):
+        market_data["structureV2"] = build_structure_v2(market_data, date=date)
 
 
 def _load_pools_for_date(root: Path, date: str) -> dict:
