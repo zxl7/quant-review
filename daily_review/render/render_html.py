@@ -297,27 +297,26 @@ def build_action_guide_v2(market_data: Dict[str, Any]) -> Dict[str, Any]:
 
     meta_title = f"🧩 盘面基调：{tag_stage}｜主线：{theme.get('name','主线')}｜模式：{mode_show}｜仓位：{stance}"
 
-    # 盘面摘要：用“关键对比 + 结论”替代堆数字
-    # - 第一段：极简数据条（便于扫读）
-    # - 第二段：Δ 对比（只放最关键 3 个）
-    # - 第三段：一句话解读（短线可执行）
-    concise = (
-        f"封{fb:.1f}%/晋{jj:.1f}%/早{early:.1f}%｜"
-        f"炸{zb:.1f}%/≥3开{zbc_ge3_ratio:.1f}%/均开{avg_zbc:.2f}｜"
-        f"扩散{int(loss)}｜量能{vol_chg:+.2f}%"
-    )
-    d_fb = delta_text("fb_rate", "pp")
-    d_jj = delta_text("jj_rate", "pp")
-    d_zb = delta_text("zb_rate", "pp")
-    delta_parts = []
-    if d_fb:
-        delta_parts.append(f"Δ封{d_fb}")
-    if d_jj:
-        delta_parts.append(f"Δ晋{d_jj}")
-    if d_zb:
-        delta_parts.append(f"Δ炸{d_zb}")
-    delta_line = bar(*delta_parts)
-    # 一句话解读：承接/分歧/风险趋势
+    # 盘面摘要：更语义化（减少“数字流水账”）
+    # - 只表达方向与结论：回暖/收敛/扩散/缩量 等
+    def _dir(x: float, *, up: str, down: str, flat: str = "持平", th: float = 0.8) -> str:
+        if x >= th:
+            return up
+        if x <= -th:
+            return down
+        return flat
+
+    dfb = to_num(delta.get("fb_rate"), 0) if delta else 0
+    djj = to_num(delta.get("jj_rate"), 0) if delta else 0
+    dzb2 = to_num(delta.get("zb_rate"), 0) if delta else 0
+    dloss2 = to_num(delta.get("loss"), 0) if delta else 0
+
+    carry_dir = "走强" if (dfb > 0.8 or djj > 0.8) else ("走弱" if (dfb < -0.8 or djj < -0.8) else "未确认")
+    diverge_dir = _dir(dzb2, up="扩大", down="收敛", flat="未放大", th=0.8)
+    loss_dir = "扩散" if (loss >= 12 or dloss2 >= 2) else ("收敛" if (loss <= 7 or dloss2 <= -2) else "中性")
+    vol_dir = _dir(vol_chg, up="放量", down="缩量", flat="平量", th=1.0)
+
+    # 一句话解读：承接/分歧/风险趋势（保持你的短线语言）
     take = []
     if fb >= 70 and jj >= 30:
         take.append("承接回暖")
@@ -329,12 +328,20 @@ def build_action_guide_v2(market_data: Dict[str, Any]) -> Dict[str, Any]:
         take.append("风险偏高")
     if not take:
         take.append("震荡中性")
+
+    # 语义化摘要（不再堆“封/晋/早/炸/开/均开/扩散/量能/Δxx”这些数字流）
+    summary_line = bar(
+        f"承接{carry_dir}",
+        f"分歧{diverge_dir}",
+        f"亏钱{loss_dir}",
+        f"量能{vol_dir}",
+    )
     # 动作建议：更像复盘而不是数据播报
     action_hint = (
         "动作：优先主线核心/回封确认，避免追高一致；"
         "若扩散继续走高则降级为低位试错/休息。"
     )
-    meta_detail = bar(concise, delta_line, "解读：" + "、".join(take) + "。", action_hint)
+    meta_detail = bar(summary_line, "解读：" + "、".join(take) + "。", action_hint)
 
     def desc_short(s: str, *, limit: int = 60) -> str:
         """
