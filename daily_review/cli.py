@@ -523,7 +523,18 @@ def run_intraday_snapshot(date: str | None) -> int:
     write_json(market_path, market_data)
 
     # 跑 pipeline + 渲染（复用 rebuild 的大部分逻辑）
-    result = run_rebuild(actual_date, suffix="intraday", source_market_path=market_path)
+    # 第一次：先把计算结果写回 intraday market_data（用于生成快照记录）
+    run_rebuild(actual_date, suffix="intraday", source_market_path=market_path)
+
+    # 追加快照记录（写入 cache/intraday_snapshots-YYYYMMDD.json）
+    try:
+        snap_md = json.loads(market_path.read_text(encoding="utf-8"))
+        _append_intraday_snapshot(root=root, date=actual_date, market_data=snap_md)
+    except Exception:
+        pass
+
+    # 第二次：把“半小时快照列表”注入页面后再渲染一次（离线，成本很低）
+    run_rebuild(actual_date, suffix="intraday", source_market_path=market_path)
 
     # 在输出 HTML 中注入盘中快照标记
     out_dir = root / "html"
@@ -649,6 +660,18 @@ def run_rebuild(date: str, modules: list[str] | None = None, suffix: str = "", s
     runner.run(ctx, targets=(modules or None))
     market_data = ctx.market_data
 
+    # === 注入盘中快照列表（供“实时盯盘”页面展示）===
+    try:
+        snaps = _load_intraday_snapshots(root=root, date=date)
+        if snaps:
+            market_data["intradaySnapshots"] = {
+                "date": date,
+                "count": len(snaps),
+                "snapshots": snaps,
+            }
+    except Exception:
+        pass
+
     # 补齐元信息：避免页面“数据更新时间”显示为 00:00:00 / 空
     try:
         import datetime as _dt
@@ -728,6 +751,71 @@ def run_rebuild(date: str, modules: list[str] | None = None, suffix: str = "", s
     )
     print(f"✅ rebuild 输出: {out_path}")
     return 0
+
+
+def _intraday_snapshots_path(root: Path, date: str) -> Path:
+    cache_dir = root / "cache"
+    d8 = date.replace("-", "")
+    return cache_dir / f"intraday_snapshots-{d8}.json"
+
+
+def _load_intraday_snapshots(*, root: Path, date: str) -> list[dict]:
+    p = _intraday_snapshots_path(root, date)
+    if not p.exists():
+        return []
+    try:
+        data = json.loads(p.read_text(encoding="utf-8"))
+        if isinstance(data, list):
+            return [x for x in data if isinstance(x, dict)]
+        return []
+    except Exception:
+        return []
+
+
+def _write_intraday_snapshots(*, root: Path, date: str, snapshots: list[dict]) -> None:
+    p = _intraday_snapshots_path(root, date)
+    p.write_text(json.dumps(snapshots, ensure_ascii=False, indent=2), encoding="utf-8")
+
+
+def _append_intraday_snapshot(*, root: Path, date: str, market_data: dict) -> None:
+    """
+    追加一条盘中快照（半小时级）。
+    只保存“盯盘所需最小信息”，避免文件膨胀。
+    """
+    meta = market_data.get("meta") or {}
+    t = str(meta.get("snapshotTime") or meta.get("asOf", {}).get("pools") or "")
+    t = t[:5] if len(t) >= 5 else t
+    if not t:
+        return
+
+    mi = (market_data.get("features") or {}).get("mood_inputs") or {}
+    mood = market_data.get("mood") or {}
+    ms = market_data.get("moodSignals") or {}
+    hm2 = market_data.get("hm2Compare") or {}
+
+    rec = {
+        "time": t,
+        "headline": ms.get("headline") or "",
+        "heat": mood.get("heat"),
+        "risk": mood.get("risk"),
+        "fb": mi.get("fb_rate"),
+        "jj": mi.get("jj_rate"),
+        "zb": mi.get("zb_rate"),
+        "loss": mi.get("loss"),
+        "hm2": hm2.get("score"),
+        "pos": ms.get("pos") or [],
+        "riskSignals": ms.get("risk") or [],
+    }
+
+    snaps = _load_intraday_snapshots(root=root, date=date)
+    # 去重：同一时间点只保留最新一条
+    snaps = [s for s in snaps if str(s.get("time") or "") != t]
+    snaps.append(rec)
+    # 按时间排序（HH:MM）
+    snaps.sort(key=lambda x: str(x.get("time") or ""))
+    # 限制条数（一天最多几十条）
+    snaps = snaps[-60:]
+    _write_intraday_snapshots(root=root, date=date, snapshots=snaps)
 
 
 def _inject_mood_history_and_delta(*, root: Path, date: str, market_data: dict) -> None:

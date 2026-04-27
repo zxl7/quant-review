@@ -291,16 +291,50 @@ def build_action_guide_v2(market_data: Dict[str, Any]) -> Dict[str, Any]:
     mode_show = mode_tpl or mode
     tag_stage = f"{stage}" if stage else "-"
 
-    meta_title = f"🧩 盘面基调：{tag_stage}｜主线：{theme.get('name','主线')}｜模式：{mode_show}｜建议：{stance}"
-    meta_detail = (
-        f"涨停{zt_cnt}，封板{fb:.1f}%（早封{early:.1f}%），晋级{jj:.1f}%；"
-        f"炸板{zb:.1f}%、扩散{int(loss)}；量能{vol_chg:+.2f}%；"
-        f"多开板≥3占比{zbc_ge3_ratio:.1f}%（均开板{avg_zbc:.2f}）。"
-    )
-
     # === 纯数据驱动文案（避免固定话术堆料）===
     def bar(*parts: str) -> str:
         return "｜".join([p for p in parts if p])
+
+    meta_title = f"🧩 盘面基调：{tag_stage}｜主线：{theme.get('name','主线')}｜模式：{mode_show}｜仓位：{stance}"
+
+    # 盘面摘要：用“关键对比 + 结论”替代堆数字
+    # - 第一段：极简数据条（便于扫读）
+    # - 第二段：Δ 对比（只放最关键 3 个）
+    # - 第三段：一句话解读（短线可执行）
+    concise = (
+        f"封{fb:.1f}%/晋{jj:.1f}%/早{early:.1f}%｜"
+        f"炸{zb:.1f}%/≥3开{zbc_ge3_ratio:.1f}%/均开{avg_zbc:.2f}｜"
+        f"扩散{int(loss)}｜量能{vol_chg:+.2f}%"
+    )
+    d_fb = delta_text("fb_rate", "pp")
+    d_jj = delta_text("jj_rate", "pp")
+    d_zb = delta_text("zb_rate", "pp")
+    delta_parts = []
+    if d_fb:
+        delta_parts.append(f"Δ封{d_fb}")
+    if d_jj:
+        delta_parts.append(f"Δ晋{d_jj}")
+    if d_zb:
+        delta_parts.append(f"Δ炸{d_zb}")
+    delta_line = bar(*delta_parts)
+    # 一句话解读：承接/分歧/风险趋势
+    take = []
+    if fb >= 70 and jj >= 30:
+        take.append("承接回暖")
+    elif fb < 60 or jj < 25:
+        take.append("承接偏弱")
+    if zb >= 35 or zbc_ge3_ratio >= 18:
+        take.append("分歧偏大")
+    if loss >= 12 or risk >= 60:
+        take.append("风险偏高")
+    if not take:
+        take.append("震荡中性")
+    # 动作建议：更像复盘而不是数据播报
+    action_hint = (
+        "动作：优先主线核心/回封确认，避免追高一致；"
+        "若扩散继续走高则降级为低位试错/休息。"
+    )
+    meta_detail = bar(concise, delta_line, "解读：" + "、".join(take) + "。", action_hint)
 
     def desc_short(s: str, *, limit: int = 60) -> str:
         """
@@ -338,9 +372,9 @@ def build_action_guide_v2(market_data: Dict[str, Any]) -> Dict[str, Any]:
             "dot": "dot-safe",
             "title": f"开盘① 定主线：{main_name}",
             "desc": bar(
-                f"净强{theme_net:.1f} · 风险{theme_risk:.1f}",
-                f"拥挤(重叠){overlap_score:.1f}%",
-                f"保留底线：净强≥{max(theme_net-1.0,0):.1f}",
+                f"看点：主线是否继续承接（净强{theme_net:.1f}/风险{theme_risk:.1f}）",
+                f"拥挤{overlap_score:.1f}%",
+                f"动作：围绕主线辨识度做（非主线少碰）",
             ),
             "tags": [
                 tag(f"样本{main_examples}", "ladder-chip-cool blue-text"),
@@ -350,11 +384,12 @@ def build_action_guide_v2(market_data: Dict[str, Any]) -> Dict[str, Any]:
             "dot": "dot-safe",
             "title": "开盘② 定节奏：承接 vs 分歧",
             "desc": bar(
-                f"承接：封板{fb:.1f}% / 晋级{jj:.1f}% / 早封{early:.1f}%",
-                f"分歧：炸板{zb:.1f}% / ≥3开板{zbc_ge3_ratio:.1f}% / 均开板{avg_zbc:.2f}",
+                f"承接：封{fb:.1f}/晋{jj:.1f}/早{early:.1f}",
+                f"分歧：炸{zb:.1f}/≥3开{zbc_ge3_ratio:.1f}/均开{avg_zbc:.2f}",
+                "动作：承接强→接力/换手；分歧大→只做回封与低位确认",
             ),
             "tags": [
-                *(x for x in [dtag("fb_rate", "pp"), dtag("jj_rate", "pp"), dtag("zb_rate", "pp"), dtag("loss")] if x),
+                *(x for x in [dtag("fb_rate", "pp"), dtag("jj_rate", "pp"), dtag("zb_rate", "pp")] if x),
             ],
         },
     ]

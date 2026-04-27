@@ -9,11 +9,15 @@ on:
       - main
   # 定时触发（可按需调整；cron 为 UTC）
   schedule:
-    # 说明：GitHub Actions 的 cron 只支持 UTC，不能直接写“北京时间”。
-    # 北京时间（UTC+8）：
-    # - 11:31 -> UTC 03:31
-    # - 15:01 -> UTC 07:01
-    - cron: "31 3 * * 1-5"
+    # GitHub Actions cron 只支持 UTC（北京时间=UTC+8）
+    # 盘中半小时快照（从 09:35 开始）：09:35 / 10:05 / 10:35 / 11:05 / 13:05 / 13:35 / 14:05 / 14:35
+    # UTC 对应：01:35 / 02:05 / 02:35 / 03:05 / 05:05 / 05:35 / 06:05 / 06:35
+    - cron: "35 1 * * 1-5"
+    - cron: "5,35 2 * * 1-5"
+    - cron: "5 3 * * 1-5"
+    - cron: "5,35 5 * * 1-5"
+    - cron: "5,35 6 * * 1-5"
+    # 收盘后补一版（北京时间 15:01 -> UTC 07:01）
     - cron: "1 7 * * 1-5"
 
 permissions:
@@ -45,25 +49,52 @@ jobs:
           set -euo pipefail
           now_bj="$(date +'%H:%M')"
           echo "beijing_now=${now_bj}"
-          # 说明：
-          # - GitHub schedule 可能延迟启动（几分钟属于正常）
-          # - 这里给一个容错窗口，避免因为延迟导致“误跳过”
-          #
-          # 双时点目标（北京时间）：11:31 / 15:01
           now_min=$((10#$(date +%H)*60 + 10#$(date +%M)))
-          t1=$((11*60+31))
-          t2=$((15*60+1))
-          tol=10
-          in_window=false
-          if [ $(( now_min > t1 - tol && now_min < t1 + tol )) -eq 1 ]; then in_window=true; fi
-          if [ $(( now_min > t2 - tol && now_min < t2 + tol )) -eq 1 ]; then in_window=true; fi
-          if [ "${in_window}" != "true" ]; then
-            echo "skip=true" >> "$GITHUB_OUTPUT"
-            echo "Not in target time window (11:31/15:01 ± ${tol}m), skip."
-          else
-            echo "skip=false" >> "$GITHUB_OUTPUT"
-            echo "Target time window hit, continue."
+          tol=7  # 允许 GitHub cron 延迟
+
+          # 盘中半小时快照（北京时间）：09:35 / 10:05 / 10:35 / 11:05 / 13:05 / 13:35 / 14:05 / 14:35
+          targets=( $((9*60+35)) $((10*60+5)) $((10*60+35)) $((11*60+5)) $((13*60+5)) $((13*60+35)) $((14*60+5)) $((14*60+35)) )
+          hit_intraday=false
+          for t in "${targets[@]}"; do
+            if [ $(( now_min > t - tol && now_min < t + tol )) -eq 1 ]; then
+              hit_intraday=true
+              break
+            fi
+          done
+
+          # 收盘后补一版（北京时间 15:01）
+          t_close=$((15*60+1))
+          hit_close=false
+          if [ $(( now_min > t_close - 12 && now_min < t_close + 12 )) -eq 1 ]; then
+            hit_close=true
           fi
+
+          if [ "${hit_close}" = "true" ]; then
+            echo "skip=false" >> "$GITHUB_OUTPUT"
+            echo "mode=eod" >> "$GITHUB_OUTPUT"
+            echo "Close window hit → eod"
+          elif [ "${hit_intraday}" = "true" ]; then
+            echo "skip=false" >> "$GITHUB_OUTPUT"
+            echo "mode=intraday" >> "$GITHUB_OUTPUT"
+            echo "Intraday window hit → intraday"
+          else
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+            echo "mode=skip" >> "$GITHUB_OUTPUT"
+            echo "Not in any window, skip."
+          fi
+
+      - name: Compute cache key (Beijing date)
+        id: datekey
+        if: ${{ github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true' }}
+        run: |
+          echo "d8=$(date +%Y%m%d)" >> "$GITHUB_OUTPUT"
+
+      - name: Restore cache/ (persist intraday snapshots)
+        uses: actions/cache@v4
+        if: ${{ github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true' }}
+        with:
+          path: cache
+          key: cache-${{ runner.os }}-${{ steps.datekey.outputs.d8 }}
 
       - name: Setup Python
         uses: actions/setup-python@v6
@@ -86,8 +117,18 @@ jobs:
             echo "Missing secrets.BIYING_TOKEN"
             exit 2
           fi
-          # qr.sh fetch：仅在线取数落缓存（有成本）→ 再用 v2 pipeline 离线重建 → 输出 html/*tab-v1.html
-          ./qr.sh fetch
+          mode="${{ steps.timecheck.outputs.mode }}"
+          if [ "${{ github.event_name }}" != "schedule" ]; then
+            mode="eod"
+          fi
+          echo "Run mode=${mode}"
+          if [ "${mode}" = "intraday" ]; then
+            # 盘中快照：每半小时一次（数据截止当前时刻）
+            PYTHONPATH=. python3 -m daily_review.cli --mode intraday
+          else
+            # 收盘版：在线取数落缓存（有成本）→ 再用 v2 pipeline 离线重建 → 输出 html/*tab-v1.html
+            ./qr.sh fetch
+          fi
 
       - name: Prepare Pages site (html/ as site root)
         if: ${{ github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true' }}

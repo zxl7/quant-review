@@ -483,20 +483,19 @@
       /* Panorama */
       .panorama-grid {
         display: grid;
-        grid-template-columns: repeat(4, 1fr);
-        gap: 0;
-        margin-bottom: 16px;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 10px;
+        margin-bottom: 0;
         border-radius: 16px;
-        overflow: hidden;
-        border: 1px solid var(--border);
-        background: rgba(255,255,255,0.03);
-      }
-      @media (max-width: 500px) {
-        .panorama-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; border: none; background: transparent; overflow: visible; }
+        overflow: visible;
+        border: none;
+        background: transparent;
       }
       .overview-grid { display:grid; grid-template-columns: 1.2fr 1fr; gap: 14px; }
       @media (max-width: 900px){ .overview-grid { grid-template-columns: 1fr; } }
       .overview-grid > *{ min-width: 0; } /* 防止子项撑破网格导致横向溢出 */
+      .overview-grid{ align-items: start; }
+      .overview-grid > div{ display:grid; gap: 12px; align-content: start; }
       .delta-badge{
         display:inline-flex;
         align-items:center;
@@ -516,36 +515,34 @@
       .delta-badge.muted{ color: var(--text-muted); }
       .panorama-box {
         text-align: center;
-        padding: 14px 10px;
-        border-radius: 0;
-        background: transparent;
-        transition: background 0.18s ease;
-        border: none;
+        padding: 14px 12px;
+        border-radius: 16px;
+        background: linear-gradient(135deg,
+          rgba(255,255,255,0.70),
+          color-mix(in oklab, var(--theme-soft) 10%, rgba(255,255,255,0.48))
+        );
+        transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
+        border: 1px solid color-mix(in oklab, var(--border) 78%, var(--theme-glow) 22%);
         position: relative;
       }
-      .panorama-box::after{
-        content:"";
-        position:absolute;
-        top: 10px;
-        right: 0;
-        bottom: 10px;
-        width: 1px;
-        background: rgba(148,163,184,0.22);
+      [data-theme="dark"] .panorama-box{
+        background: linear-gradient(135deg,
+          rgba(15,23,42,0.56),
+          color-mix(in oklab, var(--theme-soft) 10%, rgba(15,23,42,0.38))
+        );
+        border-color: rgba(148,163,184,0.22);
       }
-      .panorama-box:nth-child(4)::after{ display:none; }
-      .panorama-box:hover { background: rgba(255,255,255,0.05); }
+      .panorama-box:hover{
+        transform: translateY(-1px);
+        box-shadow: 0 14px 30px rgba(2,6,23,0.08);
+        border-color: color-mix(in oklab, var(--border) 65%, var(--theme-glow) 35%);
+      }
       .panorama-box.pulse { animation: boxPulse 2s ease-in-out; }
       @keyframes boxPulse { 0%, 100% { box-shadow: none; } 50% { box-shadow: 0 0 22px var(--theme-glow); } }
-      .panorama-num { font-size: 30px; font-weight: 900; line-height: 1.1; margin-bottom: 6px; }
+      .panorama-num { font-size: clamp(22px, 3.4vw, 30px); font-weight: 1000; line-height: 1.1; margin-bottom: 6px; }
       .panorama-label { font-size: 12px; color: var(--text-muted); font-weight: 600; }
-      @media (max-width: 500px){
-        .panorama-box{
-          border-radius: var(--radius-md);
-          background: var(--bg-elevated);
-          border: 1px solid var(--border);
-        }
-        .panorama-box::after{ display:none; }
-      }
+      #sec-panorama .insight-banner{ margin-top: 0; }
+      #sec-panorama .tri-strip{ margin-top: 0; }
 
       /* Volume */
       .volume-info-box { background: var(--bg-elevated); border-radius: var(--radius-md); padding: 20px; display: flex; align-items: center; gap: 20px; margin-bottom: 20px; border: 1px solid var(--border); }
@@ -1309,6 +1306,16 @@
         .metric-v{ font-size: 18px; }
       }
 
+      /* 股票链接（雪球） */
+      a.stock-link{
+        color: inherit;
+        text-decoration: none;
+        border-bottom: 1px dashed rgba(148,163,184,0.35);
+      }
+      a.stock-link:hover{
+        border-bottom-color: rgba(37,99,235,0.65);
+      }
+
       /* 图：承接/一致性/风险（moodCards）——不使用“长列表框”，改为三栏面板（更紧凑） */
       .mc-panels{
         margin-top: 10px;
@@ -1825,32 +1832,36 @@
       .action-body{ flex: 1; min-width: 0; }
       .action-line{
         display:flex;
-        align-items:center;
-        gap: 10px;
+        align-items:flex-start;
+        flex-wrap: wrap;
+        gap: 6px 10px;
         min-width: 0;
       }
       .action-title{
         font-size: 13px;
         color: var(--text-primary);
         font-weight: 950;
-        white-space: nowrap;
+        width: 100%;
+        white-space: normal;
+        min-width: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
       }
       .action-desc{
-        flex: 1;
-        min-width: 0;
+        width: 100%;
         font-size: 12px;
         color: var(--text-secondary);
         font-weight: 600;
-        white-space: nowrap;
         overflow: hidden;
-        text-overflow: ellipsis;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
       }
       .action-tags{
         display:flex;
         gap: 6px;
-        flex-wrap: nowrap;
-        flex-shrink: 0;
-        max-width: 42%;
+        flex-wrap: wrap;
+        max-width: 100%;
         overflow: hidden;
       }
       .action-tags .ladder-chip{ padding: 1px 6px; font-size: 11px; }
@@ -1883,6 +1894,53 @@
       }
       .plan-banner strong{ display:block; font-size: 13px; font-weight: 950; margin-bottom: 4px; }
       .plan-banner .plan-banner-sub{ margin-top: 6px; font-size: 12px; color: var(--text-secondary); font-weight: 650; line-height: 1.55; }
+
+      /* 实时盯盘：红绿灯（正面/风险触发器） */
+      .watch-panel{
+        margin-top: 10px;
+        border-radius: 16px;
+        border: 1px solid color-mix(in oklab, var(--border) 70%, var(--theme-glow) 30%);
+        background: linear-gradient(135deg,
+          color-mix(in oklab, var(--theme-soft) 12%, rgba(255,255,255,0.06)),
+          rgba(255,255,255,0.02)
+        );
+        padding: 10px 12px;
+      }
+      [data-theme="dark"] .watch-panel{ background: rgba(15,23,42,0.22); border-color: rgba(148,163,184,0.22); }
+      .watch-head{
+        display:flex;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: 10px;
+        margin-bottom: 8px;
+      }
+      .watch-head .h{ font-size: 12px; font-weight: 950; color: var(--text-primary); letter-spacing: 0.2px; }
+      .watch-head .tip{ font-size: 11px; font-weight: 800; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 65%; }
+      .watch-grid{ display:grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+      @media (max-width: 900px){ .watch-grid{ grid-template-columns: 1fr; } }
+      .watch-col{ border-radius: 14px; border: 1px solid rgba(148,163,184,0.18); background: rgba(255,255,255,0.45); padding: 10px 10px; }
+      [data-theme="dark"] .watch-col{ background: rgba(15,23,42,0.40); border-color: rgba(148,163,184,0.18); }
+      .watch-col.pos{ border-color: rgba(239,68,68,0.22); }
+      .watch-col.risk{ border-color: rgba(16,185,129,0.22); }
+      .watch-item{ display:flex; gap: 10px; align-items:flex-start; padding: 8px 8px; border-radius: 12px; }
+      .watch-item + .watch-item{ margin-top: 6px; }
+      .watch-main{ min-width:0; }
+      .watch-title{ font-size: 12px; font-weight: 950; color: var(--text-primary); }
+      .watch-sub{ margin-top: 3px; font-size: 11px; font-weight: 700; color: var(--text-secondary); line-height: 1.35; overflow-wrap:anywhere; }
+      .watch-badges{ display:flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
+      .watch-pill{
+        font-size: 11px;
+        font-weight: 950;
+        padding: 3px 8px;
+        border-radius: 999px;
+        border: 1px solid rgba(148,163,184,0.20);
+        background: rgba(255,255,255,0.62);
+        white-space: nowrap;
+      }
+      [data-theme="dark"] .watch-pill{ background: rgba(15,23,42,0.55); border-color: rgba(148,163,184,0.22); }
+      .watch-pill.on{ border-color: rgba(239,68,68,0.35); color: #991b1b; }
+      .watch-pill.watch{ border-color: rgba(245,158,11,0.32); color: #92400e; }
+      .watch-pill.off{ border-color: rgba(148,163,184,0.22); color: var(--text-muted); }
 
       /* 明日行动指南：2+2 列表并排（桌面），手机自动上下 */
       .action-grid{
@@ -2559,6 +2617,7 @@
       body[data-page="themes"] .card[data-page="themes"] { display: block; }
       body[data-page="ladder"] .card[data-page="ladder"] { display: block; }
       body[data-page="plan"] .card[data-page="plan"] { display: block; }
+      body[data-page="watch"] .card[data-page="watch"] { display: block; }
 
       /* Page blocks（非 card 的页面块，如 summary/toc） */
       .page-block[data-page] { display: none; }
@@ -3013,6 +3072,7 @@
       <!-- Tabs：单文件双页（短线情绪 / 板块题材） -->
       <div class="tabbar">
         <button class="tab-btn active" data-page="sentiment" type="button">短线情绪</button>
+        <button class="tab-btn" data-page="watch" type="button">实时盯盘</button>
         <button class="tab-btn" data-page="themes" type="button">板块题材</button>
         <button class="tab-btn" data-page="ladder" type="button">连板天梯</button>
         <button class="tab-btn" data-page="plan" type="button">明日计划</button>
@@ -3193,9 +3253,13 @@
                   <details style="margin-top:10px;" v-if="(marketData.riskEngine.faceList || []).length">
                     <summary style="cursor:pointer; color:var(--text-muted); font-weight:900; font-size:12px;">展开大面明细（样本）</summary>
                     <div class="metric-rows" style="margin-top:10px;">
-                      <div class="metric-row" v-for="(x, i) in (marketData.riskEngine.faceList || [])" :key="'face-'+i">
+                      <div class="metric-row" v-for="(x, i) in (marketData.riskEngine.faceList || []).slice(0, 5)" :key="'face-'+i">
                         <div class="metric-left">
-                          <div class="metric-k">{{ x.rank }}. {{ x.name }} <span style="color:var(--text-muted);font-weight:900;">{{ x.code }}</span></div>
+                          <div class="metric-k">
+                            {{ x.rank }}.
+                            <a class="stock-link" :href="xqUrl(x.code)" target="_blank" rel="noopener noreferrer">{{ x.name }}</a>
+                            <span style="color:var(--text-muted);font-weight:900;">{{ x.code }}</span>
+                          </div>
                           <div class="metric-note">题材/行业：{{ x.sector }}<span v-if="x.wasZt">｜昨涨停</span><span v-if="x.lbHeight">｜{{ x.lbHeight }}板</span></div>
                         </div>
                         <div class="metric-v green-text">{{ x.pct }}%</div>
@@ -3934,6 +3998,8 @@
         <div style="margin-top: 12px; padding: 10px 14px; background: rgba(239, 68, 68, 0.08); border-radius: var(--radius-sm); font-size: 12px; color: var(--danger); font-weight: 600" id="brokenList">
           ❌ 昨日断板：大胜达(2板) / 申通快递(2板) / 丽江股份(2板)
         </div>
+        <!-- 首板：放在天梯卡片最下面，默认折叠 -->
+        <details id="firstBoardDetails" style="margin-top:12px;"></details>
       </div>
 
       <!-- 已收口：板块 TOP5 与题材归因并入「多板块情绪热力图」与「结构拆解证据链」，避免重复 -->
@@ -3957,6 +4023,63 @@
           TOP5合计：<strong style="color: var(--text-primary)">{{ marketData.top10Summary.top5_sum_yi }}</strong>
           | {{ marketData.top10Summary.top5_sectors }}
         </div>
+      </div>
+
+      <!-- 实时盯盘（独立 Tab） -->
+      <div class="card" data-page="watch" id="sec-watch">
+        <div class="card-title">实时盯盘</div>
+        <div class="watch-panel" v-if="marketData.moodSignals">
+          <div class="watch-head">
+            <div class="h">红绿灯</div>
+            <div class="tip">
+              {{ marketData.moodSignals.headline || '盯盘重点：承接/分歧/扩散三件事' }}
+              <span v-if="marketData.moodSignals.updatedAt">｜更新 {{ marketData.moodSignals.updatedAt }}</span>
+            </div>
+          </div>
+          <div class="watch-grid">
+            <div class="watch-col pos">
+              <div class="watch-item" v-for="(s, i) in (marketData.moodSignals.pos || [])" :key="'wpos-tab-'+i">
+                <div class="watch-main">
+                  <div class="watch-title">{{ s.title }}</div>
+                  <div class="watch-sub">{{ s.value }} <span v-if="s.delta">（{{ s.delta }}）</span>｜{{ s.why }}</div>
+                  <div class="watch-sub" style="margin-top:4px; color: var(--text-muted);">{{ s.action }}</div>
+                  <div class="watch-badges">
+                    <span class="watch-pill" :class="s.status">{{ s.status === 'on' ? '触发' : (s.status === 'watch' ? '观察' : '中性') }}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="watch-col risk">
+              <div class="watch-item" v-for="(s, i) in (marketData.moodSignals.risk || [])" :key="'wrisk-tab-'+i">
+                <div class="watch-main">
+                  <div class="watch-title">{{ s.title }}</div>
+                  <div class="watch-sub">{{ s.value }} <span v-if="s.delta">（{{ s.delta }}）</span>｜{{ s.why }}</div>
+                  <div class="watch-sub" style="margin-top:4px; color: var(--text-muted);">{{ s.action }}</div>
+                  <div class="watch-badges">
+                    <span class="watch-pill" :class="s.status">{{ s.status === 'on' ? '触发' : (s.status === 'watch' ? '观察' : '中性') }}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <details class="inset" v-if="marketData.intradaySnapshots && (marketData.intradaySnapshots.snapshots || []).length" style="margin-top:12px;">
+          <summary style="cursor:pointer; color:var(--text-muted); font-weight:900; font-size:12px;">
+            展开半小时快照（{{ marketData.intradaySnapshots.count || (marketData.intradaySnapshots.snapshots || []).length }}）
+          </summary>
+          <div class="metric-rows" style="margin-top:10px;">
+            <div class="metric-row" v-for="(x, i) in (marketData.intradaySnapshots.snapshots || [])" :key="'snap-'+i">
+              <div class="metric-left">
+                <div class="metric-k">{{ x.time }}｜{{ x.headline || '—' }}</div>
+                <div class="metric-note">
+                  封{{ x.fb ?? '-' }}% · 晋{{ x.jj ?? '-' }}% · 炸{{ x.zb ?? '-' }}% · 扩散{{ x.loss ?? '-' }} · 热{{ x.heat ?? '-' }}/险{{ x.risk ?? '-' }}
+                </div>
+              </div>
+              <div class="metric-v">{{ x.hm2 ?? '-' }}</div>
+            </div>
+          </div>
+        </details>
       </div>
 
       <!-- 明日行动指南 -->
@@ -4055,17 +4178,19 @@
             <div class="section-header">接力候选（更偏“明日可接”）</div>
             <div class="zt-list">
               <div class="zt-item"
-                   v-for="(row, i) in (marketData.ztAnalysis?.relay || [])"
+                   v-for="(row, i) in ztRelaySorted"
                    :key="'relay-'+i"
                    :data-level="(Number(row.score) >= 75) ? 'hi' : ((Number(row.score) >= 55) ? 'mid' : 'lo')">
                 <div class="zt-top">
                   <div>
-                    <div class="zt-name">{{ row.name }}</div>
+                    <div class="zt-name">
+                      <a v-if="row.code" class="stock-link" :href="xqUrl(row.code)" target="_blank" rel="noopener noreferrer">{{ row.name }}</a>
+                      <span v-else>{{ row.name }}</span>
+                    </div>
                     <div class="zt-sub" v-html="row.reason"></div>
                   </div>
                   <div class="zt-score">
                     <div class="v">{{ row.score }}</div>
-                    <div class="k">综合分</div>
                   </div>
                 </div>
                 <div class="zt-tags">
@@ -4078,17 +4203,19 @@
             <div class="section-header">观察池（大容量/前龙头，看情绪反馈）</div>
             <div class="zt-list">
               <div class="zt-item"
-                   v-for="(row, i) in (marketData.ztAnalysis?.watch || [])"
+                   v-for="(row, i) in ztWatchSorted"
                    :key="'watch-'+i"
                    :data-level="(Number(row.score) >= 75) ? 'hi' : ((Number(row.score) >= 55) ? 'mid' : 'lo')">
                 <div class="zt-top">
                   <div>
-                    <div class="zt-name">{{ row.name }}</div>
+                    <div class="zt-name">
+                      <a v-if="row.code" class="stock-link" :href="xqUrl(row.code)" target="_blank" rel="noopener noreferrer">{{ row.name }}</a>
+                      <span v-else>{{ row.name }}</span>
+                    </div>
                     <div class="zt-sub" v-html="row.reason"></div>
                   </div>
                   <div class="zt-score">
                     <div class="v">{{ row.score }}</div>
-                    <div class="k">综合分</div>
                   </div>
                 </div>
                 <div class="zt-tags">
@@ -4300,6 +4427,18 @@
               if (v === undefined || v === null || v === '') return fallback;
               // 小数展示控制交给模板，此处仅返回值
               return v;
+            },
+            /**
+             * 雪球跳转链接（SH/SZ + 代码）
+             * 示例：https://xueqiu.com/S/SZ300136
+             */
+            xqUrl(code) {
+              const raw = String(code || '').trim();
+              const m = raw.match(/(\d{6})/);
+              const c = m ? m[1] : '';
+              if (!c) return 'https://xueqiu.com/S';
+              const prefix = (c.startsWith('6') || c.startsWith('688') || c.startsWith('900')) ? 'SH' : 'SZ';
+              return `https://xueqiu.com/S/${prefix}${c}`;
             },
             // 已移除：metaPack/metaSummary（研发信息不在产品上展示）
             /**
@@ -4882,6 +5021,12 @@
               if (key === 'dt') return this.deltaBadge(get('dt'));
               if (key === 'bf_count') return this.deltaBadge(get('bf_count'));
               if (key === 'max_lb') return this.deltaBadge(get('max_lb'));
+              // 赚钱效应（hm2Compare）兼容：用最关键的 Δ 做对比
+              if (key === 'profit') return this.deltaBadge(get('heat'));      // 热度变化
+              if (key === 'strength') return this.deltaBadge(get('jj_rate'), 'pp');
+              if (key === 'cons') return this.deltaBadge(get('fb_rate'), 'pp');
+              if (key === 'loss') return this.deltaBadge(get('loss'));        // 扩散变化
+              if (key === 'diverge') return this.deltaBadge(get('zb_rate'), 'pp');
               return '';
             },
             moodGroup(label) {
@@ -4934,7 +5079,17 @@
             prev() { return this.marketData?.prev || {}; },
             pos() { return this.positionAdvice(); },
             hm() { return this.buildHeatmap(); },
-            hm2() { return this.buildMoodHeatmapV2(); },
+            hm2() {
+              const raw = this.marketData?.hm2Compare;
+              if (raw && Array.isArray(raw.cells)) {
+                const cells = raw.cells.map(c => ({
+                  ...c,
+                  deltaHtml: c.deltaHtml || this.heatmapDeltaBadge(c),
+                }));
+                return { ...raw, cells };
+              }
+              return this.buildMoodHeatmapV2();
+            },
             hm2PosCells() {
               const cells = this.hm2?.cells || [];
               const order = ['profit', 'strength', 'cons'];
@@ -4944,6 +5099,16 @@
               const cells = this.hm2?.cells || [];
               const order = ['loss', 'diverge', 'crowd'];
               return order.map(k => cells.find(c => c && c.key === k)).filter(Boolean);
+            },
+            ztRelaySorted() {
+              const rows = (this.marketData?.ztAnalysis?.relay || []).slice();
+              rows.sort((a, b) => Number(b?.score || 0) - Number(a?.score || 0));
+              return rows;
+            },
+            ztWatchSorted() {
+              const rows = (this.marketData?.ztAnalysis?.watch || []).slice();
+              rows.sort((a, b) => Number(b?.score || 0) - Number(a?.score || 0));
+              return rows;
             },
             sectorHeat() { return this.marketData?.sectorHeatmap || this.buildSectorHeatmap(); },
             moodTriCards() { return this.buildMoodTriCards(); },
@@ -5721,6 +5886,16 @@
         const container = document.getElementById("ladderBody");
         if (!container) return;
         const summaryEl = document.getElementById("ladderSummary");
+        const firstBoardEl = document.getElementById("firstBoardDetails");
+
+        const xqUrl = (code) => {
+          const raw = String(code || '').trim();
+          const m = raw.match(/(\d{6})/);
+          const c = m ? m[1] : '';
+          if (!c) return 'https://xueqiu.com/S';
+          const prefix = (c.startsWith('6') || c.startsWith('688') || c.startsWith('900')) ? 'SH' : 'SZ';
+          return `https://xueqiu.com/S/${prefix}${c}`;
+        };
 
         // 兜底：若当天没有 2 板及以上（或数据缺失），给明确提示，避免误以为渲染失败
         if (!Array.isArray(data) || data.length === 0) {
@@ -5750,6 +5925,61 @@
             </div>
           `;
           return;
+        }
+
+        // 首板（从 ztgc 推导）：默认折叠
+        if (firstBoardEl) {
+          try {
+            const ztgc = Array.isArray(marketData?.ztgc) ? marketData.ztgc : [];
+            const first = ztgc
+              .filter(s => Number(s?.lbc ?? s?.lbHeight ?? 0) === 1)
+              .map(s => ({
+                name: String(s?.mc || s?.name || ''),
+                code: String(s?.dm || s?.code || ''),
+                zj: Number(s?.zj ?? 0),
+                zbc: Number(s?.zbc ?? 0),
+              }))
+              .filter(x => x.name && x.code);
+            first.sort((a, b) => (b.zj - a.zj) || (a.zbc - b.zbc));
+            const top = first.slice(0, 24);
+            const fmtYi = (v) => (Number.isFinite(Number(v)) && Number(v) > 0) ? `${(Number(v) / 1e8).toFixed(Number(v) / 1e8 >= 10 ? 0 : 1)}亿` : '-';
+            if (top.length) {
+              firstBoardEl.innerHTML = `
+                <summary style="cursor:pointer; color:var(--text-muted); font-weight:900; font-size:12px;">展开首板（${first.length}）</summary>
+                <div class="ladder-row" style="margin-top:10px;">
+                  <div class="ladder-left">
+                    <div class="ladder-left-top">
+                      <span class="ladder-badge badge-1">首板</span>
+                    </div>
+                    <div class="ladder-left-meta">${first.length}只</div>
+                    <div class="ladder-left-kpi">按封单排序 · 默认折叠</div>
+                  </div>
+                  <div class="ladder-stock-list">
+                    ${top.map((x) => {
+                      const openTag = Number(x.zbc || 0) >= 1 ? `${Number(x.zbc)}次开板` : '';
+                      const chips = [
+                        `<span class="ladder-chip ladder-chip-mini blue-text">首板</span>`,
+                        openTag ? `<span class="ladder-chip ladder-chip-mini ${Number(x.zbc) >= 2 ? 'orange-text' : 'blue-text'}">${openTag}</span>` : '',
+                        (Number(x.zj || 0) > 0) ? `<span class="ladder-chip ladder-chip-mini ${Number(x.zj)/1e8 >= 5 ? 'red-text' : 'orange-text'}">${fmtYi(x.zj)}封</span>` : '',
+                      ].filter(Boolean).join('');
+                      return `
+                        <div class="ladder-stock-card">
+                          <div class="ladder-stock-top">
+                            <div class="ladder-stock-name"><a class="stock-link" href="${xqUrl(x.code)}" target="_blank" rel="noopener noreferrer">${x.name}</a></div>
+                            <div class="ladder-stock-tags">${chips}</div>
+                          </div>
+                        </div>
+                      `;
+                    }).join('')}
+                  </div>
+                </div>
+              `;
+            } else {
+              firstBoardEl.innerHTML = '';
+            }
+          } catch (e) {
+            firstBoardEl.innerHTML = '';
+          }
         }
 
         const groups = [...data.reduce((acc, row) => {
@@ -5883,7 +6113,7 @@
                   return `
                   <div class="ladder-stock-card">
                     <div class="ladder-stock-top">
-                      <div class="ladder-stock-name">${row.name}</div>
+                      <div class="ladder-stock-name"><a class="stock-link" href="${xqUrl(row.code || row.dm || '')}" target="_blank" rel="noopener noreferrer">${row.name}</a></div>
                       <div class="ladder-stock-tags">${chipsTop}</div>
                     </div>
                     ${chipsMeta ? `<div class="ladder-meta-row">${chipsMeta}</div>` : ''}

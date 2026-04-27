@@ -18,6 +18,7 @@ from .theme_layers import THEME_LAYERS_MODULE
 from .action_guide import ACTION_GUIDE_MODULE
 from .summary3 import SUMMARY3_MODULE
 from .learning_notes import LEARNING_NOTES_MODULE
+from .mood_signals import MOOD_SIGNALS_MODULE
 
 ALL_MODULES = [
     PANORAMA_MODULE,
@@ -35,6 +36,7 @@ ALL_MODULES = [
     THEME_LAYERS_MODULE,
     STYLE_RADAR_MODULE,
     LEADER_MODULE,
+    MOOD_SIGNALS_MODULE,
     ACTION_GUIDE_MODULE,
     SUMMARY3_MODULE,
     LEARNING_NOTES_MODULE,
