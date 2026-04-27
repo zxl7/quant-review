@@ -1859,34 +1859,7 @@
         .engine-bar{ width: 96px; }
       }
 
-      /* 统一口径/数据源说明（折叠） */
-      .meta-box{
-        margin-top: 10px;
-        border-radius: 14px;
-        border: 1px dashed rgba(148,163,184,0.26);
-        background: rgba(148,163,184,0.06);
-        padding: 10px 12px;
-      }
-      [data-theme="dark"] .meta-box{
-        background: rgba(148,163,184,0.10);
-        border-color: rgba(148,163,184,0.26);
-      }
-      .meta-box summary{
-        cursor: pointer;
-        font-size: 12px;
-        font-weight: 900;
-        color: var(--text-muted);
-        list-style: none;
-      }
-      .meta-box summary::-webkit-details-marker{ display:none; }
-      .meta-line{
-        margin-top: 8px;
-        font-size: 12px;
-        font-weight: 650;
-        color: var(--text-secondary);
-        line-height: 1.6;
-      }
-      .meta-k{ color: var(--text-muted); font-weight: 900; }
+      /* 已移除：口径/数据源展示（按要求模板不展示） */
       /* 已删除：情绪六维雷达（仅保留市场风格雷达） */
 
       /* Mood Tri-Cards（赚/险/资） */
@@ -2628,7 +2601,6 @@
               <span>短线复盘 · 情绪监控</span>
             </div>
             <div class="hero-date">__REPORT_DATE_CN__收盘简报</div>
-            <div class="hero-subtitle">数据来源：风中一刀的主升浪丨</div>
             <div class="hero-subtitle" v-if="marketData.meta">
               数据更新时间：指数 {{ marketData.meta?.asOf?.indices || '-' }}
               ｜全景 {{ marketData.meta?.asOf?.pools || '-' }}
@@ -2923,12 +2895,7 @@
                   </details>
                 </div>
 
-                <details class="meta-box" v-if="metaPack(marketData.riskEngine)">
-                  <summary>口径 / 数据源（riskEngine） · {{ metaSummary(marketData.riskEngine) }}</summary>
-                  <div class="meta-line" v-for="(t, idx) in (metaPack(marketData.riskEngine)?.notes || [])" :key="'rm-'+idx">
-                    <span class="meta-k">•</span> {{ t }}
-                  </div>
-                </details>
+                <!-- 已移除：口径/数据源（按要求模板不展示） -->
               </div>
 
               <div class="metric-rows" v-else>
@@ -3037,12 +3004,7 @@
                   </div>
                 </div>
 
-                <details class="meta-box" v-if="metaPack(marketData.divergenceEngine)">
-                  <summary>口径 / 数据源（divergenceEngine） · {{ metaSummary(marketData.divergenceEngine) }}</summary>
-                  <div class="meta-line" v-for="(t, idx) in (metaPack(marketData.divergenceEngine)?.notes || [])" :key="'dm-'+idx">
-                    <span class="meta-k">•</span> {{ t }}
-                  </div>
-                </details>
+                <!-- 已移除：口径/数据源（按要求模板不展示） -->
               </div>
 
               <div class="metric-rows" v-else>
@@ -3127,12 +3089,7 @@
             </div>
           </div>
 
-          <details class="meta-box" v-if="metaPack(marketData.threeQuadrants)">
-            <summary>口径 / 数据源（threeQuadrants） · {{ metaSummary(marketData.threeQuadrants) }}</summary>
-            <div class="meta-line" v-for="(t, idx) in (metaPack(marketData.threeQuadrants)?.notes || [])" :key="'tqm-'+idx">
-              <span class="meta-k">•</span> {{ t }}
-            </div>
-          </details>
+          <!-- 已移除：口径/数据源（按要求模板不展示） -->
 
           <details style="margin-top:12px;">
             <summary style="cursor:pointer; color:var(--text-muted); font-weight:900; font-size:12px;">展开指标明细</summary>
@@ -3271,12 +3228,7 @@
           </div>
         </details>
 
-        <details class="meta-box" v-if="metaPack(marketData.structureV2)">
-          <summary>口径 / 数据源（structureV2） · {{ metaSummary(marketData.structureV2) }}</summary>
-          <div class="meta-line" v-for="(t, idx) in (metaPack(marketData.structureV2)?.notes || [])" :key="'s2m-'+idx">
-            <span class="meta-k">•</span> {{ t }}
-          </div>
-        </details>
+        <!-- 已移除：口径/数据源（按要求模板不展示） -->
       </div>
 
       <!-- 赚钱效应四维判断 -->
@@ -3448,12 +3400,7 @@
             <strong style="font-weight:950;">⚡ 结构性提示：</strong> {{ sectorHeat.alpha }}
           </div>
 
-          <details class="meta-box" v-if="metaPack(sectorHeat)">
-            <summary>口径 / 数据源（sectorHeatmap） · {{ metaSummary(sectorHeat) }}</summary>
-            <div class="meta-line" v-for="(t, idx) in (metaPack(sectorHeat)?.notes || [])" :key="'shm-'+idx">
-              <span class="meta-k">•</span> {{ t }}
-            </div>
-          </details>
+          <!-- 已移除：口径/数据源（按要求模板不展示） -->
         </div>
 
         <div class="tier-card" v-else>
@@ -3809,7 +3756,6 @@
           </div>
         </div>
         <p>📊 生成时间：__REPORT_DATE__ 收盘</p>
-        <p>数据来源：风中一刀的主升浪丨</p>
         <p>K线为王 · 数据先行 · 不虚构不猜测</p>
       </div>
     </div>
@@ -3996,24 +3942,7 @@
               // 小数展示控制交给模板，此处仅返回值
               return v;
             },
-            metaPack(obj) {
-              const m = obj && typeof obj === 'object' ? obj.meta : null;
-              if (!m || typeof m !== 'object') return null;
-              const notes = [];
-              if (Array.isArray(m.notes)) notes.push(...m.notes.filter(Boolean));
-              if (typeof m.note === 'string' && m.note.trim()) notes.push(m.note.trim());
-              const asOf = (m.asOf || m.generatedAt || '').toString();
-              const precision = (m.precision || '').toString();
-              return { asOf, precision, notes };
-            },
-            metaSummary(obj) {
-              const p = this.metaPack(obj);
-              if (!p) return '';
-              const parts = [];
-              if (p.precision) parts.push(`口径：${p.precision}`);
-              if (p.asOf) parts.push(`asOf：${p.asOf}`);
-              return parts.join(' · ');
-            },
+            // 已移除：metaPack/metaSummary（按要求模板不展示“口径/数据源”）
             /**
              * 纯函数：对“正负号”类数值给主题色
              * - 红：正（上涨/放量）
