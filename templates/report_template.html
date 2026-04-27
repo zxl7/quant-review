@@ -153,6 +153,8 @@
         box-sizing: border-box;
       }
 
+      html, body{ max-width: 100%; overflow-x: hidden; }
+
       body {
         font-family: -apple-system, "SF Pro Text", "Helvetica Neue", "PingFang SC", "Microsoft YaHei", sans-serif;
         background: var(--bg-base);
@@ -161,6 +163,7 @@
         font-size: var(--type-md);
         font-variant-numeric: tabular-nums;
         padding: 24px 12px calc(60px + env(safe-area-inset-bottom, 0px));
+        overflow-x: hidden; /* 防止移动端横向溢出（双保险） */
         transition:
           background 0.3s,
           color 0.3s;
@@ -242,7 +245,7 @@
         position: relative;
         z-index: 1;
         display: grid;
-        grid-template-columns: 1.55fr 1fr;
+        grid-template-columns: 0.7fr 1fr;
         gap: 16px;
         align-items: end;
       }
@@ -416,10 +419,27 @@
       .index-val.down { color: var(--success) !important; }
       .index-val.flat { color: var(--warning) !important; }
       .index-pct { font-size: 13px; font-weight: 700; }
-      /* 指数涨跌：A股口径 红涨绿跌 */
+      /* 指数涨跌：A股规则（红涨绿跌） */
       .up { color: var(--danger) !important; }
       .down { color: var(--success) !important; }
       .flat { color: var(--warning) !important; }
+
+      /* 图一：Hero 红底下指数红字不清晰 → 数字提亮，涨跌用顶部细线表达 */
+      .hero .index-strip{
+        background: rgba(255, 255, 255, 0.14);
+        border-color: rgba(255, 255, 255, 0.20);
+      }
+      .hero .index-name{ color: rgba(255,255,255,0.82); opacity: 1; }
+      .hero .index-val,
+      .hero .index-val.up,
+      .hero .index-val.down,
+      .hero .index-val.flat{
+        color: rgba(255,255,255,0.96) !important;
+        text-shadow:
+          0 1px 0 rgba(0,0,0,0.22),
+          0 10px 22px rgba(0,0,0,0.22);
+      }
+      .hero .index-pct{ color: rgba(255,255,255,0.88); }
 
       /* 深色模式：指数卡片改为暗玻璃底，红绿字保持清晰 */
       [data-theme="dark"] .index-strip{
@@ -442,6 +462,7 @@
         box-shadow: var(--shadow-md);
         border: 1px solid var(--border);
         transition: background 0.3s, border-color 0.3s;
+        max-width: 100%;
       }
       .card-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
       .card-title {
@@ -475,6 +496,7 @@
       }
       .overview-grid { display:grid; grid-template-columns: 1.2fr 1fr; gap: 14px; }
       @media (max-width: 900px){ .overview-grid { grid-template-columns: 1fr; } }
+      .overview-grid > *{ min-width: 0; } /* 防止子项撑破网格导致横向溢出 */
       .delta-badge{
         display:inline-flex;
         align-items:center;
@@ -535,6 +557,9 @@
       .volume-change { font-size: 16px; font-weight: 800; }
       .volume-increase { font-size: 14px; font-weight: 600; }
       .insight-banner { display: grid; grid-template-columns: 120px 1fr auto; gap: 18px; align-items: center; padding: 16px 18px; border-radius: var(--radius-md); background: linear-gradient(135deg, var(--theme-soft), rgba(255,255,255,0.02)); border: 1px solid var(--theme-glow); margin-top: 16px; }
+      .insight-banner{ max-width: 100%; min-width: 0; }
+      .insight-main{ min-width: 0; }
+      .insight-title, .insight-desc{ min-width: 0; overflow-wrap: anywhere; }
       .insight-score { display: flex; align-items: baseline; justify-content: center; gap: 4px; }
       .insight-score-num { font-size: 34px; line-height: 1; font-weight: 900; color: var(--primary); }
       .insight-score-unit { font-size: 12px; font-weight: 700; color: var(--text-muted); }
@@ -720,115 +745,106 @@
         border: 1px solid rgba(148, 163, 184, 0.20);
       }
 
-      /* Mood Heatmap V2（图示那种“6宫格 + 冷热刻度”） */
+      /* 图二：赚钱效应（情绪六宫格）整体推翻重做——更“终端简报化”，不改变维度 */
       .hm2{
         margin-top: 14px;
         border-radius: 18px;
-        border: 1px solid color-mix(in oklab, var(--border) 70%, var(--theme-glow) 30%);
+        border: 1px solid color-mix(in oklab, var(--border) 72%, var(--theme-glow) 28%);
         background: linear-gradient(135deg,
-          color-mix(in oklab, var(--theme-soft) 18%, rgba(255,255,255,0.04)),
-          rgba(255,255,255,0.03)
+          color-mix(in oklab, var(--theme-soft) 12%, rgba(255,255,255,0.06)),
+          rgba(255,255,255,0.02)
         );
         padding: 12px 12px 10px;
+        overflow: hidden;
       }
       [data-theme="dark"] .hm2{
         background: linear-gradient(135deg,
-          color-mix(in oklab, var(--theme-soft) 14%, rgba(15,23,42,0.70)),
+          color-mix(in oklab, var(--theme-soft) 10%, rgba(15,23,42,0.70)),
           rgba(15,23,42,0.26)
         );
         border-color: rgba(148,163,184,0.22);
       }
-      .hm2-head{ display:flex; align-items: baseline; justify-content: space-between; gap: 12px; margin-bottom: 10px; }
+      .hm2-head{ display:flex; align-items: baseline; justify-content: space-between; gap: 12px; margin-bottom: 12px; }
       .hm2-title{ display:flex; align-items: baseline; gap: 10px; }
-      .hm2-title .t{ font-size: 12px; font-weight: 950; color: var(--text-muted); letter-spacing: 0.2px; }
-      .hm2-score{
-        font-size: 28px;
-        font-weight: 1000;
-        font-variant-numeric: tabular-nums;
-        color: var(--text-primary);
-        line-height: 1;
-      }
-      .hm2-hint{ font-size: 12px; font-weight: 800; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 66%; }
+      .hm2-title .t{ font-size: 12px; font-weight: 950; color: var(--text-muted); letter-spacing: 0.22px; }
+      .hm2-score{ font-size: 30px; font-weight: 1100; font-variant-numeric: tabular-nums; color: var(--text-primary); line-height: 1; }
+      .hm2-hint{ font-size: 12px; font-weight: 800; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 68%; }
 
       .hm2-grid{ display:grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+      @media (max-width: 900px){ .hm2-grid{ grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 
-      /* data-accent -> CSS var（用于统一“条色、点色、徽章底色”） */
-      .hm2-card{ --hm2-accent: rgba(148,163,184,0.60); }
-      .hm2-card[data-accent="strength"]{ --hm2-accent: rgba(96,165,250,0.92); }
-      .hm2-card[data-accent="profit"]{ --hm2-accent: rgba(239,68,68,0.90); }
-      .hm2-card[data-accent="risk"]{ --hm2-accent: rgba(16,185,129,0.88); }
-      .hm2-card[data-accent="diverge"]{ --hm2-accent: rgba(245,158,11,0.92); }
-      .hm2-card[data-accent="cons"]{ --hm2-accent: rgba(245,158,11,0.92); }
+      .hm2-card{ --hm2-accent: rgba(148,163,184,0.70); }
+      .hm2-card[data-accent="strength"]{ --hm2-accent: rgba(96,165,250,0.95); }
+      .hm2-card[data-accent="profit"]{ --hm2-accent: rgba(239,68,68,0.92); }
+      .hm2-card[data-accent="risk"]{ --hm2-accent: rgba(16,185,129,0.90); }
+      .hm2-card[data-accent="diverge"]{ --hm2-accent: rgba(245,158,11,0.95); }
+      .hm2-card[data-accent="cons"]{ --hm2-accent: rgba(245,158,11,0.95); }
       .hm2-card[data-accent="crowd"]{ --hm2-accent: rgba(239,68,68,0.76); }
 
       .hm2-card{
         position: relative;
         border-radius: 16px;
-        border: 1px solid color-mix(in oklab, var(--border) 72%, var(--hm2-accent) 28%);
+        border: 1px solid color-mix(in oklab, var(--border) 76%, var(--hm2-accent) 24%);
         background: linear-gradient(135deg,
-          color-mix(in oklab, var(--hm2-accent) 10%, rgba(255,255,255,0.58)),
-          rgba(255,255,255,0.55)
+          rgba(255,255,255,0.70),
+          color-mix(in oklab, var(--theme-soft) 10%, rgba(255,255,255,0.48))
         );
-        padding: 14px 14px 12px;
+        padding: 12px 12px 11px;
         overflow: hidden;
-        min-height: 152px;
+        min-height: 150px;
         box-shadow: 0 10px 24px rgba(2,6,23,0.06);
-        transition: transform .18s ease, border-color .18s ease, box-shadow .18s ease;
       }
       [data-theme="dark"] .hm2-card{
         background: linear-gradient(135deg,
-          color-mix(in oklab, var(--hm2-accent) 10%, rgba(15,23,42,0.55)),
-          rgba(15,23,42,0.45)
+          rgba(15,23,42,0.56),
+          color-mix(in oklab, var(--theme-soft) 10%, rgba(15,23,42,0.38))
         );
         border-color: rgba(148,163,184,0.22);
-        box-shadow: 0 12px 28px rgba(0,0,0,0.28);
+        box-shadow: 0 14px 30px rgba(0,0,0,0.30);
       }
       .hm2-card::before{
         content:"";
         position:absolute;
-        left: 0; right: 0; top: 0;
-        height: 3px;
-        background: linear-gradient(90deg, color-mix(in oklab, var(--hm2-accent) 80%, transparent), transparent);
+        left: 0; top: 0; bottom: 0;
+        width: 3px;
+        background: linear-gradient(180deg, var(--hm2-accent), transparent);
         opacity: 0.95;
-      }
-      .hm2-card:hover{
-        transform: translateY(-1px);
-        border-color: color-mix(in oklab, var(--border) 58%, var(--hm2-accent) 42%);
-        box-shadow: 0 14px 34px rgba(2,6,23,0.10);
       }
 
       .hm2-top{ display:flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 10px; }
       .hm2-name{ font-size: 12px; font-weight: 950; color: var(--text-primary); letter-spacing: 0.15px; display:flex; align-items:center; gap: 8px; }
-      .hm2-name .dot{ width: 8px; height: 8px; border-radius: 999px; background: color-mix(in oklab, var(--hm2-accent) 85%, rgba(148,163,184,0.15)); box-shadow: 0 0 0 3px rgba(255,255,255,0.55); }
+      .hm2-name .dot{ width: 8px; height: 8px; border-radius: 999px; background: var(--hm2-accent); box-shadow: 0 0 0 3px rgba(255,255,255,0.55); }
       [data-theme="dark"] .hm2-name .dot{ box-shadow: 0 0 0 3px rgba(15,23,42,0.55); }
       .hm2-tag{
         font-size: 11px;
         font-weight: 900;
-        color: color-mix(in oklab, var(--text-muted) 60%, rgba(2,6,23,0.60));
-        border: 1px solid color-mix(in oklab, var(--border) 70%, var(--hm2-accent) 30%);
-        background: color-mix(in oklab, var(--hm2-accent) 10%, rgba(255,255,255,0.52));
+        color: var(--text-muted);
+        border: 1px solid color-mix(in oklab, var(--border) 72%, var(--hm2-accent) 28%);
+        background: color-mix(in oklab, var(--hm2-accent) 8%, rgba(255,255,255,0.62));
         padding: 3px 9px;
         border-radius: 999px;
         white-space: nowrap;
       }
       .hm2-mid{ display:flex; align-items:flex-start; justify-content: space-between; gap: 10px; }
-      .hm2-value{ font-size: 34px; font-weight: 1000; color: var(--text-primary); line-height: 1.05; font-variant-numeric: tabular-nums; }
+      .hm2-value{ font-size: 34px; font-weight: 1100; color: var(--text-primary); line-height: 1.05; font-variant-numeric: tabular-nums; }
+      .hm2-value .delta-badge{ transform: translateY(-2px); margin-left: 8px; }
       .hm2-status{
         font-size: 12px;
         font-weight: 950;
         padding: 6px 10px;
         border-radius: 999px;
-        border: 1px solid color-mix(in oklab, var(--border) 70%, var(--hm2-accent) 30%);
-        background: rgba(255,255,255,0.62);
+        border: 1px solid color-mix(in oklab, var(--border) 74%, var(--hm2-accent) 26%);
+        background: rgba(255,255,255,0.70);
         white-space: nowrap;
         display:inline-flex;
         align-items:center;
         gap: 6px;
+        color: var(--text-primary);
       }
-      [data-theme="dark"] .hm2-status{ background: rgba(15,23,42,0.55); border-color: rgba(148,163,184,0.22); }
-      .hm2-status.good{ color: #991b1b; border-color: rgba(239,68,68,0.22); }
-      .hm2-status.warn{ color: #92400e; border-color: rgba(245,158,11,0.22); }
-      .hm2-status.bad{ color: #065f46; border-color: rgba(16,185,129,0.22); }
+      [data-theme="dark"] .hm2-status{ background: rgba(15,23,42,0.60); border-color: rgba(148,163,184,0.22); }
+      .hm2-status.good{ border-color: rgba(16,185,129,0.30); }
+      .hm2-status.warn{ border-color: rgba(245,158,11,0.30); }
+      .hm2-status.bad{ border-color: rgba(239,68,68,0.30); }
       .hm2-foot{
         margin-top: 10px;
         font-size: 11px;
@@ -844,12 +860,182 @@
       .hm2-bar{ position: relative; height: 10px; flex: 1; border-radius: 999px; background: linear-gradient(90deg, rgba(14,165,233,0.85) 0%, rgba(245,158,11,0.85) 55%, rgba(239,68,68,0.92) 100%); overflow: hidden; border: 1px solid rgba(148, 163, 184, 0.20); }
       .hm2-pointer{ position:absolute; top: -6px; width: 0; height: 0; border-left: 6px solid transparent; border-right: 6px solid transparent; border-bottom: 8px solid rgba(15,23,42,0.50); filter: drop-shadow(0 6px 10px rgba(2,6,23,0.18)); }
       [data-theme="dark"] .hm2-pointer{ border-bottom-color: rgba(255,255,255,0.55); }
-      @media (max-width: 900px){ .hm2-grid{ grid-template-columns: repeat(2, minmax(0, 1fr)); } }
       @media (max-width: 520px){
         .hm2-grid{ grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
-        .hm2-card{ padding: 12px 12px 10px; min-height: 140px; }
+        .hm2-card{ min-height: 140px; }
         .hm2-value{ font-size: 30px; }
         .hm2-hint{ display:none; }
+      }
+
+      /* 赚钱效应：左右对比型（左正面 / 右风险） */
+      .hm2-compare{
+        margin-top: 12px;
+        display:grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+        align-items: start;
+      }
+      .hm2-compare > *{ min-width: 0; }
+      @media (max-width: 900px){ .hm2-compare{ grid-template-columns: 1fr; } }
+      .hm2-col{
+        border-radius: 16px;
+        border: 1px solid color-mix(in oklab, var(--border) 72%, var(--col-accent, var(--theme-glow)) 28%);
+        background: linear-gradient(135deg,
+          color-mix(in oklab, var(--theme-soft) 12%, rgba(255,255,255,0.06)),
+          rgba(255,255,255,0.02)
+        );
+        padding: 10px 10px;
+        overflow: hidden;
+      }
+      [data-theme="dark"] .hm2-col{
+        background: linear-gradient(135deg,
+          color-mix(in oklab, var(--theme-soft) 10%, rgba(15,23,42,0.70)),
+          rgba(15,23,42,0.26)
+        );
+        border-color: rgba(148,163,184,0.22);
+      }
+      .hm2-col-head{
+        display:flex;
+        align-items:center;
+        justify-content: space-between;
+        gap: 10px;
+        margin-bottom: 10px;
+      }
+      .hm2-col-title{
+        display:flex;
+        align-items:center;
+        gap: 8px;
+        font-size: 12px;
+        font-weight: 1000;
+        color: var(--text-primary);
+        letter-spacing: 0.18px;
+      }
+      .hm2-col-title .dot{
+        width: 8px; height: 8px; border-radius: 999px;
+        background: var(--col-accent, rgba(148,163,184,0.55));
+        box-shadow: 0 0 0 3px rgba(255,255,255,0.55);
+      }
+      [data-theme="dark"] .hm2-col-title .dot{ box-shadow: 0 0 0 3px rgba(15,23,42,0.55); }
+      .hm2-col-pill{
+        font-size: 11px;
+        font-weight: 950;
+        color: var(--text-muted);
+        border: 1px solid color-mix(in oklab, var(--border) 74%, var(--col-accent, var(--theme-glow)) 26%);
+        background: color-mix(in oklab, var(--col-accent, var(--theme-glow)) 8%, rgba(255,255,255,0.62));
+        padding: 3px 8px;
+        border-radius: 999px;
+        white-space: nowrap;
+      }
+      .hm2-items{ display:grid; gap: 10px; }
+      .hm2-item{
+        --item-accent: rgba(148,163,184,0.55);
+        border-radius: 14px;
+        border: 1px solid color-mix(in oklab, var(--border) 76%, var(--item-accent) 24%);
+        background: linear-gradient(135deg,
+          rgba(255,255,255,0.70),
+          color-mix(in oklab, var(--theme-soft) 10%, rgba(255,255,255,0.48))
+        );
+        padding: 10px 10px;
+        overflow: hidden;
+        position: relative;
+      }
+      [data-theme="dark"] .hm2-item{
+        background: linear-gradient(135deg,
+          rgba(15,23,42,0.56),
+          color-mix(in oklab, var(--theme-soft) 10%, rgba(15,23,42,0.38))
+        );
+        border-color: rgba(148,163,184,0.18);
+      }
+      .hm2-item::before{
+        content:"";
+        position:absolute;
+        left: 0; top: 0; bottom: 0;
+        width: 3px;
+        background: linear-gradient(180deg, var(--item-accent), transparent);
+        opacity: 0.95;
+      }
+      .hm2-item-top{
+        display:flex;
+        align-items:flex-start;
+        justify-content: space-between;
+        gap: 10px;
+        min-width: 0;
+      }
+      .hm2-item-title{ font-size: 12px; font-weight: 950; color: var(--text-primary); }
+      .hm2-item-tag{ margin-top: 3px; font-size: 11px; font-weight: 800; color: var(--text-muted); }
+      .hm2-item-status{
+        font-size: 11px;
+        font-weight: 950;
+        padding: 4px 8px;
+        border-radius: 999px;
+        border: 1px solid color-mix(in oklab, var(--border) 78%, var(--item-accent) 22%);
+        background: rgba(255,255,255,0.70);
+        white-space: nowrap;
+        flex: 0 0 auto;
+      }
+      [data-theme="dark"] .hm2-item-status{ background: rgba(15,23,42,0.55); border-color: rgba(148,163,184,0.22); }
+      .hm2-item-mid{
+        margin-top: 8px;
+        display:flex;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: 10px;
+      }
+      .hm2-item-value{
+        font-size: 18px;
+        font-weight: 1100;
+        color: var(--text-primary);
+        font-variant-numeric: tabular-nums;
+        min-width: 0;
+      }
+      .hm2-item-value .delta-badge{ transform: translateY(-1px); margin-left: 6px; }
+      .hm2-item-brief{
+        margin-top: 8px;
+        font-size: 11px;
+        font-weight: 650;
+        color: var(--text-secondary);
+        line-height: 1.45;
+        overflow-wrap: anywhere;
+      }
+      @media (max-width: 520px){
+        .hm2-compare{ gap: 10px; }
+        .hm2-item-value{ font-size: 18px; }
+      }
+
+      /* 图三/图四：证据链模块改为“卡片网格”，避免左右空太多 */
+      .evi-grid{ display:grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+      @media (max-width: 700px){ .evi-grid{ grid-template-columns: 1fr; } }
+      .evi-card{
+        border-radius: 16px;
+        border: 1px solid color-mix(in oklab, var(--border) 74%, var(--theme-glow) 26%);
+        background: linear-gradient(135deg,
+          rgba(255,255,255,0.70),
+          color-mix(in oklab, var(--theme-soft) 10%, rgba(255,255,255,0.48))
+        );
+        padding: 10px 12px;
+        display:flex;
+        align-items:flex-start;
+        justify-content: space-between;
+        gap: 10px;
+        overflow: hidden;
+      }
+      [data-theme="dark"] .evi-card{
+        background: linear-gradient(135deg,
+          rgba(15,23,42,0.56),
+          color-mix(in oklab, var(--theme-soft) 10%, rgba(15,23,42,0.38))
+        );
+        border-color: rgba(148,163,184,0.22);
+      }
+      .evi-k{ font-size: 12px; font-weight: 950; color: var(--text-primary); }
+      .evi-note{ margin-top: 4px; font-size: 11px; font-weight: 650; color: var(--text-muted); line-height: 1.35; }
+      .evi-v{ font-size: 16px; font-weight: 1100; color: var(--text-primary); font-variant-numeric: tabular-nums; white-space: nowrap; }
+
+      /* 超小屏进一步防溢出（iPhone mini / 分屏） */
+      @media (max-width: 390px){
+        .hm2-grid{ grid-template-columns: 1fr; }
+        .hero-grid{ grid-template-columns: 1fr; }
+        .tabbar{ overflow-x: auto; -webkit-overflow-scrolling: touch; }
+        .tab-btn{ flex: 0 0 auto; }
       }
 
       /* Themes — 多板块情绪热力图（PRD 3.7，数据以现有 themePanels/sectors 为准） */
@@ -1121,6 +1307,111 @@
         .metric-row{ flex-direction: column; align-items: flex-start; gap: 6px; }
         .metric-note{ white-space: normal; }
         .metric-v{ font-size: 18px; }
+      }
+
+      /* 图：承接/一致性/风险（moodCards）——不使用“长列表框”，改为三栏面板（更紧凑） */
+      .mc-panels{
+        margin-top: 10px;
+        display:grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 12px;
+      }
+      @media (max-width: 900px){ .mc-panels{ grid-template-columns: 1fr; } }
+      .mc-panel{
+        border-radius: 18px;
+        border: 1px solid color-mix(in oklab, var(--border) 72%, var(--theme-glow) 28%);
+        background: linear-gradient(135deg,
+          color-mix(in oklab, var(--theme-soft) 12%, rgba(255,255,255,0.06)),
+          rgba(255,255,255,0.02)
+        );
+        padding: 10px 10px;
+        overflow: hidden;
+      }
+      [data-theme="dark"] .mc-panel{
+        background: linear-gradient(135deg,
+          color-mix(in oklab, var(--theme-soft) 10%, rgba(15,23,42,0.70)),
+          rgba(15,23,42,0.22)
+        );
+        border-color: rgba(148,163,184,0.22);
+      }
+      .mc-head{
+        display:flex;
+        align-items:center;
+        justify-content: space-between;
+        gap: 10px;
+        margin-bottom: 10px;
+      }
+      .mc-title{
+        font-size: 12px;
+        font-weight: 1000;
+        color: var(--text-primary);
+        letter-spacing: 0.2px;
+        display:flex;
+        align-items:center;
+        gap: 8px;
+      }
+      .mc-title .dot{
+        width: 8px; height: 8px; border-radius: 999px;
+        background: var(--mc-accent, rgba(148,163,184,0.55));
+        box-shadow: 0 0 0 3px rgba(255,255,255,0.55);
+      }
+      [data-theme="dark"] .mc-title .dot{ box-shadow: 0 0 0 3px rgba(15,23,42,0.55); }
+      .mc-pill{
+        font-size: 11px;
+        font-weight: 950;
+        color: var(--text-muted);
+        border: 1px solid color-mix(in oklab, var(--border) 72%, var(--mc-accent, var(--theme-glow)) 28%);
+        background: color-mix(in oklab, var(--mc-accent, var(--theme-glow)) 8%, rgba(255,255,255,0.62));
+        padding: 3px 8px;
+        border-radius: 999px;
+        white-space: nowrap;
+      }
+      .mc-items{ display:grid; gap: 10px; }
+      .mc-item{
+        border-radius: 14px;
+        border: 1px solid color-mix(in oklab, var(--border) 80%, transparent);
+        background: linear-gradient(135deg,
+          rgba(255,255,255,0.70),
+          color-mix(in oklab, var(--theme-soft) 10%, rgba(255,255,255,0.48))
+        );
+        padding: 10px 10px;
+        display:flex;
+        align-items:flex-start;
+        justify-content: space-between;
+        gap: 10px;
+        min-width: 0;
+      }
+      [data-theme="dark"] .mc-item{
+        background: linear-gradient(135deg,
+          rgba(15,23,42,0.56),
+          color-mix(in oklab, var(--theme-soft) 10%, rgba(15,23,42,0.38))
+        );
+        border-color: rgba(148,163,184,0.18);
+      }
+      .mc-left{ min-width:0; }
+      .mc-k{ font-size: 12px; font-weight: 950; color: var(--text-primary); }
+      .mc-note{
+        margin-top: 4px;
+        font-size: 11px;
+        font-weight: 650;
+        color: var(--text-muted);
+        line-height: 1.35;
+        overflow: hidden;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+      }
+      .mc-v{
+        font-size: 16px;
+        font-weight: 1100;
+        color: var(--text-primary);
+        font-variant-numeric: tabular-nums;
+        white-space: nowrap;
+        flex: 0 0 auto;
+      }
+      @media (max-width: 520px){
+        .mc-panels{ gap: 10px; }
+        .mc-v{ font-size: 18px; }
       }
 
       /* Ladder Table */
@@ -1859,7 +2150,24 @@
         .engine-bar{ width: 96px; }
       }
 
-      /* 已移除：口径/数据源展示（按要求模板不展示） */
+      /* 已移除：研发信息（不在产品上展示） */
+
+      /* 移动端防溢出（通用） */
+      .hero-subtitle, .hero-brief, .summary-text, .zt-sub, .plan-banner-sub{
+        overflow-wrap: anywhere;
+        word-break: break-word;
+      }
+      @media (max-width: 520px){
+        .hero-subtitle{ white-space: normal !important; }
+        .action-tags{ display:none; } /* 移动端不展示 tag 行，避免挤爆 */
+        .ladder-table{ display:block; overflow-x:auto; -webkit-overflow-scrolling:touch; }
+        /* 全景：防止引擎/图谱在手机端撑破页面 */
+        .engine-row{ flex-wrap: wrap; }
+        .engine-row .right{ width: 100%; justify-content: flex-start; flex-wrap: wrap; }
+        .engine-bar{ width: auto; flex: 1 1 140px; max-width: 100%; }
+        .engine-row .sub{ max-width: 100%; white-space: normal; }
+        .prism, .engine-map, .insight-banner, .tri-strip, .panorama-grid{ max-width: 100%; }
+      }
       /* 已删除：情绪六维雷达（仅保留市场风格雷达） */
 
       /* Mood Tri-Cards（赚/险/资） */
@@ -2601,6 +2909,7 @@
               <span>短线复盘 · 情绪监控</span>
             </div>
             <div class="hero-date">__REPORT_DATE_CN__收盘简报</div>
+            <div class="hero-subtitle">数据来源：风中一刀的主升浪丨</div>
             <div class="hero-subtitle" v-if="marketData.meta">
               数据更新时间：指数 {{ marketData.meta?.asOf?.indices || '-' }}
               ｜全景 {{ marketData.meta?.asOf?.pools || '-' }}
@@ -2895,7 +3204,7 @@
                   </details>
                 </div>
 
-                <!-- 已移除：口径/数据源（按要求模板不展示） -->
+                <!-- 已移除：研发说明（不在产品上展示） -->
               </div>
 
               <div class="metric-rows" v-else>
@@ -2917,12 +3226,10 @@
                     <div class="prism-card">
                       <div class="t">时间维度 · 早封率</div>
                       <div class="n">{{ (Number(marketData.divergenceEngine.timeDim?.earlySealRate ?? 0)*100).toFixed(1) }}%</div>
-                      <div class="j">判断：{{ marketData.divergenceEngine.timeDim?.judgment || '-' }}</div>
                     </div>
                     <div class="prism-card">
                       <div class="t">空间维度 · 高位炸板</div>
                       <div class="n">{{ (Number(marketData.divergenceEngine.spaceDim?.highBoardExplodeRate ?? 0)*100).toFixed(1) }}%</div>
-                      <div class="j">判断：{{ marketData.divergenceEngine.spaceDim?.judgment || '-' }}</div>
                     </div>
                     <div class="prism-card">
                       <div class="t">资金维度 · 大单净流</div>
@@ -2930,7 +3237,6 @@
                         {{ marketData.divergenceEngine.fundDim?.netBigOrderFlow === null || marketData.divergenceEngine.fundDim?.netBigOrderFlow === undefined
                           ? '-' : (marketData.divergenceEngine.fundDim.netBigOrderFlow >= 0 ? '+' : '') + marketData.divergenceEngine.fundDim.netBigOrderFlow + '亿' }}
                       </div>
-                      <div class="j">口径：{{ marketData.divergenceEngine.fundDim?.meta?.precision || '—' }}</div>
                     </div>
                   </div>
                   <div class="prism-overall">
@@ -3004,7 +3310,7 @@
                   </div>
                 </div>
 
-                <!-- 已移除：口径/数据源（按要求模板不展示） -->
+                <!-- 已移除：研发说明（不在产品上展示） -->
               </div>
 
               <div class="metric-rows" v-else>
@@ -3089,38 +3395,57 @@
             </div>
           </div>
 
-          <!-- 已移除：口径/数据源（按要求模板不展示） -->
+          <!-- 已移除：研发说明（不在产品上展示） -->
 
           <details style="margin-top:12px;">
             <summary style="cursor:pointer; color:var(--text-muted); font-weight:900; font-size:12px;">展开指标明细</summary>
-            <div class="section-header" style="margin-top:10px;">承接</div>
-            <div class="metric-rows" style="margin-bottom:12px;">
-              <div class="metric-row" v-for="(card, idx) in moodCardsBy('carry')" :key="'mood-carry-'+idx">
-                <div class="metric-left">
-                  <div class="metric-k">{{ card.label }}</div>
-                  <div class="metric-note">{{ card.note }}</div>
+            <div class="mc-panels">
+              <div class="mc-panel" style="--mc-accent: rgba(239,68,68,0.90);">
+                <div class="mc-head">
+                  <div class="mc-title"><span class="dot"></span>承接</div>
+                  <div class="mc-pill">晋级/断板</div>
                 </div>
-                <div class="metric-v" :class="card.valueClass">{{ card.value }}</div>
+                <div class="mc-items">
+                  <div class="mc-item" v-for="(card, idx) in moodCardsBy('carry')" :key="'mood-carry-'+idx">
+                    <div class="mc-left">
+                      <div class="mc-k">{{ card.label }}</div>
+                      <div class="mc-note">{{ card.note }}</div>
+                    </div>
+                    <div class="mc-v" :class="card.valueClass">{{ card.value }}</div>
+                  </div>
+                </div>
               </div>
-            </div>
-            <div class="section-header" style="margin-top:6px;">一致性</div>
-            <div class="metric-rows" style="margin-bottom:12px;">
-              <div class="metric-row" v-for="(card, idx) in moodCardsBy('cons')" :key="'mood-cons-'+idx">
-                <div class="metric-left">
-                  <div class="metric-k">{{ card.label }}</div>
-                  <div class="metric-note">{{ card.note }}</div>
+
+              <div class="mc-panel" style="--mc-accent: rgba(245,158,11,0.92);">
+                <div class="mc-head">
+                  <div class="mc-title"><span class="dot"></span>一致性</div>
+                  <div class="mc-pill">早封/资金</div>
                 </div>
-                <div class="metric-v" :class="card.valueClass">{{ card.value }}</div>
+                <div class="mc-items">
+                  <div class="mc-item" v-for="(card, idx) in moodCardsBy('cons')" :key="'mood-cons-'+idx">
+                    <div class="mc-left">
+                      <div class="mc-k">{{ card.label }}</div>
+                      <div class="mc-note">{{ card.note }}</div>
+                    </div>
+                    <div class="mc-v" :class="card.valueClass">{{ card.value }}</div>
+                  </div>
+                </div>
               </div>
-            </div>
-            <div class="section-header" style="margin-top:6px;">风险</div>
-            <div class="metric-rows">
-              <div class="metric-row" v-for="(card, idx) in moodCardsBy('risk')" :key="'mood-risk-'+idx">
-                <div class="metric-left">
-                  <div class="metric-k">{{ card.label }}</div>
-                  <div class="metric-note">{{ card.note }}</div>
+
+              <div class="mc-panel" style="--mc-accent: rgba(16,185,129,0.90);">
+                <div class="mc-head">
+                  <div class="mc-title"><span class="dot"></span>风险</div>
+                  <div class="mc-pill">高度/拥挤</div>
                 </div>
-                <div class="metric-v" :class="card.valueClass">{{ card.value }}</div>
+                <div class="mc-items">
+                  <div class="mc-item" v-for="(card, idx) in moodCardsBy('risk')" :key="'mood-risk-'+idx">
+                    <div class="mc-left">
+                      <div class="mc-k">{{ card.label }}</div>
+                      <div class="mc-note">{{ card.note }}</div>
+                    </div>
+                    <div class="mc-v" :class="card.valueClass">{{ card.value }}</div>
+                  </div>
+                </div>
               </div>
             </div>
           </details>
@@ -3148,87 +3473,87 @@
           <summary style="cursor:pointer; color:var(--text-muted); font-weight:900; font-size:12px;">展开证据链（想看原因再点）</summary>
 
           <div class="section-header" style="margin-top:10px;">基础统计</div>
-          <div class="metric-rows">
-            <div class="metric-row">
-              <div class="metric-left">
-                <div class="metric-k">涨停 / 炸板 / 跌停</div>
-                <div class="metric-note">用于衡量环境与分歧强弱</div>
+          <div class="evi-grid">
+            <div class="evi-card">
+              <div>
+                <div class="evi-k">涨停 / 炸板 / 跌停</div>
+                <div class="evi-note">用于衡量环境与分歧强弱</div>
               </div>
-              <div class="metric-v">
+              <div class="evi-v">
                 {{ marketData.structureV2.evidence.counts?.zt ?? '-' }} /
                 {{ marketData.structureV2.evidence.counts?.zb ?? '-' }} /
                 {{ marketData.structureV2.evidence.counts?.dt ?? '-' }}
               </div>
             </div>
-            <div class="metric-row">
-              <div class="metric-left">
-                <div class="metric-k">强势池大面样本（≤-5%）</div>
-                <div class="metric-note">样本口径：qsgc，便于复算</div>
+            <div class="evi-card">
+              <div>
+                <div class="evi-k">强势池大面样本（≤-5%）</div>
+                <div class="evi-note">说明：qsgc 样本（用于稳定衡量）</div>
               </div>
-              <div class="metric-v green-text">{{ marketData.structureV2.evidence.counts?.negSample ?? '-' }}</div>
+              <div class="evi-v green-text">{{ marketData.structureV2.evidence.counts?.negSample ?? '-' }}</div>
             </div>
           </div>
 
           <div class="section-header" style="margin-top:10px;">梯队与断层</div>
-          <div class="metric-rows">
-            <div class="metric-row">
-              <div class="metric-left">
-                <div class="metric-k">最高高度</div>
-                <div class="metric-note">高度决定“空间”，断层决定“能不能接”</div>
+          <div class="evi-grid">
+            <div class="evi-card">
+              <div>
+                <div class="evi-k">最高高度</div>
+                <div class="evi-note">高度决定“空间”，断层决定“能不能接”</div>
               </div>
-              <div class="metric-v">{{ marketData.structureV2.evidence.ladder?.maxHeight ?? '-' }} 板</div>
+              <div class="evi-v">{{ marketData.structureV2.evidence.ladder?.maxHeight ?? '-' }} 板</div>
             </div>
-            <div class="metric-row">
-              <div class="metric-left">
-                <div class="metric-k">断层</div>
-                <div class="metric-note">2板/3板断层会直接破坏接力链路</div>
+            <div class="evi-card">
+              <div>
+                <div class="evi-k">断层</div>
+                <div class="evi-note">2板/3板断层会直接破坏接力链路</div>
               </div>
-              <div class="metric-v">
+              <div class="evi-v">
                 {{ (marketData.structureV2.evidence.ladder?.gaps || []).length ? (marketData.structureV2.evidence.ladder.gaps.join('、') + '（板）') : '无' }}
               </div>
             </div>
           </div>
 
           <div class="section-header" style="margin-top:10px;">高位风险预警</div>
-          <div class="metric-rows" v-if="marketData.highPositionRisk">
-            <div class="metric-row">
-              <div class="metric-left">
-                <div class="metric-k">是否触发</div>
-                <div class="metric-note">阈值：≥ {{ marketData.highPositionRisk.triggerHeight ?? 4 }} 板</div>
+          <div class="evi-grid" v-if="marketData.highPositionRisk">
+            <div class="evi-card">
+              <div>
+                <div class="evi-k">是否触发</div>
+                <div class="evi-note">阈值：≥ {{ marketData.highPositionRisk.triggerHeight ?? 4 }} 板</div>
               </div>
-              <div class="metric-v">{{ marketData.highPositionRisk.triggered ? '触发' : '未触发' }}</div>
+              <div class="evi-v">{{ marketData.highPositionRisk.triggered ? '触发' : '未触发' }}</div>
             </div>
-            <div class="metric-row">
-              <div class="metric-left">
-                <div class="metric-k">最高高度 / 风险指数</div>
-                <div class="metric-note">用于提示“高位兑现/分化”概率</div>
+            <div class="evi-card">
+              <div>
+                <div class="evi-k">最高高度 / 风险指数</div>
+                <div class="evi-note">用于提示“高位兑现/分化”概率</div>
               </div>
-              <div class="metric-v">
+              <div class="evi-v">
                 {{ marketData.highPositionRisk.maxHeight ?? '-' }}板 · {{ marketData.highPositionRisk.score ?? 0 }}/100
               </div>
             </div>
           </div>
 
           <div class="section-header" style="margin-top:10px;">主线分歧重叠</div>
-          <div class="metric-rows">
-            <div class="metric-row">
-              <div class="metric-left">
-                <div class="metric-k">涨停主线 vs 炸板主杀 重叠度</div>
-                <div class="metric-note">越高越提示“主线在分歧/退潮”</div>
+          <div class="evi-grid">
+            <div class="evi-card">
+              <div>
+                <div class="evi-k">涨停主线 vs 炸板主杀 重叠度</div>
+                <div class="evi-note">越高越提示“主线在分歧/退潮”</div>
               </div>
-              <div class="metric-v">{{ marketData.structureV2.evidence.overlap?.score ?? '-' }}</div>
+              <div class="evi-v">{{ marketData.structureV2.evidence.overlap?.score ?? '-' }}</div>
             </div>
-            <div class="metric-row">
-              <div class="metric-left">
-                <div class="metric-k">重叠题材</div>
-                <div class="metric-note">仅作提示，不等同结论</div>
+            <div class="evi-card">
+              <div>
+                <div class="evi-k">重叠题材</div>
+                <div class="evi-note">仅作提示，不等同结论</div>
               </div>
-              <div class="metric-v">{{ (marketData.structureV2.evidence.overlap?.themes || []).join(' / ') || '-' }}</div>
+              <div class="evi-v">{{ (marketData.structureV2.evidence.overlap?.themes || []).join(' / ') || '-' }}</div>
             </div>
           </div>
         </details>
 
-        <!-- 已移除：口径/数据源（按要求模板不展示） -->
+        <!-- 已移除：研发说明（不在产品上展示） -->
       </div>
 
       <!-- 赚钱效应四维判断 -->
@@ -3243,27 +3568,60 @@
             </div>
             <div class="hm2-hint">{{ hm2.hint }}</div>
           </div>
-          <div class="hm2-grid">
-            <div class="hm2-card reveal"
-                 v-for="(c, i) in hm2.cells"
-                 :key="'hm2-'+c.key+'-'+i"
-                 :data-accent="c.accent">
-              <div class="hm2-top">
-                <div class="hm2-name"><span class="dot"></span>{{ c.title }}</div>
-                <div class="hm2-tag">{{ c.tag }}</div>
+          <div class="hm2-compare">
+            <!-- 左：正面信号 -->
+            <div class="hm2-col" style="--col-accent: rgba(239,68,68,0.90);">
+              <div class="hm2-col-head">
+                <div class="hm2-col-title"><span class="dot"></span>正面信号</div>
+                <div class="hm2-col-pill">承接 / 收益 / 一致</div>
               </div>
-              <div class="hm2-mid">
-                <div class="hm2-value">
-                  {{ c.value }}
-                  <span v-html="c.deltaHtml"></span>
-                </div>
-                <div class="hm2-status" :class="c.statusClass">
-                  {{ c.statusIcon }} {{ c.statusText }}
+              <div class="hm2-items">
+                <div class="hm2-item reveal"
+                     v-for="(c, i) in hm2PosCells"
+                     :key="'hm2-pos-'+c.key+'-'+i"
+                     :style="{ '--item-accent': (c.accent==='profit' ? 'rgba(239,68,68,0.92)' : (c.accent==='strength' ? 'rgba(96,165,250,0.92)' : 'rgba(245,158,11,0.92)')) }">
+                  <div class="hm2-item-top">
+                    <div style="min-width:0;">
+                      <div class="hm2-item-title">{{ c.title }}</div>
+                      <div class="hm2-item-tag">{{ c.tag }}</div>
+                    </div>
+                    <div class="hm2-item-status">{{ c.statusIcon }} {{ c.statusText }}</div>
+                  </div>
+                  <div class="hm2-item-mid">
+                    <div class="hm2-item-value">
+                      {{ c.value }} <span v-html="c.deltaHtml"></span>
+                    </div>
+                  </div>
+                  <div class="hm2-item-brief">{{ c.driver }}</div>
                 </div>
               </div>
-              <div class="hm2-foot">
-                <div><span class="k">结论：</span><span>{{ c.brief }}</span></div>
-                <div><span class="k">驱动：</span><span>{{ c.driver }}</span></div>
+            </div>
+
+            <!-- 右：风险信号 -->
+            <div class="hm2-col" style="--col-accent: rgba(16,185,129,0.90);">
+              <div class="hm2-col-head">
+                <div class="hm2-col-title"><span class="dot"></span>风险信号</div>
+                <div class="hm2-col-pill">亏钱 / 分歧 / 拥挤</div>
+              </div>
+              <div class="hm2-items">
+                <div class="hm2-item reveal"
+                     v-for="(c, i) in hm2RiskCells"
+                     :key="'hm2-risk-'+c.key+'-'+i"
+                     :style="{ '--item-accent': (c.accent==='risk' ? 'rgba(16,185,129,0.90)' : (c.accent==='diverge' ? 'rgba(245,158,11,0.92)' : 'rgba(239,68,68,0.80)')) }">
+                  <div class="hm2-item-top">
+                    <div style="min-width:0;">
+                      <div class="hm2-item-title">{{ c.title }}</div>
+                      <div class="hm2-item-tag">{{ c.tag }}</div>
+                    </div>
+                    <div class="hm2-item-status">{{ c.statusIcon }} {{ c.statusText }}</div>
+                  </div>
+                  <div class="hm2-item-mid">
+                    <div class="hm2-item-value">
+                      {{ c.value }} <span v-html="c.deltaHtml"></span>
+                    </div>
+                  </div>
+                  <div class="hm2-item-brief">{{ c.driver }}</div>
+                </div>
               </div>
             </div>
           </div>
@@ -3284,29 +3642,29 @@
               <div class="h">昨日强势股反馈</div>
               <div class="s">均值 · 最佳 · 最弱</div>
             </div>
-            <div class="metric-rows">
-              <div class="metric-row">
-                <div class="metric-left">
-                  <div class="metric-k">强势股均涨</div>
-                  <div class="metric-note">用于判断次日正反馈强弱</div>
+            <div class="evi-grid">
+              <div class="evi-card">
+                <div>
+                  <div class="evi-k">强势股均涨</div>
+                  <div class="evi-note">用于判断次日正反馈强弱</div>
                 </div>
-                <div class="metric-v" :class="signedClass(getMoodInput('qs_avg_zf', 0))">
+                <div class="evi-v" :class="signedClass(getMoodInput('qs_avg_zf', 0))">
                   {{ (Number(getMoodInput('qs_avg_zf',0))>=0?'+':'') + Number(getMoodInput('qs_avg_zf',0)).toFixed(2) }}%
                 </div>
               </div>
-              <div class="metric-row">
-                <div class="metric-left">
-                  <div class="metric-k">最佳反馈</div>
-                  <div class="metric-note">{{ (Number(getMoodInput('qs_best_zf',0))>=0?'+':'') + Number(getMoodInput('qs_best_zf',0)).toFixed(2) }}%</div>
+              <div class="evi-card">
+                <div>
+                  <div class="evi-k">最佳反馈</div>
+                  <div class="evi-note">{{ (Number(getMoodInput('qs_best_zf',0))>=0?'+':'') + Number(getMoodInput('qs_best_zf',0)).toFixed(2) }}%</div>
                 </div>
-                <div class="metric-v red-text">{{ getMoodInput('qs_best_name', '—') }}</div>
+                <div class="evi-v red-text">{{ getMoodInput('qs_best_name', '—') }}</div>
               </div>
-              <div class="metric-row">
-                <div class="metric-left">
-                  <div class="metric-k">最弱反馈</div>
-                  <div class="metric-note">{{ (Number(getMoodInput('qs_worst_zf',0))>=0?'+':'') + Number(getMoodInput('qs_worst_zf',0)).toFixed(2) }}%</div>
+              <div class="evi-card">
+                <div>
+                  <div class="evi-k">最弱反馈</div>
+                  <div class="evi-note">{{ (Number(getMoodInput('qs_worst_zf',0))>=0?'+':'') + Number(getMoodInput('qs_worst_zf',0)).toFixed(2) }}%</div>
                 </div>
-                <div class="metric-v green-text">{{ getMoodInput('qs_worst_name', '—') }}</div>
+                <div class="evi-v green-text">{{ getMoodInput('qs_worst_name', '—') }}</div>
               </div>
             </div>
           </div>
@@ -3316,34 +3674,34 @@
               <div class="h">反馈分布</div>
               <div class="s">延续 · 盈利 · 回落 · 大面</div>
             </div>
-            <div class="metric-rows">
-              <div class="metric-row">
-                <div class="metric-left">
-                  <div class="metric-k">强延续</div>
-                  <div class="metric-note">涨幅 ≥ 5%</div>
+            <div class="evi-grid">
+              <div class="evi-card">
+                <div>
+                  <div class="evi-k">强延续</div>
+                  <div class="evi-note">涨幅 ≥ 5%</div>
                 </div>
-                <div class="metric-v red-text">{{ getMoodInput('qs_extreme_up', 0) }}只</div>
+                <div class="evi-v red-text">{{ getMoodInput('qs_extreme_up', 0) }}只</div>
               </div>
-              <div class="metric-row">
-                <div class="metric-left">
-                  <div class="metric-k">温和盈利</div>
-                  <div class="metric-note">收红但未大涨</div>
+              <div class="evi-card">
+                <div>
+                  <div class="evi-k">温和盈利</div>
+                  <div class="evi-note">收红但未大涨</div>
                 </div>
-                <div class="metric-v orange-text">{{ getMoodInput('qs_positive', 0) }}只</div>
+                <div class="evi-v orange-text">{{ getMoodInput('qs_positive', 0) }}只</div>
               </div>
-              <div class="metric-row">
-                <div class="metric-left">
-                  <div class="metric-k">小幅负反馈</div>
-                  <div class="metric-note">小幅回落</div>
+              <div class="evi-card">
+                <div>
+                  <div class="evi-k">小幅负反馈</div>
+                  <div class="evi-note">小幅回落</div>
                 </div>
-                <div class="metric-v blue-text">{{ getMoodInput('qs_negative', 0) }}只</div>
+                <div class="evi-v blue-text">{{ getMoodInput('qs_negative', 0) }}只</div>
               </div>
-              <div class="metric-row">
-                <div class="metric-left">
-                  <div class="metric-k">大面 / 核按钮</div>
-                  <div class="metric-note">跌幅 ≤ -5%</div>
+              <div class="evi-card">
+                <div>
+                  <div class="evi-k">大面 / 核按钮</div>
+                  <div class="evi-note">跌幅 ≤ -5%</div>
                 </div>
-                <div class="metric-v green-text">{{ getMoodInput('qs_extreme_down', 0) }}只</div>
+                <div class="evi-v green-text">{{ getMoodInput('qs_extreme_down', 0) }}只</div>
               </div>
             </div>
           </div>
@@ -3400,7 +3758,7 @@
             <strong style="font-weight:950;">⚡ 结构性提示：</strong> {{ sectorHeat.alpha }}
           </div>
 
-          <!-- 已移除：口径/数据源（按要求模板不展示） -->
+          <!-- 已移除：研发说明（不在产品上展示） -->
         </div>
 
         <div class="tier-card" v-else>
@@ -3686,7 +4044,7 @@
               <span style="margin-left:10px;">
                 ｜涨停池 <span class="orange-text" style="font-weight:900;">{{ marketData.ztgc?.length ?? 0 }}</span> 只
                 ｜题材映射 <span class="orange-text" style="font-weight:900;">{{ marketData.zt_code_themes ? Object.keys(marketData.zt_code_themes).length : 0 }}</span> 只
-                <span v-if="marketData.meta?.asOf?.pools">｜数据 {{ marketData.meta.asOf.pools }}</span>
+                <!-- 已移除：数据时间戳（不在产品上展示） -->
               </span>
             </div>
           </div>
@@ -3756,6 +4114,7 @@
           </div>
         </div>
         <p>📊 生成时间：__REPORT_DATE__ 收盘</p>
+        <p>数据来源：风中一刀的主升浪丨</p>
         <p>K线为王 · 数据先行 · 不虚构不猜测</p>
       </div>
     </div>
@@ -3942,7 +4301,7 @@
               // 小数展示控制交给模板，此处仅返回值
               return v;
             },
-            // 已移除：metaPack/metaSummary（按要求模板不展示“口径/数据源”）
+            // 已移除：metaPack/metaSummary（研发信息不在产品上展示）
             /**
              * 纯函数：对“正负号”类数值给主题色
              * - 红：正（上涨/放量）
@@ -4339,7 +4698,7 @@
                     statusIcon: st.icon,
                     statusText: st.text,
                     brief: `${st.text}｜集中度越高越拥挤（易分歧）`,
-                    driver: `TOP3 题材涨停集中度（题材口径）`,
+                    driver: `TOP3 题材涨停集中度`,
                   };
                 })(),
               ];
@@ -4371,7 +4730,7 @@
               const pickLeader = (theme) => leaders.find(x => x && (x.theme === theme || x.reason?.explosion?.theme === theme));
 
               const scoreRow = (r) => {
-                // 数据口径：以现有 strengthRows 为准（zt/zb/dt + net/risk）
+                // 数据说明：以现有 strengthRows 为准（zt/zb/dt + net/risk）
                 const zt = Number(r.zt || 0);
                 const zb = Number(r.zb || 0);
                 const dt = Number(r.dt || 0);
@@ -4576,6 +4935,16 @@
             pos() { return this.positionAdvice(); },
             hm() { return this.buildHeatmap(); },
             hm2() { return this.buildMoodHeatmapV2(); },
+            hm2PosCells() {
+              const cells = this.hm2?.cells || [];
+              const order = ['profit', 'strength', 'cons'];
+              return order.map(k => cells.find(c => c && c.key === k)).filter(Boolean);
+            },
+            hm2RiskCells() {
+              const cells = this.hm2?.cells || [];
+              const order = ['loss', 'diverge', 'crowd'];
+              return order.map(k => cells.find(c => c && c.key === k)).filter(Boolean);
+            },
             sectorHeat() { return this.marketData?.sectorHeatmap || this.buildSectorHeatmap(); },
             moodTriCards() { return this.buildMoodTriCards(); },
           },
