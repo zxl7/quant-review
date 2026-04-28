@@ -13,13 +13,15 @@ from typing import Any, Dict, List, Optional
 
 from daily_review.pipeline.context import Context
 from daily_review.pipeline.module import Module
+from daily_review.modules_v2._utils import map_ztgc_stock, map_ztgc_list
 
 
 def _derive_inputs(ctx: Context) -> Dict[str, Any]:
     """从Context中提取渡劫诊断所需数据"""
     pools = (ctx.raw.get("pools") or {}) if isinstance(ctx.raw, dict) else {}
-    ztgc = pools.get("ztgc") or []
-    return {"ztgc": ztgc}
+    raw_ztgc = pools.get("ztgc") or []
+    # 关键：字段映射 dm→code, mc→name, zf→chg_pct 等
+    return {"ztgc": map_ztgc_list(raw_ztgc)}
 
 
 def _safe(val: Any) -> Any:

@@ -224,7 +224,15 @@ def fetch_stocks_realtime(client: HttpClient, stock_codes: str) -> list:
     try:
         url = f"{client.base_url}/hsrl/ssjy_more/{client.token}?stock_codes={stock_codes}"
         data = client.get_json(url)
-        return data if isinstance(data, list) else []
+        # 兼容：部分返回为 {"data":[...]} 或 {"list":[...]}
+        if isinstance(data, list):
+            return data
+        if isinstance(data, dict):
+            for k in ("data", "list", "items", "result"):
+                v = data.get(k)
+                if isinstance(v, list):
+                    return v
+        return []
     except Exception:
         return []
 

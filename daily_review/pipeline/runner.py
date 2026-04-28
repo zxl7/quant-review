@@ -33,7 +33,12 @@ def _build_provider_index(modules: Sequence[Module]) -> dict[str, str]:
         for p in m.provides:
             key = _normalize_key(p)
             if key in idx and idx[key] != m.name:
-                raise PipelineError(f"产物冲突：{key} 同时由 {idx[key]} 和 {m.name} 提供")
+                # 默认策略：允许冲突，后出现的模块覆盖前者（与“全量执行=按声明顺序覆盖”的行为一致）
+                # 若需要严格模式，可设置环境变量 PIPELINE_STRICT_PROVIDERS=1 强制报错。
+                import os
+
+                if os.environ.get("PIPELINE_STRICT_PROVIDERS", "").strip() == "1":
+                    raise PipelineError(f"产物冲突：{key} 同时由 {idx[key]} 和 {m.name} 提供")
             idx[key] = m.name
     return idx
 

@@ -13,19 +13,20 @@ from typing import Any, Dict, List, Optional
 
 from daily_review.pipeline.context import Context
 from daily_review.pipeline.module import Module
+from daily_review.modules_v2._utils import map_ztgc_list
 
 
 def _derive_inputs(ctx: Context) -> Dict[str, Any]:
     """从Context中提取龙头评分所需数据"""
     pools = (ctx.raw.get("pools") or {}) if isinstance(ctx.raw, dict) else {}
-    ztgc = pools.get("ztgc") or []
+    raw_ztgc = pools.get("ztgc") or []
 
     md = ctx.market_data or {}
     theme_panels = md.get("themePanels") or {}
     style_radar = md.get("styleRadar") or {}
 
     return {
-        "ztgc": ztgc,
+        "ztgc": map_ztgc_list(raw_ztgc),  # 字段映射 dm→code, mc→name...
         "theme_panels": theme_panels,
         "style_radar": style_radar,
     }

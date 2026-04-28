@@ -12,17 +12,18 @@ from typing import Any, Dict, List, Optional
 
 from daily_review.pipeline.context import Context
 from daily_review.pipeline.module import Module
+from daily_review.modules_v2._utils import map_ztgc_stock, map_ztgc_list
 
 
 def _derive_inputs(ctx: Context) -> Dict[str, Any]:
     """从Context中提取主流判断所需数据"""
     md = ctx.market_data or {}
     pools = (ctx.raw.get("pools") or {}) if isinstance(ctx.raw, dict) else {}
-    ztgc = pools.get("ztgc") or []
+    raw_ztgc = pools.get("ztgc") or []
 
     return {
         "theme_panels": md.get("themePanels") or {},
-        "ztgc": ztgc,
+        "ztgc": map_ztgc_list(raw_ztgc),  # 统一映射 dm→code, mc→name...
         "mood": md.get("mood") or {},
         "mood_stage": md.get("moodStage") or {},
         "ladder": md.get("ladder") or [],
@@ -49,19 +50,19 @@ def _compute(ctx: Context) -> Dict[str, Any]:
 
         inputs = _derive_inputs(ctx)
 
-        # build_sector_ladder 需要 List[Dict] 个股列表; 用 ztgc 或 ladder
+        # build_sector_ladder 需要 List[Dict] 个股列表; 优先 ladder(已有name/code)
         ladder_input = inputs["ladder"] if isinstance(inputs["ladder"], list) else inputs["ztgc"]
 
-        # 将 ztgc 数据映射为 build_sector_ladder 期望的字段格式
+        # 统一字段格式（兼容 ladder 的 name/code 和 ztgc 映射后的 name/code）
         mapped_stocks = []
         for s in ladder_input:
             if isinstance(s, dict):
                 mapped_stocks.append({
-                    "name": s.get("name", ""),
-                    "code": s.get("code", ""),
+                    "name": s.get("mc") or s.get("name", ""),
+                    "code": s.get("dm") or s.get("code", ""),
                     "consecutive_boards": int(s.get("lbc", s.get("consecutive_boards", 0)) or 0),
-                    "chg_pct": float(s.get("chg", s.get("change_pct", s.get("chg_pct", 0))) or 0),
-                    "amount": float(s.get("amount", s.get("turnover", 0)) or 0),
+                    "chg_pct": float(s.get("zf", s.get("chg", s.get("change_pct", s.get("chg_pct", 0)))) or 0),
+                    "amount": float(s.get("cje", s.get("amount", s.get("turnover", 0))) or 0),
                 })
 
         try:

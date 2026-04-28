@@ -19,12 +19,14 @@ def _derive_inputs(ctx: Context) -> Dict[str, Any]:
     """从Context中提取交易性质判断所需数据"""
     md = ctx.market_data or {}
     pools = (ctx.raw.get("pools") or {}) if isinstance(ctx.raw, dict) else {}
+    quotes = (ctx.raw.get("quotes") or {}) if isinstance(ctx.raw, dict) else {}
 
     return {
         "ztgc": pools.get("ztgc") or [],
         "sentiment": md.get("v3", {}).get("sentiment") if isinstance(md.get("v3"), dict) else {},
         "mood_stage": md.get("moodStage") or {},
         "mood": md.get("mood") or {},
+        "quotes": quotes.get("items") if isinstance(quotes, dict) else {},
     }
 
 
@@ -36,19 +38,46 @@ def _compute(ctx: Context) -> Dict[str, Any]:
         inputs = _derive_inputs(ctx)
 
         # determine_trade_nature(stock_info: Dict, market_context: Dict)
-        # 取连板最高的股票作为代表，构造 stock_info
+        # v3 增强：对“高标候选池”批量输出（而不是只取代表股）
         ztgc = inputs["ztgc"] or []
-        rep_stock = {}
-        if ztgc:
-            top = max(ztgc, key=lambda s: int(s.get("lbc", 0) or 0)) if isinstance(ztgc[0], dict) else {}
-            rep_stock = {
-                "name": top.get("name", ""),
-                "code": top.get("code", ""),
-                "consecutive_boards": int(top.get("lbc", 0) or 0),
-                "chg_pct": float(top.get("chg", top.get("change_pct", 0)) or 0),
-                "yest_chg_pct": float(top.get("yest_chg", 0) or 0),
-                "is_zt": bool(top.get("is_zt", False)),
-            }
+        quotes_map = inputs.get("quotes") or {}
+
+        # 候选：按连板数降序取前 N（默认 20）
+        candidates: List[Dict[str, Any]] = []
+        if isinstance(ztgc, list):
+            rows = [x for x in ztgc if isinstance(x, dict)]
+            rows.sort(key=lambda s: int(s.get("lbc", 0) or 0), reverse=True)
+            rows = rows[:20]
+            for top in rows:
+                code6 = str(top.get("dm") or top.get("code") or "")
+                # quotes 用 6位代码 key
+                from daily_review.data.biying import normalize_stock_code
+
+                c6 = normalize_stock_code(code6)
+                q = quotes_map.get(c6) if isinstance(quotes_map, dict) else None
+                # pct：优先用实时行情 pc，否则退回涨停池字段
+                pct = None
+                try:
+                    if isinstance(q, dict) and q.get("pc") not in (None, ""):
+                        pct = float(q.get("pc"))
+                    elif top.get("chg") not in (None, ""):
+                        pct = float(top.get("chg"))
+                except Exception:
+                    pct = None
+
+                stock_info = {
+                    "name": top.get("mc") or top.get("name") or "",
+                    "code": c6 or code6,
+                    "consecutive_boards": int(top.get("lbc", 0) or 0),
+                    "chg_pct": float(pct or 0.0),
+                    "yest_chg_pct": 0.0,
+                    "is_zt": True,  # ztgc 代表涨停池
+                    "amount": (q.get("cje") if isinstance(q, dict) else None),
+                    "price": (q.get("p") if isinstance(q, dict) else None),
+                }
+                candidates.append(stock_info)
+
+        rep_stock = candidates[0] if candidates else {}
 
         sentiment_obj = inputs["sentiment"]
         sentiment_score = (
@@ -67,6 +96,7 @@ def _compute(ctx: Context) -> Dict[str, Any]:
             "mood": inputs["mood"],
         }
 
+        # 代表股判断（用于兼容旧结构）
         result = determine_trade_nature(rep_stock, market_context)
 
         output = (vars(result) if hasattr(result, "__dataclass_fields__") else result) or {}
@@ -85,6 +115,28 @@ def _compute(ctx: Context) -> Dict[str, Any]:
                 }
         except Exception:
             pass
+
+        # 批量候选输出（增强数据量）
+        dist: Dict[str, int] = {}
+        cand_out: List[Dict[str, Any]] = []
+        for s in candidates:
+            try:
+                r2 = determine_trade_nature(s, market_context)
+                o2 = (vars(r2) if hasattr(r2, "__dataclass_fields__") else r2) or {}
+                nature_obj = o2.get("nature")
+                if nature_obj is not None:
+                    code = getattr(nature_obj, "_name_", None)
+                    label = getattr(nature_obj, "name", None)
+                    o2["nature"] = {"code": code, "label": label}
+                    if code:
+                        dist[code] = dist.get(code, 0) + 1
+                o2["stock"] = {"code": s.get("code"), "name": s.get("name"), "lbc": s.get("consecutive_boards"), "chg_pct": s.get("chg_pct")}
+                cand_out.append(o2)
+            except Exception:
+                continue
+        output["candidates"] = cand_out
+        output["distribution"] = dist
+        output["candidate_count"] = len(cand_out)
 
         return {"marketData.v3.tradingNature": output}
     except Exception as e:
