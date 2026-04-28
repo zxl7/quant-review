@@ -40,6 +40,9 @@ def build_rightside_confirmation(market_data: Dict[str, Any]) -> Dict[str, Any]:
     mi = (md.get("features") or {}).get("mood_inputs") or {}
     v2s = (md.get("v2") or {}).get("sentiment") if isinstance(md.get("v2"), dict) else None
     v2s = v2s if isinstance(v2s, dict) else {}
+    sector_pack = (md.get("v2") or {}).get("sector") if isinstance(md.get("v2"), dict) else {}
+    sector_pack = sector_pack if isinstance(sector_pack, dict) else {}
+    mainline = sector_pack.get("mainline") if isinstance(sector_pack.get("mainline"), dict) else {}
 
     score = _to_float(v2s.get("score"), 5.0)  # 0~10
     phase = str(v2s.get("phase") or "")
@@ -50,11 +53,11 @@ def build_rightside_confirmation(market_data: Dict[str, Any]) -> Dict[str, Any]:
     vol_chg = _to_float(vol.get("change"), 0.0)  # -1.98%
     idx_ok = (vol_chg >= -2.0) and (score >= 4.0) and ("冰点" not in phase)
 
-    # 板块共振 proxy：主线存在且不拥挤到极限
+    # 板块共振：优先用 v2 主线判断（模块④）
     overlap = (md.get("themePanels") or {}).get("overlap") or {}
     ov = _to_float(overlap.get("score"), 0.0)
     top3 = _to_float((md.get("styleRadar") or {}).get("top3ThemeRatio"), _to_float(mi.get("top3_theme_ratio"), 0))
-    sector_ok = (top3 >= 55 and top3 <= 95 and ov < 75)
+    sector_ok = bool(mainline.get("exists")) if isinstance(mainline, dict) and mainline else (top3 >= 55 and top3 <= 95 and ov < 75)
 
     # 个股共振 proxy：晋级/封板维持 + 高位没有崩（断板/跌停不极端）
     jj = _to_float(mi.get("jj_rate"), 0.0)
@@ -76,7 +79,7 @@ def build_rightside_confirmation(market_data: Dict[str, Any]) -> Dict[str, Any]:
             "name": "板块共振",
             "passed": bool(sector_ok),
             "score": _score01(sector_ok),
-            "detail": f"主线集中{top3:.0f}% · 重叠{ov:.0f}%",
+            "detail": f"{('主线：'+str(mainline.get('top_sector'))+'·'+str(mainline.get('strength'))) if isinstance(mainline, dict) and mainline.get('top_sector') else ('主线集中'+str(int(top3))+'% · 重叠'+str(int(ov))+'%')}",
         },
         {
             "key": "stock_resonance",
@@ -111,4 +114,3 @@ def build_rightside_confirmation(market_data: Dict[str, Any]) -> Dict[str, Any]:
         "msg": msg,
         "advice": advice,
     }
-

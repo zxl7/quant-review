@@ -32,6 +32,9 @@ def check_resonance(market_data: Dict[str, Any]) -> Dict[str, Any]:
     mi = (md.get("features") or {}).get("mood_inputs") or {}
     v2s = (md.get("v2") or {}).get("sentiment") if isinstance(md.get("v2"), dict) else None
     v2s = v2s if isinstance(v2s, dict) else {}
+    sector_pack = (md.get("v2") or {}).get("sector") if isinstance(md.get("v2"), dict) else {}
+    sector_pack = sector_pack if isinstance(sector_pack, dict) else {}
+    mainline = sector_pack.get("mainline") if isinstance(sector_pack.get("mainline"), dict) else {}
 
     score = _to_float(v2s.get("score"), 5.0)
     phase = str(v2s.get("phase") or "")
@@ -41,11 +44,11 @@ def check_resonance(market_data: Dict[str, Any]) -> Dict[str, Any]:
     vol_chg = _to_float(vol.get("change"), 0.0)
     cond_index = bool(score >= 5.5 and "冰点" not in phase and vol_chg >= -1.5)
 
-    # 条件② 板块核心：有主线且不拥挤极端（overlap < 75）
+    # 条件② 板块核心：优先 v2 主线 exists，否则回退到拥挤/集中 proxy
     overlap = (md.get("themePanels") or {}).get("overlap") or {}
     ov = _to_float(overlap.get("score"), 0.0)
     top3 = _to_float((md.get("styleRadar") or {}).get("top3ThemeRatio"), _to_float(mi.get("top3_theme_ratio"), 0))
-    cond_sector = bool(top3 >= 65 and top3 <= 90 and ov < 75)
+    cond_sector = bool(mainline.get("exists")) if isinstance(mainline, dict) and mainline else bool(top3 >= 65 and top3 <= 90 and ov < 75)
 
     # 条件③ 个股核心：最高连板≥3 且 承接不差
     max_lb = int(_to_float(mi.get("max_lb"), 0))
@@ -80,8 +83,7 @@ def check_resonance(market_data: Dict[str, Any]) -> Dict[str, Any]:
         "missing": missing,
         "conditions": {
             "index": {"passed": cond_index, "detail": f"量能{vol.get('change','-')}，情绪{score:.1f}/{phase}"},
-            "sector": {"passed": cond_sector, "detail": f"主线集中{top3:.0f}% · 重叠{ov:.0f}%"},
+            "sector": {"passed": cond_sector, "detail": f"{('主线：'+str(mainline.get('top_sector'))+'·'+str(mainline.get('strength'))) if isinstance(mainline, dict) and mainline.get('top_sector') else ('主线集中'+str(int(top3))+'% · 重叠'+str(int(ov))+'%')}"},
             "stock": {"passed": cond_stock, "detail": f"高度{max_lb}板 · 晋级{jj:.0f}%"},
         },
     }
-
