@@ -3937,6 +3937,31 @@
                 <li v-for="(r, i) in marketData.v2.strategy.warnings" :key="'wrn-'+i">{{ r }}</li>
               </ul>
             </details>
+            <details v-if="marketData.v2?.dragon || marketData.v2?.height_module">
+              <summary>展开龙头诊断</summary>
+              <ul class="rules" v-if="marketData.v2?.height_module">
+                <li>
+                  高度：{{ marketData.v2.height_module.max_board || '-' }}板｜
+                  形态：{{ marketData.v2.height_module.top_stock?.state || '-' }}｜
+                  生命周期：{{ marketData.v2.height_module.life_cycle?.phase_name || '-' }}
+                </li>
+                <li v-if="marketData.v2.height_module.doujie_result?.is_doujie">
+                  渡劫：{{ marketData.v2.height_module.doujie_result.doujie_type }}｜
+                  存活率：{{ Math.round((marketData.v2.height_module.doujie_result.survival_prob || 0)*100) }}%｜
+                  建议：{{ marketData.v2.height_module.doujie_result.advice }}
+                </li>
+              </ul>
+              <ul class="rules" v-if="marketData.v2?.dragon">
+                <li>
+                  龙头：{{ marketData.v2.dragon.stock_name || '-' }}
+                  <span v-if="marketData.v2.dragon.main_theme">｜题材：{{ marketData.v2.dragon.main_theme }}</span>
+                  ｜评级：{{ marketData.v2.dragon.grade || '-' }}
+                  ｜总分：{{ marketData.v2.dragon.overall || '-' }}
+                  ｜{{ marketData.v2.dragon.god_form_analysis?.verdict || '' }}
+                </li>
+                <li v-if="marketData.v2.dragon.god_form_analysis?.note">{{ marketData.v2.dragon.god_form_analysis.note }}</li>
+              </ul>
+            </details>
           </div>
           <div class="plan-banner" v-if="marketData.actionGuideV2?.meta">
             <strong>🧩 {{ marketData.actionGuideV2.meta.title }}</strong>

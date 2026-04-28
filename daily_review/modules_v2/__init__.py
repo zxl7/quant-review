@@ -21,6 +21,7 @@ from .learning_notes import LEARNING_NOTES_MODULE
 from .mood_signals import MOOD_SIGNALS_MODULE
 from .sentiment_spec import SENTIMENT_SPEC_MODULE
 from .sentiment_v2 import SENTIMENT_V2_MODULE
+from .leader_dragon_v2 import LEADER_DRAGON_V2_MODULE
 from .position_v2 import POSITION_V2_MODULE
 from .rightside_v2 import RIGHTSIDE_V2_MODULE
 from .resonance_v2 import RESONANCE_V2_MODULE
@@ -45,6 +46,7 @@ ALL_MODULES = [
     MOOD_SIGNALS_MODULE,
     # v2 情绪计分卡应覆盖 spec v1 的兼容输出
     SENTIMENT_V2_MODULE,
+    LEADER_DRAGON_V2_MODULE,
     POSITION_V2_MODULE,
     RIGHTSIDE_V2_MODULE,
     RESONANCE_V2_MODULE,
