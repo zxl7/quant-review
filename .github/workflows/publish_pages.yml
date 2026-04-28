@@ -50,7 +50,7 @@ jobs:
           now_bj="$(date +'%H:%M')"
           echo "beijing_now=${now_bj}"
           now_min=$((10#$(date +%H)*60 + 10#$(date +%M)))
-          tol=7  # 允许 GitHub cron 延迟
+          tol=15  # 允许 GitHub cron 延迟（实际可能延迟 10~15 分钟）
 
           # 盘中半小时快照（北京时间）：09:35 / 10:05 / 10:35 / 11:05 / 13:05 / 13:35 / 14:05 / 14:35
           targets=( $((9*60+35)) $((10*60+5)) $((10*60+35)) $((11*60+5)) $((13*60+5)) $((13*60+35)) $((14*60+5)) $((14*60+35)) )
@@ -65,7 +65,7 @@ jobs:
           # 收盘后补一版（北京时间 15:01）
           t_close=$((15*60+1))
           hit_close=false
-          if [ $(( now_min > t_close - 12 && now_min < t_close + 12 )) -eq 1 ]; then
+          if [ $(( now_min > t_close - 20 && now_min < t_close + 20 )) -eq 1 ]; then
             hit_close=true
           fi
 
