@@ -25,6 +25,9 @@ def _compute(ctx: Context) -> Dict[str, Any]:
     dragon = v2.get("dragon") if isinstance(v2.get("dragon"), dict) else {}
     dragon_overall = float(dragon.get("overall") or 5.0)
 
+    tn = v2.get("trade_nature") if isinstance(v2.get("trade_nature"), dict) else {}
+    nature_compatible = bool(tn.get("compatible")) if isinstance(tn, dict) else False
+
     # 主线：优先使用 v2 模块④输出
     sector_pack = v2.get("sector") if isinstance(v2.get("sector"), dict) else {}
     mainline = (sector_pack.get("mainline") or {}) if isinstance(sector_pack, dict) else {}
@@ -40,7 +43,7 @@ def _compute(ctx: Context) -> Dict[str, Any]:
             "sentiment_score": sentiment_score,
             "mainline": mainline,
             "dragon_overall_score": dragon_overall,
-            "nature_compatible": False,  # TODO: 模块⑥接入后替换
+            "nature_compatible": nature_compatible,
             "upside_potential": 0.10,
             "downside_risk": 0.05,
         }

@@ -84,6 +84,7 @@ def generate_strategy(
     position_model: Dict[str, Any],
     resonance: Dict[str, Any] | None = None,
     rightside: Dict[str, Any] | None = None,
+    trade_nature: Dict[str, Any] | None = None,
 ) -> Dict[str, Any]:
     s = v2_sentiment or {}
     score = _to_num(s.get("score"), 5.0)
@@ -109,6 +110,21 @@ def generate_strategy(
         tactics["best_tactic"] = "等待确认"
         tactics["best_score"] = 0
 
+    # 交易性质约束：过滤允许战术 + 追加仓位上限
+    tn = trade_nature or {}
+    if isinstance(tn, dict) and tn.get("rule"):
+        rule = tn.get("rule") or {}
+        allowed = set(rule.get("allowed_tactics") or [])
+        pos_limit = _to_num(rule.get("position_limit"), 1.0)
+        if allowed:
+            tactics["recommendations"] = {k: v for k, v in (tactics.get("recommendations") or {}).items() if k in allowed}
+            # 重新选 best
+            items = list((tactics.get("recommendations") or {}).items())
+            items.sort(key=lambda x: x[1], reverse=True)
+            tactics["best_tactic"] = items[0][0] if items else "等待确认"
+            tactics["best_score"] = items[0][1] if items else 0
+        final_cap = min(final_cap, pos_limit)
+
     strategy = {
         "tone": tone,
         "overall_advice": overall_advice,
@@ -123,6 +139,16 @@ def generate_strategy(
         "iron_rules": generate_iron_rules(phase=phase, score=score),
         "warnings": s.get("warnings") or [],
     }
+    if tn:
+        strategy["trade_nature"] = {
+            "nature": tn.get("nature"),
+            "label": tn.get("label"),
+            "compatible": tn.get("compatible"),
+            "warning": tn.get("warning"),
+            "position_limit": (tn.get("rule") or {}).get("position_limit"),
+            "allowed_tactics": (tn.get("rule") or {}).get("allowed_tactics") or [],
+            "stop_loss": (tn.get("rule") or {}).get("stop_loss"),
+        }
     if rs:
         strategy["rightside"] = {
             "can_enter": bool(rs.get("can_enter")),

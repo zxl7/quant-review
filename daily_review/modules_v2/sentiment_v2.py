@@ -54,15 +54,7 @@ def _derive_inputs(ctx: Context) -> Dict[str, Any]:
     # 规则（可改）：top3ThemeRatio 过高或 overlap 过高 → 不清晰/拥挤
     style = md.get("styleRadar") or {}
     overlap = (md.get("themePanels") or {}).get("overlap") or {}
-    def _to_float(v: Any, default: float = 0.0) -> float:
-        try:
-            if v is None or v == "":
-                return default
-            if isinstance(v, str) and v.endswith("%"):
-                v = v[:-1]
-            return float(v)
-        except Exception:
-            return default
+    from daily_review.utils.num import to_float as _to_float
 
     top3 = _to_float(style.get("top3ThemeRatio") or mi.get("top3_theme_ratio") or 0)
     ov = _to_float(overlap.get("score") or mi.get("overlap_score") or 0)

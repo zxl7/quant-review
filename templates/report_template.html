@@ -3921,6 +3921,7 @@
               <span class="pill">情绪：{{ marketData.v2?.sentiment?.score ?? '-' }}｜{{ marketData.v2?.sentiment?.phase || '-' }}</span>
               <span class="pill">风险：{{ marketData.v2?.sentiment?.risk_level || '-' }}</span>
               <span class="pill" v-if="marketData.v2?.sector?.mainline?.exists">主线：{{ marketData.v2.sector.mainline.top_sector }}（{{ marketData.v2.sector.mainline.level }}）</span>
+              <span class="pill" v-if="marketData.v2?.trade_nature?.label">性质：{{ marketData.v2.trade_nature.label }}</span>
               <span class="pill" v-if="marketData.v2?.position_model">赢面：{{ marketData.v2.position_model.win_rate }}%</span>
               <span class="pill" v-if="marketData.v2?.position_model">档位：{{ marketData.v2.position_model.tier?.action }}</span>
               <span class="pill" v-if="marketData.v2?.rightside">右侧：{{ marketData.v2.rightside.can_enter ? '可入场' : '禁止入场' }}</span>
@@ -3936,6 +3937,13 @@
               <summary>展开风险提示</summary>
               <ul class="rules">
                 <li v-for="(r, i) in marketData.v2.strategy.warnings" :key="'wrn-'+i">{{ r }}</li>
+              </ul>
+            </details>
+            <details v-if="marketData.v2?.trade_nature?.warning">
+              <summary>展开交易性质提示</summary>
+              <ul class="rules">
+                <li>{{ marketData.v2.trade_nature.warning }}</li>
+                <li v-if="marketData.v2.strategy.trade_nature?.stop_loss">止损：{{ marketData.v2.strategy.trade_nature.stop_loss }}</li>
               </ul>
             </details>
             <details v-if="marketData.v2?.dragon || marketData.v2?.height_module">
