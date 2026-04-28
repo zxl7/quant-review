@@ -27,6 +27,8 @@ from .position_v2 import POSITION_V2_MODULE
 from .rightside_v2 import RIGHTSIDE_V2_MODULE
 from .resonance_v2 import RESONANCE_V2_MODULE
 from .trade_nature_v2 import TRADE_NATURE_V2_MODULE
+from .rebound_v2 import REBOUND_V2_MODULE
+from .psychology_v2 import PSYCHOLOGY_V2_MODULE
 from .strategy_v2 import STRATEGY_V2_MODULE
 
 ALL_MODULES = [
@@ -54,6 +56,8 @@ ALL_MODULES = [
     RIGHTSIDE_V2_MODULE,
     RESONANCE_V2_MODULE,
     TRADE_NATURE_V2_MODULE,
+    REBOUND_V2_MODULE,
+    PSYCHOLOGY_V2_MODULE,
     STRATEGY_V2_MODULE,
     SENTIMENT_SPEC_MODULE,
     ACTION_GUIDE_MODULE,

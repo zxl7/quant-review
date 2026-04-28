@@ -85,6 +85,8 @@ def generate_strategy(
     resonance: Dict[str, Any] | None = None,
     rightside: Dict[str, Any] | None = None,
     trade_nature: Dict[str, Any] | None = None,
+    rebound: Dict[str, Any] | None = None,
+    psychology: Dict[str, Any] | None = None,
 ) -> Dict[str, Any]:
     s = v2_sentiment or {}
     score = _to_num(s.get("score"), 5.0)
@@ -161,5 +163,25 @@ def generate_strategy(
             "passed_count": passed_count,
             "level": (resonance or {}).get("level"),
             "missing": (resonance or {}).get("missing") or [],
+        }
+
+    rb = rebound or {}
+    if isinstance(rb, dict) and rb:
+        strategy["rebound"] = {
+            "phase": rb.get("phase"),
+            "phase_name": rb.get("phase_name"),
+            "reason": rb.get("reason"),
+            "strategy": rb.get("strategy") or {},
+        }
+
+    psy = psychology or {}
+    if isinstance(psy, dict) and psy:
+        ref = (psy.get("reflexivity_cycle") or {}) if isinstance(psy.get("reflexivity_cycle"), dict) else {}
+        strategy["mindset"] = {
+            "reflexivity_position": ref.get("position_name"),
+            "reflexivity_summary": ref.get("summary"),
+            "reflexivity_warning": ref.get("warning"),
+            "behavior_chains": psy.get("behavior_chains") or [],
+            "game": psy.get("psychology_game") or {},
         }
     return strategy

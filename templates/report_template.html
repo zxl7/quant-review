@@ -3922,6 +3922,8 @@
               <span class="pill">风险：{{ marketData.v2?.sentiment?.risk_level || '-' }}</span>
               <span class="pill" v-if="marketData.v2?.sector?.mainline?.exists">主线：{{ marketData.v2.sector.mainline.top_sector }}（{{ marketData.v2.sector.mainline.level }}）</span>
               <span class="pill" v-if="marketData.v2?.trade_nature?.label">性质：{{ marketData.v2.trade_nature.label }}</span>
+              <span class="pill" v-if="marketData.v2?.rebound?.phase_name">反弹：{{ marketData.v2.rebound.phase_name }}</span>
+              <span class="pill" v-if="marketData.v2?.psychology?.reflexivity_cycle?.position_name">反身性：{{ marketData.v2.psychology.reflexivity_cycle.position_name }}</span>
               <span class="pill" v-if="marketData.v2?.position_model">赢面：{{ marketData.v2.position_model.win_rate }}%</span>
               <span class="pill" v-if="marketData.v2?.position_model">档位：{{ marketData.v2.position_model.tier?.action }}</span>
               <span class="pill" v-if="marketData.v2?.rightside">右侧：{{ marketData.v2.rightside.can_enter ? '可入场' : '禁止入场' }}</span>
@@ -3944,6 +3946,27 @@
               <ul class="rules">
                 <li>{{ marketData.v2.trade_nature.warning }}</li>
                 <li v-if="marketData.v2.strategy.trade_nature?.stop_loss">止损：{{ marketData.v2.strategy.trade_nature.stop_loss }}</li>
+              </ul>
+            </details>
+            <details v-if="marketData.v2?.rebound">
+              <summary>展开反弹阶段</summary>
+              <ul class="rules">
+                <li>{{ marketData.v2.rebound.phase_name }}：{{ marketData.v2.rebound.reason }}</li>
+                <li v-if="marketData.v2.rebound.strategy?.what_to_do">做：{{ marketData.v2.rebound.strategy.what_to_do }}</li>
+                <li v-if="marketData.v2.rebound.strategy?.what_NOT_to_do">不做：{{ marketData.v2.rebound.strategy.what_NOT_to_do }}</li>
+              </ul>
+            </details>
+            <details v-if="marketData.v2?.psychology?.reflexivity_cycle">
+              <summary>展开人性博弈层</summary>
+              <ul class="rules">
+                <li>{{ marketData.v2.psychology.reflexivity_cycle.summary }}</li>
+                <li>{{ marketData.v2.psychology.reflexivity_cycle.warning }}</li>
+                <li v-if="marketData.v2.psychology.psychology_game?.advice">博弈建议：{{ marketData.v2.psychology.psychology_game.advice }}</li>
+              </ul>
+              <ul class="rules" v-if="(marketData.v2.psychology.behavior_chains || []).length">
+                <li v-for="(c, i) in marketData.v2.psychology.behavior_chains" :key="'bc-'+i">
+                  {{ c.triggered ? '⚠️' : '—' }} {{ c.name }}：{{ c.rule }}
+                </li>
               </ul>
             </details>
             <details v-if="marketData.v2?.dragon || marketData.v2?.height_module">

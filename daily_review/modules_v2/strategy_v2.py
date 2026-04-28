@@ -24,8 +24,18 @@ def _compute(ctx: Context) -> Dict[str, Any]:
     res = v2.get("resonance") if isinstance(v2.get("resonance"), dict) else {}
     rs = v2.get("rightside") if isinstance(v2.get("rightside"), dict) else {}
     tn = v2.get("trade_nature") if isinstance(v2.get("trade_nature"), dict) else {}
+    rb = v2.get("rebound") if isinstance(v2.get("rebound"), dict) else {}
+    psy = v2.get("psychology") if isinstance(v2.get("psychology"), dict) else {}
 
-    strategy = generate_strategy(v2_sentiment=v2_sent, position_model=pos, resonance=res, rightside=rs, trade_nature=tn)
+    strategy = generate_strategy(
+        v2_sentiment=v2_sent,
+        position_model=pos,
+        resonance=res,
+        rightside=rs,
+        trade_nature=tn,
+        rebound=rb,
+        psychology=psy,
+    )
     return {"marketData.v2": {**v2, "strategy": strategy}}
 
 
