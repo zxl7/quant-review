@@ -22,6 +22,9 @@ from daily_review.pipeline.module import Module
 
 def _compute(ctx: Context) -> Dict[str, Any]:
     md = ctx.market_data or {}
+    # 若 v2 情绪计分卡已产出，则不再覆盖（避免口径打架）
+    if isinstance(md.get("v2"), dict) and isinstance((md.get("v2") or {}).get("sentiment"), dict):
+        return {}
     sentiment = build_sentiment(md)
     dual = build_dual_dimension(md, sentiment)
     height = build_height_analysis(md)
@@ -55,4 +58,3 @@ SENTIMENT_SPEC_MODULE = Module(
     ],
     compute=_compute,
 )
-
