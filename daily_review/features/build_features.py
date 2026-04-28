@@ -386,3 +386,227 @@ def build_style_inputs(
 
 def default_chart_palette() -> list[str]:
     return ["#ef4444", "#f97316", "#f59e0b", "#fb7185"]
+
+
+# === v3 扩展特征构建 ===
+
+def build_v3_sentiment_inputs(*, pools, height_history=None, **kwargs) -> Dict[str, Any]:
+    """v3 六维情绪评分所需的输入数据构建。
+
+    基于现有的 build_mood_inputs() 输出，转换为 v3 SentimentInput 格式，
+    并补充 v3 特有的字段（如高度趋势、主线判断等）。
+
+    Args:
+        pools: 三池数据映射 (ztgc/zbgc/dtgc/yest_ztgc/qsgc 等)
+        height_history: 近期高度趋势序列 [(date, max_lb), ...]
+        **kwargs: 额外字段：
+            - main_theme_clear: 主线是否清晰
+            - main_theme_strength: 主线强度描述
+            - theme_rotation_freq: 板块轮动频率
+            - has_tiandiban: 是否有天地板
+            - has_ditianban: 是否有地天板
+            - is_weekend_ahead: 是否临近周末
+
+    Returns:
+        v3 格式的情绪评分输入字典
+    """
+    base = build_mood_inputs(pools=pools)
+
+    return {
+        # 基础字段从base映射
+        'zt_count': base['zt_count'],
+        'zt_count_yesterday': len(pools.get('yest_ztgc') or []) if pools else 0,
+        'lianban_count': base.get('lb_2', 0) + base.get('lb_3', 0) + base.get('lb_4p', 0) + base.get('lb_5p', 0),
+        'max_lianban': base['max_lb'],
+        'zab_count': base['zb_count'],
+        'try_zt_total': base['zt_count'] + base['zb_count'],
+        'zab_rate': base['zb_rate'],
+        'yest_zt_avg_chg': base.get('yest_zt_avg_chg', 0.0),
+        'yest_lianban_promote_rate': base.get('jj_rate', 0.0),
+        'yest_duanban_nuclear': sum(
+            1 for s in (pools.get("dtgc") or [])
+            if isinstance(s, dict) and float(str(s.get('zf', 0) or 0)) < -5
+        ),
+        'dt_count': base['dt_count'],
+        'height_history': height_history if height_history else [],
+        'main_theme_clear': kwargs.get('main_theme_clear', False),
+        'main_theme_strength': kwargs.get('main_theme_strength', '无'),
+        'theme_rotation_freq': kwargs.get('theme_rotation_freq', 0),
+        'has_tiandiban': kwargs.get('has_tiandiban', False),
+        'has_ditianban': kwargs.get('has_ditianban', False),
+        'has_waipan_shock': False,  # 需外部数据源
+        'is_weekend_ahead': kwargs.get('is_weekend_ahead', False),
+        # 同时保留原始base数据以兼容旧模块
+        '_legacy_mood_inputs': base,
+    }
+
+
+def build_v3_dujie_inputs(*, ztgc, yest_ztgc=None, zbgc=None) -> List[Dict]:
+    """为渡劫识别准备个股级输入数据。
+
+    从涨停池中提取每只连板股的关键信息，
+    用于判断是否存在渡劫信号（高辨识度标的在分歧中存活）。
+
+    Args:
+        ztgc: 今日涨停池列表
+        yest_ztgc: 昨日涨停池列表（用于计算晋级）
+        zbgc: 今日炸板池列表（用于识别断板）
+
+    Returns:
+        个股级输入列表，每个元素包含该连板股的关键特征
+    """
+    ztgc = ztgc if isinstance(ztgc, list) else []
+    yest_ztgc = yest_ztgc if isinstance(yest_ztgc, list) else []
+    zbgc = zbgc if isinstance(zbgc, list) else []
+
+    def _code6(s: Mapping[str, Any]) -> str:
+        dm = str(s.get("dm") or s.get("code") or "")
+        digits = "".join([c for c in dm if c.isdigit()])
+        return digits[-6:] if len(digits) >= 6 else digits
+
+    def _lbc(s: Mapping[str, Any]) -> int:
+        lb = s.get("lbc", None)
+        if lb is not None:
+            return max(1, _to_int(lb, 1))
+        tj = str(s.get("tj", "") or "")
+        try:
+            parts = tj.split("/")
+            if len(parts) == 2:
+                return max(1, int(parts[1]))
+        except Exception:
+            pass
+        return 1
+
+    results: List[Dict] = []
+    for s in ztgc:
+        if not isinstance(s, dict):
+            continue
+        c6 = _code6(s)
+        if not c6:
+            continue
+        lbc = _lbc(s)
+        if lbc < 2:  # 只关注连板股
+            continue
+
+        # 昨日的连板数
+        yest_lbc = 0
+        for ys in yest_ztgc:
+            if _code6(ys) == c6:
+                yest_lbc = _lbc(ys)
+                break
+
+        # 是否有炸板记录（今日）
+        is_zab = any(_code6(zs) == c6 for zs in zbgc)
+
+        item = {
+            "code": c6,
+            "name": str(s.get("mc") or ""),
+            "lbc_today": lbc,
+            "lbc_yesterday": yest_lbc,
+            "promoted": (lbc > yest_lbc > 0),
+            "zf": _to_float(s.get("zf"), 0.0),
+            "zj": _to_float(s.get("zj"), 0.0),       # 封板资金
+            "hs": _to_float(s.get("hs"), 0.0),         # 换手率
+            "lt": _to_float(s.get("lt"), 0.0),         # 流通市值
+            "fbt": str(s.get("fbt") or ""),             # 封板时间
+            "zbc": _to_int(s.get("zbc"), 0),           # 炸板次数
+            "is_zab": is_zab,
+            "themes": s.get("themes", []),
+        }
+        results.append(item)
+
+    return results
+
+
+def build_v3_dragon_inputs(*, ztgc, market_context=None) -> List[Dict]:
+    """为龙头三要素量化准备个股级输入。
+
+    提取涨停池中高辨识度标的的详细数据，
+    用于龙头三要素评估（带领性、突破性、唯一性）。
+
+    Args:
+        ztgc: 今日涨停池列表
+        market_context: 市场上下文（指数涨跌、量能等），可选
+
+    Returns:
+        高辨识度标的的特征列表
+    """
+    ztgc = ztgc if isinstance(ztgc, list) else []
+
+    def _code6(s: Mapping[str, Any]) -> str:
+        dm = str(s.get("dm") or s.get("code") or "")
+        digits = "".join([c for c in dm if c.isdigit()])
+        return digits[-6:] if len(digits) >= 6 else digits
+
+    def _lbc(s: Mapping[str, Any]) -> int:
+        lb = s.get("lbc", None)
+        if lb is not None:
+            return max(1, _to_int(lb, 1))
+        tj = str(s.get("tj", "") or "")
+        try:
+            parts = tj.split("/")
+            if len(parts) == 2:
+                return max(1, int(parts[1]))
+        except Exception:
+            pass
+        return 1
+
+    # 筛选高辨识度标的：连板 >= 2 或 封板资金靠前
+    candidates: List[Tuple[int, Dict]] = []  # (priority_score, stock_dict)
+    seal_funds = [(_to_float(s.get("zj"), 0.0), i, s) for i, s in enumerate(ztgc) if isinstance(s, dict)]
+    seal_funds.sort(key=lambda x: x[0], reverse=True)
+
+    top_seal_set = set()
+    for _, idx, _ in seal_funds[:10]:  # 封板金额前10
+        top_seal_set.add(idx)
+
+    for i, s in enumerate(ztgc):
+        if not isinstance(s, dict):
+            continue
+        c6 = _code6(s)
+        lbc = _lbc(s)
+
+        # 高辨识度条件：高连板 或 大封单 或 早封
+        is_high_lbc = lbc >= 3
+        is_top_seal = i in top_seal_set
+        is_early_seal = _is_time_leq(str(s.get("fbt") or ""), "09:45:00")
+
+        if not (is_high_lbc or is_top_seal or is_early_seal):
+            continue
+
+        priority = 0
+        if lbc >= 5:
+            priority += 50
+        elif lbc >= 4:
+            priority += 35
+        elif lbc >= 3:
+            priority += 20
+        elif lbc >= 2:
+            priority += 10
+        if is_top_seal:
+            priority += 15
+        if is_early_seal:
+            priority += 10
+
+        candidates.append((priority, s))
+
+    candidates.sort(key=lambda x: x[0], reverse=True)
+
+    results: List[Dict] = []
+    for priority, s in candidates[:20]:  # 取前20只高辨识度标的
+        c6 = _code6(s)
+        results.append({
+            "code": c6,
+            "name": str(s.get("mc") or ""),
+            "lbc": _lbc(s),
+            "zf": _to_float(s.get("zf"), 0.0),
+            "zj": _to_float(s.get("zj"), 0.0),
+            "hs": _to_float(s.get("hs"), 0.0),
+            "lt": _to_float(s.get("lt"), 0.0),
+            "fbt": str(s.get("fbt") or ""),
+            "zbc": _to_int(s.get("zbc"), 0),
+            "priority": priority,
+            "themes": s.get("themes", []),
+        })
+
+    return results

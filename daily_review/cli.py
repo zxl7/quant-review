@@ -1267,6 +1267,8 @@ def run_partial(date: str, modules: list[str]) -> int:
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--date", help="报告日期 YYYY-MM-DD（缺省则走全量模式的默认逻辑）")
+    ap.add_argument("--require-python", default="", help="强制要求使用指定 Python 解释器路径（例如 /usr/local/bin/python3）")
+    ap.add_argument("--require-py", default="", help="强制要求 Python 版本前缀（例如 3.14）")
     ap.add_argument("--rebuild", action="store_true", help="离线重建（不请求接口）：重算并输出 tab-v1 HTML")
     ap.add_argument("--fetch", action="store_true", help="在线取数并生成缓存，然后离线重建输出 tab-v1（有成本）")
     ap.add_argument(
@@ -1281,6 +1283,14 @@ def main(argv: list[str] | None = None) -> int:
         help="运行模式：eod=收盘版（默认），intraday=盘中快照版（数据截止当前时刻）",
     )
     args = ap.parse_args(argv)
+
+    # === Python 环境校验（可选） ===
+    if args.require_python or args.require_py:
+        import sys
+        if args.require_python and sys.executable != args.require_python:
+            raise SystemExit(f"请使用指定解释器运行：{args.require_python}（当前：{sys.executable}）")
+        if args.require_py and (not sys.version.startswith(args.require_py)):
+            raise SystemExit(f"请使用 Python {args.require_py} 运行（当前：{sys.version.split()[0]}，解释器：{sys.executable}）")
 
     # 传递 mode 到全局上下文
     if args.mode == "intraday":

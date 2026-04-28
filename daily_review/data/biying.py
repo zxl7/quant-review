@@ -185,3 +185,295 @@ def fetch_stock_themes(client: HttpClient, *, code6: str) -> list[dict[str, Any]
     url = f"{client.base_url}/hszg/zg/{code6}/{client.token}"
     data = client.get_json(url)
     return data if isinstance(data, list) else []
+
+
+# === 个股行情（v3扩展）===
+
+def fetch_stock_realtime(client: HttpClient, code6: str) -> dict | None:
+    """获取个股实时行情。
+
+    Args:
+        client: HTTP客户端
+        code6: 6位股票代码，如 600519
+
+    Returns:
+        行情dict或None
+    端点: hsrl/ssjy/{code}/{token}
+    """
+    try:
+        path = f"hsrl/ssjy/{code6}/{client.token}"
+        data = client.api(path)
+        if isinstance(data, dict):
+            return data
+    except Exception:
+        pass
+    return None
+
+
+def fetch_stocks_realtime(client: HttpClient, stock_codes: str) -> list:
+    """获取多只股票实时批量行情。
+
+    Args:
+        client: HTTP客户端
+        stock_codes: 逗号分隔的股票代码字符串，如 "600519,000858"
+
+    Returns:
+        行情列表
+    端点: hsrl/ssjy_more/{token}?stock_codes={codes}
+    """
+    try:
+        url = f"{client.base_url}/hsrl/ssjy_more/{client.token}?stock_codes={stock_codes}"
+        data = client.get_json(url)
+        return data if isinstance(data, list) else []
+    except Exception:
+        return []
+
+
+# === K线数据（v3扩展）===
+
+def fetch_stock_latest_k(
+    client: HttpClient,
+    *,
+    code: str,          # 如 "600519.SH"
+    period: str = "d",  # d/w/m
+    adjust: str = "f",  # f前复权/n不复权
+    lt: int = 30,       # 最近N根
+) -> list:
+    """获取个股日K线数据。
+
+    Args:
+        client: HTTP客户端
+        code: 股票代码含市场后缀，如 "600519.SH"
+        period: 周期 d=日 w=周 m=月
+        adjust: 复权方式 f=前复权 n=不复权
+        lt: 返回最近N根K线
+
+    Returns:
+        K线数据列表
+    端点: hsstock/latest/{code}.{market}/{period}/{adjust}/{token}?lt=N
+    """
+    try:
+        url = f"{client.base_url}/hsstock/latest/{code}/{period}/{adjust}/{client.token}?lt={max(lt, 1)}"
+        data = client.get_json(url)
+        return data if isinstance(data, list) else []
+    except Exception:
+        return []
+
+
+def fetch_stock_history_k(
+    client: HttpClient,
+    *,
+    code: str,
+    period: str = "d",
+    adjust: str = "f",
+    st: str = "",   # YYYYMMDD
+    et: str = "",   # YYYYMMDD
+) -> list:
+    """获取个股历史日K线数据。
+
+    Args:
+        client: HTTP客户端
+        code: 股票代码如 "600519.SH"
+        period: 周期 d/w/m
+        adjust: 复权方式 f/n
+        st: 起始日期 YYYYMMDD
+        et: 结束日期 YYYYMMDD
+
+    Returns:
+        K线数据列表
+    端点: hsstock/history/{code}/{period}/{adjust}/{token}?st=&et=
+    """
+    try:
+        base_url = f"{client.base_url}/hsstock/history/{code}/{period}/{adjust}/{client.token}"
+        params = []
+        if st:
+            params.append(f"st={st}")
+        if et:
+            params.append(f"et={et}")
+        url = f"{base_url}?{'&'.join(params)}"
+        data = client.get_json(url)
+        return data if isinstance(data, list) else []
+    except Exception:
+        return []
+
+
+# === 技术指标（v3扩展）===
+
+def fetch_stock_indicator(
+    client: HttpClient,
+    *,
+    code: str,
+    indicator: str,      # macd / ma / boll / kdj
+    period: str = "d",
+    adjust: str = "f",
+    lt: int = 100,
+) -> list:
+    """获取技术指标数据。
+
+    Args:
+        client: HTTP客户端
+        code: 股票代码如 "600519.SH"
+        indicator: 指标类型 macd/ma/boll/kdj
+        period: 周期 d/w/m
+        adjust: 复权方式
+        lt: 返回最近N个数据点
+
+    Returns:
+        指标数据列表
+    端点: hsstock/history/{indicator}/{code}/{period}/{adjust}/{token}?lt=N
+    """
+    try:
+        valid_indicators = {"macd", "ma", "boll", "kdj"}
+        if indicator not in valid_indicators:
+            raise ValueError(f"不支持的indicator: {indicator}，可选 {valid_indicators}")
+        url = (
+            f"{client.base_url}/hsstock/history/{indicator}/{code}"
+            f"/{period}/{adjust}/{client.token}?lt={max(lt, 1)}"
+        )
+        data = client.get_json(url)
+        return data if isinstance(data, list) else []
+    except Exception:
+        return []
+
+
+# === 资金流向（v3扩展）===
+
+def fetch_stock_money_flow(
+    client: HttpClient,
+    *,
+    code: str,
+    st: str = "",
+    et: str = "",
+) -> dict | None:
+    """获取个股资金流向（大单动向）数据。
+
+    Args:
+        client: HTTP客户端
+        code: 股票代码如 "600519.SH"
+        st: 起始日期 YYYYMMDD
+        et: 结束日期 YYYYMMDD
+
+    Returns:
+        资金流向字典或None
+    端点: hsstock/history/transaction/{code}/...
+    """
+    try:
+        base_url = f"{client.base_url}/hsstock/history/transaction/{code}/{client.token}"
+        params = []
+        if st:
+            params.append(f"st={st}")
+        if et:
+            params.append(f"et={et}")
+        url = f"{base_url}?{'&'.join(params)}"
+        data = client.get_json(url)
+        return data if isinstance(data, dict) else None
+    except Exception:
+        return None
+
+
+# === 财务数据（v3扩展）===
+
+def fetch_financial_indicators(client: HttpClient, *, code6: str) -> dict | None:
+    """获取财务指标100+项(ROE/PE/PB等)。
+
+    Args:
+        client: HTTP客户端
+        code6: 6位股票代码，如 600519
+
+    Returns:
+        财务指标字典或None
+    端点: hscp/cwzb/{code6}/{token}
+    """
+    try:
+        path = f"hscp/cwzb/{code6}/{client.token}"
+        data = client.api(path)
+        if isinstance(data, dict):
+            return data
+    except Exception:
+        pass
+    return None
+
+
+def fetch_income_statement(client: HttpClient, *, code6: str) -> list | None:
+    """获取季度利润表。
+
+    Args:
+        client: HTTP客户端
+        code6: 6位股票代码
+
+    Returns:
+        利润表列表或None
+    端点: hscp/jdlr/{code6}/{token}
+    """
+    try:
+        path = f"hscp/jdlr/{code6}/{client.token}"
+        data = client.api(path)
+        if isinstance(data, list):
+            return data
+    except Exception:
+        pass
+    return None
+
+
+def fetch_top_shareholders(client: HttpClient, *, code6: str) -> list | None:
+    """获取十大股东信息。
+
+    Args:
+        client: HTTP客户端
+        code6: 6位股票代码
+
+    Returns:
+        十大股东列表或None
+    端点: hscp/sdgd/{code6}/{token}
+    """
+    try:
+        path = f"hscp/sdgd/{code6}/{client.token}"
+        data = client.api(path)
+        if isinstance(data, list):
+            return data
+    except Exception:
+        pass
+    return None
+
+
+def fetch_float_shareholders(client: HttpClient, *, code6: str) -> list | None:
+    """获取十大流通股东信息。
+
+    Args:
+        client: HTTP客户端
+        code6: 6位股票代码
+
+    Returns:
+        十大流通股东列表或None
+    端点: hscp/ltgd/{code6}/{token}
+    """
+    try:
+        path = f"hscp/ltgd/{code6}/{client.token}"
+        data = client.api(path)
+        if isinstance(data, list):
+            return data
+    except Exception:
+        pass
+    return None
+
+
+# === 五档盘口（v3扩展）===
+
+def fetch_five_level(client: HttpClient, *, code: str, market: str) -> dict | None:
+    """获取五档买卖盘口数据。
+
+    Args:
+        client: HTTP客户端
+        code: 股票代码如 "600519"
+        market: 市场代码如 "SH"
+
+    Returns:
+        五档盘口字典或None
+    端点: hsstock/real/five/{code}.{market}/...
+    """
+    try:
+        url = f"{client.base_url}/hsstock/real/five/{code}.{market}/{client.token}"
+        data = client.get_json(url)
+        return data if isinstance(data, dict) else None
+    except Exception:
+        return None

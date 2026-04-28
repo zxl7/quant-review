@@ -1928,6 +1928,79 @@
       .v2-strategy .rules{ margin-top: 8px; padding-left: 16px; }
       .v2-strategy .rules li{ margin: 6px 0; color: var(--text-secondary); font-weight: 700; font-size: 12px; line-height: 1.5; }
 
+      /* v3 终端风总览 */
+      .v3-grid{ display: grid; grid-template-columns: repeat(12, 1fr); gap: 10px; }
+      .v3-card{
+        grid-column: span 12;
+        border-radius: 18px;
+        border: 1px solid rgba(148,163,184,0.22);
+        background: linear-gradient(180deg, rgba(255,255,255,0.62), rgba(255,255,255,0.40));
+        padding: 12px 14px;
+        box-shadow: var(--shadow-sm);
+      }
+      [data-theme="dark"] .v3-card{ background: rgba(15,23,42,0.52); border-color: rgba(148,163,184,0.20); }
+      .v3-card .hd{ display:flex; align-items:baseline; justify-content:space-between; gap: 10px; }
+      .v3-card .hd .t{ font-size: 13px; font-weight: 950; letter-spacing: 0.2px; }
+      .v3-card .hd .s{ font-size: 11px; font-weight: 900; color: var(--text-muted); }
+      .v3-kpis{ margin-top: 10px; display:flex; flex-wrap: wrap; gap: 8px; }
+      .v3-kpis .pill{ font-size: 11px; font-weight: 950; padding: 4px 10px; border-radius: 999px; border: 1px solid rgba(148,163,184,0.22); background: rgba(255,255,255,0.66); }
+      [data-theme="dark"] .v3-kpis .pill{ background: rgba(15,23,42,0.58); border-color: rgba(148,163,184,0.20); }
+      .v3-kpis .pill.primary{ border-color: rgba(59,130,246,0.30); color: #1d4ed8; }
+      .v3-kpis .pill.danger{ border-color: rgba(239,68,68,0.30); color: #991b1b; }
+      .v3-card .txt{ margin-top: 8px; font-size: 12px; font-weight: 720; color: var(--text-secondary); line-height: 1.55; }
+      .v3-card details{ margin-top: 10px; }
+      .v3-card summary{ cursor:pointer; color: var(--text-muted); font-weight: 900; font-size: 12px; }
+      .v3-card .rules{ margin-top: 8px; padding-left: 16px; }
+      .v3-card .rules li{ margin: 6px 0; color: var(--text-secondary); font-weight: 700; font-size: 12px; line-height: 1.5; }
+      .v3-card.span6{ grid-column: span 12; }
+      .v3-card.span4{ grid-column: span 12; }
+      @media (min-width: 980px){
+        .v3-card.span6{ grid-column: span 6; }
+        .v3-card.span4{ grid-column: span 4; }
+      }
+      .v3-hero{
+        grid-column: span 12;
+        border-radius: 20px;
+        border: 1px solid rgba(148,163,184,0.22);
+        background: linear-gradient(135deg,
+          color-mix(in oklab, var(--theme-soft) 22%, rgba(255,255,255,0.55)),
+          rgba(255,255,255,0.45)
+        );
+        padding: 14px 14px;
+      }
+      [data-theme="dark"] .v3-hero{
+        background: rgba(15,23,42,0.52);
+        border-color: rgba(148,163,184,0.20);
+      }
+      .v3-hero .top{ display:flex; align-items:flex-end; justify-content:space-between; gap: 12px; }
+      .v3-hero .title{ font-size: 14px; font-weight: 1000; letter-spacing: 0.3px; }
+      .v3-hero .meta{ font-size: 11px; font-weight: 850; color: var(--text-muted); }
+      .v3-hero .grid{ margin-top: 10px; display:grid; grid-template-columns: repeat(12,1fr); gap: 10px; }
+      .v3-hero .kpi{
+        grid-column: span 6;
+        border-radius: 16px;
+        border: 1px solid rgba(148,163,184,0.18);
+        background: rgba(255,255,255,0.55);
+        padding: 10px 10px;
+      }
+      [data-theme="dark"] .v3-hero .kpi{ background: rgba(15,23,42,0.52); border-color: rgba(148,163,184,0.18); }
+      @media (min-width: 980px){ .v3-hero .kpi{ grid-column: span 3; } }
+      .v3-hero .k{ font-size: 11px; font-weight: 900; color: var(--text-muted); }
+      .v3-hero .v{ margin-top: 4px; font-size: 15px; font-weight: 1000; letter-spacing: 0.2px; }
+      .v3-pre{
+        margin-top: 10px;
+        padding: 10px 10px;
+        border-radius: 14px;
+        border: 1px solid rgba(148,163,184,0.18);
+        background: rgba(2,6,23,0.05);
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+        font-size: 11px;
+        line-height: 1.55;
+        overflow: auto;
+        max-height: 420px;
+      }
+      [data-theme="dark"] .v3-pre{ background: rgba(2,6,23,0.35); border-color: rgba(148,163,184,0.16); }
+
       /* 实时盯盘：红绿灯（正面/风险触发器） */
       .watch-panel{
         margin-top: 10px;
@@ -3110,6 +3183,7 @@
         <button class="tab-btn" data-page="themes" type="button">板块题材</button>
         <button class="tab-btn" data-page="ladder" type="button">连板天梯</button>
         <button class="tab-btn" data-page="plan" type="button">明日计划</button>
+        <button class="tab-btn" data-page="v3" type="button">V3算法</button>
       </div>
 
       <!-- 首屏：情绪总控（仅短线情绪页显示） -->
@@ -3910,6 +3984,28 @@
       <div class="card" data-page="plan" id="sec-action">
         <div class="card-title">明日行动指南</div>
         <div class="plan-top-grid">
+          <div class="v2-strategy" v-if="marketData.v3">
+            <div class="row">
+              <div class="tone">v3 · {{ marketData.v3.sentiment?.phase || '-' }}（{{ marketData.v3.sentiment?.score ?? '-' }}）</div>
+              <div class="cap">仓位：{{ marketData.v3.positionV3?.capital_pct_adjusted ?? '-' }}</div>
+            </div>
+            <div class="advice" v-if="marketData.v3.rightside?.advice">{{ marketData.v3.rightside.advice }}</div>
+            <div class="kpis">
+              <span class="pill primary">右侧：{{ marketData.v3.rightside?.allowed ? '允许' : '禁止' }}（{{ marketData.v3.rightside?.score ?? '-' }}/5）</span>
+              <span class="pill" v-if="marketData.v3.mainstream?.mainline">主线：{{ marketData.v3.mainstream.mainline.top_sector }}（{{ (marketData.v3.mainstream.mainline.level||[])[0] || marketData.v3.mainstream.mainline.level || '-' }}）</span>
+              <span class="pill" v-if="marketData.v3.tradingNature?.nature">性质：{{ marketData.v3.tradingNature.nature.label || '-' }}</span>
+              <span class="pill" v-if="marketData.v3.fullPosition?.passed_count !== undefined">共振：{{ marketData.v3.fullPosition.passed_count }}/3</span>
+              <span class="pill" v-if="marketData.v3.reflexivity?.cycle?.cycle_position">反身性：{{ marketData.v3.reflexivity.cycle.cycle_position }}</span>
+              <span class="pill" v-if="marketData.v3.rebound?.phase">反弹：{{ marketData.v3.rebound.phase.label || marketData.v3.rebound.phase }}</span>
+              <span class="pill" v-if="marketData.v3.collapseChain?.level">崩溃链：{{ marketData.v3.collapseChain.level }}</span>
+            </div>
+            <details v-if="marketData.v3.sentiment?.warnings && marketData.v3.sentiment.warnings.length">
+              <summary>展开 v3 风险提示</summary>
+              <ul class="rules">
+                <li v-for="(r, i) in marketData.v3.sentiment.warnings" :key="'v3w-'+i">{{ r }}</li>
+              </ul>
+            </details>
+          </div>
           <div class="v2-strategy" v-if="marketData.v2?.strategy">
             <div class="row">
               <div class="tone">{{ marketData.v2.strategy.tone }}</div>
@@ -4137,6 +4233,323 @@
         <div class="summary-box" v-if="!marketData.ztgc || !marketData.ztgc.length">
           <div class="summary-text">未注入当日涨停池明细（ztgc）。请用渲染脚本从 pools_cache.json 注入后再查看本模块。</div>
         </div>
+      </div>
+
+      <!-- v3 总览页（独立 Tab） -->
+      <div class="card" data-page="v3" id="sec-v3">
+        <div class="card-title">V3 算法总览（完整版）</div>
+        <div class="v3-grid" v-if="marketData.v3">
+          <div class="v3-hero">
+            <div class="top">
+              <div>
+                <div class="title">当日 V3 总控面板</div>
+                <div class="meta">模块 {{ Object.keys(marketData.v3 || {}).length }} 个 · error {{ Object.values(marketData.v3 || {}).filter(x => x && x.error).length }} 个</div>
+              </div>
+              <div class="meta">生成：{{ marketData.meta?.generatedAt || '-' }}</div>
+            </div>
+            <div class="grid">
+              <div class="kpi">
+                <div class="k">情绪分</div>
+                <div class="v">{{ marketData.v3.sentiment?.score ?? '-' }}</div>
+              </div>
+              <div class="kpi">
+                <div class="k">阶段</div>
+                <div class="v" style="font-size:13px; font-weight: 950;">{{ marketData.v3.sentiment?.phase || '-' }}</div>
+              </div>
+              <div class="kpi">
+                <div class="k">右侧</div>
+                <div class="v" :style="{color: marketData.v3.rightside?.allowed ? '#16a34a' : '#ef4444'}">{{ marketData.v3.rightside?.allowed ? '允许' : '禁止' }}</div>
+              </div>
+              <div class="kpi">
+                <div class="k">仓位(调整后)</div>
+                <div class="v">{{ marketData.v3.positionV3?.capital_pct_adjusted ?? '-' }}</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="v3-card span6">
+            <div class="hd">
+              <div class="t">情绪与风险</div>
+              <div class="s">confidence {{ marketData.v3.sentiment?.confidence ?? '-' }}</div>
+            </div>
+            <div class="v3-kpis">
+              <span class="pill primary">情绪 {{ marketData.v3.sentiment?.score ?? '-' }} / 10</span>
+              <span class="pill">阶段 {{ marketData.v3.sentiment?.phase || '-' }}</span>
+              <span class="pill" v-if="marketData.v3.sentiment?.phase_strategy?.position">仓位建议 {{ marketData.v3.sentiment.phase_strategy.position }}</span>
+            </div>
+            <div class="txt" v-if="marketData.v3.sentiment?.phase_detail">{{ marketData.v3.sentiment.phase_detail }}</div>
+            <details v-if="(marketData.v3.sentiment?.warnings || []).length">
+              <summary>展开 warnings</summary>
+              <ul class="rules">
+                <li v-for="(w, i) in marketData.v3.sentiment.warnings" :key="'v3-sw-'+i">{{ w }}</li>
+              </ul>
+            </details>
+          </div>
+
+          <div class="v3-card span6">
+            <div class="hd">
+              <div class="t">右侧交易</div>
+              <div class="s">score {{ marketData.v3.rightside?.score ?? '-' }}/5</div>
+            </div>
+            <div class="v3-kpis">
+              <span :class="['pill', marketData.v3.rightside?.allowed ? 'primary' : 'danger']">结论：{{ marketData.v3.rightside?.allowed ? '允许右侧' : '禁止右侧' }}</span>
+              <span class="pill" v-if="marketData.v3.rightside?.confidence">confidence {{ marketData.v3.rightside.confidence }}</span>
+              <span class="pill" v-if="marketData.v3.rightside?.signals">命中 {{ Object.values(marketData.v3.rightside.signals || {}).filter(Boolean).length }}/5</span>
+            </div>
+            <div class="txt" v-if="marketData.v3.rightside?.advice">{{ marketData.v3.rightside.advice }}</div>
+            <details v-if="marketData.v3.rightside?.violations && marketData.v3.rightside.violations.length">
+              <summary>展开左侧禁区</summary>
+              <ul class="rules">
+                <li v-for="(x, i) in marketData.v3.rightside.violations" :key="'v3-vio-'+i">{{ x }}</li>
+              </ul>
+            </details>
+            <details v-if="marketData.v3.rightside?.signals">
+              <summary>展开5信号</summary>
+              <ul class="rules">
+                <li v-for="(v, k) in (marketData.v3.rightside.signals || {})" :key="'v3-sig-'+k">{{ k }}：{{ v ? '✅' : '—' }}</li>
+              </ul>
+            </details>
+          </div>
+
+          <div class="v3-card span6">
+            <div class="hd">
+              <div class="t">仓位与共振</div>
+              <div class="s">confidence {{ marketData.v3.positionV3?.confidence ?? '-' }}</div>
+            </div>
+            <div class="v3-kpis">
+              <span class="pill primary">仓位 {{ marketData.v3.positionV3?.capital_pct_adjusted ?? '-' }}</span>
+              <span class="pill">赢面 {{ marketData.v3.positionV3?.win_rate ?? '-' }}%</span>
+              <span class="pill" v-if="marketData.v3.positionV3?.tier">档位 {{ marketData.v3.positionV3.tier }}</span>
+              <span class="pill" v-if="marketData.v3.fullPosition?.passed_count !== undefined">共振 {{ marketData.v3.fullPosition.passed_count }}/3</span>
+              <span class="pill" v-if="marketData.v3.fullPosition?.max_recommended_position !== undefined">共振上限 {{ marketData.v3.fullPosition.max_recommended_position }}</span>
+            </div>
+            <details v-if="marketData.v3.positionV3">
+              <summary>展开仓位计算细节</summary>
+              <ul class="rules">
+                <li>赔率比: {{ marketData.v3.positionV3.odds_ratio ?? '-' }}</li>
+                <li>edge: {{ marketData.v3.positionV3.edge ?? '-' }}</li>
+                <li>T+1调整: {{ marketData.v3.positionV3.t1_adjusted ?? '-' }}</li>
+                <li v-if="marketData.v3.positionV3.t1_penalty?.penalty_pct !== undefined">惩罚: {{ marketData.v3.positionV3.t1_penalty.penalty_pct }}%</li>
+              </ul>
+            </details>
+            <details v-if="marketData.v3.fullPosition">
+              <summary>展开三条件共振</summary>
+              <ul class="rules">
+                <li>指数：{{ marketData.v3.fullPosition.condition_1_index ? '✅' : '—' }}</li>
+                <li>板块：{{ marketData.v3.fullPosition.condition_2_sector ? '✅' : '—' }}</li>
+                <li>个股：{{ marketData.v3.fullPosition.condition_3_stock ? '✅' : '—' }}</li>
+                <li v-if="marketData.v3.fullPosition.details">细节：{{ JSON.stringify(marketData.v3.fullPosition.details) }}</li>
+              </ul>
+            </details>
+          </div>
+
+          <div class="v3-card span6">
+            <div class="hd">
+              <div class="t">主线 / 交易性质 / 反弹</div>
+              <div class="s">做什么 · 怎么做</div>
+            </div>
+            <div class="v3-kpis">
+              <span class="pill" v-if="marketData.v3.mainstream?.mainline">主线 {{ marketData.v3.mainstream.mainline.top_sector }} · exists={{ marketData.v3.mainstream.mainline.exists }}</span>
+              <span class="pill" v-if="marketData.v3.tradingNature?.nature">性质 {{ marketData.v3.tradingNature.nature.label }} · {{ marketData.v3.tradingNature.nature.risk_level }}</span>
+              <span class="pill" v-if="marketData.v3.rebound?.phase">反弹 {{ marketData.v3.rebound.phase.label || marketData.v3.rebound.phase }}</span>
+            </div>
+            <details v-if="marketData.v3.mainstream?.mainline?.conditions">
+              <summary>展开主线判定</summary>
+              <ul class="rules">
+                <li v-for="(c, k) in (marketData.v3.mainstream.mainline.conditions || {})" :key="'v3-ml-'+k">
+                  {{ k }}：{{ c.passed ? '✅' : '—' }}（{{ c.value ?? '-' }} / {{ c.threshold ?? '-' }}）
+                </li>
+              </ul>
+            </details>
+            <details v-if="marketData.v3.rebound?.strategy?.what_to_do">
+              <summary>展开反弹阶段策略</summary>
+              <ul class="rules">
+                <li>做：{{ marketData.v3.rebound.strategy.what_to_do }}</li>
+                <li v-if="marketData.v3.rebound.strategy.forbidden && marketData.v3.rebound.strategy.forbidden.length">不做：{{ marketData.v3.rebound.strategy.forbidden.join('、') }}</li>
+                <li v-if="marketData.v3.rebound.strategy.tactics">战术：{{ marketData.v3.rebound.strategy.tactics }}</li>
+              </ul>
+            </details>
+            <details v-if="marketData.v3.rebound?.detail?.signals">
+              <summary>展开反弹识别信号</summary>
+              <ul class="rules">
+                <li v-for="(s, i) in (marketData.v3.rebound.detail.signals || [])" :key="'v3-rb-'+i">{{ s }}</li>
+              </ul>
+            </details>
+          </div>
+
+          <div class="v3-card span6">
+            <div class="hd">
+              <div class="t">反身性 / 崩溃链</div>
+              <div class="s">防止“高潮死”</div>
+            </div>
+            <div class="v3-kpis">
+              <span class="pill" v-if="marketData.v3.reflexivity?.cycle?.cycle_position">反身性 {{ marketData.v3.reflexivity.cycle.cycle_position }}</span>
+              <span class="pill" v-if="marketData.v3.reflexivity?.cycle?.risk_level">风险 {{ marketData.v3.reflexivity.cycle.risk_level }}</span>
+              <span class="pill danger" v-if="marketData.v3.collapseChain?.level">崩溃链 {{ marketData.v3.collapseChain.level }}</span>
+            </div>
+            <div class="txt" v-if="marketData.v3.reflexivity?.cycle?.reflexivity_warning">{{ marketData.v3.reflexivity.cycle.reflexivity_warning }}</div>
+            <div class="txt" v-if="marketData.v3.collapseChain?.advice">{{ marketData.v3.collapseChain.advice }}</div>
+            <details v-if="(marketData.v3.reflexivity?.behavior_chain || []).length">
+              <summary>展开行为链</summary>
+              <ul class="rules">
+                <li v-for="(x, i) in (marketData.v3.reflexivity.behavior_chain || [])" :key="'v3-bc-'+i">{{ x }}</li>
+              </ul>
+            </details>
+          </div>
+
+          <!-- ===== 渡劫诊断 ===== -->
+          <div class="v3-card span6" v-if="marketData.v3.dujie?.stocks && marketData.v3.dujie.stocks.length">
+            <div class="hd">
+              <div class="t">渡劫诊断</div>
+              <div class="s">扫描 {{ marketData.v3.dujie.summary?.total_scanned || 0 }} 只(≥3板)</div>
+            </div>
+            <div class="v3-kpis">
+              <span class="pill" v-if="marketData.v3.dujie.summary?.max_lbc">最高 {{ marketData.v3.dujie.summary.max_lbc }}板</span>
+              <span class="pill">存活≥50%: {{ marketData.v3.dujie.summary?.qualified_count || 0 }}</span>
+            </div>
+            <table style="width:100%;font-size:11px;margin-top:8px;border-collapse:collapse;">
+              <thead><tr style="color:var(--text-muted);"><th style="text-align:left;padding:2px 4px;">名称</th><th style="text-align:center;padding:2px 4px;">板</th><th style="text-align:center;padding:2px 4px;">类型</th><th style="text-align:center;padding:2px 4px;">存活%</th><th style="text-align:left;padding:2px 4px;">生命周期</th></tr></thead>
+              <tbody>
+                <tr v-for="(s, i) in marketData.v3.dujie.stocks.slice(0, 6)" :key="'dj-'+i" style="border-top:1px solid rgba(148,163,184,0.12);">
+                  <td style="padding:3px 4px;font-weight:800;">{{ s.name || s.code || '-' }}</td>
+                  <td style="text-align:center;font-weight:900;color:#ef4444;">{{ s.lbc }}板</td>
+                  <td style="text-align:center;"><span :class="['pill', s.doujie_result?.is_doujie ? 'danger' : 'primary']">{{ s.doujie_result?.doujie_type || s.board_pattern || '-' }}</span></td>
+                  <td style="text-align:center;font-weight:900;" :style="{color: (s.doujie_result?.survival_prob||0)>=50 ? '#16a34a' : '#ef4444'}">{{ Math.round(s.doujie_result?.survival_prob||0) }}%</td>
+                  <td style="padding:3px 4px;color:var(--text-secondary);font-size:10px;">{{ Array.isArray(s.lifecycle) ? s.lifecycle[0] : (s.lifecycle?.phase || '-') }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- ===== 龙头三要素 ===== -->
+          <div class="v3-card span6" v-if="marketData.v3.dragon?.rankings && marketData.v3.dragon.rankings.length">
+            <div class="hd">
+              <div class="t">龙头神形辨析</div>
+              <div class="s">候选 {{ marketData.v3.dragon.summary?.total_candidates || 0 }} 只</div>
+            </div>
+            <div v-for="(r, i) in marketData.v3.dragon.rankings" :key="'dr-'+i" style="margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid rgba(148,163,184,0.10);">
+              <div style="display:flex;justify-content:space-between;align-items:center;">
+                <span style="font-weight:950;font-size:13px;">{{ i+1 }}. {{ r.name || r.code || '未知' }} ({{ r.lbc }}板)</span>
+                <span :class="['pill', r.score?.grade === 'S' ? 'danger' : r.score?.grade === 'A' ? 'primary' : '']">{{ r.score?.grade || '?' }} · 总分{{ r.score?.overall || 0 }}</span>
+              </div>
+              <div class="v3-kpis" style="margin-top:4px;">
+                <span class="pill">带领性 {{ r.score?.leading_score || 0 }}</span>
+                <span class="pill">突破性 {{ r.score?.breakthrough_score || 0 }}</span>
+                <span class="pill">唯一性 {{ r.score?.uniqueness_score || 0 }}</span>
+                <span :class="['pill', r.score?.is_real_dragon ? 'danger' : '']">真龙? {{ r.score?.is_real_dragon ? '是' : '否' }}</span>
+              </div>
+              <details v-if="r.score?.god_form_analysis">
+                <summary>神形拆解</summary>
+                <div style="display:flex;gap:20px;margin-top:4px;font-size:11px;">
+                  <div>神分: <b>{{ r.score.god_form_analysis.god_score || 0 }}/10</b></div>
+                  <div>形分: <b>{{ r.score.god_form_analysis.form_score || 0 }}/10</b></div>
+                </div>
+              </details>
+            </div>
+          </div>
+
+          <!-- ===== 六维情绪分项 ===== -->
+          <div class="v3-card span12" v-if="marketData.v3.sentiment?.dim_scores">
+            <div class="hd">
+              <div class="t">六维情绪评分</div>
+              <div class="s">综合 {{ marketData.v3.sentiment.score ?? '-' }} / 10</div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:6px;margin-top:10px;">
+              <template v-for="(val, key) in marketData.v3.sentiment.dim_scores" :key="'sd-'+key">
+                <div style="display:flex;align-items:center;gap:8px;">
+                  <span style="width:80px;font-size:11px;font-weight:800;color:var(--text-secondary);text-align:right;">{{ {'zt_heat':'涨停热度','money_effect':'赚钱效应','lianban_health':'连板健康度','negative_feedback':'负反馈','theme':'主线清晰度','collapse_chain':'崩溃前兆'}[key] || key }}</span>
+                  <div style="flex:1;height:8px;background:rgba(148,163,184,0.15);border-radius:4px;overflow:hidden;">
+                    <div :style="{width: Math.min(val*10, 100)+'%', height:'100%', background: val >= 7 ? '#ef4444' : val >= 5 ? '#f59e0b' : '#22c55e', borderRadius:'4px'}"></div>
+                  </div>
+                  <span style="width:28px;text-align:right;font-weight:900;font-size:12px;">{{ val.toFixed(1) }}</span>
+                </div>
+              </template>
+            </div>
+          </div>
+
+          <!-- ===== 交易性质详情 ===== -->
+          <div class="v3-card span6" v-if="marketData.v3.tradingNature?.nature">
+            <div class="hd">
+              <div class="t">交易性质判断</div>
+              <div class="s">{{ marketData.v3.tradingNature.nature.label || '-' }} · conf {{ marketData.v3.tradingNature.confidence || '-' }}</div>
+            </div>
+            <div class="v3-kpis">
+              <span :class="['pill', marketData.v3.tradingNature.nature.risk_level === '低风险' ? '' : 'danger']">风险: {{ marketData.v3.tradingNature.nature.risk_level || '-' }}</span>
+              <span class="pill primary">上限: {{ marketData.v3.tradingNature.nature.max_position || '-' }}</span>
+              <span class="pill">止损: {{ marketData.v3.tradingNature.nature.stop_loss || '-' }}</span>
+              <span class="pill">目标: {{ marketData.v3.tradingNature.nature.target_gain || '-' }}</span>
+            </div>
+            <details v-if="marketData.v3.tradingNature?.rules">
+              <summary>展开判定规则</summary>
+              <ul class="rules">
+                <li>适用阶段: {{ (marketData.v3.tradingNature.rules.valid_phases || []).join(', ') || '-' }}</li>
+                <li>最低情绪: >= {{ marketData.v3.tradingNature.rules.min_sentiment || '-' }}</li>
+                <li>战术方向: {{ marketData.v3.tradingNature.rules.tactics || '-' }}</li>
+                <li>禁止阶段: {{ (marketData.v3.tradingNature.rules.forbidden_phases || []).join(', ') || '-' }}</li>
+                <li>关键条件: {{ marketData.v3.tradingNature.rules.key_condition || '-' }}</li>
+              </ul>
+            </details>
+            <div class="txt" v-if="marketData.v3.tradingNature?.warning" style="margin-top:6px;color:#f59e0b;">{{ marketData.v3.tradingNature.warning }}</div>
+          </div>
+
+          <!-- ===== 心理博弈分析 ===== -->
+          <div class="v3-card span6" v-if="marketData.v3.reflexivity?.psychology">
+            <div class="hd">
+              <div class="t">心理博弈分析</div>
+              <div class="s">反身性心理学</div>
+            </div>
+            <details open>
+              <summary>持筹者心态</summary>
+              <div class="txt">{{ marketData.v3.reflexivity.psychology.holders?.current_mindset || '-' }}</div>
+              <ul class="rules" v-if="marketData.v3.reflexivity.psychology.holders?.on_decline_action">
+                <li>下跌时行为: {{ marketData.v3.reflexivity.psychology.holders.on_decline_action }}</li>
+              </ul>
+              <div class="txt" style="margin-top:4px;color:#3b82f6;">💡 {{ marketData.v3.reflexivity.psychology.holders?.key_insight }}</div>
+            </details>
+            <details v-if="marketData.v3.reflexivity.psychology?.watchers">
+              <summary>观望者心态</summary>
+              <div class="txt">{{ marketData.v3.reflexivity.psychology.watchers?.current_mindset || '-' }}</div>
+              <ul class="rules">
+                <li v-if="marketData.v3.reflexivity.psychology.watchers.buy_on_rally !== undefined">追涨买入: {{ marketData.v3.reflexivity.psychology.watchers.buy_on_rally ? '会' : '不会' }}</li>
+                <li v-if="marketData.v3.reflexivity.psychology.watchers.buy_on_decline !== undefined">下跌抄底: {{ marketData.v3.reflexivity.psychology.watchers.buy_on_decline ? '会' : '不会' }}</li>
+              </ul>
+              <div class="txt" style="margin-top:4px;color:#3b82f6;">💡 {{ marketData.v3.reflexivity.psychology.watchers.key_insight }}</div>
+            </details>
+            <details v-if="marketData.v3.reflexivity.psychology?.conclusion">
+              <summary>结论</summary>
+              <div class="txt">{{ marketData.v3.reflexivity.psychology.conclusion }}</div>
+            </details>
+          </div>
+
+          <!-- ===== 崩溃前兆链信号 ===== -->
+          <div class="v3-card span12" v-if="marketData.v3.collapseChain?.signals && marketData.v3.collapseChain.signals.length">
+            <div class="hd">
+              <div class="t">崩溃前兆链检测</div>
+              <div class="s" style="color:#ef4444;">等级: {{ marketData.v3.collapseChain.level }} (score={{ marketData.v3.collapseChain.score }})</div>
+            </div>
+            <div v-for="(sig, i) in marketData.v3.collapseChain.signals" :key="'cc-sig-'+i" style="display:flex;align-items:flex-start;gap:8px;margin:8px 0;padding:8px;border-radius:6px;background:rgba(239,68,68,0.06);border-left:3px solid #ef4444;">
+              <span :class="['pill', sig.severity === 'CRITICAL' ? 'danger' : 'primary']" style="white-space:nowrap;">{{ sig.level }}</span>
+              <div style="flex:1;">
+                <div style="font-weight:900;font-size:12px;">{{ sig.name }}</div>
+                <div style="font-size:11px;color:var(--text-secondary);margin-top:2px;">{{ sig.detail }}</div>
+              </div>
+            </div>
+            <div class="txt" v-if="marketData.v3.collapseChain?.advice" style="margin-top:8px;font-weight:950;color:#ef4444;">🚨 {{ marketData.v3.collapseChain.advice }}</div>
+          </div>
+
+          <div class="v3-card span12">
+            <div class="hd">
+              <div class="t">Raw v3 JSON（用于排查字段）</div>
+              <div class="s">只读</div>
+            </div>
+            <details>
+              <summary>展开原始数据</summary>
+              <pre class="v3-pre">{{ JSON.stringify(marketData.v3, null, 2) }}</pre>
+            </details>
+          </div>
+
+        </div>
+        <div v-else style="color:var(--text-muted); font-weight:800;">未检测到 marketData.v3（请确认缓存写入与模板注入是否成功）</div>
       </div>
 
       <div class="footer">
@@ -5080,6 +5493,15 @@
           renderLadder(marketData.ladder);
         } else if (page === 'plan') {
           // 明日计划页不渲染图表，释放所有图表实例避免隐藏容器尺寸问题
+          if (themeTrendChart) { themeTrendChart.dispose(); themeTrendChart = null; }
+          if (volumeChart) { volumeChart.dispose(); volumeChart = null; }
+          if (heightChart) { heightChart.dispose(); heightChart = null; }
+          if (styleChart) { styleChart.dispose(); styleChart = null; }
+          if (moodKlineChart) { moodKlineChart.dispose(); moodKlineChart = null; }
+          if (moodRadarChart) { moodRadarChart.dispose(); moodRadarChart = null; }
+          if (threeQuadrantsChart) { threeQuadrantsChart.dispose(); threeQuadrantsChart = null; }
+        } else if (page === 'v3') {
+          // v3 总览页不渲染图表，释放所有图表实例避免隐藏容器尺寸问题
           if (themeTrendChart) { themeTrendChart.dispose(); themeTrendChart = null; }
           if (volumeChart) { volumeChart.dispose(); volumeChart = null; }
           if (heightChart) { heightChart.dispose(); heightChart = null; }
