@@ -25,11 +25,15 @@ def _compute(ctx: Context) -> Dict[str, Any]:
     dragon = v2.get("dragon") if isinstance(v2.get("dragon"), dict) else {}
     dragon_overall = float(dragon.get("overall") or 5.0)
 
-    # 主线：沿用 sentiment_v2 的 proxy（后续由模块④增强替换）
-    mainline = {
-        "exists": bool((md.get("sentiment") or {}).get("sub_scores", {}).get("theme_clarity", 0) >= 6),
-        "strength": "主线偏强" if bool((md.get("sentiment") or {}).get("sub_scores", {}).get("theme_clarity", 0) >= 7.5) else "主线偏弱",
-    }
+    # 主线：优先使用 v2 模块④输出
+    sector_pack = v2.get("sector") if isinstance(v2.get("sector"), dict) else {}
+    mainline = (sector_pack.get("mainline") or {}) if isinstance(sector_pack, dict) else {}
+    if not isinstance(mainline, dict) or not mainline:
+        # 兜底：用旧 theme_clarity
+        mainline = {
+            "exists": bool((md.get("sentiment") or {}).get("sub_scores", {}).get("theme_clarity", 0) >= 6),
+            "strength": "主线偏强" if bool((md.get("sentiment") or {}).get("sub_scores", {}).get("theme_clarity", 0) >= 7.5) else "主线偏弱",
+        }
 
     model = calc_win_rate(
         {
