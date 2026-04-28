@@ -541,8 +541,8 @@
       @keyframes boxPulse { 0%, 100% { box-shadow: none; } 50% { box-shadow: 0 0 22px var(--theme-glow); } }
       .panorama-num { font-size: clamp(22px, 3.4vw, 30px); font-weight: 1000; line-height: 1.1; margin-bottom: 6px; }
       .panorama-label { font-size: 12px; color: var(--text-muted); font-weight: 600; }
-      #sec-panorama .insight-banner{ margin-top: 0; }
-      #sec-panorama .tri-strip{ margin-top: 0; }
+      #sec-thermo .insight-banner{ margin-top: 0; }
+      #sec-thermo .tri-strip{ margin-top: 0; }
 
       /* Volume */
       .volume-info-box { background: var(--bg-elevated); border-radius: var(--radius-md); padding: 20px; display: flex; align-items: center; gap: 20px; margin-bottom: 20px; border: 1px solid var(--border); }
@@ -3104,66 +3104,35 @@
         </div>
       </div>
 
-      <!-- 市场全景 -->
-      <div class="card" data-page="sentiment" id="sec-panorama">
-        <div class="card-header"><div class="card-title">全景 & 风险</div><div class="card-badge">非ST</div></div>
+      <!-- 情绪温度（全景&风险已移除） -->
+      <div class="card" data-page="sentiment" id="sec-thermo">
+        <div class="card-header"><div class="card-title">情绪温度</div></div>
         <div class="overview-grid">
           <div>
-            <div class="panorama-grid">
-              <div class="panorama-box pulse">
-                <div class="panorama-num red-text">
-                  {{ marketData.panorama.limitUp }}
-                  <span v-html="deltaBadge(delta.zt)"></span>
-                </div>
-                <div class="panorama-label">涨停</div>
-              </div>
-              <div class="panorama-box">
-                <div class="panorama-num orange-text">
-                  {{ marketData.panorama.broken }}
-                  <span v-html="deltaBadge(delta.zb)"></span>
-                </div>
-                <div class="panorama-label">炸板</div>
-              </div>
-              <div class="panorama-box">
-                <div class="panorama-num green-text">
-                  {{ marketData.panorama.limitDown }}
-                  <span v-html="deltaBadge(delta.dt)"></span>
-                </div>
-                <div class="panorama-label">跌停</div>
-              </div>
-              <div class="panorama-box">
-                <div class="panorama-num" :class="boardRateClass(marketData.panorama.ratio)">
-                  {{ marketData.panorama.ratio }}
-                  <span v-html="deltaBadge(delta.fb_rate,'pp')"></span>
-                </div>
-                <div class="panorama-label">封板率</div>
-              </div>
-            </div>
-
             <div class="insight-banner">
           <div class="insight-score">
-            <span class="insight-score-num">{{ marketData.mood?.heat ?? '-' }}</span>
-            <span class="insight-score-unit">热度</span>
+            <span class="insight-score-num">{{ marketData.sentiment?.score ?? '-' }}</span>
+            <span class="insight-score-unit">情绪分</span>
           </div>
           <div class="insight-main">
             <div class="insight-title">情绪温度 · {{ marketData.moodStage?.title || '-' }}</div>
             <div class="insight-desc">
-              热度 {{ marketData.mood?.heat ?? '-' }} / 风险 {{ marketData.mood?.risk ?? '-' }}。
-              关键看两件事：<strong>承接是否回暖</strong>、<strong>亏钱扩散是否收敛</strong>（详见下方两大引擎）。
+              赚钱效应 {{ marketData.dual_dimension?.earning_effect || '-' }} / 亏钱效应 {{ marketData.dual_dimension?.loss_effect || '-' }}。
+              盘中只盯两件事：<strong>承接是否回暖</strong>、<strong>亏钱扩散是否收敛</strong>（去「实时盯盘」看红绿灯）。
             </div>
           </div>
           <div class="insight-side">
-            <div class="insight-chip">风险 {{ marketData.mood?.risk ?? '-' }}</div>
-            <div class="insight-side-note">高度集中 · 主线集中度</div>
+            <div class="insight-chip">风险 {{ marketData.sentiment?.risk_level || '-' }}</div>
+            <div class="insight-side-note">主线集中 · 拥挤度</div>
           </div>
           <div style="grid-column: 1 / -1;">
             <div style="display:grid; gap:8px;">
               <div>
                 <div style="display:flex; justify-content:space-between; font-size:12px; color:var(--text-muted); margin-bottom:4px;">
-                  <span>热度</span><span>{{ marketData.mood?.heat ?? '-' }}</span>
+                  <span>情绪</span><span>{{ marketData.sentiment?.score ?? '-' }}</span>
                 </div>
                 <div class="insight-meter">
-                  <div class="insight-meter-fill" :style="{ width: String(marketData.mood?.heat ?? 0) + '%' }"></div>
+                  <div class="insight-meter-fill" :style="{ width: String((marketData.mood?.heat ?? 0)) + '%' }"></div>
                 </div>
               </div>
               <div>
@@ -3206,186 +3175,7 @@
             <!-- 已删除：情绪六维雷达（仅保留市场风格雷达，后续再优化） -->
           </div>
 
-          <div>
-            <div class="inset">
-              <div class="inset-head">
-                <div class="h">风险与亏钱扩散</div>
-                <div class="s">亏钱面 · 跌停 · 扩散</div>
-              </div>
-              <div class="engine-grid" v-if="marketData.riskEngine">
-                <div class="engine-kpis">
-                  <div class="engine-kpi">
-                    <div class="k">亏钱扩散得分</div>
-                    <div class="v" :class="marketData.riskEngine.level==='danger'?'red-text':(marketData.riskEngine.level==='warning'?'orange-text':'green-text')">
-                      {{ marketData.riskEngine.score }}
-                    </div>
-                    <div class="s">
-                      趋势：{{ marketData.riskEngine.trend==='up'?'加剧':(marketData.riskEngine.trend==='down'?'缓解':'持平') }}
-                    </div>
-                  </div>
-                  <div class="engine-kpi">
-                    <div class="k">跌停穿透</div>
-                    <div class="v">{{ (Number(marketData.riskEngine.penetration?.dtInZbRatio ?? 0)*100).toFixed(1) }}%</div>
-                    <div class="s">跌停中“昨涨停”占比（越高越危险）</div>
-                  </div>
-                  <div class="engine-kpi">
-                    <div class="k">风险源</div>
-                    <div class="v">{{ marketData.riskEngine.penetration?.dtCount ?? '-' }}</div>
-                    <div class="s">今日跌停数（配合大面扩散判断）</div>
-                  </div>
-                </div>
-
-                <div class="engine-map">
-                  <div style="display:flex;justify-content:space-between;align-items:baseline;gap:10px;margin-bottom:6px;">
-                    <div style="font-size:12px;font-weight:950;color:var(--text-primary);">亏钱辐射图谱（Top）</div>
-                    <div style="font-size:11px;font-weight:750;color:var(--text-muted);">按题材/行业聚合</div>
-                  </div>
-                  <div class="engine-row" v-for="(r, i) in (marketData.riskEngine.diffusionMap || [])" :key="'rdm-'+i">
-                    <div class="left">
-                      <div class="name">{{ r.sector }}</div>
-                      <div class="sub">大面 {{ r.bigFaceCount }} · 均跌 {{ Number(r.avgDrop || 0).toFixed(1) }}%</div>
-                    </div>
-                    <div class="right">
-                      <div class="engine-pill">{{ r.bigFaceCount }}只</div>
-                      <div class="engine-bar"><div class="engine-fill" :style="{ width: String(Math.min(100, r.bigFaceCount*12)) + '%' }"></div></div>
-                    </div>
-                  </div>
-
-                  <details style="margin-top:10px;" v-if="(marketData.riskEngine.faceList || []).length">
-                    <summary style="cursor:pointer; color:var(--text-muted); font-weight:900; font-size:12px;">展开大面明细（样本）</summary>
-                    <div class="metric-rows" style="margin-top:10px;">
-                      <div class="metric-row" v-for="(x, i) in (marketData.riskEngine.faceList || []).slice(0, 5)" :key="'face-'+i">
-                        <div class="metric-left">
-                          <div class="metric-k">
-                            {{ x.rank }}.
-                            <a class="stock-link" :href="xqUrl(x.code)" target="_blank" rel="noopener noreferrer">{{ x.name }}</a>
-                            <span style="color:var(--text-muted);font-weight:900;">{{ x.code }}</span>
-                          </div>
-                          <div class="metric-note">题材/行业：{{ x.sector }}<span v-if="x.wasZt">｜昨涨停</span><span v-if="x.lbHeight">｜{{ x.lbHeight }}板</span></div>
-                        </div>
-                        <div class="metric-v green-text">{{ x.pct }}%</div>
-                      </div>
-                    </div>
-                  </details>
-                </div>
-
-                <!-- 已移除：研发说明（不在产品上展示） -->
-              </div>
-
-              <div class="metric-rows" v-else>
-                <div class="metric-row">
-                  <div class="metric-left"><div class="metric-k">风险引擎</div><div class="metric-note">暂无 riskEngine（请先 fetch+rebuild）</div></div>
-                  <div class="metric-v">—</div>
-                </div>
-              </div>
-            </div>
-
-            <div class="inset">
-              <div class="inset-head">
-                <div class="h">分歧与承接</div>
-                <div class="s">炸板 · 晋级 · 封板</div>
-              </div>
-              <div class="engine-grid" v-if="marketData.divergenceEngine">
-                <div class="prism">
-                  <div class="prism-grid">
-                    <div class="prism-card">
-                      <div class="t">时间维度 · 早封率</div>
-                      <div class="n">{{ (Number(marketData.divergenceEngine.timeDim?.earlySealRate ?? 0)*100).toFixed(1) }}%</div>
-                    </div>
-                    <div class="prism-card">
-                      <div class="t">空间维度 · 高位炸板</div>
-                      <div class="n">{{ (Number(marketData.divergenceEngine.spaceDim?.highBoardExplodeRate ?? 0)*100).toFixed(1) }}%</div>
-                    </div>
-                    <div class="prism-card">
-                      <div class="t">资金维度 · 大单净流</div>
-                      <div class="n" :class="(marketData.divergenceEngine.fundDim?.netBigOrderFlow ?? 0) >= 0 ? 'red-text' : 'green-text'">
-                        {{ marketData.divergenceEngine.fundDim?.netBigOrderFlow === null || marketData.divergenceEngine.fundDim?.netBigOrderFlow === undefined
-                          ? '-' : (marketData.divergenceEngine.fundDim.netBigOrderFlow >= 0 ? '+' : '') + marketData.divergenceEngine.fundDim.netBigOrderFlow + '亿' }}
-                      </div>
-                    </div>
-                  </div>
-                  <div class="prism-overall">
-                    <div class="label">综合分歧指数</div>
-                    <div class="prism-meter"><div :style="{ width: String(Math.min(100, marketData.divergenceEngine.overallScore || 0)) + '%' }"></div></div>
-                    <div class="label" style="font-variant-numeric:tabular-nums;">{{ marketData.divergenceEngine.overallScore }}/100</div>
-                  </div>
-                  <div class="prism-verdict"
-                       :class="marketData.divergenceEngine.verdict==='healthy_divergence'?'good':(marketData.divergenceEngine.verdict==='dangerous_divergence'?'bad':'warn')">
-                    <strong style="font-weight:1000;">
-                      {{ marketData.divergenceEngine.verdict==='healthy_divergence' ? '🟡 良性分歧' : (marketData.divergenceEngine.verdict==='dangerous_divergence' ? '🔴 恶性分歧' : '🟠 中性分歧') }}
-                    </strong>
-                    <span style="margin-left:6px;color:var(--text-secondary);font-weight:750;">
-                      早封 {{ (Number(marketData.divergenceEngine.timeDim?.earlySealRate ?? 0)*100).toFixed(0) }}% ·
-                      高位炸板 {{ (Number(marketData.divergenceEngine.spaceDim?.highBoardExplodeRate ?? 0)*100).toFixed(0) }}% ·
-                      回封 {{ (Number(marketData.divergenceEngine.supportQuality?.resealRate ?? 0)*100).toFixed(0) }}%
-                    </span>
-                  </div>
-                </div>
-
-                <div class="engine-map" style="margin-top:10px;">
-                  <div style="display:flex;justify-content:space-between;align-items:baseline;gap:10px;margin-bottom:6px;">
-                    <div style="font-size:12px;font-weight:950;color:var(--text-primary);">承接质量（Support Quality）</div>
-                    <div style="font-size:11px;font-weight:750;color:var(--text-muted);">晋级/回封/尾盘</div>
-                  </div>
-                  <div class="engine-row">
-                    <div class="left">
-                      <div class="name">2进3成功率</div>
-                      <div class="sub">来自 moodCards</div>
-                    </div>
-                    <div class="right">
-                      <div class="engine-pill">{{ marketData.divergenceEngine.supportQuality?.promotionRate?.['2to3'] === null || marketData.divergenceEngine.supportQuality?.promotionRate?.['2to3'] === undefined ? '-' : (marketData.divergenceEngine.supportQuality.promotionRate['2to3']*100).toFixed(0)+'%' }}</div>
-                    </div>
-                  </div>
-                  <div class="engine-row">
-                    <div class="left">
-                      <div class="name">3进4成功率</div>
-                      <div class="sub">来自 moodCards</div>
-                    </div>
-                    <div class="right">
-                      <div class="engine-pill">{{ marketData.divergenceEngine.supportQuality?.promotionRate?.['3to4'] === null || marketData.divergenceEngine.supportQuality?.promotionRate?.['3to4'] === undefined ? '-' : (marketData.divergenceEngine.supportQuality.promotionRate['3to4']*100).toFixed(0)+'%' }}</div>
-                    </div>
-                  </div>
-                  <div class="engine-row">
-                    <div class="left">
-                      <div class="name">炸板回封率</div>
-                      <div class="sub">回封=涨停池中经历炸板仍封住（zbc&gt;0）</div>
-                    </div>
-                    <div class="right">
-                      <div class="engine-pill">{{ (Number(marketData.divergenceEngine.supportQuality?.resealRate ?? 0)*100).toFixed(0) }}%</div>
-                      <div class="engine-bar"><div class="engine-fill" :style="{ width: String(Math.min(100, (marketData.divergenceEngine.supportQuality?.resealRate ?? 0)*100)) + '%' }"></div></div>
-                    </div>
-                  </div>
-                  <div class="engine-row">
-                    <div class="left">
-                      <div class="name">平均回封耗时</div>
-                      <div class="sub">proxy：lbt-fbt（仅对经历炸板的涨停股）</div>
-                    </div>
-                    <div class="right">
-                      <div class="engine-pill">{{ Number(marketData.divergenceEngine.supportQuality?.avgResealMinutes ?? 0).toFixed(0) }} 分钟</div>
-                    </div>
-                  </div>
-                  <div class="engine-row">
-                    <div class="left">
-                      <div class="name">尾盘回封占比</div>
-                      <div class="sub">lbt≥14:30 的比例</div>
-                    </div>
-                    <div class="right">
-                      <div class="engine-pill">{{ (Number(marketData.divergenceEngine.supportQuality?.lateResealRatio ?? 0)*100).toFixed(0) }}%</div>
-                    </div>
-                  </div>
-                </div>
-
-                <!-- 已移除：研发说明（不在产品上展示） -->
-              </div>
-
-              <div class="metric-rows" v-else>
-                <div class="metric-row">
-                  <div class="metric-left"><div class="metric-k">分歧引擎</div><div class="metric-note">暂无 divergenceEngine（请先 fetch+rebuild）</div></div>
-                  <div class="metric-v">—</div>
-                </div>
-              </div>
-            </div>
-          </div>
+          <!-- 已移除：全景 & 风险（riskEngine / divergenceEngine 等内容） -->
         </div>
       </div>
 

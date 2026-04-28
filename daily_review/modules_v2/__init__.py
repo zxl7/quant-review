@@ -19,6 +19,7 @@ from .action_guide import ACTION_GUIDE_MODULE
 from .summary3 import SUMMARY3_MODULE
 from .learning_notes import LEARNING_NOTES_MODULE
 from .mood_signals import MOOD_SIGNALS_MODULE
+from .sentiment_spec import SENTIMENT_SPEC_MODULE
 
 ALL_MODULES = [
     PANORAMA_MODULE,
@@ -37,6 +38,7 @@ ALL_MODULES = [
     STYLE_RADAR_MODULE,
     LEADER_MODULE,
     MOOD_SIGNALS_MODULE,
+    SENTIMENT_SPEC_MODULE,
     ACTION_GUIDE_MODULE,
     SUMMARY3_MODULE,
     LEARNING_NOTES_MODULE,
