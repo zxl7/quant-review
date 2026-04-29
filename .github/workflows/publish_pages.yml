@@ -208,7 +208,12 @@ jobs:
             ls -la ./html || true
             exit 2
           fi
-          cp -f "${report_html}" ./html/index.html
+          # 发布目录：只保留“最新一份报告 + index.html + site_meta.json”
+          rm -rf ./site
+          mkdir -p ./site
+          cp -f "${report_html}" ./site/
+          cp -f "${report_html}" ./site/index.html
+          touch ./site/.nojekyll
           echo "site=index.html from: ${report_html}"
           export REPORT_HTML="${report_html}"
 
@@ -233,21 +238,21 @@ jobs:
               meta["source_report"] = files[0] if files else ""
             except Exception:
               pass
-          with open("./html/site_meta.json", "w", encoding="utf-8") as f:
+          with open("./site/site_meta.json", "w", encoding="utf-8") as f:
             json.dump(meta, f, ensure_ascii=False, indent=2)
           PY
 
           # 在首页顶部插入一行注释，便于肉眼确认“是否更新”
           bj="$(date +'%Y-%m-%d %H:%M:%S %Z')"
           sha="${GITHUB_SHA:-unknown}"
-          sed -i "1s;^;<!-- built_at: ${bj} | sha: ${sha} -->\n;" ./html/index.html
+          sed -i "1s;^;<!-- built_at: ${bj} | sha: ${sha} -->\n;" ./site/index.html
 
       - name: Deploy to gh-pages branch
         if: ${{ github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true' }}
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./html
+          publish_dir: ./site
           publish_branch: gh-pages
-          keep_files: true
+          keep_files: false
           enable_jekyll: false
