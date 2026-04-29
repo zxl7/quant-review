@@ -33,6 +33,7 @@ from daily_review.data.biying import (
     get_trading_days_from_index_k,
     normalize_stock_code,
     resolve_trade_date,
+    resolve_trade_date_intraday,
 )
 from daily_review.features.build_features import build_mood_inputs, default_chart_palette
 
@@ -464,7 +465,7 @@ def run_intraday_snapshot(date: str | None) -> int:
 
     client = HttpClient(base_url=cfg.base_url, token=cfg.token, timeout=30)
     req_date = date
-    actual_date, date_note = resolve_trade_date(client, req_date)
+    actual_date, date_note = resolve_trade_date_intraday(client, req_date)
 
     # 当前时间（用于量能估算和标记）
     now = _dt.datetime.now()

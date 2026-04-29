@@ -87,6 +87,40 @@ def resolve_trade_date(client: HttpClient, requested_date: str | None) -> tuple[
     return requested_date, ""
 
 
+def resolve_trade_date_intraday(client: HttpClient, requested_date: str | None) -> tuple[str, str]:
+    """
+    盘中模式的日期解析：
+    - 目标是“尽量渲染当天盘中数据”，避免因为指数日K存在 sf=1 占位而把当天回退成昨日。
+
+    规则：
+    1) requested_date 为空 → 取今天（按运行环境 TZ）
+    2) 如果 requested_date 本身就是最近交易日列表中的一天 → 直接使用
+    3) 如果 requested_date == 今天 且 今天 > 最近交易日列表最后一天（通常代表“今日尚未收盘/指数日K占位被过滤”）
+       → 仍然使用今天，并返回注释说明（盘中数据）
+    4) 其他情况 → 沿用 resolve_trade_date 的回退逻辑
+    """
+    if not requested_date:
+        requested_date = _dt.datetime.now().strftime("%Y-%m-%d")
+    try:
+        _dt.datetime.strptime(requested_date, "%Y-%m-%d")
+    except Exception:
+        return requested_date, ""
+
+    today = _dt.datetime.now().strftime("%Y-%m-%d")
+    dates = get_recent_trade_dates(client, n=20)
+    if not dates:
+        return requested_date, ""
+
+    if requested_date in dates:
+        return requested_date, ""
+
+    # 盘中兜底：允许使用“今天”（即使指数日K占位被过滤）
+    if requested_date == today and today > dates[-1]:
+        return requested_date, f"盘中模式：使用当日盘中数据（指数日K可能尚未收盘，忽略回退：{dates[-1]}）"
+
+    return resolve_trade_date(client, requested_date)
+
+
 def fetch_indices_realtime(client: HttpClient, codes: Sequence[tuple[str, str]]) -> tuple[list[dict[str, Any]], str]:
     """
     获取主要指数实时数据。
