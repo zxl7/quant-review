@@ -200,6 +200,7 @@ def build_mood_inputs(*, pools: Mapping[str, Any]) -> Dict[str, Any]:
         if n:
             big_face_names.append(n)
     bf_count = len(seen)
+    loss = int(bf_count) + int(dt_count)
 
     # 昨日强势反馈（qs_*）：如果 qsgc 提供 zf，则可直接统计
     qs_all = [s for s in qsgc if isinstance(s, dict)]
@@ -268,6 +269,7 @@ def build_mood_inputs(*, pools: Mapping[str, Any]) -> Dict[str, Any]:
         "zb_rate": round(zb_rate, 1),
         "dt_count": int(dt_count),
         "bf_count": int(bf_count),
+        "loss": int(loss),
         "bf_names": "、".join(big_face_names[:3]) if big_face_names else "无",
         "zt_count": int(zt_count),
         "zb_count": int(zb_count),

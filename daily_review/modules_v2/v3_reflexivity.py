@@ -21,6 +21,18 @@ def _derive_inputs(ctx: Context) -> Dict[str, Any]:
     """从Context中提取反身性分析所需数据"""
     md = ctx.market_data or {}
     sentiment_obj = md.get("v3", {}).get("sentiment") if isinstance(md.get("v3"), dict) else {}
+    mp = md.get("marketPanorama") if isinstance(md.get("marketPanorama"), dict) else {}
+    # effect 已下线：用 marketPanorama 生成一个兼容的 effect 代理，供 behavior_chain_monitor 使用
+    effect_proxy = md.get("effect") if isinstance(md.get("effect"), dict) else {}
+    if not effect_proxy and isinstance(mp, dict) and mp:
+        earning = mp.get("earning") if isinstance(mp.get("earning"), dict) else {}
+        loss = mp.get("loss") if isinstance(mp.get("loss"), dict) else {}
+        effect_proxy = {
+            "earning_score": earning.get("score"),
+            "earning_stars": earning.get("stars"),
+            "loss_score": loss.get("score"),
+            "loss_stars": loss.get("stars"),
+        }
 
     return {
         "sentiment_score": (
@@ -29,7 +41,7 @@ def _derive_inputs(ctx: Context) -> Dict[str, Any]:
         ),
         "sentiment": sentiment_obj,
         "panorama": md.get("panorama") or {},
-        "effect": md.get("effect") or {},
+        "effect": effect_proxy or {},
         "mood": md.get("mood") or {},
         "indices": md.get("indices") or [],
     }
@@ -94,7 +106,6 @@ V3_REFLEXIVITY_MODULE = Module(
     requires=[
         "marketData.v3.sentiment",
         "marketData.panorama",
-        "marketData.effect",
         "marketData.mood",
         "marketData.indices",
     ],

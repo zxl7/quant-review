@@ -1203,6 +1203,70 @@
       .fear-label { font-size: 11px; color: var(--text-muted); font-weight: 700; }
       .fear-note { font-size: 10px; color: var(--text-muted); margin-top: 4px; line-height: 1.3; }
 
+      /* 市场全景：KPI + 双栏（赚钱/亏钱） */
+      .mp-kpi-grid{
+        display:grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 10px;
+        margin-bottom: 14px;
+      }
+      @media (max-width: 720px){ .mp-kpi-grid{ grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+      .mp-kpi{
+        border-radius: 16px;
+        padding: 12px 12px;
+        border: 1px solid rgba(148,163,184,0.16);
+        background: linear-gradient(135deg, rgba(255,255,255,0.62), rgba(255,255,255,0.40));
+        box-shadow: var(--shadow-sm);
+        text-align: center;
+      }
+      [data-theme="dark"] .mp-kpi{ background: rgba(15,23,42,0.42); border-color: rgba(148,163,184,0.18); }
+      .mp-kpi .k{ font-size: 11px; font-weight: 900; color: var(--text-muted); }
+      .mp-kpi .v{ margin-top: 6px; font-size: 26px; font-weight: 1100; font-variant-numeric: tabular-nums; }
+      .mp-kpi .s{ margin-top: 4px; font-size: 11px; font-weight: 800; color: var(--text-secondary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+      .mp-kpi.green{ background: linear-gradient(135deg, rgba(236,253,245,0.85), rgba(209,250,229,0.55)); border-color: rgba(16,185,129,0.18); }
+      .mp-kpi.red{ background: linear-gradient(135deg, rgba(254,242,242,0.84), rgba(254,226,226,0.55)); border-color: rgba(239,68,68,0.18); }
+      .mp-kpi.blue{ background: linear-gradient(135deg, rgba(239,246,255,0.84), rgba(219,234,254,0.55)); border-color: rgba(37,99,235,0.18); }
+      .mp-kpi.amber{ background: linear-gradient(135deg, rgba(255,251,235,0.86), rgba(254,243,199,0.58)); border-color: rgba(245,158,11,0.18); }
+      [data-theme="dark"] .mp-kpi.green{ background: rgba(16,185,129,0.12); }
+      [data-theme="dark"] .mp-kpi.red{ background: rgba(239,68,68,0.12); }
+      [data-theme="dark"] .mp-kpi.blue{ background: rgba(37,99,235,0.12); }
+      [data-theme="dark"] .mp-kpi.amber{ background: rgba(245,158,11,0.12); }
+
+      .mp-two{
+        display:grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+      }
+      @media (max-width: 900px){ .mp-two{ grid-template-columns: 1fr; } }
+      .mp-panel{
+        border-radius: 16px;
+        border: 1px solid rgba(148,163,184,0.18);
+        background: rgba(255,255,255,0.55);
+        padding: 12px 12px;
+      }
+      [data-theme="dark"] .mp-panel{ background: rgba(15,23,42,0.40); border-color: rgba(148,163,184,0.18); }
+      .mp-panel .hd{ display:flex; align-items:baseline; justify-content:space-between; gap: 10px; margin-bottom: 8px; }
+      .mp-panel .t{ font-size: 13px; font-weight: 1000; }
+      .mp-panel .badge{ font-size: 11px; font-weight: 900; color: var(--text-muted); }
+      .mp-list{ display:flex; flex-direction:column; gap: 6px; }
+      .mp-row{ display:flex; align-items:baseline; justify-content:space-between; gap: 10px; padding: 6px 0; border-bottom: 1px dashed rgba(148,163,184,0.18); }
+      .mp-row:last-child{ border-bottom: none; }
+      .mp-row .lk{ font-size: 12px; font-weight: 850; color: var(--text-secondary); }
+      .mp-row .lv{ font-size: 12px; font-weight: 1000; }
+      .mp-row .ln{ font-size: 11px; font-weight: 750; color: var(--text-muted); margin-top: 2px; }
+      .mp-foot{
+        margin-top: 10px;
+        border-radius: 12px;
+        padding: 8px 10px;
+        border: 1px solid rgba(148,163,184,0.16);
+        background: rgba(2,6,23,0.04);
+        font-size: 12px;
+        font-weight: 850;
+        color: var(--text-secondary);
+      }
+      [data-theme="dark"] .mp-foot{ background: rgba(2,6,23,0.32); border-color: rgba(148,163,184,0.14); }
+      .mp-foot .stars{ font-weight: 1000; color: var(--text-primary); margin-right: 8px; }
+
       /* Inset panel：让同一张 card 内出现“内嵌模块”，打破全是同一种卡片的单调感 */
       .inset{
         border: 1px solid color-mix(in oklab, var(--border) 70%, var(--theme-glow) 30%);
@@ -3210,82 +3274,7 @@
         </div>
       </div>
 
-      <!-- 情绪温度（全景&风险已移除） -->
-      <div class="card" data-page="sentiment" id="sec-thermo">
-        <div class="card-header"><div class="card-title">情绪温度</div></div>
-        <div class="overview-grid">
-          <div>
-            <div class="insight-banner">
-          <div class="insight-score">
-            <span class="insight-score-num">{{ marketData.compat?.sentiment?.score ?? marketData.sentiment?.score ?? '-' }}</span>
-            <span class="insight-score-unit">情绪分</span>
-          </div>
-          <div class="insight-main">
-            <div class="insight-title">情绪温度 · {{ marketData.moodStage?.title || '-' }}</div>
-            <div class="insight-desc">
-              赚钱效应 {{ marketData.dual_dimension?.earning_effect || '-' }} / 亏钱效应 {{ marketData.dual_dimension?.loss_effect || '-' }}。
-              盘中只盯两件事：<strong>承接是否回暖</strong>、<strong>亏钱扩散是否收敛</strong>（去「实时盯盘」看红绿灯）。
-            </div>
-          </div>
-          <div class="insight-side">
-            <div class="insight-chip">风险 {{ marketData.compat?.sentiment?.risk_level || marketData.sentiment?.risk_level || '-' }}</div>
-            <div class="insight-side-note">主线集中 · 拥挤度</div>
-          </div>
-          <div style="grid-column: 1 / -1;">
-            <div style="display:grid; gap:8px;">
-              <div>
-                <div style="display:flex; justify-content:space-between; font-size:12px; color:var(--text-muted); margin-bottom:4px;">
-                  <span>情绪</span><span>{{ marketData.compat?.sentiment?.score ?? marketData.sentiment?.score ?? '-' }}</span>
-                </div>
-                <div class="insight-meter">
-                  <div class="insight-meter-fill" :style="{ width: String((marketData.mood?.heat ?? 0)) + '%' }"></div>
-                </div>
-              </div>
-              <div>
-                <div style="display:flex; justify-content:space-between; font-size:12px; color:var(--text-muted); margin-bottom:4px;">
-                  <span>风险</span><span>{{ marketData.mood?.risk ?? '-' }}</span>
-                </div>
-                <div class="insight-meter" style="background: rgba(239, 68, 68, 0.12);">
-                  <div class="insight-meter-fill"
-                       :style="{
-                         width: String(marketData.mood?.risk ?? 0) + '%',
-                         background: 'linear-gradient(90deg, rgba(34,197,94,0.6) 0%, rgba(249,115,22,0.85) 45%, rgba(239,68,68,0.95) 100%)'
-                       }"></div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-            <div class="tri-strip reveal" aria-label="情绪三卡">
-              <div class="tri-card reveal"
-                   v-for="(c, i) in moodTriCards"
-                   :key="'tri-'+c.key+'-'+i"
-                   :class="c.cls">
-                <div class="tri-head">
-                  <div class="tri-title">{{ c.title }}</div>
-                  <div class="tri-badges" v-html="c.badges"></div>
-                </div>
-                <div class="tri-value" :class="c.valueClass">{{ c.value }}</div>
-                <div class="tri-sub">{{ c.sub }}</div>
-                <svg class="spark tri-spark" viewBox="0 0 100 28" preserveAspectRatio="none" aria-hidden="true"
-                     v-if="(c.spark || []).length >= 2">
-                  <path class="grid" d="M0 27H100" />
-                  <polyline class="line"
-                            :stroke="c.sparkStroke"
-                            :points="sparklinePoints(c.spark)" />
-                </svg>
-              </div>
-            </div>
-
-            <!-- 已删除：情绪六维雷达 -->
-          </div>
-
-          <!-- 已移除：全景 & 风险（riskEngine / divergenceEngine 等内容） -->
-        </div>
-      </div>
-
-      <!-- 市场量能 -->
+      <!-- 市场量能（置顶：短线情绪第一位） -->
       <div class="card" data-page="sentiment" id="sec-volume">
         <div class="card-header"><div class="card-title">市场量能</div></div>
         <!-- 按你的要求：删除上面的数值条（volume-info-box），保留下面的模块内容 -->
@@ -3359,6 +3348,81 @@
               </div>
             </div>
           </details>
+        </div>
+      </div>
+
+      <!-- 情绪温度（全景&风险已移除） -->
+      <div class="card" data-page="sentiment" id="sec-thermo">
+        <div class="card-header"><div class="card-title">情绪温度</div></div>
+        <div class="overview-grid">
+          <div>
+            <div class="insight-banner">
+          <div class="insight-score">
+            <span class="insight-score-num">{{ marketData.compat?.sentiment?.score ?? marketData.sentiment?.score ?? '-' }}</span>
+            <span class="insight-score-unit">情绪分</span>
+          </div>
+          <div class="insight-main">
+            <div class="insight-title">情绪温度 · {{ marketData.moodStage?.title || '-' }}</div>
+            <div class="insight-desc">
+              赚钱效应 {{ marketData.marketPanorama?.earning?.stars_text || '-' }} / 亏钱效应 {{ marketData.marketPanorama?.loss?.stars_text || '-' }}。
+              盘中只盯两件事：<strong>承接是否回暖</strong>、<strong>亏钱扩散是否收敛</strong>（去「实时盯盘」看红绿灯）。
+            </div>
+          </div>
+          <div class="insight-side">
+            <div class="insight-chip">风险 {{ marketData.compat?.sentiment?.risk_level || marketData.sentiment?.risk_level || '-' }}</div>
+            <div class="insight-side-note">主线集中 · 拥挤度</div>
+          </div>
+          <div style="grid-column: 1 / -1;">
+            <div style="display:grid; gap:8px;">
+              <div>
+                <div style="display:flex; justify-content:space-between; font-size:12px; color:var(--text-muted); margin-bottom:4px;">
+                  <span>情绪</span><span>{{ marketData.compat?.sentiment?.score ?? marketData.sentiment?.score ?? '-' }}</span>
+                </div>
+                <div class="insight-meter">
+                  <div class="insight-meter-fill" :style="{ width: String((marketData.mood?.heat ?? 0)) + '%' }"></div>
+                </div>
+              </div>
+              <div>
+                <div style="display:flex; justify-content:space-between; font-size:12px; color:var(--text-muted); margin-bottom:4px;">
+                  <span>风险</span><span>{{ marketData.mood?.risk ?? '-' }}</span>
+                </div>
+                <div class="insight-meter" style="background: rgba(239, 68, 68, 0.12);">
+                  <div class="insight-meter-fill"
+                       :style="{
+                         width: String(marketData.mood?.risk ?? 0) + '%',
+                         background: 'linear-gradient(90deg, rgba(34,197,94,0.6) 0%, rgba(249,115,22,0.85) 45%, rgba(239,68,68,0.95) 100%)'
+                       }"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+            <div class="tri-strip reveal" aria-label="情绪三卡">
+              <div class="tri-card reveal"
+                   v-for="(c, i) in moodTriCards"
+                   :key="'tri-'+c.key+'-'+i"
+                   :class="c.cls">
+                <div class="tri-head">
+                  <div class="tri-title">{{ c.title }}</div>
+                  <div class="tri-badges" v-html="c.badges"></div>
+                </div>
+                <div class="tri-value" :class="c.valueClass">{{ c.value }}</div>
+                <div class="tri-sub">{{ c.sub }}</div>
+                <svg class="spark tri-spark" viewBox="0 0 100 28" preserveAspectRatio="none" aria-hidden="true"
+                     v-if="(c.spark || []).length >= 2">
+                  <path class="grid" d="M0 27H100" />
+                  <polyline class="line"
+                            :stroke="c.sparkStroke"
+                            :points="sparklinePoints(c.spark)" />
+                </svg>
+              </div>
+            </div>
+
+            <!-- 已删除：情绪六维雷达 -->
+          </div>
+
+          <!-- 已移除：全景 & 风险（riskEngine / divergenceEngine 等内容） -->
         </div>
       </div>
 
@@ -3466,156 +3530,74 @@
         <!-- 已移除：研发说明（不在产品上展示） -->
       </div>
 
-      <!-- 赚钱效应四维判断 -->
-      <div class="card" data-page="sentiment">
-        <div class="card-title">赚钱效应（结论 + 证据链）</div>
-        <div class="section-header">情绪六宫格（结论）</div>
-        <div class="hm2" v-if="(hm2.cells || []).length">
-          <div class="hm2-head">
-            <div class="hm2-title">
-              <div class="t">总分</div>
-              <div class="hm2-score">{{ hm2.score }}</div>
-            </div>
-            <div class="hm2-hint">{{ hm2.hint }}</div>
-          </div>
-          <div class="hm2-compare">
-            <!-- 左：正面信号 -->
-            <div class="hm2-col" style="--col-accent: rgba(239,68,68,0.90);">
-              <div class="hm2-col-head">
-                <div class="hm2-col-title"><span class="dot"></span>正面信号</div>
-                <div class="hm2-col-pill">承接 / 收益 / 一致</div>
-              </div>
-              <div class="hm2-items">
-                <div class="hm2-item reveal"
-                     v-for="(c, i) in hm2PosCells"
-                     :key="'hm2-pos-'+c.key+'-'+i"
-                     :style="{ '--item-accent': (c.accent==='profit' ? 'rgba(239,68,68,0.92)' : (c.accent==='strength' ? 'rgba(96,165,250,0.92)' : 'rgba(245,158,11,0.92)')) }">
-                  <div class="hm2-item-top">
-                    <div style="min-width:0;">
-                      <div class="hm2-item-title">{{ c.title }}</div>
-                      <div class="hm2-item-tag">{{ c.tag }}</div>
-                    </div>
-                    <div class="hm2-item-status">{{ c.statusIcon }} {{ c.statusText }}</div>
-                  </div>
-                  <div class="hm2-item-mid">
-                    <div class="hm2-item-value">
-                      {{ c.value }} <span v-html="c.deltaHtml"></span>
-                    </div>
-                  </div>
-                  <div class="hm2-item-brief">{{ c.driver }}</div>
-                </div>
-              </div>
-            </div>
-
-            <!-- 右：风险信号 -->
-            <div class="hm2-col" style="--col-accent: rgba(16,185,129,0.90);">
-              <div class="hm2-col-head">
-                <div class="hm2-col-title"><span class="dot"></span>风险信号</div>
-                <div class="hm2-col-pill">亏钱 / 分歧 / 拥挤</div>
-              </div>
-              <div class="hm2-items">
-                <div class="hm2-item reveal"
-                     v-for="(c, i) in hm2RiskCells"
-                     :key="'hm2-risk-'+c.key+'-'+i"
-                     :style="{ '--item-accent': (c.accent==='risk' ? 'rgba(16,185,129,0.90)' : (c.accent==='diverge' ? 'rgba(245,158,11,0.92)' : 'rgba(239,68,68,0.80)')) }">
-                  <div class="hm2-item-top">
-                    <div style="min-width:0;">
-                      <div class="hm2-item-title">{{ c.title }}</div>
-                      <div class="hm2-item-tag">{{ c.tag }}</div>
-                    </div>
-                    <div class="hm2-item-status">{{ c.statusIcon }} {{ c.statusText }}</div>
-                  </div>
-                  <div class="hm2-item-mid">
-                    <div class="hm2-item-value">
-                      {{ c.value }} <span v-html="c.deltaHtml"></span>
-                    </div>
-                  </div>
-                  <div class="hm2-item-brief">{{ c.driver }}</div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="hm2-scale">
-            <span>冷 ←</span>
-            <div class="hm2-bar">
-              <div class="hm2-pointer" :style="{ left: hm2.pointerLeft }"></div>
-            </div>
-            <span>→ 热</span>
-          </div>
+      <!-- 市场全景（赚钱效应 + 亏钱效应 + 图二KPI） -->
+      <div class="card" data-page="sentiment" id="sec-panorama">
+        <div class="card-header">
+          <div class="card-title">市场全景</div>
+          <div class="card-badge">KPI · 赚钱/亏钱效应</div>
         </div>
 
-        <details style="margin-top:12px;">
-          <summary style="cursor:pointer; color:var(--text-muted); font-weight:900; font-size:12px;">展开证据链（昨日强势股反馈）</summary>
-
-          <div class="inset" style="margin-top:10px;">
-            <div class="inset-head">
-              <div class="h">昨日强势股反馈</div>
-              <div class="s">均值 · 最佳 · 最弱</div>
+        <div v-if="marketData.marketPanorama">
+          <div class="mp-kpi-grid">
+            <div class="mp-kpi green">
+              <div class="k">涨停家数</div>
+              <div class="v">{{ marketData.marketPanorama.kpis?.zt_count ?? '-' }}</div>
+              <div class="s">首板{{ marketData.marketPanorama.kpis?.first_board ?? '-' }}｜连板{{ marketData.marketPanorama.kpis?.link_board ?? '-' }}</div>
             </div>
-            <div class="evi-grid">
-              <div class="evi-card">
-                <div>
-                  <div class="evi-k">强势股均涨</div>
-                  <div class="evi-note">用于判断次日正反馈强弱</div>
-                </div>
-                <div class="evi-v" :class="signedClass(getMoodInput('qs_avg_zf', 0))">
-                  {{ (Number(getMoodInput('qs_avg_zf',0))>=0?'+':'') + Number(getMoodInput('qs_avg_zf',0)).toFixed(2) }}%
-                </div>
-              </div>
-              <div class="evi-card">
-                <div>
-                  <div class="evi-k">最佳反馈</div>
-                  <div class="evi-note">{{ (Number(getMoodInput('qs_best_zf',0))>=0?'+':'') + Number(getMoodInput('qs_best_zf',0)).toFixed(2) }}%</div>
-                </div>
-                <div class="evi-v red-text">{{ getMoodInput('qs_best_name', '—') }}</div>
-              </div>
-              <div class="evi-card">
-                <div>
-                  <div class="evi-k">最弱反馈</div>
-                  <div class="evi-note">{{ (Number(getMoodInput('qs_worst_zf',0))>=0?'+':'') + Number(getMoodInput('qs_worst_zf',0)).toFixed(2) }}%</div>
-                </div>
-                <div class="evi-v green-text">{{ getMoodInput('qs_worst_name', '—') }}</div>
-              </div>
+            <div class="mp-kpi red">
+              <div class="k">跌停家数</div>
+              <div class="v">{{ marketData.marketPanorama.kpis?.dt_count ?? '-' }}</div>
+              <div class="s">亏钱扩散观察</div>
+            </div>
+            <div class="mp-kpi blue">
+              <div class="k">炸板率</div>
+              <div class="v">{{ marketData.marketPanorama.kpis?.zb_rate ?? '-' }}%</div>
+              <div class="s">炸板{{ marketData.marketPanorama.kpis?.zb_count ?? '-' }}家</div>
+            </div>
+            <div class="mp-kpi amber">
+              <div class="k">最高连板</div>
+              <div class="v">{{ marketData.marketPanorama.kpis?.max_lb ?? '-' }}板</div>
+              <div class="s">{{ marketData.marketPanorama.kpis?.max_lb_name || '—' }}</div>
             </div>
           </div>
 
-          <div class="inset">
-            <div class="inset-head">
-              <div class="h">反馈分布</div>
-              <div class="s">延续 · 盈利 · 回落 · 大面</div>
+          <div class="mp-two">
+            <div class="mp-panel">
+              <div class="hd">
+                <div class="t">赚钱效应</div>
+                <div class="badge">评级 <span class="stars">{{ marketData.marketPanorama.earning?.stars_text || '-' }}</span> {{ marketData.marketPanorama.earning?.score ?? '-' }}</div>
+              </div>
+              <div class="mp-list">
+                <div class="mp-row" v-for="(it, i) in (marketData.marketPanorama.earning?.items || [])" :key="'mp-e-'+i">
+                  <div style="min-width:0;">
+                    <div class="lk">{{ it.k }}</div>
+                    <div class="ln">{{ it.note }}</div>
+                  </div>
+                  <div class="lv red-text">{{ it.v }}</div>
+                </div>
+              </div>
+              <div class="mp-foot"><span class="stars">{{ marketData.marketPanorama.earning?.stars_text || '-' }}</span>{{ marketData.marketPanorama.earning?.comment || '—' }}</div>
             </div>
-            <div class="evi-grid">
-              <div class="evi-card">
-                <div>
-                  <div class="evi-k">强延续</div>
-                  <div class="evi-note">涨幅 ≥ 5%</div>
-                </div>
-                <div class="evi-v red-text">{{ getMoodInput('qs_extreme_up', 0) }}只</div>
+
+            <div class="mp-panel">
+              <div class="hd">
+                <div class="t">亏钱效应</div>
+                <div class="badge">评级 <span class="stars">{{ marketData.marketPanorama.loss?.stars_text || '-' }}</span> {{ marketData.marketPanorama.loss?.score ?? '-' }}</div>
               </div>
-              <div class="evi-card">
-                <div>
-                  <div class="evi-k">温和盈利</div>
-                  <div class="evi-note">收红但未大涨</div>
+              <div class="mp-list">
+                <div class="mp-row" v-for="(it, i) in (marketData.marketPanorama.loss?.items || [])" :key="'mp-l-'+i">
+                  <div style="min-width:0;">
+                    <div class="lk">{{ it.k }}</div>
+                    <div class="ln">{{ it.note }}</div>
+                  </div>
+                  <div class="lv green-text">{{ it.v }}</div>
                 </div>
-                <div class="evi-v orange-text">{{ getMoodInput('qs_positive', 0) }}只</div>
               </div>
-              <div class="evi-card">
-                <div>
-                  <div class="evi-k">小幅负反馈</div>
-                  <div class="evi-note">小幅回落</div>
-                </div>
-                <div class="evi-v blue-text">{{ getMoodInput('qs_negative', 0) }}只</div>
-              </div>
-              <div class="evi-card">
-                <div>
-                  <div class="evi-k">大面 / 核按钮</div>
-                  <div class="evi-note">跌幅 ≤ -5%</div>
-                </div>
-                <div class="evi-v green-text">{{ getMoodInput('qs_extreme_down', 0) }}只</div>
-              </div>
+              <div class="mp-foot"><span class="stars">{{ marketData.marketPanorama.loss?.stars_text || '-' }}</span>{{ marketData.marketPanorama.loss?.comment || '—' }}</div>
             </div>
           </div>
-        </details>
+        </div>
+        <div v-else style="color:var(--text-muted); font-weight:800;">marketPanorama 缺失（请先跑一次 --rebuild/--fetch）</div>
       </div>
 
       <!-- 今日热点板块解读 -->
@@ -4319,7 +4301,7 @@
             </div>
             <details>
               <summary>展开原始数据</summary>
-              <pre class="v3-pre">{{ JSON.stringify((marketData.compat?.algo==='v3' ? marketData.v3 : (marketData.compat?.algo==='v2' ? marketData.v2 : marketData)), null, 2) }}</pre>
+              <pre class="v3-pre">{{ JSON.stringify({ date: marketData.date, meta: marketData.meta, features: marketData.features, mood: marketData.mood, moodStage: marketData.moodStage, moodCards: marketData.moodCards, moodSignals: marketData.moodSignals, hm2Compare: marketData.hm2Compare, fear: marketData.fear, v2: marketData.v2, v3: marketData.v3, compat: marketData.compat }, null, 2) }}</pre>
             </details>
           </div>
 

@@ -34,6 +34,10 @@ def _derive_inputs(ctx: Context) -> Dict[str, Any]:
     zt_yest = None
     if isinstance(hist_zt, list) and len(hist_zt) >= 2:
         zt_yest = hist_zt[-2]
+    if zt_yest is None:
+        pools0 = (ctx.raw.get("pools") or {}) if isinstance(ctx.raw, dict) else {}
+        yest_ztgc0 = pools0.get("yest_ztgc") or []
+        zt_yest = len(yest_ztgc0) if isinstance(yest_ztgc0, list) else None
 
     # 晋级率：用 jj_rate 作为 yesterday lianban promote rate 的近似口径
     jj_rate = mi.get("jj_rate")
@@ -87,7 +91,7 @@ def _derive_inputs(ctx: Context) -> Dict[str, Any]:
         "is_weekend_ahead": False,
         "index_drop_3d": None,
         "has_trap_pattern": False,
-        "loss": mi.get("loss"),
+        "loss": mi.get("loss") if mi.get("loss") is not None else (int(mi.get("bf_count") or 0) + int(mi.get("dt_count") or 0)),
     }
 
 

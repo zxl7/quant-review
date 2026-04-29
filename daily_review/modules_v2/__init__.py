@@ -4,6 +4,7 @@
 from .mood import MOOD_MODULE
 from .leader import LEADER_MODULE
 from .panorama import PANORAMA_MODULE
+from .market_panorama import MARKET_PANORAMA_MODULE
 from .ladder import LADDER_MODULE
 from .theme_panels import THEME_PANELS_MODULE
 from .volume import VOLUME_MODULE
@@ -11,7 +12,6 @@ from .height_trend import HEIGHT_TREND_MODULE
 from .ztgc import ZTGC_MODULE
 from .top10 import TOP10_MODULE
 from .theme_trend import THEME_TREND_MODULE
-from .effect import EFFECT_MODULE
 from .fear import FEAR_MODULE
 from .rotation import ROTATION_MODULE
 from .theme_layers import THEME_LAYERS_MODULE
@@ -66,6 +66,7 @@ except ImportError:
 
 ALL_MODULES = [
     PANORAMA_MODULE,
+    MARKET_PANORAMA_MODULE,
     LADDER_MODULE,
     ZTGC_MODULE,
     THEME_PANELS_MODULE,
@@ -74,7 +75,6 @@ ALL_MODULES = [
     HEIGHT_TREND_MODULE,
     TOP10_MODULE,
     MOOD_MODULE,
-    EFFECT_MODULE,
     FEAR_MODULE,
     ROTATION_MODULE,
     THEME_LAYERS_MODULE,
