@@ -196,7 +196,10 @@ jobs:
             mode="${{ steps.pushmode.outputs.mode }}"
           fi
           if [ "${mode}" = "intraday" ]; then
-            report_html="$(ls -t ./html/*-intra.html 2>/dev/null | head -n 1 || true)"
+            # intraday 输出文件名历史上存在两种：
+            # - 复盘日记-YYYYMMDD-intra.html
+            # - 复盘日记-YYYYMMDD-intraday-tab-v1.html
+            report_html="$(ls -t ./html/*-intra.html ./html/*-intraday-tab-v1.html ./html/*intraday*.html 2>/dev/null | head -n 1 || true)"
           else
             report_html="$(ls -t ./html/*tab-v1.html 2>/dev/null | head -n 1 || true)"
           fi
