@@ -674,7 +674,8 @@
       .insight-chip { display: inline-flex; align-items: center; padding: 6px 12px; border-radius: 999px; font-size: 11px; font-weight: 800; background: var(--theme-chip-bg); color: var(--theme-chip-text); border: 1px solid var(--theme-glow); }
       .insight-side-note { margin-top: 8px; font-size: 11px; color: var(--text-muted); font-weight: 700; }
       .insight-meter { margin-top: 12px; height: 10px; border-radius: 999px; background: rgba(148, 163, 184, 0.16); overflow: hidden; }
-      .insight-meter-fill { height: 100%; border-radius: inherit; background: linear-gradient(90deg, var(--theme-accent-2) 0%, var(--theme-accent) 100%); }
+      /* 情绪色带：黄→红（强度越高越偏红） */
+      .insight-meter-fill { height: 100%; border-radius: inherit; background: linear-gradient(90deg, #f59e0b 0%, #ef4444 100%); }
 
       /* 情绪温度：使用容器查询做自适应（解决“66%版心但视口很宽”时仍不换行的问题） */
       #sec-thermo{ container-type: inline-size; }
@@ -1215,6 +1216,23 @@
         overflow: hidden;
         text-overflow: ellipsis;
       }
+      /* 全局：合并为一个“卡片行”，与板块行同风格 */
+      .sh-global{
+        border: 1px solid rgba(148,163,184,0.18);
+        border-radius: 16px;
+        background: rgba(255,255,255,0.55);
+        padding: 12px 14px;
+        display:flex;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: 12px;
+        margin-bottom: 10px;
+      }
+      [data-theme="dark"] .sh-global{ background: rgba(15,23,42,0.45); border-color: rgba(148,163,184,0.22); }
+      .sh-global .left{ display:flex; align-items: baseline; gap: 10px; min-width: 0; }
+      .sh-global .title{ font-size: 13px; font-weight: 950; color: var(--text-primary); letter-spacing: 0.2px; }
+      .sh-global .global{ font-size: 24px; font-weight: 1000; font-variant-numeric: tabular-nums; }
+      .sh-global .hint{ font-size: 12px; font-weight: 750; color: var(--text-muted); text-align: right; max-width: 520px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
       .sh-list{ display:grid; gap: 10px; }
       .sh-row{
         border: 1px solid rgba(148,163,184,0.18);
@@ -1239,13 +1257,54 @@
       .sh-sub{
         margin-top: 2px;
         font-size: 11px;
-        font-weight: 700;
+        font-weight: 850;
         color: var(--text-muted);
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
         max-width: 420px;
       }
+      /* 题材行：摘要区直接展示涨停/炸板/跌停（与你给的示例一致） */
+      .sh-metrics{
+        margin-top: 6px;
+        display:flex;
+        flex-wrap: wrap;
+        gap: 8px 10px;
+      }
+      .sh-m{
+        font-size: 11px;
+        font-weight: 950;
+        color: var(--text-secondary);
+        font-variant-numeric: tabular-nums;
+      }
+      .sh-m b{ font-weight: 1200; color: var(--text-primary); }
+
+      /* 题材 chips：更像数据面板（你要的“可渲染具体数据”） */
+      .sh-chips{
+        margin-top: 8px;
+        display:flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+      .sh-chip{
+        font-size: 11px;
+        font-weight: 950;
+        padding: 5px 10px;
+        border-radius: 999px;
+        border: 1px solid rgba(148,163,184,0.18);
+        background: rgba(255,255,255,0.55);
+        color: var(--text-secondary);
+        max-width: 100%;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      [data-theme="dark"] .sh-chip{ background: rgba(15,23,42,0.45); border-color: rgba(148,163,184,0.22); }
+      .sh-chip b{ font-weight: 1200; color: var(--text-primary); font-variant-numeric: tabular-nums; }
+      .sh-chip.red{ border-color: rgba(239,68,68,0.22); background: rgba(239,68,68,0.08); color: #991b1b; }
+      .sh-chip.amber{ border-color: rgba(245,158,11,0.22); background: rgba(245,158,11,0.08); color: #92400e; }
+      .sh-chip.green{ border-color: rgba(16,185,129,0.22); background: rgba(16,185,129,0.08); color: #065f46; }
+      .sh-chip.blue{ border-color: rgba(59,130,246,0.22); background: rgba(59,130,246,0.08); color: #1e3a8a; }
       .sh-right{ display:flex; align-items:center; gap: 10px; flex: 0 0 auto; }
       .sh-score{
         font-size: 14px;
@@ -2407,6 +2466,68 @@
       .wb-kpi .v{ margin-top: 6px; font-size: 17px; font-weight: 1100; color: var(--text-primary); font-variant-numeric: tabular-nums; }
       .wb-kpi .n{ margin-top: 4px; font-size: 11px; font-weight: 800; color: var(--text-secondary); white-space: nowrap; overflow:hidden; text-overflow: ellipsis; }
 
+      /* 市场状态：重构为“主指标 + 结构条” */
+      .wb-mkt{
+        display:grid;
+        grid-template-columns: 1fr;
+        gap: 10px;
+      }
+      .wb-mkt-main{
+        display:grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 10px;
+      }
+      @container (max-width: 540px){
+        .wb-mkt-main{ grid-template-columns: 1fr; }
+      }
+      .wb-mkt-stat{
+        border-radius: 14px;
+        border: 1px solid rgba(148,163,184,0.16);
+        background: rgba(255,255,255,0.52);
+        padding: 10px 10px;
+        min-width: 0;
+      }
+      [data-theme="dark"] .wb-mkt-stat{ background: rgba(2,6,23,0.22); border-color: rgba(148,163,184,0.18); }
+      .wb-mkt-stat .k{ font-size: 11px; font-weight: 900; color: var(--text-muted); }
+      .wb-mkt-stat .v{ margin-top: 6px; font-size: 20px; font-weight: 1200; color: var(--text-primary); font-variant-numeric: tabular-nums; letter-spacing: 0.2px; }
+      .wb-mkt-stat .n{ margin-top: 4px; font-size: 11px; font-weight: 850; color: var(--text-secondary); white-space: nowrap; overflow:hidden; text-overflow: ellipsis; }
+      .wb-mkt-bars{
+        display:grid;
+        grid-template-columns: 1fr;
+        gap: 8px;
+      }
+      .wb-bar{
+        display:flex;
+        align-items:center;
+        gap: 10px;
+        padding: 8px 10px;
+        border-radius: 14px;
+        border: 1px solid rgba(148,163,184,0.16);
+        background: rgba(255,255,255,0.44);
+        min-width: 0;
+      }
+      [data-theme="dark"] .wb-bar{ background: rgba(2,6,23,0.18); border-color: rgba(148,163,184,0.18); }
+      .wb-bar .k{ width: 60px; font-size: 11px; font-weight: 950; color: var(--text-muted); }
+      .wb-bar .track{
+        position: relative;
+        flex: 1;
+        height: 10px;
+        border-radius: 999px;
+        background: rgba(148,163,184,0.16);
+        overflow: hidden;
+      }
+      .wb-bar .fill{
+        position:absolute;
+        left:0; top:0; bottom:0;
+        width: 0%;
+        border-radius: inherit;
+        background: rgba(148,163,184,0.55);
+      }
+      .wb-bar .fill.red{ background: rgba(239,68,68,0.70); }
+      .wb-bar .fill.amber{ background: rgba(245,158,11,0.75); }
+      .wb-bar .fill.green{ background: rgba(16,185,129,0.70); }
+      .wb-bar .v{ flex: 0 0 auto; font-size: 11px; font-weight: 950; color: var(--text-secondary); font-variant-numeric: tabular-nums; }
+
       .wb-alerts{ display:flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
       .wb-alert{
         font-size: 11px;
@@ -3304,6 +3425,189 @@
         flex: 1;
         opacity: 0.95;
       }
+
+      /* 情绪温度（替代“情绪周期趋势”）：更直观、可解释 */
+      .thermo-mini{
+        margin-top: 10px;
+        background: var(--bg-elevated);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-md);
+        padding: 12px 12px;
+      }
+      .thermo-mini-head{
+        display:flex;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: 12px;
+        margin-bottom: 10px;
+      }
+      .thermo-mini-title{
+        font-size: 12px;
+        font-weight: 950;
+        color: var(--text-primary);
+        letter-spacing: 0.25px;
+      }
+      .thermo-mini-meta{
+        font-size: 11px;
+        font-weight: 800;
+        color: var(--text-muted);
+        white-space: nowrap;
+      }
+      .thermo-mini-rows{ display:grid; gap: 8px; }
+      .thermo-mini-row{
+        display:grid;
+        grid-template-columns: 64px 1fr 46px;
+        gap: 10px;
+        align-items: center;
+        font-size: 11px;
+        font-weight: 850;
+        color: var(--text-muted);
+      }
+      .thermo-mini-row .val{ text-align:right; color: var(--text-secondary); font-weight: 950; }
+      .thermo-explain{
+        margin-top: 10px;
+        display:grid;
+        gap: 10px;
+      }
+      .thermo-explain-item{
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 10px 10px;
+        background: rgba(255,255,255,0.02);
+      }
+      [data-theme="dark"] .thermo-explain-item{ background: rgba(255,255,255,0.01); }
+      .thermo-explain-top{
+        display:flex;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: 10px;
+        margin-bottom: 6px;
+      }
+      .thermo-explain-title{
+        display:flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 12px;
+        font-weight: 1000;
+        color: var(--text-primary);
+        min-width: 0;
+      }
+      .lvl-badge{
+        font-size: 10px;
+        font-weight: 950;
+        padding: 2px 8px;
+        border-radius: 999px;
+        border: 1px solid rgba(148,163,184,0.26);
+        color: var(--text-muted);
+        background: rgba(148,163,184,0.10);
+        white-space: nowrap;
+      }
+      .lvl-badge.low{ border-color: rgba(34,197,94,0.35); background: rgba(34,197,94,0.10); color: #16a34a; }
+      .lvl-badge.mid{ border-color: rgba(245,158,11,0.35); background: rgba(245,158,11,0.12); color: #d97706; }
+      .lvl-badge.high{ border-color: rgba(239,68,68,0.30); background: rgba(239,68,68,0.10); color: #ef4444; }
+      .thermo-explain-value{
+        font-size: 12px;
+        font-weight: 1100;
+        color: var(--text-primary);
+        white-space: nowrap;
+      }
+      .thermo-explain-sub{
+        font-size: 11px;
+        font-weight: 750;
+        color: var(--text-muted);
+        line-height: 1.5;
+      }
+      .thermo-explain-sub strong{ color: var(--text-secondary); font-weight: 950; }
+      .thermo-explain-trend{
+        margin-top: 8px;
+        display:flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        font-size: 11px;
+        color: var(--text-muted);
+        font-weight: 800;
+      }
+      .thermo-explain-trend code{
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+        font-size: 10px;
+        padding: 2px 6px;
+        border-radius: 8px;
+        background: rgba(148,163,184,0.12);
+        border: 1px solid rgba(148,163,184,0.18);
+        color: var(--text-secondary);
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      .dim-grid{
+        margin-top: 10px;
+        display:grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 10px;
+      }
+      @media (max-width: 980px){
+        .dim-grid{ grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      }
+      .dim-item{
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 10px 10px;
+        background: rgba(255,255,255,0.02);
+      }
+      [data-theme="dark"] .dim-item{ background: rgba(255,255,255,0.01); }
+      .dim-top{
+        display:flex;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: 10px;
+        margin-bottom: 8px;
+      }
+      .dim-k{ font-size: 11px; font-weight: 900; color: var(--text-muted); white-space: nowrap; }
+      .dim-v{ font-size: 12px; font-weight: 1000; color: var(--text-primary); }
+      .dim-mini{
+        margin-top: 8px;
+        display:flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        font-size: 11px;
+        font-weight: 850;
+        color: var(--text-muted);
+      }
+      .dim-chip{
+        display:inline-flex;
+        align-items:center;
+        gap: 6px;
+        font-size: 10px;
+        font-weight: 950;
+        padding: 2px 8px;
+        border-radius: 999px;
+        border: 1px solid rgba(148,163,184,0.22);
+        background: rgba(148,163,184,0.10);
+        color: var(--text-secondary);
+        white-space: nowrap;
+      }
+      .dim-mini code{
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+        font-size: 10px;
+        padding: 2px 6px;
+        border-radius: 8px;
+        background: rgba(148,163,184,0.12);
+        border: 1px solid rgba(148,163,184,0.18);
+        color: var(--text-secondary);
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+      .dim-bar{
+        height: 8px;
+        border-radius: 999px;
+        background: rgba(148,163,184,0.16);
+        overflow:hidden;
+      }
+      .dim-fill{ height: 100%; border-radius: inherit; }
       .spark path.grid{
         stroke: rgba(148,163,184,0.25);
         stroke-width: 1;
@@ -3538,12 +3842,12 @@
                     <circle class="track" cx="30" cy="30" r="22"></circle>
                     <circle class="arc heat"
                             cx="30" cy="30" r="22"
-                            :style="ringStyle(marketData.mood?.heat, 22)"></circle>
+                            :style="ringStyle(marketData.mood?.heat, 22, 'heat')"></circle>
                     <!-- risk inner -->
                     <circle class="track" cx="30" cy="30" r="16" style="stroke-width:5;"></circle>
                     <circle class="arc risk"
                             cx="30" cy="30" r="16" style="stroke-width:5;"
-                            :style="ringStyle(marketData.mood?.risk, 16)"></circle>
+                            :style="ringStyle(marketData.mood?.risk, 16, 'risk')"></circle>
                   </svg>
                   <div class="ring-center">
                     <div class="big">
@@ -3607,18 +3911,60 @@
            data-page="sentiment">
         <!-- 已删除：summarybar-grid（与顶部 Hero 的 KPI 信息重复） -->
 
-        <!-- 情绪趋势（近5/7日）：用历史缓存序列做 sparklines，先把信息“丰富起来” -->
-        <div class="mood-trend"
-             v-if="(marketData.features?.mood_inputs?.hist_days || []).length >= 2">
-          <div class="mood-trend-title">
-            <span>情绪周期趋势（近{{ (marketData.features?.mood_inputs?.hist_days || []).length }}日）</span>
-            <span style="color:var(--text-muted); font-weight:800;">用一张图看周期（上升/下降/震荡）</span>
+        <!-- 情绪温度（替代“情绪周期趋势”）：更直观、更可解释 -->
+        <div class="thermo-mini">
+          <div class="thermo-mini-head">
+            <div class="thermo-mini-title">情绪温度（解释版）</div>
+            <div class="thermo-mini-meta">
+              {{ marketData.moodStage?.title || '-' }} · 总分 {{ marketData.mood?.score ?? '-' }}/100
+            </div>
           </div>
 
-          <!-- 情绪K线：把三条关键数据叠加到同一张“K线视图”里（更直观地看上升/下降周期） -->
-          <div class="chart-container" style="height: 240px; margin: 10px 0 0;">
-            <div id="mood-kline-echart" style="width: 100%; height: 100%;"></div>
+          <div class="thermo-mini-rows">
+            <div class="thermo-mini-row">
+              <span>情绪热度</span>
+              <div class="insight-meter" style="margin-top:0;">
+                <div class="insight-meter-fill"
+                     :style="{ width: String((marketData.mood?.heat ?? 0)) + '%', background: heatColor(marketData.mood?.heat ?? 0) }"></div>
+              </div>
+              <span class="val">{{ marketData.mood?.heat ?? '-' }}</span>
+            </div>
+            <div class="thermo-mini-row">
+              <span>风险压力</span>
+              <div class="insight-meter" style="margin-top:0;">
+                <div class="insight-meter-fill"
+                     :style="{ width: String((marketData.mood?.risk ?? 0)) + '%', background: riskColor(marketData.mood?.risk ?? 0) }"></div>
+              </div>
+              <span class="val">{{ marketData.mood?.risk ?? '-' }}</span>
+            </div>
           </div>
+
+          <!-- 替代原“更多维度（算法口径）”：保持图表/条形展示，不显示长文案 -->
+          <details style="margin-top:10px;" v-if="(thermoExplainDims || []).length">
+            <summary style="cursor:pointer; color:var(--text-muted); font-weight:900; font-size:12px;">更多维度</summary>
+            <div class="dim-grid" style="margin-top:10px;">
+              <div class="dim-item" v-for="it in thermoExplainDims" :key="'txb-'+it.key">
+                <div class="dim-top">
+                  <span class="dim-k">
+                    {{ it.title }}
+                    <span class="lvl-badge" :class="it.levelCls" style="margin-left:6px;">{{ it.level }}</span>
+                  </span>
+                  <span class="dim-v">{{ it.value }}</span>
+                </div>
+                <div class="dim-bar">
+                  <div class="dim-fill"
+                       :style="{
+                         width: String(it.bar ?? 0) + '%',
+                         background: (it.kind === 'risk') ? riskColor(it.bar ?? 0) : heatColor(it.bar ?? 0)
+                       }"></div>
+                </div>
+                <div class="dim-mini">
+                  <span class="dim-chip" v-if="it.vs">{{ it.vs }}</span>
+                  <code v-if="it.trend">趋势：{{ it.trend }}</code>
+                </div>
+              </div>
+            </div>
+          </details>
         </div>
 
         <div class="summary3" v-if="marketData.summary3?.lines && marketData.summary3.lines.length">
@@ -3776,85 +4122,15 @@
         </div>
         <div v-else style="color:var(--text-muted); font-weight:800;">marketPanorama 缺失（请先跑一次 --rebuild/--fetch）</div>
 
-        <div class="section-header" style="margin-top:14px;">情绪温度</div>
-        <div class="overview-grid">
-          <div>
-            <div class="insight-banner">
-          <div class="insight-score">
-            <span class="insight-score-num">{{ marketData.compat?.sentiment?.score ?? marketData.sentiment?.score ?? '-' }}</span>
-            <span class="insight-score-unit">情绪分</span>
-          </div>
-          <div class="insight-main">
-            <div class="insight-title">情绪温度 · {{ marketData.moodStage?.title || '-' }}</div>
-            <div class="insight-desc">
-              赚钱效应 {{ marketData.marketPanorama?.earning?.stars_text || '-' }} / 亏钱效应 {{ marketData.marketPanorama?.loss?.stars_text || '-' }}。
-              盘中只盯两件事：<strong>承接是否回暖</strong>、<strong>亏钱扩散是否收敛</strong>（去「实时盯盘」看红绿灯）。
-            </div>
-          </div>
-          <div class="insight-side">
-            <div class="insight-chip">风险 {{ marketData.compat?.sentiment?.risk_level || marketData.sentiment?.risk_level || '-' }}</div>
-            <div class="insight-side-note">主线集中 · 拥挤度</div>
-          </div>
-          <div style="grid-column: 1 / -1;">
-            <div style="display:grid; gap:8px;">
-              <div>
-                <div style="display:flex; justify-content:space-between; font-size:12px; color:var(--text-muted); margin-bottom:4px;">
-                  <span>情绪</span><span>{{ marketData.compat?.sentiment?.score ?? marketData.sentiment?.score ?? '-' }}</span>
-                </div>
-                <div class="insight-meter">
-                  <div class="insight-meter-fill" :style="{ width: String((marketData.mood?.heat ?? 0)) + '%' }"></div>
-                </div>
-              </div>
-              <div>
-                <div style="display:flex; justify-content:space-between; font-size:12px; color:var(--text-muted); margin-bottom:4px;">
-                  <span>风险</span><span>{{ marketData.mood?.risk ?? '-' }}</span>
-                </div>
-                <div class="insight-meter" style="background: rgba(239, 68, 68, 0.12);">
-                  <div class="insight-meter-fill"
-                       :style="{
-                         width: String(marketData.mood?.risk ?? 0) + '%',
-                         background: 'linear-gradient(90deg, rgba(34,197,94,0.6) 0%, rgba(249,115,22,0.85) 45%, rgba(239,68,68,0.95) 100%)'
-                       }"></div>
-                </div>
-              </div>
-            </div>
-          </div>
+        <!-- 结构拆解：以“全景”为基座（避免重复展示涨停/炸板/跌停等基础统计） -->
+        <!-- 兼容锚点：保留 sec-structure 供跳转 -->
+        <div id="sec-structure"></div>
+        <div class="section-header" style="margin-top:14px;">结构拆解</div>
+        <div style="color:var(--text-muted); font-weight:800; font-size:12px; margin-top:-2px;">
+          基础统计已在上方「市场全景」展示；这里聚焦：空间、断层、分歧与风险。
         </div>
 
-            <div class="tri-strip reveal" aria-label="情绪三卡">
-              <div class="tri-card reveal"
-                   v-for="(c, i) in moodTriCards"
-                   :key="'tri-'+c.key+'-'+i"
-                   :class="c.cls">
-                <div class="tri-head">
-                  <div class="tri-title">{{ c.title }}</div>
-                  <div class="tri-badges" v-html="c.badges"></div>
-                </div>
-                <div class="tri-value" :class="c.valueClass">{{ c.value }}</div>
-                <div class="tri-sub">{{ c.sub }}</div>
-                <svg class="spark tri-spark" viewBox="0 0 100 28" preserveAspectRatio="none" aria-hidden="true"
-                     v-if="(c.spark || []).length >= 2">
-                  <path class="grid" d="M0 27H100" />
-                  <polyline class="line"
-                            :stroke="c.sparkStroke"
-                            :points="sparklinePoints(c.spark)" />
-                </svg>
-              </div>
-            </div>
-
-            <!-- 已删除：情绪六维雷达 -->
-          </div>
-
-          <!-- 已移除：全景 & 风险（riskEngine / divergenceEngine 等内容） -->
-        </div>
-      </div>
-
-      <!-- 短线结构拆解 -->
-      <div class="card" data-page="sentiment" id="sec-structure">
-        <div class="card-title">结构拆解 v2</div>
-        <div class="section-header">三条结论（先看）</div>
-
-        <div class="engine-kpis" v-if="(marketData.structureV2?.summary || []).length">
+        <div class="engine-kpis" v-if="(marketData.structureV2?.summary || []).length" style="margin-top:10px;">
           <div class="engine-kpi" v-for="(c, i) in marketData.structureV2.summary" :key="'sv2-'+c.key+'-'+i">
             <div class="k">{{ c.title }}</div>
             <div class="v"
@@ -3868,28 +4144,6 @@
 
         <details style="margin-top:12px;" v-if="marketData.structureV2?.evidence">
           <summary style="cursor:pointer; color:var(--text-muted); font-weight:900; font-size:12px;">展开证据链（看原因）</summary>
-
-          <div class="section-header" style="margin-top:10px;">基础统计</div>
-          <div class="evi-grid">
-            <div class="evi-card">
-              <div>
-                <div class="evi-k">涨停 / 炸板 / 跌停</div>
-                <div class="evi-note">用于衡量环境与分歧强弱</div>
-              </div>
-              <div class="evi-v">
-                {{ marketData.structureV2.evidence.counts?.zt ?? '-' }} /
-                {{ marketData.structureV2.evidence.counts?.zb ?? '-' }} /
-                {{ marketData.structureV2.evidence.counts?.dt ?? '-' }}
-              </div>
-            </div>
-            <div class="evi-card">
-              <div>
-                <div class="evi-k">强势池大面样本（≤ -5%）</div>
-                <div class="evi-note">口径：强势池 qsgc（稳定样本）</div>
-              </div>
-              <div class="evi-v green-text">{{ marketData.structureV2.evidence.counts?.negSample ?? '-' }}</div>
-            </div>
-          </div>
 
           <div class="section-header" style="margin-top:10px;">梯队与断层</div>
           <div class="evi-grid">
@@ -3950,31 +4204,137 @@
           </div>
         </details>
 
-        <!-- 已移除：研发说明（不在产品上展示） -->
+        <div class="section-header" style="margin-top:14px;">情绪温度</div>
+        <div class="overview-grid">
+          <div>
+            <div class="insight-banner">
+          <div class="insight-score">
+            <span class="insight-score-num">{{ marketData.mood?.score ?? marketData.compat?.sentiment?.score ?? marketData.sentiment?.score ?? '-' }}</span>
+            <span class="insight-score-unit">情绪分</span>
+          </div>
+          <div class="insight-main">
+            <div class="insight-title">情绪温度 · {{ marketData.moodStage?.title || '-' }}</div>
+            <div class="insight-desc">
+              赚钱效应 {{ marketData.marketPanorama?.earning?.stars_text || '-' }} / 亏钱效应 {{ marketData.marketPanorama?.loss?.stars_text || '-' }}。
+              盘中只盯两件事：<strong>承接是否回暖</strong>、<strong>亏钱扩散是否收敛</strong>（去「实时盯盘」看红绿灯）。
+            </div>
+          </div>
+          <div class="insight-side">
+            <div class="insight-chip">风险 {{ marketData.compat?.sentiment?.risk_level || marketData.sentiment?.risk_level || '-' }}</div>
+            <div class="insight-side-note">主线集中 · 拥挤度</div>
+          </div>
+          <div style="grid-column: 1 / -1;">
+            <div style="display:grid; gap:8px;">
+              <div>
+                <div style="display:flex; justify-content:space-between; font-size:12px; color:var(--text-muted); margin-bottom:4px;">
+                  <span>情绪</span><span>{{ marketData.mood?.heat ?? '-' }}</span>
+                </div>
+                <div class="insight-meter">
+                  <div class="insight-meter-fill" :style="{ width: String((marketData.mood?.heat ?? 0)) + '%' }"></div>
+                </div>
+              </div>
+              <div>
+                <div style="display:flex; justify-content:space-between; font-size:12px; color:var(--text-muted); margin-bottom:4px;">
+                  <span>风险</span><span>{{ marketData.mood?.risk ?? '-' }}</span>
+                </div>
+                <div class="insight-meter" style="background: rgba(239, 68, 68, 0.12);">
+                  <div class="insight-meter-fill"
+                       :style="{
+                         width: String(marketData.mood?.risk ?? 0) + '%',
+                         /* 风险色带：绿→黄（风险越高越偏黄，不再使用红色） */
+                         background: 'linear-gradient(90deg, rgba(34,197,94,0.90) 0%, rgba(245,158,11,0.95) 100%)'
+                       }"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+            <!-- 六维构成：让“情绪温度”可解释（避免只看一个分） -->
+            <div class="dim-grid" v-if="(sentimentDims || []).length">
+              <div class="dim-item" v-for="d in sentimentDims" :key="'sd2-'+d.key">
+                <div class="dim-top">
+                  <span class="dim-k">{{ d.label }}</span>
+                  <span class="dim-v">{{ d.score }}</span>
+                </div>
+                <div class="dim-bar">
+                  <div class="dim-fill" :style="{ width: d.score + '%', background: heatColor(d.score) }"></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="tri-strip reveal" aria-label="情绪三卡">
+              <div class="tri-card reveal"
+                   v-for="(c, i) in moodTriCards"
+                   :key="'tri-'+c.key+'-'+i"
+                   :class="c.cls">
+                <div class="tri-head">
+                  <div class="tri-title">{{ c.title }}</div>
+                  <div class="tri-badges" v-html="c.badges"></div>
+                </div>
+                <div class="tri-value" :class="c.valueClass">{{ c.value }}</div>
+                <div class="tri-sub">{{ c.sub }}</div>
+                <svg class="spark tri-spark" viewBox="0 0 100 28" preserveAspectRatio="none" aria-hidden="true"
+                     v-if="(c.spark || []).length >= 2">
+                  <path class="grid" d="M0 27H100" />
+                  <polyline class="line"
+                            :stroke="c.sparkStroke"
+                            :points="sparklinePoints(c.spark)" />
+                </svg>
+              </div>
+            </div>
+
+            <!-- 已删除：情绪六维雷达 -->
+          </div>
+
+          <!-- 已移除：全景 & 风险（riskEngine / divergenceEngine 等内容） -->
+        </div>
       </div>
 
       <!-- 今日热点板块解读 -->
       <div class="card" data-page="themes" id="sec-hot">
         <div class="card-title">多板块情绪热力图</div>
-        <div class="section-header">结构性机会（按题材聚合）</div>
 
-        <div class="sector-heat" v-if="(sectorHeat.rows || []).length">
-          <div class="sh-head">
-            <div class="left">
-              <div class="title">全局</div>
-              <div class="global" :class="heatClass(sectorHeat.globalScore)">{{ sectorHeat.globalScore }}</div>
+        <!-- 主线板块 TOP7：与“实时盯盘”保持同一份数据（watchThemes） -->
+        <div class="tier-card" v-if="watchThemes && watchThemes.length" style="margin-bottom: 12px;">
+          <div class="tier-title">题材 TOP7（与实时盯盘一致）</div>
+          <div class="wb-list" style="margin-top: 8px;">
+            <div class="wb-row" v-for="(c, i) in watchThemes" :key="'theme-top7-'+i">
+              <div class="name">{{ i+1 }}. {{ c.name }}</div>
+              <div class="meta">
+                <template v-if="c.chg_pct !== undefined && c.chg_pct !== null">
+                  <span :class="signedClass(c.chg_pct)">{{ (c.chg_pct ?? '-') }}%</span>
+                  <span style="opacity:.7;">｜</span>
+                  <span>领涨 {{ c.lead || '-' }}</span>
+                  <span v-if="c.lead_chg_pct !== undefined && c.lead_chg_pct !== null">（{{ c.lead_chg_pct }}%）</span>
+                </template>
+                <template v-else>
+                  <span class="orange-text">热度 {{ c.up ?? '-' }}</span>
+                  <span style="opacity:.7;">｜</span>
+                  <span>代表 {{ c.lead || '-' }}</span>
+                </template>
+              </div>
             </div>
-            <div class="hint">{{ sectorHeat.hint }}</div>
           </div>
+        </div>
 
+        <div class="sector-heat" v-if="(sectorHeatTopRows || []).length">
           <div class="sh-list">
-            <details class="sh-row" v-for="(r, i) in sectorHeat.rows" :key="'sh-'+r.name+'-'+i">
+            <details class="sh-row" v-for="(r, i) in sectorHeatTopRows" :key="'sh-'+r.name+'-'+i">
               <summary>
                 <div class="sh-left">
                   <div class="sh-emoji">{{ r.icon }}</div>
                   <div style="min-width:0;">
                     <div class="sh-name">{{ r.name }}</div>
-                    <div class="sh-sub">{{ r.sub }}</div>
+                    <div class="sh-chips">
+                      <span class="sh-chip red">涨停 <b>{{ r.zt }}</b></span>
+                      <span class="sh-chip amber">炸板 <b>{{ r.zb }}</b></span>
+                      <span class="sh-chip green">跌停 <b>{{ r.dt }}</b></span>
+                      <span class="sh-chip blue" v-if="r.net !== undefined && r.net !== null">净流 <b :class="r.netClass">{{ r.net }}</b></span>
+                      <span class="sh-chip" v-if="r.risk !== undefined && r.risk !== null">风险 <b :class="r.riskClass">{{ r.risk }}</b></span>
+                      <span class="sh-chip" v-if="r.leader">龙头 <b class="red-text">{{ r.leader }}</b></span>
+                      <span class="sh-chip" v-if="r.examples">例股 <b>{{ r.examples }}</b></span>
+                    </div>
                   </div>
                 </div>
                 <div class="sh-right">
@@ -3991,9 +4351,6 @@
                 <div class="line" v-if="r.leader">
                   <span class="k">龙头：</span><span class="red-text" style="font-weight:950;">{{ r.leader }}</span>
                   <span class="k">标签：</span><span>{{ r.tags }}</span>
-                </div>
-                <div class="line">
-                  <span class="k">结论：</span><span>{{ r.advice }}</span>
                 </div>
               </div>
             </details>
@@ -4225,13 +4582,29 @@
                   <div class="t">市场状态</div>
                   <div class="s">涨停 / 炸板 / 跌停 / 高度</div>
                 </div>
-                <div class="wb-kpis">
-                  <div class="wb-kpi"><div class="k">涨停</div><div class="v">{{ marketData.live?.market?.zt ?? '-' }}</div><div class="n">非ST</div></div>
-                  <div class="wb-kpi"><div class="k">炸板</div><div class="v">{{ marketData.live?.market?.zab ?? '-' }}</div><div class="n">率 {{ marketData.live?.market?.zab_rate ?? '-' }}%</div></div>
-                  <div class="wb-kpi"><div class="k">跌停</div><div class="v">{{ marketData.live?.market?.dt ?? '-' }}</div><div class="n">非ST</div></div>
-                  <div class="wb-kpi"><div class="k">连板</div><div class="v">{{ marketData.live?.market?.lianban ?? '-' }}</div><div class="n">≥2板</div></div>
-                  <div class="wb-kpi"><div class="k">高度</div><div class="v">{{ marketData.live?.market?.max_lianban ?? '-' }}</div><div class="n">最高板</div></div>
-                  <div class="wb-kpi"><div class="k">日期</div><div class="v" style="font-size:13px;">{{ marketData.live?.date || '-' }}</div><div class="n">盘中快照</div></div>
+                <div class="wb-mkt">
+                  <div class="wb-mkt-main">
+                    <div class="wb-mkt-stat">
+                      <div class="k">涨停（非ST）</div>
+                      <div class="v">{{ marketData.live?.market?.zt ?? '-' }}</div>
+                      <div class="n">尝试涨停：{{ (Number(marketData.live?.market?.zt||0) + Number(marketData.live?.market?.zab||0)) || '-' }}</div>
+                    </div>
+                    <div class="wb-mkt-stat">
+                      <div class="k">跌停（非ST）</div>
+                      <div class="v">{{ marketData.live?.market?.dt ?? '-' }}</div>
+                      <div class="n">连板≥2：{{ marketData.live?.market?.lianban ?? '-' }}｜最高：{{ marketData.live?.market?.max_lianban ?? '-' }}板</div>
+                    </div>
+                  </div>
+
+                  <div class="wb-mkt-bars">
+                    <div class="wb-bar">
+                      <div class="k">炸板/率</div>
+                      <div class="track">
+                        <div class="fill amber" :style="{ width: clamp100(Number(marketData.live?.market?.zab_rate ?? 0)) + '%' }"></div>
+                      </div>
+                      <div class="v">{{ marketData.live?.market?.zab ?? '-' }}｜{{ marketData.live?.market?.zab_rate ?? '-' }}%</div>
+                    </div>
+                  </div>
                 </div>
                 <div class="wb-alerts" v-if="(marketData.live?.alerts || []).length">
                   <span class="wb-alert" v-for="(a, i) in marketData.live.alerts" :key="'wba-'+i" :class="a.level">{{ a.text }}</span>
@@ -4244,60 +4617,65 @@
                 </div>
               </div>
 
-              <!-- 主线板块 -->
+              <!-- 主线板块（看整体行动） -->
               <div class="wb-card wb-span-8">
                 <div class="hd">
                   <div class="t">主线板块（看整体行动）</div>
-                  <div class="s">领涨 + 跟风 + 扩散</div>
+                  <div class="s">优先展示实时板块；无实时数据时自动回退到当日强度榜</div>
                 </div>
                 <div class="wb-list">
-                  <div class="wb-row" v-for="(c, i) in (marketData.live?.concepts || []).slice(0, 10)" :key="'wbc-'+i">
+                  <div class="wb-row" v-for="(c, i) in watchThemes" :key="'wbc-'+i">
                     <div class="name">{{ i+1 }}. {{ c.name }}</div>
                     <div class="meta">
-                      <span :class="signedClass(c.chg_pct)">{{ (c.chg_pct ?? '-') }}%</span>
-                      <span style="opacity:.7;">｜</span>
-                      <span>领涨 {{ c.lead || '-' }}</span>
-                      <span v-if="c.lead_chg_pct !== undefined && c.lead_chg_pct !== null">（{{ c.lead_chg_pct }}%）</span>
+                      <template v-if="c.chg_pct !== undefined && c.chg_pct !== null">
+                        <span :class="signedClass(c.chg_pct)">{{ (c.chg_pct ?? '-') }}%</span>
+                        <span style="opacity:.7;">｜</span>
+                        <span>领涨 {{ c.lead || '-' }}</span>
+                        <span v-if="c.lead_chg_pct !== undefined && c.lead_chg_pct !== null">（{{ c.lead_chg_pct }}%）</span>
+                      </template>
+                      <template v-else>
+                        <span class="orange-text">热度 {{ c.up ?? '-' }}</span>
+                        <span style="opacity:.7;">｜</span>
+                        <span>代表 {{ c.lead || '-' }}</span>
+                      </template>
                     </div>
                   </div>
-                  <div v-if="!(marketData.live?.concepts || []).length" style="font-size:12px;color:var(--text-muted);font-weight:850;">
-                    暂无板块数据（可能在拉取中/数据源波动）
+                  <div v-if="!watchThemes.length" style="font-size:12px;color:var(--text-muted);font-weight:850;">
+                    暂无板块数据（实时接口与当日强度榜均为空）
                   </div>
                 </div>
               </div>
 
-              <!-- 红绿灯：承接 -->
+              <!-- 客观事实（不做判断） -->
               <div class="wb-card wb-span-6">
-                <div class="hd"><div class="t">红绿灯：承接</div><div class="s">做不做 · 何时加</div></div>
-                <div class="wb-lights">
-                  <div class="wb-light" v-for="(s, i) in ((marketData.moodSignals?.pos || []).slice(0, 4))" :key="'wlp-'+i">
-                    <div class="top">
-                      <div class="k">{{ s.title }}</div>
-                      <div class="v"><span class="wb-pill" :class="s.status">{{ s.status === 'on' ? '触发' : (s.status === 'watch' ? '观察' : '中性') }}</span></div>
-                    </div>
-                    <div class="why">{{ s.value }} <span v-if="s.delta">（{{ s.delta }}）</span>｜{{ s.why }}</div>
-                    <div class="why" style="margin-top:6px;">动作：{{ s.action }}</div>
-                  </div>
-                  <div v-if="!(marketData.moodSignals?.pos || []).length" style="font-size:12px;color:var(--text-muted);font-weight:850;">
-                    承接红绿灯暂无数据（收盘版仍可用，盘中建议以“市场状态+板块主线”优先）
+                <div class="hd"><div class="t">客观事实</div><div class="s">只展示数据与统计</div></div>
+                <div class="wb-list">
+                  <div class="wb-row" v-for="(b, i) in watchFacts" :key="'wf-'+i">
+                    <div class="name">{{ b.k }}</div>
+                    <div class="meta">{{ b.v }}</div>
                   </div>
                 </div>
               </div>
 
-              <!-- 红绿灯：风险 -->
+              <!-- 结构事实（不做判断） -->
               <div class="wb-card wb-span-6">
-                <div class="hd"><div class="t">红绿灯：风险</div><div class="s">该不该撤 · 该不该等</div></div>
-                <div class="wb-lights">
-                  <div class="wb-light" v-for="(s, i) in ((marketData.moodSignals?.risk || []).slice(0, 4))" :key="'wlr-'+i">
-                    <div class="top">
-                      <div class="k">{{ s.title }}</div>
-                      <div class="v"><span class="wb-pill" :class="s.status">{{ s.status === 'on' ? '触发' : (s.status === 'watch' ? '观察' : '中性') }}</span></div>
-                    </div>
-                    <div class="why">{{ s.value }} <span v-if="s.delta">（{{ s.delta }}）</span>｜{{ s.why }}</div>
-                    <div class="why" style="margin-top:6px;">动作：{{ s.action }}</div>
+                <div class="hd"><div class="t">结构事实</div><div class="s">主线榜来自实时/或当日强度榜兜底</div></div>
+                <div class="wb-list">
+                  <div class="wb-row">
+                    <div class="name">主线 TOP1</div>
+                    <div class="meta">{{ watchThemes[0]?.name || '-' }}</div>
                   </div>
-                  <div v-if="!(marketData.moodSignals?.risk || []).length" style="font-size:12px;color:var(--text-muted);font-weight:850;">
-                    风险红绿灯暂无数据
+                  <div class="wb-row">
+                    <div class="name">主线 TOP2</div>
+                    <div class="meta">{{ watchThemes[1]?.name || '-' }}</div>
+                  </div>
+                  <div class="wb-row">
+                    <div class="name">主线 TOP3</div>
+                    <div class="meta">{{ watchThemes[2]?.name || '-' }}</div>
+                  </div>
+                  <div class="wb-row">
+                    <div class="name">代表股（TOP1）</div>
+                    <div class="meta">{{ watchThemes[0]?.lead || '-' }}</div>
                   </div>
                 </div>
               </div>
@@ -4953,20 +5331,20 @@
              * 热度（越高越红）
              */
             heatClass(v) {
+              // 情绪：黄→红（不再使用绿色）
               const n = Number(v);
               if (Number.isNaN(n)) return 'orange-text';
-              if (n >= 75) return 'red-text';
-              if (n >= 55) return 'orange-text';
-              return 'green-text';
+              if (n >= 70) return 'red-text';
+              return 'orange-text';
             },
             /**
              * 风险（越高越红）
              */
             riskClass(v) {
+              // 风险：黄→绿（不再使用红色）
               const n = Number(v);
               if (Number.isNaN(n)) return 'orange-text';
-              if (n >= 60) return 'red-text';
-              if (n >= 35) return 'orange-text';
+              if (n >= 55) return 'orange-text';
               return 'green-text';
             },
             /**
@@ -5076,6 +5454,8 @@
               try { window.location.reload(); } catch (e) {}
             },
             async refreshLive(force = false) {
+              // 定时渲染模式：实时数据已内嵌在 HTML 内，不再前端 fetch
+              if (this.marketData?.meta?.live_embedded === true) return;
               // 仅在“实时盯盘”页拉取；force=true 用于手动刷新
               try {
                 if (!force && currentPage !== 'watch') return;
@@ -5094,6 +5474,8 @@
               }
             },
             startLivePolling() {
+              // 定时渲染模式：不轮询（避免 file:// 场景 fetch 失败）
+              if (this.marketData?.meta?.live_embedded === true) return;
               if (this._liveTimer) return;
               // 先拉一次
               this.refreshLive(false);
@@ -5105,12 +5487,55 @@
                 this._liveTimer = null;
               }
             },
-            ringStyle(val, r) {
+            /**
+             * 纯函数：颜色插值（hex -> hex）
+             */
+            lerpColor(hexA, hexB, t) {
+              const toRgb = (hex) => {
+                const h = String(hex || '').replace('#','').trim();
+                const s = h.length === 3 ? h.split('').map(x => x + x).join('') : h;
+                const n = parseInt(s || '000000', 16);
+                return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
+              };
+              const clamp01 = (x) => Math.max(0, Math.min(1, Number(x)));
+              const tt = clamp01(t);
+              const [r1,g1,b1] = toRgb(hexA);
+              const [r2,g2,b2] = toRgb(hexB);
+              const r = Math.round(r1 + (r2 - r1) * tt);
+              const g = Math.round(g1 + (g2 - g1) * tt);
+              const b = Math.round(b1 + (b2 - b1) * tt);
+              return `rgb(${r},${g},${b})`;
+            },
+            /**
+             * 情绪：黄 -> 红
+             */
+            heatColor(v) {
+              const p = this.clamp100(v) / 100;
+              return this.lerpColor('#f59e0b', '#ef4444', p);
+            },
+            /**
+             * 风险：绿 -> 黄（风险越高越偏黄；不再使用红色）
+             */
+            riskColor(v) {
+              const p = this.clamp100(v) / 100;
+              return this.lerpColor('#22c55e', '#f59e0b', p);
+            },
+            /**
+             * 环形进度条样式（含颜色）
+             * - kind=heat：黄→红
+             * - kind=risk：绿→黄
+             */
+            ringStyle(val, r, kind = 'heat') {
               const rr = Number(r) || 18;
               const c = 2 * Math.PI * rr;
               const p = this.clamp100(val) / 100;
               const dashoffset = c * (1 - p);
-              return { strokeDasharray: `${c.toFixed(2)} ${c.toFixed(2)}`, strokeDashoffset: `${dashoffset.toFixed(2)}` };
+              const stroke = (kind === 'risk') ? this.riskColor(val) : this.heatColor(val);
+              return {
+                stroke,
+                strokeDasharray: `${c.toFixed(2)} ${c.toFixed(2)}`,
+                strokeDashoffset: `${dashoffset.toFixed(2)}`,
+              };
             },
             toNum(v, d = 0) {
               try {
@@ -5393,6 +5818,12 @@
 
               const leaders = md.leaders || [];
               const pickLeader = (theme) => leaders.find(x => x && (x.theme === theme || x.reason?.explosion?.theme === theme));
+              const pickExamples = (theme) => {
+                const tp = md.themePanels || {};
+                const ztTop = tp.ztTop || [];
+                const hit = Array.isArray(ztTop) ? ztTop.find(x => x && x.name === theme) : null;
+                return hit && hit.examples ? String(hit.examples) : '';
+              };
 
               const scoreRow = (r) => {
                 // 数据说明：以现有 strengthRows 为准（zt/zb/dt + net/risk）
@@ -5431,11 +5862,12 @@
                       : `涨停 ${Number(r.zt || 0)} · 炸板 ${Number(r.zb || 0)} · 跌停 ${Number(r.dt || 0)}`,
                     leader: ld ? `${ld.name}（${ld.code}）` : '',
                     tags: ld && ld.tags ? ld.tags.join(' / ') : '—',
+                    examples: pickExamples(r.name),
                     advice: advice(lv),
                   };
                 })
                 .sort((a, b) => b.score - a.score)
-                .slice(0, 10);
+                .slice(0, 7);
 
               const top = mapped[0];
               const alpha = (() => {
@@ -5604,6 +6036,53 @@
             delta() { return this.marketData?.delta || {}; },
             prev() { return this.marketData?.prev || {}; },
             pos() { return this.positionAdvice(); },
+            watchThemes() {
+              // 目标：始终展示 TOP7
+              // - 实时榜可能只有 1~2 个（数据源波动/兜底题材较少），因此用“当日强度榜”补齐到 7 个
+              const maxN = 7;
+              const out = [];
+              const seen = new Set();
+              const push = (x) => {
+                if (!x || !x.name) return;
+                const k = String(x.name);
+                if (seen.has(k)) return;
+                seen.add(k);
+                out.push(x);
+              };
+
+              // 1) 实时数据（AkShare 或 必盈兜底）
+              const live = this.marketData?.live;
+              const liveRows = (live && Array.isArray(live.concepts)) ? live.concepts : [];
+              liveRows.slice(0, maxN).forEach(push);
+
+              // 2) 兜底：当日强度榜（来自 themePanels.strengthRows / sectors）
+              const sh = this.sectorHeat;
+              const rows = (sh && Array.isArray(sh.rows)) ? sh.rows : [];
+              rows.slice(0, maxN).forEach(r => push({
+                name: r.name,
+                chg_pct: null,
+                lead: r.leader ? String(r.leader).split('（')[0] : '-',
+                lead_chg_pct: null,
+                up: r.zt ?? '-',
+                down: r.dt ?? '-',
+              }));
+
+              return out.slice(0, maxN);
+            },
+            watchFacts() {
+              const live = this.marketData?.live || {};
+              const m = live.market || {};
+              const src = live.source || m.source || '-';
+              const ts = live.ts_bj || this.marketData?.meta?.asOf?.pools || '-';
+              const liveCount = Array.isArray(live.concepts) ? live.concepts.length : 0;
+              const themeSource = liveCount > 0 ? '实时板块榜' : (this.sectorHeat?.rows?.length ? '当日强度榜（兜底）' : '-');
+              return [
+                { k: '数据源', v: String(src) },
+                { k: '更新时间', v: String(ts) },
+                { k: '主线榜来源', v: String(themeSource) },
+                { k: '实时板块数量', v: String(liveCount) },
+              ];
+            },
             watchDotClass() {
               // 用 alerts 的最高等级作为“连接状态灯”
               const live = this.marketData?.live;
@@ -5647,7 +6126,158 @@
               return rows;
             },
             sectorHeat() { return this.marketData?.sectorHeatmap || this.buildSectorHeatmap(); },
+            sectorHeatTopRows() {
+              const rows = (this.sectorHeat && Array.isArray(this.sectorHeat.rows)) ? this.sectorHeat.rows : [];
+              return rows.slice(0, 7);
+            },
             moodTriCards() { return this.buildMoodTriCards(); },
+            sentimentDims() {
+              /**
+               * 纯函数：把情绪分项映射为 0~100，供“情绪温度解释版”展示。
+               * 说明：
+               * - 算法侧可能会新增更多维度（更精准），这里用“可扩展映射”自动展示
+               * - 默认只展示已知的核心维度 + 新增维度，其余未知 key 也会显示（fallback label）
+               */
+              const ss =
+                (this.marketData?.sentiment && this.marketData.sentiment.sub_scores) ||
+                (this.marketData?.compat && this.marketData.compat.sentiment && this.marketData.compat.sentiment.sub_scores) ||
+                {};
+              const labelMap = {
+                zt_heat: '涨停热度',
+                money_effect: '赚钱效应',
+                carry_quality: '承接质量',
+                lianban_health: '连板健康',
+                negative: '负反馈可控',
+                theme_clarity: '主线清晰',
+                structure: '结构完整',
+                crowding: '拥挤压力',
+                collapse_chain: '崩溃预警',
+              };
+              const order = Object.keys(labelMap);
+              const keys = Object.keys(ss || {});
+              const sorted = [
+                ...order.filter(k => keys.includes(k)),
+                ...keys.filter(k => !order.includes(k)),
+              ];
+              const to100 = (k) => this.clamp100(this.toNum(ss?.[k], 0) * 10);
+              return sorted.map((k) => ({
+                key: k,
+                label: labelMap[k] || String(k),
+                score: Math.round(to100(k)),
+              })).filter(x => Number.isFinite(Number(x.score)));
+            },
+            thermoExplainDims() {
+              /**
+               * 纯函数：按“可读维度（近5日）”生成解释卡。
+               * 维度：
+               * 1) 涨停数（高/中/低） + 5日趋势 + vs昨日
+               * 2) 连板数（高/中/低） + 5日趋势 + 连续破10提示
+               * 3) 跌停数（高/中/低） + 5日趋势 + 亏钱扩散/收敛提示
+               * 4) 封板率（高/中/低） + 5日趋势 + 连续高位提示
+               * 5) 涨跌家数（宽度） + 5日趋势（上涨数） + 情绪反弹提示
+               */
+              const mi = (this.marketData?.features && this.marketData.features.mood_inputs) || {};
+              const pan = this.marketData?.panorama || {};
+              const prev = this.marketData?.prev || {};
+              const prevPan = prev.panorama || {};
+              const delta = this.marketData?.delta || {};
+
+              const last5 = (arr) => (Array.isArray(arr) ? arr.slice(-5) : []);
+              const fmtArr = (arr, suffix = '') => last5(arr).map(x => `${x}${suffix}`).join('-');
+              const lvl = (v, a, b, rev = false) => {
+                // rev=false：值越大越高（涨停/连板/封板率/上涨数）
+                // rev=true ：值越大越差（跌停/下跌数）
+                const x = Number(v);
+                if (!Number.isFinite(x)) return { t: '-', c: 'mid' };
+                if (!rev) {
+                  if (x >= b) return { t: '高位', c: 'high' };
+                  if (x >= a) return { t: '中位', c: 'mid' };
+                  return { t: '低位', c: 'low' };
+                }
+                if (x >= b) return { t: '高位', c: 'high' };
+                if (x >= a) return { t: '中位', c: 'mid' };
+                return { t: '低位', c: 'low' };
+              };
+              const vsText = (v0, dv, unit = '') => {
+                const cur = Number(v0);
+                const d = Number(dv);
+                if (!Number.isFinite(cur)) return '';
+                const p = Number.isFinite(d) ? d : (Number(cur) - Number(v0));
+                const sign = p > 0 ? '上升' : (p < 0 ? '下降' : '持平');
+                const abs = Number.isFinite(p) ? Math.abs(p) : 0;
+                return `（${Number(v0)}${unit}）${sign}${abs ? ` ${abs}${unit}` : ''}`;
+              };
+
+              // 1) 涨停
+              const zt = this.toNum(pan.limitUp, this.toNum(mi.zt_count, 0));
+              const ztPrev = this.toNum(prevPan.limitUp, this.toNum((prev.features?.mood_inputs || {}).zt_count, 0));
+              const ztHist = mi.hist_zt || [];
+              const ztLvl = lvl(zt, 50, 90, false);
+              const ztBreak = (() => {
+                const a = last5(ztHist);
+                if (a.length < 2) return '';
+                const prevMax = Math.max(...a.slice(0, -1).map(x => Number(x) || 0));
+                return (zt >= 100 && prevMax < 100) ? '，首次突破 100' : '';
+              })();
+              const ztDesc = `涨停数处于${ztLvl.t}，相比昨日${vsText(ztPrev, delta.zt)}，涨停趋势：${fmtArr(ztHist)}${ztBreak}。指标：<50低位，50-90中位，>90高位。`;
+
+              // 2) 连板
+              const lianban = this.toNum(mi.lianban_count, this.toNum((this.marketData?.marketPanorama?.kpis || {}).link_board, 0));
+              const lbHist = mi.hist_lianban || [];
+              const lbLvl = lvl(lianban, 10, 20, false);
+              const lbHint = (() => {
+                const a = last5(lbHist);
+                if (a.length >= 2 && Number(a[a.length - 1]) >= 10 && Number(a[a.length - 2]) >= 10) return '，连续两日破 10';
+                return '';
+              })();
+              const lbDesc = `连板数处于${lbLvl.t}${lbHint}，连板趋势：${fmtArr(lbHist)}。指标：<10低位，10-20中位，>20高位。`;
+
+              // 3) 跌停（越高越危险）
+              const dt = this.toNum(pan.limitDown, this.toNum(mi.dt_count, 0));
+              const dtPrev = this.toNum(prevPan.limitDown, this.toNum((prev.features?.mood_inputs || {}).dt_count, 0));
+              const dtHist = mi.hist_dt || [];
+              const dtLvl = lvl(dt, 3, 6, true);
+              const dtHint = (Number(delta.dt) < 0) ? '，亏钱效应开始收敛' : (Number(delta.dt) > 0 ? '，亏钱效应扩散' : '');
+              const dtDesc = `跌停数处于${dtLvl.t}${dtHint}，相比昨日${vsText(dtPrev, delta.dt)}，跌停趋势：${fmtArr(dtHist)}。指标：<3低位，3-6中位，>6高位。`;
+
+              // 4) 封板率
+              const fb = this.toNum(mi.fb_rate, 0);
+              const fbHist = mi.hist_fb_rate || [];
+              const fbLvl = lvl(fb, 70, 80, false);
+              const fbHint = (() => {
+                const a = last5(fbHist);
+                if (a.length >= 2 && Number(a[a.length - 1]) >= 80 && Number(a[a.length - 2]) >= 80) return '，连续两日处于高位';
+                return '';
+              })();
+              const fbDesc = `封板率处于${fbLvl.t}${fbHint}，板率趋势：${fmtArr(fbHist, '%')}。指标：<70%低位，70%-80%中位，>80%高位。`;
+
+              // 4.5) 晋级率（用于刻画接力延续性）
+              const jj = this.toNum(mi.jj_rate_adj, this.toNum(mi.jj_rate, 0));
+              const jjHist = mi.hist_jj_rate || [];
+              // 默认阈值：<20低位，20-35中位，>35高位（后续可按你的口径微调）
+              const jjLvl = lvl(jj, 20, 35, false);
+              const jjDesc = `晋级率处于${jjLvl.t}，晋级率趋势：${fmtArr(jjHist, '%')}。指标：<20%低位，20%-35%中位，>35%高位。`;
+
+              // 5) 涨跌家数（宽度）
+              const up = this.toNum(mi.up_count, 0);
+              const down = this.toNum(mi.down_count, 0);
+              const upHist = mi.hist_up || [];
+              const downHist = mi.hist_down || [];
+              let breadthLvl = { t: '中位', c: 'mid' };
+              if (down >= 4000) breadthLvl = { t: '低位', c: 'low' };
+              else if (up >= 4000) breadthLvl = { t: '高位', c: 'high' };
+              const breadthDesc = `上涨/下跌：${up} : ${down}，上涨数${breadthLvl.t}。上涨趋势：${fmtArr(upHist)}；下跌趋势：${fmtArr(downHist)}。指标：下跌>4000为低位，上涨>4000为高位。`;
+
+              const item = (key, title, value, level, levelCls, desc, trend, vs) => ({ key, title, value, level, levelCls, desc, trend, vs });
+              return [
+                item('zt', '涨停', `${Math.round(zt)}`, ztLvl.t, ztLvl.c, ztDesc, fmtArr(ztHist), vsText(ztPrev, delta.zt)),
+                item('lb', '连板', `${Math.round(lianban)}`, lbLvl.t, lbLvl.c, lbDesc, fmtArr(lbHist), ''),
+                item('dt', '跌停', `${Math.round(dt)}`, dtLvl.t, dtLvl.c, dtDesc, fmtArr(dtHist), vsText(dtPrev, delta.dt)),
+                item('fb', '封板率', `${Math.round(fb)}%`, fbLvl.t, fbLvl.c, fbDesc, fmtArr(fbHist, '%'), ''),
+                item('jj', '晋级率', `${Math.round(jj)}%`, jjLvl.t, jjLvl.c, jjDesc, fmtArr(jjHist, '%'), ''),
+                item('breadth', '涨跌家数', `${Math.round(up)}:${Math.round(down)}`, breadthLvl.t, breadthLvl.c, breadthDesc, fmtArr(upHist), ''),
+              ];
+            },
           },
         }).mount('#app');
         // 暴露给外层 Tabs 切换逻辑
@@ -5688,7 +6318,6 @@
           if (heightChart) { heightChart.dispose(); heightChart = null; }
           // ladder 独立页，sentiment 不再渲染天梯（避免重复信息）
           renderVolumeTrend(marketData.volume);
-          renderMoodKline(marketData.features?.mood_inputs || {});
           renderThreeQuadrants(marketData.threeQuadrants);
         } else if (page === 'themes') {
           if (volumeChart) { volumeChart.dispose(); volumeChart = null; }

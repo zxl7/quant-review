@@ -49,14 +49,15 @@ jobs:
           path: site_prev
           fetch-depth: 1
 
-      - name: Generate latest_intraday.json
+      - name: Inject live data into existing HTML
         run: |
           set -euo pipefail
-          python -m daily_review.realtime_watch --out site_prev/latest_intraday.json
-          # 同步渲染一个“可直接打开”的盯盘页（不依赖浏览器 fetch）
-          python -m daily_review.realtime_render_watch --out site_prev/watch.html
-          mkdir -p site_prev/watch
-          cp -f site_prev/watch.html site_prev/watch/index.html
+          # 直接把实时数据注入到现有页面（不新建页面，不依赖前端 fetch）
+          args="--html site_prev/index.html"
+          for f in site_prev/*tab-v1.html; do
+            if [ -f "$f" ]; then args="$args --html $f"; fi
+          done
+          python -m daily_review.inject_live_into_html $args
           touch site_prev/.nojekyll
 
       - name: Configure Pages

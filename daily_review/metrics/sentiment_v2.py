@@ -70,6 +70,98 @@ def _score_zt_heat(zt_today: int, zt_yest: int | None = None) -> float:
     return base
 
 
+def _score_zt_heat_dyn(zt_today: int, hist_zt: List[int]) -> float:
+    """
+    纯函数：涨停热度（动态版，0~10）。
+
+    - 用近 N 日涨停数 hist_zt 做“相对强弱”，避免牛/熊市阈值漂移
+    - 历史不足时回退到静态阈值
+    """
+    hs = [int(x) for x in (hist_zt or []) if isinstance(x, (int, float))]
+    if len(hs) < 3:
+        return _score_zt_heat(int(zt_today or 0), None)
+
+    hs_sorted = sorted(hs)
+    p20 = hs_sorted[max(0, int(len(hs_sorted) * 0.20) - 1)]
+    p50 = hs_sorted[max(0, int(len(hs_sorted) * 0.50) - 1)]
+    p80 = hs_sorted[max(0, int(len(hs_sorted) * 0.80) - 1)]
+    x = int(zt_today or 0)
+
+    if x >= p80:
+        return 8.5 if x < p80 * 1.15 else 9.5
+    if x >= p50:
+        t = (x - p50) / max(1.0, float(p80 - p50))
+        return round(5.5 + t * 3.0, 1)
+    if x >= p20:
+        t = (x - p20) / max(1.0, float(p50 - p20))
+        return round(3.0 + t * 2.5, 1)
+    return 1.5
+
+
+def _score_carry_quality(
+    *,
+    fb_rate: float,
+    jj_rate: float,
+    broken_lb_rate: float,
+    rate_2to3: float,
+    rate_3to4: float,
+) -> float:
+    """
+    纯函数：承接质量（0~10）。
+    """
+    fb = _clamp(_to_num(fb_rate, 0.0), 0.0, 100.0)
+    s_fb = 10 if fb >= 75 else (8 if fb >= 65 else (6 if fb >= 55 else (4 if fb >= 45 else 2)))
+
+    jj = _clamp(_to_num(jj_rate, 0.0), 0.0, 100.0)
+    s_jj = 10 if jj >= 45 else (8 if jj >= 32 else (6 if jj >= 22 else (4 if jj >= 14 else 2)))
+
+    br = _clamp(_to_num(broken_lb_rate, 0.0), 0.0, 100.0)
+    s_br = 10 if br <= 18 else (8 if br <= 28 else (6 if br <= 38 else (4 if br <= 50 else 2)))
+
+    r23 = _clamp(_to_num(rate_2to3, 0.0), 0.0, 100.0)
+    r34 = _clamp(_to_num(rate_3to4, 0.0), 0.0, 100.0)
+    s_r = ((r23 / 10.0) * 0.6 + (r34 / 10.0) * 0.4)  # 0~10
+
+    return _clamp(round(s_fb * 0.30 + s_jj * 0.35 + s_br * 0.20 + s_r * 0.15, 1), 0, 10)
+
+
+def _score_structure(tier_integrity_score: float, height_gap: float) -> float:
+    """
+    纯函数：结构完整（0~10）。
+    """
+    tier = _clamp(_to_num(tier_integrity_score, 0.0), 0.0, 100.0)
+    gap = _clamp(_to_num(height_gap, 0.0), 0.0, 10.0)
+    s_tier = tier / 10.0
+
+    penalty = 0.0
+    if gap >= 4:
+        penalty = 2.5
+    elif gap >= 3:
+        penalty = 1.8
+    elif gap >= 2:
+        penalty = 1.0
+
+    return _clamp(round(s_tier - penalty, 1), 0, 10)
+
+
+def _score_crowding(overlap_score: float, top3_ratio: float, zb_high_ratio: float, max_lb: int) -> float:
+    """
+    纯函数：拥挤压力（0~10，返回“可控分”=10-压力）。
+    """
+    ov = _clamp(_to_num(overlap_score, 0.0), 0.0, 100.0)
+    top3 = _clamp(_to_num(top3_ratio, 0.0), 0.0, 100.0)
+    zbh = _clamp(_to_num(zb_high_ratio, 0.0), 0.0, 100.0)
+    h = _clamp(float(max_lb or 0), 0.0, 10.0)
+
+    p = (
+        _clamp((ov - 55) / 35.0, 0.0, 1.0) * 0.40
+        + _clamp((top3 - 60) / 25.0, 0.0, 1.0) * 0.25
+        + _clamp((zbh - 25) / 25.0, 0.0, 1.0) * 0.20
+        + _clamp((h - 5) / 3.0, 0.0, 1.0) * 0.15
+    )
+    return _clamp(round((1.0 - p) * 10.0, 1), 0, 10)
+
+
 def _score_money_effect(avg_chg: float, promote_rate: float) -> float:
     # v2 给了 avg_chg 分段；晋级率分段按常识补齐
     if avg_chg >= 5:
@@ -331,6 +423,23 @@ def calc_sentiment_score(input_like: Dict[str, Any]) -> Dict[str, Any]:
     main_strength = str(d.get("main_theme_strength") or ("中" if main_clear else "弱"))
     rotation_freq = _to_int(d.get("theme_rotation_freq"), 0)
 
+    # 动态口径：近 N 日涨停（用于热度相对化）
+    hist_zt = d.get("hist_zt") or []
+    if not isinstance(hist_zt, list):
+        hist_zt = []
+
+    # 承接/结构/拥挤（来自 features.mood_inputs + themePanels/styleRadar proxy）
+    fb_rate = _to_num(d.get("fb_rate"), _to_num(d.get("fb", 0.0), 0.0))
+    jj_rate = _to_num(d.get("jj_rate"), promote_rate)
+    broken_lb_rate = _to_num(d.get("broken_lb_rate"), _to_num(d.get("broken_lb_rate_adj"), 0.0))
+    rate_2to3 = _to_num(d.get("rate_2to3"), 0.0)
+    rate_3to4 = _to_num(d.get("rate_3to4"), 0.0)
+    tier_integrity_score = _to_num(d.get("tier_integrity_score"), 0.0)
+    height_gap = _to_num(d.get("height_gap"), 0.0)
+    overlap_score = _to_num(d.get("overlap_score"), 0.0)
+    top3_ratio = _to_num(d.get("top3_theme_ratio"), 0.0)
+    zb_high_ratio = _to_num(d.get("zb_high_ratio"), 0.0)
+
     # v2 新增：崩溃前兆链（扣分项）
     collapse_score, collapse_hits = _score_collapse_chain(
         {
@@ -345,21 +454,39 @@ def calc_sentiment_score(input_like: Dict[str, Any]) -> Dict[str, Any]:
     )
 
     dim_scores = {
-        "zt_heat": _score_zt_heat(zt_count, zt_count_yesterday or None),
+        # 动态热度：使用历史分位（更抗周期漂移）
+        "zt_heat": _score_zt_heat_dyn(zt_count, hist_zt),
         "money_effect": _score_money_effect(yest_zt_avg_chg, promote_rate),
-        "lianban_health": _score_lianban_health(lianban_cnt, max_lb, [int(x) for x in height_history if isinstance(x, (int, float))]),
+        "carry_quality": _score_carry_quality(
+            fb_rate=fb_rate,
+            jj_rate=jj_rate,
+            broken_lb_rate=broken_lb_rate,
+            rate_2to3=rate_2to3,
+            rate_3to4=rate_3to4,
+        ),
+        "lianban_health": _score_lianban_health(
+            lianban_cnt,
+            max_lb,
+            [int(x) for x in height_history if isinstance(x, (int, float))],
+        ),
         "negative": _score_negative_feedback(zab_count, zab_rate, nuclear, dt_count),
         "theme_clarity": _score_theme(main_clear, main_strength, rotation_freq),
+        "structure": _score_structure(tier_integrity_score, height_gap),
+        "crowding": _score_crowding(overlap_score, top3_ratio, zb_high_ratio, max_lb),
         "collapse_chain": collapse_score,
     }
 
     weights = {
-        "zt_heat": 0.20,
-        "money_effect": 0.25,
-        "lianban_health": 0.20,
+        # 更贴近实战：把“承接/结构/拥挤”显式纳入总分（更稳定、更可解释）
+        "zt_heat": 0.15,
+        "money_effect": 0.18,
+        "carry_quality": 0.15,
+        "lianban_health": 0.15,
         "negative": 0.15,
-        "theme_clarity": 0.10,
-        "collapse_chain": 0.10,
+        "theme_clarity": 0.08,
+        "structure": 0.06,
+        "crowding": 0.04,
+        "collapse_chain": 0.04,
     }
     total = sum(dim_scores[k] * weights[k] for k in weights.keys())
     total = round(_clamp(total, 0.0, 10.0), 1)
@@ -394,4 +521,3 @@ def calc_sentiment_score(input_like: Dict[str, Any]) -> Dict[str, Any]:
             "lianban_count": lianban_cnt,
         },
     }
-

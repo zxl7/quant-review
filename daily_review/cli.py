@@ -971,6 +971,37 @@ def _inject_mood_history_and_delta(*, root: Path, date: str, market_data: dict) 
     mi = feats.setdefault("mood_inputs", {})
     hist_days = mi.get("hist_days")
 
+    # 先注入当天可直接计算的指标，供后续 delta / 维度解释使用
+    try:
+        mp = market_data.get("marketPanorama") or {}
+        kpis = mp.get("kpis") or {}
+        mi.setdefault("lianban_count", int(kpis.get("link_board", 0) or 0))
+    except Exception:
+        pass
+    try:
+        raw = market_data.get("raw") or {}
+        quotes = raw.get("quotes") or {}
+        items0 = quotes.get("items") or {}
+        if isinstance(items0, dict):
+            up0 = 0
+            down0 = 0
+            for _, it in items0.items():
+                if not isinstance(it, dict):
+                    continue
+                pc = it.get("pc")
+                try:
+                    pc = float(pc)
+                except Exception:
+                    continue
+                if pc > 0:
+                    up0 += 1
+                elif pc < 0:
+                    down0 += 1
+            mi.setdefault("up_count", up0)
+            mi.setdefault("down_count", down0)
+    except Exception:
+        pass
+
     need_hist = not (isinstance(hist_days, list) and len(hist_days) >= 2)
     if need_hist:
         try:
@@ -1007,6 +1038,44 @@ def _inject_mood_history_and_delta(*, root: Path, date: str, market_data: dict) 
                     except Exception:
                         return d
 
+                def _breadth_from_snap(snap_dict: dict) -> tuple[int, int]:
+                    """
+                    纯函数：从 raw.quotes.items 计算上涨/下跌家数。
+                    """
+                    raw = snap_dict.get("raw") or {}
+                    quotes = raw.get("quotes") or {}
+                    items = quotes.get("items") or {}
+                    if not isinstance(items, dict):
+                        return 0, 0
+                    up = 0
+                    down = 0
+                    for _, it in items.items():
+                        if not isinstance(it, dict):
+                            continue
+                        pc = it.get("pc")
+                        try:
+                            pc = float(pc)
+                        except Exception:
+                            continue
+                        if pc > 0:
+                            up += 1
+                        elif pc < 0:
+                            down += 1
+                    return up, down
+
+                up_cnt, down_cnt = _breadth_from_snap(snap)
+                # 连板家数：优先用 marketPanorama.kpis.link_board，其次用 lb_2/lb_3/lb_4p/lb_5p 兜底
+                mp = snap.get("marketPanorama") or {}
+                kpis = mp.get("kpis") or {}
+                lianban = int(_to_num(kpis.get("link_board", 0), 0))
+                if not lianban:
+                    lianban = int(
+                        _to_num(s_mi.get("lb_2", 0), 0)
+                        + _to_num(s_mi.get("lb_3", 0), 0)
+                        + _to_num(s_mi.get("lb_4p", 0), 0)
+                        + _to_num(s_mi.get("lb_5p", 0), 0)
+                    )
+
                 rows.append(
                     {
                         "date": f"{d8[0:4]}-{d8[4:6]}-{d8[6:8]}",
@@ -1016,6 +1085,9 @@ def _inject_mood_history_and_delta(*, root: Path, date: str, market_data: dict) 
                         "broken_lb_rate": _to_num(s_mi.get("broken_lb_rate_adj", s_mi.get("broken_lb_rate", 0)), 0),
                         "zt": int(_to_num((snap.get("panorama") or {}).get("limitUp", 0), 0)),
                         "dt": int(_to_num((snap.get("panorama") or {}).get("limitDown", 0), 0)),
+                        "lianban": lianban,
+                        "up": up_cnt,
+                        "down": down_cnt,
                     }
                 )
             except Exception:
@@ -1030,11 +1102,19 @@ def _inject_mood_history_and_delta(*, root: Path, date: str, market_data: dict) 
             mi["hist_broken_lb_rate"] = [round(r["broken_lb_rate"], 1) for r in rows]
             mi["hist_zt"] = [int(r.get("zt", 0)) for r in rows]
             mi["hist_dt"] = [int(r.get("dt", 0)) for r in rows]
+            mi["hist_lianban"] = [int(r.get("lianban", 0)) for r in rows]
+            mi["hist_up"] = [int(r.get("up", 0)) for r in rows]
+            mi["hist_down"] = [int(r.get("down", 0)) for r in rows]
             mi["hist_zt_dt_spread"] = [int(r.get("zt", 0)) - int(r.get("dt", 0)) for r in rows]
             mi["trend_max_lb"] = round(float(last["max_lb"]) - float(first["max_lb"]), 2)
             mi["trend_fb_rate"] = round(float(last["fb_rate"]) - float(first["fb_rate"]), 2)
             mi["trend_jj_rate"] = round(float(last["jj_rate"]) - float(first["jj_rate"]), 2)
             mi["trend_broken_lb_rate"] = round(float(last["broken_lb_rate"]) - float(first["broken_lb_rate"]), 2)
+            mi["trend_zt"] = int(last.get("zt", 0)) - int(first.get("zt", 0))
+            mi["trend_dt"] = int(last.get("dt", 0)) - int(first.get("dt", 0))
+            mi["trend_lianban"] = int(last.get("lianban", 0)) - int(first.get("lianban", 0))
+            mi["trend_up"] = int(last.get("up", 0)) - int(first.get("up", 0))
+            mi["trend_down"] = int(last.get("down", 0)) - int(first.get("down", 0))
 
     # ===== 2) prev / delta =====
     if len(items) < 2:
@@ -1083,6 +1163,9 @@ def _inject_mood_history_and_delta(*, root: Path, date: str, market_data: dict) 
         "zb_rate": round(_num(cur_mi.get("zb_rate"), 0) - _num(prv_mi.get("zb_rate"), 0), 2),
         "max_lb": round(_num(cur_mi.get("max_lb"), 0) - _num(prv_mi.get("max_lb"), 0), 2),
         "bf_count": round(_num(cur_mi.get("bf_count"), 0) - _num(prv_mi.get("bf_count"), 0), 2),
+        "lianban": int(_num(cur_mi.get("lianban_count"), 0) - _num(prv_mi.get("lianban_count"), 0)),
+        "up": int(_num(cur_mi.get("up_count"), 0) - _num(prv_mi.get("up_count"), 0)),
+        "down": int(_num(cur_mi.get("down_count"), 0) - _num(prv_mi.get("down_count"), 0)),
         "heat": round(_num((market_data.get("mood") or {}).get("heat"), 0) - _num((prev_data.get("mood") or {}).get("heat"), 0), 2),
         "risk": round(_num((market_data.get("mood") or {}).get("risk"), 0) - _num((prev_data.get("mood") or {}).get("risk"), 0), 2),
     }
