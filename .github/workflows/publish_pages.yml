@@ -100,6 +100,61 @@ jobs:
         with:
           python-version: "3.11"
 
+      - name: Decide push mode/date (non-schedule)
+        id: pushmode
+        if: ${{ github.event_name != 'schedule' }}
+        env:
+          BIYING_TOKEN: ${{ secrets.BIYING_TOKEN }}
+          BIYING_BASE_URL: ${{ secrets.BIYING_BASE_URL }}
+        run: |
+          set -euo pipefail
+          if [ -z "${BIYING_TOKEN}" ]; then
+            echo "Missing secrets.BIYING_TOKEN"
+            exit 2
+          fi
+          # push/workflow_dispatch：
+          # - 盘前（<09:25，北京时间）：生成最近一个“已完成交易日”的收盘版（避免生成“当天但数据为空/像昨天”的错配）
+          # - 盘中（09:25~15:01）：生成当日盘中版（intraday），保证“渲染当天数据”
+          # - 收盘后（>=15:01）：生成当日收盘版（eod）
+          now_bj="$(date +'%H:%M')"
+          now_min=$((10#$(date +%H)*60 + 10#$(date +%M)))
+          open_min=$((9*60+25))
+          close_min=$((15*60+1))
+          if [ "${now_min}" -lt "${open_min}" ]; then
+            mode="eod"
+          elif [ "${now_min}" -lt "${close_min}" ]; then
+            mode="intraday"
+          else
+            mode="eod"
+          fi
+          echo "mode=${mode}" >> "$GITHUB_OUTPUT"
+          echo "beijing_now=${now_bj}" >> "$GITHUB_OUTPUT"
+          echo "push_mode=${mode} (beijing_now=${now_bj})"
+
+          # 选择日期：
+          # - eod：取“最近一个已完成交易日”（指数日K过滤 sf/a/v 占位后的最后一天）
+          # - intraday：用今天（若非交易日，cli 内部会自动回退）
+          if [ "${mode}" = "intraday" ]; then
+            echo "date10=$(date +%F)" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          PYTHONPATH=. python - <<'PY'
+          import os
+          from daily_review.config import load_config_from_env
+          from daily_review.http import HttpClient
+          from daily_review.data.biying import get_recent_trade_dates
+          cfg = load_config_from_env()
+          client = HttpClient(base_url=cfg.base_url, token=cfg.token, timeout=30)
+          dates = get_recent_trade_dates(client, n=20) or []
+          if not dates:
+            raise SystemExit("No trade dates from index kline")
+          target = dates[-1]  # 最近一个“已收盘”的交易日（过滤 sf=1/a/v<=0）
+          with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as f:
+            f.write(f"date10={target}\n")
+          print("picked_date10=", target)
+          PY
+
       - name: Make scripts executable
         if: ${{ github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true' }}
         run: |
@@ -117,22 +172,34 @@ jobs:
           fi
           mode="${{ steps.timecheck.outputs.mode }}"
           if [ "${{ github.event_name }}" != "schedule" ]; then
-            mode="eod"
+            mode="${{ steps.pushmode.outputs.mode }}"
           fi
           echo "Run mode=${mode}"
           if [ "${mode}" = "intraday" ]; then
             # 盘中快照：每半小时一次（数据截止当前时刻）
-            PYTHONPATH=. python3 -m daily_review.cli --mode intraday
+            PYTHONPATH=. python3 -m daily_review.cli --mode intraday --date "${{ steps.pushmode.outputs.date10 }}"
           else
             # 收盘版：在线取数落缓存（有成本）→ 再用 v2 pipeline 离线重建 → 输出 html/*tab-v1.html
-            ./qr.sh fetch
+            if [ "${{ github.event_name }}" = "schedule" ]; then
+              ./qr.sh fetch
+            else
+              ./qr.sh fetch "${{ steps.pushmode.outputs.date10 }}"
+            fi
           fi
 
       - name: Prepare Pages site (html/ as site root)
         if: ${{ github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true' }}
         run: |
           set -euo pipefail
-          report_html="$(ls -t ./html/*tab-v1.html 2>/dev/null | head -n 1 || true)"
+          mode="${{ steps.timecheck.outputs.mode }}"
+          if [ "${{ github.event_name }}" != "schedule" ]; then
+            mode="${{ steps.pushmode.outputs.mode }}"
+          fi
+          if [ "${mode}" = "intraday" ]; then
+            report_html="$(ls -t ./html/*-intra.html 2>/dev/null | head -n 1 || true)"
+          else
+            report_html="$(ls -t ./html/*tab-v1.html 2>/dev/null | head -n 1 || true)"
+          fi
           if [ -z "${report_html}" ]; then
             echo "No report html found in ./html/"
             ls -la ./html || true
