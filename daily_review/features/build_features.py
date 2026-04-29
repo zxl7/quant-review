@@ -6,7 +6,6 @@ features.build_features：从 raw 提取可复用特征（供 modules 复用/par
 
 当前实现为"最小可用版"，覆盖：
 - features.mood_inputs：情绪模块输入（mood）
-- features.style_inputs：风格雷达输入（style_radar）
 - features.chart_palette：图表配色
 
 原则：
@@ -333,54 +332,6 @@ def build_mood_inputs(*, pools: Mapping[str, Any]) -> Dict[str, Any]:
         "top_duanban_name": top_duanban_name,
         "top_duanban_lb": top_duanban_lb,
         "top_duanban_is_high": top_duanban_is_high,
-    }
-
-
-def build_style_inputs(
-    *,
-    mood_inputs: Mapping[str, Any],
-    theme_panels: Mapping[str, Any] | None = None,
-    ztgc: list[dict[str, Any]] | None = None,
-) -> Dict[str, Any]:
-    """
-    尽量对齐 gen_report_v4 的 style_inputs，但只依赖现有数据。
-    """
-    zt_count = int(mood_inputs.get("zt_count", 0) or 0)
-    max_lb = int(mood_inputs.get("max_lb", 0) or 0)
-    ztgc = ztgc if isinstance(ztgc, list) else []
-
-    def _lbc(s: Mapping[str, Any]) -> int:
-        try:
-            return int(s.get("lbc", 1) or 1)
-        except Exception:
-            return 1
-
-    first_board_count = len([s for s in ztgc if isinstance(s, dict) and _lbc(s) == 1])
-    gem_today = [s for s in ztgc if isinstance(s, dict) and str(s.get("dm", "")).startswith("300")]
-    gem_today_count = len(gem_today)
-    gem_height = max((_lbc(s) for s in gem_today), default=0)
-
-    high_level_ratio = 0.0
-    if zt_count:
-        high_level_ratio = len([s for s in ztgc if isinstance(s, dict) and _lbc(s) >= 5]) / zt_count * 100.0
-    top3_ratio = 0.0
-    if theme_panels and isinstance(theme_panels, dict):
-        try:
-            top3 = (theme_panels.get("ztTop") or [])[:3]
-            top3_cnt = sum([int(x.get("count", 0) or 0) for x in top3 if isinstance(x, dict)])
-            top3_ratio = (top3_cnt / zt_count * 100.0) if zt_count else 0.0
-        except Exception:
-            top3_ratio = 0.0
-    return {
-        "jj_rate": float(mood_inputs.get("jj_rate", 0) or 0),
-        "first_board_count": int(first_board_count),
-        "zt_count": zt_count,
-        "gem_today_count": int(gem_today_count),
-        "gem_height": int(gem_height),
-        "top3_theme_ratio": round(top3_ratio, 1),
-        "top10_concentration": 0,
-        "high_level_ratio": round(high_level_ratio, 1),
-        "max_lb": max_lb,
     }
 
 

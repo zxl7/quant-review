@@ -34,9 +34,7 @@ from daily_review.data.biying import (
     normalize_stock_code,
     resolve_trade_date,
 )
-from daily_review.features.build_features import build_mood_inputs, build_style_inputs, default_chart_palette
-from daily_review.modules.style_radar import rebuild_style_radar
-from daily_review.metrics.style_radar import calc_style_strengths
+from daily_review.features.build_features import build_mood_inputs, default_chart_palette
 
 
 def _workspace_root() -> Path:
@@ -369,7 +367,6 @@ def run_fetch_and_rebuild(date: str | None) -> int:
         "actionGuideV2": {"confirm": [], "retreat": []},
         "summary3": {},
         "learningNotes": {},
-        "styleRadar": {},
         "leaders": [],
         "ztgc": [],
         "zt_code_themes": {},
@@ -437,11 +434,6 @@ def run_fetch_and_rebuild(date: str | None) -> int:
     mood_inputs = build_mood_inputs(pools=raw_pools)
     market_data["features"]["mood_inputs"] = mood_inputs
     market_data["features"]["chart_palette"] = default_chart_palette()
-    market_data["features"]["style_inputs"] = build_style_inputs(
-        mood_inputs=mood_inputs,
-        theme_panels=market_data.get("themePanels") or {},
-        ztgc=[x for x in (raw_pools.get("ztgc") or []) if isinstance(x, dict)],
-    )
 
     # 写 market_data 缓存（供 rebuild/partial 使用）
     date_compact = actual_date.replace("-", "")
@@ -594,7 +586,6 @@ def run_intraday_snapshot(date: str | None) -> int:
         "actionGuideV2": {"confirm": [], "retreat": []},
         "summary3": {},
         "learningNotes": {},
-        "styleRadar": {},
         "leaders": [],
         "ztgc": [],
         "zt_code_themes": {},
@@ -612,12 +603,6 @@ def run_intraday_snapshot(date: str | None) -> int:
     mood_inputs = build_mood_inputs(pools=raw_pools)
     market_data["features"]["mood_inputs"] = mood_inputs
     market_data["features"]["chart_palette"] = default_chart_palette()
-    ztgc = [x for x in (raw_pools.get("ztgc") or []) if isinstance(x, dict)]
-    market_data["features"]["style_inputs"] = build_style_inputs(
-        mood_inputs=mood_inputs,
-        theme_panels=market_data.get("themePanels") or {},
-        ztgc=ztgc,
-    )
 
     # 写缓存
     date_compact = actual_date.replace("-", "")
@@ -785,9 +770,6 @@ def run_rebuild(date: str, modules: list[str] | None = None, suffix: str = "", s
             feats = {}
         feats["mood_inputs"] = mood_inputs
         feats.setdefault("chart_palette", default_chart_palette())
-        ztgc = [x for x in (pools_for_feat.get("ztgc") or []) if isinstance(x, dict)]
-        feats["style_inputs"] = build_style_inputs(mood_inputs=mood_inputs, theme_panels=ctx.market_data.get("themePanels") or {}, ztgc=ztgc)
-        feats["style_strengths"] = calc_style_strengths(feats.get("style_inputs") or {})
         ctx.market_data["features"] = feats
         ctx.features = feats  # runner 使用 ctx.features 读取 features.*
     except Exception:
@@ -835,21 +817,6 @@ def run_rebuild(date: str, modules: list[str] | None = None, suffix: str = "", s
             asof["themes"] = "收盘"
         meta["asOf"] = asof
         market_data["meta"] = meta
-    except Exception:
-        pass
-
-    # 后处理：features/style_inputs 依赖 themePanels，而 themePanels 由 pipeline 产出
-    # 为保证“主线集中度/风格雷达”一致性，rebuild 后再补一遍 style_inputs，并刷新 styleRadar。
-    try:
-        feats = market_data.get("features") or {}
-        mi = feats.get("mood_inputs") or {}
-        tp = market_data.get("themePanels") or {}
-        pools = (market_data.get("raw") or {}).get("pools") or {}
-        ztgc = pools.get("ztgc") or []
-        feats["style_inputs"] = build_style_inputs(mood_inputs=mi, theme_panels=tp, ztgc=[x for x in (ztgc or []) if isinstance(x, dict)])
-        market_data["features"] = feats
-        # 重新生成 styleRadar（纯函数，安全）
-        market_data["styleRadar"] = rebuild_style_radar(market_data)["styleRadar"]
     except Exception:
         pass
 
@@ -1018,9 +985,8 @@ def _inject_mood_history_and_delta(*, root: Path, date: str, market_data: dict) 
                 snap = json.loads(fp.read_text(encoding="utf-8"))
                 s_feats = snap.get("features") or {}
                 s_mi = s_feats.get("mood_inputs") or {}
-                s_si = s_feats.get("style_inputs") or {}
-                # 兜底：max_lb 优先用 style_inputs，其次用 ladder 最高 badge 数字
-                max_lb = int(s_si.get("max_lb", 0) or 0)
+                # 兜底：max_lb 优先用 mood_inputs，其次用 ladder 最高 badge 数字
+                max_lb = int(s_mi.get("max_lb", 0) or 0)
                 if not max_lb:
                     lbs = []
                     for it in (snap.get("ladder") or []):
@@ -1378,7 +1344,7 @@ def run_partial(date: str, modules: list[str]) -> int:
     except Exception:
         pass
 
-    # partial 同样重算 features（至少 mood_inputs/style_inputs），避免局部更新时 UI 读到旧/缺字段
+    # partial 同样重算 features（至少 mood_inputs），避免局部更新时 UI 读到旧/缺字段
     try:
         pools_for_feat = ctx.raw.get("pools") or {}
         mood_inputs = build_mood_inputs(pools=pools_for_feat)
@@ -1387,9 +1353,6 @@ def run_partial(date: str, modules: list[str]) -> int:
             feats = {}
         feats["mood_inputs"] = mood_inputs
         feats.setdefault("chart_palette", default_chart_palette())
-        ztgc = [x for x in (pools_for_feat.get("ztgc") or []) if isinstance(x, dict)]
-        feats["style_inputs"] = build_style_inputs(mood_inputs=mood_inputs, theme_panels=ctx.market_data.get("themePanels") or {}, ztgc=ztgc)
-        feats["style_strengths"] = calc_style_strengths(feats.get("style_inputs") or {})
         ctx.market_data["features"] = feats
         ctx.features = feats
     except Exception:
@@ -1444,7 +1407,7 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument(
         "--only",
         nargs="+",
-        help="部分更新：指定模块名，可选：panorama, ladder, ztgc, theme_panels, volume, height_trend, top10, mood, style_radar, leader, action_guide, summary3, learning_notes",
+        help="部分更新：指定模块名，可选：panorama, ladder, ztgc, theme_panels, volume, height_trend, top10, mood, leader, action_guide, summary3, learning_notes",
     )
     ap.add_argument(
         "--mode",

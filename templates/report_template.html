@@ -2135,8 +2135,6 @@
       /* Chart */
       .chart-container { width: 100%; height: 220px; margin-bottom: 16px; position: relative; }
       .chart-legend { display: none; } /* ECharts has its own legend or we use custom one */
-      /* 仅保留“市场风格雷达”，缩小尺寸（移动端优先可读） */
-      .radar-chart-container { width: 100%; height: 220px; }
 
       /* PRD：盘面三象限（scatter + 解释） */
       .quad-wrap{
@@ -2987,7 +2985,7 @@
       }
 
       /* Footer */
-      .footer { text-align: center; padding: 32px 20px; color: var(--text-muted); font-size: 12px; font-weight: 500; }
+      .footer { text-align: center; color: var(--text-muted); font-size: 12px; font-weight: 500; }
       .footer p { margin-bottom: 4px; }
       .footer-learning{
         max-width: 980px;
@@ -3677,14 +3675,6 @@
         <div class="tier-card" v-else>
           <div class="tier-title">—</div>
           <div class="tier-desc">暂无板块热力数据（themePanels 缺失或当日无有效板块聚合）。</div>
-        </div>
-      </div>
-
-      <!-- 风格雷达图 -->
-      <div class="card" data-page="sentiment" id="sec-style">
-        <div class="card-title">市场风格雷达</div>
-        <div class="radar-chart-container">
-          <div id="style-radar-echart" style="width: 100%; height: 100%;"></div>
         </div>
       </div>
 
@@ -4492,7 +4482,6 @@
         moodCards: [],
         actionGuideV2: { confirm: [], retreat: [] },
         ztAnalysis: { relay: [], watch: [] },
-        styleRadar: { indicators: [], values: [], palette: [] },
       };
 
       /**
@@ -5237,7 +5226,7 @@
       };
 
       // 核心图表实例
-      let volumeChart, heightChart, styleChart, themeTrendChart, moodKlineChart, moodRadarChart, threeQuadrantsChart;
+      let volumeChart, heightChart, themeTrendChart, moodKlineChart, moodRadarChart, threeQuadrantsChart;
       let currentPage = document.body.getAttribute('data-page') || 'sentiment';
 
       /**
@@ -5256,13 +5245,11 @@
           if (heightChart) { heightChart.dispose(); heightChart = null; }
           // ladder 独立页，sentiment 不再渲染天梯（避免重复信息）
           renderVolumeTrend(marketData.volume);
-          renderStyleRadar(marketData.styleRadar);
           renderMoodKline(marketData.features?.mood_inputs || {});
           renderThreeQuadrants(marketData.threeQuadrants);
         } else if (page === 'themes') {
           if (volumeChart) { volumeChart.dispose(); volumeChart = null; }
           if (heightChart) { heightChart.dispose(); heightChart = null; }
-          if (styleChart) { styleChart.dispose(); styleChart = null; }
           if (moodKlineChart) { moodKlineChart.dispose(); moodKlineChart = null; }
           if (moodRadarChart) { moodRadarChart.dispose(); moodRadarChart = null; }
           if (threeQuadrantsChart) { threeQuadrantsChart.dispose(); threeQuadrantsChart = null; }
@@ -5271,7 +5258,6 @@
           // 仅渲染天梯，其他图表实例释放（减少隐藏容器下的尺寸问题）
           if (themeTrendChart) { themeTrendChart.dispose(); themeTrendChart = null; }
           if (volumeChart) { volumeChart.dispose(); volumeChart = null; }
-          if (styleChart) { styleChart.dispose(); styleChart = null; }
           if (moodKlineChart) { moodKlineChart.dispose(); moodKlineChart = null; }
           if (moodRadarChart) { moodRadarChart.dispose(); moodRadarChart = null; }
           if (threeQuadrantsChart) { threeQuadrantsChart.dispose(); threeQuadrantsChart = null; }
@@ -5282,7 +5268,6 @@
           if (themeTrendChart) { themeTrendChart.dispose(); themeTrendChart = null; }
           if (volumeChart) { volumeChart.dispose(); volumeChart = null; }
           if (heightChart) { heightChart.dispose(); heightChart = null; }
-          if (styleChart) { styleChart.dispose(); styleChart = null; }
           if (moodKlineChart) { moodKlineChart.dispose(); moodKlineChart = null; }
           if (moodRadarChart) { moodRadarChart.dispose(); moodRadarChart = null; }
           if (threeQuadrantsChart) { threeQuadrantsChart.dispose(); threeQuadrantsChart = null; }
@@ -5291,7 +5276,6 @@
           if (themeTrendChart) { themeTrendChart.dispose(); themeTrendChart = null; }
           if (volumeChart) { volumeChart.dispose(); volumeChart = null; }
           if (heightChart) { heightChart.dispose(); heightChart = null; }
-          if (styleChart) { styleChart.dispose(); styleChart = null; }
           if (moodKlineChart) { moodKlineChart.dispose(); moodKlineChart = null; }
           if (moodRadarChart) { moodRadarChart.dispose(); moodRadarChart = null; }
           if (threeQuadrantsChart) { threeQuadrantsChart.dispose(); threeQuadrantsChart = null; }
@@ -5877,65 +5861,7 @@
         heightChart.setOption(option);
       };
 
-      /**
-       * 渲染市场风格雷达图
-       * @param {Object} data 风格数据
-       */
-      const renderStyleRadar = (data) => {
-        const chartDom = document.getElementById('style-radar-echart');
-        if (!chartDom) return;
-        data = data || {};
-        if (!Array.isArray(data.indicators) || !Array.isArray(data.values) || data.indicators.length === 0 || data.values.length === 0) return;
-        if (styleChart) styleChart.dispose();
-        styleChart = echarts.init(chartDom, document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : null);
-        const colors = data.palette?.length ? data.palette : ['#2563eb', '#60a5fa'];
-        // ECharts Canvas 不会自动解析 CSS var()，这里手动取计算后的主题色，避免文字发灰/过浅
-        const css = getComputedStyle(document.documentElement);
-        const textPrimary = (css.getPropertyValue('--text-primary') || '#1e293b').trim();
-        const textSecondary = (css.getPropertyValue('--text-secondary') || '#475569').trim();
-        const border = (css.getPropertyValue('--border') || 'rgba(148, 163, 184, 0.18)').trim();
-        const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
-
-        const option = {
-          backgroundColor: 'transparent',
-          tooltip: { trigger: 'item' },
-          radar: {
-            radius: '62%',
-            splitNumber: 5,
-            indicator: data.indicators.map(name => ({ name, max: 100 })),
-            // 指标名（你反馈“文字有点浅”主要是这里）
-            name: { color: textSecondary, fontSize: 12, fontWeight: 800 },
-            axisName: { color: textSecondary, fontSize: 12, fontWeight: 800 },
-            splitArea: {
-              areaStyle: {
-                color: isDark
-                  ? ['rgba(255, 255, 255, 0.02)', 'rgba(255, 255, 255, 0.04)']
-                  : ['rgba(37, 99, 235, 0.03)', 'rgba(37, 99, 235, 0.06)']
-              }
-            },
-            splitLine: { lineStyle: { color: border } },
-            axisLine: { lineStyle: { color: border } }
-          },
-          series: [
-            {
-              name: '市场风格',
-              type: 'radar',
-              data: [
-                {
-                  value: data.values,
-                  areaStyle: { color: echarts.color.modifyAlpha(colors[0], 0.22) },
-                  lineStyle: { color: colors[0], width: 2.5 },
-                  itemStyle: { color: colors[0] },
-                  symbolSize: 6
-                }
-              ]
-            }
-          ]
-        };
-        styleChart.setOption(option);
-      };
-
-      // 已删除：情绪六维雷达（仅保留“市场风格雷达”，后续再做情绪雷达升级）
+      // 已删除：市场风格雷达
 
       /**
        * 渲染主线题材持续性图

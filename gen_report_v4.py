@@ -3254,7 +3254,7 @@ html = f'''<!doctype html>
       .purple-text {{ color: var(--purple); }}
 
       /* Footer */
-      .footer {{ text-align: center; padding: 32px 20px; color: var(--text-muted); font-size: 12px; font-weight: 500; }}
+      .footer {{ text-align: center; color: var(--text-muted); font-size: 12px; font-weight: 500; }}
       .footer p {{ margin-bottom: 4px; }}
 
       @media (max-width: 600px) {{

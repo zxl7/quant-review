@@ -2,7 +2,6 @@
 
 # ═════════════════ 旧模块(保留) ═════════════════
 from .mood import MOOD_MODULE
-from .style_radar import STYLE_RADAR_MODULE
 from .leader import LEADER_MODULE
 from .panorama import PANORAMA_MODULE
 from .ladder import LADDER_MODULE
@@ -79,7 +78,6 @@ ALL_MODULES = [
     FEAR_MODULE,
     ROTATION_MODULE,
     THEME_LAYERS_MODULE,
-    STYLE_RADAR_MODULE,
     LEADER_MODULE,
     MOOD_SIGNALS_MODULE,
     # v2 情绪计分卡应覆盖 spec v1 的兼容输出

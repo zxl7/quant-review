@@ -9,7 +9,6 @@ from __future__ import annotations
 
 from typing import Callable, Dict, Any
 
-from .style_radar import rebuild_style_radar
 from .mood import rebuild_mood_panel
 from .leader import rebuild_leaders
 
@@ -17,7 +16,6 @@ ModuleFn = Callable[[Dict[str, Any]], Dict[str, Any]]
 
 
 REGISTRY: dict[str, ModuleFn] = {
-    "style_radar": rebuild_style_radar,
     "mood": rebuild_mood_panel,
     "leader": rebuild_leaders,
 }
