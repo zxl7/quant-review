@@ -1,0 +1,79 @@
+name: Watch Live (AkShare)
+
+on:
+  # 交易时段：每 5 分钟跑一次（cron 为 UTC，北京时间=UTC+8）
+  # 覆盖 09:25~15:05 左右：UTC 01:25~07:05
+  schedule:
+    - cron: "*/5 1-7 * * 1-5"
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: true
+
+env:
+  TZ: Asia/Shanghai
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+  BIYING_BASE_URL: ${{ secrets.BIYING_BASE_URL }}
+  BIYING_TOKEN: ${{ secrets.BIYING_TOKEN }}
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout main (scripts)
+        uses: actions/checkout@v6
+        with:
+          ref: main
+
+      - name: Setup Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies (akshare)
+        run: |
+          python -m pip install -U pip
+          # akshare 依赖较多，显式安装可减少“半路拉取卡死/缺依赖”
+          pip install akshare pandas numpy py-mini-racer akracer curl_cffi html5lib jsonpath --break-system-packages
+
+      - name: Checkout gh-pages (existing site)
+        uses: actions/checkout@v6
+        with:
+          ref: gh-pages
+          path: site_prev
+          fetch-depth: 1
+
+      - name: Generate latest_intraday.json
+        run: |
+          set -euo pipefail
+          python -m daily_review.realtime_watch --out site_prev/latest_intraday.json
+          # 同步渲染一个“可直接打开”的盯盘页（不依赖浏览器 fetch）
+          python -m daily_review.realtime_render_watch --out site_prev/watch.html
+          mkdir -p site_prev/watch
+          cp -f site_prev/watch.html site_prev/watch/index.html
+          touch site_prev/.nojekyll
+
+      - name: Configure Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: site_prev
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

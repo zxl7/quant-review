@@ -150,7 +150,9 @@ def check_right_side_signals(
     if allowed:
         advice = f"✅ 右侧交易许可({score}/5信号)。建议按计划执行，仓位不超过{30 if score <=3 else 50}%。"
     elif score >= 3 and violations:
-        advice = f"⚠️ {score}/5信号达标但有{len(violations)}条左侧违规: {'; '.join(violations[:2])}。建议降低仓位或等待。"
+        label_map = {k: v for k, v in LEFT_SIDE_FORBIDDEN}
+        vtxt = "; ".join([label_map.get(v, v) for v in violations[:2]])
+        advice = f"⚠️ {score}/5信号达标但有{len(violations)}条左侧违规: {vtxt}。建议降低仓位或等待。"
     else:
         advice = f"❌ 右侧交易禁止({score}/5信号不足或有严重违规)。建议观望或仅极小仓试错。"
 

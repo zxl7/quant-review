@@ -16,12 +16,38 @@
 
 from __future__ import annotations
 
+from datetime import datetime, timezone, timedelta
 import json
 import hashlib
 import os
 import re
 from pathlib import Path
 from typing import Any, Dict
+
+
+BJ_TZ = timezone(timedelta(hours=8))
+
+
+def _now_bj_iso() -> str:
+    """
+    纯函数：返回北京时间的 ISO 字符串（YYYY-MM-DD HH:MM:SS）。
+
+    用途：
+    - 前端展示“数据更新时间”，让读者知道这份报告是何时渲染/更新的。
+    """
+    return datetime.now(BJ_TZ).strftime("%Y-%m-%d %H:%M:%S")
+
+
+def _with_render_meta(market_data: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    纯函数：为 market_data 注入渲染元信息，不改变原对象。
+    """
+    md = dict(market_data or {})
+    meta = md.get("meta") if isinstance(md.get("meta"), dict) else {}
+    meta = dict(meta)
+    meta.setdefault("rendered_at_bj", _now_bj_iso())
+    md["meta"] = meta
+    return md
 
 
 def render_html_template(
@@ -34,6 +60,7 @@ def render_html_template(
 ) -> None:
     tpl = template_path.read_text(encoding="utf-8")
 
+    market_data = _with_render_meta(market_data)
     market_data_js = json.dumps(market_data, ensure_ascii=False)
 
     # 1) 注入 marketData
