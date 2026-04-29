@@ -2330,7 +2330,7 @@
         .engine-row .sub{ max-width: 100%; white-space: normal; }
         .prism, .engine-map, .insight-banner, .tri-strip, .panorama-grid{ max-width: 100%; }
       }
-      /* 已删除：情绪六维雷达（仅保留市场风格雷达） */
+      /* 已删除：情绪六维雷达 */
 
       /* Mood Tri-Cards（赚/险/资） */
       .tri-strip{
@@ -2464,7 +2464,6 @@
 
         /* 图表高度调低，避免占屏 */
         .chart-container{ height: 180px; margin-bottom: 12px; }
-        .radar-chart-container{ height: 190px; }
         .theme-trend-chart-container{ height: 220px; }
 
         /* 情绪横幅：单列布局，减少左右拥挤 */
@@ -3279,7 +3278,7 @@
               </div>
             </div>
 
-            <!-- 已删除：情绪六维雷达（仅保留市场风格雷达，后续再优化） -->
+            <!-- 已删除：情绪六维雷达 -->
           </div>
 
           <!-- 已移除：全景 & 风险（riskEngine / divergenceEngine 等内容） -->
@@ -4396,11 +4395,7 @@
           successNote: "封板质量尚可",
           yesterday: "未计算",
         },
-        styleRadar: {
-          indicators: ["连板接力", "低位试错", "20cm弹性", "题材集中", "资金抱团", "高位博弈"],
-          values: [81, 98, 56, 90, 9, 70],
-          palette: ["#ef4444","#f97316","#f59e0b","#fb7185"],
-        },
+        // styleRadar 已删除
         themeTrend: {
           dates: ["04-13","04-14","04-15","04-16","04-17"],
           palette: ["#ef4444","#f97316","#f59e0b","#fb7185"],
@@ -6856,7 +6851,6 @@
         window.addEventListener('resize', () => {
           volumeChart && volumeChart.resize();
           heightChart && heightChart.resize();
-          styleChart && styleChart.resize();
           themeTrendChart && themeTrendChart.resize();
         });
       });
