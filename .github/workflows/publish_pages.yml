@@ -21,11 +21,13 @@ on:
     - cron: "1 7 * * 1-5"
 
 permissions:
-  contents: write
+  contents: read
+  pages: write
+  id-token: write
 
 concurrency:
-  group: "gh-pages"
-  cancel-in-progress: false
+  group: "pages"
+  cancel-in-progress: true
 
 env:
   # 提前切到 Node.js 24 执行 JavaScript actions，避免 2026-06-02 默认切换后踩坑
@@ -34,8 +36,10 @@ env:
   TZ: Asia/Shanghai
 
 jobs:
-  build-and-deploy:
+  build:
     runs-on: ubuntu-latest
+    outputs:
+      skip: ${{ steps.timecheck.outputs.skip }}
     steps:
       - name: Checkout
         uses: actions/checkout@v6
@@ -208,51 +212,32 @@ jobs:
             ls -la ./html || true
             exit 2
           fi
-          # 发布目录：只保留“最新一份报告 + index.html + site_meta.json”
+          # 发布目录：只保留“最新一份报告 + index.html”
           rm -rf ./site
           mkdir -p ./site
           cp -f "${report_html}" ./site/
           cp -f "${report_html}" ./site/index.html
           touch ./site/.nojekyll
           echo "site=index.html from: ${report_html}"
-          export REPORT_HTML="${report_html}"
 
-          # 写入站点元信息（用于排查“最新是否更新”、展示更新时间等）
-          python - <<'PY'
-          import json, os, time
-          from datetime import datetime, timezone, timedelta
-          tz = timezone(timedelta(hours=8))
-          meta = {
-            "built_at_bj": datetime.now(tz).strftime("%Y-%m-%d %H:%M:%S %z"),
-            "built_at_utc": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
-            "event_name": os.getenv("GITHUB_EVENT_NAME"),
-            "run_id": os.getenv("GITHUB_RUN_ID"),
-            "sha": os.getenv("GITHUB_SHA"),
-            "source_report": os.getenv("REPORT_HTML", ""),
-          }
-          # 环境变量里拿不到 report_html，这里用当前目录扫描一次兜底
-          if not meta["source_report"]:
-            try:
-              import glob
-              files = sorted(glob.glob("./html/*tab-v1.html"), key=os.path.getmtime, reverse=True)
-              meta["source_report"] = files[0] if files else ""
-            except Exception:
-              pass
-          with open("./site/site_meta.json", "w", encoding="utf-8") as f:
-            json.dump(meta, f, ensure_ascii=False, indent=2)
-          PY
-
-          # 在首页顶部插入一行注释，便于肉眼确认“是否更新”
-          bj="$(date +'%Y-%m-%d %H:%M:%S %Z')"
-          sha="${GITHUB_SHA:-unknown}"
-          sed -i "1s;^;<!-- built_at: ${bj} | sha: ${sha} -->\n;" ./site/index.html
-
-      - name: Deploy to gh-pages branch
+      - name: Configure Pages
         if: ${{ github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true' }}
-        uses: peaceiris/actions-gh-pages@v4
+        uses: actions/configure-pages@v5
+
+      - name: Upload Pages artifact
+        if: ${{ github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true' }}
+        uses: actions/upload-pages-artifact@v3
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./site
-          publish_branch: gh-pages
-          keep_files: false
-          enable_jekyll: false
+          path: ./site
+
+  deploy:
+    needs: build
+    if: ${{ github.event_name != 'schedule' || needs.build.outputs.skip != 'true' }}
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

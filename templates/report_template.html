@@ -79,6 +79,11 @@
 
         --lh-tight: 1.25;
         --lh-body: 1.6;
+
+        /* Typography stacks (PC杂志编辑风) */
+        --font-sans: -apple-system, "SF Pro Text", "Helvetica Neue", "PingFang SC", "Microsoft YaHei", sans-serif;
+        --font-display: "Songti SC", "STSong", "Noto Serif SC", "Source Han Serif SC", "SimSun", serif;
+        --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
       }
 
       [data-theme="dark"] {
@@ -156,7 +161,7 @@
       html, body{ max-width: 100%; overflow-x: hidden; }
 
       body {
-        font-family: -apple-system, "SF Pro Text", "Helvetica Neue", "PingFang SC", "Microsoft YaHei", sans-serif;
+        font-family: var(--font-sans);
         background: var(--bg-base);
         color: var(--text-primary);
         line-height: var(--lh-body);
@@ -188,9 +193,84 @@
         margin: 0 auto;
       }
 
+      /* PC：杂志编辑风（均衡密度） */
+      @media (min-width: 1100px){
+        body{
+          /* PC：横向布局 + 全宽（减少花哨渐变） */
+          padding: 42px 44px 80px;
+          background: var(--bg-base);
+        }
+        /* PC：主体宽度回到 66%（更适合阅读），并保持居中 */
+        .container{ width: 66%; max-width: 1180px; margin: 0 auto; }
+
+        /* PC：保持顶部横向导航（取消左侧竖向目录栏） */
+        .tabbar{
+          position: sticky;
+          top: calc(env(safe-area-inset-top, 0px) + 10px);
+          left: auto;
+          width: 100%;
+          flex-direction: row;
+          align-items: center;
+          gap: 8px;
+          padding: 8px;
+          border-radius: 999px;
+          background: color-mix(in oklab, var(--bg-card) 84%, rgba(2,6,23,0.03));
+          border: 1px solid color-mix(in oklab, var(--border) 76%, rgba(2,6,23,0.08));
+          box-shadow: 0 10px 30px rgba(2,6,23,0.08);
+          backdrop-filter: blur(10px);
+        }
+        .tab-btn{ flex: 1; text-align: center; justify-content: center; padding: 12px 14px; font-size: 13px; }
+        .tab-btn.active{ box-shadow: 0 12px 28px rgba(2,6,23,0.10); }
+
+        /* Hero：封面排版（标题用衬线，像杂志） */
+        .hero{
+          border-radius: 26px;
+          padding: 44px 44px;
+          box-shadow: 0 26px 80px rgba(2,6,23,0.16);
+        }
+        .hero-date{
+          font-family: var(--font-display);
+          font-size: 40px;
+          letter-spacing: 0.3px;
+        }
+        .hero-brief{
+          font-size: 13px;
+          line-height: 1.65;
+          max-width: 52ch;
+        }
+        .hero-panel{
+          border-radius: 22px;
+          padding: 14px 14px;
+        }
+
+        /* 卡片：减少“通用卡片感”，更像刊物的“版面区块” */
+        .card{
+          border-radius: 22px;
+          padding: 26px 26px;
+          margin-bottom: 18px;
+          box-shadow: 0 18px 60px rgba(2,6,23,0.08);
+          border-color: color-mix(in oklab, var(--border) 72%, rgba(2,6,23,0.12));
+        }
+        .card-title{
+          font-family: var(--font-display);
+          font-size: 20px;
+          letter-spacing: 0.25px;
+        }
+        .card-title::before{ display:none; }
+        .card-badge{
+          font-family: var(--font-mono);
+          letter-spacing: 0.3px;
+        }
+
+        /* 表格/列表：PC更紧凑但更精致 */
+        .ladder-table{ font-size: 12.5px; }
+        .ladder-table th{ font-size: 11px; letter-spacing: 0.3px; }
+      }
+
       /* Hero */
       .hero {
-        background: linear-gradient(135deg, var(--hero-start) 0%, var(--hero-mid) 58%, var(--hero-end) 100%);
+        /* 减少渐变：更克制的纯色 Hero（仍保留 grain 质感） */
+        background: color-mix(in oklab, var(--hero-mid) 92%, #000);
         border-radius: var(--radius-lg);
         padding: 32px 28px;
         color: #fff;
@@ -474,9 +554,8 @@
         letter-spacing: 0.2px;
       }
       .card-title::before {
-        content: ""; display: inline-block;
-        width: 3px; height: 18px;
-        background: var(--primary); border-radius: 2px;
+        /* 已禁用：卡片左侧彩色竖条 */
+        content: none;
       }
       .card-badge { font-size: 11px; padding: 4px 10px; border-radius: 999px; font-weight: 800; background: var(--bg-elevated); color: var(--text-muted); }
 
@@ -611,12 +690,8 @@
           radial-gradient(240px 160px at 92% 12%, rgba(255,255,255,0.06), rgba(255,255,255,0.00) 58%);
       }
       .heatmap-cell::after{
-        content:"";
-        position:absolute;
-        left:0; top:0; bottom:0;
-        width: 6px;
-        background: linear-gradient(180deg, var(--hm-accent), rgba(255,255,255,0));
-        opacity: 0.95;
+        /* 已禁用：卡片左侧彩色竖条 */
+        content: none;
       }
       .heatmap-cell:hover{
         transform: translateY(-2px);
@@ -800,12 +875,8 @@
         box-shadow: 0 14px 30px rgba(0,0,0,0.30);
       }
       .hm2-card::before{
-        content:"";
-        position:absolute;
-        left: 0; top: 0; bottom: 0;
-        width: 3px;
-        background: linear-gradient(180deg, var(--hm2-accent), transparent);
-        opacity: 0.95;
+        /* 已禁用：卡片左侧彩色竖条 */
+        content: none;
       }
 
       .hm2-top{ display:flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 10px; }
@@ -1207,30 +1278,51 @@
       .mp-kpi-grid{
         display:grid;
         grid-template-columns: repeat(4, minmax(0, 1fr));
-        gap: 10px;
-        margin-bottom: 14px;
+        gap: var(--space-3);
+        margin-bottom: var(--space-4);
       }
       @media (max-width: 720px){ .mp-kpi-grid{ grid-template-columns: repeat(2, minmax(0, 1fr)); } }
       .mp-kpi{
+        --mp-accent: rgba(59,130,246,0.92);
         border-radius: 16px;
-        padding: 12px 12px;
-        border: 1px solid rgba(148,163,184,0.16);
-        background: linear-gradient(135deg, rgba(255,255,255,0.62), rgba(255,255,255,0.40));
-        box-shadow: var(--shadow-sm);
+        padding: var(--space-3) var(--space-3);
+        border: 1px solid color-mix(in oklab, var(--border) 72%, var(--mp-accent) 28%);
+        background: color-mix(in oklab, var(--mp-accent) 6%, rgba(255,255,255,0.70));
+        box-shadow: 0 10px 22px rgba(2,6,23,0.06);
         text-align: center;
+        position: relative;
+        overflow: hidden;
+        transition: transform 180ms cubic-bezier(0.16, 1, 0.3, 1), box-shadow 180ms cubic-bezier(0.16, 1, 0.3, 1), border-color 180ms ease;
       }
-      [data-theme="dark"] .mp-kpi{ background: rgba(15,23,42,0.42); border-color: rgba(148,163,184,0.18); }
-      .mp-kpi .k{ font-size: 11px; font-weight: 900; color: var(--text-muted); }
-      .mp-kpi .v{ margin-top: 6px; font-size: 26px; font-weight: 1100; font-variant-numeric: tabular-nums; }
-      .mp-kpi .s{ margin-top: 4px; font-size: 11px; font-weight: 800; color: var(--text-secondary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-      .mp-kpi.green{ background: linear-gradient(135deg, rgba(236,253,245,0.85), rgba(209,250,229,0.55)); border-color: rgba(16,185,129,0.18); }
-      .mp-kpi.red{ background: linear-gradient(135deg, rgba(254,242,242,0.84), rgba(254,226,226,0.55)); border-color: rgba(239,68,68,0.18); }
-      .mp-kpi.blue{ background: linear-gradient(135deg, rgba(239,246,255,0.84), rgba(219,234,254,0.55)); border-color: rgba(37,99,235,0.18); }
-      .mp-kpi.amber{ background: linear-gradient(135deg, rgba(255,251,235,0.86), rgba(254,243,199,0.58)); border-color: rgba(245,158,11,0.18); }
-      [data-theme="dark"] .mp-kpi.green{ background: rgba(16,185,129,0.12); }
-      [data-theme="dark"] .mp-kpi.red{ background: rgba(239,68,68,0.12); }
-      [data-theme="dark"] .mp-kpi.blue{ background: rgba(37,99,235,0.12); }
-      [data-theme="dark"] .mp-kpi.amber{ background: rgba(245,158,11,0.12); }
+      .mp-kpi::after{
+        /* 已禁用：过多渐变装饰 */
+        content: none;
+      }
+      .mp-kpi::before{
+        /* 已禁用：卡片左侧彩色竖条 */
+        content: none;
+      }
+      .mp-kpi:hover{
+        transform: translateY(-2px);
+        box-shadow: 0 16px 40px rgba(2,6,23,0.10);
+        border-color: color-mix(in oklab, var(--border) 62%, var(--mp-accent) 38%);
+      }
+      [data-theme="dark"] .mp-kpi{
+        background: linear-gradient(135deg,
+          rgba(15,23,42,0.62),
+          color-mix(in oklab, var(--theme-soft) 12%, rgba(15,23,42,0.40))
+        );
+        border-color: rgba(148,163,184,0.22);
+        box-shadow: 0 14px 30px rgba(0,0,0,0.30);
+      }
+      [data-theme="dark"] .mp-kpi:hover{ box-shadow: 0 18px 44px rgba(0,0,0,0.40); }
+      .mp-kpi .k{ font-size: var(--type-xs); font-weight: 950; color: var(--text-muted); letter-spacing: 0.22px; position: relative; z-index: 1; }
+      .mp-kpi .v{ margin-top: 6px; font-size: 28px; font-weight: 1100; font-variant-numeric: tabular-nums; line-height: 1.05; position: relative; z-index: 1; }
+      .mp-kpi .s{ margin-top: 6px; font-size: var(--type-xs); font-weight: 800; color: var(--text-secondary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; position: relative; z-index: 1; }
+      .mp-kpi.green{ --mp-accent: rgba(16,185,129,0.92); }
+      .mp-kpi.red{ --mp-accent: rgba(239,68,68,0.92); }
+      .mp-kpi.blue{ --mp-accent: rgba(37,99,235,0.92); }
+      .mp-kpi.amber{ --mp-accent: rgba(245,158,11,0.92); }
 
       .mp-two{
         display:grid;
@@ -1239,33 +1331,57 @@
       }
       @media (max-width: 900px){ .mp-two{ grid-template-columns: 1fr; } }
       .mp-panel{
+        --mp-panel-accent: rgba(148,163,184,0.70);
         border-radius: 16px;
-        border: 1px solid rgba(148,163,184,0.18);
-        background: rgba(255,255,255,0.55);
-        padding: 12px 12px;
+        border: 1px solid color-mix(in oklab, var(--border) 72%, var(--mp-panel-accent) 28%);
+        background: rgba(255,255,255,0.62);
+        padding: var(--space-3) var(--space-3);
+        box-shadow: 0 12px 28px rgba(2,6,23,0.06);
+        position: relative;
+        overflow: hidden;
       }
-      [data-theme="dark"] .mp-panel{ background: rgba(15,23,42,0.40); border-color: rgba(148,163,184,0.18); }
+      .mp-panel::before{
+        /* 已禁用：卡片左侧彩色竖条 */
+        content: none;
+      }
+      .mp-panel::after{
+        /* 已禁用：过多渐变装饰 */
+        content: none;
+      }
+      [data-theme="dark"] .mp-panel{
+        background: linear-gradient(135deg,
+          rgba(15,23,42,0.62),
+          color-mix(in oklab, var(--theme-soft) 10%, rgba(15,23,42,0.34))
+        );
+        border-color: rgba(148,163,184,0.22);
+        box-shadow: 0 14px 30px rgba(0,0,0,0.30);
+      }
       .mp-panel .hd{ display:flex; align-items:baseline; justify-content:space-between; gap: 10px; margin-bottom: 8px; }
-      .mp-panel .t{ font-size: 13px; font-weight: 1000; }
-      .mp-panel .badge{ font-size: 11px; font-weight: 900; color: var(--text-muted); }
+      .mp-panel .t{ font-size: var(--type-lg); font-weight: 1100; letter-spacing: 0.15px; position: relative; z-index: 1; }
+      .mp-panel .badge{ font-size: var(--type-xs); font-weight: 950; color: var(--text-muted); position: relative; z-index: 1; }
       .mp-list{ display:flex; flex-direction:column; gap: 6px; }
       .mp-row{ display:flex; align-items:baseline; justify-content:space-between; gap: 10px; padding: 6px 0; border-bottom: 1px dashed rgba(148,163,184,0.18); }
       .mp-row:last-child{ border-bottom: none; }
-      .mp-row .lk{ font-size: 12px; font-weight: 850; color: var(--text-secondary); }
-      .mp-row .lv{ font-size: 12px; font-weight: 1000; }
-      .mp-row .ln{ font-size: 11px; font-weight: 750; color: var(--text-muted); margin-top: 2px; }
+      .mp-row > *{ position: relative; z-index: 1; }
+      .mp-row .lk{ font-size: var(--type-sm); font-weight: 900; color: var(--text-secondary); }
+      .mp-row .lv{ font-size: var(--type-sm); font-weight: 1100; }
+      .mp-row .ln{ font-size: var(--type-xs); font-weight: 750; color: var(--text-muted); margin-top: 2px; }
       .mp-foot{
-        margin-top: 10px;
+        margin-top: var(--space-3);
         border-radius: 12px;
-        padding: 8px 10px;
-        border: 1px solid rgba(148,163,184,0.16);
-        background: rgba(2,6,23,0.04);
-        font-size: 12px;
-        font-weight: 850;
+        padding: 10px 10px;
+        border: 1px solid color-mix(in oklab, var(--border) 72%, var(--mp-panel-accent) 28%);
+        background: color-mix(in oklab, var(--mp-panel-accent) 8%, rgba(2,6,23,0.04));
+        font-size: var(--type-sm);
+        font-weight: 900;
         color: var(--text-secondary);
+        position: relative;
+        z-index: 1;
       }
-      [data-theme="dark"] .mp-foot{ background: rgba(2,6,23,0.32); border-color: rgba(148,163,184,0.14); }
+      [data-theme="dark"] .mp-foot{ background: rgba(2,6,23,0.34); border-color: rgba(148,163,184,0.18); }
       .mp-foot .stars{ font-weight: 1000; color: var(--text-primary); margin-right: 8px; }
+      .mp-panel[data-accent="profit"]{ --mp-panel-accent: rgba(239,68,68,0.92); }
+      .mp-panel[data-accent="risk"]{ --mp-panel-accent: rgba(16,185,129,0.90); }
 
       /* Inset panel：让同一张 card 内出现“内嵌模块”，打破全是同一种卡片的单调感 */
       .inset{
@@ -1515,20 +1631,37 @@
         transition: background 0.18s ease;
       }
       .ladder-table tbody tr:last-child td{ border-bottom: none; }
-      .ladder-table tbody tr:hover td{ background: rgba(255,255,255,0.05); }
-      .ladder-badge { display: inline-block; padding: 4px 12px; border-radius: 8px; font-size: 12px; font-weight: 800; min-width: 45px; }
-      .badge-6 { background: linear-gradient(135deg, #fee2e2, #fecaca); color: #b91c1c; }
-      .badge-5 { background: linear-gradient(135deg, #fee2e2, #fecaca); color: #dc2626; }
-      .badge-4 { background: linear-gradient(135deg, #ffedd5, #fed7aa); color: #9a3412; }
-      .badge-3 { background: linear-gradient(135deg, #dcfce7, #bbf7d0); color: #15803d; }
-      .badge-2 { background: linear-gradient(135deg, #dbeafe, #bfdbfe); color: #1d4ed8; }
-      .badge-1 { background: var(--bg-elevated); color: var(--text-muted); }
-      [data-theme="dark"] .badge-6 { background: rgba(239, 68, 68, 0.2); color: #fca5a5; }
-      [data-theme="dark"] .badge-5 { background: rgba(239, 68, 68, 0.2); color: #fca5a5; }
-      [data-theme="dark"] .badge-4 { background: rgba(245, 158, 11, 0.2); color: #fcd34d; }
-      [data-theme="dark"] .badge-3 { background: rgba(16, 185, 129, 0.2); color: #86efac; }
-      [data-theme="dark"] .badge-2 { background: rgba(37, 99, 235, 0.2); color: #93c5fd; }
-      [data-theme="dark"] .badge-1 { background: rgba(148, 163, 184, 0.2); color: #94a3b8; }
+      .ladder-table tbody tr:hover td{ background: color-mix(in oklab, var(--theme-soft) 10%, rgba(255,255,255,0.04)); }
+      [data-theme="dark"] .ladder-table tbody tr:hover td{ background: rgba(148,163,184,0.08); }
+
+      /* 统一徽章系统：用 accent 变量而不是写死颜色 */
+      .ladder-badge{
+        --lb-accent: rgba(148,163,184,0.70);
+        display: inline-block;
+        padding: 4px 12px;
+        border-radius: 10px;
+        font-size: 12px;
+        font-weight: 950;
+        min-width: 46px;
+        border: 1px solid color-mix(in oklab, var(--border) 72%, var(--lb-accent) 28%);
+        background: color-mix(in oklab, var(--lb-accent) 12%, rgba(255,255,255,0.70));
+        color: var(--text-primary);
+      }
+      [data-theme="dark"] .ladder-badge{
+        background: color-mix(in oklab, var(--lb-accent) 14%, rgba(15,23,42,0.62));
+        border-color: rgba(148,163,184,0.22);
+      }
+      .badge-6{ --lb-accent: rgba(239,68,68,0.92); color: #7f1d1d; }
+      .badge-5{ --lb-accent: rgba(239,68,68,0.92); color: #7f1d1d; }
+      .badge-4{ --lb-accent: rgba(245,158,11,0.92); color: #78350f; }
+      .badge-3{ --lb-accent: rgba(16,185,129,0.90); color: #064e3b; }
+      .badge-2{ --lb-accent: rgba(37,99,235,0.92); color: #1e3a8a; }
+      .badge-1{ --lb-accent: rgba(148,163,184,0.70); color: var(--text-secondary); }
+      [data-theme="dark"] .badge-6,
+      [data-theme="dark"] .badge-5{ color: rgba(252,165,165,0.95); }
+      [data-theme="dark"] .badge-4{ color: rgba(253,230,138,0.95); }
+      [data-theme="dark"] .badge-3{ color: rgba(134,239,172,0.95); }
+      [data-theme="dark"] .badge-2{ color: rgba(147,197,253,0.95); }
       .stock-name-cell { font-weight: 700; color: var(--text-primary); }
       /* Ladder（Table-like 行展示） */
       .ladder-rows { display: flex; flex-direction: column; gap: 10px; }
@@ -1572,8 +1705,8 @@
       .ladder-row-footer .pill{
         padding: 2px 8px;
         border-radius: 999px;
-        background: rgba(148, 163, 184, 0.10);
-        border: 1px solid var(--border);
+        background: color-mix(in oklab, var(--theme-soft) 10%, rgba(148, 163, 184, 0.08));
+        border: 1px solid color-mix(in oklab, var(--border) 78%, var(--theme-glow) 22%);
         white-space: nowrap;
       }
       .ladder-stock-list { display: flex; flex-wrap: wrap; gap: 8px; }
@@ -1616,11 +1749,11 @@
       }
       .ladder-summary-item{
         flex: 1;
-        background: linear-gradient(135deg, var(--theme-soft), var(--bg-elevated));
+        background: var(--bg-elevated);
         border: 1px solid var(--border);
         border-radius: var(--radius-md);
         padding: 10px 12px;
-        border-left: 4px solid var(--theme-accent);
+        border-left: none;
       }
       .ladder-summary-k{ font-size: 11px; font-weight: 900; color: var(--text-muted); display:flex; align-items:center; gap: 6px; }
       .ladder-summary-icon{ width: 22px; height: 22px; border-radius: 8px; display:flex; align-items:center; justify-content:center; background: rgba(37,99,235,0.14); font-size: 12px; }
@@ -1650,12 +1783,8 @@
       }
       .ladder-step + .ladder-step{ margin-top: 10px; }
       .ladder-step::before{
-        content:"";
-        position:absolute;
-        left: 0; top: 0;
-        height: 3px; width: 100%;
-        background: linear-gradient(90deg, var(--theme-glow), transparent);
-        opacity: 0.85;
+        /* 已禁用：顶部渐变装饰条（减少渐变） */
+        content: none;
       }
       .ladder-step-header{
         display:flex;
@@ -1728,19 +1857,37 @@
 
       /* Hot Topic */
       .hot-topic { padding: 16px; border-radius: var(--radius-md); margin-bottom: 12px; border-left: 4px solid; transition: all 0.2s; }
+      .hot-topic { border-left: none; }
       .hot-topic:hover { transform: translateX(4px); }
       .hot-topic.good { background: linear-gradient(135deg, var(--theme-soft), var(--bg-elevated)); border-color: var(--theme-accent); }
       .hot-topic.caution { background: var(--bg-elevated); border-color: var(--warning); }
       .hot-topic.fire { background: linear-gradient(135deg, var(--theme-soft), var(--bg-elevated)); border-color: var(--theme-accent-2); }
       .topic-title { font-weight: 800; font-size: 14px; margin-bottom: 6px; display: flex; align-items: center; gap: 8px; color: var(--text-primary); }
       .topic-desc { font-size: 13px; color: var(--text-secondary); line-height: 1.65; }
-      .topic-tag { display: inline-block; font-size: 10px; padding: 2px 10px; border-radius: 20px; font-weight: 800; margin-left: auto; }
-      .tag-sustained { background: #dcfce7; color: #166534; }
-      .tag-caution { background: #fef3c7; color: #92400e; }
-      .tag-fire { background: #fee2e2; color: #b91c1c; }
-      [data-theme="dark"] .tag-sustained { background: rgba(16, 185, 129, 0.2); color: #86efac; }
-      [data-theme="dark"] .tag-caution { background: rgba(245, 158, 11, 0.2); color: #fcd34d; }
-      [data-theme="dark"] .tag-fire { background: rgba(239, 68, 68, 0.2); color: #fca5a5; }
+      .topic-tag{
+        --tag-accent: rgba(148,163,184,0.70);
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 10px;
+        padding: 3px 10px;
+        border-radius: 999px;
+        font-weight: 950;
+        margin-left: auto;
+        border: 1px solid color-mix(in oklab, var(--border) 72%, var(--tag-accent) 28%);
+        background: color-mix(in oklab, var(--tag-accent) 10%, rgba(255,255,255,0.70));
+        color: var(--text-primary);
+      }
+      [data-theme="dark"] .topic-tag{
+        background: color-mix(in oklab, var(--tag-accent) 12%, rgba(15,23,42,0.62));
+        border-color: rgba(148,163,184,0.22);
+      }
+      .tag-sustained{ --tag-accent: rgba(16,185,129,0.90); color: #064e3b; }
+      .tag-caution{ --tag-accent: rgba(245,158,11,0.92); color: #78350f; }
+      .tag-fire{ --tag-accent: rgba(239,68,68,0.92); color: #7f1d1d; }
+      [data-theme="dark"] .tag-sustained{ color: rgba(134,239,172,0.95); }
+      [data-theme="dark"] .tag-caution{ color: rgba(253,230,138,0.95); }
+      [data-theme="dark"] .tag-fire{ color: rgba(252,165,165,0.95); }
 
       /* Sector List */
       .sector-list{
@@ -1766,9 +1913,9 @@
       .sector-item:last-child{ border-bottom: none; }
       .sector-item:hover { background: rgba(255,255,255,0.05); }
       .sector-rank { width: 28px; height: 28px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 900; color: #fff; flex-shrink: 0; }
-      .rank-1 { background: linear-gradient(135deg, #fbbf24, #f59e0b); }
-      .rank-2 { background: linear-gradient(135deg, #94a3b8, #64748b); }
-      .rank-3 { background: linear-gradient(135deg, #d97706, #b45309); }
+      .rank-1 { background: linear-gradient(135deg, color-mix(in oklab, var(--warning) 85%, #fff), var(--warning)); }
+      .rank-2 { background: linear-gradient(135deg, rgba(148,163,184,0.92), rgba(100,116,139,0.92)); }
+      .rank-3 { background: linear-gradient(135deg, color-mix(in oklab, var(--danger) 55%, var(--warning)), var(--warning)); }
       .rank-n { background: var(--bg-card); color: var(--text-muted); }
       [data-theme="dark"] .rank-n { background: rgba(148, 163, 184, 0.2); }
       .sector-info { flex: 1; margin-left: 12px; min-width: 0; }
@@ -1814,12 +1961,8 @@
         border-color: rgba(148,163,184,0.22);
       }
       .zt-item::before{
-        content:"";
-        position:absolute;
-        left: 0; top: 0; bottom: 0;
-        width: 3px;
-        background: linear-gradient(180deg, var(--zt-accent), transparent);
-        opacity: 0.9;
+        /* 已禁用：卡片左侧彩色竖条 */
+        content: none;
       }
       .zt-top{ display:flex; align-items:flex-start; justify-content:space-between; gap: 10px; }
       .zt-name{ font-size: 14px; font-weight: 950; color: var(--text-primary); }
@@ -2419,14 +2562,8 @@
       }
       [data-theme="dark"] .tri-card{ background: rgba(15,23,42,0.45); border-color: rgba(148,163,184,0.22); }
       .tri-card::before{
-        content:"";
-        position:absolute;
-        left: 0;
-        top: 12px;
-        bottom: 12px;
-        width: 3px;
-        border-radius: 3px;
-        background: rgba(148,163,184,0.45);
+        /* 已禁用：卡片左侧彩色竖条 */
+        content: none;
       }
       .tri-card.earn::before{ background: rgba(239,68,68,0.65); }
       .tri-card.risk::before{ background: rgba(16,185,129,0.62); }
@@ -2593,25 +2730,37 @@
 
       /* Verdict Box */
       .verdict-box { border-radius: var(--radius-md); padding: 18px; font-size: 13.5px; line-height: 1.75; margin-top: 14px; }
-      .verdict-warn { background: linear-gradient(135deg, #fffbeb, #fef3c7); color: #92400e; border: 1px solid #fde68a; }
-      .verdict-good { background: linear-gradient(135deg, #ecfdf5, #d1fae5); color: #166534; border: 1px solid #a7f3d0; }
-      .verdict-fire { background: linear-gradient(135deg, #fef2f2, #fee2e2); color: #b91c1c; border: 1px solid #fecaca; }
-      body[data-market-tone="bull"] .verdict-good { background: linear-gradient(135deg, rgba(254, 226, 226, 0.96), rgba(253, 186, 116, 0.92)); color: #9a3412; border-color: rgba(249, 115, 22, 0.30); }
-      body[data-market-tone="mixed"] .verdict-warn { background: linear-gradient(135deg, rgba(255, 247, 237, 0.96), rgba(254, 215, 170, 0.88)); color: #9a3412; border-color: rgba(245, 158, 11, 0.30); }
-      body[data-market-tone="bear"] .verdict-fire { background: linear-gradient(135deg, rgba(220, 252, 231, 0.94), rgba(186, 230, 253, 0.88)); color: #0f766e; border-color: rgba(14, 165, 233, 0.28); }
-      [data-theme="dark"] .verdict-warn { background: rgba(245, 158, 11, 0.15); border-color: rgba(245, 158, 11, 0.3); }
-      [data-theme="dark"] .verdict-good { background: rgba(16, 185, 129, 0.15); border-color: rgba(16, 185, 129, 0.3); }
-      [data-theme="dark"] .verdict-fire { background: rgba(239, 68, 68, 0.15); border-color: rgba(239, 68, 68, 0.3); }
+      .verdict-warn { background: color-mix(in oklab, var(--warning) 12%, rgba(255,255,255,0.72)); color: var(--text-primary); border: 1px solid rgba(245, 158, 11, 0.22); }
+      .verdict-good { background: color-mix(in oklab, var(--danger) 10%, rgba(255,255,255,0.72)); color: var(--text-primary); border: 1px solid rgba(239, 68, 68, 0.22); }
+      .verdict-fire { background: color-mix(in oklab, var(--primary) 10%, rgba(255,255,255,0.72)); color: var(--text-primary); border: 1px solid rgba(37, 99, 235, 0.22); }
+      body[data-market-tone="bull"] .verdict-good { border-color: rgba(239,68,68,0.24); }
+      body[data-market-tone="mixed"] .verdict-warn { border-color: rgba(245,158,11,0.24); }
+      body[data-market-tone="bear"] .verdict-fire { border-color: rgba(16,185,129,0.22); }
+      [data-theme="dark"] .verdict-warn { background: rgba(245, 158, 11, 0.12); border-color: rgba(245, 158, 11, 0.26); }
+      [data-theme="dark"] .verdict-good { background: rgba(239, 68, 68, 0.12); border-color: rgba(239, 68, 68, 0.26); }
+      [data-theme="dark"] .verdict-fire { background: rgba(37, 99, 235, 0.12); border-color: rgba(37, 99, 235, 0.26); }
       .verdict-box strong { font-size: 14px; display: block; margin-bottom: 4px; }
 
       /* Summary Box */
       .summary-box { 
-        background: var(--bg-elevated); 
+        background: linear-gradient(135deg,
+          color-mix(in oklab, var(--theme-soft) 14%, rgba(255,255,255,0.62)),
+          rgba(255,255,255,0.22)
+        );
         border-radius: var(--radius-md); 
         padding: 18px 20px; 
-        border-left: 5px solid var(--theme-accent); 
+        border: 1px solid color-mix(in oklab, var(--border) 72%, var(--theme-glow) 28%);
+        border-left: 5px solid var(--theme-accent);
         margin-top: 16px; 
-        box-shadow: inset 0 0 10px rgba(0,0,0,0.02);
+        box-shadow: 0 14px 30px rgba(2,6,23,0.06);
+      }
+      [data-theme="dark"] .summary-box{
+        background: linear-gradient(135deg,
+          color-mix(in oklab, var(--theme-soft) 12%, rgba(15,23,42,0.70)),
+          rgba(15,23,42,0.28)
+        );
+        border-color: rgba(148,163,184,0.22);
+        box-shadow: 0 18px 44px rgba(0,0,0,0.40);
       }
       .summary-text { 
         font-size: 14.5px; 
@@ -2685,14 +2834,8 @@
         overflow: hidden;
       }
       .tier-card::before{
-        content:"";
-        position:absolute;
-        left: 0;
-        top: 12px;
-        bottom: 12px;
-        width: 3px;
-        background: rgba(148,163,184,0.45);
-        border-radius: 3px;
+        /* 已禁用：卡片左侧彩色竖条 */
+        content: none;
       }
       .tier-label{
         font-size: 11px;
@@ -3139,12 +3282,7 @@
             </div>
             <div class="hero-date">__REPORT_DATE_CN__收盘简报</div>
             <div class="hero-subtitle">数据来源：风中一刀的主升浪丨</div>
-            <div class="hero-subtitle" v-if="marketData.meta">
-              数据更新时间：指数 {{ marketData.meta?.asOf?.indices || '-' }}
-              ｜全景 {{ marketData.meta?.asOf?.pools || '-' }}
-              ｜题材 {{ marketData.meta?.asOf?.themes || '-' }}
-              ｜生成 {{ marketData.meta?.generatedAt || '-' }}
-            </div>
+            
             <div class="hero-brief">
               今日情绪 <strong>{{ marketData.moodStage?.title || '-' }}</strong>，
               封板率 <strong>{{ marketData.panorama?.ratio ?? '-' }}</strong>，
@@ -3562,7 +3700,7 @@
           </div>
 
           <div class="mp-two">
-            <div class="mp-panel">
+            <div class="mp-panel" data-accent="profit">
               <div class="hd">
                 <div class="t">赚钱效应</div>
                 <div class="badge">评级 <span class="stars">{{ marketData.marketPanorama.earning?.stars_text || '-' }}</span> {{ marketData.marketPanorama.earning?.score ?? '-' }}</div>
@@ -3579,7 +3717,7 @@
               <div class="mp-foot"><span class="stars">{{ marketData.marketPanorama.earning?.stars_text || '-' }}</span>{{ marketData.marketPanorama.earning?.comment || '—' }}</div>
             </div>
 
-            <div class="mp-panel">
+            <div class="mp-panel" data-accent="risk">
               <div class="hd">
                 <div class="t">亏钱效应</div>
                 <div class="badge">评级 <span class="stars">{{ marketData.marketPanorama.loss?.stars_text || '-' }}</span> {{ marketData.marketPanorama.loss?.score ?? '-' }}</div>
@@ -3615,7 +3753,7 @@
           </div>
 
           <div class="sh-list">
-            <details class="sh-row" v-for="(r, i) in sectorHeat.rows" :key="'sh-'+r.name+'-'+i" :open="i<2">
+            <details class="sh-row" v-for="(r, i) in sectorHeat.rows" :key="'sh-'+r.name+'-'+i">
               <summary>
                 <div class="sh-left">
                   <div class="sh-emoji">{{ r.icon }}</div>
@@ -3909,7 +4047,7 @@
           <!-- 统一视图：只依赖 compat（推荐作为主入口） -->
           <div class="v2-strategy" v-if="marketData.compat">
             <div class="row">
-              <div class="tone">统一口径 · {{ marketData.compat.algo || '-' }} ｜ {{ marketData.compat.sentiment?.phase || '-' }}（{{ marketData.compat.sentiment?.score ?? '-' }}）</div>
+              <div class="tone">明日行动指南 · {{ marketData.compat.sentiment?.phase || '-' }}（{{ marketData.compat.sentiment?.score ?? '-' }}）</div>
               <div class="cap">仓位：{{ marketData.compat.position?.capital_pct ?? '-' }}</div>
             </div>
             <div class="advice" v-if="marketData.compat.rightside?.advice">{{ marketData.compat.rightside.advice }}</div>
@@ -3923,7 +4061,7 @@
               <span class="pill" v-if="marketData.compat.collapse_chain?.level">崩溃链：{{ marketData.compat.collapse_chain.level }}</span>
             </div>
             <details v-if="(marketData.compat.sentiment?.warnings || []).length">
-              <summary>展开 warnings</summary>
+              <summary>展开提示</summary>
               <ul class="rules">
                 <li v-for="(r, i) in marketData.compat.sentiment.warnings" :key="'c-w-'+i">{{ r }}</li>
               </ul>
@@ -4188,9 +4326,9 @@
             <div class="top">
               <div>
                 <div class="title">当日统一口径总控面板</div>
-                <div class="meta">口径：{{ marketData.compat.algo || '-' }} · 生成：{{ marketData.compat.generatedAt || marketData.meta?.generatedAt || '-' }}</div>
+                
               </div>
-              <div class="meta">date：{{ marketData.compat.date || marketData.date || '-' }}</div>
+              
             </div>
             <div class="grid">
               <div class="kpi">
@@ -4218,7 +4356,6 @@
           <div class="v3-card span6">
             <div class="hd">
               <div class="t">情绪与风险</div>
-              <div class="s">confidence {{ marketData.compat.sentiment?.confidence ?? '-' }}</div>
             </div>
             <div class="v3-kpis">
               <span class="pill primary">情绪 {{ marketData.compat.sentiment?.score ?? '-' }} / 10</span>
@@ -4226,7 +4363,7 @@
               <span class="pill">风险 {{ marketData.compat.sentiment?.risk_level || '-' }}</span>
             </div>
             <details v-if="(marketData.compat.sentiment?.warnings || []).length">
-              <summary>展开 warnings</summary>
+              <summary>展开提示</summary>
               <ul class="rules">
                 <li v-for="(w, i) in marketData.compat.sentiment.warnings" :key="'c-sw-'+i">{{ w }}</li>
               </ul>
@@ -4242,7 +4379,7 @@
               <span :class="['pill', (marketData.compat.rightside?.allowed === true) ? 'primary' : ((marketData.compat.rightside?.allowed === false) ? 'danger' : '')]">
                 结论：{{ marketData.compat.rightside?.allowed === true ? '允许右侧' : (marketData.compat.rightside?.allowed === false ? '禁止右侧' : '-') }}
               </span>
-              <span class="pill" v-if="marketData.compat.rightside?.confidence">confidence {{ marketData.compat.rightside.confidence }}</span>
+              
             </div>
             <div class="txt" v-if="marketData.compat.rightside?.advice">{{ marketData.compat.rightside.advice }}</div>
           </div>
@@ -4250,7 +4387,6 @@
           <div class="v3-card span6">
             <div class="hd">
               <div class="t">仓位与共振</div>
-              <div class="s">confidence {{ marketData.compat.position?.confidence ?? '-' }}</div>
             </div>
             <div class="v3-kpis">
               <span class="pill primary">仓位 {{ marketData.compat.position?.capital_pct ?? '-' }}</span>
@@ -6634,9 +6770,60 @@
               (topThemes.length ? themeScore : hyScore) * 0.14 +
               boardScore * 0.12
             );
-            const score = clamp(base * 0.82 + envBoost * 0.18 + mainBonus + leaderBonus - highPenalty - multiPenalty - themePenalty);
 
+            // === 明日计划推荐个股：偏好“更容易连板晋级”的结构条件 ===
+            // 1) 小市值（尽量 <150亿）
+            // 2) 成交额接近 10 亿（过小=不易走出强趋势；过大=资金博弈更偏容量）
+            // 3) 温和放量梯队（用换手 proxy：3%~12% 更“健康”，极低/极高都扣分）
+            // 4) 题材整体行动：有领涨（题材leader）+ 有跟风（followers）+ 有扩散（多题材/强度）
             const cjeYi = toNum(s.cje, 0) / 1e8;
+            const zszYi = toNum(s.zsz, 0) / 1e8;
+            const hsPct = toNum(s.hs, 0); // %（涨停池口径）
+
+            // 小市值：<=150亿优先；>150亿逐步衰减
+            const capScore = zszYi
+              ? clamp(100 - Math.max(0, zszYi - 150) * 0.55)   // 150->100, 330->0
+              : 55;
+            const capBonus = (capScore - 55) * 0.10;            // roughly [-5, +4.5]
+
+            // 成交额：以 10 亿为中心的“接力舒适区”
+            const cjeTargetScore = cjeYi
+              ? clamp(100 - Math.abs(cjeYi - 10) * 8.0)         // 10->100, 0->20, 22->4
+              : 0;
+            const cjeBonus = (cjeTargetScore / 100) * 10.0;     // 0~10
+
+            // 温和放量梯队：换手 8% 最舒适（3~12 视作温和）
+            const volTierScore = hsPct
+              ? clamp(100 - Math.abs(hsPct - 8) * 7.0)          // 8->100, 3/13->65, 0/20->? low
+              : 55;
+            const volBonus = (volTierScore / 100) * 8.0;        // 0~8
+            const isModerateVolume = (hsPct >= 3 && hsPct <= 12);
+
+            // 题材联动/扩散：有梯队 + 有领涨/跟风 + 题材净强（net）
+            const hasSpread = themed.length >= 2;               // 多题材/发散 proxy
+            const themeActionBonus =
+              (hasTier ? 5 : 0) +
+              (hasFollow ? 5 : 0) +
+              (isThemeLeader ? 2 : 0) +
+              (hasSpread ? 3 : 0) +
+              clamp(themeNet * 0.6, 0, 6);                      // net 通常 0~15
+
+            // 最终加权：保留“封单/开板/早封/题材/梯队”主线，同时提高上述条件权重
+            // 注意：这里得到的是 rawScore（0~100）。最终用于页面展示/排序的 score 会在下方做“百分位映射”，
+            // 让高分更稀缺，避免“整体都很高”。
+            const rawScore = clamp(
+              base * 0.72 +
+              envBoost * 0.18 +
+              mainBonus +
+              leaderBonus +
+              themeActionBonus +
+              capBonus +
+              cjeBonus +
+              volBonus -
+              highPenalty -
+              multiPenalty -
+              themePenalty
+            );
 
             const tags = [
               ...(isMain ? [tag('主线', 'ladder-chip-strong red-text')] : []),
@@ -6655,7 +6842,11 @@
               tag(`封单${fundYi ? fundYi.toFixed(2) : '-'}亿`, fundYi >= 3 ? 'ladder-chip-strong red-text' : (fundYi >= 1 ? 'ladder-chip-warn orange-text' : 'ladder-chip-cool blue-text')),
               open ? tag(`${open}次开板`, open >= 3 ? 'ladder-chip-warn orange-text' : 'ladder-chip-cool blue-text') : tag('未开', 'ladder-chip-cool blue-text'),
               fmtHhmm(s.fbt) ? tag(`首封${fmtHhmm(s.fbt)}`, timeScore >= 70 ? 'ladder-chip-strong red-text' : 'ladder-chip-cool blue-text') : null,
-              cjeYi ? tag(`成交额${cjeYi.toFixed(2)}亿`, cjeYi >= 10 ? 'ladder-chip-warn orange-text' : '') : null,
+              (zszYi ? tag(`市值${zszYi.toFixed(0)}亿`, zszYi <= 150 ? 'ladder-chip-warn orange-text' : 'ladder-chip-cool blue-text') : null),
+              (cjeYi ? tag(`成交额${cjeYi.toFixed(2)}亿`, (cjeYi >= 6 && cjeYi <= 14) ? 'ladder-chip-strong red-text' : (cjeYi >= 3 ? 'ladder-chip-warn orange-text' : 'ladder-chip-cool blue-text')) : null),
+              (hsPct ? tag(`${hsPct.toFixed(1)}%换手`, isModerateVolume ? 'ladder-chip-warn orange-text' : 'ladder-chip-cool blue-text') : null),
+              (isModerateVolume ? tag('温和放量', 'ladder-chip-warn orange-text') : null),
+              (hasSpread ? tag('题材发散', 'ladder-chip-cool blue-text') : null),
               ...(topThemes.length
                 ? topThemes.map(t => tag(`题材推测${t.name}`, t.net >= 12 ? 'ladder-chip-warn orange-text' : ''))
                 : [tag(`${hy}×${hyCnt.get(hy) || 1}`, hyScore >= 60 ? 'ladder-chip-warn orange-text' : '')]
@@ -6673,6 +6864,10 @@
             if (leaderBonus >= 10) reasonBits.push('龙头梯队');
             if (hasTier && hasFollow) reasonBits.push('梯队+跟风');
             if (lbc >= 2) reasonBits.push('梯队内有辨识度');
+            if (zszYi && zszYi <= 150) reasonBits.push('小市值');
+            if (cjeYi && cjeYi >= 6 && cjeYi <= 14) reasonBits.push('成交额≈10亿');
+            if (isModerateVolume) reasonBits.push('温和放量');
+            if (hasTier && hasFollow && (hasSpread || themeNet >= 10)) reasonBits.push('题材联动');
             if (open >= 8) reasonBits.push('强分歧(多开板)');
             else if (open >= 3) reasonBits.push('分歧偏大');
             if (stageType === 'good' && lbc >= 5) reasonBits.push('高位谨慎');
@@ -6686,11 +6881,11 @@
             // 首封时间只保留在标签里，不拼到“预期管理”末尾，避免冗余
 
             const gapRange = (() => {
-              // score 越高，预期开盘溢价越高（经验分段）
-              if (score >= 82) return { lo: 3, hi: 6 };
-              if (score >= 70) return { lo: 1, hi: 4 };
-              if (score >= 58) return { lo: 0, hi: 2 };
-              if (score >= 45) return { lo: -1, hi: 1 };
+              // rawScore 越高，预期开盘溢价越高（经验分段）
+              if (rawScore >= 82) return { lo: 3, hi: 6 };
+              if (rawScore >= 70) return { lo: 1, hi: 4 };
+              if (rawScore >= 58) return { lo: 0, hi: 2 };
+              if (rawScore >= 45) return { lo: -1, hi: 1 };
               return { lo: -3, hi: 0 };
             })();
             const pct = (x) => `${x >= 0 ? '+' : ''}${x}%`;
@@ -6701,9 +6896,9 @@
             };
             const aucRatio = (() => {
               // 用“竞价成交额(估) / 今日成交额”做明日开盘量能预期（比“竞价封单”更有意义）
-              if (score >= 82) return 0.08;
-              if (score >= 70) return 0.06;
-              if (score >= 58) return 0.045;
+              if (rawScore >= 82) return 0.08;
+              if (rawScore >= 70) return 0.06;
+              if (rawScore >= 58) return 0.045;
               return 0.03;
             })();
             const aucNeed = cjeYi ? Math.max(0.15, cjeYi * aucRatio) : 0; // 亿，最低给个小门槛
@@ -6739,15 +6934,36 @@
             })();
             const head = (reasonBits.length ? reasonBits.join(' · ') : '综合条件一般');
             const reason = `<span class="reason-bits">${head}</span><div class="exp-wrap">${observePoint}</div>`;
-            return { name, code, lbc, hy, fundYi, open, predTheme, hasTier, cjeYi, score: Math.round(score), tags, reason };
+            // score 会在下方做“百分位映射”；这里用内部字段 _raw 暂存 rawScore（最终会删除，不输出到页面数据）
+            return { name, code, lbc, hy, fundYi, open, predTheme, hasTier, cjeYi, _raw: Math.round(rawScore), score: Math.round(rawScore), tags, reason };
           });
+
+          // === 百分位映射：让高分更稀缺（解决“整体打分偏高”）===
+          // 用 rawScore 排名后，将 score 映射为 1~100 的百分位分数（Top 越靠前，score 越接近 100）
+          // 这样市场强弱/分布变化时，分数依旧可比较：高分永远稀缺。
+          try {
+            const ranked = scored
+              .slice()
+              .sort((a, b) => (Number(b._raw || 0) - Number(a._raw || 0)) || (Number(b.fundYi || 0) - Number(a.fundYi || 0)) || (Number(b.lbc || 0) - Number(a.lbc || 0)));
+            const n = ranked.length || 1;
+            ranked.forEach((r, idx) => {
+              const pct = Math.round(((n - idx) / n) * 100); // top=100, bottom≈(1/n)*100
+              r.score = clamp(pct, 1, 100);
+            });
+          } catch (e) {
+            // ignore
+          }
 
           // === 分组策略：数据宽松放出、评分严格排序（避免“没数据”） ===
           // 接力：宽松入池（只做基本约束），用分数把高风险自然压下去
           // - 主要看 2-5 板（1板不做接力池）
           // - 开板太夸张（>=8）直接排除（这类属于纯情绪票，放观察池）
           let relay = scored
-            .filter(r => r.lbc >= 2 && r.lbc <= 5 && r.open < 8)
+            .filter(r =>
+              (r.lbc >= 2 && r.lbc <= 5 && r.open < 8) ||
+              // 允许少量“1进2”候选：必须满足更强的综合条件（尤其题材联动/量能/小市值）
+              (r.lbc === 1 && r.open < 3 && Number(r._raw || 0) >= 72)
+            )
             .sort((a, b) => b.score - a.score)
             .slice(0, 10);
           const relayNames = new Set(relay.map(x => x.name));
@@ -6789,7 +7005,13 @@
           watch.forEach(x => { if (!seen.has(x.name)) { merged.push(x); seen.add(x.name); } });
           watch = merged.slice(0, 8);
 
-          return { meta: { tierThemeCount, tierThemeTop }, relay, watch };
+          // 清理内部辅助字段：不向页面/全局数据暴露
+          const strip = (arr) => (arr || []).map(x => {
+            const y = { ...x };
+            delete y._raw;
+            return y;
+          });
+          return { meta: { tierThemeCount, tierThemeTop }, relay: strip(relay), watch: strip(watch) };
         };
         try {
           marketData.ztAnalysis = buildZtAnalysis(marketData);
@@ -6799,14 +7021,29 @@
 
         mountVueApp();
         // Tabs 初始化
+
+        // 默认展开策略（PC）：仅展开关键模块“明日计划”（sec-action）内的 details，其余保持折叠。
+        const applyDefaultDetails = () => {
+          try {
+            const isPC = window.innerWidth >= 1100;
+            document.querySelectorAll('details').forEach(d => { d.open = false; });
+            if (isPC) {
+              document.querySelectorAll('#sec-action details').forEach(d => { d.open = true; });
+            }
+          } catch (e) {}
+        };
         setActiveTab(currentPage);
         document.querySelectorAll('.tab-btn').forEach(btn => {
           btn.addEventListener('click', () => switchPage(btn.getAttribute('data-page')));
         });
 
         // 首屏只渲染当前页图表
+
+        // 首屏只渲染当前页图表
         renderChartsForPage(currentPage);
         updateThemeToggleLabel();
+        applyDefaultDetails();
+        window.addEventListener('resize', () => window.requestAnimationFrame(applyDefaultDetails));
 
         // Summary Bar 内置跳转（不单独做 TOC）
         document.querySelectorAll('.summary-item[data-target]').forEach(item => {

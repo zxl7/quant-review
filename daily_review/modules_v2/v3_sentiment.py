@@ -13,6 +13,7 @@ from typing import Any, Dict, List, Optional
 
 from daily_review.pipeline.context import Context
 from daily_review.pipeline.module import Module
+from daily_review.data.biying import normalize_stock_code
 
 
 def _derive_inputs(ctx: Context) -> Dict[str, Any]:
@@ -69,6 +70,37 @@ def _derive_inputs(ctx: Context) -> Dict[str, Any]:
     )
     theme_rotation_freq = int((md.get("themeTrend") or {}).get("rotationFreq") or 0)
 
+    # 昨日断板核按钮（yest_zbgc → 今日低开核按钮）
+    nuclear = 0
+    try:
+        pools_y = pools.get("yest_zbgc") or []
+        quotes = (ctx.raw.get("quotes") or {}) if isinstance(ctx.raw, dict) else {}
+        quotes_items = quotes.get("items") if isinstance(quotes, dict) else {}
+        quotes_items = quotes_items if isinstance(quotes_items, dict) else {}
+        from daily_review.utils.num import to_float as _to_float
+
+        for s in (pools_y if isinstance(pools_y, list) else []):
+            if not isinstance(s, dict):
+                continue
+            c6 = normalize_stock_code(s.get("dm") or s.get("code") or "")
+            if not c6:
+                continue
+            q = quotes_items.get(c6)
+            if not isinstance(q, dict):
+                continue
+            yc = _to_float(q.get("yc") or 0)
+            o = _to_float(q.get("o") or 0)
+            if yc > 0 and o > 0:
+                gap = (o - yc) / yc * 100.0
+                if gap <= -5.0:
+                    nuclear += 1
+            else:
+                zf = _to_float(q.get("zf") or 0)
+                if zf <= -5.0:
+                    nuclear += 1
+    except Exception:
+        nuclear = 0
+
     return {
         "zt_count": zt_count,
         "zt_count_yesterday": zt_yest,
@@ -79,7 +111,7 @@ def _derive_inputs(ctx: Context) -> Dict[str, Any]:
         "zab_rate": mi.get("zb_rate"),
         "yest_zt_avg_chg": yest_zt_avg_chg,
         "yest_lianban_promote_rate": jj_rate,
-        "yest_duanban_nuclear": None,
+        "yest_duanban_nuclear": nuclear,
         "dt_count": dt_count,
         "height_history": height_history,
         "main_theme_clear": main_clear,

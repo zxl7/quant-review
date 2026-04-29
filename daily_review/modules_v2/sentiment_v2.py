@@ -16,6 +16,7 @@ from typing import Any, Dict, List
 from daily_review.metrics.sentiment_v2 import calc_sentiment_score
 from daily_review.pipeline.context import Context
 from daily_review.pipeline.module import Module
+from daily_review.data.biying import normalize_stock_code
 
 
 def _derive_inputs(ctx: Context) -> Dict[str, Any]:
@@ -66,6 +67,38 @@ def _derive_inputs(ctx: Context) -> Dict[str, Any]:
     main_strength = "强" if (main_clear and top3 >= 65 and ov < 68) else ("中" if main_clear else "弱")
     theme_rotation_freq = int((md.get("themeTrend") or {}).get("rotationFreq") or 0)
 
+    # 6) 昨日断板核按钮（yest_zbgc → 今日低开核按钮）
+    # 口径：昨日炸板池个股，若今日“低开<=-5%”记为核按钮；缺口数据不足则 fallback 到今日涨跌幅<=-5%。
+    nuclear = 0
+    try:
+        quotes = (ctx.raw.get("quotes") or {}) if isinstance(ctx.raw, dict) else {}
+        quotes_items = quotes.get("items") if isinstance(quotes, dict) else {}
+        quotes_items = quotes_items if isinstance(quotes_items, dict) else {}
+        yest_zbgc = pools.get("yest_zbgc") or []
+        from daily_review.utils.num import to_float as _to_float
+
+        for s in (yest_zbgc if isinstance(yest_zbgc, list) else []):
+            if not isinstance(s, dict):
+                continue
+            c6 = normalize_stock_code(s.get("dm") or s.get("code") or "")
+            if not c6:
+                continue
+            q = quotes_items.get(c6)
+            if not isinstance(q, dict):
+                continue
+            yc = _to_float(q.get("yc") or 0)
+            o = _to_float(q.get("o") or 0)
+            if yc > 0 and o > 0:
+                gap = (o - yc) / yc * 100.0
+                if gap <= -5.0:
+                    nuclear += 1
+            else:
+                zf = _to_float(q.get("zf") or 0)
+                if zf <= -5.0:
+                    nuclear += 1
+    except Exception:
+        nuclear = 0
+
     return {
         "zt_count": zt_count,
         "zt_count_yesterday": zt_yest,
@@ -76,7 +109,7 @@ def _derive_inputs(ctx: Context) -> Dict[str, Any]:
         "zab_rate": mi.get("zb_rate"),  # 直接沿用现有
         "yest_zt_avg_chg": yest_zt_avg_chg,
         "yest_lianban_promote_rate": jj_rate,
-        "yest_duanban_nuclear": None,  # 暂缺：后续接入昨日断板/核按钮数据源
+        "yest_duanban_nuclear": nuclear,
         "dt_count": dt_count,
         "height_history": height_history,
         "main_theme_clear": main_clear,
