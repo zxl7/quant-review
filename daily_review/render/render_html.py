@@ -571,26 +571,47 @@ def build_learning_notes(*, market_data: Dict[str, Any], cache_dir: Path) -> Dic
 
     def _load_user_pool() -> tuple[list[tuple[str, str]], list[tuple[str, str]], list[tuple[str, str]]]:
         """
-        从工作区的 ocr_识别结果.md 中提炼候选：
+        从工作区的「心法.md」中提炼候选（语录 + 短线提醒）：
         - 返回 (tips_add, quotes_add, fire_quotes_add)
-        说明：这里只做「短句提炼」，不搬运长段落；且不引用外部链接内容。
+        说明：
+        - 只做「短句提炼」，不搬运长段落
+        - 不引用外部链接内容
+        - 允许用标题粗分：短线提醒/语录/退潮（更易维护）
         """
         workspace_root = cache_dir.parent
-        md_path = workspace_root / "ocr_识别结果.md"
+        md_path = workspace_root / "心法.md"
         if not md_path.exists():
             return ([], [], [])
 
         raw = md_path.read_text(encoding="utf-8", errors="ignore")
-        lines = [ln for ln in raw.splitlines() if ln.strip() and not ln.strip().startswith("#")]
+        # 允许标题，但标题用于“分区”；正文行来自：- xxx / "xxx" / xxx
+        lines = [ln.rstrip() for ln in raw.splitlines() if ln.strip()]
         sentences: list[str] = []
+        section = ""  # tip / quote / fire / ''
         for ln in lines:
-            ln = _norm_line(ln)
-            if not ln or ln == "图片":
+            s0 = ln.strip()
+            if s0.startswith("#"):
+                # 仅用于分区
+                if "短线提醒" in s0:
+                    section = "tip"
+                elif "语录" in s0:
+                    section = "quote"
+                elif any(k in s0 for k in ("退潮", "防守", "冰点")):
+                    # 在语录区出现时，倾向放到 fire_quotes
+                    section = "fire"
                 continue
-            # 过滤明显标题
-            if re.match(r"^(利弗莫尔|经典|整理|一、|二、|三\.|四、|五、|六\.|七\.|八\.|九\.|十\.)", ln):
+
+            # 去掉 bullet/引号
+            s0 = re.sub(r"^\s*[-*+]\s*", "", s0)
+            s0 = s0.strip().strip("“”\"'").strip()
+            s0 = _norm_line(s0)
+            if not s0:
                 continue
-            sentences.extend(_split_sentences(ln))
+            # 分区：短线提醒不切分，语录允许按标点轻切
+            if section == "tip":
+                sentences.append(s0)
+            else:
+                sentences.extend(_split_sentences(s0))
 
         # 去重 + 长度控制
         seen: set[str] = set()
@@ -598,7 +619,7 @@ def build_learning_notes(*, market_data: Dict[str, Any], cache_dir: Path) -> Dic
         for s in sentences:
             s = _norm_line(s)
             s = re.sub(r"\s+", "", s)
-            if len(s) < 12 or len(s) > 44:
+            if len(s) < 10 or len(s) > 60:
                 continue
             if s in seen:
                 continue
