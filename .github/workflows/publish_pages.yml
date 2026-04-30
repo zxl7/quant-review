@@ -97,6 +97,30 @@ jobs:
           path: cache
           key: cache-${{ runner.os }}-${{ steps.datekey.outputs.d8 }}
 
+      - name: Checkout gh-pages (history cache + publish branch)
+        if: ${{ github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true' }}
+        uses: actions/checkout@v4
+        with:
+          ref: gh-pages
+          path: site_prev
+          fetch-depth: 1
+          persist-credentials: true
+
+      - name: Restore history cache from gh-pages (keep last 7)
+        if: ${{ github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true' }}
+        run: |
+          set -euo pipefail
+          mkdir -p cache
+          mkdir -p site_prev/cache
+          # 把 gh-pages 中沉淀的历史 cache 拉回工作区，供“趋势/分位”计算使用
+          cp -f site_prev/cache/market_data-*.json cache/ 2>/dev/null || true
+
+          # 本地 cache 只保留最近 7 个交易日（按文件名 YYYYMMDD 排序）
+          files=( $(ls -1 cache/market_data-*.json 2>/dev/null | sort || true) )
+          if [ ${#files[@]} -gt 7 ]; then
+            rm -f "${files[@]:0:${#files[@]}-7}"
+          fi
+
       - name: Setup Python
         uses: actions/setup-python@v5
         if: ${{ github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true' }}
@@ -228,19 +252,13 @@ jobs:
           touch ./site/.nojekyll
           echo "site=index.html from: ${report_html}"
 
-      - name: Checkout gh-pages (publish branch)
-        if: ${{ github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true' }}
-        uses: actions/checkout@v4
-        with:
-          ref: gh-pages
-          path: site_prev
-          fetch-depth: 1
-          persist-credentials: true
-
       - name: Commit & push to gh-pages
         if: ${{ github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true' }}
         run: |
           set -euo pipefail
+          # 站点策略：只保留最新一份报告 HTML（历史可通过重新拉取数据再渲染）
+          rm -f site_prev/复盘日记-*.html 2>/dev/null || true
+
           # 将构建产物覆盖写入 gh-pages 根目录（Deploy from branch: /）
           cp -f ./site/.nojekyll site_prev/.nojekyll
           cp -f ./site/index.html site_prev/index.html
@@ -248,6 +266,14 @@ jobs:
           for f in ./site/*.html; do
             if [ -f "$f" ]; then cp -f "$f" site_prev/; fi
           done
+
+          # 同步历史 cache（只保留最近 7 个 market_data-YYYYMMDD.json）
+          mkdir -p site_prev/cache
+          cp -f cache/market_data-*.json site_prev/cache/ 2>/dev/null || true
+          cfiles=( $(ls -1 site_prev/cache/market_data-*.json 2>/dev/null | sort || true) )
+          if [ ${#cfiles[@]} -gt 7 ]; then
+            rm -f "${cfiles[@]:0:${#cfiles[@]}-7}"
+          fi
 
           if git -C site_prev diff --quiet; then
             echo "No changes to commit."

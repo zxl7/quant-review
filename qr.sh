@@ -84,6 +84,38 @@ cleanup_timestamp_html() {
   shopt -u nullglob
 }
 
+prune_cache_keep_latest_n() {
+  # 只保留最近 N 个 market_data-YYYYMMDD.json（按文件名排序，等价于日期排序）
+  local n="${1:-7}"
+  shopt -s nullglob
+  local files=( cache/market_data-*.json )
+  shopt -u nullglob
+  if ((${#files[@]} == 0)); then
+    return 0
+  fi
+  # 按日期排序（文件名中 YYYYMMDD）
+  IFS=$'\n' files=( $(printf "%s\n" "${files[@]}" | sort) )
+  unset IFS
+  if ((${#files[@]} > n)); then
+    rm -f "${files[@]:0:${#files[@]}-n}"
+  fi
+}
+
+prune_html_keep_latest_report() {
+  # 只保留最新一份「复盘日记-*.html」，其余历史报告全部删除
+  local latest
+  latest="$(ls -t html/复盘日记-*.html 2>/dev/null | head -n 1 || true)"
+  [[ -n "${latest}" ]] || return 0
+  shopt -s nullglob
+  local files=( html/复盘日记-*.html )
+  shopt -u nullglob
+  for f in "${files[@]}"; do
+    if [[ "${f}" != "${latest}" ]]; then
+      rm -f "${f}"
+    fi
+  done
+}
+
 render_offline() {
   # 离线渲染：用 cache/market_data-YYYYMMDD.json + templates/report_template.html 生成 tab-v1 HTML
   local date10="$1"
@@ -100,6 +132,8 @@ render_offline() {
   PYTHONPATH=. python3 -m daily_review.cli --date "${date10}" --rebuild
 
   echo "✅ 离线渲染完成: ${out_html}"
+  # 本地策略：报告只保留最新一份
+  prune_html_keep_latest_report
 }
 
 cmd_fetch() {
@@ -111,6 +145,7 @@ cmd_fetch() {
     # 新 FULL：走 daily_review.cli --fetch（data/cache 层），最终产物仍由 pipeline 生成
     PYTHONPATH=. python3 -m daily_review.cli --fetch --date "${DATE_ARG}"
     cleanup_timestamp_html "$(date10_to_date8 "${DATE_ARG}")"
+    prune_cache_keep_latest_n 7
     return 0
   fi
 
@@ -123,6 +158,7 @@ cmd_fetch() {
   d10="$(date8_to_date10 "${d8}")"
   render_offline "${d10}"
   cleanup_timestamp_html "${d8}"
+  prune_cache_keep_latest_n 7
 }
 
 cmd_gen() {
@@ -147,6 +183,7 @@ cmd_render() {
   load_dotenv_if_needed
   if [[ -n "${DATE_ARG}" ]]; then
     render_offline "${DATE_ARG}"
+    prune_cache_keep_latest_n 7
     return 0
   fi
 
@@ -154,6 +191,7 @@ cmd_render() {
   d8="$(pick_latest_cache_date8)" || die "未找到 cache/market_data-*.json，请先执行：./qr.sh fetch"
   d10="$(date8_to_date10 "${d8}")"
   render_offline "${d10}"
+  prune_cache_keep_latest_n 7
 }
 
 cmd_deploy() {
