@@ -21,12 +21,11 @@ on:
     - cron: "1 7 * * 1-5"
 
 permissions:
-  # 你的 Pages 使用 “Deploy from branch: gh-pages”，这里仍然允许 workflow 正常运行；
-  # 如果你后续要让它直接推送 gh-pages，再把 contents 提升为 write。
-  contents: read
+  # 你的 Pages 使用 “Deploy from branch: gh-pages”，因此需要把生成结果直接提交到 gh-pages 分支
+  contents: write
 
 concurrency:
-  group: "pages-publish"
+  group: "gh-pages-publish"
   cancel-in-progress: true
 
 env:
@@ -103,6 +102,7 @@ jobs:
         if: ${{ github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true' }}
         with:
           python-version: "3.11"
+          cache: "pip"
 
       - name: Decide push mode/date (non-schedule)
         id: pushmode
@@ -229,27 +229,34 @@ jobs:
           touch ./site/.nojekyll
           echo "site=index.html from: ${report_html}"
 
-      - name: Configure Pages
+      - name: Checkout gh-pages (publish branch)
         if: ${{ github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true' }}
-        uses: actions/configure-pages@v5
-
-      - name: Upload Pages artifact
-        if: ${{ github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true' }}
-        uses: actions/upload-pages-artifact@v3
+        uses: actions/checkout@v4
         with:
-          path: ./site
+          ref: gh-pages
+          path: site_prev
+          fetch-depth: 1
+          persist-credentials: true
 
-  deploy:
-    needs: build
-    if: ${{ github.event_name != 'schedule' || needs.build.outputs.skip != 'true' }}
-    runs-on: ubuntu-latest
-    concurrency:
-      group: "pages-deploy"
-      cancel-in-progress: true
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    steps:
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
+      - name: Commit & push to gh-pages
+        if: ${{ github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true' }}
+        run: |
+          set -euo pipefail
+          # 将构建产物覆盖写入 gh-pages 根目录（Deploy from branch: /）
+          cp -f ./site/.nojekyll site_prev/.nojekyll
+          cp -f ./site/index.html site_prev/index.html
+          # 把报告文件也一并带上（便于历史访问）
+          for f in ./site/*.html; do
+            if [ -f "$f" ]; then cp -f "$f" site_prev/; fi
+          done
+
+          if git -C site_prev diff --quiet; then
+            echo "No changes to commit."
+            exit 0
+          fi
+          git -C site_prev status --porcelain
+          git -C site_prev config user.name "github-actions[bot]"
+          git -C site_prev config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git -C site_prev add -A
+          git -C site_prev commit -m "deploy: update report" || true
+          git -C site_prev push origin HEAD:gh-pages
