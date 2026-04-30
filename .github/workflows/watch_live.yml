@@ -57,6 +57,10 @@ jobs:
             echo "Missing secrets.BIYING_TOKEN"
             exit 2
           fi
+          if [ -z "${BIYING_BASE_URL}" ]; then
+            echo "Missing secrets.BIYING_BASE_URL"
+            exit 2
+          fi
           # 直接把实时数据注入到现有页面（不新建页面，不依赖前端 fetch）
           args="--html site_prev/index.html"
           for f in site_prev/*tab-v1.html; do
