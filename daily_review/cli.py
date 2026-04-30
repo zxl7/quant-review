@@ -680,6 +680,8 @@ def run_rebuild(date: str, modules: list[str] | None = None, suffix: str = "", s
             "yest_date": yest or "",
         }
     )
+    # 注入近7天涨停池（离线）：供“近7天2连板题材聚合”等跨日模块使用
+    ctx.raw["pools"]["ztgc_by_day"] = _load_ztgc_by_day_window(root=root, date=date, n=7)
     ctx.raw.setdefault("themes", {})
     ctx.raw["themes"]["code2themes"] = _load_theme_cache(root)
     ctx.raw["index_klines"] = _load_index_klines_cache(root)
@@ -826,6 +828,14 @@ def run_rebuild(date: str, modules: list[str] | None = None, suffix: str = "", s
     # - 仅在字段缺失/为空时注入，避免覆盖后端已算出的更准口径
     try:
         _inject_mood_history_and_delta(root=root, date=date, market_data=market_data)
+    except Exception:
+        pass
+
+    # actionAdvisor：依赖“历史趋势/昨日对比”等注入字段，故在注入后再计算，保证口径一致
+    try:
+        from daily_review.metrics.action_advisor import build_action_advisor
+
+        market_data["actionAdvisor"] = build_action_advisor(market_data=market_data)
     except Exception:
         pass
 
@@ -1296,6 +1306,39 @@ def _load_pools_for_date(root: Path, date: str) -> dict:
         "all_dates": sorted(set((pools.get("ztgc") or {}).keys()) | set((pools.get("dtgc") or {}).keys()) | set((pools.get("zbgc") or {}).keys())),
     }
 
+
+def _load_ztgc_by_day_window(*, root: Path, date: str, n: int = 7) -> dict[str, list[dict]]:
+    """
+    读取本地 cache/pools_cache.json，提取「<= date 的最近 n 个交易日」涨停池（ztgc）明细。
+
+    设计目的：
+    - 支持“近7天 2连板去重汇总/按题材聚合”等需要跨日统计的模块
+    - 不做任何网络请求（完全离线）
+
+    返回：
+    - { "YYYY-MM-DD": [ {dm, mc, lbc, ...}, ... ], ... }
+    """
+    try:
+        cache_path = root / "cache" / "pools_cache.json"
+        if not cache_path.exists():
+            return {}
+        data = json.loads(cache_path.read_text(encoding="utf-8"))
+        pools = data.get("pools") or {}
+        zt_by_day = pools.get("ztgc") or {}
+        if not isinstance(zt_by_day, dict):
+            return {}
+
+        # 仅取 <= date 的最近 n 天（日期字符串本身可字典序排序）
+        days = sorted([d for d in zt_by_day.keys() if isinstance(d, str) and d <= date])
+        days = days[-max(1, int(n or 7)) :]
+        out: dict[str, list[dict]] = {}
+        for d in days:
+            rows = zt_by_day.get(d) or []
+            out[d] = [x for x in rows if isinstance(x, dict)] if isinstance(rows, list) else []
+        return out
+    except Exception:
+        return {}
+
 def _load_theme_cache(root: Path) -> dict:
     """
     读取本地 cache/theme_cache.json，返回 {code6 -> [themes]} 映射。
@@ -1392,6 +1435,8 @@ def run_partial(date: str, modules: list[str]) -> int:
             "yest_date": yest or "",
         }
     )
+    # 注入近7天涨停池（离线）：供“近7天2连板题材聚合”等跨日模块使用
+    ctx.raw["pools"]["ztgc_by_day"] = _load_ztgc_by_day_window(root=root, date=date, n=7)
 
     # 注入题材缓存：供 theme_panels 模块统计（不做任何网络请求）
     ctx.raw.setdefault("themes", {})

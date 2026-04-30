@@ -487,6 +487,13 @@ def build_summary3(*, market_data: Dict[str, Any]) -> Dict[str, Any]:
     2) 主线与空间锚（题材/最高板）
     """
 
+    # 若已生成 actionAdvisor，则 summary3 仅做“兼容输出”（避免页面/旧逻辑依赖 summary3 时丢失展示）
+    adv = market_data.get("actionAdvisor") if isinstance(market_data.get("actionAdvisor"), dict) else {}
+    if isinstance(adv, dict) and adv.get("action_line"):
+        # 兼容：只输出一行建议（不含主线/空间锚）
+        line1 = str(adv.get("action_line") or "").strip()
+        return {"lines": [line1]}
+
     def _num(x, d=0.0) -> float:
         try:
             if x is None:
@@ -606,17 +613,46 @@ def build_summary3(*, market_data: Dict[str, Any]) -> Dict[str, Any]:
     else:
         action = "动作：以主线核心为主，等待确认信号后再加速。"
 
-    # 输出顺序（按你的要求）：涨停 → 跌停 → 封板率 → 晋级率 → 高度 → 连板
-    line1 = (
-        f"今日：{stage}，{tone}｜"
-        f"涨停{zt_lvl}({ _trend_word(zt_hist) })｜"
-        f"跌停{dt_lvl}({ _trend_word(dt_hist, reverse=True) })｜"
-        f"封板率{fb_lvl}({ _trend_word(fb_hist) })｜"
-        f"晋级率{jj_lvl}({ _trend_word(jj_hist) })｜"
-        f"高度{maxlb_lvl}({ _trend_word(maxlb_hist) })｜"
-        f"连板{lb_lvl}({ _trend_word(lb_hist) })｜"
-        f"{action}"
-    )
+    # 输出“总结”而不是“报数”：基于维度趋势/分位 → 归纳情绪温度 & 注意事项 & 操作指南
+    heat_tr = _trend_word(zt_hist)  # 走强/走弱/走平
+    risk_tr = _trend_word(dt_hist, reverse=True)  # 扩散/收敛/走平
+    carry_tr = _trend_word(fb_hist)  # 走强/走弱/走平
+    relay_tr = _trend_word(jj_hist)  # 走强/走弱/走平
+    space_tr = _trend_word(maxlb_hist)  # 走强/走弱/走平
+
+    # 结构化归因（仍然只依赖算法数据）
+    notes: list[str] = []
+    # 赚钱效应/情绪热度
+    if heat_tr == "走强" and zt_lvl in ("偏强", "中位"):
+        notes.append("赚钱效应回暖")
+    elif heat_tr == "走弱" or zt_lvl == "偏弱":
+        notes.append("赚钱效应偏弱")
+    else:
+        notes.append("赚钱效应中性")
+
+    # 亏钱效应（风险）
+    if risk_tr == "扩散" or dt_lvl == "偏高":
+        notes.append("亏钱效应仍在扩散")
+    elif risk_tr == "收敛" and dt_lvl in ("偏低", "中位"):
+        notes.append("亏钱效应收敛")
+    else:
+        notes.append("风险处于可控区间")
+
+    # 承接/接力延续性（封板率 + 晋级率）
+    if fb_lvl == "偏强" and carry_tr in ("走强", "走平") and jj_lvl != "偏弱":
+        notes.append("承接偏强，接力可尝试")
+    elif jj_lvl == "偏弱" or relay_tr == "走弱":
+        notes.append("接力延续性不足")
+    else:
+        notes.append("承接中性，择强参与")
+
+    # 空间（高度/连板结构）
+    if maxlb_lvl == "偏强" and space_tr in ("走强", "走平"):
+        notes.append("空间维持")
+    elif space_tr == "走弱":
+        notes.append("空间走弱，谨慎高位")
+
+    line1 = f"今日：{stage}，{tone}。{ '；'.join(notes) }。{action}"
 
     # 主线与龙头（保持客观输出：题材 + 最高板）
     main = (market_data.get("themePanels") or {}).get("ztTop") or []
@@ -640,6 +676,13 @@ def build_summary3(*, market_data: Dict[str, Any]) -> Dict[str, Any]:
     line2 = f"主线：{main_name}；空间锚：{leader}。"
 
     return {"lines": [line1, line2]}
+
+
+def build_action_advisor(*, market_data: Dict[str, Any]) -> Dict[str, Any]:
+    # 逻辑已抽离到独立模块，便于集中维护
+    from daily_review.metrics.action_advisor import build_action_advisor as _impl
+
+    return _impl(market_data=market_data)
 
 def build_learning_notes(*, market_data: Dict[str, Any], cache_dir: Path) -> Dict[str, Any]:
     """

@@ -3464,6 +3464,65 @@
         color: var(--text-muted);
       }
       .thermo-mini-row .val{ text-align:right; color: var(--text-secondary); font-weight: 950; }
+      /* Action Advisor（操作建议） */
+      .action-advisor{
+        margin-top: 10px;
+        padding: 12px 12px;
+        border-radius: var(--radius-md);
+        border: 1px solid var(--border);
+        background: var(--bg-elevated);
+      }
+      .aa-line1{
+        display:flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        font-size: 12px;
+        font-weight: 950;
+        color: var(--text-primary);
+      }
+      .aa-line1 .txt{ font-weight: 900; color: var(--text-secondary); }
+      .aa-pill{
+        font-size: 11px;
+        font-weight: 900;
+        padding: 4px 10px;
+        border-radius: 999px;
+        border: 1px solid rgba(148,163,184,0.26);
+        color: var(--text-muted);
+        background: rgba(148,163,184,0.10);
+        white-space: nowrap;
+      }
+      .aa-line2{
+        margin-top: 8px;
+        font-size: 11px;
+        font-weight: 850;
+        color: var(--text-muted);
+      }
+      .aa-line2 span{ display:block; margin-top: 4px; }
+      .aa-tags{
+        margin-top: 10px;
+        display:flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+      .aa-tag{
+        font-size: 11px;
+        font-weight: 850;
+        padding: 4px 10px;
+        border-radius: 999px;
+        border: 1px solid rgba(148,163,184,0.22);
+        background: rgba(148,163,184,0.08);
+        color: var(--text-secondary);
+      }
+      .aa-tag small{ margin-left: 4px; color: var(--text-muted); font-weight: 800; }
+      .aa-risk{
+        margin-top: 10px;
+        font-size: 11px;
+        color: var(--text-muted);
+        font-weight: 850;
+        line-height: 1.55;
+      }
+      .aa-risk strong{ color: var(--text-secondary); font-weight: 950; }
       .thermo-explain{
         margin-top: 10px;
         display:grid;
@@ -3505,6 +3564,10 @@
       .lvl-badge.low{ border-color: rgba(34,197,94,0.35); background: rgba(34,197,94,0.10); color: #16a34a; }
       .lvl-badge.mid{ border-color: rgba(245,158,11,0.35); background: rgba(245,158,11,0.12); color: #d97706; }
       .lvl-badge.high{ border-color: rgba(239,68,68,0.30); background: rgba(239,68,68,0.10); color: #ef4444; }
+      .lvl-chg{ margin-left: 6px; font-weight: 950; }
+      .lvl-chg.up{ color: #ef4444; }
+      .lvl-chg.down{ color: #10b981; }
+      .lvl-chg.flat{ color: var(--text-muted); opacity: 0.9; }
       .thermo-explain-value{
         font-size: 12px;
         font-weight: 1100;
@@ -3947,7 +4010,10 @@
                 <div class="dim-top">
                   <span class="dim-k">
                     {{ it.title }}
-                    <span class="lvl-badge" :class="it.levelCls" style="margin-left:6px;">{{ it.level }}</span>
+                    <span class="lvl-badge" :class="it.levelCls" style="margin-left:6px;">
+                      {{ it.level }}
+                      <span v-if="it.chgStr" class="lvl-chg" :class="it.chgCls">{{ it.chgStr }}</span>
+                    </span>
                   </span>
                   <span class="dim-v">{{ it.value }}</span>
                 </div>
@@ -3967,8 +4033,21 @@
           </details>
         </div>
 
-        <div class="summary3" v-if="marketData.summary3?.lines && marketData.summary3.lines.length">
-          <div class="summary3-line" v-for="(l, i) in marketData.summary3.lines" :key="'s3-'+i"><strong>{{ i+1 }}.</strong> {{ l }}</div>
+        <!-- 操作建议（结构化输出，替代 summary3 文案拼接） -->
+        <div class="action-advisor" v-if="marketData.actionAdvisor && marketData.actionAdvisor.action_line">
+          <div class="aa-line1">
+            <div class="txt">{{ marketData.actionAdvisor.summary || marketData.actionAdvisor.action_line }}</div>
+            <div class="aa-pill">{{ marketData.actionAdvisor.posture }} · {{ marketData.actionAdvisor.position }}</div>
+          </div>
+          <div class="aa-line2" v-if="marketData.actionAdvisor.posture_line || marketData.actionAdvisor.action_guide">
+            <span v-if="marketData.actionAdvisor.posture_line"><strong>{{ marketData.actionAdvisor.posture_line }}</strong></span>
+            <span v-if="marketData.actionAdvisor.action_guide">{{ marketData.actionAdvisor.action_guide }}</span>
+          </div>
+          <div class="aa-tags" v-if="marketData.actionAdvisor.tags && marketData.actionAdvisor.tags.length">
+            <span class="aa-tag" v-for="(t, i) in marketData.actionAdvisor.tags" :key="'aat-'+i">
+              {{ t.key }}：{{ t.value }}<small v-if="t.detail">({{ t.detail }})</small>
+            </span>
+          </div>
         </div>
       </div>
 
@@ -6233,12 +6312,21 @@
                 return 0;
               };
               const barPct = (v, cap) => this.clamp100((this.toNum(v, 0) / Math.max(1, cap)) * 100);
+              const chgMeta = (d, unit = '') => {
+                const x = Number(d);
+                if (!Number.isFinite(x) || Math.abs(x) < 1e-9) return { chgStr: '持平', chgCls: 'flat' };
+                const up = x > 0;
+                const abs = Math.abs(x);
+                const num = (unit === '%') ? abs.toFixed(1) : String(Math.round(abs));
+                return { chgStr: `${up ? '上升' : '下降'} ${up ? '+' : '-'}${num}${unit}`, chgCls: up ? 'up' : 'down' };
+              };
 
               // 1) 涨停
               const zt = this.toNum(pan.limitUp, this.toNum(mi.zt_count, 0));
               const ztPrev = this.toNum(prevPan.limitUp, this.toNum((prev.features?.mood_inputs || {}).zt_count, 0));
               const ztHist = mi.hist_zt || [];
               const ztLvl = lvlByHist(zt, ztHist, false, 50, 90);
+              const ztD = ensureDelta(zt, ztPrev, 'zt');
               const ztBreak = (() => {
                 const a = lastN(ztHist);
                 if (a.length < 2) return '';
@@ -6246,6 +6334,7 @@
                 return (zt >= 100 && prevMax < 100) ? '，首次突破 100' : '';
               })();
               const ztDesc = `涨停数：${Math.round(zt)}；趋势：${fmtArr(ztHist)}${ztBreak}。`;
+              const ztChg = chgMeta(ztD, '');
 
               // 2) 连板
               const lianban = this.toNum(mi.lianban_count, this.toNum((this.marketData?.marketPanorama?.kpis || {}).link_board, 0));
@@ -6266,9 +6355,12 @@
               const dtD = ensureDelta(dt, dtPrev, 'dt');
               const dtHint = (Number(dtD) < 0) ? '（收敛）' : (Number(dtD) > 0 ? '（扩散）' : '');
               const dtDesc = `跌停数：${Math.round(dt)} ${dtHint}；趋势：${fmtArr(dtHist)}。`;
+              const dtChg = chgMeta(dtD, '');
 
               // 4) 封板率
               const fb = this.toNum(mi.fb_rate, 0);
+              const fbPrev = this.toNum((prev.features?.mood_inputs || {}).fb_rate, fb);
+              const fbD = this.toNum(fb, 0) - this.toNum(fbPrev, 0);
               const fbHist = mi.hist_fb_rate || [];
               const fbLvl = lvlByHist(fb, fbHist, false, 70, 80);
               const fbHint = (() => {
@@ -6277,28 +6369,41 @@
                 return '';
               })();
               const fbDesc = `封板率：${Math.round(fb)}%${fbHint}；趋势：${fmtArr(fbHist, '%')}。`;
+              const fbChg = chgMeta(fbD, '%');
 
               // 4.5) 晋级率（用于刻画接力延续性）
               const jj = this.toNum(mi.jj_rate_adj, this.toNum(mi.jj_rate, 0));
+              const jjPrev = this.toNum((prev.features?.mood_inputs || {}).jj_rate_adj, this.toNum((prev.features?.mood_inputs || {}).jj_rate, jj));
+              const jjD = this.toNum(jj, 0) - this.toNum(jjPrev, 0);
               const jjHist = mi.hist_jj_rate || [];
               const jjLvl = lvlByHist(jj, jjHist, false, 20, 35);
               const jjDesc = `晋级率：${Math.round(jj)}%；趋势：${fmtArr(jjHist, '%')}。`;
+              const jjChg = chgMeta(jjD, '%');
 
               // 5) 高度（最高板）
               const maxLb = this.toNum(mi.max_lb, this.toNum((this.marketData?.marketPanorama?.kpis || {}).max_lianban, 0));
+              const maxLbPrev = this.toNum((prev.features?.mood_inputs || {}).max_lb, this.toNum((prev.marketPanorama?.kpis || {}).max_lianban, maxLb));
+              const maxLbD = this.toNum(maxLb, 0) - this.toNum(maxLbPrev, 0);
               const maxLbHist = mi.hist_max_lb || [];
               const maxLbLvl = lvlByHist(maxLb, maxLbHist, false, 3, 5);
               const maxLbDesc = `高度：${Math.round(maxLb)}板；趋势：${fmtArr(maxLbHist)}。`;
+              const maxLbChg = chgMeta(maxLbD, '');
 
               const item = (key, title, value, level, levelCls, desc, trend, vs, bar, kind = 'heat') =>
                 ({ key, title, value, level, levelCls, desc, trend, vs, bar, kind });
               return [
-                item('zt', '涨停', `${Math.round(zt)}`, ztLvl.t, ztLvl.c, ztDesc, fmtArr(ztHist), vsText(ztPrev, ensureDelta(zt, ztPrev, 'zt')), barPct(zt, 150), 'heat'),
-                item('dt', '跌停', `${Math.round(dt)}`, dtLvl.t, dtLvl.c, dtDesc, fmtArr(dtHist), vsText(dtPrev, dtD), barPct(dt, 30), 'risk'),
-                item('fb', '封板率', `${Math.round(fb)}%`, fbLvl.t, fbLvl.c, fbDesc, fmtArr(fbHist, '%'), '', this.clamp100(fb), 'heat'),
-                item('jj', '晋级率', `${Math.round(jj)}%`, jjLvl.t, jjLvl.c, jjDesc, fmtArr(jjHist, '%'), '', this.clamp100(jj), 'heat'),
-                item('max_lb', '最高板', `${Math.round(maxLb)}板`, maxLbLvl.t, maxLbLvl.c, maxLbDesc, fmtArr(maxLbHist), '', barPct(maxLb, 10), 'heat'),
-                item('lb', '连板数', `${Math.round(lianban)}`, lbLvl.t, lbLvl.c, lbDesc, fmtArr(lbHist), '', barPct(lianban, 30), 'heat'),
+                { ...item('zt', '涨停', `${Math.round(zt)}`, ztLvl.t, ztLvl.c, ztDesc, fmtArr(ztHist), '', barPct(zt, 150), 'heat'), ...ztChg },
+                { ...item('dt', '跌停', `${Math.round(dt)}`, dtLvl.t, dtLvl.c, dtDesc, fmtArr(dtHist), '', barPct(dt, 30), 'risk'), ...dtChg },
+                { ...item('fb', '封板率', `${Math.round(fb)}%`, fbLvl.t, fbLvl.c, fbDesc, fmtArr(fbHist, '%'), '', this.clamp100(fb), 'heat'), ...fbChg },
+                { ...item('jj', '晋级率', `${Math.round(jj)}%`, jjLvl.t, jjLvl.c, jjDesc, fmtArr(jjHist, '%'), '', this.clamp100(jj), 'heat'), ...jjChg },
+                { ...item('max_lb', '高度', `${Math.round(maxLb)}板`, maxLbLvl.t, maxLbLvl.c, maxLbDesc, fmtArr(maxLbHist), '', barPct(maxLb, 10), 'heat'), ...maxLbChg },
+                { ...item('lb', '连板', `${Math.round(lianban)}`, lbLvl.t, lbLvl.c, lbDesc, fmtArr(lbHist), '', barPct(lianban, 30), 'heat'),
+                  ...(() => {
+                    const lbPrev = this.toNum((prev.features?.mood_inputs || {}).lianban_count, this.toNum((prev.marketPanorama?.kpis || {}).link_board, lianban));
+                    const lbD = this.toNum(lianban, 0) - this.toNum(lbPrev, 0);
+                    return chgMeta(lbD, '');
+                  })()
+                },
               ];
             },
           },
