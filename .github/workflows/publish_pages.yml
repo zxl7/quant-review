@@ -102,7 +102,6 @@ jobs:
         if: ${{ github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true' }}
         with:
           python-version: "3.11"
-          cache: "pip"
 
       - name: Decide push mode/date (non-schedule)
         id: pushmode
