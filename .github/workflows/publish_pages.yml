@@ -21,9 +21,9 @@ on:
     - cron: "1 7 * * 1-5"
 
 permissions:
+  # 你的 Pages 使用 “Deploy from branch: gh-pages”，这里仍然允许 workflow 正常运行；
+  # 如果你后续要让它直接推送 gh-pages，再把 contents 提升为 write。
   contents: read
-  pages: write
-  id-token: write
 
 concurrency:
   group: "pages-publish"
@@ -116,6 +116,9 @@ jobs:
             echo "Missing secrets.BIYING_TOKEN"
             exit 2
           fi
+          if [ -z "${BIYING_BASE_URL}" ]; then
+            echo "WARN: secrets.BIYING_BASE_URL 缺失，将使用默认 https://api.biyingapi.com"
+          fi
           # push/workflow_dispatch：
           # - 盘前（<09:25，北京时间）：生成最近一个“已完成交易日”的收盘版（避免生成“当天但数据为空/像昨天”的错配）
           # - 盘中（09:25~15:01）：生成当日盘中版（intraday），保证“渲染当天数据”
@@ -144,16 +147,17 @@ jobs:
           fi
 
           PYTHONPATH=. python - <<'PY'
-          import os
+          import os, datetime as dt
           from daily_review.config import load_config_from_env
           from daily_review.http import HttpClient
           from daily_review.data.biying import get_recent_trade_dates
           cfg = load_config_from_env()
           client = HttpClient(base_url=cfg.base_url, token=cfg.token, timeout=30)
           dates = get_recent_trade_dates(client, n=20) or []
+          # 兜底：若指数日K取不到交易日（接口/网络/配置问题），不要让 workflow 直接失败
+          target = dates[-1] if dates else dt.date.today().strftime("%Y-%m-%d")
           if not dates:
-            raise SystemExit("No trade dates from index kline")
-          target = dates[-1]  # 最近一个“已收盘”的交易日（过滤 sf=1/a/v<=0）
+            print("WARN: No trade dates from index kline. Fallback to today:", target)
           with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as f:
             f.write(f"date10={target}\n")
           print("picked_date10=", target)

@@ -35,6 +35,7 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: "3.11"
+          cache: "pip"
 
       - name: Install dependencies (akshare)
         run: |
@@ -53,23 +54,19 @@ jobs:
       - name: Inject live data into existing HTML
         run: |
           set -euo pipefail
-          if [ -z "${BIYING_TOKEN}" ]; then
-            echo "Missing secrets.BIYING_TOKEN"
-            exit 2
-          fi
-          if [ -z "${BIYING_BASE_URL}" ]; then
-            echo "Missing secrets.BIYING_BASE_URL"
-            exit 2
+          # 允许缺失必盈配置：此时仅用 AkShare 生成 live（必盈只做兜底）
+          if [ -z "${BIYING_TOKEN}" ] || [ -z "${BIYING_BASE_URL}" ]; then
+            echo "WARN: BIYING_TOKEN / BIYING_BASE_URL 缺失，将以 AkShare 为主（必盈兜底关闭）"
           fi
           # 直接把实时数据注入到现有页面（不新建页面，不依赖前端 fetch）
-          args="--html site_prev/index.html"
-          for f in site_prev/*tab-v1.html; do
+          args="--html ${GITHUB_WORKSPACE}/site_prev/index.html"
+          for f in ${GITHUB_WORKSPACE}/site_prev/*tab-v1.html; do
             if [ -f "$f" ]; then args="$args --html $f"; fi
           done
           # 注入脚本在 main 仓库里；目标 HTML 在 site_prev（gh-pages 分支）
           # 注意：不要 cd 到 main，否则相对路径 site_prev/* 会失效
           PYTHONPATH=main python -m daily_review.inject_live_into_html $args
-          touch site_prev/.nojekyll
+          touch ${GITHUB_WORKSPACE}/site_prev/.nojekyll
 
       - name: Commit & push to gh-pages
         run: |
@@ -84,4 +81,5 @@ jobs:
           git -C site_prev config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git -C site_prev add -A
           git -C site_prev commit -m "chore(live): inject realtime snapshot" || true
-          git -C site_prev push origin gh-pages
+          # 即使处于 detached HEAD，也能推送到远端 gh-pages
+          git -C site_prev push origin HEAD:gh-pages

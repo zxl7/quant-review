@@ -50,13 +50,39 @@ def get_recent_trade_dates(client: HttpClient, *, n: int = 15) -> list[str]:
     """
     从指数日K提取最近交易日列表，用于非交易日回退。
     """
-    try:
-        url = f"{client.base_url}/hsindex/latest/000001.SH/d/{client.token}?lt={max(n, 12)}"
-        data = client.get_json(url)
-        uniq = sorted(set(_extract_trade_dates(data)))
-        return uniq[-n:] if len(uniq) >= n else uniq
-    except Exception:
-        return []
+    def _unwrap(resp: Any) -> Any:
+        """
+        必盈接口偶发会返回 dict 包裹结构（如 data/items/result/list），此处做轻量兼容。
+        """
+        if isinstance(resp, list):
+            return resp
+        if not isinstance(resp, dict):
+            return resp
+        for k in ("data", "items", "list", "result", "rows", "klines", "kline", "resultObj"):
+            v = resp.get(k)
+            if isinstance(v, list):
+                return v
+            if isinstance(v, dict) and isinstance(v.get("items"), list):
+                return v.get("items")
+        # 兜底：找第一个 list 值
+        for v in resp.values():
+            if isinstance(v, list):
+                return v
+        return resp
+
+    # 兼容：指数代码备用（某些环境 000001.SH 可能权限/路径异常）
+    codes = ("000001.SH", "399001.SZ", "399006.SZ")
+    for code in codes:
+        try:
+            url = f"{client.base_url}/hsindex/latest/{code}/d/{client.token}?lt={max(n, 12)}"
+            data = client.get_json(url)
+            items = _unwrap(data)
+            uniq = sorted(set(_extract_trade_dates(items)))
+            if uniq:
+                return uniq[-n:] if len(uniq) >= n else uniq
+        except Exception:
+            continue
+    return []
 
 
 def resolve_trade_date(client: HttpClient, requested_date: str | None) -> tuple[str, str]:
