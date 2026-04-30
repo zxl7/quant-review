@@ -63,8 +63,8 @@ jobs:
             if [ -f "$f" ]; then args="$args --html $f"; fi
           done
           # 注入脚本在 main 仓库里；目标 HTML 在 site_prev（gh-pages 分支）
-          cd main
-          PYTHONPATH=. python -m daily_review.inject_live_into_html $args
+          # 注意：不要 cd 到 main，否则相对路径 site_prev/* 会失效
+          PYTHONPATH=main python -m daily_review.inject_live_into_html $args
           touch site_prev/.nojekyll
 
       - name: Commit & push to gh-pages
