@@ -481,58 +481,165 @@ def build_action_guide_v2(market_data: Dict[str, Any]) -> Dict[str, Any]:
 
 
 def build_summary3(*, market_data: Dict[str, Any]) -> Dict[str, Any]:
-    """全站三句话（复盘口径统一）：今天是什么盘 / 主线与龙头 / 明天模式与触发条件"""
-    ag = (market_data.get("actionGuideV2") or {})
-    meta = (ag.get("meta") or {})
+    """
+    全站两句话（复盘口径统一）：
+    1) 今日情绪温度摘要（完全基于“情绪温度/特征数据”，不拼主观策略文案）
+    2) 主线与空间锚（题材/最高板）
+    """
 
-    # 1) 今天是什么盘（取 meta.detail 的数字版 + stage）
-    stage = (market_data.get("moodStage") or {}).get("title") or "-"
-    line1 = f"今日：{stage}，{meta.get('detail','').strip()}"
-
-    # 2) 主线与龙头
-    theme = ((market_data.get("actionGuideV2") or {}).get("meta") or {}).get("title", "")
-    # meta.title 内含「主线：xx」，这里再提取一次更直白
-    main = (market_data.get("themePanels") or {}).get("ztTop") or []
-    main_name = ""
-    if "主线：" in str(meta.get("title", "")):
+    def _num(x, d=0.0) -> float:
         try:
-            main_name = str(meta.get("title")).split("主线：", 1)[1].split("｜", 1)[0].strip()
+            if x is None:
+                return float(d)
+            if isinstance(x, str):
+                x = x.replace("%", "").replace("板", "").strip()
+            return float(x)
         except Exception:
-            main_name = ""
-    if not main_name:
-        main_name = (main[0].get("name") if main else "主线")
+            return float(d)
+
+    stage = (market_data.get("moodStage") or {}).get("title") or "-"
+    mood = (market_data.get("mood") or {})
+
+    feats = market_data.get("features") or {}
+    mi = (feats.get("mood_inputs") or {}) if isinstance(feats, dict) else {}
+    pano = market_data.get("panorama") or {}
+    mp = market_data.get("marketPanorama") or {}
+    kpis = (mp.get("kpis") or {}) if isinstance(mp, dict) else {}
+
+    # 口径：优先 mood_inputs（离线统一口径），其次 panorama/kpis 兜底
+    zt = int(_num(mi.get("zt_count"), _num(pano.get("limitUp"), 0)))
+    dt = int(_num(mi.get("dt_count"), _num(pano.get("limitDown"), 0)))
+    fb = _num(mi.get("fb_rate"), 0.0)
+    jj = _num(mi.get("jj_rate_adj", mi.get("jj_rate")), 0.0)
+    max_lb = int(_num(mi.get("max_lb"), _num(mi.get("max_lianban"), _num(kpis.get("max_lianban"), 0))))
+    lianban = int(_num(mi.get("lianban_count"), _num(kpis.get("link_board"), 0)))
+
+    # 历史窗口（用于趋势与分位评级）
+    W = 7
+
+    def _tail(arr: Any) -> list[float]:
+        if not isinstance(arr, list):
+            return []
+        out: list[float] = []
+        for x in arr[-W:]:
+            try:
+                out.append(float(str(x).replace("%", "").replace("板", "").strip()))
+            except Exception:
+                continue
+        return out
+
+    def _q(arr: list[float], p: float) -> float | None:
+        a = [x for x in arr if isinstance(x, (int, float))]
+        a = sorted(a)
+        if not a:
+            return None
+        idx = int(round((len(a) - 1) * p))
+        idx = max(0, min(len(a) - 1, idx))
+        return a[idx]
+
+    def _lvl_by_hist(v: float, hist: list[float], *, fallback_a: float, fallback_b: float, reverse: bool = False) -> str:
+        q33 = _q(hist, 0.33)
+        q66 = _q(hist, 0.66)
+        a = q33 if q33 is not None else fallback_a
+        b = q66 if q66 is not None else fallback_b
+        if reverse:
+            # 值越大越差（风险）
+            if v >= b:
+                return "偏高"
+            if v >= a:
+                return "中位"
+            return "偏低"
+        # 值越大越好（热度/承接）
+        if v >= b:
+            return "偏强"
+        if v >= a:
+            return "中位"
+        return "偏弱"
+
+    def _trend_word(hist: list[float], *, reverse: bool = False) -> str:
+        """
+        reverse=False：值越大越强（涨停/封板率/晋级率/连板/高度）→ 走强/走弱
+        reverse=True ：值越大越差（跌停等亏钱指标）→ 扩散/收敛
+        """
+        if len(hist) < 2:
+            return "无趋势"
+        d = hist[-1] - hist[0]
+        if abs(d) < 1e-6:
+            return "走平"
+        if reverse:
+            return "扩散" if d > 0 else "收敛"
+        return "走强" if d > 0 else "走弱"
+
+    # 近7日趋势（用于摘要与动作建议）
+    zt_hist = _tail(mi.get("hist_zt"))
+    dt_hist = _tail(mi.get("hist_dt"))
+    fb_hist = _tail(mi.get("hist_fb_rate"))
+    jj_hist = _tail(mi.get("hist_jj_rate"))
+    lb_hist = _tail(mi.get("hist_lianban"))
+    maxlb_hist = _tail(mi.get("hist_max_lb"))
+
+    zt_lvl = _lvl_by_hist(float(zt), zt_hist, fallback_a=50, fallback_b=90, reverse=False)
+    dt_lvl = _lvl_by_hist(float(dt), dt_hist, fallback_a=3, fallback_b=6, reverse=True)
+    fb_lvl = _lvl_by_hist(float(fb), fb_hist, fallback_a=70, fallback_b=80, reverse=False)
+    jj_lvl = _lvl_by_hist(float(jj), jj_hist, fallback_a=20, fallback_b=35, reverse=False)
+    maxlb_lvl = _lvl_by_hist(float(max_lb), maxlb_hist, fallback_a=3, fallback_b=5, reverse=False)
+    lb_lvl = _lvl_by_hist(float(lianban), lb_hist, fallback_a=10, fallback_b=20, reverse=False)
+
+    # 简单“温度/风险”合成逻辑（算法输出：仅依赖数据分位与趋势）
+    heat_up = (zt_lvl in ("偏强", "中位")) and (fb_lvl in ("偏强", "中位"))
+    risk_up = (dt_lvl == "偏高") or (jj_lvl == "偏弱")
+
+    if heat_up and not risk_up:
+        tone = "情绪回暖，承接占优"
+    elif heat_up and risk_up:
+        tone = "情绪修复中，风险未完全收敛"
+    else:
+        tone = "情绪偏谨慎，先看承接修复"
+
+    # 操作指南（只用客观触发）
+    if dt_lvl == "偏高":
+        action = "动作：先降速降仓，优先低位试错/等待回封确认，避免高位一致。"
+    elif jj_lvl == "偏弱":
+        action = "动作：承接未强，主线只做最强辨识度的分歧回封，少做接力。"
+    elif fb_lvl == "偏强" and zt_lvl == "偏强":
+        action = "动作：承接偏强，可聚焦主线核心的回封/换手确认，避免追高一致。"
+    else:
+        action = "动作：以主线核心为主，等待确认信号后再加速。"
+
+    # 输出顺序（按你的要求）：涨停 → 跌停 → 封板率 → 晋级率 → 高度 → 连板
+    line1 = (
+        f"今日：{stage}，{tone}｜"
+        f"涨停{zt_lvl}({ _trend_word(zt_hist) })｜"
+        f"跌停{dt_lvl}({ _trend_word(dt_hist, reverse=True) })｜"
+        f"封板率{fb_lvl}({ _trend_word(fb_hist) })｜"
+        f"晋级率{jj_lvl}({ _trend_word(jj_hist) })｜"
+        f"高度{maxlb_lvl}({ _trend_word(maxlb_hist) })｜"
+        f"连板{lb_lvl}({ _trend_word(lb_hist) })｜"
+        f"{action}"
+    )
+
+    # 主线与龙头（保持客观输出：题材 + 最高板）
+    main = (market_data.get("themePanels") or {}).get("ztTop") or []
+    main_name = (main[0].get("name") if main else "") or "主线"
     leader = "龙头"
     ladder = market_data.get("ladder") or []
     if ladder:
-        maxb = max(int(float(r.get("badge", 0) or 0)) for r in ladder)
-        tops = [r for r in ladder if int(float(r.get("badge", 0) or 0)) == maxb]
-        leader = "、".join([str(r.get("name") or "") for r in tops[:2] if str(r.get("name") or "")]) or leader
-        leader = f"{leader}（{maxb}板）"
+        maxb = max(int(_num(r.get("badge", 0), 0)) for r in ladder)
+        tops = [r for r in ladder if int(_num(r.get("badge", 0), 0)) == maxb]
+        def _clean_name(s: str) -> str:
+            s = (s or "").strip()
+            # 避免重复冠冕符号：上游可能已带 👑
+            s = s.replace("👑", "").strip()
+            return s
+
+        names = [_clean_name(str(r.get("name") or "")) for r in tops[:2]]
+        names = [n for n in names if n]
+        if names:
+            leader = "、".join(names)
+        leader = f"👑 {leader}（{maxb}板）"
     line2 = f"主线：{main_name}；空间锚：{leader}。"
 
-    # 3) 明天怎么做（模式 + 关键触发）
-    mode = ""
-    if "模式：" in str(meta.get("title", "")):
-        try:
-            mode = str(meta.get("title")).split("模式：", 1)[1].split("｜", 1)[0].strip()
-        except Exception:
-            mode = ""
-    if not mode:
-        mode = "低位试错"
-
-    # 从 confirm/retreat 抽一句最关键的阈值（尽量短）
-    cf = (ag.get("confirm") or [])
-    rt = (ag.get("retreat") or [])
-    cf_hint = ""
-    rt_hint = ""
-    if cf:
-        cf_hint = str((cf[1].get("desc") if len(cf) > 1 else cf[0].get("desc")) or "").strip()
-        cf_hint = cf_hint.split("；", 1)[0]
-    if rt:
-        rt_hint = str(rt[0].get("desc") or "").strip().split("，", 1)[0]
-    line3 = f"明日：{mode}。确认：{cf_hint or '承接确认'}；撤退：{rt_hint or '风险放大就降级'}。"
-
-    return {"lines": [line1, line2, line3]}
+    return {"lines": [line1, line2]}
 
 def build_learning_notes(*, market_data: Dict[str, Any], cache_dir: Path) -> Dict[str, Any]:
     """

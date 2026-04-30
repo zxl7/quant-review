@@ -829,6 +829,14 @@ def run_rebuild(date: str, modules: list[str] | None = None, suffix: str = "", s
     except Exception:
         pass
 
+    # summary3（二句话）：依赖“历史趋势/昨日对比”等注入字段，故在注入后再重算一次，保证口径一致
+    try:
+        from daily_review.render.render_html import build_summary3
+
+        market_data["summary3"] = build_summary3(market_data=market_data)
+    except Exception:
+        pass
+
     # PRD v2：核心派生字段（必须可复算）
     # - sectorHeatmap（多板块情绪热力图）
     # - threeQuadrants（盘面三象限）
