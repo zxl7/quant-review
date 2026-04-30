@@ -4263,6 +4263,11 @@
               </div>
             </div>
 
+            <!-- 情绪温度（解释版）｜近7日五线趋势：涨停、连板、跌停、封板率、晋级率 -->
+            <div class="chart-container" style="height: 260px; margin-top: 12px;">
+              <div id="mood-5line-echart" style="width: 100%; height: 100%;"></div>
+            </div>
+
             <div class="tri-strip reveal" aria-label="情绪三卡">
               <div class="tri-card reveal"
                    v-for="(c, i) in moodTriCards"
@@ -6258,16 +6263,6 @@
               const jjLvl = lvl(jj, 20, 35, false);
               const jjDesc = `晋级率处于${jjLvl.t}，晋级率趋势：${fmtArr(jjHist, '%')}。指标：<20%低位，20%-35%中位，>35%高位。`;
 
-              // 5) 涨跌家数（宽度）
-              const up = this.toNum(mi.up_count, 0);
-              const down = this.toNum(mi.down_count, 0);
-              const upHist = mi.hist_up || [];
-              const downHist = mi.hist_down || [];
-              let breadthLvl = { t: '中位', c: 'mid' };
-              if (down >= 4000) breadthLvl = { t: '低位', c: 'low' };
-              else if (up >= 4000) breadthLvl = { t: '高位', c: 'high' };
-              const breadthDesc = `上涨/下跌：${up} : ${down}，上涨数${breadthLvl.t}。上涨趋势：${fmtArr(upHist)}；下跌趋势：${fmtArr(downHist)}。指标：下跌>4000为低位，上涨>4000为高位。`;
-
               const item = (key, title, value, level, levelCls, desc, trend, vs) => ({ key, title, value, level, levelCls, desc, trend, vs });
               return [
                 item('zt', '涨停', `${Math.round(zt)}`, ztLvl.t, ztLvl.c, ztDesc, fmtArr(ztHist), vsText(ztPrev, delta.zt)),
@@ -6275,7 +6270,6 @@
                 item('dt', '跌停', `${Math.round(dt)}`, dtLvl.t, dtLvl.c, dtDesc, fmtArr(dtHist), vsText(dtPrev, delta.dt)),
                 item('fb', '封板率', `${Math.round(fb)}%`, fbLvl.t, fbLvl.c, fbDesc, fmtArr(fbHist, '%'), ''),
                 item('jj', '晋级率', `${Math.round(jj)}%`, jjLvl.t, jjLvl.c, jjDesc, fmtArr(jjHist, '%'), ''),
-                item('breadth', '涨跌家数', `${Math.round(up)}:${Math.round(down)}`, breadthLvl.t, breadthLvl.c, breadthDesc, fmtArr(upHist), ''),
               ];
             },
           },
@@ -6297,7 +6291,7 @@
       };
 
       // 核心图表实例
-      let volumeChart, heightChart, themeTrendChart, moodKlineChart, moodRadarChart, threeQuadrantsChart;
+      let volumeChart, heightChart, themeTrendChart, moodKlineChart, moodRadarChart, threeQuadrantsChart, mood5LineChart;
       // 支持“定时渲染的盯盘页”：在 marketData.meta.default_page 提供时优先生效
       let currentPage = (marketData && marketData.meta && marketData.meta.default_page) || document.body.getAttribute('data-page') || 'sentiment';
       document.body.setAttribute('data-page', currentPage);
@@ -6316,14 +6310,17 @@
         if (page === 'sentiment') {
           if (themeTrendChart) { themeTrendChart.dispose(); themeTrendChart = null; }
           if (heightChart) { heightChart.dispose(); heightChart = null; }
+          if (mood5LineChart) { mood5LineChart.dispose(); mood5LineChart = null; }
           // ladder 独立页，sentiment 不再渲染天梯（避免重复信息）
           renderVolumeTrend(marketData.volume);
           renderThreeQuadrants(marketData.threeQuadrants);
+          renderMood5LineTrend((marketData.features || {}).mood_inputs || {});
         } else if (page === 'themes') {
           if (volumeChart) { volumeChart.dispose(); volumeChart = null; }
           if (heightChart) { heightChart.dispose(); heightChart = null; }
           if (moodKlineChart) { moodKlineChart.dispose(); moodKlineChart = null; }
           if (moodRadarChart) { moodRadarChart.dispose(); moodRadarChart = null; }
+          if (mood5LineChart) { mood5LineChart.dispose(); mood5LineChart = null; }
           if (threeQuadrantsChart) { threeQuadrantsChart.dispose(); threeQuadrantsChart = null; }
           renderThemeTrend(marketData.themeTrend);
         } else if (page === 'ladder') {
@@ -6332,6 +6329,7 @@
           if (volumeChart) { volumeChart.dispose(); volumeChart = null; }
           if (moodKlineChart) { moodKlineChart.dispose(); moodKlineChart = null; }
           if (moodRadarChart) { moodRadarChart.dispose(); moodRadarChart = null; }
+          if (mood5LineChart) { mood5LineChart.dispose(); mood5LineChart = null; }
           if (threeQuadrantsChart) { threeQuadrantsChart.dispose(); threeQuadrantsChart = null; }
           renderHeightTrend(marketData.heightTrend);
           renderLadder(marketData.ladder);
@@ -6342,6 +6340,7 @@
           if (heightChart) { heightChart.dispose(); heightChart = null; }
           if (moodKlineChart) { moodKlineChart.dispose(); moodKlineChart = null; }
           if (moodRadarChart) { moodRadarChart.dispose(); moodRadarChart = null; }
+          if (mood5LineChart) { mood5LineChart.dispose(); mood5LineChart = null; }
           if (threeQuadrantsChart) { threeQuadrantsChart.dispose(); threeQuadrantsChart = null; }
         } else if (page === 'v3') {
           // v3 总览页不渲染图表，释放所有图表实例避免隐藏容器尺寸问题
@@ -6350,6 +6349,7 @@
           if (heightChart) { heightChart.dispose(); heightChart = null; }
           if (moodKlineChart) { moodKlineChart.dispose(); moodKlineChart = null; }
           if (moodRadarChart) { moodRadarChart.dispose(); moodRadarChart = null; }
+          if (mood5LineChart) { mood5LineChart.dispose(); mood5LineChart = null; }
           if (threeQuadrantsChart) { threeQuadrantsChart.dispose(); threeQuadrantsChart = null; }
         }
       };
@@ -6768,6 +6768,71 @@
           ]
         };
         moodKlineChart.setOption(option);
+      };
+
+      /**
+       * 渲染情绪温度（解释版）五线折线图（近7日）
+       * 五线：涨停、连板、跌停、封板率、晋级率
+       */
+      const renderMood5LineTrend = (mi) => {
+        const chartDom = document.getElementById('mood-5line-echart');
+        if (!chartDom) return;
+        const days = Array.isArray(mi?.hist_days) ? mi.hist_days : [];
+        const zt = (Array.isArray(mi?.hist_zt) ? mi.hist_zt : []).map(v => Number(v));
+        const lb = (Array.isArray(mi?.hist_lianban) ? mi.hist_lianban : []).map(v => Number(v));
+        const dt = (Array.isArray(mi?.hist_dt) ? mi.hist_dt : []).map(v => Number(v));
+        const fb = (Array.isArray(mi?.hist_fb_rate) ? mi.hist_fb_rate : []).map(v => Number(v));
+        const jj = (Array.isArray(mi?.hist_jj_rate) ? mi.hist_jj_rate : []).map(v => Number(v));
+        const n = Math.min(days.length, zt.length, lb.length, dt.length, fb.length, jj.length);
+        if (n < 2) return;
+
+        if (mood5LineChart) mood5LineChart.dispose();
+        mood5LineChart = echarts.init(chartDom, document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : null);
+
+        const option = {
+          backgroundColor: 'transparent',
+          tooltip: {
+            trigger: 'axis',
+            axisPointer: { type: 'line' },
+          },
+          legend: {
+            data: ['涨停', '连板', '跌停', '封板率', '晋级率'],
+            top: 0,
+            textStyle: { color: 'var(--text-muted)', fontWeight: 700, fontSize: 11 },
+            icon: 'circle',
+          },
+          grid: { top: 34, left: '3%', right: '5%', bottom: 24, containLabel: true },
+          xAxis: {
+            type: 'category',
+            data: days.slice(0, n),
+            axisLine: { lineStyle: { color: 'var(--text-muted)' } },
+            axisLabel: { color: 'var(--text-muted)', fontWeight: 700, fontSize: 10 }
+          },
+          yAxis: [
+            {
+              type: 'value',
+              name: '数量',
+              axisLabel: { color: 'var(--text-muted)', fontWeight: 700, fontSize: 10 },
+              splitLine: { lineStyle: { type: 'dashed', color: 'var(--border)' } },
+            },
+            {
+              type: 'value',
+              name: '%',
+              min: 0,
+              max: 100,
+              axisLabel: { color: 'var(--text-muted)', fontWeight: 700, fontSize: 10, formatter: '{value}%' },
+              splitLine: { show: false },
+            }
+          ],
+          series: [
+            { name: '涨停', type: 'line', data: zt.slice(0, n), smooth: true, showSymbol: false, lineStyle: { width: 2.4, color: '#ef4444' } },
+            { name: '连板', type: 'line', data: lb.slice(0, n), smooth: true, showSymbol: false, lineStyle: { width: 2.2, color: '#8b5cf6' } },
+            { name: '跌停', type: 'line', data: dt.slice(0, n), smooth: true, showSymbol: false, lineStyle: { width: 2.2, color: '#10b981' } },
+            { name: '封板率', yAxisIndex: 1, type: 'line', data: fb.slice(0, n), smooth: true, showSymbol: false, lineStyle: { width: 2.6, color: '#f59e0b' } },
+            { name: '晋级率', yAxisIndex: 1, type: 'line', data: jj.slice(0, n), smooth: true, showSymbol: false, lineStyle: { width: 2.6, color: '#60a5fa' } },
+          ],
+        };
+        mood5LineChart.setOption(option);
       };
 
       /**

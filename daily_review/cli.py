@@ -1005,7 +1005,8 @@ def _inject_mood_history_and_delta(*, root: Path, date: str, market_data: dict) 
     need_hist = not (isinstance(hist_days, list) and len(hist_days) >= 2)
     if need_hist:
         try:
-            hist_n = int(os.getenv("MOOD_HIST_DAYS", "5") or "5")
+            # 默认近 7 日：用于“情绪温度（解释版）”五线趋势（涨停/连板/跌停/封板率/晋级率）
+            hist_n = int(os.getenv("MOOD_HIST_DAYS", "7") or "7")
         except Exception:
             hist_n = 5
         hist_n = max(3, min(hist_n, 10))
@@ -1210,7 +1211,8 @@ def _inject_prd_v2_metrics(*, root: Path, date: str, market_data: dict) -> None:
             items.append((d8, fp))
     items.sort(key=lambda x: x[0])
     hist = []
-    for d8, fp in items[-5:]:
+    # 最近 7 个交易日：用于“情绪温度（解释版）”五线趋势（涨停/连板/跌停/封板率/晋级率）
+    for d8, fp in items[-7:]:
         try:
             snap = json.loads(fp.read_text(encoding="utf-8"))
             pt = build_three_quadrants(snap)

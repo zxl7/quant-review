@@ -8,12 +8,11 @@ on:
   workflow_dispatch: {}
 
 permissions:
-  contents: read
-  pages: write
-  id-token: write
+  # 你的 Pages 采用 “Deploy from branch: gh-pages”，因此这里需要把结果直接提交到 gh-pages 分支
+  contents: write
 
 concurrency:
-  group: "pages"
+  group: "gh-pages-live"
   cancel-in-progress: true
 
 env:
@@ -23,16 +22,17 @@ env:
   BIYING_TOKEN: ${{ secrets.BIYING_TOKEN }}
 
 jobs:
-  build:
+  inject:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout main (scripts)
-        uses: actions/checkout@v6
+        uses: actions/checkout@v4
         with:
           ref: main
+          path: main
 
       - name: Setup Python
-        uses: actions/setup-python@v6
+        uses: actions/setup-python@v5
         with:
           python-version: "3.11"
 
@@ -43,38 +43,41 @@ jobs:
           pip install akshare pandas numpy py-mini-racer akracer curl_cffi html5lib jsonpath --break-system-packages
 
       - name: Checkout gh-pages (existing site)
-        uses: actions/checkout@v6
+        uses: actions/checkout@v4
         with:
           ref: gh-pages
           path: site_prev
           fetch-depth: 1
+          persist-credentials: true
 
       - name: Inject live data into existing HTML
         run: |
           set -euo pipefail
+          if [ -z "${BIYING_TOKEN}" ]; then
+            echo "Missing secrets.BIYING_TOKEN"
+            exit 2
+          fi
           # 直接把实时数据注入到现有页面（不新建页面，不依赖前端 fetch）
           args="--html site_prev/index.html"
           for f in site_prev/*tab-v1.html; do
             if [ -f "$f" ]; then args="$args --html $f"; fi
           done
-          python -m daily_review.inject_live_into_html $args
+          # 注入脚本在 main 仓库里；目标 HTML 在 site_prev（gh-pages 分支）
+          cd main
+          PYTHONPATH=. python -m daily_review.inject_live_into_html $args
           touch site_prev/.nojekyll
 
-      - name: Configure Pages
-        uses: actions/configure-pages@v5
-
-      - name: Upload Pages artifact
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: site_prev
-
-  deploy:
-    needs: build
-    runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    steps:
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
+      - name: Commit & push to gh-pages
+        run: |
+          set -euo pipefail
+          # 若没有变化则直接退出（避免空提交）
+          if git -C site_prev diff --quiet; then
+            echo "No changes to commit."
+            exit 0
+          fi
+          git -C site_prev status --porcelain
+          git -C site_prev config user.name "github-actions[bot]"
+          git -C site_prev config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git -C site_prev add -A
+          git -C site_prev commit -m "chore(live): inject realtime snapshot" || true
+          git -C site_prev push origin gh-pages

@@ -26,7 +26,7 @@ permissions:
   id-token: write
 
 concurrency:
-  group: "pages"
+  group: "pages-publish"
   cancel-in-progress: true
 
 env:
@@ -42,7 +42,7 @@ jobs:
       skip: ${{ steps.timecheck.outputs.skip }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v4
 
       - name: Check Beijing time (schedule only)
         id: timecheck
@@ -99,7 +99,7 @@ jobs:
           key: cache-${{ runner.os }}-${{ steps.datekey.outputs.d8 }}
 
       - name: Setup Python
-        uses: actions/setup-python@v6
+        uses: actions/setup-python@v5
         if: ${{ github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true' }}
         with:
           python-version: "3.11"
@@ -179,9 +179,14 @@ jobs:
             mode="${{ steps.pushmode.outputs.mode }}"
           fi
           echo "Run mode=${mode}"
+          run_date="${{ steps.pushmode.outputs.date10 }}"
+          if [ "${{ github.event_name }}" = "schedule" ]; then
+            # schedule 场景：intraday 直接用今天（若非交易日，cli 内部会自动回退）
+            run_date="$(date +%F)"
+          fi
           if [ "${mode}" = "intraday" ]; then
             # 盘中快照：每半小时一次（数据截止当前时刻）
-            PYTHONPATH=. python3 -m daily_review.cli --mode intraday --date "${{ steps.pushmode.outputs.date10 }}"
+            PYTHONPATH=. python3 -m daily_review.cli --mode intraday --date "${run_date}"
           else
             # 收盘版：在线取数落缓存（有成本）→ 再用 v2 pipeline 离线重建 → 输出 html/*tab-v1.html
             if [ "${{ github.event_name }}" = "schedule" ]; then
@@ -234,6 +239,9 @@ jobs:
     needs: build
     if: ${{ github.event_name != 'schedule' || needs.build.outputs.skip != 'true' }}
     runs-on: ubuntu-latest
+    concurrency:
+      group: "pages-deploy"
+      cancel-in-progress: true
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
