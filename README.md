@@ -75,11 +75,13 @@ chmod +x ./qr.sh
 
 仓库内已提供工作流：`.github/workflows/publish_pages.yml`，会：
 - 云端执行 `./qr.sh fetch` 生成最新 HTML
-- 自动把 `html/` 部署到 GitHub Pages
+- 将最新产物写入 `gh-pages` 分支（`index.html` + 同步保留当日报告文件）
+- GitHub Pages 使用 **Deploy from branch: gh-pages（/root）** 发布
 
 ### 一次性配置
 1) GitHub → 仓库 → Settings → Pages  
-   Source 选择：**GitHub Actions**
+   Source 选择：**Deploy from a branch**  
+   Branch 选择：`gh-pages` / `/(root)`
 
 2) GitHub → 仓库 → Settings → Secrets and variables → Actions → New repository secret
    - Name: `BIYING_TOKEN`（必填）
@@ -110,3 +112,16 @@ chmod +x ./qr.sh
 - `gen_report_v4.py`：在线取数/计算主脚本（生成 cache + 留档 HTML）
 - `daily_review/render/render_html.py`：离线渲染器（模板注入）
 - `templates/report_template.html`：主模板
+
+---
+
+## 语录合集（可选）
+
+为了让复盘更“有手感”，仓库里维护了一份可持续扩充的语录合集：
+
+- `心法.md`：短线/龙头/情绪周期相关的核心口诀与摘录
+
+你可以把它当作：
+- 复盘后的“自检清单”
+- 行为约束（避免临时起意）
+- 训练用语料（长期维护、不断迭代）
