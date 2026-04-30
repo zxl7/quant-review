@@ -16,8 +16,7 @@ v3 Y=F(X)反身性模型 + 人性博弈分析层
 """
 
 from __future__ import annotations
-from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List
 
 
 def analyze_reflexivity_cycle(market_state: Dict[str, Any]) -> Dict[str, Any]:

@@ -11,7 +11,7 @@ v3_reflexivity 模块：基于v3.0算法规格书的反身性周期分析
 
 from __future__ import annotations
 
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict
 
 from daily_review.pipeline.context import Context
 from daily_review.pipeline.module import Module

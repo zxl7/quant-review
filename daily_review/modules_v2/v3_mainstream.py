@@ -8,11 +8,11 @@ v3_mainstream 模块：基于v3.0算法规格书的主流/主线判断
 
 from __future__ import annotations
 
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict
 
 from daily_review.pipeline.context import Context
 from daily_review.pipeline.module import Module
-from daily_review.modules_v2._utils import map_ztgc_stock, map_ztgc_list
+from daily_review.modules_v2._utils import map_ztgc_list
 
 
 def _derive_inputs(ctx: Context) -> Dict[str, Any]:

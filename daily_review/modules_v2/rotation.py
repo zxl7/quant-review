@@ -11,7 +11,7 @@ rotation 模块（v2）：高低切换/风格偏好（marketData.rotation）
 
 from __future__ import annotations
 
-from typing import Any, Dict, Mapping
+from typing import Any, Dict
 
 from daily_review.pipeline.context import Context
 from daily_review.pipeline.module import Module

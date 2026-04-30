@@ -13,7 +13,7 @@ fear 模块（v2）：恐惧/亏钱扩散信息（marketData.fear）
 
 from __future__ import annotations
 
-from typing import Any, Dict, Mapping
+from typing import Any, Dict
 
 from daily_review.pipeline.context import Context
 from daily_review.pipeline.module import Module

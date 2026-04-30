@@ -9,7 +9,7 @@ v3_sentiment 模块：基于v3.0算法规格书的六维加权情绪评分
 
 from __future__ import annotations
 
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict
 
 from daily_review.pipeline.context import Context
 from daily_review.pipeline.module import Module
@@ -129,10 +129,8 @@ def _derive_inputs(ctx: Context) -> Dict[str, Any]:
 
 def _compute(ctx: Context) -> Dict[str, Any]:
     """v3 sentiment 计算主函数"""
-    md = ctx.market_data or {}
-
     try:
-        from daily_review.metrics.v3_validator import SentimentInput, validate_and_clean
+        from daily_review.metrics.v3_validator import validate_and_clean
         from daily_review.metrics.v3_sentiment import calc_sentiment_score
 
         raw_inputs = _derive_inputs(ctx)

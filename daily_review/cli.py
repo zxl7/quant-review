@@ -13,7 +13,6 @@ from __future__ import annotations
 import argparse
 import json
 import os
-import sys
 from pathlib import Path
 
 from daily_review.modules_v2 import ALL_MODULES
@@ -25,7 +24,6 @@ from daily_review.config import load_config_from_env
 from daily_review.config import DEFAULT_CONFIG
 from daily_review.data.biying import (
     fetch_indices_realtime,
-    fetch_index_latest_k,
     fetch_index_history_k,
     fetch_pool,
     fetch_stock_themes,
@@ -548,7 +546,6 @@ def run_intraday_snapshot(date: str | None) -> int:
 
     # 构造 market_data 骨架（标记为 intraday 模式）
     gen_time = now.strftime("%Y-%m-%d %H:%M:%S")
-    yest = actual_date  # 盘中时昨日用上一个交易日
 
     raw_pools = {
         "ztgc": pools["ztgc"].get(actual_date) or [],
@@ -1205,6 +1202,96 @@ def _inject_prd_v2_metrics(*, root: Path, date: str, market_data: dict) -> None:
     from daily_review.metrics.structure_v2 import build_structure_v2
     from daily_review.metrics.action_sheet import build_action_sheet
 
+    def _concept_fund_flow_cache_path(*, root: Path) -> Path:
+        """
+        纯函数：概念级资金流向缓存路径（AkShare/东财口径）。
+        """
+        return root / "cache" / "concept_fund_flow_cache.json"
+
+    def _load_concept_fund_flow_cache(*, root: Path) -> dict:
+        """
+        读取概念资金流缓存。
+        结构：
+        {
+          "version": 1,
+          "by_day": { "YYYYMMDD": [ {name, net, inflow, outflow, chg_pct, lead, lead_chg_pct, companies}, ... ] }
+        }
+        """
+        p = _concept_fund_flow_cache_path(root=root)
+        data = read_json(p, default={})
+        if not isinstance(data, dict):
+            return {"version": 1, "by_day": {}}
+        by_day = data.get("by_day") or {}
+        if not isinstance(by_day, dict):
+            by_day = {}
+        return {"version": 1, "by_day": by_day}
+
+    def _write_concept_fund_flow_cache(*, root: Path, data: dict) -> None:
+        """
+        写回概念资金流缓存（副作用）。
+        """
+        p = _concept_fund_flow_cache_path(root=root)
+        write_json(p, data)
+
+    def _now_bj_date10() -> str:
+        """
+        纯函数：返回北京时间今天 YYYY-MM-DD（用于判定是否允许在线拉取概念资金流）。
+        """
+        import datetime as _dt
+        from datetime import timezone, timedelta
+
+        bj = timezone(timedelta(hours=8))
+        return _dt.datetime.now(bj).strftime("%Y-%m-%d")
+
+    def _fetch_concept_fund_flow_top(*, topn: int = 40) -> list[dict]:
+        """
+        在线抓取“概念/题材级资金流向榜”（AkShare -> 东财）。
+
+        说明：
+        - 这是板块/概念级数据源，比“个股资金流再聚合”更接近你要的“板块流入”
+        - AkShare 不需要 BIYING_TOKEN，但需要联网
+        - 返回字段尽量收敛为可渲染的结构（单位按数据源原样保留）
+        """
+        try:
+            import akshare as ak  # type: ignore
+        except Exception:
+            return []
+
+        try:
+            df = ak.stock_fund_flow_concept()
+        except Exception:
+            return []
+
+        if df is None or getattr(df, "empty", True):
+            return []
+
+        def pick(row: dict) -> dict:
+            """
+            纯函数：行 -> 规范化 dict。
+            """
+            name = str(row.get("行业") or row.get("板块") or row.get("名称") or "").strip()
+            return {
+                "name": name,
+                "index": row.get("行业指数"),
+                "chg_pct": row.get("行业-涨跌幅"),
+                "inflow": row.get("流入资金"),
+                "outflow": row.get("流出资金"),
+                "net": row.get("净额"),
+                "companies": row.get("公司家数"),
+                "lead": row.get("领涨股") or row.get("领涨股票") or "",
+                "lead_chg_pct": row.get("领涨股-涨跌幅") or row.get("领涨股票-涨跌幅"),
+                "price": row.get("当前价"),
+            }
+
+        # 兼容列名：AkShare 当前使用中文列
+        rows = []
+        for _, r in df.head(max(int(topn), 1)).iterrows():
+            if hasattr(r, "to_dict"):
+                it = pick(r.to_dict())
+                if it.get("name"):
+                    rows.append(it)
+        return rows
+
     def _code_with_market(code6: str) -> str:
         """
         纯函数：6位代码 -> 带市场后缀（SH/SZ）。
@@ -1473,6 +1560,37 @@ def _inject_prd_v2_metrics(*, root: Path, date: str, market_data: dict) -> None:
                 client = None
         if client is not None:
             _inject_sector_flow_7d(root=root, date=date, market_data=market_data, client=client)
+    except Exception:
+        pass
+
+    # 4.2) conceptFundFlow（概念级资金流向榜）：
+    # - 优先读取本地缓存（离线可重建）
+    # - 若缓存缺失且 report_date=北京时间今天，则允许用 AkShare 在线补齐（不依赖 BIYING_TOKEN）
+    try:
+        cache = _load_concept_fund_flow_cache(root=root)
+        by_day = cache.get("by_day") or {}
+        if not isinstance(by_day, dict):
+            by_day = {}
+        date8 = date.replace("-", "")
+        rows = by_day.get(date8)
+
+        if not isinstance(rows, list) or not rows:
+            # 仅当“报告日期=今天”才在线补齐，避免历史日期错配
+            if date == _now_bj_date10():
+                rows = _fetch_concept_fund_flow_top(topn=60)
+                if rows:
+                    by_day[date8] = rows
+                    cache["by_day"] = by_day
+                    _write_concept_fund_flow_cache(root=root, data=cache)
+
+        if isinstance(rows, list) and rows:
+            market_data["conceptFundFlowTop"] = rows[:20]
+            meta = market_data.get("meta") if isinstance(market_data.get("meta"), dict) else {}
+            if isinstance(meta, dict):
+                meta.setdefault("asOf", {})
+                if isinstance(meta.get("asOf"), dict):
+                    meta["asOf"]["concept_fund_flow"] = meta.get("asOf", {}).get("pools", "")
+                market_data["meta"] = meta
     except Exception:
         pass
 

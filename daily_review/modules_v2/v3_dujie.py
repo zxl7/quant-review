@@ -9,11 +9,11 @@ v3_dujie 模块：基于v3.0算法规格书的断板/渡劫诊断
 
 from __future__ import annotations
 
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict
 
 from daily_review.pipeline.context import Context
 from daily_review.pipeline.module import Module
-from daily_review.modules_v2._utils import map_ztgc_stock, map_ztgc_list
+from daily_review.modules_v2._utils import map_ztgc_list
 
 
 def _derive_inputs(ctx: Context) -> Dict[str, Any]:
@@ -43,12 +43,9 @@ def _safe(val: Any) -> Any:
 
 def _compute(ctx: Context) -> Dict[str, Any]:
     """v3 dujie 计算主函数"""
-    md = ctx.market_data or {}
-
     try:
         from daily_review.metrics.v3_dujie import (
             diagnose_doujie,
-            batch_diagnose_dujie,
             classify_board_pattern,
             identify_life_cycle,
         )

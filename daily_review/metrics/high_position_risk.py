@@ -11,7 +11,7 @@ high_position_risk: PRD 3.5 高位风险预警（High-Position Risk Alert）
 
 from __future__ import annotations
 
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional
 
 from daily_review.http import HttpClient
 

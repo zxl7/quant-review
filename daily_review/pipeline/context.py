@@ -12,7 +12,7 @@ Context：统一数据容器（raw/features/marketData）
 """
 
 from dataclasses import dataclass, field
-from typing import Any, Dict, Optional
+from typing import Any, Dict
 
 
 def get_path(obj: Dict[str, Any], path: str, default: Any = None) -> Any:

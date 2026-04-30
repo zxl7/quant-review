@@ -14,7 +14,7 @@ data.biying：外部数据源访问（不做业务判断）
 from __future__ import annotations
 
 import datetime as _dt
-from typing import Any, Dict, List, Optional, Sequence, Tuple
+from typing import Any, Sequence
 
 from daily_review.http import HttpClient
 

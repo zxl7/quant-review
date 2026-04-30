@@ -9,8 +9,7 @@ divergence: PRD 3.2 分歧与承接（Divergence & Support Engine）
 
 from __future__ import annotations
 
-from dataclasses import dataclass
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Optional
 
 from daily_review.http import HttpClient
 

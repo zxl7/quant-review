@@ -17,7 +17,7 @@ L5: 大面积崩溃 (跌停>=30) → 直接归0
 
 from __future__ import annotations
 from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional
+from typing import List, Optional
 
 
 @dataclass

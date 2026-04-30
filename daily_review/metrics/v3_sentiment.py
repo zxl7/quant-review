@@ -9,7 +9,7 @@ v3 六维加权情绪评分引擎（对标规格书模块①）
 
 from __future__ import annotations
 from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional
+from typing import Any, List
 
 
 # ─── 核心输出数据结构 ──────────────────────────────────────────────

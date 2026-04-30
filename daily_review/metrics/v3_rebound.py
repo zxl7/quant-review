@@ -17,7 +17,7 @@ v3 反弹三阶段策略引擎
 from __future__ import annotations
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict
 
 
 class ReboundPhase(Enum):

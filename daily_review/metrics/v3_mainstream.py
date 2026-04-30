@@ -15,7 +15,7 @@ v3 主流三级划分 + 板块梯队构建系统
 次主流: 持仓1-2天, 仓位10-20%, 只能打板
 """
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from enum import Enum
 from typing import Any, Dict, List, Optional, Tuple
 

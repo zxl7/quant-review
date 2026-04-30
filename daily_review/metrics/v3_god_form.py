@@ -16,8 +16,7 @@ v3 神/形辨析体系
 """
 
 from dataclasses import dataclass, field
-from enum import Enum
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Dict
 
 
 @dataclass

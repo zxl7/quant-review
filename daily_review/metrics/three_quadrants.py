@@ -19,7 +19,7 @@ three_quadrants: PRD 3.3 盘面三象限（Market Three Quadrants）
 
 from __future__ import annotations
 
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Optional
 
 
 def _to_num(v: Any, d: float = 0.0) -> float:

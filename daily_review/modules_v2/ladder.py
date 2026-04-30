@@ -14,7 +14,7 @@ ladder 模块（v2）：遵循 pipeline.Module 协议
 
 from __future__ import annotations
 
-from typing import Any, Dict, List, Tuple
+from typing import Any, Dict, List
 
 from daily_review.pipeline.context import Context
 from daily_review.pipeline.module import Module

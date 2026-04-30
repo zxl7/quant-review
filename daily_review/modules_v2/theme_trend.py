@@ -14,7 +14,7 @@ theme_trend 模块（v2）：主线题材近5日持续性（marketData.themeTren
 
 from __future__ import annotations
 
-from typing import Any, Dict, List, Tuple
+from typing import Any, Dict
 
 from daily_review.pipeline.context import Context
 from daily_review.pipeline.module import Module

@@ -12,7 +12,7 @@ v3 置信度评分系统 — 每个算法模块输出附加confidence(0-100%)字
 
 from __future__ import annotations
 import statistics
-from typing import Any, Dict, List
+from typing import Dict
 
 
 def calc_confidence(
@@ -51,8 +51,6 @@ def assess_dim_consistency(dim_scores: Dict[str, float]) -> tuple:
         std = statistics.stdev(values)
     except statistics.StatisticsError:
         std = 0.0
-
-    avg = statistics.mean(values) if values else 0
 
     if std <= 1.0:
         score = 100.0

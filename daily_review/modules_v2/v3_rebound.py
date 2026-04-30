@@ -9,7 +9,7 @@ PRE(前反弹) / EARLY(初期) / MID(中期) / LATE(后期) / OVER(结束)
 
 from __future__ import annotations
 
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict
 
 from daily_review.pipeline.context import Context
 from daily_review.pipeline.module import Module

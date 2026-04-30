@@ -14,7 +14,7 @@ structure_v2: PRD 3.4/3.5/3.6 的“结构拆解 v2”（产品化降噪版）
 
 from __future__ import annotations
 
-from typing import Any, Dict, List, Tuple
+from typing import Any
 
 
 def _to_num(v: Any, d: float = 0.0) -> float:

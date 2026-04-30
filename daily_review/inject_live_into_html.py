@@ -44,7 +44,7 @@ def _inject_one(html_path: Path, date8: str | None) -> None:
     if not m:
         raise RuntimeError(f"找不到 __INJECTED_MARKET_DATA__ 注入点：{html_path}")
 
-    prefix, payload, suffix = m.group(1), m.group(2), m.group(3)
+    payload = m.group(2)
 
     md: Dict[str, Any] = json.loads(payload)
 
@@ -77,4 +77,3 @@ def main() -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
-

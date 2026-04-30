@@ -56,6 +56,20 @@ def _to_int(x: Any, default: int = 0) -> int:
         return default
 
 
+def _to_int_or_none(x: Any) -> int | None:
+    """
+    纯函数：安全转 int；失败返回 None（用于可选字段）。
+    """
+    try:
+        if x is None or x == "":
+            return None
+        if isinstance(x, bool):
+            return None
+        return int(float(str(x).strip()))
+    except Exception:
+        return None
+
+
 def _safe_df_to_records(df, cols: List[str], limit: int = 10) -> List[Dict[str, Any]]:
     if df is None:
         return []
@@ -71,6 +85,74 @@ def _safe_df_to_records(df, cols: List[str], limit: int = 10) -> List[Dict[str, 
         return recs[:limit]
     except Exception:
         return []
+
+def _concept_fund_flow_rows(ak, *, limit: int = 80) -> List[Dict[str, Any]]:
+    """
+    在线获取“概念/题材级资金流向”（AkShare -> 东财）。
+
+    返回字段（尽量稳定）：
+    - name: 概念名
+    - net: 资金净额（单位按数据源原样）
+    - inflow/outflow: 流入/流出
+    - chg_pct: 概念涨跌幅（可能与概念涨跌幅榜略有差异，按源数据为准）
+    - companies: 成分家数
+    - lead/lead_chg_pct: 领涨股及其涨跌幅
+    """
+    if ak is None:
+        return []
+    try:
+        _sleep_jitter()
+        df = ak.stock_fund_flow_concept()
+        if df is None:
+            return []
+        # 常见列：行业/行业-涨跌幅/流入资金/流出资金/净额/公司家数/领涨股/领涨股-涨跌幅/当前价
+        if "净额" in df.columns:
+            try:
+                df = df.sort_values(by="净额", ascending=False)
+            except Exception:
+                pass
+        df = df.fillna("")
+        out: List[Dict[str, Any]] = []
+        for _, r in df.head(max(int(limit), 1)).iterrows():
+            try:
+                rr = r.to_dict() if hasattr(r, "to_dict") else dict(r)
+            except Exception:
+                continue
+            name = str(rr.get("行业") or rr.get("板块") or rr.get("名称") or "").strip()
+            if not name:
+                continue
+            out.append(
+                {
+                    "name": name,
+                    "chg_pct": round(_to_float(rr.get("行业-涨跌幅"), None), 2) if str(rr.get("行业-涨跌幅") or "").strip() else None,
+                    "inflow": _to_float(rr.get("流入资金"), None),
+                    "outflow": _to_float(rr.get("流出资金"), None),
+                    "net": _to_float(rr.get("净额"), None),
+                    "companies": _to_int_or_none(rr.get("公司家数")),
+                    "lead": str(rr.get("领涨股") or rr.get("领涨股票") or "").strip(),
+                    "lead_chg_pct": round(_to_float(rr.get("领涨股-涨跌幅") or rr.get("领涨股票-涨跌幅"), None), 2)
+                    if str(rr.get("领涨股-涨跌幅") or rr.get("领涨股票-涨跌幅") or "").strip()
+                    else None,
+                }
+            )
+        return out
+    except Exception:
+        return []
+
+
+def _index_by_name(rows: List[Dict[str, Any]]) -> Dict[str, Dict[str, Any]]:
+    """
+    纯函数：把 rows 按 name 建索引（用于合并概念强度榜与概念资金榜）。
+    """
+    out: Dict[str, Dict[str, Any]] = {}
+    for r in rows or []:
+        if not isinstance(r, dict):
+            continue
+        name = str(r.get("name") or "").strip()
+        if not name:
+            continue
+        out[name] = r
+    return out
 
 
 @dataclass
@@ -323,6 +405,32 @@ def build_live_snapshot(date8: str | None = None) -> LiveSnapshot:
                         )
         except Exception:
             pass
+
+    # --- 2.1) 概念资金流向（净额/流入/流出） ---
+    # 说明：用于“短线热点板块”判断时，与涨跌幅榜合并展示（强度 + 资金）。
+    fund_rows = _concept_fund_flow_rows(ak, limit=120) if ak is not None else []
+    if fund_rows:
+        if "AkShare" not in sources:
+            sources.append("AkShare")
+        sources.append("ConceptFlow")
+        fund_idx = _index_by_name(fund_rows)
+        # 若涨跌幅榜已有 concepts，则按 name 合并资金字段
+        if concepts:
+            for c in concepts:
+                if not isinstance(c, dict):
+                    continue
+                name = str(c.get("name") or "").strip()
+                fr = fund_idx.get(name)
+                if not fr:
+                    continue
+                # 合并：不覆盖已有 chg_pct/lead（以涨跌幅榜更贴近“强度”）
+                c.setdefault("net", fr.get("net"))
+                c.setdefault("inflow", fr.get("inflow"))
+                c.setdefault("outflow", fr.get("outflow"))
+                c.setdefault("companies", fr.get("companies"))
+        else:
+            # 若涨跌幅榜为空，则用资金榜作为主线榜（按净额排序）
+            concepts = fund_rows[:12]
 
     # 必盈兜底：当 AkShare 概念榜为空时，用涨停池题材统计补齐
     if not concepts:

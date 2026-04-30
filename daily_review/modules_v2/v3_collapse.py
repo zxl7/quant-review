@@ -9,7 +9,7 @@ v3_collapse 模块：基于v3.0算法规格书的崩溃前兆链检测
 
 from __future__ import annotations
 
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict
 
 from daily_review.pipeline.context import Context
 from daily_review.pipeline.module import Module
@@ -97,8 +97,6 @@ def _build_collapse_input(inputs: Dict[str, Any]) -> Any:
 
 def _compute(ctx: Context) -> Dict[str, Any]:
     """v3 collapseChain 计算主函数"""
-    md = ctx.market_data or {}
-
     try:
         from daily_review.metrics.v3_sentiment import _score_collapse_chain
 

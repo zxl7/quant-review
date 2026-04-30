@@ -12,7 +12,7 @@ v3 龙头渡劫四类型识别引擎
 高位额外折扣: 7板以上*0.7, 5-6板*0.85
 """
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from enum import Enum
 from typing import Any, Dict, List, Optional, Tuple
 
@@ -53,7 +53,6 @@ def classify_board_pattern(stock_data: Dict[str, Any]) -> BoardPattern:
     low = stock_data.get("low", 0)
     close = stock_data.get("close", 0)
     zt_price = stock_data.get("zt_price", 0)
-    dt_price = stock_data.get("dt_price", 0)   # 跌停价
     turnover = stock_data.get("turnover", 0)     # 换手率%
 
     # 零值保护
@@ -300,7 +299,6 @@ def diagnose_doujie(stock_history: List[Dict[str, Any]]) -> DoujieResult:
 
     # 无渡劫
     if not candidates:
-        pattern = classify_board_pattern(today)
         return DoujieResult(
             is_doujie=False,
             survival_prob=1.0,

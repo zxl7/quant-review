@@ -11,7 +11,7 @@ sentiment_v2 模块：按 v2 规格书输出 marketData.v2.summary
 
 from __future__ import annotations
 
-from typing import Any, Dict, List
+from typing import Any, Dict
 
 from daily_review.metrics.sentiment_v2 import calc_sentiment_score
 from daily_review.pipeline.context import Context

@@ -356,7 +356,6 @@ def calc_stage_sublabel(*, stage_title: str, inputs: Dict[str, Any]) -> Dict[str
     broken_lb_rate = float(inputs.get("broken_lb_rate", 0) or 0)
     jj_rate = float(inputs.get("jj_rate", 0) or 0)
     zb_rate = float(inputs.get("zb_rate", 0) or 0)
-    bf_count = int(inputs.get("bf_count", 0) or 0)
 
     sublabel = ""
     sublabel_class = ""

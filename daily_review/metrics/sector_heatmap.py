@@ -12,7 +12,6 @@ sector_heatmap: PRD 3.7 多板块情绪热力图（按题材聚合）
 
 from __future__ import annotations
 
-from dataclasses import dataclass
 from typing import Any, Dict, List, Optional
 
 
@@ -193,7 +192,6 @@ def build_sector_heatmap(market_data: dict[str, Any]) -> dict[str, Any]:
 
     # 关注方向统计
     focus_rows = [r for r in rows_out if r.get("isFocus")]
-    other_rows = [r for r in rows_out if not r.get("isFocus")]
 
     top = rows_out[0] if rows_out else None
     # 关注方向摘要

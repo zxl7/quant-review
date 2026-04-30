@@ -196,8 +196,6 @@ def build_action_guide_v2(market_data: Dict[str, Any]) -> Dict[str, Any]:
     mood_stage = (market_data.get("moodStage") or {})
     stage = mood_stage.get("title") or "-"
     stage_type = mood_stage.get("type") or "warn"
-    cycle = str(mood_stage.get("cycle") or "")
-    cycle_cn = str(mood_stage.get("detail") or "")
     stance_from_stage = str(mood_stage.get("stance") or "")
     mode_from_stage = str(mood_stage.get("mode") or "")
     theme = pick_theme()
@@ -217,19 +215,7 @@ def build_action_guide_v2(market_data: Dict[str, Any]) -> Dict[str, Any]:
     loss = to_num(mi.get("bf_count"), 0) + to_num(mi.get("dt_count"), 0)
     heat = to_num((market_data.get("mood") or {}).get("heat"), 0)
     risk = to_num((market_data.get("mood") or {}).get("risk"), 0)
-    zt_cnt = int(to_num((market_data.get("panorama") or {}).get("limitUp"), to_num(mi.get("zt_count"), 0)))
     vol_chg = to_num(((market_data.get("volume") or {}).get("change")), 0)  # %
-
-    # 阈值容忍度：随阶段动态变化（避免写死绝对阈值）
-    if stage_type == "good":
-        tol = {"fb": 8, "jj": 10, "zb": 10, "loss": 3}
-        stage_cls = "ladder-chip-strong red-text"
-    elif stage_type == "fire":
-        tol = {"fb": 6, "jj": 8, "zb": 8, "loss": 2}
-        stage_cls = "ladder-chip-cool blue-text"
-    else:
-        tol = {"fb": 5, "jj": 8, "zb": 8, "loss": 2}
-        stage_cls = "ladder-chip-warn orange-text"
 
     def dtag(key: str, unit: str = "") -> Dict[str, str] | None:
         v = delta.get(key)
@@ -264,13 +250,10 @@ def build_action_guide_v2(market_data: Dict[str, Any]) -> Dict[str, Any]:
 
     # 盘面基调（给行动指南一个「像复盘」的总起）
     if stage_type == "good":
-        regime = "强势偏高潮"
         verdict_type = "good"
     elif stage_type == "fire":
-        regime = "弱势偏退潮"
         verdict_type = "fire"
     else:
-        regime = "震荡分歧"
         verdict_type = "warn"
 
     stance = "均衡"
@@ -393,13 +376,10 @@ def build_action_guide_v2(market_data: Dict[str, Any]) -> Dict[str, Any]:
 
     main_name = str(theme.get("name") or "主线")
     main_examples = str(theme.get("examples") or "—")
-    main_str = f"{main_name}（样本：{main_examples}）"
     leader_name = str(leader.get("names") or "龙头")
     leader_b = leader.get("maxB") or "-"
 
     # 观察清单：你明确不需要（容易产生「滞后/空泛」观感），保持为空
-    observe: list[Dict[str, Any]] = []
-
     # 开盘2条：纯数据 + 阈值（不写「建议/观察/优先」这类空话）
     confirm = [
         {
@@ -505,8 +485,6 @@ def build_summary3(*, market_data: Dict[str, Any]) -> Dict[str, Any]:
             return float(d)
 
     stage = (market_data.get("moodStage") or {}).get("title") or "-"
-    mood = (market_data.get("mood") or {})
-
     feats = market_data.get("features") or {}
     mi = (feats.get("mood_inputs") or {}) if isinstance(feats, dict) else {}
     pano = market_data.get("panorama") or {}
@@ -519,7 +497,6 @@ def build_summary3(*, market_data: Dict[str, Any]) -> Dict[str, Any]:
     fb = _num(mi.get("fb_rate"), 0.0)
     jj = _num(mi.get("jj_rate_adj", mi.get("jj_rate")), 0.0)
     max_lb = int(_num(mi.get("max_lb"), _num(mi.get("max_lianban"), _num(kpis.get("max_lianban"), 0))))
-    lianban = int(_num(mi.get("lianban_count"), _num(kpis.get("link_board"), 0)))
 
     # 历史窗口（用于趋势与分位评级）
     W = 7
@@ -582,7 +559,6 @@ def build_summary3(*, market_data: Dict[str, Any]) -> Dict[str, Any]:
     dt_hist = _tail(mi.get("hist_dt"))
     fb_hist = _tail(mi.get("hist_fb_rate"))
     jj_hist = _tail(mi.get("hist_jj_rate"))
-    lb_hist = _tail(mi.get("hist_lianban"))
     maxlb_hist = _tail(mi.get("hist_max_lb"))
 
     zt_lvl = _lvl_by_hist(float(zt), zt_hist, fallback_a=50, fallback_b=90, reverse=False)
@@ -590,8 +566,6 @@ def build_summary3(*, market_data: Dict[str, Any]) -> Dict[str, Any]:
     fb_lvl = _lvl_by_hist(float(fb), fb_hist, fallback_a=70, fallback_b=80, reverse=False)
     jj_lvl = _lvl_by_hist(float(jj), jj_hist, fallback_a=20, fallback_b=35, reverse=False)
     maxlb_lvl = _lvl_by_hist(float(max_lb), maxlb_hist, fallback_a=3, fallback_b=5, reverse=False)
-    lb_lvl = _lvl_by_hist(float(lianban), lb_hist, fallback_a=10, fallback_b=20, reverse=False)
-
     # 简单“温度/风险”合成逻辑（算法输出：仅依赖数据分位与趋势）
     heat_up = (zt_lvl in ("偏强", "中位")) and (fb_lvl in ("偏强", "中位"))
     risk_up = (dt_lvl == "偏高") or (jj_lvl == "偏弱")

@@ -11,9 +11,8 @@
 
 from __future__ import annotations
 
-from dataclasses import dataclass
 from statistics import median
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, List
 
 
 def _to_num(x: Any, default: float = 0.0) -> float:
@@ -81,7 +80,6 @@ def build_mood_signals(market_data: Dict[str, Any]) -> Dict[str, Any]:
     avg_zbc = _to_num(mi.get("avg_zt_zbc"), 0.0)
     ge3 = _to_num(mi.get("zbc_ge3_ratio"), 0.0)
     loss = _to_num(mi.get("loss"), 0.0)
-    risk = _to_num((market_data.get("mood") or {}).get("risk"), 0.0)
 
     # 拥挤/集中（来自 style_radar/theme_panels，若不存在则兜底）
     top3_ratio = _to_num((market_data.get("styleRadar") or {}).get("top3ThemeRatio"), _to_num(mi.get("top3_theme_ratio"), 0.0))
@@ -99,7 +97,6 @@ def build_mood_signals(market_data: Dict[str, Any]) -> Dict[str, Any]:
     d_jj = _to_num(d.get("jj_rate"), 0.0)
     d_zb = _to_num(d.get("zb_rate"), 0.0)
     d_loss = _to_num(d.get("loss"), 0.0)
-    d_risk = _to_num(d.get("risk"), 0.0)
 
     pos: List[Dict[str, Any]] = []
     risk_signals: List[Dict[str, Any]] = []
@@ -319,4 +316,3 @@ def build_hm2_compare(market_data: Dict[str, Any]) -> Dict[str, Any]:
     ]
 
     return {"score": score, "hint": hint, "pointerLeft": pointer_left, "cells": cells}
-

@@ -11,7 +11,7 @@ compat：统一输出层（v1/v2/v3 → 单一口径）
 
 from __future__ import annotations
 
-from typing import Any, Dict, Literal, Optional
+from typing import Any, Dict, Literal
 
 
 Algo = Literal["auto", "v1", "v2", "v3"]

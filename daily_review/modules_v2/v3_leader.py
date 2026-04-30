@@ -9,7 +9,7 @@ v3_leader (dragon) 模块：基于v3.0算法规格书的龙头三要素评分
 
 from __future__ import annotations
 
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict
 
 from daily_review.pipeline.context import Context
 from daily_review.pipeline.module import Module
@@ -34,10 +34,8 @@ def _derive_inputs(ctx: Context) -> Dict[str, Any]:
 
 def _compute(ctx: Context) -> Dict[str, Any]:
     """v3 dragon (leader) 计算主函数"""
-    md = ctx.market_data or {}
-
     try:
-        from daily_review.metrics.v3_god_form import calc_three_elements, DragonScore
+        from daily_review.metrics.v3_god_form import calc_three_elements
 
         inputs = _derive_inputs(ctx)
         ztgc = inputs["ztgc"]
