@@ -3914,7 +3914,7 @@
         <!-- 情绪温度（替代“情绪周期趋势”）：更直观、更可解释 -->
         <div class="thermo-mini">
           <div class="thermo-mini-head">
-            <div class="thermo-mini-title">情绪温度（解释版）</div>
+            <div class="thermo-mini-title">情绪温度</div>
             <div class="thermo-mini-meta">
               {{ marketData.moodStage?.title || '-' }} · 总分 {{ marketData.mood?.score ?? '-' }}/100
             </div>
@@ -3940,7 +3940,7 @@
           </div>
 
           <!-- 替代原“更多维度（算法口径）”：保持图表/条形展示，不显示长文案 -->
-          <details style="margin-top:10px;" v-if="(thermoExplainDims || []).length">
+          <details style="margin-top:10px;" v-if="(thermoExplainDims || []).length" open data-open-default="1">
             <summary style="cursor:pointer; color:var(--text-muted); font-weight:900; font-size:12px;">更多维度</summary>
             <div class="dim-grid" style="margin-top:10px;">
               <div class="dim-item" v-for="it in thermoExplainDims" :key="'txb-'+it.key">
@@ -6173,13 +6173,10 @@
             },
             thermoExplainDims() {
               /**
-               * 纯函数：按“可读维度（近5日）”生成解释卡。
-               * 维度：
-               * 1) 涨停数（高/中/低） + 5日趋势 + vs昨日
-               * 2) 连板数（高/中/低） + 5日趋势 + 连续破10提示
-               * 3) 跌停数（高/中/低） + 5日趋势 + 亏钱扩散/收敛提示
-               * 4) 封板率（高/中/低） + 5日趋势 + 连续高位提示
-               * 5) 涨跌家数（宽度） + 5日趋势（上涨数） + 情绪反弹提示
+               * 纯函数：按“可读维度（近7日）”生成解释卡（只展示客观数据与趋势）。
+               * 目标：
+               * - 维度：涨停/连板/高度/跌停/封板率/晋级率
+               * - 真实口径：优先使用 features.mood_inputs（离线统一口径）；其次用 panorama/prev/delta 兜底
                */
               const mi = (this.marketData?.features && this.marketData.features.mood_inputs) || {};
               const pan = this.marketData?.panorama || {};
@@ -6187,8 +6184,15 @@
               const prevPan = prev.panorama || {};
               const delta = this.marketData?.delta || {};
 
-              const last5 = (arr) => (Array.isArray(arr) ? arr.slice(-5) : []);
-              const fmtArr = (arr, suffix = '') => last5(arr).map(x => `${x}${suffix}`).join('-');
+              const W = 7; // 近7日窗口
+              const lastN = (arr) => (Array.isArray(arr) ? arr.slice(-W) : []);
+              const fmtArr = (arr, suffix = '') => lastN(arr).map(x => `${x}${suffix}`).join('-');
+              const q = (arr, p) => {
+                const a = (Array.isArray(arr) ? arr : []).map(x => Number(x)).filter(x => Number.isFinite(x)).sort((x, y) => x - y);
+                if (!a.length) return null;
+                const idx = Math.max(0, Math.min(a.length - 1, Math.round((a.length - 1) * p)));
+                return a[idx];
+              };
               const lvl = (v, a, b, rev = false) => {
                 // rev=false：值越大越高（涨停/连板/封板率/上涨数）
                 // rev=true ：值越大越差（跌停/下跌数）
@@ -6203,73 +6207,98 @@
                 if (x >= a) return { t: '中位', c: 'mid' };
                 return { t: '低位', c: 'low' };
               };
+              const lvlByHist = (v, hist, rev = false, fallbackA = 0, fallbackB = 0) => {
+                // 经验：用近7日分位做“高/中/低”，比固定阈值更贴近当下行情强弱
+                const h = lastN(hist);
+                const a = q(h, 0.33);
+                const b = q(h, 0.66);
+                const A = (a === null) ? fallbackA : a;
+                const B = (b === null) ? fallbackB : b;
+                return lvl(v, A, B, rev);
+              };
               const vsText = (v0, dv, unit = '') => {
                 const cur = Number(v0);
                 const d = Number(dv);
                 if (!Number.isFinite(cur)) return '';
-                const p = Number.isFinite(d) ? d : (Number(cur) - Number(v0));
+                const p = Number.isFinite(d) ? d : 0;
                 const sign = p > 0 ? '上升' : (p < 0 ? '下降' : '持平');
                 const abs = Number.isFinite(p) ? Math.abs(p) : 0;
                 return `（${Number(v0)}${unit}）${sign}${abs ? ` ${abs}${unit}` : ''}`;
               };
+              const ensureDelta = (cur, prevV, key) => {
+                const d = Number(delta?.[key]);
+                if (Number.isFinite(d)) return d;
+                const a = Number(cur), b = Number(prevV);
+                if (Number.isFinite(a) && Number.isFinite(b)) return a - b;
+                return 0;
+              };
+              const barPct = (v, cap) => this.clamp100((this.toNum(v, 0) / Math.max(1, cap)) * 100);
 
               // 1) 涨停
               const zt = this.toNum(pan.limitUp, this.toNum(mi.zt_count, 0));
               const ztPrev = this.toNum(prevPan.limitUp, this.toNum((prev.features?.mood_inputs || {}).zt_count, 0));
               const ztHist = mi.hist_zt || [];
-              const ztLvl = lvl(zt, 50, 90, false);
+              const ztLvl = lvlByHist(zt, ztHist, false, 50, 90);
               const ztBreak = (() => {
-                const a = last5(ztHist);
+                const a = lastN(ztHist);
                 if (a.length < 2) return '';
                 const prevMax = Math.max(...a.slice(0, -1).map(x => Number(x) || 0));
                 return (zt >= 100 && prevMax < 100) ? '，首次突破 100' : '';
               })();
-              const ztDesc = `涨停数处于${ztLvl.t}，相比昨日${vsText(ztPrev, delta.zt)}，涨停趋势：${fmtArr(ztHist)}${ztBreak}。指标：<50低位，50-90中位，>90高位。`;
+              const ztDesc = `涨停数：${Math.round(zt)}；趋势：${fmtArr(ztHist)}${ztBreak}。`;
 
               // 2) 连板
               const lianban = this.toNum(mi.lianban_count, this.toNum((this.marketData?.marketPanorama?.kpis || {}).link_board, 0));
               const lbHist = mi.hist_lianban || [];
-              const lbLvl = lvl(lianban, 10, 20, false);
+              const lbLvl = lvlByHist(lianban, lbHist, false, 10, 20);
               const lbHint = (() => {
-                const a = last5(lbHist);
+                const a = lastN(lbHist);
                 if (a.length >= 2 && Number(a[a.length - 1]) >= 10 && Number(a[a.length - 2]) >= 10) return '，连续两日破 10';
                 return '';
               })();
-              const lbDesc = `连板数处于${lbLvl.t}${lbHint}，连板趋势：${fmtArr(lbHist)}。指标：<10低位，10-20中位，>20高位。`;
+              const lbDesc = `连板数：${Math.round(lianban)}${lbHint}；趋势：${fmtArr(lbHist)}。`;
 
               // 3) 跌停（越高越危险）
               const dt = this.toNum(pan.limitDown, this.toNum(mi.dt_count, 0));
               const dtPrev = this.toNum(prevPan.limitDown, this.toNum((prev.features?.mood_inputs || {}).dt_count, 0));
               const dtHist = mi.hist_dt || [];
-              const dtLvl = lvl(dt, 3, 6, true);
-              const dtHint = (Number(delta.dt) < 0) ? '，亏钱效应开始收敛' : (Number(delta.dt) > 0 ? '，亏钱效应扩散' : '');
-              const dtDesc = `跌停数处于${dtLvl.t}${dtHint}，相比昨日${vsText(dtPrev, delta.dt)}，跌停趋势：${fmtArr(dtHist)}。指标：<3低位，3-6中位，>6高位。`;
+              const dtLvl = lvlByHist(dt, dtHist, true, 3, 6);
+              const dtD = ensureDelta(dt, dtPrev, 'dt');
+              const dtHint = (Number(dtD) < 0) ? '（收敛）' : (Number(dtD) > 0 ? '（扩散）' : '');
+              const dtDesc = `跌停数：${Math.round(dt)} ${dtHint}；趋势：${fmtArr(dtHist)}。`;
 
               // 4) 封板率
               const fb = this.toNum(mi.fb_rate, 0);
               const fbHist = mi.hist_fb_rate || [];
-              const fbLvl = lvl(fb, 70, 80, false);
+              const fbLvl = lvlByHist(fb, fbHist, false, 70, 80);
               const fbHint = (() => {
-                const a = last5(fbHist);
+                const a = lastN(fbHist);
                 if (a.length >= 2 && Number(a[a.length - 1]) >= 80 && Number(a[a.length - 2]) >= 80) return '，连续两日处于高位';
                 return '';
               })();
-              const fbDesc = `封板率处于${fbLvl.t}${fbHint}，板率趋势：${fmtArr(fbHist, '%')}。指标：<70%低位，70%-80%中位，>80%高位。`;
+              const fbDesc = `封板率：${Math.round(fb)}%${fbHint}；趋势：${fmtArr(fbHist, '%')}。`;
 
               // 4.5) 晋级率（用于刻画接力延续性）
               const jj = this.toNum(mi.jj_rate_adj, this.toNum(mi.jj_rate, 0));
               const jjHist = mi.hist_jj_rate || [];
-              // 默认阈值：<20低位，20-35中位，>35高位（后续可按你的口径微调）
-              const jjLvl = lvl(jj, 20, 35, false);
-              const jjDesc = `晋级率处于${jjLvl.t}，晋级率趋势：${fmtArr(jjHist, '%')}。指标：<20%低位，20%-35%中位，>35%高位。`;
+              const jjLvl = lvlByHist(jj, jjHist, false, 20, 35);
+              const jjDesc = `晋级率：${Math.round(jj)}%；趋势：${fmtArr(jjHist, '%')}。`;
 
-              const item = (key, title, value, level, levelCls, desc, trend, vs) => ({ key, title, value, level, levelCls, desc, trend, vs });
+              // 5) 高度（最高板）
+              const maxLb = this.toNum(mi.max_lb, this.toNum((this.marketData?.marketPanorama?.kpis || {}).max_lianban, 0));
+              const maxLbHist = mi.hist_max_lb || [];
+              const maxLbLvl = lvlByHist(maxLb, maxLbHist, false, 3, 5);
+              const maxLbDesc = `高度：${Math.round(maxLb)}板；趋势：${fmtArr(maxLbHist)}。`;
+
+              const item = (key, title, value, level, levelCls, desc, trend, vs, bar, kind = 'heat') =>
+                ({ key, title, value, level, levelCls, desc, trend, vs, bar, kind });
               return [
-                item('zt', '涨停', `${Math.round(zt)}`, ztLvl.t, ztLvl.c, ztDesc, fmtArr(ztHist), vsText(ztPrev, delta.zt)),
-                item('lb', '连板', `${Math.round(lianban)}`, lbLvl.t, lbLvl.c, lbDesc, fmtArr(lbHist), ''),
-                item('dt', '跌停', `${Math.round(dt)}`, dtLvl.t, dtLvl.c, dtDesc, fmtArr(dtHist), vsText(dtPrev, delta.dt)),
-                item('fb', '封板率', `${Math.round(fb)}%`, fbLvl.t, fbLvl.c, fbDesc, fmtArr(fbHist, '%'), ''),
-                item('jj', '晋级率', `${Math.round(jj)}%`, jjLvl.t, jjLvl.c, jjDesc, fmtArr(jjHist, '%'), ''),
+                item('zt', '涨停', `${Math.round(zt)}`, ztLvl.t, ztLvl.c, ztDesc, fmtArr(ztHist), vsText(ztPrev, ensureDelta(zt, ztPrev, 'zt')), barPct(zt, 150), 'heat'),
+                item('dt', '跌停', `${Math.round(dt)}`, dtLvl.t, dtLvl.c, dtDesc, fmtArr(dtHist), vsText(dtPrev, dtD), barPct(dt, 30), 'risk'),
+                item('fb', '封板率', `${Math.round(fb)}%`, fbLvl.t, fbLvl.c, fbDesc, fmtArr(fbHist, '%'), '', this.clamp100(fb), 'heat'),
+                item('jj', '晋级率', `${Math.round(jj)}%`, jjLvl.t, jjLvl.c, jjDesc, fmtArr(jjHist, '%'), '', this.clamp100(jj), 'heat'),
+                item('max_lb', '最高板', `${Math.round(maxLb)}板`, maxLbLvl.t, maxLbLvl.c, maxLbDesc, fmtArr(maxLbHist), '', barPct(maxLb, 10), 'heat'),
+                item('lb', '连板数', `${Math.round(lianban)}`, lbLvl.t, lbLvl.c, lbDesc, fmtArr(lbHist), '', barPct(lianban, 30), 'heat'),
               ];
             },
           },
@@ -8051,7 +8080,7 @@
         mountVueApp();
         // Tabs 初始化
 
-        // 默认展开策略（PC）：仅展开关键模块“明日计划”（sec-action）内的 details，其余保持折叠。
+        // 默认展开策略（PC）：展开关键模块（sec-action）与标记 data-open-default 的 details，其余保持折叠。
         const applyDefaultDetails = () => {
           try {
             const isPC = window.innerWidth >= 1100;
@@ -8059,6 +8088,8 @@
             if (isPC) {
               document.querySelectorAll('#sec-action details').forEach(d => { d.open = true; });
             }
+            // 无论 PC/移动端：允许强制默认展开的模块（例如：情绪温度 -> 更多维度）
+            document.querySelectorAll('details[data-open-default="1"]').forEach(d => { d.open = true; });
           } catch (e) {}
         };
         setActiveTab(currentPage);
