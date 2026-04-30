@@ -1205,6 +1205,196 @@ def _inject_prd_v2_metrics(*, root: Path, date: str, market_data: dict) -> None:
     from daily_review.metrics.structure_v2 import build_structure_v2
     from daily_review.metrics.action_sheet import build_action_sheet
 
+    def _code_with_market(code6: str) -> str:
+        """
+        纯函数：6位代码 -> 带市场后缀（SH/SZ）。
+        """
+        c = "".join([x for x in str(code6 or "") if x.isdigit()])[-6:]
+        if not c:
+            return ""
+        return f"{c}.SH" if c.startswith("6") else f"{c}.SZ"
+
+    def _to_num(v: Any, d: float = 0.0) -> float:
+        """
+        纯函数：安全转 float（兼容 %/亿 等字符串）。
+        """
+        try:
+            if v is None:
+                return d
+            if isinstance(v, str):
+                s = v.replace("%", "").replace("亿", "").strip()
+                return float(s) if s else d
+            return float(v)
+        except Exception:
+            return d
+
+    def _money_flow_cache_path(*, root: Path) -> Path:
+        """
+        纯函数：资金流向缓存路径。
+        """
+        return root / "cache" / "money_flow_cache.json"
+
+    def _load_money_flow_cache(*, root: Path) -> dict:
+        """
+        读取资金流向缓存（离线复用）。
+        结构：
+        {
+          "version": 1,
+          "by_day": { "YYYYMMDD": { "000001": 1.23, ... }, ... }
+        }
+        """
+        p = _money_flow_cache_path(root=root)
+        data = read_json(p, default={})
+        if not isinstance(data, dict):
+            return {"version": 1, "by_day": {}}
+        by_day = data.get("by_day") or {}
+        if not isinstance(by_day, dict):
+            by_day = {}
+        return {"version": 1, "by_day": by_day}
+
+    def _write_money_flow_cache(*, root: Path, data: dict) -> None:
+        """
+        写回资金流向缓存（副作用）。
+        """
+        p = _money_flow_cache_path(root=root)
+        write_json(p, data)
+
+    def _net_big_order_flow_yi(client: Any, *, date8: str, code6: str) -> float | None:
+        """
+        使用资金流向接口：特大单+大单 主买 - 主卖（单位：亿）。
+
+        端点（同 divergenceEngine 使用口径）：
+        hsstock/history/transaction/{code}.{SZ|SH}/{token}?st=YYYYMMDD&et=YYYYMMDD&lt=1
+        """
+        code = _code_with_market(code6)
+        if not code:
+            return None
+        url = f"{client.base_url}/hsstock/history/transaction/{code}/{client.token}?st={date8}&et={date8}&lt=1"
+        data = client.get_json(url)
+        if not isinstance(data, list) or not data:
+            return None
+        it = data[-1] if isinstance(data[-1], dict) else {}
+        buy = _to_num(it.get("zmbtdcje"), 0) + _to_num(it.get("zmbddcje"), 0)
+        sell = _to_num(it.get("zmstdcje"), 0) + _to_num(it.get("zmsddcje"), 0)
+        return round((buy - sell) / 1e8, 2)  # 元 -> 亿
+
+    def _inject_sector_flow_7d(*, root: Path, date: str, market_data: dict, client: Any) -> None:
+        """
+        板块流入（近7日累计，口径=大单净流入）：
+        - 近7日：从 pools_cache 的日期序列中截取 <=date 的最近7个交易日
+        - 股票集合：近7日中所有“2连板(lbc=2)”出现过的股票（按 code6 去重，但按出现日计算资金流）
+        - 题材归属：theme_cache.json 的 code6->themes（已清洗）
+        - 分摊：一只股票多个题材时，用 1/k 分摊到每个题材
+        - 输出：写回 marketData.sectors[*].flow7d_yi，用于 UI 展示
+        """
+        md = market_data or {}
+        sectors = md.get("sectors") or []
+        if not isinstance(sectors, list) or not sectors:
+            return
+
+        # 只对当前要展示的题材做流入计算（控制接口调用规模）
+        target_themes = [str(s.get("name") or "").strip() for s in sectors if isinstance(s, dict)]
+        target_themes = [t for t in target_themes if t]
+        if not target_themes:
+            return
+        target_set = set(target_themes)
+
+        zt_by_day = _load_ztgc_by_day_window(root=root, date=date, n=7)
+        if not zt_by_day:
+            return
+        code2themes = _load_theme_cache(root)
+        if not isinstance(code2themes, dict) or not code2themes:
+            return
+
+        # 1) 生成“(day, code)-> 题材分摊权重”列表
+        allocs: list[tuple[str, str, str, float]] = []
+        pairs: set[tuple[str, str]] = set()
+        days = sorted([d for d in zt_by_day.keys() if isinstance(d, str) and d <= date])[-7:]
+        for d in days:
+            rows = zt_by_day.get(d) or []
+            if not isinstance(rows, list):
+                continue
+            day8 = d.replace("-", "")
+            for r in rows:
+                if not isinstance(r, dict):
+                    continue
+                if int(r.get("lbc", 0) or 0) != 2:
+                    continue
+                c6 = "".join([x for x in str(r.get("dm") or r.get("code") or "") if x.isdigit()])[-6:]
+                if not c6:
+                    continue
+                ths0 = code2themes.get(c6) or []
+                ths = [str(x).strip() for x in ths0 if str(x or "").strip()]
+                if not ths:
+                    continue
+                hit = [t for t in ths if t in target_set]
+                if not hit:
+                    continue
+                w = 1.0 / float(len(ths))  # 多题材 1/k 分摊（用全集，避免人为偏置）
+                for t in hit:
+                    allocs.append((day8, c6, t, w))
+                pairs.add((day8, c6))
+
+        if not allocs:
+            return
+
+        # 2) 拉取/复用资金流向缓存
+        cache = _load_money_flow_cache(root=root)
+        by_day = cache.get("by_day") or {}
+        if not isinstance(by_day, dict):
+            by_day = {}
+
+        # 3) 批量补齐缺失的 (day, code) 资金流向
+        for day8, c6 in sorted(list(pairs)):
+            day_map = by_day.get(day8) or {}
+            if not isinstance(day_map, dict):
+                day_map = {}
+            if c6 in day_map:
+                continue
+            v = _net_big_order_flow_yi(client, date8=day8, code6=c6)
+            if v is None:
+                continue
+            day_map[c6] = v
+            by_day[day8] = day_map
+
+        cache["by_day"] = by_day
+        _write_money_flow_cache(root=root, data=cache)
+
+        # 4) 聚合到题材：7日累计净流入（亿）
+        flow_by_theme: dict[str, float] = {t: 0.0 for t in target_themes}
+        miss = 0
+        for day8, c6, theme, w in allocs:
+            day_map = by_day.get(day8) or {}
+            v = day_map.get(c6) if isinstance(day_map, dict) else None
+            if v is None:
+                miss += 1
+                continue
+            flow_by_theme[theme] = float(flow_by_theme.get(theme, 0.0) or 0.0) + float(v) * float(w)
+
+        # 5) 写回 sectors（用于板块题材tab展示）
+        for s in sectors:
+            if not isinstance(s, dict):
+                continue
+            name = str(s.get("name") or "").strip()
+            if not name or name not in flow_by_theme:
+                continue
+            fy = round(float(flow_by_theme.get(name, 0.0) or 0.0), 2)
+            s["flow7d_yi"] = fy
+            # 给前端一个颜色参考（也可直接用 signedClass）
+            s["flow7d_class"] = "red-text" if fy > 0 else ("green-text" if fy < 0 else "text-muted")
+
+        # 写 meta，便于你排查“为何没数据/覆盖率”
+        md.setdefault("meta", {})
+        if isinstance(md.get("meta"), dict):
+            md["meta"]["sectorFlow7d"] = {
+                "precision": "big_order_net",
+                "window_days": days,
+                "pairs": len(pairs),
+                "allocs": len(allocs),
+                "missing_allocs": miss,
+                "cache_file": str(_money_flow_cache_path(root=root).name),
+            }
+
     # 1) sectorHeatmap（优先使用 python 统一口径）
     # - 若历史缓存已存在旧结构（无 meta），则刷新一次以补齐口径信息
     sh = market_data.get("sectorHeatmap")
@@ -1267,6 +1457,24 @@ def _inject_prd_v2_metrics(*, root: Path, date: str, market_data: dict) -> None:
         except Exception:
             client = None
         market_data["divergenceEngine"] = build_divergence_engine(market_data, date=date, client=client)
+
+    # 4.1) sectorFlow7d（近7天2连板题材的资金流入聚合）— 需要 token 才能精确计算
+    try:
+        # divergenceEngine 已存在时，本函数可能没有初始化 client；这里独立兜底一次
+        if "client" not in locals() or client is None:
+            try:
+                from daily_review.config import load_config_from_env
+                from daily_review.http import HttpClient
+
+                cfg = load_config_from_env()
+                if (cfg.token or "").strip():
+                    client = HttpClient(base_url=cfg.base_url, token=cfg.token, timeout=30)
+            except Exception:
+                client = None
+        if client is not None:
+            _inject_sector_flow_7d(root=root, date=date, market_data=market_data, client=client)
+    except Exception:
+        pass
 
     # 5) highPositionRisk（高位风险预警）— 未触发也输出结构化结果
     if not isinstance(market_data.get("highPositionRisk"), dict):

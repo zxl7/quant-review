@@ -141,8 +141,6 @@ def build_action_advisor(*, market_data: Dict[str, Any]) -> Dict[str, Any]:
     avg_zbc = float(_num(mi.get("avg_zt_zbc"), 0.0))
     ge3_ratio = float(_num(mi.get("zt_zbc_ge3_ratio"), 0.0))
     diverge_high = (avg_zbc >= 1.6) or (ge3_ratio >= 18)
-    early_ratio = float(_num(mi.get("zt_early_ratio"), 0.0))
-    seal_fund = float(_num(mi.get("avg_seal_fund_yi"), 0.0))
 
     # === 基底建议（按周期）===
     BASE = {
@@ -259,4 +257,3 @@ def build_action_advisor(*, market_data: Dict[str, Any]) -> Dict[str, Any]:
         "action_guide": action_txt,
         "tags": tags,
     }
-

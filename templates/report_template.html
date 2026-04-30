@@ -2063,6 +2063,106 @@
       .sector-detail { font-size: 11px; color: var(--text-muted); margin-top: 2px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
       .sector-pct { font-size: 15px; font-weight: 800; min-width: 55px; text-align: right; }
 
+      /* ===== 板块题材排行（交易台风） ===== */
+      .theme-rank-list{
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        margin-top: 10px;
+      }
+      .theme-rank-item{
+        display: flex;
+        align-items: stretch;
+        gap: 12px;
+        padding: 12px 12px;
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        background: color-mix(in oklab, var(--bg-card), var(--bg-elevated) 22%);
+        box-shadow: var(--shadow-sm);
+        transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+      }
+      .theme-rank-item:hover{
+        transform: translateY(-1px);
+        box-shadow: var(--shadow-md);
+        border-color: color-mix(in oklab, var(--border), var(--theme-accent) 22%);
+      }
+      .theme-rank-left{
+        width: 42px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        border-radius: 12px;
+        color: #fff;
+        font-weight: 950;
+        line-height: 1;
+        flex-shrink: 0;
+      }
+      .theme-rank-left .rk{ font-size: 14px; opacity: .92; }
+      .theme-rank-left .dot{
+        width: 8px;
+        height: 8px;
+        border-radius: 99px;
+        background: rgba(255,255,255,.9);
+        margin-top: 8px;
+        opacity: .85;
+      }
+      .theme-rank-mid{ flex: 1; min-width: 0; display: flex; flex-direction: column; justify-content: center; }
+      .theme-rank-name{
+        font-weight: 900;
+        font-size: 14px;
+        color: var(--text-primary);
+        letter-spacing: .2px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .theme-rank-sub{
+        margin-top: 4px;
+        font-size: 11px;
+        color: var(--text-muted);
+        font-weight: 750;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .theme-rank-right{
+        width: 104px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: flex-end;
+        text-align: right;
+        flex-shrink: 0;
+      }
+      .theme-rank-chg{
+        font-size: 18px;
+        font-weight: 950;
+        letter-spacing: .2px;
+        font-variant-numeric: tabular-nums;
+      }
+      .theme-rank-net{
+        margin-top: 4px;
+        font-size: 11px;
+        color: var(--text-secondary);
+        font-weight: 850;
+      }
+      .theme-rank-microbar{
+        margin-top: 8px;
+        width: 100%;
+        height: 6px;
+        border-radius: 99px;
+        background: color-mix(in oklab, var(--bg-elevated), #000 6%);
+        overflow: hidden;
+      }
+      .theme-rank-microbar > i{
+        display: block;
+        height: 100%;
+        border-radius: 99px;
+        background: linear-gradient(90deg, var(--theme-accent), var(--theme-accent-2));
+        width: 0%;
+      }
+
       /* 涨停个股分析 */
       .zt-panel { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
       @media (max-width: 900px){ .zt-panel { grid-template-columns: 1fr; } }
@@ -4377,79 +4477,45 @@
 
       <!-- 今日热点板块解读 -->
       <div class="card" data-page="themes" id="sec-hot">
-        <div class="card-title">多板块情绪热力图</div>
+        <div class="card-title">板块题材</div>
 
-        <!-- 主线板块 TOP7：与“实时盯盘”保持同一份数据（watchThemes） -->
-        <div class="tier-card" v-if="watchThemes && watchThemes.length" style="margin-bottom: 12px;">
-          <div class="tier-title">题材 TOP7（与实时盯盘一致）</div>
-          <div class="wb-list" style="margin-top: 8px;">
-            <div class="wb-row" v-for="(c, i) in watchThemes" :key="'theme-top7-'+i">
-              <div class="name">{{ i+1 }}. {{ c.name }}</div>
-              <div class="meta">
-                <template v-if="c.chg_pct !== undefined && c.chg_pct !== null">
-                  <span :class="signedClass(c.chg_pct)">{{ (c.chg_pct ?? '-') }}%</span>
-                  <span style="opacity:.7;">｜</span>
-                  <span>领涨 {{ c.lead || '-' }}</span>
-                  <span v-if="c.lead_chg_pct !== undefined && c.lead_chg_pct !== null">（{{ c.lead_chg_pct }}%）</span>
-                </template>
-                <template v-else>
-                  <span class="orange-text">热度 {{ c.up ?? '-' }}</span>
-                  <span style="opacity:.7;">｜</span>
-                  <span>代表 {{ c.lead || '-' }}</span>
-                </template>
+        <!-- 板块题材排行（资金流向口径，替换原“2连板题材榜”） -->
+        <div class="tier-card" v-if="(marketData.conceptFundFlowTop || []).length">
+          <div class="tier-title">板块题材排行 TOP10（按涨幅）</div>
+          <div class="tier-desc" style="margin-top: 4px;">
+            口径：概念/题材级资金流向（AkShare/东财）；排序：按涨跌幅从高到低（净流仅作参考）。
+          </div>
+          <div class="theme-rank-list">
+            <div class="theme-rank-item" v-for="(c, i) in conceptTop10ByChg" :key="'cff-top10-'+c.name+'-'+i">
+              <div class="theme-rank-left" :style="{ background: rankBg(i+1) }">
+                <div class="rk">{{ i+1 }}</div>
+                <div class="dot"></div>
+              </div>
+              <div class="theme-rank-mid">
+                <div class="theme-rank-name">{{ c.name }}</div>
+                <div class="theme-rank-sub">
+                  领涨 {{ c.lead || '-' }}
+                  <template v-if="c.lead_chg_pct !== undefined && c.lead_chg_pct !== null">
+                    （<span :class="signedClass(c.lead_chg_pct)">{{ formatSigned(c.lead_chg_pct) }}%</span>）
+                  </template>
+                  <template v-if="c.companies !== undefined && c.companies !== null">
+                    <span style="opacity:.7;">｜</span>成分 {{ c.companies }}
+                  </template>
+                </div>
+              </div>
+              <div class="theme-rank-right">
+                <div class="theme-rank-chg" :class="signedClass(c.chg_pct)">
+                  {{ c.chg_pct === undefined || c.chg_pct === null ? '-' : (formatSigned(c.chg_pct) + '%') }}
+                </div>
+                <div class="theme-rank-net" v-if="c.net !== undefined && c.net !== null">
+                  净额 <span :class="signedClass(c.net)">{{ formatSigned(c.net) }}</span>
+                </div>
+                <div class="theme-rank-microbar" aria-hidden="true">
+                  <i :style="{ width: clamp100(toNum(c.chg_pct, 0) * 10) + '%' }"></i>
+                </div>
               </div>
             </div>
           </div>
-        </div>
-
-        <div class="sector-heat" v-if="(sectorHeatTopRows || []).length">
-          <div class="sh-list">
-            <details class="sh-row" v-for="(r, i) in sectorHeatTopRows" :key="'sh-'+r.name+'-'+i">
-              <summary>
-                <div class="sh-left">
-                  <div class="sh-emoji">{{ r.icon }}</div>
-                  <div style="min-width:0;">
-                    <div class="sh-name">{{ r.name }}</div>
-                    <div class="sh-chips">
-                      <span class="sh-chip red">涨停 <b>{{ r.zt }}</b></span>
-                      <span class="sh-chip amber">炸板 <b>{{ r.zb }}</b></span>
-                      <span class="sh-chip green">跌停 <b>{{ r.dt }}</b></span>
-                      <span class="sh-chip blue" v-if="r.net !== undefined && r.net !== null">净流 <b :class="r.netClass">{{ r.net }}</b></span>
-                      <span class="sh-chip" v-if="r.risk !== undefined && r.risk !== null">风险 <b :class="r.riskClass">{{ r.risk }}</b></span>
-                      <span class="sh-chip" v-if="r.leader">龙头 <b class="red-text">{{ r.leader }}</b></span>
-                      <span class="sh-chip" v-if="r.examples">例股 <b>{{ r.examples }}</b></span>
-                    </div>
-                  </div>
-                </div>
-                <div class="sh-right">
-                  <div class="sh-score" :class="r.level">{{ r.score }}分</div>
-                  <div class="sh-bar"><div class="sh-fill" :style="{ width: r.score + '%' }"></div></div>
-                </div>
-              </summary>
-              <div class="sh-detail">
-                <div class="line">
-                  <span class="k">涨停/炸板/跌停：</span><span>{{ r.zt }} / {{ r.zb }} / {{ r.dt }}</span>
-                  <span class="k">净强度：</span><span :class="r.netClass">{{ r.net }}</span>
-                  <span class="k">风险：</span><span :class="r.riskClass">{{ r.risk }}</span>
-                </div>
-                <div class="line" v-if="r.leader">
-                  <span class="k">龙头：</span><span class="red-text" style="font-weight:950;">{{ r.leader }}</span>
-                  <span class="k">标签：</span><span>{{ r.tags }}</span>
-                </div>
-              </div>
-            </details>
-          </div>
-
-          <div class="sh-alpha" v-if="sectorHeat.alpha">
-            <strong style="font-weight:950;">⚡ 结构性提示：</strong> {{ sectorHeat.alpha }}
-          </div>
-
-          <!-- 已移除：研发说明（不在产品上展示） -->
-        </div>
-
-        <div class="tier-card" v-else>
-          <div class="tier-title">—</div>
-          <div class="tier-desc">暂无板块热力数据（themePanels 缺失或当日无有效板块聚合）。</div>
         </div>
       </div>
 
@@ -4713,12 +4779,20 @@
                     <div class="meta">
                       <template v-if="c.chg_pct !== undefined && c.chg_pct !== null">
                         <span :class="signedClass(c.chg_pct)">{{ (c.chg_pct ?? '-') }}%</span>
+                        <span v-if="c.net !== undefined && c.net !== null">
+                          <span style="opacity:.7;">｜</span>
+                          <span>净流 <b :class="signedClass(c.net)">{{ formatSigned(c.net) }}</b></span>
+                        </span>
                         <span style="opacity:.7;">｜</span>
                         <span>领涨 {{ c.lead || '-' }}</span>
                         <span v-if="c.lead_chg_pct !== undefined && c.lead_chg_pct !== null">（{{ c.lead_chg_pct }}%）</span>
                       </template>
                       <template v-else>
                         <span class="orange-text">热度 {{ c.up ?? '-' }}</span>
+                        <span v-if="c.net !== undefined && c.net !== null">
+                          <span style="opacity:.7;">｜</span>
+                          <span>净流 <b :class="signedClass(c.net)">{{ formatSigned(c.net) }}</b></span>
+                        </span>
                         <span style="opacity:.7;">｜</span>
                         <span>代表 {{ c.lead || '-' }}</span>
                       </template>
@@ -6083,6 +6157,16 @@
               const cards = this.marketData?.moodCards || [];
               return cards.filter(c => this.moodGroup(c.label) === group);
             },
+            rankBg(rank) {
+              /**
+               * 纯函数：榜单 rank 的背景色（用于“板块题材排行”）。
+               */
+              const r = Number(rank || 0);
+              if (r === 1) return 'linear-gradient(135deg,#ef4444,#f97316)';
+              if (r === 2) return 'linear-gradient(135deg,#f97316,#f59e0b)';
+              if (r === 3) return 'linear-gradient(135deg,#3b82f6,#22c55e)';
+              return 'linear-gradient(135deg,#64748b,#334155)';
+            },
             /**
              * 仓位建议（轻量启发式）：用于“明日行动指南”新增模块
              * - 以热度 vs 风险为主
@@ -6213,6 +6297,24 @@
             sectorHeatTopRows() {
               const rows = (this.sectorHeat && Array.isArray(this.sectorHeat.rows)) ? this.sectorHeat.rows : [];
               return rows.slice(0, 7);
+            },
+            conceptTop10ByChg() {
+              /**
+               * 纯函数：板块题材排行 Top10（按涨幅排序）。
+               * - 数据源：marketData.conceptFundFlowTop（概念资金流向榜，含 chg_pct/net/inflow/outflow）
+               * - 排序：chg_pct desc；缺失 chg_pct 的放到后面，再按 net desc 兜底
+               */
+              const rows = (this.marketData?.conceptFundFlowTop || []).slice();
+              const num = (v, d) => this.toNum(v, d);
+              rows.sort((a, b) => {
+                const ac = num(a?.chg_pct, -1e9);
+                const bc = num(b?.chg_pct, -1e9);
+                if (bc !== ac) return bc - ac;
+                const an = num(a?.net, -1e9);
+                const bn = num(b?.net, -1e9);
+                return bn - an;
+              });
+              return rows.slice(0, 10);
             },
             moodTriCards() { return this.buildMoodTriCards(); },
             sentimentDims() {
