@@ -5,13 +5,13 @@
 短线规则表（可配置）
 
 用途：
-- 统一管理：情绪周期阶段阈值、阶段→策略模板、学习提醒卡片
+- 统一管理：情绪周期阶段阈值、阶段→策略模板
 - 让"经验"变成可计算、可迭代的系统能力（避免散落在各模块里）
 """
 
 from __future__ import annotations
 
-from typing import Any, Dict, List, Literal, TypedDict
+from typing import Any, Dict, Literal, TypedDict
 
 
 CycleStage = Literal["ICE", "START", "FERMENT", "CLIMAX"]
@@ -79,14 +79,3 @@ ACTION_TEMPLATES: Dict[CycleStage, Dict[str, Any]] = {
         "core": ["不追一致末端", "警惕次日分化", "高位只卖不买"],
     },
 }
-
-
-NOTE_CARDS: List[Dict[str, Any]] = [
-    {"id": "ice_001", "when": {"cycle": ["ICE"]}, "text": "冰点期：不做接力，盯首板→1进2的确认信号。"},
-    {"id": "start_001", "when": {"cycle": ["START"]}, "text": "启动期：最重要是1→2筛选关口，不追高。"},
-    {"id": "ferment_001", "when": {"cycle": ["FERMENT"]}, "text": "加速期：主线清晰后做核心辨识度，回封是加仓点。"},
-    {"id": "climax_001", "when": {"cycle": ["CLIMAX"]}, "text": "高潮期：高手卖出龙头，不要追一致末端。"},
-    {"id": "risk_spike_001", "when": {"risk_spike": [1]}, "text": "风险突刺：炸板/跌停共振时先保命。"},
-    {"id": "tier_break_001", "when": {"tier_integrity_low": [1]}, "text": "梯队断层：龙头有高度但缺中军，仓位要降级。"},
-]
-

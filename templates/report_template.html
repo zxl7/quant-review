@@ -4,11 +4,12 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>A股收盘简报 | __REPORT_DATE__</title>
-    <!-- 线上发布：使用 CDN 资源（无需 vendor 目录） -->
-    <script src="https://fastly.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"
-            onerror="this.onerror=null;this.src='https://cdnjs.cloudflare.com/ajax/libs/echarts/5.4.3/echarts.min.js'"></script>
-    <script src="https://fastly.jsdelivr.net/npm/vue@3/dist/vue.global.prod.js"
-            onerror="this.onerror=null;this.src='https://unpkg.com/vue@3/dist/vue.global.prod.js'"></script>
+    <!-- 前端依赖：本地 vendor 优先，CDN 兜底
+         目的：解决本地文件预览/离线打开时，Vue/ECharts 外链不可用导致“板块/实盘/计划/统一视图”全部不渲染的问题。 -->
+    <script src="./vendor/echarts.min.js"
+            onerror="this.onerror=null;this.src='https://fastly.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js'"></script>
+    <script src="./vendor/vue.global.prod.js"
+            onerror="this.onerror=null;this.src='https://fastly.jsdelivr.net/npm/vue@3/dist/vue.global.prod.js'"></script>
     <script>
       // 预览兜底：
       // 一些内置预览/文件预览会限制脚本或外链资源，导致 Vue 无法挂载。
@@ -4383,96 +4384,7 @@
           </div>
         </details>
 
-        <div class="section-header" style="margin-top:14px;">情绪温度</div>
-        <div class="overview-grid">
-          <div>
-            <div class="insight-banner">
-          <div class="insight-score">
-            <span class="insight-score-num">{{ marketData.mood?.score ?? marketData.compat?.sentiment?.score ?? marketData.sentiment?.score ?? '-' }}</span>
-            <span class="insight-score-unit">情绪分</span>
-          </div>
-          <div class="insight-main">
-            <div class="insight-title">情绪温度 · {{ marketData.moodStage?.title || '-' }}</div>
-            <div class="insight-desc">
-              赚钱效应 {{ marketData.marketPanorama?.earning?.stars_text || '-' }} / 亏钱效应 {{ marketData.marketPanorama?.loss?.stars_text || '-' }}。
-              盘中只盯两件事：<strong>承接是否回暖</strong>、<strong>亏钱扩散是否收敛</strong>（去「实时盯盘」看红绿灯）。
-            </div>
-          </div>
-          <div class="insight-side">
-            <div class="insight-chip">风险 {{ marketData.compat?.sentiment?.risk_level || marketData.sentiment?.risk_level || '-' }}</div>
-            <div class="insight-side-note">主线集中 · 拥挤度</div>
-          </div>
-          <div style="grid-column: 1 / -1;">
-            <div style="display:grid; gap:8px;">
-              <div>
-                <div style="display:flex; justify-content:space-between; font-size:12px; color:var(--text-muted); margin-bottom:4px;">
-                  <span>情绪</span><span>{{ marketData.mood?.heat ?? '-' }}</span>
-                </div>
-                <div class="insight-meter">
-                  <div class="insight-meter-fill" :style="{ width: String((marketData.mood?.heat ?? 0)) + '%' }"></div>
-                </div>
-              </div>
-              <div>
-                <div style="display:flex; justify-content:space-between; font-size:12px; color:var(--text-muted); margin-bottom:4px;">
-                  <span>风险</span><span>{{ marketData.mood?.risk ?? '-' }}</span>
-                </div>
-                <div class="insight-meter" style="background: rgba(239, 68, 68, 0.12);">
-                  <div class="insight-meter-fill"
-                       :style="{
-                         width: String(marketData.mood?.risk ?? 0) + '%',
-                         /* 风险色带：绿→黄（风险越高越偏黄，不再使用红色） */
-                         background: 'linear-gradient(90deg, rgba(34,197,94,0.90) 0%, rgba(245,158,11,0.95) 100%)'
-                       }"></div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-            <!-- 六维构成：让“情绪温度”可解释（避免只看一个分） -->
-            <div class="dim-grid" v-if="(sentimentDims || []).length">
-              <div class="dim-item" v-for="d in sentimentDims" :key="'sd2-'+d.key">
-                <div class="dim-top">
-                  <span class="dim-k">{{ d.label }}</span>
-                  <span class="dim-v">{{ d.score }}</span>
-                </div>
-                <div class="dim-bar">
-                  <div class="dim-fill" :style="{ width: d.score + '%', background: heatColor(d.score) }"></div>
-                </div>
-              </div>
-            </div>
-
-            <!-- 情绪温度（解释版）｜近7日五线趋势：涨停、连板、跌停、封板率、晋级率 -->
-            <div class="chart-container" style="height: 260px; margin-top: 12px;">
-              <div id="mood-5line-echart" style="width: 100%; height: 100%;"></div>
-            </div>
-
-            <div class="tri-strip reveal" aria-label="情绪三卡">
-              <div class="tri-card reveal"
-                   v-for="(c, i) in moodTriCards"
-                   :key="'tri-'+c.key+'-'+i"
-                   :class="c.cls">
-                <div class="tri-head">
-                  <div class="tri-title">{{ c.title }}</div>
-                  <div class="tri-badges" v-html="c.badges"></div>
-                </div>
-                <div class="tri-value" :class="c.valueClass">{{ c.value }}</div>
-                <div class="tri-sub">{{ c.sub }}</div>
-                <svg class="spark tri-spark" viewBox="0 0 100 28" preserveAspectRatio="none" aria-hidden="true"
-                     v-if="(c.spark || []).length >= 2">
-                  <path class="grid" d="M0 27H100" />
-                  <polyline class="line"
-                            :stroke="c.sparkStroke"
-                            :points="sparklinePoints(c.spark)" />
-                </svg>
-              </div>
-            </div>
-
-            <!-- 已删除：情绪六维雷达 -->
-          </div>
-
-          <!-- 已移除：全景 & 风险（riskEngine / divergenceEngine 等内容） -->
-        </div>
+        <!-- 已移除：全景 & 风险（riskEngine / divergenceEngine 等内容） -->
       </div>
 
       <!-- 今日热点板块解读 -->
