@@ -3933,16 +3933,6 @@
   </head>
   <body data-market-tone="bull" data-page="sentiment">
     <div class="container" id="app" v-cloak>
-      <!-- Tabs：顶部固定（首屏即显示） -->
-      <div class="tabbar">
-        <button class="tab-btn active" data-page="sentiment" type="button">短线情绪</button>
-        <button class="tab-btn" data-page="watch" type="button">实时盯盘</button>
-        <button class="tab-btn" data-page="themes" type="button">板块题材</button>
-        <button class="tab-btn" data-page="ladder" type="button">连板天梯</button>
-        <button class="tab-btn" data-page="plan" type="button">明日计划</button>
-        <button class="tab-btn" data-page="v3" type="button">统一视图</button>
-      </div>
-
       <!-- Hero -->
       <div class="hero">
         <!-- Algorithmic grain overlay (SVG turbulence, no JS, very cheap) -->
@@ -4067,6 +4057,16 @@
             </div>
           </div>
         </div>
+      </div>
+
+      <!-- Tabs：正常显示时放在 Hero 下方 -->
+      <div class="tabbar">
+        <button class="tab-btn active" data-page="sentiment" type="button">短线情绪</button>
+        <button class="tab-btn" data-page="watch" type="button">实时盯盘</button>
+        <button class="tab-btn" data-page="themes" type="button">板块题材</button>
+        <button class="tab-btn" data-page="ladder" type="button">连板天梯</button>
+        <button class="tab-btn" data-page="plan" type="button">明日计划</button>
+        <button class="tab-btn" data-page="v3" type="button">统一视图</button>
       </div>
 
       <!-- 首屏：情绪总控（仅短线情绪页显示） -->
