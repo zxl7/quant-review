@@ -74,12 +74,13 @@ def _lbc_of(s: Mapping[str, Any]) -> int:
     return 1
 
 
-def build_mood_inputs(*, pools: Mapping[str, Any]) -> Dict[str, Any]:
+def build_mood_inputs(*, pools: Mapping[str, Any], quotes: Mapping[str, Any] | None = None) -> Dict[str, Any]:
     zt = pools.get("ztgc") or []
     zb = pools.get("zbgc") or []
     dt = pools.get("dtgc") or []
     yest_zt = pools.get("yest_ztgc") or []
     qsgc = pools.get("qsgc") or []
+    quotes_map = quotes if isinstance(quotes, Mapping) else {}
 
     zt = zt if isinstance(zt, list) else []
     zb = zb if isinstance(zb, list) else []
@@ -263,6 +264,61 @@ def build_mood_inputs(*, pools: Mapping[str, Any]) -> Dict[str, Any]:
                 break
         top_duanban_is_high = 1 if top_duanban_lb >= 5 else 0
 
+    # 断板负反馈细节：定位断板个股，统计“高点→低点 / 高点→收盘”的杀伤
+    yest_name_map = {_code6(s): str(s.get("mc") or "") for s in yest_zt if isinstance(s, dict) and _code6(s)}
+    duanban_details: list[dict[str, Any]] = []
+    for c in yest_lb_codes:
+        if c in today_map:
+            continue
+        q = quotes_map.get(c) if isinstance(quotes_map, Mapping) else None
+        high_chg = None
+        low_chg = None
+        close_chg = None
+        drop_hl_pct = None
+        drop_hc_pct = None
+        if isinstance(q, Mapping):
+            yc = _to_float(q.get("yc"), 0.0)
+            high = _to_float(q.get("h"), 0.0)
+            low = _to_float(q.get("l"), 0.0)
+            close = _to_float(q.get("p"), 0.0)
+            if yc > 0:
+                high_chg = round((high / yc - 1.0) * 100.0, 2) if high > 0 else None
+                low_chg = round((low / yc - 1.0) * 100.0, 2) if low > 0 else None
+                close_chg = round((close / yc - 1.0) * 100.0, 2) if close > 0 else None
+                if high_chg is not None and low_chg is not None:
+                    drop_hl_pct = round(high_chg - low_chg, 2)
+                if high_chg is not None and close_chg is not None:
+                    drop_hc_pct = round(high_chg - close_chg, 2)
+        duanban_details.append(
+            {
+                "code": c,
+                "name": yest_name_map.get(c, ""),
+                "yest_lb": int(yest_map.get(c, 0) or 0),
+                "high_chg": high_chg,
+                "low_chg": low_chg,
+                "close_chg": close_chg,
+                "drop_hl_pct": drop_hl_pct,
+                "drop_hc_pct": drop_hc_pct,
+            }
+        )
+
+    duanban_details.sort(
+        key=lambda x: (
+            int(x.get("yest_lb") or 0),
+            float(x.get("drop_hl_pct") or -999.0),
+            float(-(x.get("close_chg") or 999.0)),
+        ),
+        reverse=True,
+    )
+    duanban_drop_hl_vals = [float(x.get("drop_hl_pct")) for x in duanban_details if x.get("drop_hl_pct") is not None]
+    duanban_drop_hc_vals = [float(x.get("drop_hc_pct")) for x in duanban_details if x.get("drop_hc_pct") is not None]
+    duanban_high_count = len([x for x in duanban_details if int(x.get("yest_lb") or 0) >= 5])
+    duanban_max_drop_hl = max(duanban_drop_hl_vals) if duanban_drop_hl_vals else 0.0
+    duanban_avg_drop_hl = (sum(duanban_drop_hl_vals) / len(duanban_drop_hl_vals)) if duanban_drop_hl_vals else 0.0
+    duanban_max_drop_hc = max(duanban_drop_hc_vals) if duanban_drop_hc_vals else 0.0
+    duanban_avg_drop_hc = (sum(duanban_drop_hc_vals) / len(duanban_drop_hc_vals)) if duanban_drop_hc_vals else 0.0
+    worst_duanban = duanban_details[0] if duanban_details else {}
+
     return {
         "fb_rate": round(fb_rate, 1),
         "jj_rate": round(jj_rate, 1),
@@ -334,6 +390,14 @@ def build_mood_inputs(*, pools: Mapping[str, Any]) -> Dict[str, Any]:
         "top_duanban_name": top_duanban_name,
         "top_duanban_lb": top_duanban_lb,
         "top_duanban_is_high": top_duanban_is_high,
+        "duanban_high_count": int(duanban_high_count),
+        "duanban_max_drop_hl": round(duanban_max_drop_hl, 2),
+        "duanban_avg_drop_hl": round(duanban_avg_drop_hl, 2),
+        "duanban_max_drop_hc": round(duanban_max_drop_hc, 2),
+        "duanban_avg_drop_hc": round(duanban_avg_drop_hc, 2),
+        "duanban_worst_name": str(worst_duanban.get("name") or ""),
+        "duanban_worst_lb": int(worst_duanban.get("yest_lb") or 0),
+        "duanban_details": duanban_details[:8],
     }
 
 

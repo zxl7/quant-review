@@ -651,6 +651,145 @@ def build_summary3(*, market_data: Dict[str, Any]) -> Dict[str, Any]:
     return {"lines": [line1, line2]}
 
 
+def build_market_overview_7d(*, market_data: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    市场全景 · 7日对比
+    - 合并量能 / 全景核心KPI
+    - 提供近7日极值与当前相对位置，供前端统一展示
+    """
+
+    def _num(x, d=0.0) -> float:
+        try:
+            if x is None:
+                return float(d)
+            if isinstance(x, str):
+                x = x.replace("%", "").replace("板", "").replace("亿", "").strip()
+            return float(x)
+        except Exception:
+            return float(d)
+
+    def _tail(arr: Any, n: int = 7) -> list[float]:
+        if not isinstance(arr, list):
+            return []
+        out: list[float] = []
+        for x in arr[-n:]:
+            try:
+                out.append(float(str(x).replace("%", "").replace("板", "").replace("亿", "").strip()))
+            except Exception:
+                continue
+        return out
+
+    def _fmt_num(v: float, kind: str) -> str:
+        if kind == "pct":
+            return f"{v:.1f}%"
+        if kind == "board":
+            return f"{int(round(v))}板"
+        if kind == "yi":
+            return f"{v:.2f}亿"
+        return f"{int(round(v))}"
+
+    def _series_meta(*, key: str, label: str, values: list[float], dates: list[str], kind: str) -> dict[str, Any]:
+        if not values:
+            return {"key": key, "label": label, "current": "-", "max": "-", "min": "-", "note": "无数据"}
+        curr = float(values[-1])
+        max_v = max(values)
+        min_v = min(values)
+        max_idx = max(range(len(values)), key=lambda i: values[i])
+        min_idx = min(range(len(values)), key=lambda i: values[i])
+        rank = sorted(values, reverse=True).index(curr) + 1 if values.count(curr) == 1 else None
+        note = []
+        if curr == max_v:
+            note.append("当前就是7日最高")
+        elif curr == min_v:
+            note.append("当前就是7日最低")
+        else:
+            note.append(f"7日最高 {_fmt_num(max_v, kind)}")
+        note.append(f"高点日 {dates[max_idx] if max_idx < len(dates) else '-'}")
+        if rank is not None:
+            note.append(f"排序第{rank}/{len(values)}")
+        return {
+            "key": key,
+            "label": label,
+            "current": _fmt_num(curr, kind),
+            "max": _fmt_num(max_v, kind),
+            "min": _fmt_num(min_v, kind),
+            "maxDate": dates[max_idx] if max_idx < len(dates) else "-",
+            "minDate": dates[min_idx] if min_idx < len(dates) else "-",
+            "note": "｜".join(note),
+            "currentValue": curr,
+            "maxValue": max_v,
+            "minValue": min_v,
+            "kind": kind,
+        }
+
+    feats = market_data.get("features") or {}
+    mi = (feats.get("mood_inputs") or {}) if isinstance(feats, dict) else {}
+    volume = market_data.get("volume") or {}
+    volume_dates = list(volume.get("dates") or []) if isinstance(volume, dict) else []
+    volume_values = [float(x) for x in (volume.get("values") or [])] if isinstance(volume, dict) and isinstance(volume.get("values"), list) else []
+
+    hist_days = list(mi.get("hist_days") or []) if isinstance(mi.get("hist_days"), list) else []
+    dates7 = [(d[5:] if len(str(d)) >= 10 else str(d)) for d in hist_days[-7:]]
+    if not dates7:
+        dates7 = volume_dates[-7:]
+
+    zt_hist = _tail(mi.get("hist_zt"), 7)
+    dt_hist = _tail(mi.get("hist_dt"), 7)
+    fb_hist = _tail(mi.get("hist_fb_rate"), 7)
+    maxlb_hist = _tail(mi.get("hist_max_lb"), 7)
+    lb_hist = _tail(mi.get("hist_lianban"), 7)
+    broken_hist = _tail(mi.get("hist_broken_lb_rate"), 7)
+    zb_hist = [round(max(0.0, 100.0 - x), 1) for x in fb_hist] if fb_hist else []
+
+    # 日期长度对齐
+    n = max(len(zt_hist), len(dt_hist), len(zb_hist), len(maxlb_hist), len(volume_values), len(lb_hist), len(broken_hist))
+    if len(dates7) < n:
+        if volume_dates and len(volume_dates) >= n:
+            dates7 = volume_dates[-n:]
+        else:
+            dates7 = dates7 + ["-"] * (n - len(dates7))
+    elif len(dates7) > n and n > 0:
+        dates7 = dates7[-n:]
+
+    series = []
+    series.append(_series_meta(key="volume", label="两市成交", values=volume_values[-7:], dates=volume_dates[-7:] if volume_dates else dates7, kind="yi"))
+    series.append(_series_meta(key="zt", label="涨停家数", values=zt_hist, dates=dates7, kind="count"))
+    series.append(_series_meta(key="zb_rate", label="炸板率", values=zb_hist, dates=dates7, kind="pct"))
+    series.append(_series_meta(key="dt", label="跌停家数", values=dt_hist, dates=dates7, kind="count"))
+    series.append(_series_meta(key="max_lb", label="最高高度", values=maxlb_hist, dates=dates7, kind="board"))
+    series.append(_series_meta(key="link_board", label="连板家数", values=lb_hist, dates=dates7, kind="count"))
+    series.append(_series_meta(key="broken_lb_rate", label="断板率", values=broken_hist, dates=dates7, kind="pct"))
+    series = [s for s in series if s.get("current") != "-"]
+
+    def _find(key: str) -> dict[str, Any]:
+        for s in series:
+            if s.get("key") == key:
+                return s
+        return {}
+
+    zt_meta = _find("zt")
+    zb_meta = _find("zb_rate")
+    high_meta = _find("max_lb")
+    vol_meta = _find("volume")
+
+    highlights: list[str] = []
+    if zt_meta:
+        highlights.append(f"7日最高涨停家数 {zt_meta.get('max')}（{zt_meta.get('maxDate', '-')}）")
+    if zb_meta:
+        highlights.append(f"7日最高炸板率 {zb_meta.get('max')}（{zb_meta.get('maxDate', '-')}）")
+    if high_meta:
+        highlights.append(f"7日最高高度 {high_meta.get('max')}（{high_meta.get('maxDate', '-')}）")
+    if vol_meta:
+        highlights.append(f"7日最高成交额 {vol_meta.get('max')}（{vol_meta.get('maxDate', '-')}）")
+
+    return {
+        "window": 7,
+        "dates": dates7,
+        "series": series,
+        "highlights": highlights[:4],
+    }
+
+
 def build_action_advisor(*, market_data: Dict[str, Any]) -> Dict[str, Any]:
     # 逻辑已抽离到独立模块，便于集中维护
     from daily_review.metrics.action_advisor import build_action_advisor as _impl
@@ -788,6 +927,12 @@ if __name__ == "__main__":
         market_data.setdefault("summary3", build_summary3(market_data=market_data))
     except Exception:
         market_data.setdefault("summary3", {"lines": []})
+
+    # 离线增强：市场全景 · 7日对比（量能 / 涨停 / 炸板 / 高度统一看）
+    try:
+        market_data.setdefault("marketOverview7d", build_market_overview_7d(market_data=market_data))
+    except Exception:
+        market_data.setdefault("marketOverview7d", {"window": 7, "dates": [], "series": [], "highlights": []})
 
     # 离线增强：学习短线提醒 + 语录（随情绪阶段动态切换）
     try:

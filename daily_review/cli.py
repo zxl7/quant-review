@@ -430,7 +430,7 @@ def run_fetch_and_rebuild(date: str | None) -> int:
         pass
 
     # features：最小可用版
-    mood_inputs = build_mood_inputs(pools=raw_pools)
+    mood_inputs = build_mood_inputs(pools=raw_pools, quotes=quotes_map)
     market_data["features"]["mood_inputs"] = mood_inputs
     market_data["features"]["chart_palette"] = default_chart_palette()
 
@@ -764,7 +764,8 @@ def run_rebuild(date: str, modules: list[str] | None = None, suffix: str = "", s
     # features 应由 raw 推导，不能长期依赖旧 cache/market_data 里残留的 features。
     try:
         pools_for_feat = ctx.raw.get("pools") or {}
-        mood_inputs = build_mood_inputs(pools=pools_for_feat)
+        quotes_items = (((ctx.raw.get("quotes") or {}) if isinstance(ctx.raw, dict) else {}).get("items") or {})
+        mood_inputs = build_mood_inputs(pools=pools_for_feat, quotes=quotes_items)
         feats = ctx.market_data.get("features") if isinstance(ctx.market_data.get("features"), dict) else {}
         if not isinstance(feats, dict):
             feats = {}
@@ -838,9 +839,10 @@ def run_rebuild(date: str, modules: list[str] | None = None, suffix: str = "", s
 
     # summary3（二句话）：依赖“历史趋势/昨日对比”等注入字段，故在注入后再重算一次，保证口径一致
     try:
-        from daily_review.render.render_html import build_summary3
+        from daily_review.render.render_html import build_market_overview_7d, build_summary3
 
         market_data["summary3"] = build_summary3(market_data=market_data)
+        market_data["marketOverview7d"] = build_market_overview_7d(market_data=market_data)
     except Exception:
         pass
 
@@ -1812,7 +1814,8 @@ def run_partial(date: str, modules: list[str]) -> int:
     # partial 同样重算 features（至少 mood_inputs），避免局部更新时 UI 读到旧/缺字段
     try:
         pools_for_feat = ctx.raw.get("pools") or {}
-        mood_inputs = build_mood_inputs(pools=pools_for_feat)
+        quotes_items = (((ctx.raw.get("quotes") or {}) if isinstance(ctx.raw, dict) else {}).get("items") or {})
+        mood_inputs = build_mood_inputs(pools=pools_for_feat, quotes=quotes_items)
         feats = ctx.market_data.get("features") if isinstance(ctx.market_data.get("features"), dict) else {}
         if not isinstance(feats, dict):
             feats = {}

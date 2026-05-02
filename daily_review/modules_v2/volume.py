@@ -54,7 +54,7 @@ def _compute(ctx: Context) -> Dict[str, Any]:
 
     report_day = str((ctx.meta.get("date") if isinstance(ctx.meta, dict) else "") or ctx.market_data.get("date") or "")
 
-    # 对齐日期：取两边交集的最后 5 天（且不超过报告日）
+    # 对齐日期：取两边交集的最后 7 天（且不超过报告日）
     sh_map = {_extract_date(it.get("t", "")): _to_float(it.get("a", 0.0)) for it in sh if isinstance(it, dict)}
     sz_map = {_extract_date(it.get("t", "")): _to_float(it.get("a", 0.0)) for it in sz if isinstance(it, dict)}
     days = sorted(set(sh_map.keys()) & set(sz_map.keys()))
@@ -72,7 +72,7 @@ def _compute(ctx: Context) -> Dict[str, Any]:
         for d in days
         if (sh_map.get(d, 0.0) > 0 and sz_map.get(d, 0.0) > 0 and sh_sf.get(d, 0) != 1 and sz_sf.get(d, 0) != 1)
     ]
-    days = days[-5:]
+    days = days[-7:]
     if len(days) < 2:
         cur = ctx.market_data.get("volume") or {}
         return {"marketData.volume": cur}

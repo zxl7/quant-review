@@ -63,6 +63,95 @@ def _normalize_hms(hms: str) -> str:
     return s
 
 
+def _parse_minutes(hms: str) -> int:
+    s = _normalize_hms(hms)
+    if not s or ":" not in s:
+        return -1
+    try:
+        hh, mm = s.split(":")[0:2]
+        return int(hh) * 60 + int(mm)
+    except Exception:
+        return -1
+
+
+def _chip(text: str, cls: str) -> Dict[str, str]:
+    return {"text": text, "cls": cls}
+
+
+def _quality_profile(*, lbc: int, status: str, zbc: int, hs: float, zj: float, cje: float, fbt: str) -> Dict[str, Any]:
+    """
+    连板质量标签：
+    - 分歧烂板：开板次数非常多，且换手/承接压力明显
+    - 加速确认：晋级板早盘快速确认，几乎不给分歧
+    - 温和放量：有一定换手，但开板少，量价结构健康
+    - 高换手承接：分歧充分，靠承接完成封板
+    - 午后确认：确认时间偏后，更像后手修复
+    """
+    minute = _parse_minutes(fbt)
+    seal_ratio = (zj / cje) if cje > 0 else 0.0
+
+    quality_label = "常规封板"
+    quality_tags: List[Dict[str, str]] = []
+    quality_note = "质量中性，需结合位阶与次日承接再看。"
+
+    if zbc >= 8 or (zbc >= 5 and hs >= 10):
+        quality_label = "分歧烂板"
+        quality_tags = [
+            _chip("分歧烂板", "ladder-chip-warn orange-text"),
+            _chip("高波动", "ladder-chip-warn orange-text"),
+        ]
+        quality_note = f"开板 {zbc} 次、换手 {hs:.1f}%，封板过程反复，次日承接压力偏大。"
+    elif status == "晋级" and zbc == 0 and 0 < minute <= 570 and hs <= 6:
+        quality_label = "加速确认"
+        quality_tags = [
+            _chip("加速确认", "ladder-chip-strong red-text"),
+            _chip("早盘强封", "ladder-chip-cool blue-text"),
+        ]
+        quality_note = "晋级板早盘直接确认，几乎不给分歧，属于一致性较强的加速板。"
+    elif zbc <= 1 and 4 <= hs <= 16:
+        quality_label = "温和放量"
+        quality_tags = [
+            _chip("温和放量", "ladder-chip-cool blue-text"),
+        ]
+        quality_note = f"换手 {hs:.1f}% 且开板不多，量能释放适中，承接结构相对健康。"
+    elif zbc <= 2 and hs >= 16:
+        quality_label = "高换手承接"
+        quality_tags = [
+            _chip("高换手承接", "ladder-chip-cool blue-text"),
+        ]
+        quality_note = f"换手 {hs:.1f}% 较高，但仍能封住，说明承接充分、筹码交换完成。"
+    elif zbc >= 3:
+        quality_label = "反复回封"
+        quality_tags = [
+            _chip("反复回封", "ladder-chip-warn orange-text"),
+        ]
+        quality_note = f"开板 {zbc} 次后完成回封，分歧明显，质量强弱取决于次日是否有承接。"
+    elif zbc == 0 and 0 < minute <= 575 and seal_ratio >= 0.18:
+        quality_label = "封单充足"
+        quality_tags = [
+            _chip("封单充足", "ladder-chip-strong red-text"),
+        ]
+        quality_note = "早盘封单相对充足，全天一致性较强，属于偏强质量板。"
+    elif zbc <= 1 and minute >= 780:
+        quality_label = "午后确认"
+        quality_tags = [
+            _chip("午后确认", "ladder-chip-cool blue-text"),
+        ]
+        quality_note = "午后才完成封板，偏修复确认型，次日更要看情绪是否延续。"
+    elif lbc >= 4 and zbc <= 1:
+        quality_label = "高位确认"
+        quality_tags = [
+            _chip("高位确认", "ladder-chip-strong red-text"),
+        ]
+        quality_note = "高位板仍能较顺畅封住，说明当前高度压制不算明显。"
+
+    return {
+        "quality_label": quality_label,
+        "quality_tags": quality_tags,
+        "quality_note": quality_note,
+    }
+
+
 def _as_list(v: Any) -> List[Dict[str, Any]]:
     return v if isinstance(v, list) else []
 
@@ -110,19 +199,35 @@ def _compute(ctx: Context) -> Dict[str, Any]:
             code = str(s.get("dm") or "").strip()
             ylb = yest_lb.get(code, 0)
             status = "晋级" if (ylb == lb - 1 and ylb >= 1) else "新晋"
+            zbc = _to_int(s.get("zbc"), 0)
+            zj = _to_float(s.get("zj"), 0.0)
+            hs = _to_float(s.get("hs"), 0.0)
+            cje = _to_float(s.get("cje"), 0.0)
+            fbt = _normalize_hms(str(s.get("fbt") or ""))
+            q = _quality_profile(
+                lbc=lb,
+                status=status,
+                zbc=zbc,
+                hs=hs,
+                zj=zj,
+                cje=cje,
+                fbt=fbt,
+            )
             ladder_rows.append(
                 {
                     "badge": lb,
                     "name": str(s.get("mc") or ""),
                     "code": code,
                     "zf": _to_float(s.get("zf"), 0.0),
-                    "zbc": _to_int(s.get("zbc"), 0),
-                    "zj": _to_float(s.get("zj"), 0.0),
-                    "hs": _to_float(s.get("hs"), 0.0),
-                    "cje": _to_float(s.get("cje"), 0.0),
-                    "fbt": _normalize_hms(str(s.get("fbt") or "")),
+                    "zbc": zbc,
+                    "zj": zj,
+                    "hs": hs,
+                    "cje": cje,
+                    "fbt": fbt,
                     "status": status,
-                    "note": "",
+                    "note": q["quality_note"],
+                    "qualityLabel": q["quality_label"],
+                    "qualityTags": q["quality_tags"],
                 }
             )
 
