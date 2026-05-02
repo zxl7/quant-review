@@ -4233,7 +4233,7 @@
       <!-- 兼容锚点：保留 sec-panorama 供跳转（原“市场全景”卡片已合并进来） -->
       <div id="sec-panorama"></div>
       <div class="card" data-page="sentiment" id="sec-thermo">
-        <div class="card-header"><div class="card-title">市场全景 · 情绪温度</div></div>
+        <div class="card-header"><div class="card-title">市场全景</div></div>
 
         <div class="section-header">市场全景</div>
         <div v-if="marketData.marketPanorama">
@@ -5178,6 +5178,14 @@
       <div class="footer">
         <div class="footer-learning" v-if="marketData.learningNotes">
           <div class="footer-learning-title">📌 短线提醒:</div>
+          <div style="font-size:11px; color:var(--text-muted); font-weight:800; margin: 0 0 8px 0;"
+               v-if="marketData.learningNotes.meta">
+            调用层：{{ marketData.learningNotes.meta.cycle || '-' }}
+            <span style="opacity:.7;">｜</span>
+            视图：{{ marketData.learningNotes.meta.stageType || '-' }}
+            <span style="opacity:.7;">｜</span>
+            来源：{{ marketData.learningNotes.meta.source || '-' }}
+          </div>
           <ul v-if="marketData.learningNotes.tips && marketData.learningNotes.tips.length">
             <li v-for="(t, i) in marketData.learningNotes.tips" :key="'tip-'+i">{{ t }}</li>
           </ul>
