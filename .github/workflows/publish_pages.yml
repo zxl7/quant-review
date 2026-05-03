@@ -249,44 +249,26 @@ jobs:
           BIYING_BASE_URL: ${{ secrets.BIYING_BASE_URL }}
         run: |
           set -euo pipefail
-          if [ -z "${BIYING_TOKEN}" ]; then
-            echo "Missing secrets.BIYING_TOKEN"
-            exit 2
-          fi
-          if [ -z "${BIYING_BASE_URL}" ]; then
-            echo "WARN: secrets.BIYING_BASE_URL 缺失，将使用默认 https://api.biyingapi.com"
-          fi
-          is_trade_today="${{ steps.tradeday.outputs.is_trade_today }}"
-          latest_trade="${{ steps.tradeday.outputs.latest_trade_date }}"
-          today_bj="${{ steps.tradeday.outputs.today_bj }}"
-
           # push/workflow_dispatch：
-          # - 非交易日：固定回落到最近交易日收盘版
-          # - 盘前（<09:25，北京时间）：生成最近一个“已完成交易日”的收盘版
-          # - 盘中（09:25~15:01）：仅在交易日生成当日盘中版
-          # - 收盘后（>=15:01）：仅在交易日生成当日收盘版
-          now_bj="$(date +'%H:%M')"
-          now_min=$((10#$(date +%H)*60 + 10#$(date +%M)))
-          open_min=$((9*60+25))
-          close_min=$((15*60+1))
-          if [ "${is_trade_today}" != "true" ]; then
-            mode="eod"
+          # 你的主流程是“本地构建 -> 提交 cache_online -> 远端自动构建”
+          # 因此这里不再猜“今天该跑哪天”，而是优先使用 cache_online/manifest.json 里的日期。
+          if [ -f "cache_online/manifest.json" ]; then
+            date10="$(python3 -c "import json, pathlib; print(str(json.loads(pathlib.Path('cache_online/manifest.json').read_text(encoding='utf-8')).get('date') or '').strip())")"
+            if [ -n "${date10}" ]; then
+              mode="render"
+              echo "使用 cache_online/manifest.json 指定日期：${date10}"
+            fi
+          fi
+
+          if [ -z "${date10:-}" ]; then
+            latest_trade="${{ steps.tradeday.outputs.latest_trade_date }}"
+            mode="render"
             date10="${latest_trade}"
-            echo "非交易日：回落到最近交易日 ${date10}"
-          elif [ "${now_min}" -lt "${open_min}" ]; then
-            mode="eod"
-            date10="${latest_trade}"
-          elif [ "${now_min}" -lt "${close_min}" ]; then
-            mode="intraday"
-            date10="${today_bj}"
-          else
-            mode="eod"
-            date10="${today_bj}"
+            echo "未找到 manifest 日期，回退到最近交易日：${date10}"
           fi
           echo "mode=${mode}" >> "$GITHUB_OUTPUT"
           echo "date10=${date10}" >> "$GITHUB_OUTPUT"
-          echo "beijing_now=${now_bj}" >> "$GITHUB_OUTPUT"
-          echo "push_mode=${mode} (beijing_now=${now_bj}, date10=${date10})"
+          echo "push_mode=${mode} (date10=${date10})"
 
       - name: Make scripts executable
         if: ${{ github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true' }}
@@ -315,6 +297,9 @@ jobs:
           if [ "${mode}" = "intraday" ]; then
             # 盘中快照：每半小时一次（数据截止当前时刻）
             PYTHONPATH=. python3 -m daily_review.cli --mode intraday --date "${run_date}"
+          elif [ "${mode}" = "render" ]; then
+            # push/workflow_dispatch：只使用本地已提交的 cache_online/cache 重建，不再在线 fetch 覆盖日期
+            ./qr.sh render "${run_date}"
           else
             # 收盘版：在线取数落缓存（有成本）→ 再用 v2 pipeline 离线重建 → 输出 html/*tab-v1.html
             if [ "${{ github.event_name }}" = "schedule" ]; then
