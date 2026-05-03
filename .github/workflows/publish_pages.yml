@@ -204,18 +204,30 @@ jobs:
           today = dt.datetime.now().strftime("%Y-%m-%d")
           local_dates = collect_local_trade_days()
 
+          rt_date = ""
           if local_dates:
             dates = [d for d in local_dates if d <= today]
             latest_trade = dates[-1] if dates else local_dates[-1]
             is_trade_today = "true" if today in local_dates else "false"
-            rt_date = ""
             source = "local_cache"
           else:
-            dates = get_recent_trade_dates(client, n=20) or []
-            latest_trade = dates[-1] if dates else today
-            rt_date = get_realtime_market_date(client)
-            is_trade_today = "true" if (today in dates or rt_date == today) else "false"
+            dates = []
+            latest_trade = today
+            is_trade_today = "false"
             source = "remote_fallback"
+
+          # 封板前兜底：若本地缓存尚未滚到今天，向远端再确认一次，避免交易日误判成非交易日
+          if is_trade_today != "true":
+            remote_dates = get_recent_trade_dates(client, n=20) or []
+            rt_date = get_realtime_market_date(client)
+            if remote_dates:
+              dates = [d for d in remote_dates if d <= today]
+              if dates:
+                latest_trade = dates[-1]
+              else:
+                latest_trade = remote_dates[-1]
+            is_trade_today = "true" if (today in remote_dates or rt_date == today or today in local_dates) else "false"
+            source = "local_cache+remote_verify" if local_dates else "remote_fallback"
 
           with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as f:
             f.write(f"today_bj={today}\n")
