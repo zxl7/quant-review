@@ -19,6 +19,21 @@ from typing import Any, Sequence
 from daily_review.http import HttpClient
 
 
+def get_realtime_market_date(client: HttpClient, *, code: str = "000001.SH") -> str:
+    """
+    通过指数实时接口判断“当前行情所属日期”。
+    - 交易日盘中/收盘后：通常返回今天
+    - 节假日/休市：通常返回上一交易日
+    """
+    try:
+        url = f"{client.base_url}/hsindex/real/time/{code}/{client.token}"
+        data = client.get_json(url) or {}
+        t = str(data.get("t", "") or "")
+        return t[:10] if len(t) >= 10 else ""
+    except Exception:
+        return ""
+
+
 def _extract_trade_dates(items: Any) -> list[str]:
     """
     从指数K线条目提取“真实交易日”列表。
@@ -99,6 +114,13 @@ def resolve_trade_date(client: HttpClient, requested_date: str | None) -> tuple[
     except Exception:
         return requested_date, ""
 
+    today = _dt.datetime.now().strftime("%Y-%m-%d")
+    rt_date = get_realtime_market_date(client)
+    # 若请求的是“今天”，且实时行情日期已经确认是今天，则直接按今天处理。
+    # 目的：避免收盘后/盘中指数日K尚未确认时，被误判为“非交易日回退到昨日”。
+    if requested_date == today and rt_date == today:
+        return requested_date, ""
+
     dates = get_recent_trade_dates(client, n=20)
     if not dates:
         return requested_date, ""
@@ -133,6 +155,7 @@ def resolve_trade_date_intraday(client: HttpClient, requested_date: str | None) 
         return requested_date, ""
 
     today = _dt.datetime.now().strftime("%Y-%m-%d")
+    rt_date = get_realtime_market_date(client)
     dates = get_recent_trade_dates(client, n=20)
     if not dates:
         return requested_date, ""
@@ -140,8 +163,8 @@ def resolve_trade_date_intraday(client: HttpClient, requested_date: str | None) 
     if requested_date in dates:
         return requested_date, ""
 
-    # 盘中兜底：允许使用“今天”（即使指数日K占位被过滤）
-    if requested_date == today and today > dates[-1]:
+    # 盘中兜底：仅当实时行情确认“今天确实在交易”时，允许使用今天
+    if requested_date == today and rt_date == today and today > dates[-1]:
         return requested_date, f"盘中模式：使用当日盘中数据（指数日K可能尚未收盘，忽略回退：{dates[-1]}）"
 
     return resolve_trade_date(client, requested_date)

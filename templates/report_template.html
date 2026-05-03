@@ -2468,20 +2468,6 @@
       @media (min-width: 980px){ .v3-hero .kpi{ grid-column: span 3; } }
       .v3-hero .k{ font-size: 11px; font-weight: 900; color: var(--text-muted); }
       .v3-hero .v{ margin-top: 4px; font-size: 15px; font-weight: 1000; letter-spacing: 0.2px; }
-      .v3-pre{
-        margin-top: 10px;
-        padding: 10px 10px;
-        border-radius: 14px;
-        border: 1px solid rgba(148,163,184,0.18);
-        background: rgba(2,6,23,0.05);
-        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-        font-size: 11px;
-        line-height: 1.55;
-        overflow: auto;
-        max-height: 420px;
-      }
-      [data-theme="dark"] .v3-pre{ background: rgba(2,6,23,0.35); border-color: rgba(148,163,184,0.16); }
-
       /* 实时盯盘 WatchBoard（重构版） */
       #sec-watch{ container-type: inline-size; }
       .wb{
@@ -4232,7 +4218,7 @@
 
         <div class="inset">
           <!-- 已移除：研发说明（不在产品上展示） -->
-          <details style="margin-top:12px;">
+          <details open style="margin-top:12px;">
             <summary style="cursor:pointer; color:var(--text-muted); font-weight:900; font-size:12px;">展开指标明细</summary>
             <div class="mc-panels">
               <div class="mc-panel" style="--mc-accent: rgba(239,68,68,0.90);">
@@ -4886,133 +4872,19 @@
       <div class="card" data-page="plan" id="sec-action">
         <div class="card-title">明日行动指南</div>
         <div class="plan-top-grid">
-          <!-- 统一视图：只依赖 compat（推荐作为主入口） -->
-          <div class="v2-strategy" v-if="marketData.compat">
+          <div class="v2-strategy" v-if="planGuide">
             <div class="row">
-              <div class="tone">明日行动指南 · {{ marketData.compat.sentiment?.phase || '-' }}（{{ marketData.compat.sentiment?.score ?? '-' }}）</div>
-              <div class="cap">仓位：{{ marketData.compat.position?.capital_pct ?? '-' }}</div>
+              <div class="tone">明日行动指南 · {{ planGuide.phase || '-' }}（{{ planGuide.score ?? '-' }}）</div>
+              <div class="cap">仓位：{{ planGuide.position || '-' }}</div>
             </div>
-            <div class="advice" v-if="marketData.compat.rightside?.advice">{{ marketData.compat.rightside.advice }}</div>
+            <div class="advice" v-if="planGuide.advice">{{ planGuide.advice }}</div>
             <div class="kpis">
-              <span class="pill primary">右侧：{{ marketData.compat.rightside?.allowed === null || marketData.compat.rightside?.allowed === undefined ? '-' : (marketData.compat.rightside.allowed ? '允许' : '禁止') }}</span>
-              <span class="pill">主线：{{ marketData.compat.mainline?.top_sector || '-' }}</span>
-              <span class="pill" v-if="marketData.compat.trading_nature?.label">性质：{{ marketData.compat.trading_nature.label }}</span>
-              <span class="pill" v-if="marketData.compat.full_position?.passed_count !== undefined && marketData.compat.full_position?.passed_count !== null">共振：{{ marketData.compat.full_position.passed_count }}/3</span>
-              <span class="pill" v-if="marketData.compat.reflexivity?.cycle_position">反身性：{{ marketData.compat.reflexivity.cycle_position }}</span>
-              <span class="pill" v-if="marketData.compat.rebound?.phase">反弹：{{ marketData.compat.rebound.phase }}</span>
-              <span class="pill" v-if="marketData.compat.collapse_chain?.level">崩溃链：{{ marketData.compat.collapse_chain.level }}</span>
+              <span v-for="(pill, idx) in planGuidePills" :key="'pg-pill-'+idx" class="pill" :class="{ primary: pill.primary }">{{ pill.text }}</span>
             </div>
-            <details v-if="(marketData.compat.sentiment?.warnings || []).length">
+            <details v-if="planGuideWarnings.length">
               <summary>展开提示</summary>
               <ul class="rules">
-                <li v-for="(r, i) in marketData.compat.sentiment.warnings" :key="'c-w-'+i">{{ r }}</li>
-              </ul>
-            </details>
-          </div>
-          <div class="v2-strategy" v-else-if="marketData.v3">
-            <div class="row">
-              <div class="tone">v3 · {{ marketData.v3.sentiment?.phase || '-' }}（{{ marketData.v3.sentiment?.score ?? '-' }}）</div>
-              <div class="cap">仓位：{{ marketData.v3.positionV3?.capital_pct_adjusted ?? '-' }}</div>
-            </div>
-            <div class="advice" v-if="marketData.v3.rightside?.advice">{{ marketData.v3.rightside.advice }}</div>
-            <div class="kpis">
-              <span class="pill primary">右侧：{{ marketData.v3.rightside?.allowed ? '允许' : '禁止' }}（{{ marketData.v3.rightside?.score ?? '-' }}/5）</span>
-              <span class="pill" v-if="marketData.v3.mainstream?.mainline">主线：{{ marketData.v3.mainstream.mainline.top_sector }}（{{ (marketData.v3.mainstream.mainline.level||[])[0] || marketData.v3.mainstream.mainline.level || '-' }}）</span>
-              <span class="pill" v-if="marketData.v3.tradingNature?.nature">性质：{{ marketData.v3.tradingNature.nature.label || '-' }}</span>
-              <span class="pill" v-if="marketData.v3.fullPosition?.passed_count !== undefined">共振：{{ marketData.v3.fullPosition.passed_count }}/3</span>
-              <span class="pill" v-if="marketData.v3.reflexivity?.cycle?.cycle_position">反身性：{{ marketData.v3.reflexivity.cycle.cycle_position }}</span>
-              <span class="pill" v-if="marketData.v3.rebound?.phase">反弹：{{ marketData.v3.rebound.phase.label || marketData.v3.rebound.phase }}</span>
-              <span class="pill" v-if="marketData.v3.collapseChain?.level">崩溃链：{{ marketData.v3.collapseChain.level }}</span>
-            </div>
-            <details v-if="marketData.v3.sentiment?.warnings && marketData.v3.sentiment.warnings.length">
-              <summary>展开 v3 风险提示</summary>
-              <ul class="rules">
-                <li v-for="(r, i) in marketData.v3.sentiment.warnings" :key="'v3w-'+i">{{ r }}</li>
-              </ul>
-            </details>
-          </div>
-          <div class="v2-strategy" v-else-if="marketData.v2?.strategy">
-            <div class="row">
-              <div class="tone">{{ marketData.v2.strategy.tone }}</div>
-              <div class="cap">仓位上限：{{ marketData.v2.strategy.position?.recommended_max || '-' }}</div>
-            </div>
-            <div class="advice">{{ marketData.v2.strategy.overall_advice }}</div>
-            <div class="kpis">
-              <span class="pill primary">最佳战术：{{ marketData.v2.strategy.tactics?.best_tactic || '-' }}</span>
-              <span class="pill">情绪：{{ marketData.v2?.sentiment?.score ?? '-' }}｜{{ marketData.v2?.sentiment?.phase || '-' }}</span>
-              <span class="pill">风险：{{ marketData.v2?.sentiment?.risk_level || '-' }}</span>
-              <span class="pill" v-if="marketData.v2?.sector?.mainline?.exists">主线：{{ marketData.v2.sector.mainline.top_sector }}（{{ marketData.v2.sector.mainline.level }}）</span>
-              <span class="pill" v-if="marketData.v2?.trade_nature?.label">性质：{{ marketData.v2.trade_nature.label }}</span>
-              <span class="pill" v-if="marketData.v2?.rebound?.phase_name">反弹：{{ marketData.v2.rebound.phase_name }}</span>
-              <span class="pill" v-if="marketData.v2?.psychology?.reflexivity_cycle?.position_name">反身性：{{ marketData.v2.psychology.reflexivity_cycle.position_name }}</span>
-              <span class="pill" v-if="marketData.v2?.position_model">赢面：{{ marketData.v2.position_model.win_rate }}%</span>
-              <span class="pill" v-if="marketData.v2?.position_model">档位：{{ marketData.v2.position_model.tier?.action }}</span>
-              <span class="pill" v-if="marketData.v2?.rightside">右侧：{{ marketData.v2.rightside.can_enter ? '可入场' : '禁止入场' }}</span>
-              <span class="pill" v-if="marketData.v2?.resonance">共振：{{ marketData.v2.resonance.passed_count }}/3</span>
-            </div>
-            <details v-if="(marketData.v2.strategy.iron_rules || []).length">
-              <summary>展开风控铁律</summary>
-              <ul class="rules">
-                <li v-for="(r, i) in marketData.v2.strategy.iron_rules" :key="'ir-'+i">{{ r }}</li>
-              </ul>
-            </details>
-            <details v-if="(marketData.v2.strategy.warnings || []).length">
-              <summary>展开风险提示</summary>
-              <ul class="rules">
-                <li v-for="(r, i) in marketData.v2.strategy.warnings" :key="'wrn-'+i">{{ r }}</li>
-              </ul>
-            </details>
-            <details v-if="marketData.v2?.trade_nature?.warning">
-              <summary>展开交易性质提示</summary>
-              <ul class="rules">
-                <li>{{ marketData.v2.trade_nature.warning }}</li>
-                <li v-if="marketData.v2.strategy.trade_nature?.stop_loss">止损：{{ marketData.v2.strategy.trade_nature.stop_loss }}</li>
-              </ul>
-            </details>
-            <details v-if="marketData.v2?.rebound">
-              <summary>展开反弹阶段</summary>
-              <ul class="rules">
-                <li>{{ marketData.v2.rebound.phase_name }}：{{ marketData.v2.rebound.reason }}</li>
-                <li v-if="marketData.v2.rebound.strategy?.what_to_do">做：{{ marketData.v2.rebound.strategy.what_to_do }}</li>
-                <li v-if="marketData.v2.rebound.strategy?.what_NOT_to_do">不做：{{ marketData.v2.rebound.strategy.what_NOT_to_do }}</li>
-              </ul>
-            </details>
-            <details v-if="marketData.v2?.psychology?.reflexivity_cycle">
-              <summary>展开人性博弈层</summary>
-              <ul class="rules">
-                <li>{{ marketData.v2.psychology.reflexivity_cycle.summary }}</li>
-                <li>{{ marketData.v2.psychology.reflexivity_cycle.warning }}</li>
-                <li v-if="marketData.v2.psychology.psychology_game?.advice">博弈建议：{{ marketData.v2.psychology.psychology_game.advice }}</li>
-              </ul>
-              <ul class="rules" v-if="(marketData.v2.psychology.behavior_chains || []).length">
-                <li v-for="(c, i) in marketData.v2.psychology.behavior_chains" :key="'bc-'+i">
-                  {{ c.triggered ? '⚠️' : '—' }} {{ c.name }}：{{ c.rule }}
-                </li>
-              </ul>
-            </details>
-            <details v-if="marketData.v2?.dragon || marketData.v2?.height_module">
-              <summary>展开龙头诊断</summary>
-              <ul class="rules" v-if="marketData.v2?.height_module">
-                <li>
-                  高度：{{ marketData.v2.height_module.max_board || '-' }}板｜
-                  形态：{{ marketData.v2.height_module.top_stock?.state || '-' }}｜
-                  生命周期：{{ marketData.v2.height_module.life_cycle?.phase_name || '-' }}
-                </li>
-                <li v-if="marketData.v2.height_module.doujie_result?.is_doujie">
-                  渡劫：{{ marketData.v2.height_module.doujie_result.doujie_type }}｜
-                  存活率：{{ Math.round((marketData.v2.height_module.doujie_result.survival_prob || 0)*100) }}%｜
-                  建议：{{ marketData.v2.height_module.doujie_result.advice }}
-                </li>
-              </ul>
-              <ul class="rules" v-if="marketData.v2?.dragon">
-                <li>
-                  龙头：{{ marketData.v2.dragon.stock_name || '-' }}
-                  <span v-if="marketData.v2.dragon.main_theme">｜题材：{{ marketData.v2.dragon.main_theme }}</span>
-                  ｜评级：{{ marketData.v2.dragon.grade || '-' }}
-                  ｜总分：{{ marketData.v2.dragon.overall || '-' }}
-                  ｜{{ marketData.v2.dragon.god_form_analysis?.verdict || '' }}
-                </li>
-                <li v-if="marketData.v2.dragon.god_form_analysis?.note">{{ marketData.v2.dragon.god_form_analysis.note }}</li>
+                <li v-for="(r, i) in planGuideWarnings" :key="'c-w-'+i">{{ r }}</li>
               </ul>
             </details>
           </div>
@@ -5167,7 +5039,6 @@
           <div class="v3-card span6">
             <div class="hd">
               <div class="t">右侧交易</div>
-              <div class="s">score {{ marketData.compat.rightside?.score ?? '-' }}</div>
             </div>
             <div class="v3-kpis">
               <span :class="['pill', (marketData.compat.rightside?.allowed === true) ? 'primary' : ((marketData.compat.rightside?.allowed === false) ? 'danger' : '')]">
@@ -5194,7 +5065,6 @@
           <div class="v3-card span6">
             <div class="hd">
               <div class="t">主线 / 交易性质 / 反弹</div>
-              <div class="s">做什么 · 怎么做</div>
             </div>
             <div class="v3-kpis">
               <span class="pill">主线 {{ marketData.compat.mainline?.top_sector || '-' }}</span>
@@ -5213,7 +5083,6 @@
           <div class="v3-card span6">
             <div class="hd">
               <div class="t">反身性 / 崩溃链</div>
-              <div class="s">防止“高潮死”</div>
             </div>
             <div class="v3-kpis">
               <span class="pill" v-if="marketData.compat.reflexivity?.cycle_position">反身性 {{ marketData.compat.reflexivity.cycle_position }}</span>
@@ -5222,17 +5091,6 @@
             </div>
             <div class="txt" v-if="marketData.compat.reflexivity?.warning">{{ marketData.compat.reflexivity.warning }}</div>
             <div class="txt" v-if="marketData.compat.collapse_chain?.advice">{{ marketData.compat.collapse_chain.advice }}</div>
-          </div>
-
-          <div class="v3-card span12">
-            <div class="hd">
-              <div class="t">Raw JSON（用于排查字段）</div>
-              <div class="s">只读</div>
-            </div>
-            <details>
-              <summary>展开原始数据</summary>
-              <pre class="v3-pre">{{ JSON.stringify({ date: marketData.date, meta: marketData.meta, features: marketData.features, mood: marketData.mood, moodStage: marketData.moodStage, moodCards: marketData.moodCards, moodSignals: marketData.moodSignals, hm2Compare: marketData.hm2Compare, fear: marketData.fear, v2: marketData.v2, v3: marketData.v3, compat: marketData.compat }, null, 2) }}</pre>
-            </details>
           </div>
 
         </div>
@@ -6217,6 +6075,65 @@
             delta() { return this.marketData?.delta || {}; },
             prev() { return this.marketData?.prev || {}; },
             pos() { return this.positionAdvice(); },
+            planGuide() {
+              const md = this.marketData || {};
+              if (md.compat) {
+                return {
+                  phase: md.compat?.sentiment?.phase || '-',
+                  score: md.compat?.sentiment?.score ?? '-',
+                  position: md.compat?.position?.capital_pct ?? '-',
+                  advice: md.compat?.rightside?.advice || '',
+                  rightsideText: md.compat?.rightside?.allowed === true ? '允许' : (md.compat?.rightside?.allowed === false ? '禁止' : '-'),
+                  mainline: md.compat?.mainline?.top_sector || '',
+                  nature: md.compat?.trading_nature?.label || '',
+                  resonance: md.compat?.full_position?.passed_count !== undefined && md.compat?.full_position?.passed_count !== null ? `${md.compat.full_position.passed_count}/3` : '',
+                  warnings: Array.isArray(md.compat?.sentiment?.warnings) ? md.compat.sentiment.warnings : [],
+                };
+              }
+              if (md.v3) {
+                return {
+                  phase: md.v3?.sentiment?.phase || '-',
+                  score: md.v3?.sentiment?.score ?? '-',
+                  position: md.v3?.positionV3?.capital_pct_adjusted ?? '-',
+                  advice: md.v3?.rightside?.advice || '',
+                  rightsideText: md.v3?.rightside?.allowed === true ? '允许' : (md.v3?.rightside?.allowed === false ? '禁止' : '-'),
+                  mainline: md.v3?.mainstream?.mainline?.top_sector || '',
+                  nature: md.v3?.tradingNature?.nature?.label || '',
+                  resonance: md.v3?.fullPosition?.passed_count !== undefined && md.v3?.fullPosition?.passed_count !== null ? `${md.v3.fullPosition.passed_count}/3` : '',
+                  warnings: Array.isArray(md.v3?.sentiment?.warnings) ? md.v3.sentiment.warnings : [],
+                };
+              }
+              if (md.v2?.strategy) {
+                return {
+                  phase: md.v2?.sentiment?.phase || md.v2?.strategy?.tone || '-',
+                  score: md.v2?.sentiment?.score ?? '-',
+                  position: md.v2?.strategy?.position?.recommended_max || '-',
+                  advice: md.v2?.strategy?.overall_advice || '',
+                  rightsideText: md.v2?.rightside?.can_enter === true ? '允许' : (md.v2?.rightside?.can_enter === false ? '禁止' : '-'),
+                  mainline: md.v2?.sector?.mainline?.top_sector || '',
+                  nature: md.v2?.trade_nature?.label || '',
+                  resonance: md.v2?.resonance?.passed_count !== undefined && md.v2?.resonance?.passed_count !== null ? `${md.v2.resonance.passed_count}/3` : '',
+                  warnings: [
+                    ...(Array.isArray(md.v2?.strategy?.warnings) ? md.v2.strategy.warnings : []),
+                    ...(Array.isArray(md.v2?.strategy?.iron_rules) ? md.v2.strategy.iron_rules : []),
+                  ].slice(0, 6),
+                };
+              }
+              return null;
+            },
+            planGuidePills() {
+              const g = this.planGuide;
+              if (!g) return [];
+              return [
+                { text: `右侧：${g.rightsideText || '-'}`, primary: true },
+                ...(g.mainline ? [{ text: `主线：${g.mainline}`, primary: false }] : []),
+                ...(g.nature ? [{ text: `性质：${g.nature}`, primary: false }] : []),
+                ...(g.resonance ? [{ text: `共振：${g.resonance}`, primary: false }] : []),
+              ];
+            },
+            planGuideWarnings() {
+              return Array.isArray(this.planGuide?.warnings) ? this.planGuide.warnings : [];
+            },
             watchThemes() {
               // 目标：始终展示 TOP7
               // - 实时榜可能只有 1~2 个（数据源波动/兜底题材较少），因此用“当日强度榜”补齐到 7 个

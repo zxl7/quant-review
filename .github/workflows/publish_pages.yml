@@ -146,6 +146,43 @@ jobs:
         with:
           python-version: "3.11"
 
+      - name: Check A-share trade day
+        id: tradeday
+        if: ${{ github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true' }}
+        env:
+          BIYING_TOKEN: ${{ secrets.BIYING_TOKEN }}
+          BIYING_BASE_URL: ${{ secrets.BIYING_BASE_URL }}
+        run: |
+          set -euo pipefail
+          if [ -z "${BIYING_TOKEN}" ]; then
+            echo "Missing secrets.BIYING_TOKEN"
+            exit 2
+          fi
+          PYTHONPATH=. python3 - <<'PY'
+          import os, datetime as dt
+          from daily_review.config import load_config_from_env
+          from daily_review.http import HttpClient
+          from daily_review.data.biying import get_recent_trade_dates, get_realtime_market_date
+
+          cfg = load_config_from_env()
+          client = HttpClient(base_url=cfg.base_url, token=cfg.token, timeout=30)
+          today = dt.datetime.now().strftime("%Y-%m-%d")
+          dates = get_recent_trade_dates(client, n=20) or []
+          latest_trade = dates[-1] if dates else today
+          rt_date = get_realtime_market_date(client)
+          is_trade_today = "true" if (rt_date == today) else "false"
+
+          with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as f:
+            f.write(f"today_bj={today}\n")
+            f.write(f"latest_trade_date={latest_trade}\n")
+            f.write(f"realtime_market_date={rt_date}\n")
+            f.write(f"is_trade_today={is_trade_today}\n")
+          print("today_bj=", today)
+          print("latest_trade_date=", latest_trade)
+          print("realtime_market_date=", rt_date)
+          print("is_trade_today=", is_trade_today)
+          PY
+
       - name: Decide push mode/date (non-schedule)
         id: pushmode
         if: ${{ github.event_name != 'schedule' }}
@@ -161,49 +198,37 @@ jobs:
           if [ -z "${BIYING_BASE_URL}" ]; then
             echo "WARN: secrets.BIYING_BASE_URL 缺失，将使用默认 https://api.biyingapi.com"
           fi
+          is_trade_today="${{ steps.tradeday.outputs.is_trade_today }}"
+          latest_trade="${{ steps.tradeday.outputs.latest_trade_date }}"
+          today_bj="${{ steps.tradeday.outputs.today_bj }}"
+
           # push/workflow_dispatch：
-          # - 盘前（<09:25，北京时间）：生成最近一个“已完成交易日”的收盘版（避免生成“当天但数据为空/像昨天”的错配）
-          # - 盘中（09:25~15:01）：生成当日盘中版（intraday），保证“渲染当天数据”
-          # - 收盘后（>=15:01）：生成当日收盘版（eod）
+          # - 非交易日：固定回落到最近交易日收盘版
+          # - 盘前（<09:25，北京时间）：生成最近一个“已完成交易日”的收盘版
+          # - 盘中（09:25~15:01）：仅在交易日生成当日盘中版
+          # - 收盘后（>=15:01）：仅在交易日生成当日收盘版
           now_bj="$(date +'%H:%M')"
           now_min=$((10#$(date +%H)*60 + 10#$(date +%M)))
           open_min=$((9*60+25))
           close_min=$((15*60+1))
-          if [ "${now_min}" -lt "${open_min}" ]; then
+          if [ "${is_trade_today}" != "true" ]; then
             mode="eod"
+            date10="${latest_trade}"
+            echo "非交易日：回落到最近交易日 ${date10}"
+          elif [ "${now_min}" -lt "${open_min}" ]; then
+            mode="eod"
+            date10="${latest_trade}"
           elif [ "${now_min}" -lt "${close_min}" ]; then
             mode="intraday"
+            date10="${today_bj}"
           else
             mode="eod"
+            date10="${today_bj}"
           fi
           echo "mode=${mode}" >> "$GITHUB_OUTPUT"
+          echo "date10=${date10}" >> "$GITHUB_OUTPUT"
           echo "beijing_now=${now_bj}" >> "$GITHUB_OUTPUT"
-          echo "push_mode=${mode} (beijing_now=${now_bj})"
-
-          # 选择日期：
-          # - eod：取“最近一个已完成交易日”（指数日K过滤 sf/a/v 占位后的最后一天）
-          # - intraday：用今天（若非交易日，cli 内部会自动回退）
-          if [ "${mode}" = "intraday" ]; then
-            echo "date10=$(date +%F)" >> "$GITHUB_OUTPUT"
-            exit 0
-          fi
-
-          PYTHONPATH=. python - <<'PY'
-          import os, datetime as dt
-          from daily_review.config import load_config_from_env
-          from daily_review.http import HttpClient
-          from daily_review.data.biying import get_recent_trade_dates
-          cfg = load_config_from_env()
-          client = HttpClient(base_url=cfg.base_url, token=cfg.token, timeout=30)
-          dates = get_recent_trade_dates(client, n=20) or []
-          # 兜底：若指数日K取不到交易日（接口/网络/配置问题），不要让 workflow 直接失败
-          target = dates[-1] if dates else dt.date.today().strftime("%Y-%m-%d")
-          if not dates:
-            print("WARN: No trade dates from index kline. Fallback to today:", target)
-          with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as f:
-            f.write(f"date10={target}\n")
-          print("picked_date10=", target)
-          PY
+          echo "push_mode=${mode} (beijing_now=${now_bj}, date10=${date10})"
 
       - name: Make scripts executable
         if: ${{ github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true' }}
@@ -211,7 +236,7 @@ jobs:
           chmod +x ./qr.sh || true
 
       - name: Generate latest report (online fetch -> offline pipeline rebuild)
-        if: ${{ github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true' }}
+        if: ${{ (github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true') && (github.event_name != 'schedule' || steps.tradeday.outputs.is_trade_today == 'true') }}
         env:
           BIYING_TOKEN: ${{ secrets.BIYING_TOKEN }}
           BIYING_BASE_URL: ${{ secrets.BIYING_BASE_URL }}
@@ -227,8 +252,7 @@ jobs:
           echo "Run mode=${mode}"
           run_date="${{ steps.pushmode.outputs.date10 }}"
           if [ "${{ github.event_name }}" = "schedule" ]; then
-            # schedule 场景：intraday 直接用今天（若非交易日，cli 内部会自动回退）
-            run_date="$(date +%F)"
+            run_date="${{ steps.tradeday.outputs.today_bj }}"
           fi
           if [ "${mode}" = "intraday" ]; then
             # 盘中快照：每半小时一次（数据截止当前时刻）
@@ -236,14 +260,14 @@ jobs:
           else
             # 收盘版：在线取数落缓存（有成本）→ 再用 v2 pipeline 离线重建 → 输出 html/*tab-v1.html
             if [ "${{ github.event_name }}" = "schedule" ]; then
-              ./qr.sh fetch
+              ./qr.sh fetch "${run_date}"
             else
               ./qr.sh fetch "${{ steps.pushmode.outputs.date10 }}"
             fi
           fi
 
       - name: Prepare Pages site (html/ as site root)
-        if: ${{ github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true' }}
+        if: ${{ (github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true') && (github.event_name != 'schedule' || steps.tradeday.outputs.is_trade_today == 'true') }}
         run: |
           set -euo pipefail
           mode="${{ steps.timecheck.outputs.mode }}"
@@ -272,7 +296,7 @@ jobs:
           echo "site=index.html from: ${report_html}"
 
       - name: Commit & push to gh-pages
-        if: ${{ github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true' }}
+        if: ${{ (github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true') && (github.event_name != 'schedule' || steps.tradeday.outputs.is_trade_today == 'true') }}
         run: |
           set -euo pipefail
           # 站点策略：只保留最新一份报告 HTML（历史可通过重新拉取数据再渲染）
