@@ -2175,11 +2175,17 @@
         background: color-mix(in oklab, var(--bg-card), var(--bg-elevated) 22%);
         box-shadow: var(--shadow-sm);
         transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+        cursor: pointer;
       }
       .theme-rank-item:hover{
         transform: translateY(-1px);
         box-shadow: var(--shadow-md);
         border-color: color-mix(in oklab, var(--border), var(--theme-accent) 22%);
+      }
+      .theme-rank-item.is-active{
+        border-color: color-mix(in oklab, var(--theme-accent) 48%, var(--border) 52%);
+        box-shadow: 0 0 0 1px color-mix(in oklab, var(--theme-accent) 22%, transparent), var(--shadow-md);
+        background: color-mix(in oklab, var(--bg-card), var(--theme-accent) 7%);
       }
       .theme-rank-left{
         width: 42px;
@@ -2257,6 +2263,159 @@
         background: linear-gradient(90deg, var(--theme-accent), var(--theme-accent-2));
         width: 0%;
       }
+      .theme-detail-card{
+        margin-top: 12px;
+        border: 1px solid color-mix(in oklab, var(--border) 78%, var(--theme-accent) 22%);
+        border-radius: 16px;
+        background: color-mix(in oklab, var(--bg-card), var(--bg-elevated) 18%);
+        padding: 14px 14px 12px;
+        box-shadow: var(--shadow-sm);
+      }
+      .theme-detail-head{
+        display:flex;
+        align-items:flex-start;
+        justify-content:space-between;
+        gap: 14px;
+      }
+      .theme-detail-title{
+        font-size: 16px;
+        font-weight: 950;
+        color: var(--text-primary);
+        letter-spacing: .2px;
+      }
+      .theme-detail-sub{
+        margin-top: 4px;
+        font-size: 11px;
+        color: var(--text-muted);
+        font-weight: 760;
+      }
+      .theme-detail-kpis{
+        display:flex;
+        gap: 8px;
+        flex-wrap:wrap;
+        justify-content:flex-end;
+      }
+      .theme-detail-kpi{
+        min-width: 92px;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 8px 10px;
+        background: color-mix(in oklab, var(--bg-card), var(--bg-elevated) 26%);
+        text-align:right;
+      }
+      .theme-detail-kpi .k{
+        font-size: 10px;
+        color: var(--text-muted);
+        font-weight: 850;
+      }
+      .theme-detail-kpi .v{
+        margin-top: 3px;
+        font-size: 16px;
+        font-weight: 950;
+        color: var(--text-primary);
+        font-variant-numeric: tabular-nums;
+      }
+      .theme-detail-grid{
+        margin-top: 12px;
+        display:grid;
+        grid-template-columns: 1.05fr 1fr 1fr;
+        gap: 10px;
+      }
+      .theme-detail-panel{
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 10px 10px;
+        background: color-mix(in oklab, var(--bg-card), var(--bg-elevated) 18%);
+      }
+      .theme-detail-panel .hd{
+        font-size: 11px;
+        font-weight: 900;
+        color: var(--text-secondary);
+        margin-bottom: 8px;
+      }
+      .theme-leader-list{
+        display:flex;
+        flex-wrap:wrap;
+        gap: 8px;
+      }
+      .theme-leader-chip{
+        display:inline-flex;
+        align-items:center;
+        gap: 6px;
+        padding: 6px 8px;
+        border-radius: 10px;
+        border: 1px solid var(--border);
+        background: color-mix(in oklab, var(--bg-card), var(--bg-elevated) 24%);
+        font-size: 11px;
+        line-height: 1;
+      }
+      .theme-leader-chip .rk{
+        font-weight: 900;
+        color: var(--text-muted);
+      }
+      .theme-leader-chip .nm{
+        font-weight: 850;
+        color: var(--text-primary);
+      }
+      .theme-mini-chart{
+        display:flex;
+        flex-direction:column;
+        gap: 8px;
+      }
+      .theme-mini-line{
+        height: 92px;
+        border-radius: 10px;
+        border: 1px solid var(--border);
+        background: color-mix(in oklab, var(--bg-card), var(--bg-elevated) 22%);
+        padding: 6px 6px;
+      }
+      .theme-mini-line svg{
+        width:100%;
+        height:100%;
+        display:block;
+      }
+      .theme-mini-axis{
+        stroke: color-mix(in oklab, var(--text-muted) 35%, transparent);
+        stroke-width: 1;
+        stroke-dasharray: 2 4;
+      }
+      .theme-mini-path{
+        fill: none;
+        stroke-width: 2.2;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+      }
+      .theme-mini-path.strength{
+        stroke: color-mix(in oklab, var(--theme-accent) 86%, var(--text-primary) 14%);
+      }
+      .theme-mini-path.volume{
+        stroke: color-mix(in oklab, var(--theme-accent-2) 78%, var(--text-primary) 22%);
+      }
+      .theme-mini-area{
+        opacity: .14;
+      }
+      .theme-mini-area.strength{
+        fill: color-mix(in oklab, var(--theme-accent) 78%, transparent);
+      }
+      .theme-mini-area.volume{
+        fill: color-mix(in oklab, var(--theme-accent-2) 70%, transparent);
+      }
+      .theme-mini-meta{
+        display:flex;
+        justify-content:space-between;
+        gap: 8px;
+        font-size: 10px;
+        color: var(--text-muted);
+        font-weight: 760;
+        flex-wrap: wrap;
+      }
+      .theme-mini-meta strong{
+        color: var(--text-primary);
+        font-weight: 900;
+      }
+      @media (max-width: 980px){
+        .theme-detail-grid{ grid-template-columns: 1fr; }
+      }
 
       /* 涨停个股分析 */
       .zt-panel { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
@@ -2285,9 +2444,6 @@
         position: relative;
         overflow: hidden;
       }
-      .zt-item[data-level="hi"]{ --zt-accent: rgba(239,68,68,0.90); }
-      .zt-item[data-level="mid"]{ --zt-accent: rgba(245,158,11,0.92); }
-      .zt-item[data-level="lo"]{ --zt-accent: rgba(37,99,235,0.85); }
       [data-theme="dark"] .zt-item{
         background: linear-gradient(135deg,
           color-mix(in oklab, var(--zt-accent) 10%, rgba(15,23,42,0.55)),
@@ -4581,39 +4737,136 @@
       <div class="card" data-page="themes" id="sec-hot">
         <div class="card-title">板块题材</div>
 
-        <!-- 板块题材排行（资金流向口径，替换原“2连板题材榜”） -->
-        <div class="tier-card" v-if="(marketData.conceptFundFlowTop || []).length">
-          <div class="tier-title">板块题材排行 TOP10（按涨幅）</div>
+        <!-- 板块题材排行 -->
+        <div class="tier-card" v-if="conceptTop10ByChg.length">
+          <div class="tier-title">板块题材排行 TOP10（{{ (marketData.plateRotateTop || []).length ? '按强度' : '按涨幅' }}）</div>
           <div class="tier-desc" style="margin-top: 4px;">
-            口径：概念/题材级资金流向（AkShare/东财）；排序：按涨跌幅从高到低（净流仅作参考）。
+            {{ (marketData.plateRotateTop || []).length
+              ? '口径：短线侠板块轮动；数字为当日板块强度。'
+              : '口径：概念/题材级资金流向（AkShare/东财）；排序：按涨跌幅从高到低（净流仅作参考）。' }}
           </div>
           <div class="theme-rank-list">
-            <div class="theme-rank-item" v-for="(c, i) in conceptTop10ByChg" :key="'cff-top10-'+c.name+'-'+i">
+            <div
+              class="theme-rank-item"
+              v-for="(c, i) in conceptTop10ByChg"
+              :key="'cff-top10-'+c.name+'-'+i"
+              :class="{ 'is-active': selectedPlateTheme && (selectedPlateTheme.code || selectedPlateTheme.name) === (c.code || c.name) }"
+              @click="selectPlateTheme(c)"
+            >
               <div class="theme-rank-left" :style="{ background: rankBg(i+1) }">
                 <div class="rk">{{ i+1 }}</div>
                 <div class="dot"></div>
               </div>
               <div class="theme-rank-mid">
                 <div class="theme-rank-name">{{ c.name }}</div>
-                <div class="theme-rank-sub">
-                  领涨 {{ c.lead || '-' }}
+                <div class="theme-rank-sub" v-if="c.lead || c.companies !== undefined || c.sourceNote">
+                  <template v-if="c.lead">
+                    领涨 {{ c.lead }}
+                  </template>
                   <template v-if="c.lead_chg_pct !== undefined && c.lead_chg_pct !== null">
                     （<span :class="signedClass(c.lead_chg_pct)">{{ formatSigned(c.lead_chg_pct) }}%</span>）
                   </template>
                   <template v-if="c.companies !== undefined && c.companies !== null">
                     <span style="opacity:.7;">｜</span>成分 {{ c.companies }}
                   </template>
+                  <template v-if="c.volume !== undefined && c.volume !== null && c.volume !== ''">
+                    <span style="opacity:.7;">｜</span>量能 {{ c.volume }}亿
+                  </template>
+                  <template v-if="c.sourceNote">
+                    {{ c.sourceNote }}
+                  </template>
                 </div>
               </div>
               <div class="theme-rank-right">
-                <div class="theme-rank-chg" :class="signedClass(c.chg_pct)">
-                  {{ c.chg_pct === undefined || c.chg_pct === null ? '-' : (formatSigned(c.chg_pct) + '%') }}
+                <div class="theme-rank-chg" :class="c.displayClass || signedClass(c.chg_pct)">
+                  {{ c.displayValue }}
                 </div>
-                <div class="theme-rank-net" v-if="c.net !== undefined && c.net !== null">
+                <div class="theme-rank-net" v-if="c.net !== undefined && c.net !== null && !(marketData.plateRotateTop || []).length">
                   净额 <span :class="signedClass(c.net)">{{ formatSigned(c.net) }}</span>
                 </div>
                 <div class="theme-rank-microbar" aria-hidden="true">
-                  <i :style="{ width: clamp100(toNum(c.chg_pct, 0) * 10) + '%' }"></i>
+                  <i :style="{ width: clamp100(toNum(c.barPct, 0)) + '%' }"></i>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="theme-detail-card" v-if="(marketData.plateRotateTop || []).length && selectedPlateTheme">
+            <div class="theme-detail-head">
+              <div>
+                <div class="theme-detail-title">{{ selectedPlateTheme.name }}</div>
+                <div class="theme-detail-sub">
+                  当前查看：板块轮动明细。点击上方排行可切换领涨龙头与近20日强度/量能。
+                </div>
+              </div>
+              <div class="theme-detail-kpis">
+                <div class="theme-detail-kpi">
+                  <div class="k">当日强度</div>
+                  <div class="v">{{ selectedPlateTheme.displayValue || '-' }}</div>
+                </div>
+                <div class="theme-detail-kpi">
+                  <div class="k">当日领涨</div>
+                  <div class="v" style="font-size:14px;">{{ selectedPlateTheme.lead || '-' }}</div>
+                </div>
+                <div class="theme-detail-kpi">
+                  <div class="k">当日量能</div>
+                  <div class="v">{{ selectedPlateTheme.volume !== undefined && selectedPlateTheme.volume !== null ? (selectedPlateTheme.volume + '亿') : '-' }}</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="theme-detail-grid">
+              <div class="theme-detail-panel">
+                <div class="hd">当日领涨龙头</div>
+                <div class="theme-leader-list">
+                  <a
+                    class="theme-leader-chip"
+                    v-for="(x, idx) in selectedPlateLeaders"
+                    :key="'plate-leader-'+(x.code||x.name||idx)+'-'+idx"
+                    :href="xqUrl(x.code)"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <span class="rk">{{ x.rank || ('龙' + (idx + 1)) }}</span>
+                    <span class="nm">{{ x.name || '-' }}</span>
+                  </a>
+                  <div class="theme-leader-chip" v-if="!selectedPlateLeaders.length">
+                    <span class="nm">当日无领涨</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="theme-detail-panel">
+                <div class="hd">近20日强度</div>
+                <div class="theme-mini-chart">
+                  <div class="theme-mini-line" v-if="selectedPlateStrengthSeries.length">
+                    <svg viewBox="0 0 300 80" preserveAspectRatio="none" aria-hidden="true">
+                      <line class="theme-mini-axis" x1="0" y1="72" x2="300" y2="72"></line>
+                      <path class="theme-mini-area strength" :d="selectedPlateStrengthLine.area"></path>
+                      <path class="theme-mini-path strength" :d="selectedPlateStrengthLine.line"></path>
+                    </svg>
+                  </div>
+                  <div class="theme-mini-meta">
+                    <span>最新 <strong>{{ selectedPlateTheme.strengthByDate ?? selectedPlateTheme.strength ?? '-' }}</strong></span>
+                    <span>峰值 <strong>{{ selectedPlateStrengthPeak }}</strong></span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="theme-detail-panel">
+                <div class="hd">近20日量能</div>
+                <div class="theme-mini-chart">
+                  <div class="theme-mini-line" v-if="selectedPlateVolumeSeries.length">
+                    <svg viewBox="0 0 300 80" preserveAspectRatio="none" aria-hidden="true">
+                      <line class="theme-mini-axis" x1="0" y1="72" x2="300" y2="72"></line>
+                      <path class="theme-mini-area volume" :d="selectedPlateVolumeLine.area"></path>
+                      <path class="theme-mini-path volume" :d="selectedPlateVolumeLine.line"></path>
+                    </svg>
+                  </div>
+                  <div class="theme-mini-meta">
+                    <span>最新 <strong>{{ selectedPlateTheme.volume !== undefined && selectedPlateTheme.volume !== null ? (selectedPlateTheme.volume + '亿') : '-' }}</strong></span>
+                    <span>峰值 <strong>{{ selectedPlateVolumePeak }}</strong></span>
+                  </div>
                 </div>
               </div>
             </div>
@@ -5114,54 +5367,6 @@
         <!-- <div class="summary3" v-if="marketData.summary3?.lines && marketData.summary3.lines.length">
           <div class="summary3-line" v-for="(l, i) in marketData.summary3.lines" :key="'plan-s3-'+i"><strong>{{ i+1 }}.</strong> {{ l }}</div>
         </div> -->
-        <div class="action-grid">
-          <div class="action-col">
-            <div class="action-head">
-              <div class="h">开盘只盯 2 件事</div>
-              <div class="tip">先确认 → 再出手</div>
-            </div>
-            <ul class="action-list">
-              <li class="action-item" v-for="(item, idx) in (marketData.actionGuideV2?.confirm || [])" :key="'cf2-'+idx">
-                <span class="action-dot" :class="item.dot"></span>
-                <div class="action-body">
-                  <div class="action-line" :title="item.desc">
-                    <div class="action-title">{{ item.title }}</div>
-                    <div class="action-desc">{{ item.descShort || item.desc }}</div>
-                    <div class="action-tags" v-if="item.tags && item.tags.length">
-                      <span class="ladder-chip" v-for="(t, ti) in item.tags" :key="'cf2-tag-'+idx+'-'+ti" :class="t.cls">{{ t.text }}</span>
-                    </div>
-                  </div>
-                </div>
-              </li>
-            </ul>
-          </div>
-
-          <div class="action-col">
-            <div class="action-head">
-              <div class="h">盘中只盯 2 个失效信号</div>
-              <div class="tip">出现即减仓/撤退</div>
-            </div>
-            <ul class="action-list">
-              <li class="action-item" v-for="(item, idx) in (marketData.actionGuideV2?.retreat || [])" :key="'rt2-'+idx">
-                <span class="action-dot" :class="item.dot"></span>
-                <div class="action-body">
-                  <div class="action-line" :title="item.desc">
-                    <div class="action-title">{{ item.title }}</div>
-                    <div class="action-desc">{{ item.descShort || item.desc }}</div>
-                    <div class="action-tags" v-if="item.tags && item.tags.length">
-                      <span class="ladder-chip" v-for="(t, ti) in item.tags" :key="'rt2-tag-'+idx+'-'+ti" :class="t.cls">{{ t.text }}</span>
-                    </div>
-                  </div>
-                </div>
-              </li>
-            </ul>
-          </div>
-        </div>
-        <!-- 观察清单已移除：避免“滞后数据 + 固定话术”占版面 -->
-
-        <div class="summary-box" v-if="(!marketData.actionGuideV2) && marketData.actionGuide">
-          <div class="summary-text">提示：已切换为新版“开盘2条 + 盘中2条 + 观察清单”，不再展示“出手/禁止”清单。</div>
-        </div>
       </div>
 
       <!-- 涨停个股数据分析 -->
@@ -5187,8 +5392,7 @@
             <div class="zt-list">
               <div class="zt-item"
                    v-for="(row, i) in ztRelaySorted"
-                   :key="'relay-'+i"
-                   :data-level="(Number(row.score) >= 75) ? 'hi' : ((Number(row.score) >= 55) ? 'mid' : 'lo')">
+                   :key="'relay-'+i">
                 <div class="zt-top">
                   <div>
                     <div class="zt-name">
@@ -5199,6 +5403,7 @@
                   </div>
                   <div class="zt-score">
                     <div class="v">{{ row.score }}</div>
+                    <div class="k">质量优先</div>
                   </div>
                 </div>
                 <div class="zt-tags">
@@ -5212,8 +5417,7 @@
             <div class="zt-list">
               <div class="zt-item"
                    v-for="(row, i) in ztWatchSorted"
-                   :key="'watch-'+i"
-                   :data-level="(Number(row.score) >= 75) ? 'hi' : ((Number(row.score) >= 55) ? 'mid' : 'lo')">
+                   :key="'watch-'+i">
                 <div class="zt-top">
                   <div>
                     <div class="zt-name">
@@ -5224,6 +5428,7 @@
                   </div>
                   <div class="zt-score">
                     <div class="v">{{ row.score }}</div>
+                    <div class="k">观察参考</div>
                   </div>
                 </div>
                 <div class="zt-tags">
@@ -5549,7 +5754,7 @@
 
         const app = createApp({
           data() {
-            return { marketData, liveLoading: false, liveError: '' };
+            return { marketData, liveLoading: false, liveError: '', selectedPlateThemeKey: '' };
           },
           methods: {
             formatDateCn(dateStr) {
@@ -5578,6 +5783,35 @@
               if (!c) return 'https://xueqiu.com/S';
               const prefix = (c.startsWith('6') || c.startsWith('688') || c.startsWith('900')) ? 'SH' : 'SZ';
               return `https://xueqiu.com/S/${prefix}${c}`;
+            },
+            selectPlateTheme(row) {
+              const key = String(row?.code || row?.name || '');
+              this.selectedPlateThemeKey = key;
+            },
+            seriesBars(series) {
+              const arr = (Array.isArray(series) ? series : []).map(v => this.toNum(v, 0));
+              const max = Math.max(...arr, 0);
+              return arr.map((value) => ({
+                value,
+                pct: max > 0 ? (value / max) * 100 : 0,
+              }));
+            },
+            linePath(series, w = 300, h = 80, pad = 8) {
+              const vals = (Array.isArray(series) ? series : []).map(v => this.toNum(v, 0));
+              if (!vals.length) return { line: '', area: '' };
+              const n = vals.length;
+              const min = Math.min(...vals);
+              const max = Math.max(...vals);
+              const span = (max - min) || 1;
+              const xStep = n > 1 ? (w - pad * 2) / (n - 1) : 0;
+              const pts = vals.map((v, i) => {
+                const x = pad + i * xStep;
+                const y = h - pad - ((v - min) / span) * (h - pad * 2);
+                return [x, y];
+              });
+              const line = pts.map((p, i) => `${i ? 'L' : 'M'}${p[0].toFixed(2)},${p[1].toFixed(2)}`).join(' ');
+              const area = `${line} L${(pad + (n - 1) * xStep).toFixed(2)},${(h - pad).toFixed(2)} L${pad.toFixed(2)},${(h - pad).toFixed(2)} Z`;
+              return { line, area };
             },
             // 已移除：metaPack/metaSummary（研发信息不在产品上展示）
             /**
@@ -6395,12 +6629,20 @@
             },
             ztRelaySorted() {
               const rows = (this.marketData?.ztAnalysis?.relay || []).slice();
-              rows.sort((a, b) => Number(b?.score || 0) - Number(a?.score || 0));
+              rows.sort((a, b) =>
+                (Number(b?.qualityScore || 0) - Number(a?.qualityScore || 0)) ||
+                (Number(b?.score || 0) - Number(a?.score || 0)) ||
+                (Number(b?.fundYi || 0) - Number(a?.fundYi || 0))
+              );
               return rows;
             },
             ztWatchSorted() {
               const rows = (this.marketData?.ztAnalysis?.watch || []).slice();
-              rows.sort((a, b) => Number(b?.score || 0) - Number(a?.score || 0));
+              rows.sort((a, b) =>
+                (Number(b?.qualityScore || 0) - Number(a?.qualityScore || 0)) ||
+                (Number(b?.score || 0) - Number(a?.score || 0)) ||
+                (Number(b?.cjeYi || 0) - Number(a?.cjeYi || 0))
+              );
               return rows;
             },
             sectorHeat() { return this.marketData?.sectorHeatmap || this.buildSectorHeatmap(); },
@@ -6410,10 +6652,23 @@
             },
             conceptTop10ByChg() {
               /**
-               * 纯函数：板块题材排行 Top10（按涨幅排序）。
-               * - 数据源：marketData.conceptFundFlowTop（概念资金流向榜，含 chg_pct/net/inflow/outflow）
-               * - 排序：chg_pct desc；缺失 chg_pct 的放到后面，再按 net desc 兜底
+               * 纯函数：板块题材排行 Top10。
+               * - 优先：marketData.plateRotateTop（短线侠板块轮动，按 strength）
+               * - 兜底：marketData.conceptFundFlowTop（概念资金流向榜，按 chg_pct）
                */
+              const plateRows = (this.marketData?.plateRotateTop || []).slice();
+              if (plateRows.length) {
+                plateRows.sort((a, b) => this.toNum(b?.strength, -1e9) - this.toNum(a?.strength, -1e9));
+                const maxStrength = Math.max(...plateRows.map(x => this.toNum(x?.strength, 0)), 0);
+                return plateRows.slice(0, 10).map((r) => ({
+                  ...r,
+                  displayValue: this.toNum(r?.strength, 0) > 0 ? String(Math.round(this.toNum(r?.strength, 0))) : '-',
+                  displayClass: 'red-text',
+                  barPct: maxStrength > 0 ? (this.toNum(r?.strength, 0) / maxStrength) * 100 : 0,
+                  sourceNote: r?.lead || r?.volume !== undefined ? '' : '｜当日板块强度',
+                }));
+              }
+
               const rows = (this.marketData?.conceptFundFlowTop || []).slice();
               const num = (v, d) => this.toNum(v, d);
               rows.sort((a, b) => {
@@ -6424,7 +6679,56 @@
                 const bn = num(b?.net, -1e9);
                 return bn - an;
               });
-              return rows.slice(0, 10);
+              return rows.slice(0, 10).map((r) => ({
+                ...r,
+                displayValue: r?.chg_pct === undefined || r?.chg_pct === null ? '-' : (this.formatSigned(r.chg_pct) + '%'),
+                displayClass: this.signedClass(r?.chg_pct),
+                barPct: num(r?.chg_pct, 0) * 10,
+              }));
+            },
+            selectedPlateTheme() {
+              const rows = this.conceptTop10ByChg || [];
+              if (!rows.length) return null;
+              const key = String(this.selectedPlateThemeKey || '');
+              return rows.find(r => String(r?.code || r?.name || '') === key) || rows[0];
+            },
+            selectedPlateDetail() {
+              const row = this.selectedPlateTheme;
+              if (!row) return null;
+              const code = String(row?.code || '');
+              const m = this.marketData?.plateRotateDetailByCode || {};
+              return (code && m && m[code]) ? m[code] : null;
+            },
+            selectedPlateLeaders() {
+              const row = this.selectedPlateTheme;
+              if (!row) return [];
+              if (Array.isArray(row.leaders) && row.leaders.length) return row.leaders;
+              return [];
+            },
+            selectedPlateDates() {
+              return Array.isArray(this.selectedPlateDetail?.date) ? this.selectedPlateDetail.date : [];
+            },
+            selectedPlateStrengthSeries() {
+              return Array.isArray(this.selectedPlateDetail?.strengthSeries) ? this.selectedPlateDetail.strengthSeries : [];
+            },
+            selectedPlateVolumeSeries() {
+              return Array.isArray(this.selectedPlateDetail?.volumeSeries) ? this.selectedPlateDetail.volumeSeries : [];
+            },
+            selectedPlateStrengthLine() {
+              return this.linePath(this.selectedPlateStrengthSeries || []);
+            },
+            selectedPlateVolumeLine() {
+              return this.linePath(this.selectedPlateVolumeSeries || []);
+            },
+            selectedPlateStrengthPeak() {
+              const arr = (this.selectedPlateStrengthSeries || []).map(v => this.toNum(v, 0));
+              const max = Math.max(...arr, 0);
+              return max > 0 ? Math.round(max) : '-';
+            },
+            selectedPlateVolumePeak() {
+              const arr = (this.selectedPlateVolumeSeries || []).map(v => this.toNum(v, 0));
+              const max = Math.max(...arr, 0);
+              return max > 0 ? `${Math.round(max)}亿` : '-';
             },
             moodTriCards() { return this.buildMoodTriCards(); },
             sentimentDims() {
@@ -8114,6 +8418,12 @@
             const openScore = invNorm(open, openLo, openHi);
             const timeScore = t ? invNorm(t, timeLo, timeHi) : 50; // 越早越好
             const hyScore = maxHy ? clamp(hyCnt.get(hy) / maxHy * 100) : 0;
+            const ladderRow = ladderMap.get(code) || null;
+            const qualityLabel = String(ladderRow?.qualityLabel || '');
+            const qualityScore = Number.isFinite(Number(ladderRow?.qualityScore))
+              ? Number(ladderRow.qualityScore)
+              : clamp(fundScore * 0.30 + openScore * 0.42 + timeScore * 0.28);
+            const qualityNote = String(ladderRow?.note || '');
 
             // 题材：优先用 theme_cache 注入的题材列表；并与 strengthRows 对齐选出“更像主线”的前2个
             const themes = Array.isArray(codeThemes?.[code]) ? codeThemes[code] : [];
@@ -8206,8 +8516,9 @@
             // 注意：这里得到的是 rawScore（0~100）。最终用于页面展示/排序的 score 会在下方做“百分位映射”，
             // 让高分更稀缺，避免“整体都很高”。
             const rawScore = clamp(
-              base * 0.72 +
-              envBoost * 0.18 +
+              base * 0.54 +
+              qualityScore * 0.24 +
+              envBoost * 0.14 +
               mainBonus +
               leaderBonus +
               themeActionBonus +
@@ -8220,6 +8531,7 @@
             );
 
             const tags = [
+              ...(qualityLabel ? [tag(qualityLabel, qualityScore >= 88 ? 'ladder-chip-strong red-text' : (qualityScore >= 72 ? 'ladder-chip-warn orange-text' : 'ladder-chip-cool blue-text'))] : []),
               ...(isMain ? [tag('主线', 'ladder-chip-strong red-text')] : []),
               ...(leaderBonus >= 10 ? [tag('前龙头', 'ladder-chip-strong red-text')] : (leaderBonus > 0 ? [tag('核心梯队', 'ladder-chip-warn orange-text')] : [])),
               ...(hasTier ? [tag('有梯队', 'ladder-chip-warn orange-text')] : [tag('无梯队', 'ladder-chip-cool blue-text')]),
@@ -8249,6 +8561,7 @@
 
             // 解释：复盘一句话归因 + 明日观察点（更贴复盘）
             const reasonBits = [];
+            if (qualityLabel) reasonBits.push(`封板质量：${qualityLabel}`);
             if (fundYi >= (fundLo + (fundHi - fundLo) * 0.6)) reasonBits.push('封单偏强');
             if (open <= 1) reasonBits.push('开板少/封板稳');
             if (timeScore >= 70) reasonBits.push('早封');
@@ -8284,8 +8597,8 @@
             })();
             const pct = (x) => `${x >= 0 ? '+' : ''}${x}%`;
             const gapLabel = (lo, hi) => {
-              if (hi <= 0) return '绿开';
-              if (lo >= 0) return '红开';
+              if (hi <= 0) return '低开';
+              if (lo >= 0) return '高开';
               return '平开';
             };
             const aucRatio = (() => {
@@ -8326,10 +8639,11 @@
                 <div class="exp-row"><span class="exp-pill pill-lo">低预期</span>低于${pct(lo)} 或 竞价量能<${aucStr(aucNeed*0.7)}亿</div>
               `.trim();
             })();
+            if (qualityNote) reasonBits.push(qualityNote);
             const head = (reasonBits.length ? reasonBits.join(' · ') : '综合条件一般');
             const reason = `<span class="reason-bits">${head}</span><div class="exp-wrap">${observePoint}</div>`;
             // score 会在下方做“百分位映射”；这里用内部字段 _raw 暂存 rawScore（最终会删除，不输出到页面数据）
-            return { name, code, lbc, hy, fundYi, open, predTheme, hasTier, cjeYi, _raw: Math.round(rawScore), score: Math.round(rawScore), tags, reason };
+            return { name, code, lbc, hy, fundYi, open, predTheme, hasTier, cjeYi, qualityLabel, qualityScore, _raw: Math.round(rawScore), score: Math.round(rawScore), tags, reason };
           });
 
           // === 百分位映射：让高分更稀缺（解决“整体打分偏高”）===
@@ -8338,7 +8652,7 @@
           try {
             const ranked = scored
               .slice()
-              .sort((a, b) => (Number(b._raw || 0) - Number(a._raw || 0)) || (Number(b.fundYi || 0) - Number(a.fundYi || 0)) || (Number(b.lbc || 0) - Number(a.lbc || 0)));
+              .sort((a, b) => (Number(b.qualityScore || 0) - Number(a.qualityScore || 0)) || (Number(b._raw || 0) - Number(a._raw || 0)) || (Number(b.fundYi || 0) - Number(a.fundYi || 0)) || (Number(b.lbc || 0) - Number(a.lbc || 0)));
             const n = ranked.length || 1;
             ranked.forEach((r, idx) => {
               const pct = Math.round(((n - idx) / n) * 100); // top=100, bottom≈(1/n)*100
@@ -8358,7 +8672,7 @@
               // 允许少量“1进2”候选：必须满足更强的综合条件（尤其题材联动/量能/小市值）
               (r.lbc === 1 && r.open < 3 && Number(r._raw || 0) >= 72)
             )
-            .sort((a, b) => b.score - a.score)
+            .sort((a, b) => (b.qualityScore - a.qualityScore) || (b.score - a.score) || (b.fundYi - a.fundYi))
             .slice(0, 10);
           const relayNames = new Set(relay.map(x => x.name));
 
@@ -8373,13 +8687,13 @@
               r.open >= 3 ||                                  // 强分歧看反馈
               r.hasTier === false                              // 无梯队：看看会不会走出新线/新方向
             )
-            .sort((a, b) => (b.cjeYi - a.cjeYi) || (b.lbc - a.lbc) || (b.score - a.score));
+            .sort((a, b) => (b.qualityScore - a.qualityScore) || (b.cjeYi - a.cjeYi) || (b.lbc - a.lbc) || (b.score - a.score));
           let watch = watchPool.slice(0, 10);
           // 兜底：若观察条件为空，就用“剩余里容量/分歧/高位”优先补齐
           if (!watch.length) {
             watchPool = scored
               .filter(r => !relayNames.has(r.name))
-              .sort((a, b) => (b.cjeYi - a.cjeYi) || (b.open - a.open) || (b.lbc - a.lbc) || (b.score - a.score));
+              .sort((a, b) => (b.qualityScore - a.qualityScore) || (b.cjeYi - a.cjeYi) || (b.open - a.open) || (b.lbc - a.lbc) || (b.score - a.score));
             watch = watchPool.slice(0, 10);
           }
 

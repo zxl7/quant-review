@@ -101,6 +101,26 @@ prune_cache_keep_latest_n() {
   fi
 }
 
+prune_extra_cache_artifacts() {
+  # 额外清理：
+  # - intraday_snapshots 只保留最近 2 份
+  # - v3_quality-*.md 视为临时分析产物，全部删除
+  shopt -s nullglob
+  local snaps=( cache/intraday_snapshots-*.json )
+  local v3m=( cache/v3_quality-*.md )
+  shopt -u nullglob
+
+  if ((${#snaps[@]} > 2)); then
+    IFS=$'\n' snaps=( $(printf "%s\n" "${snaps[@]}" | sort) )
+    unset IFS
+    rm -f "${snaps[@]:0:${#snaps[@]}-2}"
+  fi
+
+  if ((${#v3m[@]} > 0)); then
+    rm -f "${v3m[@]}"
+  fi
+}
+
 prune_html_keep_latest_report() {
   # 只保留最新一份「复盘日记-*.html」，其余历史报告全部删除
   local latest
@@ -146,6 +166,7 @@ cmd_fetch() {
     PYTHONPATH=. python3 -m daily_review.cli --fetch --date "${DATE_ARG}"
     cleanup_timestamp_html "$(date10_to_date8 "${DATE_ARG}")"
     prune_cache_keep_latest_n 7
+    prune_extra_cache_artifacts
     return 0
   fi
 
@@ -159,6 +180,7 @@ cmd_fetch() {
   render_offline "${d10}"
   cleanup_timestamp_html "${d8}"
   prune_cache_keep_latest_n 7
+  prune_extra_cache_artifacts
 }
 
 cmd_gen() {
@@ -184,6 +206,7 @@ cmd_render() {
   if [[ -n "${DATE_ARG}" ]]; then
     render_offline "${DATE_ARG}"
     prune_cache_keep_latest_n 7
+    prune_extra_cache_artifacts
     return 0
   fi
 
@@ -192,6 +215,7 @@ cmd_render() {
   d10="$(date8_to_date10 "${d8}")"
   render_offline "${d10}"
   prune_cache_keep_latest_n 7
+  prune_extra_cache_artifacts
 }
 
 cmd_deploy() {

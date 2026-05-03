@@ -34,6 +34,7 @@ from daily_review.data.biying import (
     resolve_trade_date_intraday,
 )
 from daily_review.features.build_features import build_mood_inputs, default_chart_palette
+from daily_review.data.plate_rotate_fetcher import PlateRotateFetcher
 
 
 def _workspace_root() -> Path:
@@ -1235,6 +1236,85 @@ def _inject_prd_v2_metrics(*, root: Path, date: str, market_data: dict) -> None:
         p = _concept_fund_flow_cache_path(root=root)
         write_json(p, data)
 
+    def _plate_rotate_cache_path(*, root: Path) -> Path:
+        """
+        纯函数：短线侠板块轮动缓存路径。
+        """
+        return root / "cache" / "plate_rotate_cache.json"
+
+    def _load_plate_rotate_cache(*, root: Path) -> dict:
+        """
+        读取短线侠板块轮动缓存。
+        结构：
+        {
+          "version": 1,
+          "by_day": {
+            "YYYYMMDD": {
+              "rows": [ {rank, name, strength}, ... ],
+              "leaders": [..]
+            }
+          }
+        }
+        """
+        p = _plate_rotate_cache_path(root=root)
+        data = read_json(p, default={})
+        if not isinstance(data, dict):
+            return {"version": 1, "by_day": {}}
+        by_day = data.get("by_day") or {}
+        if not isinstance(by_day, dict):
+            by_day = {}
+        return {"version": 1, "by_day": by_day}
+
+    def _write_plate_rotate_cache(*, root: Path, data: dict) -> None:
+        p = _plate_rotate_cache_path(root=root)
+        write_json(p, data)
+
+    def _refresh_plate_rotate_cache(*, root: Path) -> dict:
+        """
+        在线刷新短线侠板块轮动缓存：
+        - 抓最近 20 日窗口
+        - 为窗口内每一天写入 top10 + 当天龙头 + 量能/强度
+        """
+        fetcher = PlateRotateFetcher()
+        payload = fetcher.fetch_kaipan_days(days=20)
+        by_day = payload.get("by_day") or {}
+        cache = {"version": 2, "by_day": by_day, "source": payload.get("source") or ""}
+        _write_plate_rotate_cache(root=root, data=cache)
+        return cache
+
+    def _should_refresh_plate_rotate_cache(*, cache: dict, report_date: str) -> bool:
+        """
+        是否允许在线刷新板块轮动缓存：
+        - 历史日期：不刷新，只读本地
+        - 非北京时间今天：不刷新
+        - 今天但未收盘：不刷新
+        - 今天且已收盘：若今天数据不存在/不完整，则刷新一次
+        """
+        try:
+            bj = datetime.now(_SH_TZ)
+            today = bj.strftime("%Y-%m-%d")
+            if str(report_date or "") != today:
+                return False
+            # 收盘后再抓，给一点缓冲，默认 15:10 之后
+            hm = int(bj.strftime("%H%M"))
+            if hm < 1510:
+                return False
+            by_day = cache.get("by_day") if isinstance(cache, dict) else {}
+            if not isinstance(by_day, dict):
+                by_day = {}
+            day_obj = by_day.get(today) or by_day.get(today.replace("-", "")) or {}
+            if not isinstance(day_obj, dict):
+                return True
+            rows = day_obj.get("rows")
+            if not isinstance(rows, list) or len(rows) < 10:
+                return True
+            # 已有 10 条，并且前几条含明细，则认为今天已抓过
+            sample = rows[:3]
+            has_detail = any(isinstance(x, dict) and (x.get("lead") or x.get("volume") is not None) for x in sample)
+            return not has_detail
+        except Exception:
+            return False
+
     def _now_bj_date10() -> str:
         """
         纯函数：返回北京时间今天 YYYY-MM-DD（用于判定是否允许在线拉取概念资金流）。
@@ -1565,7 +1645,63 @@ def _inject_prd_v2_metrics(*, root: Path, date: str, market_data: dict) -> None:
     except Exception:
         pass
 
-    # 4.2) conceptFundFlow（概念级资金流向榜）：
+    # 4.2) plateRotateTop（短线侠板块轮动强度）：
+    # - 优先读取本地缓存
+    # - 仅在“北京时间今天且收盘后”才尝试在线增量刷新一次
+    # - 命中后直接替换“板块题材排行 TOP10”模块的数据源
+    try:
+        plate_cache = _load_plate_rotate_cache(root=root)
+        try:
+            if _should_refresh_plate_rotate_cache(cache=plate_cache, report_date=date):
+                plate_cache = _refresh_plate_rotate_cache(root=root)
+        except Exception:
+            pass
+        plate_by_day = plate_cache.get("by_day") or {}
+        if not isinstance(plate_by_day, dict):
+            plate_by_day = {}
+        date8 = date.replace("-", "")
+        plate_day = plate_by_day.get(date) or plate_by_day.get(date8) or {}
+        if isinstance(plate_day, dict):
+            plate_rows = plate_day.get("rows")
+            if isinstance(plate_rows, list) and plate_rows:
+                detail_by_code = plate_day.get("detailByCode")
+                enriched_rows = []
+                for r in plate_rows[:20]:
+                    row = dict(r) if isinstance(r, dict) else {}
+                    code = str(row.get("code") or "")
+                    detail = detail_by_code.get(code) if isinstance(detail_by_code, dict) else {}
+                    leaders_by_date = (detail.get("leadersByDate") or {}) if isinstance(detail, dict) else {}
+                    leaders_today = leaders_by_date.get(date) or row.get("leaders") or []
+                    if leaders_today and not row.get("lead"):
+                        row["lead"] = str((leaders_today[0] or {}).get("name") or "")
+                    if leaders_today and not row.get("leadCode"):
+                        row["leadCode"] = str((leaders_today[0] or {}).get("code") or "")
+                    if row.get("volume") is None and isinstance(detail, dict):
+                        vol_by_date = detail.get("volumeByDate") or {}
+                        if isinstance(vol_by_date, dict):
+                            row["volume"] = vol_by_date.get(date)
+                    if row.get("strengthByDate") is None and isinstance(detail, dict):
+                        st_by_date = detail.get("strengthByDate") or {}
+                        if isinstance(st_by_date, dict):
+                            row["strengthByDate"] = st_by_date.get(date)
+                    if leaders_today and not row.get("leaders"):
+                        row["leaders"] = leaders_today
+                    enriched_rows.append(row)
+                market_data["plateRotateTop"] = enriched_rows
+                if isinstance(detail_by_code, dict) and detail_by_code:
+                    market_data["plateRotateDetailByCode"] = detail_by_code
+                if enriched_rows and isinstance(enriched_rows[0].get("leaders"), list):
+                    market_data["plateRotateLeaders"] = enriched_rows[0].get("leaders")[:10]
+                meta = market_data.get("meta") if isinstance(market_data.get("meta"), dict) else {}
+                if isinstance(meta, dict):
+                    meta.setdefault("asOf", {})
+                    if isinstance(meta.get("asOf"), dict):
+                        meta["asOf"]["plate_rotate"] = date
+                    market_data["meta"] = meta
+    except Exception:
+        pass
+
+    # 4.3) conceptFundFlow（概念级资金流向榜）：
     # - 优先读取本地缓存（离线可重建）
     # - 若缓存缺失且 report_date=北京时间今天，则允许用 AkShare 在线补齐（不依赖 BIYING_TOKEN）
     try:

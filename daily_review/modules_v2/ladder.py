@@ -93,9 +93,11 @@ def _quality_profile(*, lbc: int, status: str, zbc: int, hs: float, zj: float, c
     quality_label = "常规封板"
     quality_tags: List[Dict[str, str]] = []
     quality_note = "质量中性，需结合位阶与次日承接再看。"
+    quality_score = 68.0
 
     if zbc >= 8 or (zbc >= 5 and hs >= 10):
         quality_label = "分歧烂板"
+        quality_score = 36.0
         quality_tags = [
             _chip("分歧烂板", "ladder-chip-warn orange-text"),
             _chip("高波动", "ladder-chip-warn orange-text"),
@@ -103,6 +105,7 @@ def _quality_profile(*, lbc: int, status: str, zbc: int, hs: float, zj: float, c
         quality_note = f"开板 {zbc} 次、换手 {hs:.1f}%，封板过程反复，次日承接压力偏大。"
     elif status == "晋级" and zbc == 0 and 0 < minute <= 570 and hs <= 6:
         quality_label = "加速确认"
+        quality_score = 96.0
         quality_tags = [
             _chip("加速确认", "ladder-chip-strong red-text"),
             _chip("早盘强封", "ladder-chip-cool blue-text"),
@@ -110,36 +113,42 @@ def _quality_profile(*, lbc: int, status: str, zbc: int, hs: float, zj: float, c
         quality_note = "晋级板早盘直接确认，几乎不给分歧，属于一致性较强的加速板。"
     elif zbc <= 1 and 4 <= hs <= 16:
         quality_label = "温和放量"
+        quality_score = 84.0
         quality_tags = [
             _chip("温和放量", "ladder-chip-cool blue-text"),
         ]
         quality_note = f"换手 {hs:.1f}% 且开板不多，量能释放适中，承接结构相对健康。"
     elif zbc <= 2 and hs >= 16:
         quality_label = "高换手承接"
+        quality_score = 78.0
         quality_tags = [
             _chip("高换手承接", "ladder-chip-cool blue-text"),
         ]
         quality_note = f"换手 {hs:.1f}% 较高，但仍能封住，说明承接充分、筹码交换完成。"
     elif zbc >= 3:
         quality_label = "反复回封"
+        quality_score = 54.0
         quality_tags = [
             _chip("反复回封", "ladder-chip-warn orange-text"),
         ]
         quality_note = f"开板 {zbc} 次后完成回封，分歧明显，质量强弱取决于次日是否有承接。"
     elif zbc == 0 and 0 < minute <= 575 and seal_ratio >= 0.18:
         quality_label = "封单充足"
+        quality_score = 90.0
         quality_tags = [
             _chip("封单充足", "ladder-chip-strong red-text"),
         ]
         quality_note = "早盘封单相对充足，全天一致性较强，属于偏强质量板。"
     elif zbc <= 1 and minute >= 780:
         quality_label = "午后确认"
+        quality_score = 66.0
         quality_tags = [
             _chip("午后确认", "ladder-chip-cool blue-text"),
         ]
         quality_note = "午后才完成封板，偏修复确认型，次日更要看情绪是否延续。"
     elif lbc >= 4 and zbc <= 1:
         quality_label = "高位确认"
+        quality_score = 88.0
         quality_tags = [
             _chip("高位确认", "ladder-chip-strong red-text"),
         ]
@@ -147,6 +156,7 @@ def _quality_profile(*, lbc: int, status: str, zbc: int, hs: float, zj: float, c
 
     return {
         "quality_label": quality_label,
+        "quality_score": quality_score,
         "quality_tags": quality_tags,
         "quality_note": quality_note,
     }
@@ -188,13 +198,11 @@ def _compute(ctx: Context) -> Dict[str, Any]:
             lbc = 1
         by_lbc.setdefault(lbc, []).append(s)
 
-    for k in list(by_lbc.keys()):
-        by_lbc[k].sort(key=lambda x: _to_float(x.get("zf"), 0.0), reverse=True)
-
     ladder_rows: List[Dict[str, Any]] = []
     for lb in sorted(by_lbc.keys(), reverse=True):
         if lb <= 1:
             continue
+        rows_for_lb: List[Dict[str, Any]] = []
         for s in by_lbc[lb]:
             code = str(s.get("dm") or "").strip()
             ylb = yest_lb.get(code, 0)
@@ -213,7 +221,7 @@ def _compute(ctx: Context) -> Dict[str, Any]:
                 cje=cje,
                 fbt=fbt,
             )
-            ladder_rows.append(
+            rows_for_lb.append(
                 {
                     "badge": lb,
                     "name": str(s.get("mc") or ""),
@@ -227,9 +235,21 @@ def _compute(ctx: Context) -> Dict[str, Any]:
                     "status": status,
                     "note": q["quality_note"],
                     "qualityLabel": q["quality_label"],
+                    "qualityScore": q["quality_score"],
                     "qualityTags": q["quality_tags"],
                 }
             )
+        rows_for_lb.sort(
+            key=lambda x: (
+                _to_float(x.get("qualityScore"), 0.0),
+                _to_float(x.get("zj"), 0.0),
+                -_parse_minutes(str(x.get("fbt") or "")) if _parse_minutes(str(x.get("fbt") or "")) > 0 else -9999,
+                -_to_int(x.get("zbc"), 0),
+                _to_float(x.get("zf"), 0.0),
+            ),
+            reverse=True,
+        )
+        ladder_rows.extend(rows_for_lb)
 
     # 最高板标记（保持与 gen_report_v4 一致的体验）
     if ladder_rows:
