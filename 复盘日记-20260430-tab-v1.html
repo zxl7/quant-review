@@ -4039,40 +4039,6 @@
       }
       .wb-shift-card {
         position: relative;
-        overflow: hidden;
-        border-width: 1.5px;
-      }
-      .wb-shift-card::before {
-        content: "";
-        position: absolute;
-        inset: 0 0 auto 0;
-        height: 4px;
-        background: linear-gradient(90deg, var(--theme-accent), var(--theme-accent-2));
-        opacity: 0.95;
-      }
-      .wb-shift-card.tone-bull {
-        border-color: rgba(239, 68, 68, 0.2);
-        background: linear-gradient(180deg, rgba(254, 242, 242, 0.92), rgba(255, 255, 255, 0.76));
-      }
-      .wb-shift-card.tone-mixed {
-        border-color: rgba(245, 158, 11, 0.22);
-        background: linear-gradient(180deg, rgba(255, 247, 237, 0.92), rgba(255, 255, 255, 0.76));
-      }
-      .wb-shift-card.tone-bear {
-        border-color: rgba(16, 185, 129, 0.22);
-        background: linear-gradient(180deg, rgba(236, 253, 245, 0.92), rgba(255, 255, 255, 0.76));
-      }
-      [data-theme="dark"] .wb-shift-card.tone-bull {
-        background: linear-gradient(180deg, rgba(127, 29, 29, 0.24), rgba(15, 23, 42, 0.76));
-        border-color: rgba(248, 113, 113, 0.22);
-      }
-      [data-theme="dark"] .wb-shift-card.tone-mixed {
-        background: linear-gradient(180deg, rgba(120, 53, 15, 0.24), rgba(15, 23, 42, 0.76));
-        border-color: rgba(251, 191, 36, 0.22);
-      }
-      [data-theme="dark"] .wb-shift-card.tone-bear {
-        background: linear-gradient(180deg, rgba(6, 78, 59, 0.24), rgba(15, 23, 42, 0.76));
-        border-color: rgba(52, 211, 153, 0.22);
       }
       .wb-shift-card .hd {
         position: relative;
@@ -4128,18 +4094,6 @@
         border: 1px solid rgba(148, 163, 184, 0.16);
         background: rgba(255, 255, 255, 0.52);
         padding: 10px 10px;
-      }
-      .wb-shift-card.tone-bull .wb-mini-kpi {
-        border-color: rgba(239, 68, 68, 0.12);
-        background: rgba(255, 255, 255, 0.58);
-      }
-      .wb-shift-card.tone-mixed .wb-mini-kpi {
-        border-color: rgba(245, 158, 11, 0.14);
-        background: rgba(255, 255, 255, 0.58);
-      }
-      .wb-shift-card.tone-bear .wb-mini-kpi {
-        border-color: rgba(16, 185, 129, 0.14);
-        background: rgba(255, 255, 255, 0.58);
       }
       [data-theme="dark"] .wb-mini-kpi {
         background: rgba(2, 6, 23, 0.22);
@@ -5559,8 +5513,8 @@
         isolation: isolate;
         display: flex;
         gap: 6px;
-        margin: 10px 0 0;
-        padding: 6px;
+        margin: 10px 0;
+        padding: 4px;
         width: 100%;
         background: color-mix(in oklab, var(--bg-card) 72%, var(--theme-soft) 28%);
         border: 1px solid color-mix(in oklab, var(--border) 70%, var(--theme-glow) 30%);
