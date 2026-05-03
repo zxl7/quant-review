@@ -15,9 +15,9 @@
         const app = document.getElementById('app');
         if (app && app.hasAttribute('v-cloak') && !window.Vue) app.removeAttribute('v-cloak');
       };
-      setTimeout(uncloaker, 800);
-      window.addEventListener('DOMContentLoaded', () => setTimeout(uncloaker, 800));
-      window.addEventListener('load', () => setTimeout(uncloaker, 800));
+      setTimeout(uncloaker, 120);
+      window.addEventListener('DOMContentLoaded', () => setTimeout(uncloaker, 120));
+      window.addEventListener('load', () => setTimeout(uncloaker, 120));
     </script>
     <style>
       /* 不使用 v-cloak 隐藏，避免在受限预览环境出现“整页空白” */
@@ -2107,6 +2107,29 @@
         background: linear-gradient(90deg, var(--theme-accent), var(--theme-accent-2));
         width: 0%;
       }
+      .theme-tools{
+        margin-top: 10px;
+        display:flex;
+        justify-content:flex-end;
+      }
+      .theme-open-btn{
+        appearance:none;
+        border: 1px solid color-mix(in oklab, var(--border) 70%, var(--theme-accent) 30%);
+        background: color-mix(in oklab, var(--bg-card), var(--theme-accent) 8%);
+        color: var(--text-primary);
+        border-radius: 12px;
+        padding: 9px 12px;
+        font-size: 12px;
+        font-weight: 900;
+        letter-spacing: .15px;
+        cursor:pointer;
+        transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+      }
+      .theme-open-btn:hover{
+        transform: translateY(-1px);
+        box-shadow: var(--shadow-sm);
+        border-color: color-mix(in oklab, var(--theme-accent) 46%, var(--border) 54%);
+      }
       .theme-detail-card{
         margin-top: 12px;
         border: 1px solid color-mix(in oklab, var(--border) 78%, var(--theme-accent) 22%);
@@ -2409,65 +2432,6 @@
       .v2-strategy .rules{ margin-top: 8px; padding-left: 16px; }
       .v2-strategy .rules li{ margin: 6px 0; color: var(--text-secondary); font-weight: 700; font-size: 12px; line-height: 1.5; }
 
-      /* v3 终端风总览 */
-      .v3-grid{ display: grid; grid-template-columns: repeat(12, 1fr); gap: 10px; }
-      .v3-card{
-        grid-column: span 12;
-        border-radius: 18px;
-        border: 1px solid rgba(148,163,184,0.22);
-        background: linear-gradient(180deg, rgba(255,255,255,0.62), rgba(255,255,255,0.40));
-        padding: 12px 14px;
-        box-shadow: var(--shadow-sm);
-      }
-      [data-theme="dark"] .v3-card{ background: rgba(15,23,42,0.52); border-color: rgba(148,163,184,0.20); }
-      .v3-card .hd{ display:flex; align-items:baseline; justify-content:space-between; gap: 10px; }
-      .v3-card .hd .t{ font-size: 13px; font-weight: 950; letter-spacing: 0.2px; }
-      .v3-card .hd .s{ font-size: 11px; font-weight: 900; color: var(--text-muted); }
-      .v3-kpis{ margin-top: 10px; display:flex; flex-wrap: wrap; gap: 8px; }
-      .v3-kpis .pill{ font-size: 11px; font-weight: 950; padding: 4px 10px; border-radius: 999px; border: 1px solid rgba(148,163,184,0.22); background: rgba(255,255,255,0.66); }
-      [data-theme="dark"] .v3-kpis .pill{ background: rgba(15,23,42,0.58); border-color: rgba(148,163,184,0.20); }
-      .v3-kpis .pill.primary{ border-color: rgba(59,130,246,0.30); color: #1d4ed8; }
-      .v3-kpis .pill.danger{ border-color: rgba(239,68,68,0.30); color: #991b1b; }
-      .v3-card .txt{ margin-top: 8px; font-size: 12px; font-weight: 720; color: var(--text-secondary); line-height: 1.55; }
-      .v3-card details{ margin-top: 10px; }
-      .v3-card summary{ cursor:pointer; color: var(--text-muted); font-weight: 900; font-size: 12px; }
-      .v3-card .rules{ margin-top: 8px; padding-left: 16px; }
-      .v3-card .rules li{ margin: 6px 0; color: var(--text-secondary); font-weight: 700; font-size: 12px; line-height: 1.5; }
-      .v3-card.span6{ grid-column: span 12; }
-      .v3-card.span4{ grid-column: span 12; }
-      @media (min-width: 980px){
-        .v3-card.span6{ grid-column: span 6; }
-        .v3-card.span4{ grid-column: span 4; }
-      }
-      .v3-hero{
-        grid-column: span 12;
-        border-radius: 20px;
-        border: 1px solid rgba(148,163,184,0.22);
-        background: linear-gradient(135deg,
-          color-mix(in oklab, var(--theme-soft) 22%, rgba(255,255,255,0.55)),
-          rgba(255,255,255,0.45)
-        );
-        padding: 14px 14px;
-      }
-      [data-theme="dark"] .v3-hero{
-        background: rgba(15,23,42,0.52);
-        border-color: rgba(148,163,184,0.20);
-      }
-      .v3-hero .top{ display:flex; align-items:flex-end; justify-content:space-between; gap: 12px; }
-      .v3-hero .title{ font-size: 14px; font-weight: 1000; letter-spacing: 0.3px; }
-      .v3-hero .meta{ font-size: 11px; font-weight: 850; color: var(--text-muted); }
-      .v3-hero .grid{ margin-top: 10px; display:grid; grid-template-columns: repeat(12,1fr); gap: 10px; }
-      .v3-hero .kpi{
-        grid-column: span 6;
-        border-radius: 16px;
-        border: 1px solid rgba(148,163,184,0.18);
-        background: rgba(255,255,255,0.55);
-        padding: 10px 10px;
-      }
-      [data-theme="dark"] .v3-hero .kpi{ background: rgba(15,23,42,0.52); border-color: rgba(148,163,184,0.18); }
-      @media (min-width: 980px){ .v3-hero .kpi{ grid-column: span 3; } }
-      .v3-hero .k{ font-size: 11px; font-weight: 900; color: var(--text-muted); }
-      .v3-hero .v{ margin-top: 4px; font-size: 15px; font-weight: 1000; letter-spacing: 0.2px; }
       /* 实时盯盘 WatchBoard（重构版） */
       #sec-watch{ container-type: inline-size; }
       .wb{
@@ -3358,14 +3322,12 @@
       body[data-page="ladder"] .card[data-page="ladder"] { display: block; }
       body[data-page="plan"] .card[data-page="plan"] { display: block; }
       body[data-page="watch"] .card[data-page="watch"] { display: block; }
-      body[data-page="v3"] .card[data-page="v3"] { display: block; }
 
       /* Page blocks（非 card 的页面块，如 summary/toc） */
       .page-block[data-page] { display: none; }
       body[data-page="sentiment"] .page-block[data-page="sentiment"] { display: block; }
       body[data-page="themes"] .page-block[data-page="themes"] { display: block; }
       body[data-page="plan"] .page-block[data-page="plan"] { display: block; }
-      body[data-page="v3"] .page-block[data-page="v3"] { display: block; }
 
       /* Summary Bar（首屏情绪总控） */
       .summarybar {
@@ -4086,11 +4048,10 @@
       <!-- Tabs：正常显示时放在 Hero 下方 -->
       <div class="tabbar">
         <button class="tab-btn active" data-page="sentiment" type="button">短线情绪</button>
-        <button class="tab-btn" data-page="watch" type="button">实时盯盘</button>
         <button class="tab-btn" data-page="themes" type="button">板块题材</button>
         <button class="tab-btn" data-page="ladder" type="button">连板天梯</button>
         <button class="tab-btn" data-page="plan" type="button">明日计划</button>
-        <button class="tab-btn" data-page="v3" type="button">统一视图</button>
+        <button class="tab-btn" data-page="watch" type="button">实时盯盘</button>
       </div>
 
       <!-- 首屏：情绪总控（仅短线情绪页显示） -->
@@ -4400,6 +4361,11 @@
               ? '口径：短线侠板块轮动；数字为当日板块强度。'
               : '口径：概念/题材级资金流向（AkShare/东财）；排序：按涨跌幅从高到低（净流仅作参考）。' }}
           </div>
+          <div class="theme-tools">
+            <a class="theme-open-btn" :href="'https://www.duanxianxia.com/web/platerotat'" target="_blank" rel="noopener noreferrer">
+              打开短线侠板块轮动
+            </a>
+          </div>
           <div class="theme-rank-list">
             <div
               class="theme-rank-item"
@@ -4443,6 +4409,7 @@
                   <i :style="{ width: clamp100(toNum(c.barPct, 0)) + '%' }"></i>
                 </div>
               </div>
+
             </div>
           </div>
 
@@ -4984,119 +4951,6 @@
         </div>
       </div>
 
-      <!-- v3 总览页（独立 Tab） -->
-      <div class="card" data-page="v3" id="sec-v3">
-        <div class="card-title">统一视图（compat）</div>
-        <div class="v3-grid" v-if="marketData.compat">
-          <div class="v3-hero">
-            <div class="top">
-              <div>
-                <div class="title">当日统一口径总控面板</div>
-                
-              </div>
-              
-            </div>
-            <div class="grid">
-              <div class="kpi">
-                <div class="k">情绪分</div>
-                <div class="v">{{ marketData.compat.sentiment?.score ?? '-' }}</div>
-              </div>
-              <div class="kpi">
-                <div class="k">阶段</div>
-                <div class="v" style="font-size:13px; font-weight: 950;">{{ marketData.compat.sentiment?.phase || '-' }}</div>
-              </div>
-              <div class="kpi">
-                <div class="k">右侧</div>
-                <div class="v"
-                     :style="{color: (marketData.compat.rightside?.allowed === true) ? '#16a34a' : ((marketData.compat.rightside?.allowed === false) ? '#ef4444' : 'var(--text-primary)')}">
-                  {{ marketData.compat.rightside?.allowed === true ? '允许' : (marketData.compat.rightside?.allowed === false ? '禁止' : '-') }}
-                </div>
-              </div>
-              <div class="kpi">
-                <div class="k">仓位(调整后)</div>
-                <div class="v">{{ marketData.compat.position?.capital_pct ?? '-' }}</div>
-              </div>
-            </div>
-          </div>
-
-          <div class="v3-card span6">
-            <div class="hd">
-              <div class="t">情绪与风险</div>
-            </div>
-            <div class="v3-kpis">
-              <span class="pill primary">情绪 {{ marketData.compat.sentiment?.score ?? '-' }} / 10</span>
-              <span class="pill">阶段 {{ marketData.compat.sentiment?.phase || '-' }}</span>
-              <span class="pill">风险 {{ marketData.compat.sentiment?.risk_level || '-' }}</span>
-            </div>
-            <details v-if="(marketData.compat.sentiment?.warnings || []).length">
-              <summary>展开提示</summary>
-              <ul class="rules">
-                <li v-for="(w, i) in marketData.compat.sentiment.warnings" :key="'c-sw-'+i">{{ w }}</li>
-              </ul>
-            </details>
-          </div>
-
-          <div class="v3-card span6">
-            <div class="hd">
-              <div class="t">右侧交易</div>
-            </div>
-            <div class="v3-kpis">
-              <span :class="['pill', (marketData.compat.rightside?.allowed === true) ? 'primary' : ((marketData.compat.rightside?.allowed === false) ? 'danger' : '')]">
-                结论：{{ marketData.compat.rightside?.allowed === true ? '允许右侧' : (marketData.compat.rightside?.allowed === false ? '禁止右侧' : '-') }}
-              </span>
-              
-            </div>
-            <div class="txt" v-if="marketData.compat.rightside?.advice">{{ marketData.compat.rightside.advice }}</div>
-          </div>
-
-          <div class="v3-card span6">
-            <div class="hd">
-              <div class="t">仓位与共振</div>
-            </div>
-            <div class="v3-kpis">
-              <span class="pill primary">仓位 {{ marketData.compat.position?.capital_pct ?? '-' }}</span>
-              <span class="pill">赢面 {{ marketData.compat.position?.win_rate ?? '-' }}%</span>
-              <span class="pill" v-if="marketData.compat.position?.tier">档位 {{ marketData.compat.position.tier }}</span>
-              <span class="pill" v-if="marketData.compat.full_position?.passed_count !== undefined && marketData.compat.full_position?.passed_count !== null">共振 {{ marketData.compat.full_position.passed_count }}/3</span>
-              <span class="pill" v-if="marketData.compat.full_position?.max_recommended_position !== undefined && marketData.compat.full_position?.max_recommended_position !== null">共振上限 {{ marketData.compat.full_position.max_recommended_position }}</span>
-            </div>
-          </div>
-
-          <div class="v3-card span6">
-            <div class="hd">
-              <div class="t">主线 / 交易性质 / 反弹</div>
-            </div>
-            <div class="v3-kpis">
-              <span class="pill">主线 {{ marketData.compat.mainline?.top_sector || '-' }}</span>
-              <span class="pill" v-if="marketData.compat.trading_nature?.label">性质 {{ marketData.compat.trading_nature.label }} · {{ marketData.compat.trading_nature.risk_level || '-' }}</span>
-              <span class="pill" v-if="marketData.compat.rebound?.phase">反弹 {{ marketData.compat.rebound.phase }}</span>
-            </div>
-            <details v-if="marketData.compat.trading_nature?.stop_loss || marketData.compat.trading_nature?.max_position">
-              <summary>展开交易性质细节</summary>
-              <ul class="rules">
-                <li v-if="marketData.compat.trading_nature?.max_position">仓位上限：{{ marketData.compat.trading_nature.max_position }}</li>
-                <li v-if="marketData.compat.trading_nature?.stop_loss">止损：{{ marketData.compat.trading_nature.stop_loss }}</li>
-              </ul>
-            </details>
-          </div>
-
-          <div class="v3-card span6">
-            <div class="hd">
-              <div class="t">反身性 / 崩溃链</div>
-            </div>
-            <div class="v3-kpis">
-              <span class="pill" v-if="marketData.compat.reflexivity?.cycle_position">反身性 {{ marketData.compat.reflexivity.cycle_position }}</span>
-              <span class="pill" v-if="marketData.compat.reflexivity?.risk_level">风险 {{ marketData.compat.reflexivity.risk_level }}</span>
-              <span class="pill danger" v-if="marketData.compat.collapse_chain?.level">崩溃链 {{ marketData.compat.collapse_chain.level }}</span>
-            </div>
-            <div class="txt" v-if="marketData.compat.reflexivity?.warning">{{ marketData.compat.reflexivity.warning }}</div>
-            <div class="txt" v-if="marketData.compat.collapse_chain?.advice">{{ marketData.compat.collapse_chain.advice }}</div>
-          </div>
-
-        </div>
-        <div v-else style="color:var(--text-muted); font-weight:800;">未检测到 marketData.compat（请先用 CLI 生成/写入 compat）</div>
-      </div>
-
       <div class="footer">
         <div class="footer-learning" v-if="marketData.learningNotes">
           <div class="footer-learning-title">📌 短线提醒:</div>
@@ -5229,8 +5083,6 @@
         moodStage: {"title": "弱修复", "type": "warn", "detail": "有修复但承接一般，适合轻仓试错，重点观察2进3/3进4能否走强。"},
         moodCards: [{"value": "66%", "label": "早盘封板占比", "note": "10点前首封 47 / 涨停 71", "valueClass": "red-text"}, {"value": "1.1亿", "label": "平均封板资金", "note": "TOP3：剑桥科技6亿、株冶集团6亿、光迅科技4亿", "valueClass": "orange-text"}, {"value": "8.3%", "label": "涨停换手(中位)", "note": "高换手(≥15%) 20%", "valueClass": "orange-text"}, {"value": "40%", "label": "2进3成功率", "note": "昨日2板 5 → 今3板+ 2", "valueClass": "orange-text"}, {"value": "100%", "label": "3进4成功率", "note": "昨日3板 1 → 今4板+ 1", "valueClass": "red-text"}, {"value": "2", "label": "高度差", "note": "最高7板 / 次高5板", "valueClass": "blue-text"}, {"value": "0.0%", "label": "高位炸板占比(4板+)", "note": "高位炸板 0 / 炸板 20（真视通、乔治白、深圳华强）", "valueClass": "green-text"}, {"value": "1.6", "label": "涨停炸板次数(均)", "note": "高炸板(≥3次) 17%", "valueClass": "orange-text"}, {"value": "25%", "label": "小票活跃度(<50亿)", "note": "小票 18 / 涨停 71", "valueClass": "green-text"}, {"value": "38%", "label": "连板断板率", "note": "昨日连板 8 → 断板 3", "valueClass": "red-text"}],
         themePanels: {"ztTop": [{"name": "华为概念", "count": 22, "examples": "品高股份·共进股份·盛视科技"}, {"name": "光伏玻璃", "count": 16, "examples": "天通股份·圣阳股份·云南锗业"}, {"name": "光通信", "count": 15, "examples": "天通股份·共进股份·剑桥科技"}], "zbTop": [{"name": "华为概念", "count": 7, "examples": "真视通·深圳华强·高新发展"}, {"name": "航天军工", "count": 5, "examples": "真视通·东方通信·东材科技"}, {"name": "创投", "count": 5, "examples": "乔治白·深圳华强·高新发展"}], "dtTop": [{"name": "在线教育", "count": 3, "examples": "GQY视讯·网达软件·实达集团"}, {"name": "智慧城市", "count": 3, "examples": "GQY视讯·网达软件·实达集团"}, {"name": "安防", "count": 3, "examples": "GQY视讯·网达软件·实达集团"}], "strengthRows": [{"name": "华为概念", "zt": 22, "zb": 7, "dt": 2, "net": 14.7, "risk": 7.3, "netClass": "red-text", "riskClass": "red-text"}, {"name": "光通信", "zt": 15, "zb": 2, "dt": 0, "net": 13.6, "risk": 1.4, "netClass": "red-text", "riskClass": "orange-text"}, {"name": "芯片概念", "zt": 14, "zb": 2, "dt": 0, "net": 12.6, "risk": 1.4, "netClass": "red-text", "riskClass": "orange-text"}, {"name": "光伏玻璃", "zt": 16, "zb": 5, "dt": 0, "net": 12.5, "risk": 3.5, "netClass": "red-text", "riskClass": "red-text"}, {"name": "专精特新", "zt": 15, "zb": 2, "dt": 1, "net": 12.4, "risk": 2.6, "netClass": "red-text", "riskClass": "orange-text"}, {"name": "储能", "zt": 15, "zb": 4, "dt": 0, "net": 12.2, "risk": 2.8, "netClass": "red-text", "riskClass": "orange-text"}, {"name": "消费电子", "zt": 12, "zb": 0, "dt": 0, "net": 12.0, "risk": 0.0, "netClass": "red-text", "riskClass": "green-text"}, {"name": "新能源车", "zt": 14, "zb": 4, "dt": 0, "net": 11.2, "risk": 2.8, "netClass": "red-text", "riskClass": "orange-text"}, {"name": "新材料", "zt": 14, "zb": 4, "dt": 0, "net": 11.2, "risk": 2.8, "netClass": "red-text", "riskClass": "orange-text"}, {"name": "太阳能（光伏）", "zt": 14, "zb": 4, "dt": 0, "net": 11.2, "risk": 2.8, "netClass": "red-text", "riskClass": "orange-text"}, {"name": "5G", "zt": 14, "zb": 4, "dt": 0, "net": 11.2, "risk": 2.8, "netClass": "red-text", "riskClass": "orange-text"}, {"name": "比亚迪概念", "zt": 13, "zb": 3, "dt": 0, "net": 10.9, "risk": 2.1, "netClass": "red-text", "riskClass": "orange-text"}], "overlap": {"themes": ["光伏玻璃", "华为概念"], "score": "40%", "note": "涨停主线与炸板主杀题材的重叠度（越高越提示主线在分歧/退潮）"}},
-      }; */
-
       // 默认值：模板单独打开时不展示任何“写死行情”
       // 注意：__INJECTED_MARKET_DATA__ 在“模板直接打开”场景下不存在，直接引用会触发 ReferenceError，
       // 因此用 typeof 做兼容；渲染脚本会把 __INJECTED_MARKET_DATA__ 替换为实际的 Object 字面量。
@@ -5281,7 +5133,12 @@
 
         const app = createApp({
           data() {
-            return { marketData, liveLoading: false, liveError: '', selectedPlateThemeKey: '' };
+            return {
+              marketData,
+              liveLoading: false,
+              liveError: '',
+              selectedPlateThemeKey: '',
+            };
           },
           methods: {
             formatDateCn(dateStr) {
@@ -5576,422 +5433,6 @@
                 return d;
               }
             },
-            buildHeatmap() {
-              const existing = this.marketData?.heatmap;
-              if (existing && Array.isArray(existing.cells) && existing.cells.length) return existing;
-
-              const mi = this.marketData?.features?.mood_inputs || {};
-              const pan = this.marketData?.panorama || {};
-              const fear = this.marketData?.fear || {};
-              const mood = this.marketData?.mood || {};
-              const d = this.delta || {};
-
-              const fb = this.toNum(mi.fb_rate, this.toNum(pan.ratio, 0));
-              const jj = this.toNum(mi.jj_rate_adj, this.toNum(mi.jj_rate, 0));
-              const zb = this.toNum(mi.zb_rate, 0);
-              const dt = this.toNum(pan.limitDown, 0);
-              const bf = this.toNum(mi.bf_count, this.toNum(fear.bigFace, 0));
-              const maxLb = this.toNum(mi.max_lb, this.toNum((this.marketData?.ladder?.[0] || {}).badge, 0));
-
-              const cell = (key, title, value, tag, note, level, signalClass, signalIcon, signalText, pulse = false) => ({
-                key, title, value, tag, note, level, signalClass, signalIcon, signalText, pulse,
-              });
-
-              // level: 1~5（冷→爆）；signalClass：good/warn/bad（强/中/弱）
-              const fbCell = (() => {
-                const lvl = fb >= 75 ? 5 : (fb >= 60 ? 4 : (fb >= 45 ? 3 : 2));
-                const sig = fb >= 70 ? ['good','🔥','强'] : (fb >= 55 ? ['warn','⚠','一般'] : ['bad','🧊','弱']);
-                return cell('fb_rate', '封板率', `${fb.toFixed(1)}%`, '关键', '封板质量决定次日承接空间', lvl, sig[0], sig[1], sig[2], true);
-              })();
-
-              const jjCell = (() => {
-                const lvl = jj >= 35 ? 5 : (jj >= 25 ? 4 : (jj >= 18 ? 3 : 2));
-                const sig = jj >= 30 ? ['good','🔥','强'] : (jj >= 20 ? ['warn','⚠','一般'] : ['bad','🧊','弱']);
-                return cell('jj_rate', '晋级率', `${jj.toFixed(1)}%`, '关键', '连板生存与高度延续的核心指标', lvl, sig[0], sig[1], sig[2], true);
-              })();
-
-              const zbCell = (() => {
-                const lvl = zb <= 25 ? 4 : (zb <= 40 ? 3 : 2);
-                const sig = zb <= 30 ? ['good','🔥','可控'] : (zb <= 45 ? ['warn','⚠','偏高'] : ['bad','🧊','高']);
-                return cell('zb_rate', '炸板率', `${zb.toFixed(1)}%`, '分歧', '分歧强度（高→承接变差/回封难）', lvl, sig[0], sig[1], sig[2], false);
-              })();
-
-              const dtCell = (() => {
-                const lvl = dt <= 3 ? 4 : (dt <= 10 ? 3 : 2);
-                const sig = dt <= 5 ? ['good','🔥','低'] : (dt <= 12 ? ['warn','⚠','中'] : ['bad','🧊','高']);
-                return cell('dt', '跌停数', `${dt}家`, '风险', '极端负反馈密度（低→可博弈修复）', lvl, sig[0], sig[1], sig[2], false);
-              })();
-
-              const bfCell = (() => {
-                const lvl = bf <= 10 ? 4 : (bf <= 25 ? 3 : 2);
-                const sig = bf <= 15 ? ['good','🔥','低'] : (bf <= 30 ? ['warn','⚠','中'] : ['bad','🧊','高']);
-                return cell('bf_count', '大面扩散', `${bf}只`, '亏钱', '亏钱效应与情绪退潮信号', lvl, sig[0], sig[1], sig[2], false);
-              })();
-
-              const hCell = (() => {
-                const lvl = maxLb >= 7 ? 5 : (maxLb >= 5 ? 4 : (maxLb >= 3 ? 3 : 2));
-                const sig = maxLb >= 6 ? ['good','🔥','高'] : (maxLb >= 4 ? ['warn','⚠','中'] : ['bad','🧊','低']);
-                return cell('max_lb', '高度', `${maxLb}板`, '空间', '空间高度（配合断板/大面判断风险）', lvl, sig[0], sig[1], sig[2], false);
-              })();
-
-              const trend = (() => {
-                const tFb = this.toNum(mi.trend_fb_rate, 0);
-                const tJj = this.toNum(mi.trend_jj_rate, 0);
-                const tHb = this.toNum(mi.trend_max_lb, 0);
-                const s = (tFb > 0) + (tJj > 0) + (tHb > 0) - ((tFb < 0) + (tJj < 0) + (tHb < 0));
-                if (s >= 2) return { icon: '↑↑', text: '升温' };
-                if (s <= -2) return { icon: '↓↓', text: '降温' };
-                return { icon: '→→', text: '稳定' };
-              })();
-
-              const score = this.toNum(mood.score, 0) || Math.round((fb * 0.4 + jj * 0.35 + (100 - zb) * 0.15 + (100 - dt) * 0.10));
-              const summary = `封板${fb.toFixed(1)} / 晋级${jj.toFixed(1)} / 炸板${zb.toFixed(1)}；跌停${dt}家`;
-
-              return { score, summary, trend, cells: [fbCell, jjCell, zbCell, dtCell, bfCell, hCell] };
-            },
-            pickMoodCard(label) {
-              const cards = this.marketData?.moodCards || [];
-              return cards.find(c => c && c.label === label) || null;
-            },
-            buildMoodHeatmapV2() {
-              const md = this.marketData || {};
-              const mi = md.features?.mood_inputs || {};
-              const si = md.features?.style_inputs || {};
-              const pan = md.panorama || {};
-              const fear = md.fear || {};
-              const mood = md.mood || {};
-              const d = this.delta || {};
-
-              const fb = this.toNum(mi.fb_rate, this.toNum(pan.ratio, 0));                // %
-              const jj = this.toNum(mi.jj_rate_adj, this.toNum(mi.jj_rate, 0));          // %
-              const zb = this.toNum(mi.zb_rate, 0);                                      // %
-              const dt = this.toNum(pan.limitDown, 0);
-              const bf = this.toNum(mi.bf_count, this.toNum(fear.bigFace, 0));
-              const loss = Math.round(dt + bf);
-              const top3 = this.toNum(si.top3_theme_ratio, 0);                            // %
-              const qsAvg = this.toNum(mi.qs_avg_zf, NaN);                                // %
-
-              const score = Math.round(this.toNum(mood.score, (fb * 0.38 + jj * 0.32 + (100 - zb) * 0.18 + (100 - Math.min(60, loss)) * 0.12)));
-              const heat = this.clamp100(this.toNum(mood.heat, 50));
-              const pointerLeft = `calc(${heat.toFixed(1)}% - 6px)`;
-
-              const hint = (() => {
-                if (this.toNum(mood.risk, 0) >= 60) return '偏防守：关注亏钱扩散、主线拥挤与晋级/封板变化';
-                if (this.toNum(mood.risk, 0) >= 45) return '偏谨慎：重点看承接是否回暖、亏钱扩散是否收敛';
-                return '可参与：优先主线低位与分歧回封，避免追高';
-              })();
-
-              const status = (kind, val) => {
-                // kind: strength/profit/risk/diverge/cons/crowd
-                if (kind === 'strength') {
-                  if (val >= 28) return { cls: 'good', icon: '✅', text: '可做' };
-                  if (val >= 20) return { cls: 'warn', icon: '⚠️', text: '轻仓' };
-                  return { cls: 'bad', icon: '⛔', text: '回避' };
-                }
-                if (kind === 'profit') {
-                  if (val >= 2) return { cls: 'good', icon: '✅', text: '可做' };
-                  if (val >= 0) return { cls: 'warn', icon: '⚠️', text: '轻仓' };
-                  return { cls: 'bad', icon: '⛔', text: '回避' };
-                }
-                if (kind === 'risk') {
-                  if (val <= 20) return { cls: 'good', icon: '✅', text: '可做' };
-                  if (val <= 40) return { cls: 'warn', icon: '⚠️', text: '轻仓' };
-                  return { cls: 'bad', icon: '⛔', text: '回避' };
-                }
-                if (kind === 'diverge') {
-                  if (val <= 25) return { cls: 'good', icon: '✅', text: '可做' };
-                  if (val <= 40) return { cls: 'warn', icon: '⚠️', text: '轻仓' };
-                  return { cls: 'bad', icon: '⛔', text: '回避' };
-                }
-                if (kind === 'cons') {
-                  if (val >= 75) return { cls: 'good', icon: '✅', text: '可做' };
-                  if (val >= 60) return { cls: 'warn', icon: '⚠️', text: '轻仓' };
-                  return { cls: 'bad', icon: '⛔', text: '回避' };
-                }
-                // crowd
-                if (val >= 90) return { cls: 'bad', icon: '⛔', text: '回避' };
-                if (val >= 70) return { cls: 'warn', icon: '⚠️', text: '轻仓' };
-                return { cls: 'good', icon: '✅', text: '可做' };
-              };
-
-              const fmtPct = (x) => `${Number(x || 0).toFixed(1)}%`;
-              const fmtPctSigned = (x) => `${x >= 0 ? '+' : ''}${Number(x).toFixed(1)}%`;
-
-              const c23 = this.pickMoodCard('2进3成功率');
-              const c34 = this.pickMoodCard('3进4成功率');
-              const best = mi.qs_best_name ? `${mi.qs_best_name} ${(this.toNum(mi.qs_best_zf,0) >= 0 ? '+' : '') + this.toNum(mi.qs_best_zf,0).toFixed(1)}%` : '—';
-              const worst = mi.qs_worst_name ? `${mi.qs_worst_name} ${(this.toNum(mi.qs_worst_zf,0) >= 0 ? '+' : '') + this.toNum(mi.qs_worst_zf,0).toFixed(1)}%` : '—';
-
-              const cells = [
-                (() => {
-                  const st = status('strength', jj);
-                  return {
-                    key: 'strength',
-                    accent: 'strength',
-                    title: '承接强度',
-                    tag: '强度',
-                    value: `晋级 ${fmtPct(jj)}`,
-                    deltaHtml: this.deltaBadge(d.jj_rate, 'pp'),
-                    statusClass: st.cls,
-                    statusIcon: st.icon,
-                    statusText: st.text,
-                    brief: `${st.text}｜2→3 ${c23?.value || '-'} · 3→4 ${c34?.value || '-'}`,
-                    driver: `连板晋级与高度延续（优先看 2→3）`,
-                  };
-                })(),
-                (() => {
-                  const v = Number.isFinite(qsAvg) ? qsAvg : this.toNum(mi.qs_avg_zf, 0);
-                  const st = status('profit', v);
-                  return {
-                    key: 'profit',
-                    accent: 'profit',
-                    title: '赚钱效应',
-                    tag: '收益',
-                    value: `均涨 ${fmtPctSigned(v)}`,
-                    deltaHtml: this.deltaBadge(d.heat),
-                    statusClass: st.cls,
-                    statusIcon: st.icon,
-                    statusText: st.text,
-                    brief: `${st.text}｜最佳 ${best}`,
-                    driver: `强势股池均涨（用于判断次日正反馈强弱）`,
-                  };
-                })(),
-                (() => {
-                  const st = status('risk', loss);
-                  return {
-                    key: 'loss',
-                    accent: 'risk',
-                    title: '亏钱扩散',
-                    tag: '风险',
-                    value: `${loss}只`,
-                    deltaHtml: this.deltaBadge(d.dt),
-                    statusClass: st.cls,
-                    statusIcon: st.icon,
-                    statusText: st.text,
-                    brief: `${st.text}｜大面 ${Math.round(bf)} + 跌停 ${Math.round(dt)}`,
-                    driver: `大面密度与跌停数量（先看是否收敛）`,
-                  };
-                })(),
-                (() => {
-                  const st = status('diverge', zb);
-                  return {
-                    key: 'diverge',
-                    accent: 'diverge',
-                    title: '分歧强度',
-                    tag: '分歧',
-                    value: `分歧 ${Math.round(zb)} 分`,
-                    deltaHtml: this.deltaBadge(d.zb_rate, 'pp'),
-                    statusClass: st.cls,
-                    statusIcon: st.icon,
-                    statusText: st.text,
-                    brief: `${st.text}｜回封质量决定日内交易环境`,
-                    driver: `回封难度与开板次数（高→分歧加剧）`,
-                  };
-                })(),
-                (() => {
-                  const st = status('cons', fb);
-                  return {
-                    key: 'cons',
-                    accent: 'cons',
-                    title: '一致性',
-                    tag: '封板',
-                    value: `一致 ${Math.round(fb)} 分`,
-                    deltaHtml: this.deltaBadge(d.fb_rate, 'pp'),
-                    statusClass: st.cls,
-                    statusIcon: st.icon,
-                    statusText: st.text,
-                    brief: `${st.text}｜早盘封板与回封率决定一致性`,
-                    driver: `封板质量与早封结构（越稳定越一致）`,
-                  };
-                })(),
-                (() => {
-                  const st = status('crowd', top3);
-                  return {
-                    key: 'crowd',
-                    accent: 'crowd',
-                    title: '题材集中度',
-                    tag: '主线',
-                    value: `TOP3 ${Number(top3 || 0).toFixed(1)}%`,
-                    deltaHtml: '',
-                    statusClass: st.cls,
-                    statusIcon: st.icon,
-                    statusText: st.text,
-                    brief: `${st.text}｜集中度越高越拥挤（易分歧）`,
-                    driver: `TOP3 题材涨停集中度`,
-                  };
-                })(),
-              ];
-
-              return { score, hint, pointerLeft, cells };
-            },
-            buildSectorHeatmap() {
-              const md = this.marketData || {};
-              const rows = (md.themePanels?.strengthRows || []).map(r => ({ ...r }));
-              if (!rows.length) {
-                // fallback：用 sectors（只有涨停count）拼一个简版
-                const secs = (md.sectors || []).map(s => ({
-                  name: s.name,
-                  zt: Number(s.count || 0),
-                  zb: 0,
-                  dt: 0,
-                  net: Number(s.net || 0),
-                  risk: Number(s.risk || 0),
-                  netClass: 'red-text',
-                  riskClass: 'green-text',
-                }));
-                rows.push(...secs);
-              }
-
-              const clamp = (x) => Math.max(0, Math.min(100, x));
-              const globalScore = Math.round(this.toNum(md.mood?.score, this.toNum(md.mood?.heat, 50)));
-
-              const leaders = md.leaders || [];
-              const pickLeader = (theme) => leaders.find(x => x && (x.theme === theme || x.reason?.explosion?.theme === theme));
-              const pickExamples = (theme) => {
-                const tp = md.themePanels || {};
-                const ztTop = tp.ztTop || [];
-                const hit = Array.isArray(ztTop) ? ztTop.find(x => x && x.name === theme) : null;
-                return hit && hit.examples ? String(hit.examples) : '';
-              };
-
-              const scoreRow = (r) => {
-                // 数据说明：以现有 strengthRows 为准（zt/zb/dt + net/risk）
-                const zt = Number(r.zt || 0);
-                const zb = Number(r.zb || 0);
-                const dt = Number(r.dt || 0);
-                const net = Number(r.net || 0);
-                const risk = Number(r.risk || 0);
-                const s = 50 + zt * 1.8 - zb * 1.2 - dt * 2.2 + net * 0.8 - risk * 0.6;
-                return clamp(Math.round(s));
-              };
-
-              const level = (s) => (s >= 80 ? 'hot' : (s >= 60 ? 'warm' : (s >= 40 ? 'cool' : 'cold')));
-              const icon = (lv) => (lv === 'hot' ? '🔥🔥🔥' : (lv === 'warm' ? '🔥🔥☆' : (lv === 'cool' ? '☆☆☆' : '🧊')));
-              const advice = (lv) => (lv === 'hot' ? '强势题材，可做龙头与强分支' : (lv === 'warm' ? '可做但控制追高' : (lv === 'cool' ? '偏防守，低位试错' : '回避，等待修复')));
-
-              const mapped = rows
-                .map(r => {
-                  const s = scoreRow(r);
-                  const lv = level(s);
-                  const ld = pickLeader(r.name);
-                  return {
-                    name: r.name,
-                    score: s,
-                    level: lv,
-                    icon: icon(lv),
-                    zt: Number(r.zt || 0),
-                    zb: Number(r.zb || 0),
-                    dt: Number(r.dt || 0),
-                    net: (r.net === undefined || r.net === null) ? '-' : `${Number(r.net).toFixed(1)}亿`,
-                    risk: (r.risk === undefined || r.risk === null) ? '-' : `${Number(r.risk).toFixed(1)}%`,
-                    netClass: r.netClass || (Number(r.net || 0) >= 0 ? 'red-text' : 'green-text'),
-                    riskClass: r.riskClass || (Number(r.risk || 0) >= 0 ? 'red-text' : 'green-text'),
-                    sub: (ld && ld.tags && ld.tags.length)
-                      ? `龙头：${ld.name}｜${ld.tags.join(' / ')}`
-                      : `涨停 ${Number(r.zt || 0)} · 炸板 ${Number(r.zb || 0)} · 跌停 ${Number(r.dt || 0)}`,
-                    leader: ld ? `${ld.name}（${ld.code}）` : '',
-                    tags: ld && ld.tags ? ld.tags.join(' / ') : '—',
-                    examples: pickExamples(r.name),
-                    advice: advice(lv),
-                  };
-                })
-                .sort((a, b) => b.score - a.score)
-                .slice(0, 7);
-
-              const top = mapped[0];
-              const alpha = (() => {
-                if (!top) return '';
-                if (globalScore < 50 && top.score >= 75) return `全局偏冷（${globalScore}），但「${top.name}」偏热（${top.score}）→ 可结构性做多该题材，其余方向防守。`;
-                if (globalScore >= 60 && top.score < 60) return `全局不弱（${globalScore}），但题材扩散一般 → 注意“无主线”的轮动风险。`;
-                return '';
-              })();
-
-              const hint = alpha || `按题材聚合强弱：优先看高分题材的龙头与扩散，其次看跌停/炸板是否向主线穿透。`;
-              return { globalScore, rows: mapped, alpha, hint };
-            },
-            moodIndexSeries(mi) {
-              mi = mi || {};
-              const days = Array.isArray(mi.hist_days) ? mi.hist_days : [];
-              const maxLb = (Array.isArray(mi.hist_max_lb) ? mi.hist_max_lb : []).map(v => Number(v));
-              const fb = (Array.isArray(mi.hist_fb_rate) ? mi.hist_fb_rate : []).map(v => Number(v));
-              const jj = (Array.isArray(mi.hist_jj_rate) ? mi.hist_jj_rate : []).map(v => Number(v));
-              const n = Math.min(days.length, maxLb.length, fb.length, jj.length);
-              if (n < 2) return [];
-              const clamp01 = (x) => Math.max(0, Math.min(1, x));
-              const clamp = (x, lo, hi) => Math.max(lo, Math.min(hi, x));
-              const heightScore = maxLb.slice(0, n).map(v => clamp01(clamp(v, 0, 10) / 10) * 100);
-              return Array.from({ length: n }).map((_, i) => {
-                const f = Number.isFinite(fb[i]) ? fb[i] : 0;
-                const j = Number.isFinite(jj[i]) ? jj[i] : 0;
-                const h = Number.isFinite(heightScore[i]) ? heightScore[i] : 0;
-                return clamp(0.45 * f + 0.35 * j + 0.20 * h, 0, 100);
-              });
-            },
-            buildMoodTriCards() {
-              const md = this.marketData || {};
-              const mi = md.features?.mood_inputs || {};
-              const pan = md.panorama || {};
-              const mood = md.mood || {};
-              const fear = md.fear || {};
-              const d = this.delta || {};
-
-              const fb = this.toNum(mi.fb_rate, this.toNum(pan.ratio, 0));
-              const jj = this.toNum(mi.jj_rate_adj, this.toNum(mi.jj_rate, 0));
-              const zb = this.toNum(mi.zb_rate, 0);
-              const risk = this.toNum(mood.risk, 0);
-              const heat = this.toNum(mood.heat, 0);
-              const score = (mood.score === undefined || mood.score === null) ? '' : String(mood.score);
-
-              const earnIdx = this.moodIndexSeries(mi);
-              const riskSeries = (Array.isArray(mi.hist_zt_dt_spread) ? mi.hist_zt_dt_spread : []);
-              const cashSeries = (Array.isArray(md.volume?.values) ? md.volume.values : []);
-
-              const earnBadges = [
-                this.deltaBadge(d.fb_rate, 'pp'),
-                this.deltaBadge(d.jj_rate, 'pp'),
-              ].filter(Boolean).join('');
-
-              const riskBadges = [
-                this.deltaBadge(d.dt),
-                this.deltaBadge(d.bf_count),
-              ].filter(Boolean).join('');
-
-              return [
-                {
-                  key: 'earn',
-                  cls: 'earn',
-                  title: '赚：承接强度',
-                  value: score ? `${score} 分` : `${(0.55 * fb + 0.45 * jj).toFixed(0)} 分`,
-                  valueClass: this.heatClass(heat),
-                  sub: `承接=封板质量 × 晋级延续 × 高度（更关注“结论”，原始率见引擎与K线）`,
-                  badges: earnBadges,
-                  spark: earnIdx,
-                  sparkStroke: 'rgba(239,68,68,0.82)'
-                },
-                {
-                  key: 'risk',
-                  cls: 'risk',
-                  title: '险：亏钱扩散',
-                  value: `${risk}`,
-                  valueClass: this.riskClass(risk),
-                  sub: `跌停 ${pan.limitDown ?? '-'} · 大面 ${fear.bigFace ?? '-'} · 风险越高越谨慎`,
-                  badges: riskBadges,
-                  spark: riskSeries,
-                  sparkStroke: 'rgba(16,185,129,0.82)'
-                },
-                {
-                  key: 'cash',
-                  cls: 'cash',
-                  title: '资：量能回流',
-                  value: `${md.volume?.change ?? '-'}`,
-                  valueClass: this.signedClass(md.volume?.change),
-                  sub: `两市 ${md.volume?.total ?? '-'} · 增量 ${md.volume?.increase ?? '-'}`,
-                  badges: '',
-                  spark: cashSeries,
-                  sparkStroke: 'rgba(96,165,250,0.86)'
-                },
-              ];
-            },
             heatmapCellClass(cell) {
               const key = String(cell?.key || cell?.title || '');
               if (key.includes('封板') || key.includes('fb_rate')) return 'big';
@@ -6075,52 +5516,7 @@
             delta() { return this.marketData?.delta || {}; },
             prev() { return this.marketData?.prev || {}; },
             pos() { return this.positionAdvice(); },
-            planGuide() {
-              const md = this.marketData || {};
-              if (md.compat) {
-                return {
-                  phase: md.compat?.sentiment?.phase || '-',
-                  score: md.compat?.sentiment?.score ?? '-',
-                  position: md.compat?.position?.capital_pct ?? '-',
-                  advice: md.compat?.rightside?.advice || '',
-                  rightsideText: md.compat?.rightside?.allowed === true ? '允许' : (md.compat?.rightside?.allowed === false ? '禁止' : '-'),
-                  mainline: md.compat?.mainline?.top_sector || '',
-                  nature: md.compat?.trading_nature?.label || '',
-                  resonance: md.compat?.full_position?.passed_count !== undefined && md.compat?.full_position?.passed_count !== null ? `${md.compat.full_position.passed_count}/3` : '',
-                  warnings: Array.isArray(md.compat?.sentiment?.warnings) ? md.compat.sentiment.warnings : [],
-                };
-              }
-              if (md.v3) {
-                return {
-                  phase: md.v3?.sentiment?.phase || '-',
-                  score: md.v3?.sentiment?.score ?? '-',
-                  position: md.v3?.positionV3?.capital_pct_adjusted ?? '-',
-                  advice: md.v3?.rightside?.advice || '',
-                  rightsideText: md.v3?.rightside?.allowed === true ? '允许' : (md.v3?.rightside?.allowed === false ? '禁止' : '-'),
-                  mainline: md.v3?.mainstream?.mainline?.top_sector || '',
-                  nature: md.v3?.tradingNature?.nature?.label || '',
-                  resonance: md.v3?.fullPosition?.passed_count !== undefined && md.v3?.fullPosition?.passed_count !== null ? `${md.v3.fullPosition.passed_count}/3` : '',
-                  warnings: Array.isArray(md.v3?.sentiment?.warnings) ? md.v3.sentiment.warnings : [],
-                };
-              }
-              if (md.v2?.strategy) {
-                return {
-                  phase: md.v2?.sentiment?.phase || md.v2?.strategy?.tone || '-',
-                  score: md.v2?.sentiment?.score ?? '-',
-                  position: md.v2?.strategy?.position?.recommended_max || '-',
-                  advice: md.v2?.strategy?.overall_advice || '',
-                  rightsideText: md.v2?.rightside?.can_enter === true ? '允许' : (md.v2?.rightside?.can_enter === false ? '禁止' : '-'),
-                  mainline: md.v2?.sector?.mainline?.top_sector || '',
-                  nature: md.v2?.trade_nature?.label || '',
-                  resonance: md.v2?.resonance?.passed_count !== undefined && md.v2?.resonance?.passed_count !== null ? `${md.v2.resonance.passed_count}/3` : '',
-                  warnings: [
-                    ...(Array.isArray(md.v2?.strategy?.warnings) ? md.v2.strategy.warnings : []),
-                    ...(Array.isArray(md.v2?.strategy?.iron_rules) ? md.v2.strategy.iron_rules : []),
-                  ].slice(0, 6),
-                };
-              }
-              return null;
-            },
+            planGuide() { return this.marketData?.planGuide || null; },
             planGuidePills() {
               const g = this.planGuide;
               if (!g) return [];
@@ -6191,7 +5587,7 @@
               if (alerts.some(a => a && a.level === 'warn')) return 'warn';
               return 'on';
             },
-            hm() { return this.buildHeatmap(); },
+            hm() { return this.marketData?.heatmap || { score: '-', summary: '', trend: { icon: '→→', text: '稳定' }, cells: [] }; },
             hm2() {
               const raw = this.marketData?.hm2Compare;
               if (raw && Array.isArray(raw.cells)) {
@@ -6201,7 +5597,7 @@
                 }));
                 return { ...raw, cells };
               }
-              return this.buildMoodHeatmapV2();
+              return { score: 0, hint: '', pointerLeft: '0%', cells: [] };
             },
             hm2PosCells() {
               const cells = this.hm2?.cells || [];
@@ -6231,17 +5627,15 @@
               );
               return rows;
             },
-            sectorHeat() { return this.marketData?.sectorHeatmap || this.buildSectorHeatmap(); },
+            sectorHeat() { return this.marketData?.sectorHeatmap || { globalScore: 0, rows: [], alpha: '', hint: '' }; },
             sectorHeatTopRows() {
               const rows = (this.sectorHeat && Array.isArray(this.sectorHeat.rows)) ? this.sectorHeat.rows : [];
               return rows.slice(0, 7);
             },
             conceptTop10ByChg() {
-              /**
-               * 纯函数：板块题材排行 Top10。
-               * - 优先：marketData.plateRotateTop（短线侠板块轮动，按 strength）
-               * - 兜底：marketData.conceptFundFlowTop（概念资金流向榜，按 chg_pct）
-               */
+              const injected = this.marketData?.plateRankTop10;
+              if (Array.isArray(injected) && injected.length) return injected;
+
               const plateRows = (this.marketData?.plateRotateTop || []).slice();
               if (plateRows.length) {
                 plateRows.sort((a, b) => this.toNum(b?.strength, -1e9) - this.toNum(a?.strength, -1e9));
@@ -6256,20 +5650,19 @@
               }
 
               const rows = (this.marketData?.conceptFundFlowTop || []).slice();
-              const num = (v, d) => this.toNum(v, d);
               rows.sort((a, b) => {
-                const ac = num(a?.chg_pct, -1e9);
-                const bc = num(b?.chg_pct, -1e9);
+                const ac = this.toNum(a?.chg_pct, -1e9);
+                const bc = this.toNum(b?.chg_pct, -1e9);
                 if (bc !== ac) return bc - ac;
-                const an = num(a?.net, -1e9);
-                const bn = num(b?.net, -1e9);
+                const an = this.toNum(a?.net, -1e9);
+                const bn = this.toNum(b?.net, -1e9);
                 return bn - an;
               });
               return rows.slice(0, 10).map((r) => ({
                 ...r,
                 displayValue: r?.chg_pct === undefined || r?.chg_pct === null ? '-' : (this.formatSigned(r.chg_pct) + '%'),
                 displayClass: this.signedClass(r?.chg_pct),
-                barPct: num(r?.chg_pct, 0) * 10,
+                barPct: this.toNum(r?.chg_pct, 0) * 10,
               }));
             },
             selectedPlateTheme() {
@@ -6316,7 +5709,7 @@
               const max = Math.max(...arr, 0);
               return max > 0 ? `${Math.round(max)}亿` : '-';
             },
-            moodTriCards() { return this.buildMoodTriCards(); },
+            moodTriCards() { return this.marketData?.moodTriCards || []; },
             sentimentDims() {
               /**
                * 纯函数：把情绪分项映射为 0~100，供“情绪温度解释版”展示。
@@ -6326,7 +5719,6 @@
                */
               const ss =
                 (this.marketData?.sentiment && this.marketData.sentiment.sub_scores) ||
-                (this.marketData?.compat && this.marketData.compat.sentiment && this.marketData.compat.sentiment.sub_scores) ||
                 {};
               const labelMap = {
                 zt_heat: '涨停热度',
@@ -6530,7 +5922,12 @@
       let volumeChart, heightChart, themeTrendChart, moodKlineChart, moodRadarChart, threeQuadrantsChart, mood5LineChart;
       const hasEcharts = () => typeof window !== 'undefined' && typeof window.echarts !== 'undefined';
       // 支持“定时渲染的盯盘页”：在 marketData.meta.default_page 提供时优先生效
-      let currentPage = (marketData && marketData.meta && marketData.meta.default_page) || document.body.getAttribute('data-page') || 'sentiment';
+      const allowedPages = new Set(['sentiment', 'watch', 'themes', 'ladder', 'plan']);
+      let ensurePlanDerived = () => {};
+      let savedPage = '';
+      try { savedPage = window.localStorage.getItem('review.currentPage') || ''; } catch (e) {}
+      let currentPage = (marketData && marketData.meta && marketData.meta.default_page) || savedPage || document.body.getAttribute('data-page') || 'sentiment';
+      if (!allowedPages.has(currentPage)) currentPage = 'sentiment';
       document.body.setAttribute('data-page', currentPage);
 
       /**
@@ -6580,21 +5977,14 @@
           if (moodRadarChart) { moodRadarChart.dispose(); moodRadarChart = null; }
           if (mood5LineChart) { mood5LineChart.dispose(); mood5LineChart = null; }
           if (threeQuadrantsChart) { threeQuadrantsChart.dispose(); threeQuadrantsChart = null; }
-        } else if (page === 'v3') {
-          // v3 总览页不渲染图表，释放所有图表实例避免隐藏容器尺寸问题
-          if (themeTrendChart) { themeTrendChart.dispose(); themeTrendChart = null; }
-          if (volumeChart) { volumeChart.dispose(); volumeChart = null; }
-          if (heightChart) { heightChart.dispose(); heightChart = null; }
-          if (moodKlineChart) { moodKlineChart.dispose(); moodKlineChart = null; }
-          if (moodRadarChart) { moodRadarChart.dispose(); moodRadarChart = null; }
-          if (mood5LineChart) { mood5LineChart.dispose(); mood5LineChart = null; }
-          if (threeQuadrantsChart) { threeQuadrantsChart.dispose(); threeQuadrantsChart = null; }
         }
       };
 
       const switchPage = (page) => {
-        currentPage = page || 'sentiment';
+        currentPage = allowedPages.has(page) ? page : 'sentiment';
         document.body.setAttribute('data-page', currentPage);
+        try { window.localStorage.setItem('review.currentPage', currentPage); } catch (e) {}
+          if (currentPage === 'plan') ensurePlanDerived();
         setActiveTab(currentPage);
         window.scrollTo({ top: 0, behavior: 'smooth' });
         // 盯盘页：开启/关闭实时轮询
@@ -7699,176 +7089,7 @@
           return { score: Math.round(total), summary, cells };
         };
 
-        try {
-          marketData.heatmap = buildHeatmap(marketData);
-        } catch (e) {
-          marketData.heatmap = { score: '-', summary: '热力图生成失败', cells: [] };
-        }
-
-        // 明日行动指南 V2：围绕“短线情绪 / 市场主线 / 核心龙头”动态生成（不写死）
-        const buildActionGuideV2 = (md) => {
-          const mi = md?.features?.mood_inputs || {};
-          const delta = md?.delta || {};
-          const toNum = (v, d=0) => {
-            const n = Number(String(v ?? '').replace('%',''));
-            return Number.isFinite(n) ? n : d;
-          };
-          const pct0 = (v) => `${Math.round(toNum(v, 0))}%`;
-          const pct1 = (v) => `${toNum(v, 0).toFixed(1)}%`;
-          const pickTheme = () => {
-            const t = md?.themePanels?.ztTop?.[0];
-            if (!t) return { name: '主线', count: 0, examples: '' };
-            return t;
-          };
-          const pickLeader = () => {
-            const rows = md?.ladder || [];
-            const maxB = rows.reduce((m, r) => Math.max(m, Number(r.badge ?? 0)), 0);
-            const names = rows.filter(r => Number(r.badge ?? 0) === maxB).slice(0, 3).map(r => r.name).filter(Boolean);
-            return { maxB, names: names.length ? names.join('、') : '龙头', count: rows.filter(r => Number(r.badge ?? 0) === maxB).length };
-          };
-          const tag = (text, cls='') => ({ text, cls });
-          const dtag = (k, unit='') => {
-            const v = delta?.[k];
-            if (v === undefined || v === null || v === '') return null;
-            const n = Number(v);
-            if (!Number.isFinite(n)) return null;
-            const cls = n > 0 ? 'ladder-chip-strong red-text' : (n < 0 ? 'ladder-chip-cool blue-text' : '');
-            const sign = n > 0 ? '+' : '';
-            return tag(`Δ${sign}${n}${unit}`, cls);
-          };
-
-          const fb = toNum(mi.fb_rate, toNum(md?.panorama?.ratio, 0));
-          const jj = toNum(mi.jj_rate, 0);
-          const zb = toNum(mi.zb_rate, toNum(md?.fear?.broken, 0));
-          const early = toNum(mi.zt_early_ratio, 0);
-          const loss = toNum(mi.bf_count, 0) + toNum(mi.dt_count, 0);
-          const heat = toNum(md?.mood?.heat, 0);
-          const risk = toNum(md?.mood?.risk, 0);
-
-          const stage = md?.moodStage?.title || '-';
-          const stageType = md?.moodStage?.type || 'warn';
-          const theme = pickTheme();
-          const leader = pickLeader();
-
-          // 容忍度：根据阶段动态调整，不采用固定“绝对阈值”
-          const tol = (() => {
-            if (stageType === 'good') return { fb: 8, jj: 10, zb: 10, loss: 3 };
-            if (stageType === 'fire') return { fb: 6, jj: 8, zb: 8, loss: 2 };
-            return { fb: 5, jj: 8, zb: 8, loss: 2 };
-          })();
-
-          const observe = [
-            {
-              dot: 'dot-key',
-              title: `主线与龙头：${theme.name} · ${leader.names}（${leader.maxB || '-'}板）`,
-              desc: `明日先验证主线是否继续扩散/分歧回封；龙头能否继续晋级决定短线空间与风格（高潮更易分化）。`,
-              tags: [
-                tag(`情绪：${stage}`, stageType === 'good' ? 'ladder-chip-strong red-text' : (stageType === 'warn' ? 'ladder-chip-warn orange-text' : 'ladder-chip-cool blue-text')),
-                tag(`主线：${theme.name} ${theme.count || 0}家`, 'ladder-chip-cool blue-text'),
-                tag(`高度：${leader.maxB || '-'}板`, leader.maxB >= 6 ? 'ladder-chip-strong red-text' : 'ladder-chip-warn orange-text'),
-                dtag('max_lb'),
-              ].filter(Boolean),
-            },
-            {
-              dot: 'dot-watch',
-              title: '承接与一致性：封板/晋级是否掉速',
-              desc: `关注封板率不低于今日 ${Math.max(0, fb - tol.fb).toFixed(0)}%（今日${fb.toFixed(1)}%），晋级率不低于今日 ${Math.max(0, jj - tol.jj).toFixed(1)}%（今日${jj.toFixed(1)}%）。`,
-              tags: [
-                tag(`封板 ${fb.toFixed(1)}%`, 'ladder-chip-warn orange-text'),
-                dtag('fb_rate', 'pp'),
-                tag(`晋级 ${jj.toFixed(1)}%`, 'ladder-chip-cool blue-text'),
-                dtag('jj_rate', 'pp'),
-                tag(`早封 ${early.toFixed(0)}%`, 'ladder-chip-cool blue-text'),
-                dtag('zt_early_ratio', 'pp'),
-              ].filter(Boolean),
-            },
-            {
-              dot: 'dot-watch',
-              title: '分歧信号：炸板与亏钱扩散是否放大',
-              desc: `关注炸板率不高于今日 ${ (zb + tol.zb).toFixed(1) }%（今日${zb.toFixed(1)}%）；亏钱扩散（大面+跌停）不高于今日 ${loss + tol.loss} 只（今日${loss}）。`,
-              tags: [
-                tag(`炸板 ${zb.toFixed(1)}%`, 'ladder-chip-warn orange-text'),
-                dtag('zb_rate', 'pp'),
-                tag(`扩散 ${loss}只`, 'ladder-chip-strong red-text'),
-                dtag('loss'),
-              ].filter(Boolean),
-            },
-          ];
-
-          const doList = [
-            {
-              dot: 'dot-safe',
-              title: '计划A（主线核心）：先做确认再加速',
-              desc: `若封板/晋级维持且炸板不放大，优先围绕主线「${theme.name}」做核心辨识度：以 2板确认/分歧回封为主，不追尾盘一致。`,
-              tags: [
-                tag(`主线 ${theme.name}`, 'ladder-chip-cool blue-text'),
-                tag(`封板≥${Math.max(0, fb - tol.fb).toFixed(0)}%`, ''),
-                tag(`晋级≥${Math.max(0, jj - tol.jj).toFixed(0)}%`, ''),
-                tag(`炸板≤${(zb + tol.zb).toFixed(0)}%`, ''),
-              ],
-            },
-            {
-              dot: 'dot-safe',
-              title: '计划B（低位试错）：当分歧上升时切到低位换手',
-              desc: `若主线分歧扩大（炸板/扩散走高），风格切换到“低位换手+首板/1进2”，减少高位追涨。`,
-              tags: [
-                tag(`亏钱扩散≤${loss + tol.loss}只`, ''),
-                tag(`早封 ${early.toFixed(0)}%`, 'ladder-chip-cool blue-text'),
-              ],
-            },
-            {
-              dot: 'dot-safe',
-              title: '仓位建议：用热度/风险配仓',
-              desc: `热度 ${heat} / 风险 ${risk}：风险高于热度时只做防守试错；热度明显占优时再做进攻加仓。`,
-              tags: [
-                tag(`热度 ${heat}`, heat >= 70 ? 'ladder-chip-strong red-text' : 'ladder-chip-warn orange-text'),
-                tag(`风险 ${risk}`, risk >= 60 ? 'ladder-chip-strong red-text' : 'ladder-chip-cool blue-text'),
-                dtag('heat'),
-                dtag('risk'),
-              ].filter(Boolean),
-            },
-          ];
-
-          const avoid = [
-            {
-              dot: 'dot-risk',
-              title: '禁止追高：高潮/高位阶段不追一致末端',
-              desc: `若处于「${stage}」且高度 ${leader.maxB || '-'} 板偏高，次日更易分化与回撤：不追尾盘一致，不做高位情绪票“补涨”。`,
-              tags: [
-                tag(`阶段 ${stage}`, stageType === 'good' ? 'ladder-chip-strong red-text' : 'ladder-chip-warn orange-text'),
-                tag(`高度 ${leader.maxB || '-'}板`, leader.maxB >= 6 ? 'ladder-chip-strong red-text' : 'ladder-chip-warn orange-text'),
-              ],
-            },
-            {
-              dot: 'dot-risk',
-              title: '禁止硬接分歧：当炸板/扩散显著放大',
-              desc: `当炸板率 > ${(zb + tol.zb).toFixed(1)}% 或 亏钱扩散 > ${loss + tol.loss} 只，优先保命，不做“情绪硬接力”。`,
-              tags: [
-                tag(`炸板>${(zb + tol.zb).toFixed(0)}%`, 'ladder-chip-warn orange-text'),
-                tag(`扩散>${loss + tol.loss}只`, 'ladder-chip-strong red-text'),
-              ],
-            },
-            {
-              dot: 'dot-risk',
-              title: '禁止脱离主线：主线退潮时不做题材发散',
-              desc: `若主线（${theme.name}）涨停家数明显缩减或板块内出现高位炸板扩散，减少题材发散，回到“主线核心/容量辨识度”。`,
-              tags: [
-                tag(`主线 ${theme.name}`, 'ladder-chip-cool blue-text'),
-                tag(`样本 ${theme.examples || '—'}`, ''),
-              ],
-            },
-          ];
-
-          return { observe, do: doList, avoid };
-        };
-        // 若渲染器（Python）已注入 actionGuideV2，则不覆盖；否则使用前端算法兜底生成
-        try {
-          if (!marketData.actionGuideV2) {
-            marketData.actionGuideV2 = buildActionGuideV2(marketData);
-          }
-        } catch (e) {
-          marketData.actionGuideV2 = marketData.actionGuideV2 || { observe: [], do: [], avoid: [] };
-        }
+        marketData.actionGuideV2 = marketData.actionGuideV2 || { observe: [], do: [], avoid: [] };
 
         // 涨停个股数据分析：结合 封单大小 + 题材推测(优先用题材映射，其次行业集中度) + 量能 + 炸板次数 + 连板梯队
         const buildZtAnalysis = (md) => {
@@ -8309,16 +7530,31 @@
           });
           return { meta: { tierThemeCount, tierThemeTop }, relay: strip(relay), watch: strip(watch) };
         };
-        try {
-          marketData.ztAnalysis = buildZtAnalysis(marketData);
-        } catch (e) {
-          marketData.ztAnalysis = { relay: [], watch: [] };
-        }
+        let ztAnalysisReady = false;
+        ensurePlanDerived = () => {
+          const hasRows = !!(
+            marketData?.ztAnalysis &&
+            (
+              (Array.isArray(marketData.ztAnalysis.relay) && marketData.ztAnalysis.relay.length) ||
+              (Array.isArray(marketData.ztAnalysis.watch) && marketData.ztAnalysis.watch.length)
+            )
+          );
+          if (ztAnalysisReady && hasRows) return;
+          try {
+            marketData.ztAnalysis = buildZtAnalysis(marketData);
+          } catch (e) {
+            marketData.ztAnalysis = { relay: [], watch: [] };
+          }
+          ztAnalysisReady = true;
+        };
+
+        // 稳定优先：启动时先完成一次计算，避免切页时出现“涨停个股数据分析”空白/延迟
+        ensurePlanDerived();
 
         mountVueApp();
         // Tabs 初始化
 
-        // 默认展开策略（PC）：展开关键模块（sec-action）与标记 data-open-default 的 details，其余保持折叠。
+        // 默认展开策略：仅在初始化与断点切换时应用，避免用户手动展开后被 resize 强制重置。
         const applyDefaultDetails = () => {
           try {
             const isPC = window.innerWidth >= 1100;
@@ -8330,18 +7566,21 @@
             document.querySelectorAll('details[data-open-default="1"]').forEach(d => { d.open = true; });
           } catch (e) {}
         };
+        let lastDetailsMode = window.innerWidth >= 1100 ? 'pc' : 'mobile';
+        let resizeRaf = 0;
         setActiveTab(currentPage);
         document.querySelectorAll('.tab-btn').forEach(btn => {
           btn.addEventListener('click', () => switchPage(btn.getAttribute('data-page')));
         });
 
         // 首屏只渲染当前页图表
-
-        // 首屏只渲染当前页图表
         renderChartsForPage(currentPage);
+        if (currentPage === 'plan') ensurePlanDerived();
+        if (currentPage === 'watch') {
+          try { window.__APP_VM__?.startLivePolling?.(); } catch (e) {}
+        }
         updateThemeToggleLabel();
         applyDefaultDetails();
-        window.addEventListener('resize', () => window.requestAnimationFrame(applyDefaultDetails));
 
         // Summary Bar 内置跳转（不单独做 TOC）
         document.querySelectorAll('.summary-item[data-target]').forEach(item => {
@@ -8364,11 +7603,21 @@
           });
         });
         
-        // 响应式处理
+        // 响应式处理：只在真正需要时执行，减少重复 resize 开销
         window.addEventListener('resize', () => {
-          volumeChart && volumeChart.resize();
-          heightChart && heightChart.resize();
-          themeTrendChart && themeTrendChart.resize();
+          if (resizeRaf) cancelAnimationFrame(resizeRaf);
+          resizeRaf = window.requestAnimationFrame(() => {
+            const mode = window.innerWidth >= 1100 ? 'pc' : 'mobile';
+            if (mode !== lastDetailsMode) {
+              lastDetailsMode = mode;
+              applyDefaultDetails();
+            }
+            volumeChart && volumeChart.resize();
+            heightChart && heightChart.resize();
+            themeTrendChart && themeTrendChart.resize();
+            threeQuadrantsChart && threeQuadrantsChart.resize();
+            mood5LineChart && mood5LineChart.resize();
+          });
         });
       });
 

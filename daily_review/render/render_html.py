@@ -44,9 +44,219 @@ def _with_render_meta(market_data: Dict[str, Any]) -> Dict[str, Any]:
     md = dict(market_data or {})
     meta = md.get("meta") if isinstance(md.get("meta"), dict) else {}
     meta = dict(meta)
-    meta.setdefault("rendered_at_bj", _now_bj_iso())
+    meta.setdefault("rendered_at_bj", str(meta.get("generatedAt") or _now_bj_iso()))
     md["meta"] = meta
     return md
+
+
+def _to_num(v: Any, d: float = 0.0) -> float:
+    try:
+        if v is None or v == "":
+            return d
+        if isinstance(v, str):
+            s = v.replace("%", "").replace("亿", "").strip()
+            return float(s) if s else d
+        n = float(v)
+        return n if n == n else d
+    except Exception:
+        return d
+
+
+def _clamp100(x: float) -> float:
+    return max(0.0, min(100.0, float(x)))
+
+
+def _delta_badge_html(v: Any, unit: str = "") -> str:
+    if v is None or v == "":
+        return ""
+    try:
+        n = float(v)
+    except Exception:
+        return ""
+    if abs(n) < 1e-12:
+        return ""
+    sign = "+" if n > 0 else ""
+    text = f"{sign}{n:.1f}{unit}" if unit == "pp" else f"{sign}{int(n) if float(n).is_integer() else n}{unit}"
+    cls = "up" if n > 0 else "down"
+    return f'<span class="delta-badge {cls}">Δ{text}</span>'
+
+
+def _mood_index_series(mi: Dict[str, Any]) -> list[float]:
+    days = mi.get("hist_days") if isinstance(mi.get("hist_days"), list) else []
+    max_lb = [_to_num(v, 0) for v in (mi.get("hist_max_lb") if isinstance(mi.get("hist_max_lb"), list) else [])]
+    fb = [_to_num(v, 0) for v in (mi.get("hist_fb_rate") if isinstance(mi.get("hist_fb_rate"), list) else [])]
+    jj = [_to_num(v, 0) for v in (mi.get("hist_jj_rate") if isinstance(mi.get("hist_jj_rate"), list) else [])]
+    n = min(len(days), len(max_lb), len(fb), len(jj))
+    if n < 2:
+        return []
+    out: list[float] = []
+    for i in range(n):
+        h = _clamp100(max(0.0, min(10.0, max_lb[i])) / 10.0 * 100.0)
+        out.append(round(max(0.0, min(100.0, 0.45 * fb[i] + 0.35 * jj[i] + 0.20 * h)), 2))
+    return out
+
+
+def build_heatmap(market_data: Dict[str, Any]) -> Dict[str, Any]:
+    existing = market_data.get("heatmap")
+    if isinstance(existing, dict) and isinstance(existing.get("cells"), list) and existing.get("cells"):
+        return existing
+
+    md = market_data or {}
+    mi = ((md.get("features") or {}).get("mood_inputs") or {}) if isinstance(md.get("features"), dict) else {}
+    pan = md.get("panorama") or {}
+    fear = md.get("fear") or {}
+    mood = md.get("mood") or {}
+
+    fb = _to_num(mi.get("fb_rate"), _to_num(pan.get("ratio"), 0))
+    jj = _to_num(mi.get("jj_rate_adj"), _to_num(mi.get("jj_rate"), 0))
+    zb = _to_num(mi.get("zb_rate"), 0)
+    dt = _to_num(pan.get("limitDown"), 0)
+    bf = _to_num(mi.get("bf_count"), _to_num(fear.get("bigFace"), 0))
+    ladder = md.get("ladder") if isinstance(md.get("ladder"), list) else []
+    max_lb = _to_num(mi.get("max_lb"), _to_num((ladder[0] or {}).get("badge") if ladder else 0, 0))
+
+    def cell(key: str, title: str, value: str, tag: str, note: str, level: int, sig_cls: str, sig_icon: str, sig_text: str, pulse: bool = False) -> Dict[str, Any]:
+        return {
+            "key": key,
+            "title": title,
+            "value": value,
+            "tag": tag,
+            "note": note,
+            "level": level,
+            "signalClass": sig_cls,
+            "signalIcon": sig_icon,
+            "signalText": sig_text,
+            "pulse": pulse,
+        }
+
+    def signal_pos(x: float, hi: float, mid: float) -> tuple[str, str, str]:
+        if x >= hi:
+            return ("good", "🔥", "强")
+        if x >= mid:
+            return ("warn", "⚠", "一般")
+        return ("bad", "🧊", "弱")
+
+    def signal_neg(x: float, lo: float, mid: float, good_text: str = "低", warn_text: str = "中", bad_text: str = "高") -> tuple[str, str, str]:
+        if x <= lo:
+            return ("good", "🔥", good_text)
+        if x <= mid:
+            return ("warn", "⚠", warn_text)
+        return ("bad", "🧊", bad_text)
+
+    fb_sig = signal_pos(fb, 70, 55)
+    jj_sig = signal_pos(jj, 30, 20)
+    zb_sig = signal_neg(zb, 30, 45, "可控", "偏高", "高")
+    dt_sig = signal_neg(dt, 5, 12)
+    bf_sig = signal_neg(bf, 15, 30)
+    h_sig = signal_pos(max_lb, 6, 4)
+
+    t_fb = _to_num(mi.get("trend_fb_rate"), 0)
+    t_jj = _to_num(mi.get("trend_jj_rate"), 0)
+    t_hb = _to_num(mi.get("trend_max_lb"), 0)
+    s = (1 if t_fb > 0 else 0) + (1 if t_jj > 0 else 0) + (1 if t_hb > 0 else 0) - (1 if t_fb < 0 else 0) - (1 if t_jj < 0 else 0) - (1 if t_hb < 0 else 0)
+    trend = {"icon": "↑↑", "text": "升温"} if s >= 2 else ({"icon": "↓↓", "text": "降温"} if s <= -2 else {"icon": "→→", "text": "稳定"})
+    score = int(round(_to_num(mood.get("score"), round(fb * 0.4 + jj * 0.35 + (100 - zb) * 0.15 + (100 - dt) * 0.10))))
+    summary = f"封板{fb:.1f} / 晋级{jj:.1f} / 炸板{zb:.1f}；跌停{int(round(dt))}家"
+    return {
+        "score": score,
+        "summary": summary,
+        "trend": trend,
+        "cells": [
+            cell("fb_rate", "封板率", f"{fb:.1f}%", "关键", "封板质量决定次日承接空间", 5 if fb >= 75 else 4 if fb >= 60 else 3 if fb >= 45 else 2, *fb_sig, True),
+            cell("jj_rate", "晋级率", f"{jj:.1f}%", "关键", "连板生存与高度延续的核心指标", 5 if jj >= 35 else 4 if jj >= 25 else 3 if jj >= 18 else 2, *jj_sig, True),
+            cell("zb_rate", "炸板率", f"{zb:.1f}%", "分歧", "分歧强度（高→承接变差/回封难）", 4 if zb <= 25 else 3 if zb <= 40 else 2, *zb_sig),
+            cell("dt", "跌停数", f"{int(round(dt))}家", "风险", "极端负反馈密度（低→可博弈修复）", 4 if dt <= 3 else 3 if dt <= 10 else 2, *dt_sig),
+            cell("bf_count", "大面扩散", f"{int(round(bf))}只", "亏钱", "亏钱效应与情绪退潮信号", 4 if bf <= 10 else 3 if bf <= 25 else 2, *bf_sig),
+            cell("max_lb", "高度", f"{int(round(max_lb))}板", "空间", "空间高度（配合断板/大面判断风险）", 5 if max_lb >= 7 else 4 if max_lb >= 5 else 3 if max_lb >= 3 else 2, *h_sig),
+        ],
+    }
+
+
+def build_mood_tri_cards(market_data: Dict[str, Any]) -> list[Dict[str, Any]]:
+    md = market_data or {}
+    mi = ((md.get("features") or {}).get("mood_inputs") or {}) if isinstance(md.get("features"), dict) else {}
+    pan = md.get("panorama") or {}
+    mood = md.get("mood") or {}
+    fear = md.get("fear") or {}
+    delta = md.get("delta") or {}
+
+    fb = _to_num(mi.get("fb_rate"), _to_num(pan.get("ratio"), 0))
+    jj = _to_num(mi.get("jj_rate_adj"), _to_num(mi.get("jj_rate"), 0))
+    risk = _to_num(mood.get("risk"), 0)
+    heat = _to_num(mood.get("heat"), 0)
+    score = mood.get("score")
+    earn_value = f"{score} 分" if score not in (None, "") else f"{(0.55 * fb + 0.45 * jj):.0f} 分"
+    risk_series = mi.get("hist_zt_dt_spread") if isinstance(mi.get("hist_zt_dt_spread"), list) else []
+    cash_series = ((md.get("volume") or {}).get("values") or []) if isinstance((md.get("volume") or {}).get("values"), list) else []
+    return [
+        {
+            "key": "earn",
+            "cls": "earn",
+            "title": "赚：承接强度",
+            "value": earn_value,
+            "valueClass": "red-text" if heat >= 70 else ("orange-text" if heat >= 50 else "blue-text"),
+            "sub": "承接=封板质量 × 晋级延续 × 高度（更关注“结论”，原始率见引擎与K线）",
+            "badges": "".join([x for x in [_delta_badge_html(delta.get("fb_rate"), "pp"), _delta_badge_html(delta.get("jj_rate"), "pp")] if x]),
+            "spark": _mood_index_series(mi),
+            "sparkStroke": "rgba(239,68,68,0.82)",
+        },
+        {
+            "key": "risk",
+            "cls": "risk",
+            "title": "险：亏钱扩散",
+            "value": str(int(round(risk))),
+            "valueClass": "red-text" if risk >= 70 else ("orange-text" if risk >= 50 else "blue-text"),
+            "sub": f"跌停 {pan.get('limitDown', '-')} · 大面 {fear.get('bigFace', '-')} · 风险越高越谨慎",
+            "badges": "".join([x for x in [_delta_badge_html(delta.get('dt')), _delta_badge_html(delta.get('bf_count'))] if x]),
+            "spark": risk_series,
+            "sparkStroke": "rgba(16,185,129,0.82)",
+        },
+        {
+            "key": "cash",
+            "cls": "cash",
+            "title": "资：量能回流",
+            "value": f"{((md.get('volume') or {}).get('change') or '-')}",
+            "valueClass": "red-text" if str(((md.get('volume') or {}).get('change') or '')).startswith('+') else ("green-text" if str(((md.get('volume') or {}).get('change') or '')).startswith('-') else ""),
+            "sub": f"两市 {((md.get('volume') or {}).get('total') or '-')} · 增量 {((md.get('volume') or {}).get('increase') or '-')}",
+            "badges": "",
+            "spark": cash_series,
+            "sparkStroke": "rgba(96,165,250,0.86)",
+        },
+    ]
+
+
+def build_plate_rank_top10(market_data: Dict[str, Any]) -> list[Dict[str, Any]]:
+    md = market_data or {}
+    plate_rows = list(md.get("plateRotateTop") or [])
+    if plate_rows:
+        plate_rows.sort(key=lambda x: _to_num((x or {}).get("strength"), -1e9), reverse=True)
+        max_strength = max([_to_num((x or {}).get("strength"), 0) for x in plate_rows] + [0])
+        out = []
+        for r in plate_rows[:10]:
+            if not isinstance(r, dict):
+                continue
+            strength = _to_num(r.get("strength"), 0)
+            item = dict(r)
+            item["displayValue"] = str(int(round(strength))) if strength > 0 else "-"
+            item["displayClass"] = "red-text"
+            item["barPct"] = (strength / max_strength * 100) if max_strength > 0 else 0
+            item["sourceNote"] = "" if (r.get("lead") or r.get("volume") is not None) else "｜当日板块强度"
+            out.append(item)
+        return out
+
+    rows = list(md.get("conceptFundFlowTop") or [])
+    rows.sort(key=lambda x: (_to_num((x or {}).get("chg_pct"), -1e9), _to_num((x or {}).get("net"), -1e9)), reverse=True)
+    out = []
+    for r in rows[:10]:
+        if not isinstance(r, dict):
+            continue
+        chg = r.get("chg_pct")
+        item = dict(r)
+        item["displayValue"] = "-" if chg is None else f"{_to_num(chg, 0):+,.1f}%".replace(",", "")
+        item["displayClass"] = "red-text" if _to_num(chg, 0) > 0 else ("green-text" if _to_num(chg, 0) < 0 else "")
+        item["barPct"] = _to_num(chg, 0) * 10
+        out.append(item)
+    return out
 
 
 def render_html_template(
@@ -58,6 +268,14 @@ def render_html_template(
     date_note: str = "",
 ) -> None:
     tpl = template_path.read_text(encoding="utf-8")
+
+    # 清理历史示例数据大注释块：仅用于开发回溯，保留在模板里会显著放大最终 HTML。
+    tpl = re.sub(
+        r"\n\s*// 核心数据对象\s*\n\s*/\*[\s\S]*?\n\s*// 默认值：模板单独打开时不展示任何“写死行情”",
+        "\n      // 默认值：模板单独打开时不展示任何“写死行情”",
+        tpl,
+        count=1,
+    )
 
     market_data = _with_render_meta(market_data)
     market_data_js = json.dumps(market_data, ensure_ascii=False)
@@ -933,6 +1151,38 @@ if __name__ == "__main__":
         market_data.setdefault("marketOverview7d", build_market_overview_7d(market_data=market_data))
     except Exception:
         market_data.setdefault("marketOverview7d", {"window": 7, "dates": [], "series": [], "highlights": []})
+
+    # 前四个 tab：统一下沉到后端，前端尽量只展示
+    try:
+        market_data.setdefault("heatmap", build_heatmap(market_data))
+    except Exception:
+        market_data.setdefault("heatmap", {"score": "-", "summary": "", "trend": {"icon": "→→", "text": "稳定"}, "cells": []})
+
+    try:
+        if not market_data.get("hm2Compare"):
+            from daily_review.metrics.mood_signals import build_hm2_compare
+
+            market_data["hm2Compare"] = build_hm2_compare(market_data)
+    except Exception:
+        market_data.setdefault("hm2Compare", {"score": 0, "hint": "", "pointerLeft": "0%", "cells": []})
+
+    try:
+        if not market_data.get("sectorHeatmap"):
+            from daily_review.metrics.sector_heatmap import build_sector_heatmap
+
+            market_data["sectorHeatmap"] = build_sector_heatmap(market_data)
+    except Exception:
+        market_data.setdefault("sectorHeatmap", {"globalScore": 0, "rows": [], "alpha": "", "hint": ""})
+
+    try:
+        market_data.setdefault("moodTriCards", build_mood_tri_cards(market_data))
+    except Exception:
+        market_data.setdefault("moodTriCards", [])
+
+    try:
+        market_data.setdefault("plateRankTop10", build_plate_rank_top10(market_data))
+    except Exception:
+        market_data.setdefault("plateRankTop10", [])
 
     # 离线增强：学习短线提醒 + 语录（随情绪阶段动态切换）
     try:

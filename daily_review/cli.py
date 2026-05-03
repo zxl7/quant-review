@@ -18,7 +18,7 @@ from pathlib import Path
 from daily_review.modules_v2 import ALL_MODULES
 from daily_review.pipeline.context import Context
 from daily_review.pipeline.runner import Runner
-from daily_review.render.render_html import render_html_template
+from daily_review.render.render_html import render_html_template, build_plate_rank_top10
 from daily_review.cache_io import read_json, write_json
 from daily_review.config import load_config_from_env
 from daily_review.config import DEFAULT_CONFIG
@@ -40,6 +40,138 @@ from daily_review.data.plate_rotate_fetcher import PlateRotateFetcher
 def _workspace_root() -> Path:
     # /workspace/daily_review/cli.py -> /workspace
     return Path(__file__).resolve().parent.parent
+
+
+def _build_plan_guide(market_data: dict) -> dict | None:
+    """
+    为前端生成轻量版“明日行动指南”字段，避免模板直接依赖 v2/v3 大对象。
+    优先级：v3 -> v2 -> 顶层兜底。
+    """
+    md = market_data if isinstance(market_data, dict) else {}
+
+    v3 = md.get("v3") if isinstance(md.get("v3"), dict) else {}
+    if v3:
+        sent = v3.get("sentiment") if isinstance(v3.get("sentiment"), dict) else {}
+        right = v3.get("rightside") if isinstance(v3.get("rightside"), dict) else {}
+        mainline = (((v3.get("mainstream") or {}) if isinstance(v3.get("mainstream"), dict) else {}).get("mainline") or {})
+        trading_nature = (((v3.get("tradingNature") or {}) if isinstance(v3.get("tradingNature"), dict) else {}).get("nature") or {})
+        full_pos = v3.get("fullPosition") if isinstance(v3.get("fullPosition"), dict) else {}
+        pos = v3.get("positionV3") if isinstance(v3.get("positionV3"), dict) else {}
+        return {
+            "phase": sent.get("phase") or "-",
+            "score": sent.get("score", "-"),
+            "position": pos.get("capital_pct_adjusted", "-"),
+            "advice": right.get("advice") or "",
+            "rightsideText": "允许" if right.get("allowed") is True else ("禁止" if right.get("allowed") is False else "-"),
+            "mainline": mainline.get("top_sector") or "",
+            "nature": trading_nature.get("label") or "",
+            "resonance": (
+                f"{full_pos.get('passed_count')}/3"
+                if full_pos.get("passed_count") is not None
+                else ""
+            ),
+            "warnings": sent.get("warnings") if isinstance(sent.get("warnings"), list) else [],
+        }
+
+    v2 = md.get("v2") if isinstance(md.get("v2"), dict) else {}
+    if v2:
+        sent = v2.get("sentiment") if isinstance(v2.get("sentiment"), dict) else {}
+        strategy = v2.get("strategy") if isinstance(v2.get("strategy"), dict) else {}
+        right = v2.get("rightside") if isinstance(v2.get("rightside"), dict) else {}
+        sector = v2.get("sector") if isinstance(v2.get("sector"), dict) else {}
+        mainline = sector.get("mainline") if isinstance(sector.get("mainline"), dict) else {}
+        trade_nature = v2.get("trade_nature") if isinstance(v2.get("trade_nature"), dict) else {}
+        resonance = v2.get("resonance") if isinstance(v2.get("resonance"), dict) else {}
+        warnings = []
+        if isinstance(strategy.get("warnings"), list):
+            warnings.extend(strategy.get("warnings") or [])
+        if isinstance(strategy.get("iron_rules"), list):
+            warnings.extend(strategy.get("iron_rules") or [])
+        return {
+            "phase": sent.get("phase") or strategy.get("tone") or "-",
+            "score": sent.get("score", "-"),
+            "position": ((strategy.get("position") or {}) if isinstance(strategy.get("position"), dict) else {}).get("recommended_max", "-"),
+            "advice": strategy.get("overall_advice") or "",
+            "rightsideText": "允许" if right.get("can_enter") is True else ("禁止" if right.get("can_enter") is False else "-"),
+            "mainline": mainline.get("top_sector") or "",
+            "nature": trade_nature.get("label") or "",
+            "resonance": (
+                f"{resonance.get('passed_count')}/3"
+                if resonance.get("passed_count") is not None
+                else ""
+            ),
+            "warnings": warnings[:6],
+        }
+
+    top_sent = md.get("sentiment") if isinstance(md.get("sentiment"), dict) else {}
+    mood_stage = md.get("moodStage") if isinstance(md.get("moodStage"), dict) else {}
+    return {
+        "phase": top_sent.get("phase") or mood_stage.get("title") or "-",
+        "score": top_sent.get("score", "-"),
+        "position": "-",
+        "advice": "",
+        "rightsideText": "-",
+        "mainline": "",
+        "nature": "",
+        "resonance": "",
+        "warnings": [],
+    }
+
+
+def _prune_frontend_unused_fields(market_data: dict) -> None:
+    """
+    删除当前页面不再消费、但体积较大的遗留字段，减小 cache/html 注入体积。
+    注意：此函数应在所有依赖这些字段的派生计算完成之后调用。
+    """
+    market_data["planGuide"] = _build_plan_guide(market_data)
+    try:
+        market_data["plateRankTop10"] = build_plate_rank_top10(market_data)
+    except Exception:
+        pass
+    try:
+        ztgc = market_data.get("ztgc")
+        if isinstance(ztgc, list):
+            keep = ("dm", "mc", "lbc", "cje", "zsz", "zj", "zbc", "hs", "fbt", "hy")
+            market_data["ztgc"] = [{k: row.get(k) for k in keep if isinstance(row, dict)} for row in ztgc if isinstance(row, dict)]
+    except Exception:
+        pass
+    try:
+        code2themes = market_data.get("zt_code_themes")
+        if isinstance(code2themes, dict):
+            compact = {}
+            for code, themes in code2themes.items():
+                if not isinstance(code, str):
+                    continue
+                if isinstance(themes, list):
+                    compact[code] = [str(t).strip() for t in themes if str(t).strip()][:4]
+                else:
+                    compact[code] = []
+            market_data["zt_code_themes"] = compact
+    except Exception:
+        pass
+    try:
+        details = market_data.get("plateRotateDetailByCode")
+        if isinstance(details, dict):
+            compact = {}
+            for code, row in details.items():
+                if not isinstance(row, dict):
+                    continue
+                compact[str(code)] = {
+                    "date": row.get("date") or [],
+                    "strengthSeries": row.get("strengthSeries") or [],
+                    "volumeSeries": row.get("volumeSeries") or [],
+                }
+            market_data["plateRotateDetailByCode"] = compact
+    except Exception:
+        pass
+    for key in ("raw", "compat", "v2", "v3", "dragon", "height_module", "sector"):
+        market_data.pop(key, None)
+    meta = market_data.get("meta") if isinstance(market_data.get("meta"), dict) else {}
+    if isinstance(meta, dict):
+        meta.pop("algo", None)
+        if meta.get("default_page") == "v3":
+            meta.pop("default_page", None)
+        market_data["meta"] = meta
 
 
 def run_full(date: str | None) -> int:
@@ -855,26 +987,13 @@ def run_rebuild(date: str, modules: list[str] | None = None, suffix: str = "", s
     except Exception:
         pass
 
-    # 写回缓存（让离线 render/partial 都读到最新重建结果）
-    # compat：统一输出层（v1/v2/v3 → marketData.compat.*）
+    # 清理前端已不用的大字段：统一视图/compat 兼容层已下线，同时下沉 planGuide
     try:
-        from daily_review.compat import build_compat
-
-        prefer_algo = os.environ.get("REPORT_ALGO", "").strip().lower() or "auto"
-        if prefer_algo not in ("auto", "v1", "v2", "v3"):
-            prefer_algo = "auto"
-        market_data["compat"] = build_compat(market_data, prefer=prefer_algo)  # type: ignore[arg-type]
-        meta = market_data.get("meta") if isinstance(market_data.get("meta"), dict) else {}
-        if not isinstance(meta, dict):
-            meta = {}
-        meta["algo"] = market_data.get("compat", {}).get("algo", prefer_algo)
-        market_data["meta"] = meta
+        _prune_frontend_unused_fields(market_data)
     except Exception:
         pass
 
-    market_path.write_text(json.dumps(market_data, ensure_ascii=False, indent=2), encoding="utf-8")
-
-    # 渲染 tab-v1
+    # 渲染 tab-v1（render 阶段还会补充部分展示专用派生字段）
     template_path = root / "templates" / "report_template.html"
     out_dir = root / "html"
     out_dir.mkdir(parents=True, exist_ok=True)
@@ -888,6 +1007,8 @@ def run_rebuild(date: str, modules: list[str] | None = None, suffix: str = "", s
         report_date=date,
         date_note=market_data.get("dateNote", ""),
     )
+    # 回写最终 market_data：确保 render 阶段补齐的展示字段也能稳定落盘
+    market_path.write_text(json.dumps(market_data, ensure_ascii=False, indent=2), encoding="utf-8")
     print(f"✅ rebuild 输出: {out_path}")
     return 0
 
@@ -1966,19 +2087,9 @@ def run_partial(date: str, modules: list[str]) -> int:
     runner.run(ctx, targets=modules)
     market_data = ctx.market_data
 
-    # compat：统一输出层（partial 也需要，避免模板读不到）
+    # 清理前端已不用的大字段：避免 partial 更新时把旧 compat/default_page 等写回
     try:
-        from daily_review.compat import build_compat
-
-        prefer_algo = os.environ.get("REPORT_ALGO", "").strip().lower() or "auto"
-        if prefer_algo not in ("auto", "v1", "v2", "v3"):
-            prefer_algo = "auto"
-        market_data["compat"] = build_compat(market_data, prefer=prefer_algo)  # type: ignore[arg-type]
-        meta = market_data.get("meta") if isinstance(market_data.get("meta"), dict) else {}
-        if not isinstance(meta, dict):
-            meta = {}
-        meta["algo"] = market_data.get("compat", {}).get("algo", prefer_algo)
-        market_data["meta"] = meta
+        _prune_frontend_unused_fields(market_data)
     except Exception:
         pass
 
@@ -1995,6 +2106,8 @@ def run_partial(date: str, modules: list[str]) -> int:
         report_date=date,
         date_note=market_data.get("dateNote", ""),
     )
+    # 与 rebuild 保持一致：render 阶段补齐后的展示字段需要稳定写回 cache
+    market_path.write_text(json.dumps(market_data, ensure_ascii=False, indent=2), encoding="utf-8")
 
     print(f"✅ partial 输出: {out_path}")
     return 0
@@ -2005,7 +2118,6 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--date", help="报告日期 YYYY-MM-DD（缺省则走全量模式的默认逻辑）")
     ap.add_argument("--require-python", default="", help="强制要求使用指定 Python 解释器路径（例如 /usr/local/bin/python3）")
     ap.add_argument("--require-py", default="", help="强制要求 Python 版本前缀（例如 3.14）")
-    ap.add_argument("--algo", default="auto", choices=["auto", "v1", "v2", "v3"], help="选择算法口径：auto=优先v3→v2→v1；或强制指定 v1/v2/v3")
     ap.add_argument("--rebuild", action="store_true", help="离线重建（不请求接口）：重算并输出 tab-v1 HTML")
     ap.add_argument("--fetch", action="store_true", help="在线取数并生成缓存，然后离线重建输出 tab-v1（有成本）")
     ap.add_argument(
@@ -2032,9 +2144,6 @@ def main(argv: list[str] | None = None) -> int:
     # 传递 mode 到全局上下文
     if args.mode == "intraday":
         os.environ["REPORT_MODE"] = "intraday"
-    # 传递 algo（供 compat 层决定口径）
-    os.environ["REPORT_ALGO"] = (args.algo or "auto")
-
     if args.only:
         if not args.date:
             raise SystemExit("--only 模式必须指定 --date")
