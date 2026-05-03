@@ -46,6 +46,24 @@ def _intraday_slices_path(root: Path, date10: str) -> Path:
     return root / "cache" / f"intraday_slices-{_date10_to_8(date10)}.json"
 
 
+def _normalize_slot_label(ts_bj: str) -> str:
+    slots = ["09:35", "10:05", "10:35", "11:05", "13:05", "13:35", "14:05", "14:35"]
+    raw = str(ts_bj or "")[11:16] if len(str(ts_bj or "")) >= 16 else str(ts_bj or "")
+    try:
+        hh, mm = raw.split(":")
+        cur = int(hh) * 60 + int(mm)
+    except Exception:
+        return raw or slots[-1]
+    slot_minutes = []
+    for s in slots:
+        sh, sm = s.split(":")
+        slot_minutes.append((int(sh) * 60 + int(sm), s))
+    eligible = [label for minute, label in slot_minutes if minute <= cur]
+    if eligible:
+        return eligible[-1]
+    return slots[0]
+
+
 def _calc_shift_score(rec: dict[str, Any]) -> int:
     fb = _to_num(rec.get("fb"), 0)
     jj = _to_num(rec.get("jj"), 0)
@@ -104,8 +122,9 @@ def _build_slice(snapshot: dict[str, Any], prev: dict[str, Any] | None = None) -
     jj = round(lianban / max(zt, 1) * 100.0, 1)
     heat = int(round(max(0.0, min(100.0, 0.42 * fb + 0.24 * jj + min(zt, 100) * 0.16 + min(max_lb * 12.0, 100) * 0.18))))
     risk = int(round(max(0.0, min(100.0, zb * 0.55 + min(dt * 5.0, 100.0) * 0.30 + min(zab * 3.0, 100.0) * 0.15))))
+    slot_time = _normalize_slot_label(ts_bj)
     rec = {
-        "time": ts_bj[11:16] if len(ts_bj) >= 16 else ts_bj,
+        "time": slot_time,
         "ts_bj": ts_bj,
         "date": str(snapshot.get("date") or ""),
         "source": "intraday_live",
@@ -148,14 +167,25 @@ def append_intraday_slice(*, root: Path, snapshot: dict[str, Any]) -> dict[str, 
     for row in rows:
         if not isinstance(row, dict):
             continue
-        if row.get("time") == rec.get("time"):
-            out.append(rec)
-            replaced = True
-        else:
-            out.append(row)
+        normalized_row = dict(row)
+        normalized_row["time"] = _normalize_slot_label(str(row.get("time") or row.get("ts_bj") or ""))
+        if normalized_row.get("time") == rec.get("time"):
+            if not replaced:
+                out.append(rec)
+                replaced = True
+            continue
+        out.append(normalized_row)
     if not replaced:
         out.append(rec)
-    out = out[-32:]
+
+    dedup: dict[str, dict[str, Any]] = {}
+    for row in out:
+        if not isinstance(row, dict):
+            continue
+        key = str(row.get("time") or "")
+        dedup[key] = row
+    ordered_slots = ["09:35", "10:05", "10:35", "11:05", "13:05", "13:35", "14:05", "14:35"]
+    out = [dedup[s] for s in ordered_slots if s in dedup][-32:]
     _write_json(path, out)
     return {
         "date": date10,
