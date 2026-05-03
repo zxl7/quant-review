@@ -42,6 +42,7 @@ def build_required_files(date10: str, mode: str) -> list[tuple[str, Path, bool]]
         ("pools_cache.json", CACHE_DIR / "pools_cache.json", True),
         ("theme_cache.json", CACHE_DIR / "theme_cache.json", True),
         ("plate_rotate_cache.json", CACHE_DIR / "plate_rotate_cache.json", True),
+        ("trade_days_cache.json", CACHE_DIR / "trade_days_cache.json", True),
     ]
     optional: list[tuple[str, Path, bool]] = [
         ("index_kline_cache.json", CACHE_DIR / "index_kline_cache.json", False),
@@ -49,7 +50,6 @@ def build_required_files(date10: str, mode: str) -> list[tuple[str, Path, bool]]
         ("height_trend_cache.json", CACHE_DIR / "height_trend_cache.json", False),
         ("concept_fund_flow_cache.json", CACHE_DIR / "concept_fund_flow_cache.json", False),
         ("money_flow_cache.json", CACHE_DIR / "money_flow_cache.json", False),
-        ("trade_days_cache.json", CACHE_DIR / "trade_days_cache.json", False),
     ]
     return base + (optional if mode == "full" else [])
 

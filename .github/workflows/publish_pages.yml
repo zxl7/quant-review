@@ -159,26 +159,84 @@ jobs:
             exit 2
           fi
           PYTHONPATH=. python3 - <<'PY'
-          import os, datetime as dt
+          import os, re, json, datetime as dt
+          from pathlib import Path
           from daily_review.config import load_config_from_env
           from daily_review.http import HttpClient
           from daily_review.data.biying import get_recent_trade_dates, get_realtime_market_date
 
+          root = Path(".")
+          cache_dir = root / "cache"
+
+          def collect_local_trade_days():
+            out = set()
+            # 1) trade_days_cache（若最新则直接用）
+            p = cache_dir / "trade_days_cache.json"
+            try:
+              if p.exists():
+                data = json.loads(p.read_text(encoding="utf-8"))
+                days = data.get("days") or []
+                for d in days:
+                  if isinstance(d, str) and re.match(r"^\d{4}-\d{2}-\d{2}$", d):
+                    out.add(d)
+            except Exception:
+              pass
+
+            # 2) pools_cache：通常比 trade_days_cache 更新
+            p = cache_dir / "pools_cache.json"
+            try:
+              if p.exists():
+                data = json.loads(p.read_text(encoding="utf-8"))
+                pools = (data.get("pools") or {}) if isinstance(data, dict) else {}
+                for pn in ("ztgc", "dtgc", "zbgc", "qsgc"):
+                  mp = pools.get(pn) or {}
+                  if isinstance(mp, dict):
+                    for d in mp.keys():
+                      if isinstance(d, str) and re.match(r"^\d{4}-\d{2}-\d{2}$", d):
+                        out.add(d)
+            except Exception:
+              pass
+
+            # 3) market_data 文件名：本地已成功构建过的日期也算可靠交易日
+            try:
+              for fp in cache_dir.glob("market_data-*.json"):
+                m = re.match(r"market_data-(\d{8})\.json$", fp.name)
+                if not m:
+                  continue
+                d8 = m.group(1)
+                out.add(f"{d8[:4]}-{d8[4:6]}-{d8[6:8]}")
+            except Exception:
+              pass
+
+            return sorted(out)
+
           cfg = load_config_from_env()
           client = HttpClient(base_url=cfg.base_url, token=cfg.token, timeout=30)
           today = dt.datetime.now().strftime("%Y-%m-%d")
-          dates = get_recent_trade_dates(client, n=20) or []
-          latest_trade = dates[-1] if dates else today
-          rt_date = get_realtime_market_date(client)
-          is_trade_today = "true" if (rt_date == today) else "false"
+          local_dates = collect_local_trade_days()
+
+          if local_dates:
+            dates = [d for d in local_dates if d <= today]
+            latest_trade = dates[-1] if dates else local_dates[-1]
+            is_trade_today = "true" if today in local_dates else "false"
+            rt_date = ""
+            source = "local_cache"
+          else:
+            dates = get_recent_trade_dates(client, n=20) or []
+            latest_trade = dates[-1] if dates else today
+            rt_date = get_realtime_market_date(client)
+            is_trade_today = "true" if (today in dates or rt_date == today) else "false"
+            source = "remote_fallback"
 
           with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as f:
             f.write(f"today_bj={today}\n")
             f.write(f"latest_trade_date={latest_trade}\n")
             f.write(f"realtime_market_date={rt_date}\n")
             f.write(f"is_trade_today={is_trade_today}\n")
+            f.write(f"trade_day_source={source}\n")
           print("today_bj=", today)
           print("latest_trade_date=", latest_trade)
+          print("trade_day_source=", source)
           print("realtime_market_date=", rt_date)
           print("is_trade_today=", is_trade_today)
           PY

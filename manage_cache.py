@@ -113,6 +113,7 @@ def sync_online_cache(date10: str, *, mode: str = "minimal") -> tuple[list[Path]
         CACHE_DIR / "pools_cache.json",
         CACHE_DIR / "theme_cache.json",
         CACHE_DIR / "plate_rotate_cache.json",
+        CACHE_DIR / "trade_days_cache.json",
     ]
     optional = [
         CACHE_DIR / "index_kline_cache.json",
@@ -120,7 +121,6 @@ def sync_online_cache(date10: str, *, mode: str = "minimal") -> tuple[list[Path]
         CACHE_DIR / "theme_trend_cache.json",
         CACHE_DIR / "concept_fund_flow_cache.json",
         CACHE_DIR / "money_flow_cache.json",
-        CACHE_DIR / "trade_days_cache.json",
     ]
     files = required + (optional if mode == "full" else [])
 
