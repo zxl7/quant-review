@@ -97,6 +97,15 @@ jobs:
           path: cache
           key: cache-${{ runner.os }}-${{ steps.datekey.outputs.d8 }}
 
+      - name: Seed cache from repository cache_online/
+        if: ${{ github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true' }}
+        run: |
+          set -euo pipefail
+          mkdir -p cache
+          if [ -d "cache_online" ]; then
+            cp -f cache_online/*.json cache/ 2>/dev/null || true
+          fi
+
       - name: Checkout gh-pages (history cache + publish branch)
         if: ${{ github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true' }}
         uses: actions/checkout@v4
@@ -114,6 +123,16 @@ jobs:
           mkdir -p site_prev/cache
           # 把 gh-pages 中沉淀的历史 cache 拉回工作区，供“趋势/分位”计算使用
           cp -f site_prev/cache/market_data-*.json cache/ 2>/dev/null || true
+          # 线上依赖缓存：远端 render/rebuild 需要的本地依赖
+          cp -f site_prev/cache/pools_cache.json cache/ 2>/dev/null || true
+          cp -f site_prev/cache/theme_cache.json cache/ 2>/dev/null || true
+          cp -f site_prev/cache/plate_rotate_cache.json cache/ 2>/dev/null || true
+          cp -f site_prev/cache/index_kline_cache.json cache/ 2>/dev/null || true
+          cp -f site_prev/cache/height_trend_cache.json cache/ 2>/dev/null || true
+          cp -f site_prev/cache/theme_trend_cache.json cache/ 2>/dev/null || true
+          cp -f site_prev/cache/concept_fund_flow_cache.json cache/ 2>/dev/null || true
+          cp -f site_prev/cache/money_flow_cache.json cache/ 2>/dev/null || true
+          cp -f site_prev/cache/trade_days_cache.json cache/ 2>/dev/null || true
 
           # 本地 cache 只保留最近 7 个交易日（按文件名 YYYYMMDD 排序）
           files=( $(ls -1 cache/market_data-*.json 2>/dev/null | sort || true) )
@@ -270,6 +289,15 @@ jobs:
           # 同步历史 cache（只保留最近 7 个 market_data-YYYYMMDD.json）
           mkdir -p site_prev/cache
           cp -f cache/market_data-*.json site_prev/cache/ 2>/dev/null || true
+          cp -f cache/pools_cache.json site_prev/cache/ 2>/dev/null || true
+          cp -f cache/theme_cache.json site_prev/cache/ 2>/dev/null || true
+          cp -f cache/plate_rotate_cache.json site_prev/cache/ 2>/dev/null || true
+          cp -f cache/index_kline_cache.json site_prev/cache/ 2>/dev/null || true
+          cp -f cache/height_trend_cache.json site_prev/cache/ 2>/dev/null || true
+          cp -f cache/theme_trend_cache.json site_prev/cache/ 2>/dev/null || true
+          cp -f cache/concept_fund_flow_cache.json site_prev/cache/ 2>/dev/null || true
+          cp -f cache/money_flow_cache.json site_prev/cache/ 2>/dev/null || true
+          cp -f cache/trade_days_cache.json site_prev/cache/ 2>/dev/null || true
           cfiles=( $(ls -1 site_prev/cache/market_data-*.json 2>/dev/null | sort || true) )
           if [ ${#cfiles[@]} -gt 7 ]; then
             rm -f "${cfiles[@]:0:${#cfiles[@]}-7}"
