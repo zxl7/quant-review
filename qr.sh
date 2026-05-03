@@ -12,6 +12,7 @@
 #   ./qr.sh fetch [YYYY-MM-DD]   # 在线取数 + 写入 cache + 离线渲染 html/复盘日记-YYYYMMDD-tab-v1.html
 #   ./qr.sh gen  [YYYY-MM-DD]    # 仅在线取数生成缓存/带时分秒 HTML（不做离线渲染 tab-v1）
 #   ./qr.sh render [YYYY-MM-DD]  # 只用 cache 离线渲染（不请求接口）
+#   ./qr.sh sync-cache [YYYY-MM-DD] # 同步 cache_online/（远端自动构建依赖目录）
 #   ./qr.sh deploy              # （可选）把最新 tab-v1 报告发布到 gh-pages/index.html
 #
 set -euo pipefail
@@ -121,6 +122,18 @@ prune_extra_cache_artifacts() {
   fi
 }
 
+sync_online_cache_dir() {
+  # 将本地 cache 中远端构建需要的最小文件同步到 cache_online/
+  # 默认不压缩；因为你的主流程是“本地构建 -> git 提交 -> 远端自动构建”
+  local date10="$1"
+  if [[ -f "manage_cache.py" ]]; then
+    info "同步 cache_online/（供远端自动构建使用）: ${date10}"
+    python3 manage_cache.py --date "${date10}" --mode minimal >/dev/null
+  else
+    info "跳过 cache_online 同步：未找到 manage_cache.py"
+  fi
+}
+
 prune_html_keep_latest_report() {
   # 只保留最新一份「复盘日记-*.html」，其余历史报告全部删除
   local latest
@@ -167,6 +180,7 @@ cmd_fetch() {
     cleanup_timestamp_html "$(date10_to_date8 "${DATE_ARG}")"
     prune_cache_keep_latest_n 7
     prune_extra_cache_artifacts
+    sync_online_cache_dir "${DATE_ARG}"
     return 0
   fi
 
@@ -181,6 +195,7 @@ cmd_fetch() {
   cleanup_timestamp_html "${d8}"
   prune_cache_keep_latest_n 7
   prune_extra_cache_artifacts
+  sync_online_cache_dir "${d10}"
 }
 
 cmd_gen() {
@@ -196,8 +211,13 @@ cmd_gen() {
   if [[ -n "${DATE_ARG}" ]]; then
     # 兼容：暂时仍保留 gen_report_v4，但推荐用 daily_review.cli --fetch
     python3 gen_report_v4.py "${DATE_ARG}"
+    sync_online_cache_dir "${DATE_ARG}"
   else
     python3 gen_report_v4.py
+    local d8 d10
+    d8="$(pick_latest_cache_date8)" || die "未找到 cache/market_data-*.json（gen_report_v4.py 未生成缓存？）"
+    d10="$(date8_to_date10 "${d8}")"
+    sync_online_cache_dir "${d10}"
   fi
 }
 
@@ -207,6 +227,7 @@ cmd_render() {
     render_offline "${DATE_ARG}"
     prune_cache_keep_latest_n 7
     prune_extra_cache_artifacts
+    sync_online_cache_dir "${DATE_ARG}"
     return 0
   fi
 
@@ -216,6 +237,20 @@ cmd_render() {
   render_offline "${d10}"
   prune_cache_keep_latest_n 7
   prune_extra_cache_artifacts
+  sync_online_cache_dir "${d10}"
+}
+
+cmd_sync_cache() {
+  load_dotenv_if_needed
+  local d8 d10
+  if [[ -n "${DATE_ARG}" ]]; then
+    d10="${DATE_ARG}"
+  else
+    d8="$(pick_latest_cache_date8)" || die "未找到 cache/market_data-*.json，请先执行：./qr.sh fetch 或 ./qr.sh render"
+    d10="$(date8_to_date10 "${d8}")"
+  fi
+  sync_online_cache_dir "${d10}"
+  info "已同步远端依赖目录: cache_online/"
 }
 
 cmd_deploy() {
@@ -283,6 +318,7 @@ main() {
     fetch)  cmd_fetch ;;
     gen)    cmd_gen ;;
     render) cmd_render ;;
+    sync-cache) cmd_sync_cache ;;
     deploy) cmd_deploy ;;
     -h|--help|help|"") usage ;;
     *) die "未知命令：${cmd}（用 ./qr.sh help 查看用法）" ;;
