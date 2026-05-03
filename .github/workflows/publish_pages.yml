@@ -268,6 +268,10 @@ jobs:
           mkdir -p ./site
           cp -f "${report_html}" ./site/
           cp -f "${report_html}" ./site/index.html
+          if [ -d "./html/vendor" ]; then
+            mkdir -p ./site/vendor
+            cp -f ./html/vendor/* ./site/vendor/ 2>/dev/null || true
+          fi
           touch ./site/.nojekyll
           echo "site=index.html from: ${report_html}"
 
@@ -285,6 +289,10 @@ jobs:
           for f in ./site/*.html; do
             if [ -f "$f" ]; then cp -f "$f" site_prev/; fi
           done
+          if [ -d "./site/vendor" ]; then
+            mkdir -p site_prev/vendor
+            cp -f ./site/vendor/* site_prev/vendor/ 2>/dev/null || true
+          fi
 
           # 同步历史 cache（只保留最近 7 个 market_data-YYYYMMDD.json）
           mkdir -p site_prev/cache

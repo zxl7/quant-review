@@ -280,18 +280,28 @@ cmd_deploy() {
   report_html="$(ls -t ./html/*tab-v1.html 2>/dev/null | head -n 1 || true)"
   [[ -n "${report_html}" ]] || die "未找到可发布的报告文件：./html/*tab-v1.html"
 
-  local tmp
+  local tmp tmpdir
   tmp="$(mktemp -t deploy_pages.XXXXXX.html)"
   cp -f "${report_html}" "${tmp}"
+  tmpdir="$(mktemp -d -t deploy_pages_dir.XXXXXX)"
+  if [[ -d "./html/vendor" ]]; then
+    mkdir -p "${tmpdir}/vendor"
+    cp -f ./html/vendor/* "${tmpdir}/vendor/" 2>/dev/null || true
+  fi
 
   info "切到 ${pages_branch} 并覆盖 ${pages_file}"
   git switch "${pages_branch}"
   cd "${repo_root}"
   mkdir -p "$(dirname "${pages_file}")" 2>/dev/null || true
   install -m 644 "${tmp}" "${pages_file}"
+  if [[ -d "${tmpdir}/vendor" ]]; then
+    mkdir -p ./vendor
+    cp -f "${tmpdir}/vendor/"* ./vendor/ 2>/dev/null || true
+  fi
   rm -f "${tmp}"
+  rm -rf "${tmpdir}"
 
-  git add "${pages_file}"
+  git add "${pages_file}" ./vendor
   git commit -m "deploy: $(date '+%F %T')" || true
   git push
 
