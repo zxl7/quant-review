@@ -78,12 +78,19 @@ def classify_cache() -> tuple[list[CacheRule], list[CacheRule]]:
     for p in dropped_market:
         drop.append(CacheRule(p, "drop", "超出最近 7 个 market_data 快照"))
 
-    # intraday snapshots：只保留最近 2 个
+    # intraday snapshots：兼容旧文件名，只保留最近 2 个
     kept_snap, dropped_snap = keep_latest(CACHE_DIR.glob("intraday_snapshots-*.json"), 2)
     for p in kept_snap:
         keep.append(CacheRule(p, "keep", "保留最近 2 个盘中快照"))
     for p in dropped_snap:
         drop.append(CacheRule(p, "drop", "过旧盘中快照"))
+
+    # intraday slices：新盘中切片文件，只保留最近 2 个
+    kept_slices, dropped_slices = keep_latest(CACHE_DIR.glob("intraday_slices-*.json"), 2)
+    for p in kept_slices:
+        keep.append(CacheRule(p, "keep", "保留最近 2 个盘中切片"))
+    for p in dropped_slices:
+        drop.append(CacheRule(p, "drop", "过旧盘中切片"))
 
     # v3_quality markdown：当前无代码消费，按临时分析产物处理
     for p in sorted(CACHE_DIR.glob("v3_quality-*.md")):
@@ -152,7 +159,7 @@ def write_report(keep: list[CacheRule], drop: list[CacheRule], date10: str, mode
         "## 当前脚本自动清理现状",
         "",
         "- `qr.sh` 目前只会自动删除：旧的 `market_data-*.json`（保留最近 7 个）和历史 HTML。",
-        "- `qr.sh` 目前不会自动删除：`intraday_snapshots-*`、`v3_quality-*.md`、`learning_notes_history.json`、`trade_days_cache.json` 等。",
+        "- `qr.sh` 目前不会自动删除：`intraday_snapshots-*`、`intraday_slices-*`、`v3_quality-*.md`、`learning_notes_history.json`、`trade_days_cache.json` 等。",
         "",
         "## 建议保留",
         "",

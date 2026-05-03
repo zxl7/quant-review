@@ -104,10 +104,11 @@ prune_cache_keep_latest_n() {
 
 prune_extra_cache_artifacts() {
   # 额外清理：
-  # - intraday_snapshots 只保留最近 2 份
+  # - intraday_snapshots / intraday_slices 只保留最近 2 份
   # - v3_quality-*.md 视为临时分析产物，全部删除
   shopt -s nullglob
   local snaps=( cache/intraday_snapshots-*.json )
+  local slices=( cache/intraday_slices-*.json )
   local v3m=( cache/v3_quality-*.md )
   shopt -u nullglob
 
@@ -115,6 +116,12 @@ prune_extra_cache_artifacts() {
     IFS=$'\n' snaps=( $(printf "%s\n" "${snaps[@]}" | sort) )
     unset IFS
     rm -f "${snaps[@]:0:${#snaps[@]}-2}"
+  fi
+
+  if ((${#slices[@]} > 2)); then
+    IFS=$'\n' slices=( $(printf "%s\n" "${slices[@]}" | sort) )
+    unset IFS
+    rm -f "${slices[@]:0:${#slices[@]}-2}"
   fi
 
   if ((${#v3m[@]} > 0)); then
@@ -253,6 +260,19 @@ cmd_sync_cache() {
   info "已同步远端依赖目录: cache_online/"
 }
 
+cmd_watch_slice() {
+  load_dotenv_if_needed
+  ensure_token
+  local date_arg="${DATE_ARG:-}"
+  info "生成实时盯盘切片 JSON（独立请求层，不重建整份报告）"
+  if [[ -n "${date_arg}" ]]; then
+    PYTHONPATH=. python3 -m daily_review.watch_runtime --date "$(date10_to_date8 "${date_arg}")" --publish
+  else
+    PYTHONPATH=. python3 -m daily_review.watch_runtime --publish
+  fi
+  prune_extra_cache_artifacts
+}
+
 cmd_deploy() {
   # 可选：本地发布到 gh-pages（仍沿用之前 deploy_pages.sh 的思路）
   # 说明：如果你主要用 GitHub Actions 发布，可以不需要该命令。
@@ -308,6 +328,7 @@ usage() {
   ./qr.sh fetch [YYYY-MM-DD]   在线取数 + 生成缓存 + 离线渲染 tab-v1 HTML
   ./qr.sh gen  [YYYY-MM-DD]    仅在线取数生成缓存/留档 HTML（不做离线渲染）
   ./qr.sh render [YYYY-MM-DD]  仅用 cache 离线渲染（不请求接口）
+  ./qr.sh watch-slice [YYYY-MM-DD]  仅生成实时盯盘切片 JSON（供页面动态读取）
   ./qr.sh deploy               （可选）发布最新 tab-v1 到 gh-pages/index.html
 EOF
 }
@@ -319,6 +340,7 @@ main() {
     gen)    cmd_gen ;;
     render) cmd_render ;;
     sync-cache) cmd_sync_cache ;;
+    watch-slice) cmd_watch_slice ;;
     deploy) cmd_deploy ;;
     -h|--help|help|"") usage ;;
     *) die "未知命令：${cmd}（用 ./qr.sh help 查看用法）" ;;

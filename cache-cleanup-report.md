@@ -6,15 +6,16 @@
 ## 当前脚本自动清理现状
 
 - `qr.sh` 目前只会自动删除：旧的 `market_data-*.json`（保留最近 7 个）和历史 HTML。
-- `qr.sh` 目前不会自动删除：`intraday_snapshots-*`、`v3_quality-*.md`、`learning_notes_history.json`、`trade_days_cache.json` 等。
+- `qr.sh` 目前不会自动删除：`intraday_snapshots-*`、`intraday_slices-*`、`v3_quality-*.md`、`learning_notes_history.json`、`trade_days_cache.json` 等。
 
 ## 建议保留
 
 - `concept_fund_flow_cache.json`：板块排行兜底数据
 - `height_trend_cache.json`：高度趋势模块依赖
 - `index_kline_cache.json`：指数K线/量能模块依赖
-- `intraday_snapshots-20260427.json`：保留最近 2 个盘中快照
+- `intraday_slices-20260430.json`：保留最近 2 个盘中切片
 - `intraday_snapshots-20260429.json`：保留最近 2 个盘中快照
+- `intraday_snapshots-20260430.json`：保留最近 2 个盘中快照
 - `learning_notes_history.json`：学习语录去重历史
 - `market_data-20260422.json`：最近 7 个 market_data 快照
 - `market_data-20260423.json`：最近 7 个 market_data 快照

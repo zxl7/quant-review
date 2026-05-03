@@ -9,6 +9,15 @@ on:
       - main
   # 定时触发（可按需调整；cron 为 UTC）
   schedule:
+    # 盘中半小时切片（北京时间）
+    - cron: "35 1 * * 1-5"  # 09:35
+    - cron: "5 2 * * 1-5"   # 10:05
+    - cron: "35 2 * * 1-5"  # 10:35
+    - cron: "5 3 * * 1-5"   # 11:05
+    - cron: "5 5 * * 1-5"   # 13:05
+    - cron: "35 5 * * 1-5"  # 13:35
+    - cron: "5 6 * * 1-5"   # 14:05
+    - cron: "35 6 * * 1-5"  # 14:35
     # GitHub Actions cron 只支持 UTC（北京时间=UTC+8）
     # 只在收盘后补一版（北京时间 15:12 -> UTC 07:12）
     # 原因：题材/板块数据通常收盘后才稳定更新；同时对齐本地“15:10 后再抓板块轮动”的规则。
@@ -63,7 +72,11 @@ jobs:
             hit_close=true
           fi
 
-          if [ "${hit_close}" = "true" ]; then
+          if [ "${hit_intraday}" = "true" ]; then
+            echo "skip=false" >> "$GITHUB_OUTPUT"
+            echo "mode=intraday" >> "$GITHUB_OUTPUT"
+            echo "Intraday window hit → intraday"
+          elif [ "${hit_close}" = "true" ]; then
             echo "skip=false" >> "$GITHUB_OUTPUT"
             echo "mode=eod" >> "$GITHUB_OUTPUT"
             echo "Close window hit → eod"
@@ -122,11 +135,17 @@ jobs:
           cp -f site_prev/cache/concept_fund_flow_cache.json cache/ 2>/dev/null || true
           cp -f site_prev/cache/money_flow_cache.json cache/ 2>/dev/null || true
           cp -f site_prev/cache/trade_days_cache.json cache/ 2>/dev/null || true
+          cp -f site_prev/cache/intraday_slices-*.json cache/ 2>/dev/null || true
+          cp -f site_prev/cache/intraday_snapshots-*.json cache/ 2>/dev/null || true
 
           # 本地 cache 只保留最近 7 个交易日（按文件名 YYYYMMDD 排序）
           files=( $(ls -1 cache/market_data-*.json 2>/dev/null | sort || true) )
           if [ ${#files[@]} -gt 7 ]; then
             rm -f "${files[@]:0:${#files[@]}-7}"
+          fi
+          sfiles=( $(ls -1 cache/intraday_slices-*.json 2>/dev/null | sort || true) )
+          if [ ${#sfiles[@]} -gt 2 ]; then
+            rm -f "${sfiles[@]:0:${#sfiles[@]}-2}"
           fi
 
       - name: Setup Python
@@ -296,8 +315,8 @@ jobs:
             run_date="${{ steps.tradeday.outputs.today_bj }}"
           fi
           if [ "${mode}" = "intraday" ]; then
-            # 盘中快照：每半小时一次（数据截止当前时刻）
-            PYTHONPATH=. python3 -m daily_review.cli --mode intraday --date "${run_date}"
+            # 盘中切片：请求层独立脚本，只更新 latest_intraday*.json 与当日切片文件
+            PYTHONPATH=. python3 -m daily_review.watch_runtime --date "$(echo "${run_date}" | tr -d '-')" --publish
           elif [ "${mode}" = "render" ]; then
             # push/workflow_dispatch：只使用本地已提交的 cache_online/cache 重建，不再在线 fetch 覆盖日期
             ./qr.sh render "${run_date}"
@@ -323,6 +342,10 @@ jobs:
             # - 复盘日记-YYYYMMDD-intra.html
             # - 复盘日记-YYYYMMDD-intraday-tab-v1.html
             report_html="$(ls -t ./html/*-intra.html ./html/*-intraday-tab-v1.html ./html/*intraday*.html 2>/dev/null | head -n 1 || true)"
+            # 盘中仅更新 JSON，若当天还没有完整报告，则回退到最近一份日终 HTML
+            if [ -z "${report_html}" ]; then
+              report_html="$(ls -t ./html/*tab-v1.html 2>/dev/null | head -n 1 || true)"
+            fi
           else
             report_html="$(ls -t ./html/*tab-v1.html 2>/dev/null | head -n 1 || true)"
           fi
@@ -336,6 +359,8 @@ jobs:
           mkdir -p ./site
           cp -f "${report_html}" ./site/
           cp -f "${report_html}" ./site/index.html
+          cp -f ./html/latest_intraday.json ./site/ 2>/dev/null || true
+          cp -f ./html/latest_intraday_slices.json ./site/ 2>/dev/null || true
           touch ./site/.nojekyll
           echo "site=index.html from: ${report_html}"
 
@@ -366,10 +391,18 @@ jobs:
           cp -f cache/concept_fund_flow_cache.json site_prev/cache/ 2>/dev/null || true
           cp -f cache/money_flow_cache.json site_prev/cache/ 2>/dev/null || true
           cp -f cache/trade_days_cache.json site_prev/cache/ 2>/dev/null || true
+          cp -f cache/intraday_slices-*.json site_prev/cache/ 2>/dev/null || true
           cfiles=( $(ls -1 site_prev/cache/market_data-*.json 2>/dev/null | sort || true) )
           if [ ${#cfiles[@]} -gt 7 ]; then
             rm -f "${cfiles[@]:0:${#cfiles[@]}-7}"
           fi
+          sfiles=( $(ls -1 site_prev/cache/intraday_slices-*.json 2>/dev/null | sort || true) )
+          if [ ${#sfiles[@]} -gt 2 ]; then
+            rm -f "${sfiles[@]:0:${#sfiles[@]}-2}"
+          fi
+
+          cp -f ./html/latest_intraday.json site_prev/ 2>/dev/null || true
+          cp -f ./html/latest_intraday_slices.json site_prev/ 2>/dev/null || true
 
           if git -C site_prev diff --quiet; then
             echo "No changes to commit."

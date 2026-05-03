@@ -12,6 +12,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import math
 import os
 from pathlib import Path
 
@@ -915,13 +916,7 @@ def run_rebuild(date: str, modules: list[str] | None = None, suffix: str = "", s
 
     # === 注入盘中快照列表（供“实时盯盘”页面展示）===
     try:
-        snaps = _load_intraday_snapshots(root=root, date=date)
-        if snaps:
-            market_data["intradaySnapshots"] = {
-                "date": date,
-                "count": len(snaps),
-                "snapshots": snaps,
-            }
+        _inject_intraday_snapshots(root=root, date=date, market_data=market_data)
     except Exception:
         pass
 
@@ -1013,6 +1008,12 @@ def run_rebuild(date: str, modules: list[str] | None = None, suffix: str = "", s
     return 0
 
 
+def _intraday_slices_path(root: Path, date: str) -> Path:
+    cache_dir = root / "cache"
+    d8 = date.replace("-", "")
+    return cache_dir / f"intraday_slices-{d8}.json"
+
+
 def _intraday_snapshots_path(root: Path, date: str) -> Path:
     cache_dir = root / "cache"
     d8 = date.replace("-", "")
@@ -1020,20 +1021,22 @@ def _intraday_snapshots_path(root: Path, date: str) -> Path:
 
 
 def _load_intraday_snapshots(*, root: Path, date: str) -> list[dict]:
-    p = _intraday_snapshots_path(root, date)
-    if not p.exists():
-        return []
-    try:
-        data = json.loads(p.read_text(encoding="utf-8"))
-        if isinstance(data, list):
-            return [x for x in data if isinstance(x, dict)]
-        return []
-    except Exception:
-        return []
+    for p in (_intraday_slices_path(root, date), _intraday_snapshots_path(root, date)):
+        if not p.exists():
+            continue
+        try:
+            data = json.loads(p.read_text(encoding="utf-8"))
+            if isinstance(data, list):
+                return [x for x in data if isinstance(x, dict)]
+            if isinstance(data, dict) and isinstance(data.get("snapshots"), list):
+                return [x for x in (data.get("snapshots") or []) if isinstance(x, dict)]
+        except Exception:
+            continue
+    return []
 
 
 def _write_intraday_snapshots(*, root: Path, date: str, snapshots: list[dict]) -> None:
-    p = _intraday_snapshots_path(root, date)
+    p = _intraday_slices_path(root, date)
     p.write_text(json.dumps(snapshots, ensure_ascii=False, indent=2), encoding="utf-8")
 
 
@@ -1052,15 +1055,20 @@ def _append_intraday_snapshot(*, root: Path, date: str, market_data: dict) -> No
     mood = market_data.get("mood") or {}
     ms = market_data.get("moodSignals") or {}
     hm2 = market_data.get("hm2Compare") or {}
+    panorama = market_data.get("panorama") or {}
 
     rec = {
         "time": t,
+        "source": "intraday_live",
         "headline": ms.get("headline") or "",
         "heat": mood.get("heat"),
         "risk": mood.get("risk"),
         "fb": mi.get("fb_rate"),
         "jj": mi.get("jj_rate"),
         "zb": mi.get("zb_rate"),
+        "dt": panorama.get("limitDown"),
+        "bf": mi.get("bf_count"),
+        "max_lb": mi.get("max_lb"),
         "loss": mi.get("loss"),
         "hm2": hm2.get("score"),
         "pos": ms.get("pos") or [],
@@ -1076,6 +1084,192 @@ def _append_intraday_snapshot(*, root: Path, date: str, market_data: dict) -> No
     # 限制条数（一天最多几十条）
     snaps = snaps[-60:]
     _write_intraday_snapshots(root=root, date=date, snapshots=snaps)
+
+
+def _safe_float(v, d: float = 0.0) -> float:
+    try:
+        if v is None or v == "":
+            return d
+        if isinstance(v, str):
+            s = v.replace("%", "").replace("亿", "").strip()
+            return float(s) if s else d
+        return float(v)
+    except Exception:
+        return d
+
+
+def _calc_watch_shift_score(rec: dict) -> int:
+    fb = _safe_float(rec.get("fb"), 0)
+    jj = _safe_float(rec.get("jj"), 0)
+    zb = _safe_float(rec.get("zb"), 0)
+    dt = _safe_float(rec.get("dt"), 0)
+    bf = _safe_float(rec.get("bf"), 0)
+    max_lb = _safe_float(rec.get("max_lb"), 0)
+    score = (
+        fb * 0.26
+        + jj * 0.22
+        + min(max_lb * 10.0, 100.0) * 0.14
+        + max(0.0, 100.0 - zb) * 0.18
+        + max(0.0, 100.0 - dt * 8.0) * 0.10
+        + max(0.0, 100.0 - bf * 5.0) * 0.10
+    )
+    return int(round(max(0.0, min(100.0, score))))
+
+
+def _watch_shift_label(score: int) -> str:
+    if score >= 72:
+        return "走强"
+    if score >= 60:
+        return "修复"
+    if score >= 48:
+        return "分歧"
+    if score >= 36:
+        return "走弱"
+    return "退潮"
+
+
+def _watch_shift_note(curr: dict, prev: dict | None) -> str:
+    if not prev:
+        return "以收盘数据反推盘中节奏，仅作盯盘视角模拟。"
+    diff = int(curr.get("shift_score", 0) or 0) - int(prev.get("shift_score", 0) or 0)
+    if diff >= 5:
+        return "承接增强、分歧收敛，情绪有继续抬升迹象。"
+    if diff >= 2:
+        return "情绪边际回暖，但仍需观察是否持续。"
+    if diff <= -5:
+        return "分歧与亏钱扩散同步抬头，情绪明显转弱。"
+    if diff <= -2:
+        return "情绪略有回落，谨防午后走弱。"
+    return "情绪整体平稳，维持当前节奏运行。"
+
+
+def _simulate_intraday_snapshots(*, date: str, market_data: dict) -> list[dict]:
+    times = ["09:35", "10:05", "10:35", "11:05", "13:05", "13:35", "14:05", "14:35"]
+    md = market_data or {}
+    mi = (md.get("features") or {}).get("mood_inputs") or {}
+    mood = md.get("mood") or {}
+    panorama = md.get("panorama") or {}
+    ms = md.get("moodSignals") or {}
+    hm2 = md.get("hm2Compare") or {}
+    final_fb = _safe_float(mi.get("fb_rate"), _safe_float(panorama.get("ratio"), 0))
+    final_jj = _safe_float(mi.get("jj_rate"), 0)
+    final_zb = _safe_float(mi.get("zb_rate"), 0)
+    final_dt = _safe_float(panorama.get("limitDown"), 0)
+    final_bf = _safe_float(mi.get("bf_count"), 0)
+    final_max_lb = _safe_float(mi.get("max_lb"), 0)
+    final_zt = _safe_float(panorama.get("limitUp"), 0)
+    final_lianban = _safe_float(mi.get("lianban_count"), 0)
+    final_heat = _safe_float(mood.get("heat"), 0)
+    final_risk = _safe_float(mood.get("risk"), 0)
+    final_hm2 = _safe_float(hm2.get("score"), 0)
+    final_loss = _safe_float(mi.get("loss"), final_dt + final_bf)
+
+    final_rec = {
+        "fb": final_fb,
+        "jj": final_jj,
+        "zb": final_zb,
+        "dt": final_dt,
+        "bf": final_bf,
+        "max_lb": final_max_lb,
+    }
+    final_score = _calc_watch_shift_score(final_rec)
+    trend_bias = max(-1.0, min(1.0, (final_score - 50.0) / 24.0))
+    progress = [0.0, 0.16, 0.32, 0.46, 0.62, 0.78, 0.90, 1.0]
+
+    def pos_series(final_v: float) -> list[float]:
+        start_factor = 0.80 - 0.22 * trend_bias
+        start = final_v * max(0.45, min(1.05, start_factor))
+        out = []
+        for i, p in enumerate(progress):
+            wiggle = math.sin((i / max(1, len(progress) - 1)) * math.pi) * final_v * 0.05 * (1.0 - abs(trend_bias) * 0.35)
+            out.append(max(0.0, start + (final_v - start) * p + wiggle))
+        out[-1] = final_v
+        return out
+
+    def neg_series(final_v: float) -> list[float]:
+        start_factor = 1.05 + 0.28 * trend_bias
+        start = final_v * max(0.55, min(1.50, start_factor))
+        out = []
+        for i, p in enumerate(progress):
+            wiggle = math.sin((i / max(1, len(progress) - 1)) * math.pi) * max(final_v, 1.0) * 0.06 * (1.0 - abs(trend_bias) * 0.35)
+            out.append(max(0.0, start + (final_v - start) * p + wiggle))
+        out[-1] = final_v
+        return out
+
+    fb_series = pos_series(final_fb)
+    jj_series = pos_series(final_jj)
+    max_lb_series = pos_series(final_max_lb)
+    heat_series = pos_series(final_heat)
+    hm2_series = pos_series(final_hm2)
+    zt_series = pos_series(final_zt)
+    lianban_series = pos_series(final_lianban)
+    zb_series = neg_series(final_zb)
+    dt_series = neg_series(final_dt)
+    bf_series = neg_series(final_bf)
+    risk_series = neg_series(final_risk)
+    loss_series = neg_series(final_loss)
+
+    snaps: list[dict] = []
+    prev = None
+    for i, t in enumerate(times):
+        rec = {
+            "time": t,
+            "source": "simulated_close",
+            "zt": int(round(zt_series[i])),
+            "lianban": int(round(lianban_series[i])),
+            "fb": round(fb_series[i], 1),
+            "jj": round(jj_series[i], 1),
+            "zb": round(zb_series[i], 1),
+            "zab": int(round(max(0.0, zt_series[i] * zb_series[i] / 100.0))),
+            "dt": int(round(dt_series[i])),
+            "bf": int(round(bf_series[i])),
+            "max_lb": int(round(max_lb_series[i])),
+            "loss": int(round(loss_series[i])),
+            "heat": int(round(heat_series[i])),
+            "risk": int(round(risk_series[i])),
+            "hm2": int(round(hm2_series[i])),
+            "pos": ms.get("pos") or [],
+            "riskSignals": ms.get("risk") or [],
+        }
+        rec["shift_score"] = _calc_watch_shift_score(rec)
+        rec["shift_label"] = _watch_shift_label(rec["shift_score"])
+        rec["headline"] = rec["shift_label"]
+        rec["note"] = _watch_shift_note(rec, prev)
+        snaps.append(rec)
+        prev = rec
+
+    if snaps:
+        snaps[-1]["headline"] = str(ms.get("headline") or snaps[-1]["shift_label"] or "收盘定格")
+        snaps[-1]["note"] = "收盘定格：使用当日收盘口径生成盘中轨迹，仅用于盯盘演化模拟。"
+    return snaps
+
+
+def _inject_intraday_snapshots(*, root: Path, date: str, market_data: dict) -> None:
+    snaps = _load_intraday_snapshots(root=root, date=date)
+    simulated = False
+    slices_path = _intraday_slices_path(root, date)
+    simulated_loaded = bool(snaps) and all(str((x or {}).get("source") or "") == "simulated_close" for x in snaps if isinstance(x, dict))
+    simulated_stale = simulated_loaded and any(
+        not isinstance(x, dict) or ("zt" not in x) or ("lianban" not in x) or ("zab" not in x) or ("shift_score" not in x)
+        for x in snaps
+    )
+    if len(snaps) < 4 or simulated_stale:
+        snaps = _simulate_intraday_snapshots(date=date, market_data=market_data)
+        simulated = True
+        if snaps:
+            _write_intraday_snapshots(root=root, date=date, snapshots=snaps)
+    elif simulated_loaded:
+        simulated = True
+    if snaps:
+        if not slices_path.exists():
+            _write_intraday_snapshots(root=root, date=date, snapshots=snaps)
+        market_data["intradaySnapshots"] = {
+            "date": date,
+            "count": len(snaps),
+            "snapshots": snaps,
+            "simulated": simulated,
+            "interval_min": 30,
+        }
 
 
 def _inject_mood_history_and_delta(*, root: Path, date: str, market_data: dict) -> None:
