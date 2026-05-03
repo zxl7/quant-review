@@ -4,12 +4,9 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>A股收盘简报 | __REPORT_DATE__</title>
-    <!-- 前端依赖：本地 vendor 优先，CDN 兜底
-         目的：解决本地文件预览/离线打开时，Vue/ECharts 外链不可用导致“板块/实盘/计划/统一视图”全部不渲染的问题。 -->
-    <script src="./vendor/echarts.min.js"
-            onerror="this.onerror=null;this.src='https://fastly.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js'"></script>
-    <script src="./vendor/vue.global.prod.js"
-            onerror="this.onerror=null;this.src='https://fastly.jsdelivr.net/npm/vue@3/dist/vue.global.prod.js'"></script>
+    <!-- 前端依赖：统一使用远端 CDN，避免本地/线上静态资源路径不一致 -->
+    <script src="https://fastly.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+    <script src="https://fastly.jsdelivr.net/npm/vue@3/dist/vue.global.prod.js"></script>
     <script>
       // 预览兜底：
       // 一些内置预览/文件预览会限制脚本或外链资源，导致 Vue 无法挂载。
@@ -1465,159 +1462,6 @@
       .mp-kpi.blue{ --mp-accent: rgba(37,99,235,0.92); }
       .mp-kpi.amber{ --mp-accent: rgba(245,158,11,0.92); }
 
-      .mp-two{
-        display:grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 18px;
-      }
-      @media (max-width: 900px){ .mp-two{ grid-template-columns: 1fr; } }
-      .mp-panel{
-        border-radius: 0;
-        border: 1px solid rgba(148,163,184,0.16);
-        background: rgba(255,255,255,0.72);
-        padding: 18px 18px 16px;
-        box-shadow: none;
-        position: relative;
-        overflow: hidden;
-      }
-      .mp-panel::before{
-        content:"";
-        position:absolute;
-        left: 18px;
-        right: 18px;
-        top: 0;
-        height: 1px;
-        background: rgba(15,23,42,0.12);
-      }
-      .mp-panel::after{
-        content:none;
-      }
-      [data-theme="dark"] .mp-panel{
-        background: rgba(15,23,42,0.62);
-        border-color: rgba(148,163,184,0.14);
-      }
-      .mp-panel .hd{
-        display:grid;
-        grid-template-columns: minmax(0,1fr) auto;
-        align-items:start;
-        gap: 14px;
-        margin-bottom: 14px;
-        position: relative;
-        z-index: 1;
-      }
-      .mp-head-meta{ min-width:0; }
-      .mp-panel .eyebrow{
-        font-size: 10px;
-        font-weight: 900;
-        letter-spacing: .18em;
-        color: var(--text-muted);
-        margin-bottom: 8px;
-        text-transform: uppercase;
-      }
-      .mp-panel .t{
-        font-size: clamp(18px, 2.2vw, 22px);
-        font-weight: 1000;
-        letter-spacing: -0.02em;
-        position: relative;
-        z-index: 1;
-        line-height: 1.12;
-      }
-      .mp-panel .sub{
-        margin-top: 8px;
-        font-size: 11px;
-        font-weight: 760;
-        color: var(--text-muted);
-        line-height: 1.55;
-        max-width: 34ch;
-      }
-      .mp-score{
-        min-width: 92px;
-        display:flex;
-        flex-direction:column;
-        align-items:flex-end;
-        text-align:right;
-        gap: 6px;
-      }
-      .mp-score .label{
-        font-size: 10px;
-        font-weight: 850;
-        color: var(--text-muted);
-        letter-spacing: .18em;
-        text-transform: uppercase;
-      }
-      .mp-score .num{
-        font-size: clamp(30px, 3vw, 38px);
-        font-weight: 980;
-        line-height: 1;
-        font-variant-numeric: tabular-nums;
-        color: var(--text-primary);
-      }
-      .mp-score .stars{
-        font-size: 10px;
-        font-weight: 800;
-        color: var(--text-muted);
-        letter-spacing: .08em;
-      }
-      .mp-list{
-        display:flex;
-        flex-direction:column;
-        gap: 0;
-        position: relative;
-        z-index: 1;
-        border-top: 1px solid rgba(148,163,184,0.14);
-      }
-      .mp-row{
-        display:flex;
-        align-items:flex-start;
-        justify-content:space-between;
-        gap: 14px;
-        padding: 12px 0;
-        border-bottom: 1px solid rgba(148,163,184,0.12);
-        background: transparent;
-      }
-      [data-theme="dark"] .mp-row{
-        border-color: rgba(148,163,184,0.10);
-      }
-      .mp-row > *{ position: relative; z-index: 1; }
-      .mp-row .lk{ font-size: 12px; font-weight: 980; color: var(--text-primary); letter-spacing: .02em; }
-      .mp-row .lv{
-        min-width: 70px;
-        text-align:right;
-        font-size: 13px;
-        font-weight: 950;
-        font-variant-numeric: tabular-nums;
-        color: var(--text-primary);
-      }
-      .mp-row .ln{ font-size: 11px; font-weight: 720; color: var(--text-muted); margin-top: 4px; line-height: 1.55; }
-      .mp-foot{
-        margin-top: 14px;
-        padding-top: 10px;
-        border-top: 1px solid rgba(148,163,184,0.16);
-        border-radius: 0;
-        padding-left: 0;
-        padding-right: 0;
-        padding-bottom: 0;
-        border-left: none;
-        border-right: none;
-        border-bottom: none;
-        background: transparent;
-        font-size: 11px;
-        font-weight: 760;
-        color: var(--text-secondary);
-        position: relative;
-        z-index: 1;
-        line-height: 1.55;
-      }
-      [data-theme="dark"] .mp-foot{ border-color: rgba(148,163,184,0.12); }
-      .mp-foot .stars{ font-weight: 900; color: var(--text-primary); margin-right: 8px; }
-      @media (max-width: 640px){
-        .mp-panel{ padding: 12px; }
-        .mp-panel .hd{ grid-template-columns: 1fr; }
-        .mp-score{ align-items:flex-start; text-align:left; min-width: 0; }
-        .mp-score .num{ font-size: 30px; }
-        .mp-row .lv{ min-width: 0; }
-      }
-
       /* Inset panel：让同一张 card 内出现“内嵌模块”，打破全是同一种卡片的单调感 */
       .inset{
         border: 1px solid color-mix(in oklab, var(--border) 70%, var(--theme-glow) 30%);
@@ -2498,72 +2342,11 @@
       .pill-lo{ background: rgba(37, 99, 235, 0.12); color: var(--primary); border-color: rgba(37, 99, 235, 0.20); }
       .reason-bits{ color: var(--text-secondary); font-weight: 720; }
 
-      /* Action List */
-      .action-list { list-style: none; }
-      /* 单行紧凑版：减少高度与信息噪音（详情用 hover/title 看完整 desc） */
-      .action-item{
-        display:flex;
-        gap: 10px;
-        padding: 10px 10px;
-        border-radius: 14px;
-        border: 1px solid color-mix(in oklab, var(--border) 78%, var(--theme-glow) 22%);
-        background: linear-gradient(135deg,
-          color-mix(in oklab, var(--theme-soft) 10%, rgba(255,255,255,0.52)),
-          rgba(255,255,255,0.42)
-        );
-        margin-top: 10px;
-      }
-      .action-item:first-child{ margin-top: 0; }
-      [data-theme="dark"] .action-item{
-        background: linear-gradient(135deg,
-          color-mix(in oklab, var(--theme-soft) 10%, rgba(15,23,42,0.55)),
-          rgba(15,23,42,0.40)
-        );
-        border-color: rgba(148,163,184,0.22);
-      }
       .action-dot { width: 8px; height: 8px; border-radius: 50%; margin-top: 7px; flex-shrink: 0; }
       .dot-key { background: var(--primary); box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15); }
       .dot-risk { background: var(--danger); box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.15); }
       .dot-watch { background: var(--warning); box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.15); }
       .dot-safe { background: var(--success); box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.15); }
-      .action-text { font-size: 13.5px; color: var(--text-secondary); line-height: 1.65; font-weight: 500; }
-      .action-body{ flex: 1; min-width: 0; }
-      .action-line{
-        display:flex;
-        align-items:flex-start;
-        flex-wrap: wrap;
-        gap: 6px 10px;
-        min-width: 0;
-      }
-      .action-title{
-        font-size: 13px;
-        color: var(--text-primary);
-        font-weight: 950;
-        width: 100%;
-        white-space: normal;
-        min-width: 0;
-        overflow: hidden;
-        text-overflow: ellipsis;
-      }
-      .action-desc{
-        width: 100%;
-        font-size: 12px;
-        color: var(--text-secondary);
-        font-weight: 600;
-        overflow: hidden;
-        display: -webkit-box;
-        -webkit-line-clamp: 2;
-        -webkit-box-orient: vertical;
-      }
-      .action-tags{
-        display:flex;
-        gap: 6px;
-        flex-wrap: wrap;
-        max-width: 100%;
-        overflow: hidden;
-      }
-      .action-tags .ladder-chip{ padding: 1px 6px; font-size: 11px; }
-      /* 明日计划：已取消折叠（只保留 2+2 核心条目） */
 
       /* 明日行动指南：顶部区域（基调条 + 仓位建议） */
       .plan-top-grid{
@@ -2922,44 +2705,6 @@
       .wb-pill.on{ border-color: rgba(239,68,68,0.28); color: #991b1b; background: rgba(239,68,68,0.10); }
       .wb-pill.watch{ border-color: rgba(245,158,11,0.26); color: #92400e; background: rgba(245,158,11,0.10); }
       .wb-pill.off{ border-color: rgba(148,163,184,0.20); color: var(--text-muted); background: rgba(148,163,184,0.08); }
-
-      /* 明日行动指南：2+2 列表并排（桌面），手机自动上下 */
-      .action-grid{
-        margin-top: 10px;
-        display:grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 12px;
-      }
-      @media (max-width: 900px){ .action-grid{ grid-template-columns: 1fr; } }
-      .action-col{
-        border: 1px solid color-mix(in oklab, var(--border) 70%, var(--theme-glow) 30%);
-        border-radius: 16px;
-        padding: 10px 12px;
-        background: linear-gradient(135deg,
-          color-mix(in oklab, var(--theme-soft) 14%, rgba(255,255,255,0.04)),
-          rgba(255,255,255,0.02)
-        );
-      }
-      [data-theme="dark"] .action-col{ background: rgba(15,23,42,0.22); border-color: rgba(148,163,184,0.22); }
-      .action-head{
-        display:flex;
-        align-items: baseline;
-        justify-content: space-between;
-        gap: 10px;
-        margin-bottom: 6px;
-      }
-      .action-head .h{
-        font-size: 12px;
-        font-weight: 950;
-        color: var(--text-primary);
-        letter-spacing: 0.2px;
-      }
-      .action-head .tip{
-        font-size: 11px;
-        font-weight: 800;
-        color: var(--text-muted);
-        white-space: nowrap;
-      }
 
       /* 仓位建议（明日行动指南新增模块） */
       .pos-card{
@@ -3365,26 +3110,6 @@
         .sector-name{ font-size: 13px; }
         .sector-detail{ font-size: 11px; }
         .sector-pct{ font-size: 14px; min-width: 44px; }
-
-        /* 明日行动指南：手机允许两行展示，tags 默认隐藏（减少噪音） */
-        .action-item{ padding: 10px 0; }
-        .action-line{
-          flex-wrap: wrap;
-          align-items: flex-start;
-          gap: 6px;
-        }
-        .action-title{ width: 100%; font-size: 13px; }
-        .action-desc{
-          width: 100%;
-          white-space: normal;
-          overflow: hidden;
-          display: -webkit-box;
-          -webkit-line-clamp: 2;
-          -webkit-box-orient: vertical;
-          font-size: 12px;
-          line-height: 1.45;
-        }
-        .action-tags{ display: none !important; }
 
         /* 仓位建议：手机端上下排布 */
         .pos-card{ flex-direction: column; align-items: flex-start; gap: 10px; }
@@ -4505,62 +4230,6 @@
           </div>
         </div>
 
-        <div class="section-header">效应拆面</div>
-        <div v-if="marketData.marketPanorama">
-          <div class="mp-two">
-            <div class="mp-panel" data-accent="profit">
-              <div class="hd">
-                <div class="mp-head-meta">
-                  <div class="eyebrow">收益观察</div>
-                  <div class="t">赚钱效应</div>
-                  <div class="sub">强势溢价、封板承接与接力链条，决定今天的钱往哪里聚。</div>
-                </div>
-                <div class="mp-score">
-                  <div class="label">评分</div>
-                  <div class="num">{{ marketData.marketPanorama.earning?.score ?? '-' }}</div>
-                  <div class="stars">{{ marketData.marketPanorama.earning?.stars_text || '-' }}</div>
-                </div>
-              </div>
-              <div class="mp-list">
-                <div class="mp-row" v-for="(it, i) in (marketData.marketPanorama.earning?.items || [])" :key="'mp-e-'+i">
-                  <div style="min-width:0;">
-                    <div class="lk">{{ it.k }}</div>
-                    <div class="ln">{{ it.note }}</div>
-                  </div>
-                  <div class="lv">{{ it.v }}</div>
-                </div>
-              </div>
-              <div class="mp-foot"><span class="stars">{{ marketData.marketPanorama.earning?.stars_text || '-' }}</span>{{ marketData.marketPanorama.earning?.comment || '—' }}</div>
-            </div>
-
-            <div class="mp-panel" data-accent="risk">
-              <div class="hd">
-                <div class="mp-head-meta">
-                  <div class="eyebrow">风险观察</div>
-                  <div class="t">亏钱效应</div>
-                  <div class="sub">跌停扩散、炸板杀伤与高位分歧，决定风险有没有继续外溢。</div>
-                </div>
-                <div class="mp-score">
-                  <div class="label">评分</div>
-                  <div class="num">{{ marketData.marketPanorama.loss?.score ?? '-' }}</div>
-                  <div class="stars">{{ marketData.marketPanorama.loss?.stars_text || '-' }}</div>
-                </div>
-              </div>
-              <div class="mp-list">
-                <div class="mp-row" v-for="(it, i) in (marketData.marketPanorama.loss?.items || [])" :key="'mp-l-'+i">
-                  <div style="min-width:0;">
-                    <div class="lk">{{ it.k }}</div>
-                    <div class="ln">{{ it.note }}</div>
-                  </div>
-                  <div class="lv">{{ it.v }}</div>
-                </div>
-              </div>
-              <div class="mp-foot"><span class="stars">{{ marketData.marketPanorama.loss?.stars_text || '-' }}</span>{{ marketData.marketPanorama.loss?.comment || '—' }}</div>
-            </div>
-          </div>
-        </div>
-        <div v-else style="color:var(--text-muted); font-weight:800;">marketPanorama 缺失（请先跑一次 --rebuild/--fetch）</div>
-
         <div class="inset">
           <!-- 已移除：研发说明（不在产品上展示） -->
           <details style="margin-top:12px;">
@@ -5240,7 +4909,7 @@
               </ul>
             </details>
           </div>
-          <div class="v2-strategy" v-if="marketData.v3">
+          <div class="v2-strategy" v-else-if="marketData.v3">
             <div class="row">
               <div class="tone">v3 · {{ marketData.v3.sentiment?.phase || '-' }}（{{ marketData.v3.sentiment?.score ?? '-' }}）</div>
               <div class="cap">仓位：{{ marketData.v3.positionV3?.capital_pct_adjusted ?? '-' }}</div>
@@ -5262,7 +4931,7 @@
               </ul>
             </details>
           </div>
-          <div class="v2-strategy" v-if="marketData.v2?.strategy">
+          <div class="v2-strategy" v-else-if="marketData.v2?.strategy">
             <div class="row">
               <div class="tone">{{ marketData.v2.strategy.tone }}</div>
               <div class="cap">仓位上限：{{ marketData.v2.strategy.position?.recommended_max || '-' }}</div>
@@ -6942,6 +6611,7 @@
 
       // 核心图表实例
       let volumeChart, heightChart, themeTrendChart, moodKlineChart, moodRadarChart, threeQuadrantsChart, mood5LineChart;
+      const hasEcharts = () => typeof window !== 'undefined' && typeof window.echarts !== 'undefined';
       // 支持“定时渲染的盯盘页”：在 marketData.meta.default_page 提供时优先生效
       let currentPage = (marketData && marketData.meta && marketData.meta.default_page) || document.body.getAttribute('data-page') || 'sentiment';
       document.body.setAttribute('data-page', currentPage);
@@ -6957,6 +6627,7 @@
 
       const renderChartsForPage = (page) => {
         // 注意：ECharts 在 display:none 容器里初始化会拿到 0 宽高，因此按页懒渲染
+        if (!hasEcharts()) return;
         if (page === 'sentiment') {
           if (themeTrendChart) { themeTrendChart.dispose(); themeTrendChart = null; }
           if (heightChart) { heightChart.dispose(); heightChart = null; }
