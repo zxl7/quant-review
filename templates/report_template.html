@@ -10055,8 +10055,8 @@
 
             // === 明日计划推荐个股：偏好“更容易连板晋级”的结构条件 ===
             // 1) 小市值（尽量 <150亿）
-            // 2) 成交额接近 10 亿（过小=不易走出强趋势；过大=资金博弈更偏容量）
-            // 3) 温和放量梯队（用换手 proxy：3%~12% 更“健康”，极低/极高都扣分）
+            // 2) 成交额严格>10 亿才进高分档（≤10 亿明显偏低；10~40 亿舒适上沿，过大略衰减）
+            // 3) 温和放量：换手 3%~12% 加分；同时满足「>10亿 + 温和换手」再叠加 mildVolExtra
             // 4) 题材整体行动：有领涨（题材leader）+ 有跟风（followers）+ 有扩散（多题材/强度）
             const cjeYi = toNum(s.cje, 0) / 1e8
             const zszYi = toNum(s.zsz, 0) / 1e8
@@ -10068,18 +10068,24 @@
               : 55
             const capBonus = (capScore - 55) * 0.1 // roughly [-5, +4.5]
 
-            // 成交额：以 10 亿为中心的“接力舒适区”
-            const cjeTargetScore = cjeYi
-              ? clamp(100 - Math.abs(cjeYi - 10) * 8.0) // 10->100, 0->20, 22->4
-              : 0
-            const cjeBonus = (cjeTargetScore / 100) * 10.0 // 0~10
+            // 成交额：严格 >10 亿才进入高分舒适区（≤10 亿仍按“未过线”衰减，仅接近10亿略抬高）
+            let cjeTargetScore = 0
+            if (cjeYi > 0) {
+              if (cjeYi <= 10) {
+                cjeTargetScore = clamp(36 * (cjeYi / 10), 0, 36) // 含10亿：最高36分档
+              } else {
+                cjeTargetScore = clamp(92 + Math.min(cjeYi - 10, 25) * 0.38 - Math.max(0, cjeYi - 40) * 0.85, 76, 100)
+              }
+            }
+            const cjeBonus = (cjeTargetScore / 100) * 16.0 // 0~16，突出>10亿
 
-            // 温和放量梯队：换手 8% 最舒适（3~12 视作温和）
+            // 温和放量：换手 8% 最舒适（3~12 视作温和）；略抬高 volBonus；>10亿且温和换手再叠加 mildVolExtra
             const volTierScore = hsPct
-              ? clamp(100 - Math.abs(hsPct - 8) * 7.0) // 8->100, 3/13->65, 0/20->? low
+              ? clamp(100 - Math.abs(hsPct - 8) * 6.5)
               : 55
-            const volBonus = (volTierScore / 100) * 8.0 // 0~8
+            const volBonus = (volTierScore / 100) * 10.0 // 0~10
             const isModerateVolume = hsPct >= 3 && hsPct <= 12
+            const mildVolExtra = isModerateVolume ? (cjeYi > 10 ? 7 : 4) : 0
 
             // 题材联动/扩散：有梯队 + 有领涨/跟风 + 题材净强（net）
             const hasSpread = themed.length >= 2 // 多题材/发散 proxy
@@ -10089,7 +10095,7 @@
             // 注意：这里得到的是 rawScore（0~100）。最终用于页面展示/排序的 score 会在下方做“百分位映射”，
             // 让高分更稀缺，避免“整体都很高”。
             const rawScore = clamp(
-              base * 0.54 + qualityScore * 0.24 + envBoost * 0.14 + mainBonus + leaderBonus + themeActionBonus + capBonus + cjeBonus + volBonus - highPenalty - multiPenalty - themePenalty,
+              base * 0.54 + qualityScore * 0.24 + envBoost * 0.14 + mainBonus + leaderBonus + themeActionBonus + capBonus + cjeBonus + volBonus + mildVolExtra - highPenalty - multiPenalty - themePenalty,
             )
 
             const tags = [
@@ -10103,7 +10109,7 @@
               open ? tag(`${open}次开板`, open >= 3 ? "ladder-chip-warn orange-text" : "ladder-chip-cool blue-text") : tag("未开", "ladder-chip-cool blue-text"),
               fmtHhmm(s.fbt) ? tag(`首封${fmtHhmm(s.fbt)}`, timeScore >= 70 ? "ladder-chip-strong red-text" : "ladder-chip-cool blue-text") : null,
               zszYi ? tag(`市值${zszYi.toFixed(0)}亿`, zszYi <= 150 ? "ladder-chip-warn orange-text" : "ladder-chip-cool blue-text") : null,
-              cjeYi ? tag(`成交额${cjeYi.toFixed(2)}亿`, cjeYi >= 6 && cjeYi <= 14 ? "ladder-chip-strong red-text" : cjeYi >= 3 ? "ladder-chip-warn orange-text" : "ladder-chip-cool blue-text") : null,
+              cjeYi ? tag(`成交额${cjeYi.toFixed(2)}亿`, cjeYi > 10 ? "ladder-chip-strong red-text" : cjeYi >= 8 ? "ladder-chip-warn orange-text" : cjeYi >= 3 ? "ladder-chip-warn orange-text" : "ladder-chip-cool blue-text") : null,
               hsPct ? tag(`${hsPct.toFixed(1)}%换手`, isModerateVolume ? "ladder-chip-warn orange-text" : "ladder-chip-cool blue-text") : null,
               isModerateVolume ? tag("温和放量", "ladder-chip-warn orange-text") : null,
               hasSpread ? tag("题材发散", "ladder-chip-cool blue-text") : null,
@@ -10125,7 +10131,7 @@
             if (hasTier && hasFollow) reasonBits.push("梯队+跟风")
             if (lbc >= 2) reasonBits.push("梯队内有辨识度")
             if (zszYi && zszYi <= 150) reasonBits.push("小市值")
-            if (cjeYi && cjeYi >= 6 && cjeYi <= 14) reasonBits.push("成交额≈10亿")
+            if (cjeYi && cjeYi > 10) reasonBits.push("成交额>10亿")
             if (isModerateVolume) reasonBits.push("温和放量")
             if (hasTier && hasFollow && (hasSpread || themeNet >= 10)) reasonBits.push("题材联动")
             if (open >= 8) reasonBits.push("强分歧(多开板)")
