@@ -269,23 +269,22 @@ jobs:
           BIYING_BASE_URL: ${{ secrets.BIYING_BASE_URL }}
         run: |
           set -euo pipefail
-          # push/workflow_dispatch：
-          # 你的主流程是“本地构建 -> 提交 cache_online -> 远端自动构建”
-          # 因此这里不再猜“今天该跑哪天”，而是优先使用 cache_online/manifest.json 里的日期。
+          # push/workflow_dispatch：统一走在线全量 ./qr.sh fetch（不再用 render 只吃仓库缓存）
+          # 日期仍优先 cache_online/manifest.json，与本地提交对齐；缺省则用 tradeday 最近交易日。
           if [ -f "cache_online/manifest.json" ]; then
             date10="$(python3 -c "import json, pathlib; print(str(json.loads(pathlib.Path('cache_online/manifest.json').read_text(encoding='utf-8')).get('date') or '').strip())")"
             if [ -n "${date10}" ]; then
-              mode="render"
               echo "使用 cache_online/manifest.json 指定日期：${date10}"
             fi
           fi
 
           if [ -z "${date10:-}" ]; then
             latest_trade="${{ steps.tradeday.outputs.latest_trade_date }}"
-            mode="render"
             date10="${latest_trade}"
             echo "未找到 manifest 日期，回退到最近交易日：${date10}"
           fi
+          mode="fetch"
+          echo "push/workflow_dispatch → mode=fetch（在线拉最新） date10=${date10}"
           echo "mode=${mode}" >> "$GITHUB_OUTPUT"
           echo "date10=${date10}" >> "$GITHUB_OUTPUT"
           echo "push_mode=${mode} (date10=${date10})"
@@ -315,18 +314,12 @@ jobs:
             run_date="${{ steps.tradeday.outputs.today_bj }}"
           fi
           if [ "${mode}" = "intraday" ]; then
-            # 盘中切片：请求层独立脚本，只更新 latest_intraday*.json 与当日切片文件
+            # 盘中：先在线全量 fetch（最新 pools/theme/market_data + 重建 tab-v1），再打实时切片 JSON
+            ./qr.sh fetch "${run_date}"
             PYTHONPATH=. python3 -m daily_review.watch_runtime --date "$(echo "${run_date}" | tr -d '-')" --publish
-          elif [ "${mode}" = "render" ]; then
-            # push/workflow_dispatch：只使用本地已提交的 cache_online/cache 重建，不再在线 fetch 覆盖日期
-            ./qr.sh render "${run_date}"
           else
-            # 收盘版：在线取数落缓存（有成本）→ 再用 v2 pipeline 离线重建 → 输出 html/*tab-v1.html
-            if [ "${{ github.event_name }}" = "schedule" ]; then
-              ./qr.sh fetch "${run_date}"
-            else
-              ./qr.sh fetch "${{ steps.pushmode.outputs.date10 }}"
-            fi
+            # 日终定时 / push / workflow_dispatch：在线全量 fetch
+            ./qr.sh fetch "${run_date}"
           fi
 
       - name: Prepare Pages site (html/ as site root)
