@@ -1261,21 +1261,22 @@ def _inject_intraday_snapshots(*, root: Path, date: str, market_data: dict) -> N
     snaps = _load_intraday_snapshots(root=root, date=date)
     simulated = False
     slices_path = _intraday_slices_path(root, date)
+    has_live = any(str((x or {}).get("source") or "") == "intraday_live" for x in snaps if isinstance(x, dict))
     simulated_loaded = bool(snaps) and all(str((x or {}).get("source") or "") == "simulated_close" for x in snaps if isinstance(x, dict))
     simulated_stale = simulated_loaded and any(
         not isinstance(x, dict) or ("zt" not in x) or ("lianban" not in x) or ("zab" not in x) or ("shift_score" not in x)
         for x in snaps
     )
-    if len(snaps) < 4 or simulated_stale:
+    # 有实盘切片时：绝不写回「收盘模拟」覆盖磁盘，否则 CI 里 rebuild 会抹掉 watch_runtime 刚累积的时间轴。
+    if (len(snaps) < 4 or simulated_stale) and not has_live:
         snaps = _simulate_intraday_snapshots(date=date, market_data=market_data)
         simulated = True
-        if snaps:
-            _write_intraday_snapshots(root=root, date=date, snapshots=snaps, simulated=True)
+        # 仅注入内存供 HTML；intraday_slices-*.json 交给 watch_runtime 首条实盘创建/追加
     elif simulated_loaded:
         simulated = True
     if snaps:
-        if not slices_path.exists():
-            _write_intraday_snapshots(root=root, date=date, snapshots=snaps, simulated=simulated)
+        if has_live and not slices_path.exists():
+            _write_intraday_snapshots(root=root, date=date, snapshots=snaps, simulated=False)
         market_data["intradaySnapshots"] = {
             "date": date,
             "count": len(snaps),

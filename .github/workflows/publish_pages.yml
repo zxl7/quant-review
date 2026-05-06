@@ -92,12 +92,8 @@ jobs:
         run: |
           echo "d8=$(date +%Y%m%d)" >> "$GITHUB_OUTPUT"
 
-      - name: Restore cache/ (persist intraday snapshots)
-        uses: actions/cache@v4
-        if: ${{ github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true' }}
-        with:
-          path: cache
-          key: cache-${{ runner.os }}-${{ steps.datekey.outputs.d8 }}
+      # 不使用 actions/cache 恢复整包 cache/：同日多次运行易带上 runner 旧目录，与「每次全量拉数」冲突。
+      # 盘中时间轴与依赖文件改由 cache_online + gh-pages/site_prev/cache 提供。
 
       - name: Seed cache from repository cache_online/
         if: ${{ github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true' }}
