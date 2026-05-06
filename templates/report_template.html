@@ -8048,7 +8048,7 @@
               return rows.length > 1 ? rows[rows.length - 2] : null
             },
             watchModeText() {
-              return this.marketData?.intradaySnapshots?.simulated ? "收盘模拟·30分钟" : "半小时快照"
+              return this.marketData?.intradaySnapshots?.simulated ? "收盘模拟·30分钟" : "盘中时间节点"
             },
             watchSourceText() {
               return this.marketData?.intradaySnapshots?.simulated ? "收盘模拟轨迹" : this.marketData.live?.source || "AkShare"

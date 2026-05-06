@@ -1035,9 +1035,18 @@ def _load_intraday_snapshots(*, root: Path, date: str) -> list[dict]:
     return []
 
 
-def _write_intraday_snapshots(*, root: Path, date: str, snapshots: list[dict]) -> None:
+def _write_intraday_snapshots(*, root: Path, date: str, snapshots: list[dict], simulated: bool = False) -> None:
+    """与 watch_runtime 一致：落盘为 envelope，便于线上/本地共用同一时间轴 JSON。"""
     p = _intraday_slices_path(root, date)
-    p.write_text(json.dumps(snapshots, ensure_ascii=False, indent=2), encoding="utf-8")
+    env = {
+        "date": date,
+        "count": len(snapshots),
+        "snapshots": snapshots,
+        "simulated": simulated,
+        "interval_min": None,
+        "latest": snapshots[-1] if snapshots else None,
+    }
+    p.write_text(json.dumps(env, ensure_ascii=False, indent=2), encoding="utf-8")
 
 
 def _append_intraday_snapshot(*, root: Path, date: str, market_data: dict) -> None:
@@ -1046,10 +1055,12 @@ def _append_intraday_snapshot(*, root: Path, date: str, market_data: dict) -> No
     只保存“盯盘所需最小信息”，避免文件膨胀。
     """
     meta = market_data.get("meta") or {}
-    t = str(meta.get("snapshotTime") or meta.get("asOf", {}).get("pools") or "")
-    t = t[:5] if len(t) >= 5 else t
-    if not t:
+    gen_at = str(meta.get("generatedAt") or "").strip()
+    snap_t = str(meta.get("snapshotTime") or meta.get("asOf", {}).get("pools") or "").strip()
+    ts_bj = gen_at if len(gen_at) >= 19 else (f"{date} {snap_t}" if snap_t else "")
+    if not ts_bj:
         return
+    t_label = ts_bj[11:19] if len(ts_bj) >= 19 else (ts_bj[11:16] if len(ts_bj) >= 16 else snap_t[:8] if snap_t else "")
 
     mi = (market_data.get("features") or {}).get("mood_inputs") or {}
     mood = market_data.get("mood") or {}
@@ -1058,7 +1069,9 @@ def _append_intraday_snapshot(*, root: Path, date: str, market_data: dict) -> No
     panorama = market_data.get("panorama") or {}
 
     rec = {
-        "time": t,
+        "time": t_label,
+        "ts_bj": ts_bj,
+        "date": date,
         "source": "intraday_live",
         "headline": ms.get("headline") or "",
         "heat": mood.get("heat"),
@@ -1076,14 +1089,12 @@ def _append_intraday_snapshot(*, root: Path, date: str, market_data: dict) -> No
     }
 
     snaps = _load_intraday_snapshots(root=root, date=date)
-    # 去重：同一时间点只保留最新一条
-    snaps = [s for s in snaps if str(s.get("time") or "") != t]
+    # 去重：同一 ts_bj 只保留最新一条（与 watch_runtime 节点键一致）
+    snaps = [s for s in snaps if str(s.get("ts_bj") or "") != ts_bj]
     snaps.append(rec)
-    # 按时间排序（HH:MM）
-    snaps.sort(key=lambda x: str(x.get("time") or ""))
-    # 限制条数（一天最多几十条）
-    snaps = snaps[-60:]
-    _write_intraday_snapshots(root=root, date=date, snapshots=snaps)
+    snaps.sort(key=lambda x: str(x.get("ts_bj") or f"{date} {x.get('time') or '00:00:00'}"))
+    snaps = snaps[-96:]
+    _write_intraday_snapshots(root=root, date=date, snapshots=snaps, simulated=False)
 
 
 def _safe_float(v, d: float = 0.0) -> float:
@@ -1214,6 +1225,8 @@ def _simulate_intraday_snapshots(*, date: str, market_data: dict) -> list[dict]:
     for i, t in enumerate(times):
         rec = {
             "time": t,
+            "ts_bj": f"{date} {t}:00",
+            "date": date,
             "source": "simulated_close",
             "zt": int(round(zt_series[i])),
             "lianban": int(round(lianban_series[i])),
@@ -1257,18 +1270,18 @@ def _inject_intraday_snapshots(*, root: Path, date: str, market_data: dict) -> N
         snaps = _simulate_intraday_snapshots(date=date, market_data=market_data)
         simulated = True
         if snaps:
-            _write_intraday_snapshots(root=root, date=date, snapshots=snaps)
+            _write_intraday_snapshots(root=root, date=date, snapshots=snaps, simulated=True)
     elif simulated_loaded:
         simulated = True
     if snaps:
         if not slices_path.exists():
-            _write_intraday_snapshots(root=root, date=date, snapshots=snaps)
+            _write_intraday_snapshots(root=root, date=date, snapshots=snaps, simulated=simulated)
         market_data["intradaySnapshots"] = {
             "date": date,
             "count": len(snaps),
             "snapshots": snaps,
             "simulated": simulated,
-            "interval_min": 30,
+            "interval_min": None,
         }
 
 

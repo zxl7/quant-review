@@ -5,8 +5,11 @@ from __future__ import annotations
 
 import argparse
 import json
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any
+
+BJ_TZ = timezone(timedelta(hours=8))
 
 from daily_review.realtime_watch import build_live_snapshot
 
@@ -46,22 +49,65 @@ def _intraday_slices_path(root: Path, date10: str) -> Path:
     return root / "cache" / f"intraday_slices-{_date10_to_8(date10)}.json"
 
 
-def _normalize_slot_label(ts_bj: str) -> str:
-    slots = ["09:35", "10:05", "10:35", "11:05", "13:05", "13:35", "14:05", "14:35"]
-    raw = str(ts_bj or "")[11:16] if len(str(ts_bj or "")) >= 16 else str(ts_bj or "")
-    try:
-        hh, mm = raw.split(":")
-        cur = int(hh) * 60 + int(mm)
-    except Exception:
-        return raw or slots[-1]
-    slot_minutes = []
-    for s in slots:
-        sh, sm = s.split(":")
-        slot_minutes.append((int(sh) * 60 + int(sm), s))
-    eligible = [label for minute, label in slot_minutes if minute <= cur]
-    if eligible:
-        return eligible[-1]
-    return slots[0]
+# 单日最多保留的盘中节点（每次 watch_runtime 成功请求打一条；约覆盖 2 小时/5 分钟粒度）
+INTRADAY_SLICE_MAX = 96
+
+
+def _read_slices_rows(path: Path) -> list[dict[str, Any]]:
+    raw = _read_json(path, default=None)
+    if raw is None:
+        return []
+    if isinstance(raw, list):
+        return [x for x in raw if isinstance(x, dict)]
+    if isinstance(raw, dict):
+        sn = raw.get("snapshots")
+        if isinstance(sn, list):
+            return [x for x in sn if isinstance(x, dict)]
+    return []
+
+
+def _row_ts_bj(row: dict[str, Any], fallback_date10: str) -> str:
+    t = str(row.get("ts_bj") or "").strip()
+    if t:
+        return t
+    d = str(row.get("date") or fallback_date10 or "").strip()
+    tm = str(row.get("time") or "").strip()
+    if len(tm) == 5 and tm[2] == ":":
+        return f"{d} {tm}:00"
+    if len(tm) >= 8 and tm[2] == ":" and tm[5] == ":":
+        return f"{d} {tm}"
+    return f"{d} 00:00:00"
+
+
+def _display_time_from_ts_bj(ts_bj: str) -> str:
+    s = str(ts_bj or "").strip()
+    if len(s) >= 19:
+        return s[11:19]
+    if len(s) >= 16:
+        return s[11:16]
+    return s or "—"
+
+
+def _normalize_slice_row(row: dict[str, Any], date10: str) -> dict[str, Any]:
+    """补齐旧数据缺失的 ts_bj / time，避免排序与去重异常。"""
+    r = dict(row)
+    if not str(r.get("ts_bj") or "").strip():
+        r["ts_bj"] = _row_ts_bj(r, date10)
+    r["time"] = _display_time_from_ts_bj(str(r.get("ts_bj") or ""))
+    if not r.get("date"):
+        r["date"] = date10
+    return r
+
+
+def _prev_row_for_ts(rows: list[dict[str, Any]], curr_ts_bj: str, date10: str) -> dict[str, Any] | None:
+    prev: dict[str, Any] | None = None
+    for r in sorted(rows, key=lambda x: _row_ts_bj(x, date10)):
+        t = _row_ts_bj(r, date10)
+        if t < curr_ts_bj:
+            prev = r
+        elif t >= curr_ts_bj:
+            break
+    return prev
 
 
 def _calc_shift_score(rec: dict[str, Any]) -> int:
@@ -122,9 +168,8 @@ def _build_slice(snapshot: dict[str, Any], prev: dict[str, Any] | None = None) -
     jj = round(lianban / max(zt, 1) * 100.0, 1)
     heat = int(round(max(0.0, min(100.0, 0.42 * fb + 0.24 * jj + min(zt, 100) * 0.16 + min(max_lb * 12.0, 100) * 0.18))))
     risk = int(round(max(0.0, min(100.0, zb * 0.55 + min(dt * 5.0, 100.0) * 0.30 + min(zab * 3.0, 100.0) * 0.15))))
-    slot_time = _normalize_slot_label(ts_bj)
     rec = {
-        "time": slot_time,
+        "time": _display_time_from_ts_bj(ts_bj),
         "ts_bj": ts_bj,
         "date": str(snapshot.get("date") or ""),
         "source": "intraday_live",
@@ -157,45 +202,37 @@ def _build_slice(snapshot: dict[str, Any], prev: dict[str, Any] | None = None) -
 def append_intraday_slice(*, root: Path, snapshot: dict[str, Any]) -> dict[str, Any]:
     date10 = str(snapshot.get("date") or "")
     path = _intraday_slices_path(root, date10)
-    rows = _read_json(path, default=[])
-    if not isinstance(rows, list):
-        rows = []
-    prev = rows[-1] if rows and isinstance(rows[-1], dict) else None
-    rec = _build_slice(snapshot, prev)
-    out: list[dict[str, Any]] = []
-    replaced = False
+    rows = [_normalize_slice_row(r, date10) for r in _read_slices_rows(path)]
+    ts_bj = str(snapshot.get("ts_bj") or "").strip()
+    if not ts_bj:
+        ts_bj = datetime.now(BJ_TZ).strftime("%Y-%m-%d %H:%M:%S")
+    snap2 = dict(snapshot)
+    snap2["ts_bj"] = ts_bj
+    prev = _prev_row_for_ts(rows, ts_bj, date10)
+    rec = _build_slice(snap2, prev)
+    merged: list[dict[str, Any]] = []
+    seen_ts = rec.get("ts_bj") or ts_bj
     for row in rows:
         if not isinstance(row, dict):
             continue
-        normalized_row = dict(row)
-        normalized_row["time"] = _normalize_slot_label(str(row.get("time") or row.get("ts_bj") or ""))
-        if normalized_row.get("time") == rec.get("time"):
-            if not replaced:
-                out.append(rec)
-                replaced = True
+        if _row_ts_bj(row, date10) == seen_ts:
             continue
-        out.append(normalized_row)
-    if not replaced:
-        out.append(rec)
-
-    dedup: dict[str, dict[str, Any]] = {}
-    for row in out:
-        if not isinstance(row, dict):
-            continue
-        key = str(row.get("time") or "")
-        dedup[key] = row
-    ordered_slots = ["09:35", "10:05", "10:35", "11:05", "13:05", "13:35", "14:05", "14:35"]
-    out = [dedup[s] for s in ordered_slots if s in dedup][-32:]
-    _write_json(path, out)
-    return {
+        merged.append(row)
+    merged.append(rec)
+    merged.sort(key=lambda x: _row_ts_bj(x, date10))
+    if len(merged) > INTRADAY_SLICE_MAX:
+        merged = merged[-INTRADAY_SLICE_MAX:]
+    envelope: dict[str, Any] = {
         "date": date10,
-        "count": len(out),
-        "interval_min": 30,
+        "count": len(merged),
+        "interval_min": None,
         "simulated": False,
-        "snapshots": out,
-        "latest": out[-1] if out else None,
+        "snapshots": merged,
+        "latest": merged[-1] if merged else None,
         "updated_at": rec.get("ts_bj"),
     }
+    _write_json(path, envelope)
+    return envelope
 
 
 def publish_runtime_files(*, root: Path, latest_snapshot: dict[str, Any], slices_payload: dict[str, Any]) -> None:
