@@ -1,6 +1,6 @@
 # Cache 清理与线上同步报告
 
-- 最新报告日期：`2026-05-06`
+- 最新报告日期：`2026-05-07`
 - 线上目录模式：`minimal`
 
 ## 当前脚本自动清理现状
@@ -15,13 +15,13 @@
 - `index_kline_cache.json`：指数K线/量能模块依赖
 - `intraday_slices-20260506.json`：保留最近 2 个盘中切片
 - `learning_notes_history.json`：学习语录去重历史
-- `market_data-20260423.json`：最近 7 个 market_data 快照
 - `market_data-20260424.json`：最近 7 个 market_data 快照
 - `market_data-20260427.json`：最近 7 个 market_data 快照
 - `market_data-20260428.json`：最近 7 个 market_data 快照
 - `market_data-20260429.json`：最近 7 个 market_data 快照
 - `market_data-20260430.json`：最近 7 个 market_data 快照
 - `market_data-20260506.json`：最近 7 个 market_data 快照
+- `market_data-20260507.json`：最近 7 个 market_data 快照
 - `money_flow_cache.json`：板块流入聚合依赖
 - `plate_rotate_cache.json`：板块轮动明细必需
 - `pools_cache.json`：离线重建涨停/跌停/炸板池必需
