@@ -49,8 +49,32 @@ def _intraday_slices_path(root: Path, date10: str) -> Path:
     return root / "cache" / f"intraday_slices-{_date10_to_8(date10)}.json"
 
 
-# 单日最多保留的盘中节点（每次 watch_runtime 成功请求打一条；约覆盖 2 小时/5 分钟粒度）
-INTRADAY_SLICE_MAX = 96
+def _date8_to_10(date8: str) -> str:
+    """纯函数：YYYYMMDD -> YYYY-MM-DD。"""
+    d8 = str(date8 or "").strip()
+    if len(d8) == 8 and d8.isdigit():
+        return f"{d8[:4]}-{d8[4:6]}-{d8[6:8]}"
+    return d8
+
+
+def _purge_previous_day_slices(*, root: Path, keep_date10: str) -> None:
+    """执行前清理前一日及更早的盘中切片缓存，仅保留当日文件。"""
+    cache_dir = root / "cache"
+    keep_date8 = _date10_to_8(keep_date10)
+    for p in cache_dir.glob("intraday_slices-*.json"):
+        stem = p.stem  # intraday_slices-YYYYMMDD
+        d8 = stem.replace("intraday_slices-", "", 1)
+        if d8 != keep_date8:
+            try:
+                p.unlink()
+            except Exception:
+                continue
+
+
+# 盘中快照粒度（分钟）
+INTRADAY_INTERVAL_MIN = 10
+# 单日最多保留的盘中节点（10 分钟粒度下可覆盖约 2 个交易日）
+INTRADAY_SLICE_MAX = 48
 
 
 def _read_slices_rows(path: Path) -> list[dict[str, Any]]:
@@ -225,7 +249,7 @@ def append_intraday_slice(*, root: Path, snapshot: dict[str, Any]) -> dict[str, 
     envelope: dict[str, Any] = {
         "date": date10,
         "count": len(merged),
-        "interval_min": None,
+        "interval_min": INTRADAY_INTERVAL_MIN,
         "simulated": False,
         "snapshots": merged,
         "latest": merged[-1] if merged else None,
@@ -248,7 +272,13 @@ def main() -> int:
     args = ap.parse_args()
 
     root = _workspace_root()
-    snap = build_live_snapshot(args.date.strip() or None).to_dict()
+    date8 = args.date.strip() or datetime.now(BJ_TZ).strftime("%Y%m%d")
+    date10 = _date8_to_10(date8)
+
+    # 先清前一日缓存，再拉取实时数据打快照
+    _purge_previous_day_slices(root=root, keep_date10=date10)
+
+    snap = build_live_snapshot(date8).to_dict()
     payload = append_intraday_slice(root=root, snapshot=snap)
     if args.publish:
         publish_runtime_files(root=root, latest_snapshot=snap, slices_payload=payload)

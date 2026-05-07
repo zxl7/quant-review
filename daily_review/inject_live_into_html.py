@@ -33,8 +33,7 @@ def _now_bj() -> datetime:
 
 
 _RE = re.compile(
-    r"(const\s+__INJECTED_MARKET_DATA__\s*=\s*)(\{.*?\})(\s*;)",
-    re.DOTALL,
+    r"(const\s+__INJECTED_MARKET_DATA__\s*=\s*)(\{.*\})(\s*;?)"
 )
 
 
