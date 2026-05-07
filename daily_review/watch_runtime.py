@@ -246,14 +246,18 @@ def append_intraday_slice(*, root: Path, snapshot: dict[str, Any]) -> dict[str, 
     merged.sort(key=lambda x: _row_ts_bj(x, date10))
     if len(merged) > INTRADAY_SLICE_MAX:
         merged = merged[-INTRADAY_SLICE_MAX:]
+    latest_ts = str(rec.get("ts_bj") or "")
     envelope: dict[str, Any] = {
+        "schema": "intraday_snapshot_v1",
+        "render_mode": "snapshot_stream",
         "date": date10,
         "count": len(merged),
         "interval_min": INTRADAY_INTERVAL_MIN,
         "simulated": False,
         "snapshots": merged,
         "latest": merged[-1] if merged else None,
-        "updated_at": rec.get("ts_bj"),
+        "updated_at": latest_ts,
+        "snapshot_sig": f"{date10}|{latest_ts}|{len(merged)}",
     }
     _write_json(path, envelope)
     return envelope

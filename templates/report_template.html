@@ -7262,7 +7262,7 @@
                     </div>
                   </div>
                   <div class="wb-list" style="margin-top: 12px">
-                    <div class="wb-row" v-for="(x, i) in watchSnapshots.slice(-8).reverse()" :key="'wbt-'+i">
+                    <div class="wb-row" v-for="(x, i) in watchRecentRows" :key="'wbt-'+i">
                       <div class="name">{{ x.time }}｜{{ x.shift_label || x.headline || '—' }}</div>
                       <div class="meta">
                         封{{ x.fb ?? '-' }}% · 晋{{ x.jj ?? '-' }}% · 炸{{ x.zb ?? '-' }}% · 跌{{ x.dt ?? '-' }} · 面{{ x.bf ?? '-' }} · 热{{ x.heat ?? '-' }}/险{{ x.risk ?? '-' }}
@@ -7270,7 +7270,7 @@
                     </div>
                   </div>
                 </div>
-                <div v-else style="font-size: 12px; color: var(--text-muted); font-weight: 850">暂无半小时快照（收盘重建后会自动生成模拟轨迹）</div>
+                <div v-else style="font-size: 12px; color: var(--text-muted); font-weight: 850">暂无快照流数据（收盘重建后会自动生成模拟轨迹）</div>
               </div>
             </div>
           </div>
@@ -7800,12 +7800,44 @@
                 window.location.reload()
               } catch (e) {}
             },
+            /**
+             * 纯函数：生成快照签名，用于增量更新判定，避免重复渲染。
+             */
+            buildSnapshotSig(live, slices) {
+              const date = String(live?.date || slices?.date || "")
+              const ts = String(slices?.latest?.ts_bj || live?.ts_bj || "")
+              const count = Array.isArray(slices?.snapshots) ? slices.snapshots.length : 0
+              return `${date}|${ts}|${count}`
+            },
+            /**
+             * 纯函数：规范化轮询间隔，单位分钟，默认 10 分钟。
+             */
+            normalizePollIntervalMin(v) {
+              const n = Number(v)
+              if (!Number.isFinite(n)) return 10
+              return Math.max(2, Math.min(30, Math.round(n)))
+            },
+            /**
+             * 增量应用快照数据：签名未变化则跳过，降低无效渲染成本。
+             */
+            applyLiveSnapshotPayload(live, slices) {
+              if (!live) return false
+              const nextSlices = slices && Array.isArray(slices.snapshots) ? slices : this.marketData?.intradaySnapshots || {}
+              const nextSig = this.buildSnapshotSig(live, nextSlices)
+              if (nextSig && nextSig === this._lastSnapshotSig) return false
+              this.marketData.live = live
+              if (nextSlices && Array.isArray(nextSlices.snapshots)) this.marketData.intradaySnapshots = nextSlices
+              this._lastSnapshotSig = nextSig
+              return true
+            },
             async refreshLive(force = false) {
               // 定时渲染模式：实时数据已内嵌在 HTML 内，不再前端 fetch
               if (this.marketData?.meta?.live_embedded === true) return
               // 仅在“实时盯盘”页拉取；force=true 用于手动刷新
               try {
                 if (!force && currentPage !== "watch") return
+                if (this._liveReqInFlight) return
+                this._liveReqInFlight = true
                 this.liveLoading = true
                 this.liveError = ""
                 const ts = Date.now()
@@ -7814,27 +7846,37 @@
                   fetch(`latest_intraday_slices.json?ts=${ts}`, { cache: "no-store" }).catch(() => null),
                 ])
                 if (!resLive.ok) throw new Error(`HTTP ${resLive.status}`)
-                const data = await resLive.json()
-                this.marketData.live = data
+                const live = await resLive.json()
+                let slices = null
                 if (resSlices && resSlices.ok) {
-                  const slices = await resSlices.json()
-                  if (slices && Array.isArray(slices.snapshots)) {
-                    this.marketData.intradaySnapshots = slices
-                  }
+                  slices = await resSlices.json()
                 }
+                this.applyLiveSnapshotPayload(live, slices)
+                this._consecutiveLiveFail = 0
+                // 快照源携带 interval_min 时，动态对齐轮询频率。
+                const nextIntervalMin = this.normalizePollIntervalMin(slices?.interval_min)
+                if (nextIntervalMin !== this._pollIntervalMin) this.startLivePolling(true)
               } catch (e) {
+                this._consecutiveLiveFail = Number(this._consecutiveLiveFail || 0) + 1
                 this.liveError = `实时数据获取失败：${String(e && e.message ? e.message : e)}`
               } finally {
+                this._liveReqInFlight = false
                 this.liveLoading = false
               }
             },
-            startLivePolling() {
+            startLivePolling(forceRestart = false) {
               // 定时渲染模式：不轮询（避免 file:// 场景 fetch 失败）
               if (this.marketData?.meta?.live_embedded === true) return
-              if (this._liveTimer) return
+              if (this._liveTimer && !forceRestart) return
+              if (this._liveTimer && forceRestart) {
+                clearInterval(this._liveTimer)
+                this._liveTimer = null
+              }
+              const intervalMin = this.normalizePollIntervalMin(this.marketData?.intradaySnapshots?.interval_min)
+              this._pollIntervalMin = intervalMin
               // 先拉一次
               this.refreshLive(false)
-              this._liveTimer = setInterval(() => this.refreshLive(false), 300000) // 5分钟
+              this._liveTimer = setInterval(() => this.refreshLive(false), intervalMin * 60 * 1000)
             },
             stopLivePolling() {
               if (this._liveTimer) {
@@ -8022,7 +8064,7 @@
                 { k: "轨迹模式", v: String(this.watchModeText) },
                 { k: "当前时点", v: String(ts) },
                 { k: "快照数量", v: String(this.watchSnapshots.length || 0) },
-                { k: "更新策略", v: "盘中仅更新实时盯盘 JSON" },
+                { k: "更新策略", v: `快照流增量渲染（${this.watchIntervalText}）` },
               ]
             },
             watchDotClass() {
@@ -8048,7 +8090,11 @@
               return rows.length > 1 ? rows[rows.length - 2] : null
             },
             watchModeText() {
-              return this.marketData?.intradaySnapshots?.simulated ? "收盘模拟·30分钟" : "盘中时间节点"
+              return this.marketData?.intradaySnapshots?.simulated ? "收盘模拟·30分钟" : "快照流实时渲染"
+            },
+            watchIntervalText() {
+              const n = this.normalizePollIntervalMin(this.marketData?.intradaySnapshots?.interval_min)
+              return `${n}分钟/次`
             },
             watchSourceText() {
               return this.marketData?.intradaySnapshots?.simulated ? "收盘模拟轨迹" : this.marketData.live?.source || "AkShare"
@@ -8203,6 +8249,11 @@
             },
             watchTimes() {
               return (this.watchSnapshots || []).map((x) => x?.time || "--")
+            },
+            watchRecentRows() {
+              const rows = this.watchSnapshots || []
+              const n = this.watchSnapshots.length > 12 ? 12 : 8
+              return rows.slice(-n).reverse()
             },
             hm() {
               return this.marketData?.heatmap || { score: "-", summary: "", trend: { icon: "→→", text: "稳定" }, cells: [] }
