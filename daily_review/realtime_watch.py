@@ -15,8 +15,6 @@ from __future__ import annotations
 
 import argparse
 import json
-import random
-import time
 from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
 from typing import Any, Dict, List
@@ -27,10 +25,6 @@ BJ_TZ = timezone(timedelta(hours=8))
 
 def _now_bj() -> datetime:
     return datetime.now(BJ_TZ)
-
-
-def _sleep_jitter(lo: float = 0.8, hi: float = 1.8) -> None:
-    time.sleep(random.uniform(lo, hi))
 
 
 def _to_float(x: Any, default: float = 0.0) -> float:
@@ -68,92 +62,6 @@ def _to_int_or_none(x: Any) -> int | None:
         return int(float(str(x).strip()))
     except Exception:
         return None
-
-
-def _safe_df_to_records(df, cols: List[str], limit: int = 10) -> List[Dict[str, Any]]:
-    if df is None:
-        return []
-    try:
-        sub = df
-        # 尽量只取需要列
-        keep = [c for c in cols if c in sub.columns]
-        if keep:
-            sub = sub[keep]
-        # 去掉 NaN
-        sub = sub.fillna("")
-        recs = sub.to_dict(orient="records")
-        return recs[:limit]
-    except Exception:
-        return []
-
-def _concept_fund_flow_rows(ak, *, limit: int = 80) -> List[Dict[str, Any]]:
-    """
-    在线获取“概念/题材级资金流向”（AkShare -> 东财）。
-
-    返回字段（尽量稳定）：
-    - name: 概念名
-    - net: 资金净额（单位按数据源原样）
-    - inflow/outflow: 流入/流出
-    - chg_pct: 概念涨跌幅（可能与概念涨跌幅榜略有差异，按源数据为准）
-    - companies: 成分家数
-    - lead/lead_chg_pct: 领涨股及其涨跌幅
-    """
-    if ak is None:
-        return []
-    try:
-        _sleep_jitter()
-        df = ak.stock_fund_flow_concept()
-        if df is None:
-            return []
-        # 常见列：行业/行业-涨跌幅/流入资金/流出资金/净额/公司家数/领涨股/领涨股-涨跌幅/当前价
-        if "净额" in df.columns:
-            try:
-                df = df.sort_values(by="净额", ascending=False)
-            except Exception:
-                pass
-        df = df.fillna("")
-        out: List[Dict[str, Any]] = []
-        for _, r in df.head(max(int(limit), 1)).iterrows():
-            try:
-                rr = r.to_dict() if hasattr(r, "to_dict") else dict(r)
-            except Exception:
-                continue
-            name = str(rr.get("行业") or rr.get("板块") or rr.get("名称") or "").strip()
-            if not name:
-                continue
-            out.append(
-                {
-                    "name": name,
-                    "chg_pct": round(_to_float(rr.get("行业-涨跌幅"), None), 2) if str(rr.get("行业-涨跌幅") or "").strip() else None,
-                    "inflow": _to_float(rr.get("流入资金"), None),
-                    "outflow": _to_float(rr.get("流出资金"), None),
-                    "net": _to_float(rr.get("净额"), None),
-                    "companies": _to_int_or_none(rr.get("公司家数")),
-                    "lead": str(rr.get("领涨股") or rr.get("领涨股票") or "").strip(),
-                    "lead_chg_pct": round(_to_float(rr.get("领涨股-涨跌幅") or rr.get("领涨股票-涨跌幅"), None), 2)
-                    if str(rr.get("领涨股-涨跌幅") or rr.get("领涨股票-涨跌幅") or "").strip()
-                    else None,
-                }
-            )
-        return out
-    except Exception:
-        return []
-
-
-def _index_by_name(rows: List[Dict[str, Any]]) -> Dict[str, Dict[str, Any]]:
-    """
-    纯函数：把 rows 按 name 建索引（用于合并概念强度榜与概念资金榜）。
-    """
-    out: Dict[str, Dict[str, Any]] = {}
-    for r in rows or []:
-        if not isinstance(r, dict):
-            continue
-        name = str(r.get("name") or "").strip()
-        if not name:
-            continue
-        out[name] = r
-    return out
-
 
 @dataclass
 class LiveSnapshot:
@@ -247,6 +155,10 @@ def _concepts_from_biying(date10: str) -> List[Dict[str, Any]]:
             {
                 "name": t,
                 "chg_pct": None,          # 必盈兜底无法给出“板块涨跌幅”，前端会展示为 -
+                "inflow": None,
+                "outflow": None,
+                "net": None,
+                "companies": None,
                 "lead": v.get("lead") or "-",
                 "lead_chg_pct": None,
                 "up": int(v.get("count", 0) or 0),  # 用“涨停样本数”近似梯队热度
@@ -254,6 +166,71 @@ def _concepts_from_biying(date10: str) -> List[Dict[str, Any]]:
             }
         )
     return out
+
+
+def _read_local_cache(date8: str) -> Dict[str, Any] | None:
+    """
+    尝试读取本地缓存 market_data-YYYYMMDD.json。
+    """
+    from pathlib import Path
+    try:
+        # 假设 cache 目录在 daily_review 的上两级
+        root = Path(__file__).resolve().parent.parent
+        cache_file = root / "cache" / f"market_data-{date8}.json"
+        if cache_file.exists():
+            with open(cache_file, "r", encoding="utf-8") as f:
+                return json.load(f)
+    except Exception:
+        pass
+    return None
+
+
+def _market_from_local(cache_data: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    从本地缓存中提取市场状态。
+    """
+    if not cache_data:
+        return {}
+    try:
+        features = cache_data.get("features") or {}
+        mood_inputs = features.get("mood_inputs") or {}
+        return {
+            "zt": _to_int(mood_inputs.get("zt_count"), 0),
+            "dt": _to_int(mood_inputs.get("dt_count"), 0),
+            "zab": _to_int(mood_inputs.get("zb_count"), 0),
+            "zab_rate": _to_float(mood_inputs.get("zb_rate"), 0.0),
+            "lianban": _to_int(mood_inputs.get("lianban_count"), 0),
+            "max_lianban": _to_int(mood_inputs.get("max_lb"), 0),
+        }
+    except Exception:
+        return {}
+
+
+def _concepts_from_local(cache_data: Dict[str, Any]) -> List[Dict[str, Any]]:
+    """
+    从本地缓存中提取板块概念。
+    优先尝试从 plateRankTop10 或 conceptFundFlowTop 中读取。
+    """
+    if not cache_data:
+        return []
+    try:
+        # 优先使用处理好的强榜
+        concepts = cache_data.get("plateRankTop10") or cache_data.get("conceptFundFlowTop") or []
+        out = []
+        for c in concepts[:12]:
+            out.append({
+                "name": c.get("name") or "",
+                "chg_pct": _to_float(c.get("chg_pct"), None),
+                "inflow": _to_float(c.get("inflow"), None),
+                "outflow": _to_float(c.get("outflow"), None),
+                "net": _to_float(c.get("net"), None),
+                "companies": _to_int_or_none(c.get("companies")),
+                "lead": c.get("lead") or "-",
+                "lead_chg_pct": _to_float(c.get("lead_chg_pct"), None),
+            })
+        return out
+    except Exception:
+        return []
 
 
 def _market_from_biying(date10: str) -> Dict[str, Any]:
@@ -315,134 +292,32 @@ def build_live_snapshot(date8: str | None = None) -> LiveSnapshot:
     market: Dict[str, Any] = {}
     concepts: List[Dict[str, Any]] = []
 
-    # 先尝试 AkShare
-    ak = None
-    try:
-        import akshare as ak  # type: ignore
-    except Exception as e:
-        alerts.append({"level": "warn", "text": f"AkShare 不可用，启用必盈兜底（{e}）"})
-        ak = None
-
-    # --- 1) 涨跌停/炸板/连板（轻量） ---
+    # 1) 优先尝试从本地缓存读取
+    cache_data = _read_local_cache(date8)
     zt_cnt = dt_cnt = zab_cnt = lianban_cnt = max_lianban = 0
-    if ak is not None:
-        sources.append("AkShare")
-        try:
-            _sleep_jitter()
-            zt_df = ak.stock_zt_pool_em(date=date8)  # 今日涨停池
-            # 过滤 ST（尽量）
-            if zt_df is not None and "名称" in zt_df.columns:
-                zt_df = zt_df[~zt_df["名称"].astype(str).str.contains("ST", na=False)]
-            zt_cnt = int(len(zt_df)) if zt_df is not None else 0
-        except Exception:
-            pass
+    zab_rate = 0.0
 
-        try:
-            _sleep_jitter()
-            dt_df = ak.stock_zt_pool_dtgc_em(date=date8)  # 跌停池
-            if dt_df is not None and "名称" in dt_df.columns:
-                dt_df = dt_df[~dt_df["名称"].astype(str).str.contains("ST", na=False)]
-            dt_cnt = int(len(dt_df)) if dt_df is not None else 0
-        except Exception:
-            pass
-
-        try:
-            _sleep_jitter()
-            zb_df = ak.stock_zt_pool_zbgc_em(date=date8)  # 炸板池
-            if zb_df is not None and "名称" in zb_df.columns:
-                zb_df = zb_df[~zb_df["名称"].astype(str).str.contains("ST", na=False)]
-            zab_cnt = int(len(zb_df)) if zb_df is not None else 0
-        except Exception:
-            pass
-
-        try:
-            _sleep_jitter()
-            strong_df = ak.stock_zt_pool_strong_em(date=date8)  # 连板池/强势池
-            # 常见列：连板数/连续涨停天数 等；尽量容错
-            if strong_df is not None:
-                # 统计连板数>=2
-                lb_col = None
-                for c in ["连板数", "连续涨停天数", "连板", "连续涨停"]:
-                    if c in strong_df.columns:
-                        lb_col = c
-                        break
-                if lb_col:
-                    lbs = strong_df[lb_col].apply(lambda x: _to_int(x, 0))
-                    lianban_cnt = int((lbs >= 2).sum())
-                    max_lianban = int(lbs.max()) if len(lbs) else 0
-        except Exception:
-            pass
-
-    try_total = zt_cnt + zab_cnt
-    zab_rate = (zab_cnt / try_total * 100.0) if try_total > 0 else 0.0
-
-    # --- 2) 板块主线（概念涨跌幅 TOP） ---
-    if ak is not None:
-        try:
-            _sleep_jitter()
-            cdf = ak.stock_board_concept_spot_em()  # 概念板块实时
-            if cdf is not None:
-                # 常见：板块名称, 涨跌幅, 领涨股票, 领涨股票-涨跌幅
-                if "涨跌幅" in cdf.columns:
-                    cdf = cdf.sort_values(by="涨跌幅", ascending=False)
-                for _, r in cdf.head(12).iterrows():
-                    name = str(r.get("板块名称") or r.get("板块") or r.get("名称") or "")
-                    chg = _to_float(r.get("涨跌幅"), 0.0)
-                    lead = str(r.get("领涨股票") or r.get("领涨股") or "")
-                    lead_chg = _to_float(r.get("领涨股票-涨跌幅") or r.get("领涨股-涨跌幅"), 0.0)
-                    up = _to_int(r.get("上涨家数"), 0)
-                    dn = _to_int(r.get("下跌家数"), 0)
-                    if name:
-                        concepts.append(
-                            {
-                                "name": name,
-                                "chg_pct": round(chg, 2),
-                                "lead": lead,
-                                "lead_chg_pct": round(lead_chg, 2),
-                                "up": up,
-                                "down": dn,
-                            }
-                        )
-        except Exception:
-            pass
-
-    # --- 2.1) 概念资金流向（净额/流入/流出） ---
-    # 说明：用于“短线热点板块”判断时，与涨跌幅榜合并展示（强度 + 资金）。
-    fund_rows = _concept_fund_flow_rows(ak, limit=120) if ak is not None else []
-    if fund_rows:
-        if "AkShare" not in sources:
-            sources.append("AkShare")
-        sources.append("ConceptFlow")
-        fund_idx = _index_by_name(fund_rows)
-        # 若涨跌幅榜已有 concepts，则按 name 合并资金字段
-        if concepts:
-            for c in concepts:
-                if not isinstance(c, dict):
-                    continue
-                name = str(c.get("name") or "").strip()
-                fr = fund_idx.get(name)
-                if not fr:
-                    continue
-                # 合并：不覆盖已有 chg_pct/lead（以涨跌幅榜更贴近“强度”）
-                c.setdefault("net", fr.get("net"))
-                c.setdefault("inflow", fr.get("inflow"))
-                c.setdefault("outflow", fr.get("outflow"))
-                c.setdefault("companies", fr.get("companies"))
-        else:
-            # 若涨跌幅榜为空，则用资金榜作为主线榜（按净额排序）
-            concepts = fund_rows[:12]
-
-    # 必盈兜底：当 AkShare 概念榜为空时，用涨停池题材统计补齐
-    if not concepts:
-        c2 = _concepts_from_biying(date10)
-        if c2:
-            concepts = c2
-            sources.append("必盈")
-        else:
-            alerts.append({"level": "warn", "text": "板块数据获取失败或为空（稍后重试）"})
-
-    # 必盈兜底：当 AkShare 市场统计拿不到时，用三池补齐
-    if (zt_cnt == 0 and dt_cnt == 0 and zab_cnt == 0) or ak is None:
+    if cache_data:
+        sources.append("本地缓存")
+        m_local = _market_from_local(cache_data)
+        if m_local:
+            zt_cnt = int(m_local.get("zt", 0) or 0)
+            dt_cnt = int(m_local.get("dt", 0) or 0)
+            zab_cnt = int(m_local.get("zab", 0) or 0)
+            zab_rate = float(m_local.get("zab_rate", 0.0) or 0.0)
+            lianban_cnt = int(m_local.get("lianban", 0) or 0)
+            max_lianban = int(m_local.get("max_lianban", 0) or 0)
+        
+        c_local = _concepts_from_local(cache_data)
+        if c_local:
+            concepts = c_local
+    
+    # 2) 如果本地缓存没拿到数据，或者数据缺失，使用必盈兜底
+    if not cache_data or (zt_cnt == 0 and dt_cnt == 0 and zab_cnt == 0):
+        if "本地缓存" in sources:
+            sources.remove("本地缓存")
+            alerts.append({"level": "warn", "text": "本地缓存数据不完整，启用必盈兜底"})
+        
         m2 = _market_from_biying(date10)
         if m2:
             zt_cnt = int(m2.get("zt", 0) or 0)
@@ -453,6 +328,16 @@ def build_live_snapshot(date8: str | None = None) -> LiveSnapshot:
             max_lianban = int(m2.get("max_lianban", 0) or 0)
             if "必盈" not in sources:
                 sources.append("必盈")
+                
+    if not concepts:
+        c2 = _concepts_from_biying(date10)
+        if c2:
+            concepts = c2
+            if "必盈" not in sources:
+                sources.append("必盈")
+        else:
+            alerts.append({"level": "warn", "text": "板块数据获取失败或为空（稍后重试）"})
+
     # 负反馈：跌停/炸板过多
     if dt_cnt >= 20:
         alerts.append({"level": "danger", "text": f"跌停偏多（{dt_cnt}）→ 亏钱扩散风险上升"})
