@@ -10,11 +10,11 @@ on:
   # 定时触发（可按需调整；cron 为 UTC）
   schedule:
     # 盘中10分钟切片（北京时间）
-    - cron: "35-55/10 1 * * 1-5"  # 09:35 / 09:45 / 09:55
-    - cron: "5-55/10 2 * * 1-5"   # 10:05 ~ 10:55
-    - cron: "5-25/10 3 * * 1-5"   # 11:05 / 11:15 / 11:25
-    - cron: "5-55/10 5 * * 1-5"   # 13:05 ~ 13:55
-    - cron: "5-55/10 6 * * 1-5"   # 14:05 ~ 14:55
+    - cron: "35,45,55 1 * * 1-5"  # 09:35 / 09:45 / 09:55
+    - cron: "5,15,25,35,45,55 2 * * 1-5"   # 10:05 ~ 10:55
+    - cron: "5,15,25 3 * * 1-5"   # 11:05 / 11:15 / 11:25
+    - cron: "5,15,25,35,45,55 5 * * 1-5"   # 13:05 ~ 13:55
+    - cron: "5,15,25,35,45,55 6 * * 1-5"   # 14:05 ~ 14:55
     # GitHub Actions cron 只支持 UTC（北京时间=UTC+8）
     # 只在收盘后补一版（北京时间 15:12 -> UTC 07:12）
     # 原因：题材/板块数据通常收盘后才稳定更新；同时对齐本地“15:10 后再抓板块轮动”的规则。
@@ -49,7 +49,8 @@ jobs:
         run: |
           set -euo pipefail
           now_bj="$(date +'%H:%M')"
-          echo "beijing_now=${now_bj}"
+          echo "DEBUG: event_name=${{ github.event_name }}"
+          echo "DEBUG: beijing_now=${now_bj}"
           now_min=$((10#$(date +%H)*60 + 10#$(date +%M)))
           tol=20  # 允许 GitHub cron 延迟
 
@@ -260,6 +261,7 @@ jobs:
           print("trade_day_source=", source)
           print("realtime_market_date=", rt_date)
           print("is_trade_today=", is_trade_today)
+          print(f"DEBUG: today={today}, remote_dates_count={len(remote_dates)}, rt_date={rt_date}")
           PY
 
       - name: Decide push mode/date (non-schedule)
