@@ -206,6 +206,7 @@ def _build_slice(snapshot: dict[str, Any], prev: dict[str, Any] | None = None) -
         "jj": jj,
         "lianban": lianban,
         "max_lb": max_lb,
+        "bf": 0,  # 盘中难以精确获取大面，设为0占位
         "heat": heat,
         "risk": risk,
         "headline": "",

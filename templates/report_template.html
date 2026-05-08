@@ -7265,7 +7265,7 @@
                     <div class="wb-row" v-for="(x, i) in watchRecentRows" :key="'wbt-'+i">
                       <div class="name">{{ x.time }}｜{{ x.shift_label || x.headline || '—' }}</div>
                       <div class="meta">
-                        封{{ x.fb ?? '-' }}% · 晋{{ x.jj ?? '-' }}% · 炸{{ x.zb ?? '-' }}% · 跌{{ x.dt ?? '-' }} · 面{{ x.bf ?? '-' }} · 热{{ x.heat ?? '-' }}/险{{ x.risk ?? '-' }}
+                        封{{ x.fb ?? '-' }}% · 晋{{ x.jj ?? '-' }}% · 炸{{ x.zb ?? '-' }}% · 跌{{ x.dt ?? '-' }} · 热{{ x.heat ?? '-' }}/险{{ x.risk ?? '-' }}
                       </div>
                     </div>
                   </div>
@@ -8139,7 +8139,7 @@
                   note: prev?.[key] === undefined ? "首个点位" : `上一时点 ${Number.isInteger(p) ? p : p.toFixed(1)}${unit}`,
                 }
               }
-              return [mk("fb", "封板率", "%"), mk("jj", "晋级率", "%"), mk("zb", "炸板率", "%"), mk("dt", "跌停数", "家"), mk("bf", "大面数", "只"), mk("max_lb", "最高板", "板")]
+              return [mk("fb", "封板率", "%"), mk("jj", "晋级率", "%"), mk("zb", "炸板率", "%"), mk("dt", "跌停数", "家"), mk("max_lb", "最高板", "板")]
             },
             watchTempCards() {
               const rows = this.watchSnapshots || []
