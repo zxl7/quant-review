@@ -12,6 +12,9 @@ from typing import Any
 BJ_TZ = timezone(timedelta(hours=8))
 
 from daily_review.realtime_watch import build_live_snapshot
+from daily_review.data.biying import resolve_trade_date
+from daily_review.http import HttpClient
+from daily_review.config import load_config_from_env
 
 
 def _workspace_root() -> Path:
@@ -55,6 +58,32 @@ def _date8_to_10(date8: str) -> str:
     if len(d8) == 8 and d8.isdigit():
         return f"{d8[:4]}-{d8[4:6]}-{d8[6:8]}"
     return d8
+
+
+def _purge_previous_day_published(*, root: Path, keep_date10: str) -> None:
+    """清理前一天的已发布文件（latest_intraday*.json），确保每天重建。"""
+    html_dir = root / "html"
+    keep_date8 = _date10_to_8(keep_date10)
+    # 清理 latest_intraday.json（单日快照）
+    lip = html_dir / "latest_intraday.json"
+    if lip.exists():
+        try:
+            data = json.loads(lip.read_text(encoding="utf-8"))
+            d = str(data.get("date") or "")
+            if d != keep_date10 and _date10_to_8(d) != keep_date8:
+                lip.unlink()
+        except Exception:
+            pass
+    # 清理 latest_intraday_slices.json（盘中切片）
+    lsp = html_dir / "latest_intraday_slices.json"
+    if lsp.exists():
+        try:
+            data = json.loads(lsp.read_text(encoding="utf-8"))
+            d = str(data.get("date") or "")
+            if d != keep_date10 and _date10_to_8(d) != keep_date8:
+                lsp.unlink()
+        except Exception:
+            pass
 
 
 def _purge_previous_day_slices(*, root: Path, keep_date10: str) -> None:
@@ -274,22 +303,36 @@ def main() -> int:
     ap = argparse.ArgumentParser(description="生成实时盯盘切片 JSON")
     ap.add_argument("--date", default="", help="YYYYMMDD；为空取北京时间今天")
     ap.add_argument("--publish", action="store_true", help="同时输出 html/latest_intraday*.json")
+    ap.add_argument("--offline", action="store_true", help="离线模式：允许使用本地缓存（用于测试）")
     args = ap.parse_args()
 
     root = _workspace_root()
     date8 = args.date.strip() or datetime.now(BJ_TZ).strftime("%Y%m%d")
     date10 = _date8_to_10(date8)
+    intraday = not args.offline
 
-    # 先清前一日缓存，再拉取实时数据打快照
+    # 自动回退到最近交易日（非交易日时生效）
+    cfg = load_config_from_env()
+    client = HttpClient(base_url=cfg.base_url, token=cfg.token, timeout=30)
+    resolved_date10, date_note = resolve_trade_date(client, date10)
+    if date_note:
+        print(f"ℹ️ {date_note}")
+    date10 = resolved_date10
+    date8 = _date10_to_8(date10)
+
+    # 先清前一日缓存和已发布文件，确保每天重建
     _purge_previous_day_slices(root=root, keep_date10=date10)
+    _purge_previous_day_published(root=root, keep_date10=date10)
 
-    snap = build_live_snapshot(date8).to_dict()
+    snap = build_live_snapshot(date8, intraday=intraday).to_dict()
     payload = append_intraday_slice(root=root, snapshot=snap)
     if args.publish:
         publish_runtime_files(root=root, latest_snapshot=snap, slices_payload=payload)
     print(f"✅ 实时切片已写入: {_intraday_slices_path(root, str(snap.get('date') or ''))}")
     if args.publish:
         print("✅ 已发布 latest_intraday.json / latest_intraday_slices.json")
+    if args.offline:
+        print("⚠️  离线模式：数据可能非实时")
     return 0
 
 

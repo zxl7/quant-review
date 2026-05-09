@@ -106,7 +106,6 @@ def resolve_trade_date(client: HttpClient, requested_date: str | None) -> tuple[
     返回：(date, date_note)
     """
     if not requested_date:
-        # 默认用今天；若非交易日则回退
         requested_date = _dt.datetime.now().strftime("%Y-%m-%d")
     note = ""
     try:
@@ -115,15 +114,26 @@ def resolve_trade_date(client: HttpClient, requested_date: str | None) -> tuple[
         return requested_date, ""
 
     today = _dt.datetime.now().strftime("%Y-%m-%d")
-    rt_date = get_realtime_market_date(client)
-    # 若请求的是“今天”，且实时行情日期已经确认是今天，则直接按今天处理。
-    # 目的：避免收盘后/盘中指数日K尚未确认时，被误判为“非交易日回退到昨日”。
-    if requested_date == today and rt_date == today:
+    dates = get_recent_trade_dates(client, n=20)
+
+    # 兜底：通过上证指数实时行情日期判断最近交易日
+    if not dates:
+        try:
+            rt_date = get_realtime_market_date(client)
+            if rt_date and len(rt_date) == 10:
+                if requested_date > rt_date:
+                    note = f"非交易日自动回退到最近交易日：{rt_date}"
+                    return rt_date, note
+                return requested_date, ""
+        except Exception:
+            pass
+        # 连K线都拿不到，返回原始请求日期
         return requested_date, ""
 
-    dates = get_recent_trade_dates(client, n=20)
-    if not dates:
+    # 若请求的是"今天"，且今天在交易日列表内，则直接按今天处理。
+    if requested_date == today and today in dates:
         return requested_date, ""
+
     if requested_date in dates:
         return requested_date, ""
     # 回退：取 <= requested_date 的最近一个
@@ -265,8 +275,14 @@ def fetch_stock_themes(client: HttpClient, *, code6: str) -> list[dict[str, Any]
     """
     获取个股题材原始列表（不做过滤）。
     """
+    import urllib.error
     url = f"{client.base_url}/hszg/zg/{code6}/{client.token}"
-    data = client.get_json(url)
+    try:
+        data = client.get_json(url)
+    except urllib.error.HTTPError as e:
+        if e.code == 404:
+            return []
+        raise
     return data if isinstance(data, list) else []
 
 

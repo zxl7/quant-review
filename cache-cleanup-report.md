@@ -13,15 +13,16 @@
 - `concept_fund_flow_cache.json`：板块排行兜底数据
 - `height_trend_cache.json`：高度趋势模块依赖
 - `index_kline_cache.json`：指数K线/量能模块依赖
-- `intraday_slices-20260507.json`：保留最近 2 个盘中切片
+- `intraday_slices-20260506.json`：保留最近 2 个盘中切片
+- `intraday_slices-20260508.json`：保留最近 2 个盘中切片
 - `learning_notes_history.json`：学习语录去重历史
-- `market_data-20260427.json`：最近 7 个 market_data 快照
 - `market_data-20260428.json`：最近 7 个 market_data 快照
 - `market_data-20260429.json`：最近 7 个 market_data 快照
 - `market_data-20260430.json`：最近 7 个 market_data 快照
 - `market_data-20260506.json`：最近 7 个 market_data 快照
 - `market_data-20260507.json`：最近 7 个 market_data 快照
 - `market_data-20260508.json`：最近 7 个 market_data 快照
+- `market_data-20260509.json`：最近 7 个 market_data 快照
 - `money_flow_cache.json`：板块流入聚合依赖
 - `plate_rotate_cache.json`：板块轮动明细必需
 - `pools_cache.json`：离线重建涨停/跌停/炸板池必需
