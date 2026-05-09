@@ -110,6 +110,76 @@ chmod +x ./qr.sh
 
 ---
 
+## 模块组织（modules_v2）
+
+`daily_review/modules_v2/` 按 **5 个 HTML Tab** 重新组织，提升可维护性：
+
+```
+modules_v2/
+├── __init__.py          # 集中导入所有子模块，导出 ALL_MODULES
+├── _utils.py            # 公共工具函数（保留在根目录）
+│
+├── sentiment/          # 短线情绪 Tab
+│   ├── __init__.py
+│   ├── mood.py            # 市场情绪
+│   ├── sentiment_v2.py    # v2 情绪计分卡
+│   ├── v3_sentiment.py    # v3 六维情绪评分
+│   ├── v3_collapse.py    # 崩溃链检测
+│   ├── v3_dujie.py       # 渡劫识别
+│   ├── v3_reflexivity.py # Y=F(X)反身性模型
+│   └── ... (共 14 个文件)
+│
+├── themes/             # 板块题材 Tab
+│   ├── __init__.py
+│   ├── theme_panels.py   # 板块面板
+│   ├── theme_trend.py    # 题材趋势
+│   ├── rotation.py       # 板块轮动
+│   └── ... (共 6 个文件)
+│
+├── ladder/            # 连板天梯 Tab
+│   ├── __init__.py
+│   ├── ladder.py         # 连板天梯主模块
+│   ├── height_trend.py   # 高度趋势
+│   ├── v3_leader.py     # 龙头神形辨析
+│   ├── v3_mainstream.py # 主流三级划分
+│   └── ... (共 7 个文件)
+│
+├── plan/              # 明日计划 Tab
+│   ├── __init__.py
+│   ├── action_guide.py   # 行动指南
+│   ├── v3_position.py   # 养家仓位五档
+│   ├── v3_rebound.py    # 反弹三阶段策略
+│   ├── v3_trading.py   # 交易性质分类
+│   └── ... (共 16 个文件)
+│
+└── watch/             # 实时盯盘 Tab（待扩展）
+    ├── __init__.py
+    └── (待扩展)
+```
+
+### 设计原则
+
+1. **按 Tab 分类**：每个子目录对应一个 HTML Tab，便于快速定位
+2. **向后兼容**：`modules_v2/__init__.py` 集中导入所有子模块，外部调用方式不变
+3. **子包导出**：每个子目录的 `__init__.py` 重新导出模块，支持直接导入（如 `from .sentiment import MoodModule`）
+4. **v3 模块标注**：v3 模块放在对应 Tab 子目录，文件名加 `v3_` 前缀
+
+### 模块执行顺序
+
+`ALL_MODULES` 列表的顺序决定执行顺序，按依赖关系排列：
+- 先执行数据采集模块（全景图、市场概览）
+- 再执行分析模块（情绪、板块、连板）
+- 最后执行决策模块（明日计划）
+
+### 扩展新模块
+
+1. 在对应 Tab 子目录创建新文件（如 `sentiment/my_new_module.py`）
+2. 实现 `Module` 协议（见 `daily_review/pipeline/module.py`）
+3. 在子目录的 `__init__.py` 中导出
+4. 在 `modules_v2/__init__.py` 中添加到 `ALL_MODULES`
+
+---
+
 ## 语录合集（可选）
 
 为了让复盘更“有手感”，仓库里维护了一份可持续扩充的语录合集：
