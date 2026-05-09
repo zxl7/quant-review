@@ -3,10 +3,10 @@
 """
 实时盯盘（AkShare + 必盈兜底）
 
-输出一个轻量 JSON（latest_intraday.json），供 GitHub Pages 静态页在“实时盯盘”Tab 拉取并自动刷新。
+输出一个轻量 JSON（latest_intraday.json），供 GitHub Pages 静态页在"实时盯盘"Tab 拉取并自动刷新。
 
 原则：
-- 只取“盯盘必要字段”，避免请求过多导致被限流
+- 只取"盯盘必要字段"，避免请求过多导致被限流
 - 容错：单个数据源失败不影响整体输出
 - 输出字段尽量稳定（前端只依赖少量 key）
 """
@@ -85,8 +85,8 @@ class LiveSnapshot:
 
 def _concepts_from_biying(date10: str) -> List[Dict[str, Any]]:
     """
-    必盈兜底：用涨停池的题材字段(gn/hy)粗略构建“主线板块TOP”。
-    - 这是一个“盯盘可用”的 proxy，不追求严格等同东方财富概念涨跌幅。
+    必盈兜底：用涨停池的题材字段(gn/hy)粗略构建"主线板块TOP"。
+    - 这是一个"盯盘可用"的 proxy，不追求严格等同东方财富概念涨跌幅。
     """
     try:
         from daily_review.config import load_config_from_env, DEFAULT_CONFIG
@@ -154,14 +154,14 @@ def _concepts_from_biying(date10: str) -> List[Dict[str, Any]]:
         out.append(
             {
                 "name": t,
-                "chg_pct": None,          # 必盈兜底无法给出“板块涨跌幅”，前端会展示为 -
+                "chg_pct": None,          # 必盈兜底无法给出"板块涨跌幅"，前端会展示为 -
                 "inflow": None,
                 "outflow": None,
                 "net": None,
                 "companies": None,
                 "lead": v.get("lead") or "-",
                 "lead_chg_pct": None,
-                "up": int(v.get("count", 0) or 0),  # 用“涨停样本数”近似梯队热度
+                "up": int(v.get("count", 0) or 0),  # 用"涨停样本数"近似梯队热度
                 "down": 0,
             }
         )
@@ -194,6 +194,7 @@ def _market_from_local(cache_data: Dict[str, Any]) -> Dict[str, Any]:
     try:
         features = cache_data.get("features") or {}
         mood_inputs = features.get("mood_inputs") or {}
+        volume_data = cache_data.get("volume") or {}
         return {
             "zt": _to_int(mood_inputs.get("zt_count"), 0),
             "dt": _to_int(mood_inputs.get("dt_count"), 0),
@@ -201,6 +202,7 @@ def _market_from_local(cache_data: Dict[str, Any]) -> Dict[str, Any]:
             "zab_rate": _to_float(mood_inputs.get("zb_rate"), 0.0),
             "lianban": _to_int(mood_inputs.get("lianban_count"), 0),
             "max_lianban": _to_int(mood_inputs.get("max_lb"), 0),
+            "amount": str(volume_data.get("total", "")),
         }
     except Exception:
         return {}
@@ -268,6 +270,7 @@ def _market_from_biying(date10: str) -> Dict[str, Any]:
 
     try_total = zt_cnt + zab_cnt
     zab_rate = (zab_cnt / try_total * 100.0) if try_total > 0 else 0.0
+    # 成交额：必盈 API 暂无市场总成交额接口，留空由缓存兜底
     return {
         "zt": zt_cnt,
         "dt": dt_cnt,
@@ -275,13 +278,16 @@ def _market_from_biying(date10: str) -> Dict[str, Any]:
         "zab_rate": round(zab_rate, 1),
         "lianban": lianban_cnt,
         "max_lianban": max_lianban,
+        "amount": "",
     }
 
 
-def build_live_snapshot(date8: str | None = None) -> LiveSnapshot:
+def build_live_snapshot(date8: str | None = None, *, intraday: bool = True) -> "LiveSnapshot":
     """
     生成实时盯盘快照。
-    date8: YYYYMMDD；为空则取北京时间“今天”。
+
+    - intraday=True（默认）：强制拉取实时数据，缓存仅作兜底。
+    - intraday=False：允许使用本地缓存（用于离线渲染测试）。
     """
     now = _now_bj()
     date8 = date8 or now.strftime("%Y%m%d")
@@ -291,9 +297,11 @@ def build_live_snapshot(date8: str | None = None) -> LiveSnapshot:
     alerts: List[Dict[str, Any]] = []
     market: Dict[str, Any] = {}
     concepts: List[Dict[str, Any]] = []
+    amount: str = ""
 
-    # 1) 优先尝试从本地缓存读取
+    # 始终尝试读取本地缓存（用于获取 amount 等补充字段）
     cache_data = _read_local_cache(date8)
+
     zt_cnt = dt_cnt = zab_cnt = lianban_cnt = max_lianban = 0
     zab_rate = 0.0
 
@@ -301,23 +309,27 @@ def build_live_snapshot(date8: str | None = None) -> LiveSnapshot:
         sources.append("本地缓存")
         m_local = _market_from_local(cache_data)
         if m_local:
-            zt_cnt = int(m_local.get("zt", 0) or 0)
-            dt_cnt = int(m_local.get("dt", 0) or 0)
-            zab_cnt = int(m_local.get("zab", 0) or 0)
-            zab_rate = float(m_local.get("zab_rate", 0.0) or 0.0)
-            lianban_cnt = int(m_local.get("lianban", 0) or 0)
-            max_lianban = int(m_local.get("max_lianban", 0) or 0)
-        
+            zt_cnt = int(m_local.get("zt") or 0)
+            dt_cnt = int(m_local.get("dt") or 0)
+            zab_cnt = int(m_local.get("zab") or 0)
+            zab_rate = float(m_local.get("zab_rate") or 0.0)
+            lianban_cnt = int(m_local.get("lianban") or 0)
+            max_lianban = int(m_local.get("max_lianban") or 0)
+            amount = str(m_local.get("amount")) or ""
+
         c_local = _concepts_from_local(cache_data)
         if c_local:
             concepts = c_local
-    
-    # 2) 如果本地缓存没拿到数据，或者数据缺失，使用必盈兜底
-    if not cache_data or (zt_cnt == 0 and dt_cnt == 0 and zab_cnt == 0):
-        if "本地缓存" in sources:
+
+    # 2) 如果缓存没拿到数据，或者数据缺失，使用必盈实时拉取
+    #    盘中模式（intraday=True）强制走此分支
+    if intraday or not cache_data or (zt_cnt == 0 and dt_cnt == 0 and zab_cnt == 0):
+        if cache_data and "本地缓存" in sources:
             sources.remove("本地缓存")
-            alerts.append({"level": "warn", "text": "本地缓存数据不完整，启用必盈兜底"})
-        
+            alerts.append({"level": "warn", "text": "本地缓存数据不完整，启用必盈实时拉取"})
+        elif intraday and not cache_data:
+            alerts.append({"level": "info", "text": "盘中模式：强制实时拉取"})
+
         m2 = _market_from_biying(date10)
         if m2:
             zt_cnt = int(m2.get("zt", 0) or 0)
@@ -326,16 +338,27 @@ def build_live_snapshot(date8: str | None = None) -> LiveSnapshot:
             zab_rate = float(m2.get("zab_rate", 0.0) or 0.0)
             lianban_cnt = int(m2.get("lianban", 0) or 0)
             max_lianban = int(m2.get("max_lianban", 0) or 0)
+            # 必盈没有 amount，尝试使用缓存中的 amount
+            amount_from_biying = str(m2.get("amount", "") or "")
+            if not amount_from_biying and cache_data:
+                m_local = _market_from_local(cache_data)
+                amount_from_biying = str(m_local.get("amount")) or ""
+            amount = amount_from_biying
             if "必盈" not in sources:
-                sources.append("必盈")
+                sources.append("必盈(实时)")
+        elif cache_data:
+            # API 也失败了，回退到缓存
+            sources.append("必盈(失败，使用缓存兜底)")
+        else:
+            alerts.append({"level": "danger", "text": "数据拉取失败，请稍后重试"})
                 
-    if not concepts:
+    if not concepts or intraday:
         c2 = _concepts_from_biying(date10)
         if c2:
             concepts = c2
             if "必盈" not in sources:
-                sources.append("必盈")
-        else:
+                sources.append("必盈(实时)")
+        elif not concepts:
             alerts.append({"level": "warn", "text": "板块数据获取失败或为空（稍后重试）"})
 
     # 负反馈：跌停/炸板过多
@@ -366,6 +389,7 @@ def build_live_snapshot(date8: str | None = None) -> LiveSnapshot:
         "zab_rate": round(zab_rate, 1),
         "lianban": lianban_cnt,
         "max_lianban": max_lianban,
+        "amount": str(amount) if amount else "",
     }
 
     return LiveSnapshot(

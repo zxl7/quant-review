@@ -4171,15 +4171,15 @@
       }
       .wb-temp-grid {
         display: grid;
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-        gap: 16px;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 10px;
       }
       .wb-temp-card {
-        border-radius: 18px;
-        border: 1px solid rgba(148, 163, 184, 0.2);
+        border-radius: 14px;
+        border: 1px solid rgba(148, 163, 184, 0.18);
         background: rgba(255, 255, 255, 0.72);
-        padding: 14px 14px 13px;
-        min-height: 132px;
+        padding: 10px 12px 10px;
+        min-height: 98px;
       }
       [data-theme="dark"] .wb-temp-card {
         background: rgba(2, 6, 23, 0.22);
@@ -7156,6 +7156,10 @@
                       <div class="v">{{ watchMarket.lianban ?? '-' }} / {{ watchMarket.max_lianban ?? '-' }}</div>
                       <div class="n">炸板率 {{ watchMarket.zab_rate ?? '-' }}%</div>
                     </div>
+                    <div class="wb-mini-kpi">
+                      <div class="k">成交额</div>
+                      <div class="v">{{ watchMarket.amount ?? '-' }}</div>
+                    </div>
                   </div>
                 </div>
                 <div class="wb-alerts" v-if="(marketData.live?.alerts || []).length && !marketData.intradaySnapshots?.simulated">
@@ -7172,24 +7176,28 @@
                 </div>
               </div>
 
-              <!-- 六维温度 -->
+              <!-- 六维参考温度 -->
               <div class="wb-card wb-span-12">
                 <div class="hd">
                   <div class="t">六维参考温度</div>
                   <div class="s">参考情绪温度设计，按当前点位与半小时序列展示</div>
                 </div>
-                <div class="wb-temp-grid">
-                  <div class="wb-temp-card" v-for="item in watchTempCards" :key="'wt-'+item.key" :data-accent="item.accent">
-                    <div class="wb-temp-top">
-                      <div class="wb-temp-left">
-                        <span class="wb-temp-label">{{ item.label }}</span>
-                        <span class="wb-temp-pill">{{ item.level }}</span>
-                        <span class="wb-temp-delta">{{ item.deltaWord }} {{ item.deltaVal }}</span>
-                      </div>
-                      <div class="wb-temp-value">{{ item.valueText }}</div>
+                <div class="dim-grid">
+                  <div class="dim-item" v-for="item in watchTempCards" :key="'wt-'+item.key">
+                    <div class="dim-top">
+                      <span class="dim-k">
+                        {{ item.label }}
+                        <span class="lvl-badge" :class="item.levelCls">{{ item.level }}</span>
+                      </span>
+                      <span class="dim-v">{{ item.valueText }}</span>
                     </div>
-                    <div class="wb-temp-track"><i :style="{ width: item.barPct + '%' }"></i></div>
-                    <div class="wb-temp-trend">趋势：{{ item.trend }}</div>
+                    <div class="dim-bar">
+                      <div class="dim-fill" :style="{ width: item.barPct + '%', background: heatColor(item.barPct) }"></div>
+                    </div>
+                    <div class="dim-mini">
+                      <span class="dim-chip">{{ item.deltaWord }} {{ item.deltaVal }}</span>
+                      <code v-if="item.trend">趋势：{{ item.trend }}</code>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -8158,6 +8166,7 @@
                 const p = this.toNum(prev?.[cfg.key], c)
                 const delta = c - p
                 const level = cfg.inverse ? (c <= cfg.hi ? "低位" : c <= cfg.mid ? "中位" : "高位") : c >= cfg.hi ? "高位" : c >= cfg.mid ? "中位" : "低位"
+                const levelCls = level === "高位" ? "high" : level === "中位" ? "mid" : "low"
                 const deltaWord = Math.abs(delta) < 0.05 ? "持平" : delta > 0 ? "上升" : "下降"
                 const deltaVal = Math.abs(delta) < 0.05 ? "0" : `${delta > 0 ? "+" : "-"}${Number.isInteger(Math.abs(delta)) ? Math.abs(delta) : Math.abs(delta).toFixed(1)}${cfg.unit}`
                 const trend = rows
@@ -8169,8 +8178,8 @@
                 return {
                   key: cfg.key,
                   label: cfg.label,
-                  accent: cfg.accent,
                   level,
+                  levelCls,
                   deltaWord,
                   deltaVal,
                   valueText: `${Number.isInteger(c) ? c : c.toFixed(1)}${cfg.unit}`,
