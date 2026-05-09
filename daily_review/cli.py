@@ -1034,7 +1034,10 @@ def run_rebuild(date: str, modules: list[str] | None = None, suffix: str = "", s
     out_dir = root / "html"
     out_dir.mkdir(parents=True, exist_ok=True)
     suffix_part = f"-{suffix}" if suffix else ""
-    out_path = out_dir / f"复盘日记-{date_compact}{suffix_part}-tab-v1.html"
+    # 文件名用当天日期（实时日期），不用交易日期
+    from datetime import date as date_cls
+    today_compact = date_cls.today().strftime("%Y%m%d")
+    out_path = out_dir / f"复盘日记-{today_compact}{suffix_part}-tab-v1.html"
 
     render_html_template(
         template_path=template_path,

@@ -3950,43 +3950,6 @@
         overflow-x: auto;
         padding-bottom: 8px;
       }
-      .wb-card2 {
-        min-width: 160px;
-        flex: 0 0 auto;
-        padding: 8px 10px;
-        border: 1px solid var(--border);
-        border-radius: 6px;
-        background: rgba(255, 255, 255, 0.45);
-      }
-      [data-theme="dark"] .wb-card2 {
-        background: rgba(2, 6, 23, 0.35);
-        border-color: rgba(148, 163, 184, 0.18);
-      }
-      .wb-card2 .wb-time {
-        font-size: 11px;
-        font-weight: 850;
-        color: var(--text-secondary);
-        margin-bottom: 4px;
-      }
-      .wb-card2 .wb-label {
-        font-size: 12px;
-        font-weight: 900;
-        color: var(--text-primary);
-        margin-bottom: 6px;
-      }
-      .wb-card2 .wb-metrics {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 4px;
-      }
-      .wb-card2 .wb-m {
-        font-size: 11px;
-        font-weight: 850;
-        color: var(--text-muted);
-        background: rgba(148, 163, 184, 0.12);
-        padding: 2px 5px;
-        border-radius: 3px;
-      }
       .wb-row {
         display: flex;
         align-items: baseline;
@@ -7313,18 +7276,10 @@
                       <div class="v">{{ watchEvolutionSummary }}</div>
                     </div>
                   </div>
-                  <div class="wb-grid" style="margin-top: 12px">
-                    <div class="wb-card2" v-for="(x, i) in watchRecentRows" :key="'wbt-'+i">
-                      <div class="wb-time">{{ x.time }}</div>
-                      <div class="wb-label">{{ x.shift_label || x.headline || '—' }}</div>
-                      <div class="wb-metrics">
-                        <span class="wb-m">封{{ x.fb ?? '-' }}%</span>
-                        <span class="wb-m">晋{{ x.jj ?? '-' }}%</span>
-                        <span class="wb-m">炸{{ x.zb ?? '-' }}%</span>
-                        <span class="wb-m">跌{{ x.dt ?? '-' }}</span>
-                        <span class="wb-m">热{{ x.heat ?? '-' }}</span>
-                        <span class="wb-m">险{{ x.risk ?? '-' }}</span>
-                      </div>
+                  <div class="wb-list" style="margin-top: 12px">
+                    <div class="wb-row" v-for="(x, i) in watchRecentRows" :key="'wbt-'+i">
+                      <span class="name">{{ x.time }} {{ x.shift_label || x.headline || '—' }}</span>
+                      <span class="meta">封{{ x.fb ?? '-' }}% | 晋{{ x.jj ?? '-' }}% | 炸{{ x.zb ?? '-' }}% | 跌{{ x.dt ?? '-' }} | 热{{ x.heat ?? '-' }} | 险{{ x.risk ?? '-' }}</span>
                     </div>
                   </div>
                 </div>

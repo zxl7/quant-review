@@ -163,7 +163,7 @@ render_offline() {
   yyyymmdd="$(date10_to_date8 "${date10}")"
   market_json="cache/market_data-${yyyymmdd}.json"
   template="templates/report_template.html"
-  out_html="html/复盘日记-${yyyymmdd}-tab-v1.html"
+  out_html="html/复盘日记-$(date +%Y%m%d)-tab-v1.html"
 
   [[ -f "${market_json}" ]] || die "未找到 ${market_json}，请先执行：./qr.sh fetch ${date10}"
 
