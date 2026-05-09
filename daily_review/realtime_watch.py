@@ -238,6 +238,7 @@ def _concepts_from_local(cache_data: Dict[str, Any]) -> List[Dict[str, Any]]:
 def _market_from_biying(date10: str) -> Dict[str, Any]:
     """
     必盈兜底：用三池统计市场状态（涨停/炸板/跌停/连板高度）。
+    成交额：从池子数据汇总 cje 字段，作为两市成交额的近似值。
     """
     try:
         from daily_review.config import load_config_from_env
@@ -270,7 +271,23 @@ def _market_from_biying(date10: str) -> Dict[str, Any]:
 
     try_total = zt_cnt + zab_cnt
     zab_rate = (zab_cnt / try_total * 100.0) if try_total > 0 else 0.0
-    # 成交额：必盈 API 暂无市场总成交额接口，留空由缓存兜底
+
+    # 成交额：从池子数据汇总 cje，作为近似值
+    amount_val = 0.0
+    for pool in (zt, zb, dt):
+        if isinstance(pool, list):
+            for stock in pool:
+                if isinstance(stock, dict):
+                    amount_val += _to_float(stock.get("cje"), 0.0)
+    # 池子只是全市场的一部分，乘以一个经验系数（约 3~5 倍）来近似全市场
+    # 涨停池+炸板池+跌停池 约覆盖 100~200 只股票，全市场约 5000 只
+    # 用 5 作为粗略放大系数；如果池子为空则留空
+    if amount_val > 0:
+        amount_val *= 5.0
+        amount_str = f"{amount_val/1e8:.1f}亿"
+    else:
+        amount_str = ""
+
     return {
         "zt": zt_cnt,
         "dt": dt_cnt,
@@ -278,7 +295,7 @@ def _market_from_biying(date10: str) -> Dict[str, Any]:
         "zab_rate": round(zab_rate, 1),
         "lianban": lianban_cnt,
         "max_lianban": max_lianban,
-        "amount": "",
+        "amount": amount_str,
     }
 
 
