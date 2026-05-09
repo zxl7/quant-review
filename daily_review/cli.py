@@ -483,7 +483,7 @@ def run_fetch_and_rebuild(date: str | None) -> int:
             "generatedAt": gen_time,
         },
         "indices": indices_for_report or [
-            {"name": i["name"], "val": f"{float(i['val']):.2f}", "chg": f"{float(i['chg']):+.2f}%"} for i in (indices_rt or [])
+            _norm_index_chg(i["name"], float(i["val"]), float(i["chg"])) for i in (indices_rt or [])
         ],
         "panorama": {},
         "volume": {},
@@ -574,7 +574,46 @@ def run_fetch_and_rebuild(date: str | None) -> int:
     write_json(market_path, market_data)
 
     # 离线重建（pipeline）并渲染 tab-v1
-    return run_rebuild(actual_date)
+    rc = run_rebuild(actual_date)
+
+    # 同步生成盯盘快照：每次 fetch 都追加一条盘中切片 + 发布 latest_intraday*.json
+    try:
+        import datetime as _dt
+        from daily_review.watch_runtime import (
+            append_intraday_slice,
+            publish_runtime_files,
+        )
+        now_bj = _dt.datetime.now(
+            _dt.timezone(_dt.timedelta(hours=8))
+        ).strftime("%Y-%m-%d %H:%M:%S")
+        mi = mood_inputs or {}
+        watch_snap = {
+            "source": market_data.get("meta", {}).get("source", {}).get("indices", "fetch"),
+            "ts_bj": now_bj,
+            "date": actual_date,
+            "market": {
+                "zt": int(mi.get("zt_count", 0) or 0),
+                "dt": int(mi.get("dt_count", 0) or 0),
+                "zab": int(mi.get("zb_count", 0) or 0),
+                "zab_rate": float(mi.get("zb_rate", 0) or 0.0),
+                "lianban": int(mi.get("lianban_count", 0) or 0),
+                "max_lianban": int(mi.get("max_lb", 0) or 0),
+                "amount": str(market_data.get("volume", {}).get("total", "") or ""),
+            },
+            "concepts": [
+                {"name": c.get("name"), "lead": c.get("lead"), "chg_pct": c.get("chg_pct")}
+                for c in (market_data.get("plateRankTop10") or [])[:5]
+                if isinstance(c, dict) and c.get("name")
+            ],
+            "alerts": [],
+        }
+        slices_payload = append_intraday_slice(root=root, snapshot=watch_snap)
+        publish_runtime_files(root=root, latest_snapshot=watch_snap, slices_payload=slices_payload)
+        print("✅ 盯盘快照已追加并发布")
+    except Exception as e:
+        print(f"⚠️ 盯盘快照生成失败（不影响主流程）: {e}")
+
+    return rc
 
 
 def run_intraday_snapshot(date: str | None) -> int:
@@ -871,6 +910,8 @@ def run_rebuild(date: str, modules: list[str] | None = None, suffix: str = "", s
                     continue
                 c, pc = r
                 chg = ((c - pc) / pc * 100.0) if pc else 0.0
+                if abs(chg) < 0.005:
+                    chg = 0.0
                 inds.append(
                     {
                         "name": name,
@@ -2270,6 +2311,8 @@ def run_partial(date: str, modules: list[str]) -> int:
                     continue
                 c, pc = r
                 chg = ((c - pc) / pc * 100.0) if pc else 0.0
+                if abs(chg) < 0.005:
+                    chg = 0.0
                 inds.append({"name": name, "val": f"{c:.2f}", "chg": f"{chg:+.2f}%"})
             if inds:
                 ctx.market_data["indices"] = inds
