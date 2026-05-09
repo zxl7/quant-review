@@ -235,10 +235,28 @@ def _concepts_from_local(cache_data: Dict[str, Any]) -> List[Dict[str, Any]]:
         return []
 
 
+
+def _fetch_index_amount(client, code: str) -> float:
+    """
+    有副作用函数：获取指数实时成交额（元）。
+    使用 hsindex/real/time/{code} 端点，返回 cje 字段。
+    """
+    try:
+        resp = client.api(f"hsindex/real/time/{code}")
+        if isinstance(resp, dict):
+            val = resp.get("cje", 0)
+            if val:
+                return float(val)
+    except Exception:
+        pass
+    return 0.0
+
+
+
 def _market_from_biying(date10: str) -> Dict[str, Any]:
     """
     必盈兜底：用三池统计市场状态（涨停/炸板/跌停/连板高度）。
-    成交额：从池子数据汇总 cje 字段，作为两市成交额的近似值。
+    成交额：直接获取上证(000001.SH) + 深证(399001.SZ) 实时成交额，相加得两市总额。
     """
     try:
         from daily_review.config import load_config_from_env
@@ -272,18 +290,12 @@ def _market_from_biying(date10: str) -> Dict[str, Any]:
     try_total = zt_cnt + zab_cnt
     zab_rate = (zab_cnt / try_total * 100.0) if try_total > 0 else 0.0
 
-    # 成交额：从池子数据汇总 cje，作为近似值
+    # 成交额：直接获取上证(000001.SH) + 深证(399001.SZ) 实时成交额
     amount_val = 0.0
-    for pool in (zt, zb, dt):
-        if isinstance(pool, list):
-            for stock in pool:
-                if isinstance(stock, dict):
-                    amount_val += _to_float(stock.get("cje"), 0.0)
-    # 池子只是全市场的一部分，乘以一个经验系数（约 3~5 倍）来近似全市场
-    # 涨停池+炸板池+跌停池 约覆盖 100~200 只股票，全市场约 5000 只
-    # 用 5 作为粗略放大系数；如果池子为空则留空
+    amount_val += _fetch_index_amount(client, "000001.SH")
+    amount_val += _fetch_index_amount(client, "399001.SZ")
+    
     if amount_val > 0:
-        amount_val *= 5.0
         amount_str = f"{amount_val/1e8:.1f}亿"
     else:
         amount_str = ""
@@ -297,7 +309,6 @@ def _market_from_biying(date10: str) -> Dict[str, Any]:
         "max_lianban": max_lianban,
         "amount": amount_str,
     }
-
 
 def build_live_snapshot(date8: str | None = None, *, intraday: bool = True) -> "LiveSnapshot":
     """
