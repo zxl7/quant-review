@@ -1,50 +1,68 @@
-"""modules_v2：基于 pipeline.Module 协议的新模块实现（逐步迁移）。"""
+"""modules_v2：基于 pipeline.Module 协议的新模块实现（按 Tab 重新组织）。"""
 
-# ═════════════════ 旧模块(保留) ═════════════════
-from .mood import MOOD_MODULE
-from .leader import LEADER_MODULE
-from .panorama import PANORAMA_MODULE
-from .market_panorama import MARKET_PANORAMA_MODULE
-from .ladder import LADDER_MODULE
-from .theme_panels import THEME_PANELS_MODULE
-from .volume import VOLUME_MODULE
-from .height_trend import HEIGHT_TREND_MODULE
-from .ztgc import ZTGC_MODULE
-from .top10 import TOP10_MODULE
-from .theme_trend import THEME_TREND_MODULE
-from .fear import FEAR_MODULE
-from .rotation import ROTATION_MODULE
-from .theme_layers import THEME_LAYERS_MODULE
-from .action_guide import ACTION_GUIDE_MODULE
-from .summary3 import SUMMARY3_MODULE
-from .learning_notes import LEARNING_NOTES_MODULE
-from .mood_signals import MOOD_SIGNALS_MODULE
-from .sentiment_spec import SENTIMENT_SPEC_MODULE
-from .sentiment_v2 import SENTIMENT_V2_MODULE
-from .leader_dragon_v2 import LEADER_DRAGON_V2_MODULE
-from .theme_ladder_v2 import THEME_LADDER_V2_MODULE
-from .position_v2 import POSITION_V2_MODULE
-from .rightside_v2 import RIGHTSIDE_V2_MODULE
-from .resonance_v2 import RESONANCE_V2_MODULE
-from .trade_nature_v2 import TRADE_NATURE_V2_MODULE
-from .rebound_v2 import REBOUND_V2_MODULE
-from .psychology_v2 import PSYCHOLOGY_V2_MODULE
-from .strategy_v2 import STRATEGY_V2_MODULE
+# ════════════════ 短线情绪 (sentiment/) ════════════════
+from .sentiment.mood import MOOD_MODULE
+from .sentiment.sentiment_spec import SENTIMENT_SPEC_MODULE
+from .sentiment.sentiment_v2 import SENTIMENT_V2_MODULE
+from .sentiment.mood_signals import MOOD_SIGNALS_MODULE
+from .sentiment.fear import FEAR_MODULE
+from .sentiment.v3_sentiment import V3_SENTIMENT_MODULE
+from .sentiment.v3_dujie import V3_DUJIE_MODULE
+from .sentiment.effect import EFFECT_MODULE
+from .sentiment.panorama import PANORAMA_MODULE
+from .sentiment.market_panorama import MARKET_PANORAMA_MODULE
+from .sentiment.v3_reflexivity import V3_REFLEXIVITY_MODULE
+from .sentiment.volume import VOLUME_MODULE
+from .sentiment.v3_collapse import V3_COLLAPSE_MODULE
 
-# ═════════════════ v3 模块(对标v3.0算法规格书) ═════════════════
+# ════════════════ 板块题材 (themes/) ════════════════
+from .themes.theme_panels import THEME_PANELS_MODULE
+from .themes.theme_trend import THEME_TREND_MODULE
+from .themes.theme_layers import THEME_LAYERS_MODULE
+from .themes.theme_ladder_v2 import THEME_LADDER_V2_MODULE
+from .themes.rotation import ROTATION_MODULE
+from .themes.top10 import TOP10_MODULE
+
+# ════════════════ 连板天梯 (ladder/) ════════════════
+from .ladder.ladder import LADDER_MODULE
+from .ladder.height_trend import HEIGHT_TREND_MODULE
+from .ladder.ztgc import ZTGC_MODULE
+from .ladder.v3_leader import V3_LEADER_MODULE
+from .ladder.v3_mainstream import V3_MAINSTREAM_MODULE
+from .ladder.leader import LEADER_MODULE
+from .ladder.leader_dragon_v2 import LEADER_DRAGON_V2_MODULE
+
+# ════════════════ 明日计划 (plan/) ════════════════
+from .plan.action_guide import ACTION_GUIDE_MODULE
+from .plan.strategy_v2 import STRATEGY_V2_MODULE
+from .plan.position_v2 import POSITION_V2_MODULE
+from .plan.psychology_v2 import PSYCHOLOGY_V2_MODULE
+from .plan.v3_position import V3_POSITION_MODULE
+from .plan.v3_rebound import V3_REBOUND_MODULE
+from .plan.v3_fullpos import V3_FULLPOS_MODULE
+from .plan.summary3 import SUMMARY3_MODULE
+from .plan.learning_notes import LEARNING_NOTES_MODULE
+from .plan.v3_trading import V3_TRADING_MODULE
+from .plan.v3_rightside import V3_RIGHTSIDE_MODULE
+from .plan.rebound_v2 import REBOUND_V2_MODULE
+from .plan.resonance_v2 import RESONANCE_V2_MODULE
+from .plan.rightside_v2 import RIGHTSIDE_V2_MODULE
+from .plan.trade_nature_v2 import TRADE_NATURE_V2_MODULE
+
+# ════════════════ v3 模块(对标v3.0算法规格书) ════════════════
 
 try:
-    from .v3_sentiment import V3_SENTIMENT_MODULE
-    from .v3_dujie import V3_DUJIE_MODULE
-    from .v3_leader import V3_LEADER_MODULE
-    from .v3_mainstream import V3_MAINSTREAM_MODULE
-    from .v3_trading import V3_TRADING_MODULE
-    from .v3_rightside import V3_RIGHTSIDE_MODULE
-    from .v3_position import V3_POSITION_MODULE
-    from .v3_rebound import V3_REBOUND_MODULE
-    from .v3_fullpos import V3_FULLPOS_MODULE
-    from .v3_reflexivity import V3_REFLEXIVITY_MODULE
-    from .v3_collapse import V3_COLLAPSE_MODULE
+    from .sentiment.v3_sentiment import V3_SENTIMENT_MODULE
+    from .sentiment.v3_dujie import V3_DUJIE_MODULE
+    from .ladder.v3_leader import V3_LEADER_MODULE
+    from .ladder.v3_mainstream import V3_MAINSTREAM_MODULE
+    from .plan.v3_trading import V3_TRADING_MODULE
+    from .plan.v3_rightside import V3_RIGHTSIDE_MODULE
+    from .plan.v3_position import V3_POSITION_MODULE
+    from .plan.v3_rebound import V3_REBOUND_MODULE
+    from .plan.v3_fullpos import V3_FULLPOS_MODULE
+    from .sentiment.v3_reflexivity import V3_REFLEXIVITY_MODULE
+    from .sentiment.v3_collapse import V3_COLLAPSE_MODULE
 
     # v3 模块列表（按执行顺序排列，依赖前置模块先执行）
     V3_MODULES = [
