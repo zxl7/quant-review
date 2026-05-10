@@ -14,6 +14,7 @@ import argparse
 import json
 import math
 import os
+import time
 from pathlib import Path
 
 from daily_review.modules_v2 import ALL_MODULES
@@ -175,6 +176,11 @@ def _prune_frontend_unused_fields(market_data: dict) -> None:
         market_data["meta"] = meta
 
 
+def _log(msg: str) -> None:
+    ts = time.strftime("%H:%M:%S")
+    print(f"  [{ts}] {msg}")
+
+
 def run_full(date: str | None) -> int:
     """
     全量更新（收口阶段）：
@@ -193,12 +199,15 @@ def run_fetch_and_rebuild(date: str | None) -> int:
     cache_dir = root / "cache"
     cache_dir.mkdir(parents=True, exist_ok=True)
 
+    _log(f"开始在线取数 (请求日期: {date or '自动'})")
+
     cfg = load_config_from_env()
     from daily_review.http import HttpClient
 
     client = HttpClient(base_url=cfg.base_url, token=cfg.token, timeout=30)
     req_date = date
     actual_date, date_note = resolve_trade_date(client, req_date)
+    _log(f"交易日确认: {actual_date} ({date_note})")
 
     # 交易日序列（用于缓存裁剪/昨日）
     trade_days = get_trading_days_from_index_k(client, date=actual_date, n=7) or [actual_date]
@@ -235,8 +244,9 @@ def run_fetch_and_rebuild(date: str | None) -> int:
         pools[pn] = {d: v for d, v in (pools.get(pn) or {}).items() if d in keep}
     pools_cache = {"version": 1, "pools": pools}
     write_json(pools_path, pools_cache)
+    _log("涨停池/跌停池/炸板池/强势池 已获取并落盘")
 
-    # theme_cache.json：只补齐“当日出现的 code6”，避免无限增长
+    # theme_cache.json：只补齐"当日出现的 code6"，避免无限增长
     themes_path = cache_dir / "theme_cache.json"
     theme_cache_disk = read_json(themes_path, default={})
     codes_map = (theme_cache_disk.get("codes") or {}) if isinstance(theme_cache_disk, dict) else {}
@@ -286,6 +296,7 @@ def run_fetch_and_rebuild(date: str | None) -> int:
             uniq.append(nm)
         codes_map[code6] = uniq
     write_json(themes_path, {"version": 1, "codes": codes_map})
+    _log(f"题材缓存已更新 (共 {len(codes_map)} 只股票)")
 
     # theme_trend_cache.json：主线题材近 5 日持续性（只用已缓存的 code2themes，不额外请求）
     theme_trend_path = cache_dir / "theme_trend_cache.json"
@@ -317,13 +328,11 @@ def run_fetch_and_rebuild(date: str | None) -> int:
         rows = rows if isinstance(rows, list) else []
         by_day[d] = count_day_themes([x for x in rows if isinstance(x, dict)])
 
-    # 裁剪：只保留最近 30 天
-    keep_days = set(trade_days)
-    for k in sorted(list(by_day.keys())):
-        if isinstance(k, str) and k not in keep_days and len(by_day) > 40:
-            by_day.pop(k, None)
+    # 裁剪：只保留近 7 个交易日
+    by_day = {k: v for k, v in by_day.items() if k in keep}
 
     write_json(theme_trend_path, {"version": 1, "as_of": actual_date, "by_day": by_day})
+    _log("主线趋势已计算 (近5日)")
 
     # index_kline_cache.json：缓存指数日K
     # - 用 history 拉更长序列（便于 MA5/MA20 等技术指标在 v3 右侧交易中使用）
@@ -352,6 +361,7 @@ def run_fetch_and_rebuild(date: str | None) -> int:
             cleaned.append(it)
         codes_entry[code] = {"as_of": actual_date, "items": cleaned[-80:]}
     write_json(index_k_path, {"version": 1, "codes": codes_entry})
+    _log("指数日K已缓存 (近120日)")
 
     # height_trend_cache.json：近 7 日高度趋势（只缓存历史日，不缓存当天）
     # 口径对齐 gen_report_v4：main=最高板、sub=次高、gem=创业板最高（300*）
@@ -390,7 +400,10 @@ def run_fetch_and_rebuild(date: str | None) -> int:
         day_data = pools.get("ztgc", {}).get(d) or []
         if isinstance(day_data, list):
             ht_days[d] = calc_height_trend_row(d, [x for x in day_data if isinstance(x, dict)])
+    # 裁剪：只保留近 7 个交易日
+    ht_days = {d: v for d, v in ht_days.items() if d in keep}
     write_json(ht_path, {"version": 1, "days": ht_days})
+    _log("高度趋势已计算 (近7日)")
 
     # indices（实时）：仅用于 asOf 展示（HH:MM:SS）
     indices_rt, indices_asof = fetch_indices_realtime(
@@ -567,6 +580,7 @@ def run_fetch_and_rebuild(date: str | None) -> int:
         if isinstance(meta.get("asOf"), dict):
             meta["asOf"]["quotes"] = indices_asof
         market_data["meta"] = meta
+        _log(f"个股实时行情已获取 ({len(quotes_map)} 只)")
     except Exception:
         pass
 
@@ -579,8 +593,10 @@ def run_fetch_and_rebuild(date: str | None) -> int:
     date_compact = actual_date.replace("-", "")
     market_path = cache_dir / f"market_data-{date_compact}.json"
     write_json(market_path, market_data)
+    _log(f"market_data 缓存已写入: {market_path.name}")
 
     # 离线重建（pipeline）并渲染 tab-v1
+    _log("开始离线重建 pipeline...")
     rc = run_rebuild(actual_date)
 
     # 同步生成盯盘快照：每次 fetch 都追加一条盘中切片 + 发布 latest_intraday*.json
@@ -597,9 +613,12 @@ def run_fetch_and_rebuild(date: str | None) -> int:
         # 从 rebuild 后的缓存重新读取完整 market_data
         rebuilt_data = json.loads(market_path.read_text(encoding="utf-8")) if market_path.exists() else market_data
         rebuilt_mi = (rebuilt_data.get("features") or {}).get("mood_inputs") or mood_inputs
-        # 跨日清理：确保只保留当日数据
-        _purge_previous_day_slices(root=root, keep_date10=actual_date)
-        _purge_previous_day_published(root=root, keep_date10=actual_date)
+        # 跨日清理：确保只保留当日数据（用当前北京时间日期，而非数据日期）
+        now_bj_date = _dt.datetime.now(
+            _dt.timezone(_dt.timedelta(hours=8))
+        ).strftime("%Y-%m-%d")
+        _purge_previous_day_slices(root=root, keep_date10=now_bj_date)
+        _purge_previous_day_published(root=root, keep_date10=now_bj_date)
         now_bj = _dt.datetime.now(
             _dt.timezone(_dt.timedelta(hours=8))
         ).strftime("%Y-%m-%d %H:%M:%S")
@@ -624,7 +643,7 @@ def run_fetch_and_rebuild(date: str | None) -> int:
         watch_snap = {
             "source": market_data.get("meta", {}).get("source", {}).get("indices", "fetch"),
             "ts_bj": now_bj,
-            "date": actual_date,
+            "date": now_bj_date,
             "market": {
                 "zt": int(rebuilt_mi.get("zt_count", 0) or 0),
                 "dt": int(rebuilt_mi.get("dt_count", 0) or 0),
@@ -671,6 +690,7 @@ def run_intraday_snapshot(date: str | None) -> int:
     client = HttpClient(base_url=cfg.base_url, token=cfg.token, timeout=30)
     req_date = date
     actual_date, date_note = resolve_trade_date_intraday(client, req_date)
+    _log(f"盘中交易日: {actual_date} ({date_note})")
 
     # 当前时间（用于量能估算和标记）
     now = _dt.datetime.now()
@@ -683,6 +703,8 @@ def run_intraday_snapshot(date: str | None) -> int:
 
     if not is_trading_hour:
         print(f"⚠️ 当前时间 {now_str} 不在交易时段内（9:00-15:30），数据可能为上一交易日收盘数据。")
+
+    _log(f"盘中快照模式启动 (请求日期: {date or '自动'})")
 
     # ===== 取数逻辑与 fetch 相同，但不强制刷新历史缓存 =====
     trade_days = get_trading_days_from_index_k(client, date=actual_date, n=3) or [actual_date]
@@ -702,7 +724,12 @@ def run_intraday_snapshot(date: str | None) -> int:
     for pn in ("ztgc", "dtgc", "zbgc", "qsgc"):
         pools.setdefault(pn, {})
         pools[pn][actual_date] = fetch_pool(client, pool_name=pn, date=actual_date)
+    # 裁剪：只保留近 3 个交易日（watch 模式 trade_days 最多 3 天）
+    watch_keep = set(trade_days)
+    for pn in ("ztgc", "dtgc", "zbgc", "qsgc"):
+        pools[pn] = {d: v for d, v in (pools.get(pn) or {}).items() if d in watch_keep}
     write_json(pools_path, {"version": 1, "pools": pools})
+    _log("盘中数据池已获取")
 
     # theme_cache：只处理当日涨停股
     themes_path = cache_dir / "theme_cache.json"
@@ -813,19 +840,25 @@ def run_intraday_snapshot(date: str | None) -> int:
     date_compact = actual_date.replace("-", "")
     market_path = cache_dir / f"market_data-{date_compact}-intraday.json"
     write_json(market_path, market_data)
+    _log(f"盘中缓存已写入: {market_path.name}")
 
     # 跑 pipeline + 渲染（复用 rebuild 的大部分逻辑）
     # 第一次：先把计算结果写回 intraday market_data（用于生成快照记录）
+    _log("pipeline 初次重建...")
     run_rebuild(actual_date, suffix="intraday", source_market_path=market_path)
 
     # 追加快照记录（写入 cache/intraday_snapshots-YYYYMMDD.json）
     try:
+        import datetime as _dt3
+        _now10_snap = _dt3.datetime.now(_dt3.timezone(_dt3.timedelta(hours=8))).strftime("%Y-%m-%d")
         snap_md = json.loads(market_path.read_text(encoding="utf-8"))
-        _append_intraday_snapshot(root=root, date=actual_date, market_data=snap_md)
+        _append_intraday_snapshot(root=root, date=_now10_snap, market_data=snap_md)
+        _log("快照记录已追加")
     except Exception:
         pass
 
-    # 第二次：把“半小时快照列表”注入页面后再渲染一次（离线，成本很低）
+    # 第二次：把"半小时快照列表"注入页面后再渲染一次（离线，成本很低）
+    _log("pipeline 二次重建（含快照注入）...")
     run_rebuild(actual_date, suffix="intraday", source_market_path=market_path)
 
     # 在输出 HTML 中注入盘中快照标记
@@ -865,6 +898,8 @@ def run_rebuild(date: str, modules: list[str] | None = None, suffix: str = "", s
         raise FileNotFoundError(f"找不到缓存 marketData：{market_path}（请先跑一次 ./qr.sh fetch {date}）")
 
     market_data = json.loads(market_path.read_text(encoding="utf-8"))
+    _log(f"缓存已加载: {market_path.name}")
+
     ctx = Context.from_market_data(market_data)
 
     # 注入 raw：复用 partial 的离线缓存注入逻辑
@@ -891,6 +926,7 @@ def run_rebuild(date: str, modules: list[str] | None = None, suffix: str = "", s
     ctx.raw["index_klines"] = _load_index_klines_cache(root)
     ctx.raw["height_trend_cache"] = _load_height_trend_cache(root)
     ctx.raw["theme_trend_cache"] = _load_theme_trend_cache(root)
+    _log("离线数据已注入 (pools/themes/klines/height_trend/theme_trend)")
 
     # 修复：三大指数涨幅在离线重建中可能残留为 +0.00%
     # 这里用指数日K缓存按“报告日收盘价 vs 前收”重算，确保与报告日期一致。
@@ -985,13 +1021,19 @@ def run_rebuild(date: str, modules: list[str] | None = None, suffix: str = "", s
     except Exception:
         pass
 
+    _log("features 已重算")
+
     runner = Runner(ALL_MODULES)
     runner.run(ctx, targets=(modules or None))
     market_data = ctx.market_data
+    _log("pipeline 已执行")
 
-    # === 注入盘中快照列表（供“实时盯盘”页面展示）===
+    # === 注入盘中快照列表（供"实时盯盘"页面展示）===
     try:
-        _inject_intraday_snapshots(root=root, date=date, market_data=market_data)
+        import datetime as _dt2
+        _now10 = _dt2.datetime.now(_dt2.timezone(_dt2.timedelta(hours=8))).strftime("%Y-%m-%d")
+        _inject_intraday_snapshots(root=root, date=date, market_data=market_data, now_date10=_now10)
+        _log(f"盘中快照已注入 ({len(market_data.get('intradaySnapshots', {}).get('snapshots', []))} 条)")
     except Exception:
         pass
 
@@ -1029,6 +1071,7 @@ def run_rebuild(date: str, modules: list[str] | None = None, suffix: str = "", s
     # - 仅在字段缺失/为空时注入，避免覆盖后端已算出的更准口径
     try:
         _inject_mood_history_and_delta(root=root, date=date, market_data=market_data)
+        _log("情绪历史趋势/昨日对比 已注入")
     except Exception:
         pass
 
@@ -1037,6 +1080,7 @@ def run_rebuild(date: str, modules: list[str] | None = None, suffix: str = "", s
         from daily_review.metrics.action_advisor import build_action_advisor
 
         market_data["actionAdvisor"] = build_action_advisor(market_data=market_data)
+        _log("actionAdvisor 已生成")
     except Exception:
         pass
 
@@ -1046,6 +1090,7 @@ def run_rebuild(date: str, modules: list[str] | None = None, suffix: str = "", s
 
         market_data["summary3"] = build_summary3(market_data=market_data)
         market_data["marketOverview7d"] = build_market_overview_7d(market_data=market_data)
+        _log("summary3 / marketOverview7d 已生成")
     except Exception:
         pass
 
@@ -1054,12 +1099,14 @@ def run_rebuild(date: str, modules: list[str] | None = None, suffix: str = "", s
     # - threeQuadrants（盘面三象限）
     try:
         _inject_prd_v2_metrics(root=root, date=date, market_data=market_data)
+        _log("PRD v2 指标已注入 (sectorHeatmap/threeQuadrants)")
     except Exception:
         pass
 
     # 清理前端已不用的大字段：统一视图/compat 兼容层已下线，同时下沉 planGuide
     try:
         _prune_frontend_unused_fields(market_data)
+        _log("前端冗余字段已清理")
     except Exception:
         pass
 
@@ -1080,6 +1127,7 @@ def run_rebuild(date: str, modules: list[str] | None = None, suffix: str = "", s
         report_date=date,
         date_note=market_data.get("dateNote", ""),
     )
+    _log(f"HTML 已渲染: {out_path.name}")
     # 回写最终 market_data：确保 render 阶段补齐的展示字段也能稳定落盘
     market_path.write_text(json.dumps(market_data, ensure_ascii=False, indent=2), encoding="utf-8")
     print(f"✅ rebuild 输出: {out_path}")
@@ -1098,18 +1146,24 @@ def _intraday_snapshots_path(root: Path, date: str) -> Path:
     return cache_dir / f"intraday_snapshots-{d8}.json"
 
 
-def _load_intraday_snapshots(*, root: Path, date: str) -> list[dict]:
-    for p in (_intraday_slices_path(root, date), _intraday_snapshots_path(root, date)):
-        if not p.exists():
-            continue
-        try:
-            data = json.loads(p.read_text(encoding="utf-8"))
-            if isinstance(data, list):
-                return [x for x in data if isinstance(x, dict)]
-            if isinstance(data, dict) and isinstance(data.get("snapshots"), list):
-                return [x for x in (data.get("snapshots") or []) if isinstance(x, dict)]
-        except Exception:
-            continue
+def _load_intraday_snapshots(*, root: Path, date: str, now_date10: str | None = None) -> list[dict]:
+    """加载盘中切片：优先当前日期，回退数据日期。"""
+    dates_to_try = []
+    if now_date10 and now_date10 != date:
+        dates_to_try.append(now_date10)
+    dates_to_try.append(date)
+    for d in dates_to_try:
+        for p in (_intraday_slices_path(root, d), _intraday_snapshots_path(root, d)):
+            if not p.exists():
+                continue
+            try:
+                data = json.loads(p.read_text(encoding="utf-8"))
+                if isinstance(data, list):
+                    return [x for x in data if isinstance(x, dict)]
+                if isinstance(data, dict) and isinstance(data.get("snapshots"), list):
+                    return [x for x in (data.get("snapshots") or []) if isinstance(x, dict)]
+            except Exception:
+                continue
     return []
 
 
@@ -1175,193 +1229,22 @@ def _append_intraday_snapshot(*, root: Path, date: str, market_data: dict) -> No
     _write_intraday_snapshots(root=root, date=date, snapshots=snaps, simulated=False)
 
 
-def _safe_float(v, d: float = 0.0) -> float:
-    try:
-        if v is None or v == "":
-            return d
-        if isinstance(v, str):
-            s = v.replace("%", "").replace("亿", "").strip()
-            return float(s) if s else d
-        return float(v)
-    except Exception:
-        return d
 
-
-def _calc_watch_shift_score(rec: dict) -> int:
-    fb = _safe_float(rec.get("fb"), 0)
-    jj = _safe_float(rec.get("jj"), 0)
-    zb = _safe_float(rec.get("zb"), 0)
-    dt = _safe_float(rec.get("dt"), 0)
-    bf = _safe_float(rec.get("bf"), 0)
-    max_lb = _safe_float(rec.get("max_lb"), 0)
-    score = (
-        fb * 0.26
-        + jj * 0.22
-        + min(max_lb * 10.0, 100.0) * 0.14
-        + max(0.0, 100.0 - zb) * 0.18
-        + max(0.0, 100.0 - dt * 8.0) * 0.10
-        + max(0.0, 100.0 - bf * 5.0) * 0.10
-    )
-    return int(round(max(0.0, min(100.0, score))))
-
-
-def _watch_shift_label(score: int) -> str:
-    if score >= 72:
-        return "走强"
-    if score >= 60:
-        return "修复"
-    if score >= 48:
-        return "分歧"
-    if score >= 36:
-        return "走弱"
-    return "退潮"
-
-
-def _watch_shift_note(curr: dict, prev: dict | None) -> str:
-    if not prev:
-        return "以收盘数据反推盘中节奏，仅作盯盘视角模拟。"
-    diff = int(curr.get("shift_score", 0) or 0) - int(prev.get("shift_score", 0) or 0)
-    if diff >= 5:
-        return "承接增强、分歧收敛，情绪有继续抬升迹象。"
-    if diff >= 2:
-        return "情绪边际回暖，但仍需观察是否持续。"
-    if diff <= -5:
-        return "分歧与亏钱扩散同步抬头，情绪明显转弱。"
-    if diff <= -2:
-        return "情绪略有回落，谨防午后走弱。"
-    return "情绪整体平稳，维持当前节奏运行。"
-
-
-def _simulate_intraday_snapshots(*, date: str, market_data: dict) -> list[dict]:
-    times = ["09:35", "10:05", "10:35", "11:05", "13:05", "13:35", "14:05", "14:35"]
-    md = market_data or {}
-    mi = (md.get("features") or {}).get("mood_inputs") or {}
-    mood = md.get("mood") or {}
-    panorama = md.get("panorama") or {}
-    ms = md.get("moodSignals") or {}
-    hm2 = md.get("hm2Compare") or {}
-    final_fb = _safe_float(mi.get("fb_rate"), _safe_float(panorama.get("ratio"), 0))
-    final_jj = _safe_float(mi.get("jj_rate"), 0)
-    final_zb = _safe_float(mi.get("zb_rate"), 0)
-    final_dt = _safe_float(panorama.get("limitDown"), 0)
-    final_bf = _safe_float(mi.get("bf_count"), 0)
-    final_max_lb = _safe_float(mi.get("max_lb"), 0)
-    final_zt = _safe_float(panorama.get("limitUp"), 0)
-    final_lianban = _safe_float(mi.get("lianban_count"), 0)
-    final_heat = _safe_float(mood.get("heat"), 0)
-    final_risk = _safe_float(mood.get("risk"), 0)
-    final_hm2 = _safe_float(hm2.get("score"), 0)
-    final_loss = _safe_float(mi.get("loss"), final_dt + final_bf)
-
-    final_rec = {
-        "fb": final_fb,
-        "jj": final_jj,
-        "zb": final_zb,
-        "dt": final_dt,
-        "bf": final_bf,
-        "max_lb": final_max_lb,
+def _inject_intraday_snapshots(*, root: Path, date: str, market_data: dict, now_date10: str | None = None) -> None:
+    snaps = _load_intraday_snapshots(root=root, date=date, now_date10=now_date10)
+    if not snaps:
+        return
+    # 过滤掉残留的模拟数据
+    snaps = [s for s in snaps if isinstance(s, dict) and str(s.get("source") or "") != "simulated_close"]
+    if not snaps:
+        return
+    market_data["intradaySnapshots"] = {
+        "date": snaps[0].get("date") or date,
+        "count": len(snaps),
+        "snapshots": snaps,
+        "simulated": False,
+        "interval_min": None,
     }
-    final_score = _calc_watch_shift_score(final_rec)
-    trend_bias = max(-1.0, min(1.0, (final_score - 50.0) / 24.0))
-    progress = [0.0, 0.16, 0.32, 0.46, 0.62, 0.78, 0.90, 1.0]
-
-    def pos_series(final_v: float) -> list[float]:
-        start_factor = 0.80 - 0.22 * trend_bias
-        start = final_v * max(0.45, min(1.05, start_factor))
-        out = []
-        for i, p in enumerate(progress):
-            wiggle = math.sin((i / max(1, len(progress) - 1)) * math.pi) * final_v * 0.05 * (1.0 - abs(trend_bias) * 0.35)
-            out.append(max(0.0, start + (final_v - start) * p + wiggle))
-        out[-1] = final_v
-        return out
-
-    def neg_series(final_v: float) -> list[float]:
-        start_factor = 1.05 + 0.28 * trend_bias
-        start = final_v * max(0.55, min(1.50, start_factor))
-        out = []
-        for i, p in enumerate(progress):
-            wiggle = math.sin((i / max(1, len(progress) - 1)) * math.pi) * max(final_v, 1.0) * 0.06 * (1.0 - abs(trend_bias) * 0.35)
-            out.append(max(0.0, start + (final_v - start) * p + wiggle))
-        out[-1] = final_v
-        return out
-
-    fb_series = pos_series(final_fb)
-    jj_series = pos_series(final_jj)
-    max_lb_series = pos_series(final_max_lb)
-    heat_series = pos_series(final_heat)
-    hm2_series = pos_series(final_hm2)
-    zt_series = pos_series(final_zt)
-    lianban_series = pos_series(final_lianban)
-    zb_series = neg_series(final_zb)
-    dt_series = neg_series(final_dt)
-    bf_series = neg_series(final_bf)
-    risk_series = neg_series(final_risk)
-    loss_series = neg_series(final_loss)
-
-    snaps: list[dict] = []
-    prev = None
-    for i, t in enumerate(times):
-        rec = {
-            "time": t,
-            "ts_bj": f"{date} {t}:00",
-            "date": date,
-            "source": "simulated_close",
-            "zt": int(round(zt_series[i])),
-            "lianban": int(round(lianban_series[i])),
-            "fb": round(fb_series[i], 1),
-            "jj": round(jj_series[i], 1),
-            "zb": round(zb_series[i], 1),
-            "zab": int(round(max(0.0, zt_series[i] * zb_series[i] / 100.0))),
-            "dt": int(round(dt_series[i])),
-            "bf": int(round(bf_series[i])),
-            "max_lb": int(round(max_lb_series[i])),
-            "loss": int(round(loss_series[i])),
-            "heat": int(round(heat_series[i])),
-            "risk": int(round(risk_series[i])),
-            "hm2": int(round(hm2_series[i])),
-            "pos": ms.get("pos") or [],
-            "riskSignals": ms.get("risk") or [],
-        }
-        rec["shift_score"] = _calc_watch_shift_score(rec)
-        rec["shift_label"] = _watch_shift_label(rec["shift_score"])
-        rec["headline"] = rec["shift_label"]
-        rec["note"] = _watch_shift_note(rec, prev)
-        snaps.append(rec)
-        prev = rec
-
-    if snaps:
-        snaps[-1]["headline"] = str(ms.get("headline") or snaps[-1]["shift_label"] or "收盘定格")
-        snaps[-1]["note"] = "收盘定格：使用当日收盘口径生成盘中轨迹，仅用于盯盘演化模拟。"
-    return snaps
-
-
-def _inject_intraday_snapshots(*, root: Path, date: str, market_data: dict) -> None:
-    snaps = _load_intraday_snapshots(root=root, date=date)
-    simulated = False
-    slices_path = _intraday_slices_path(root, date)
-    has_live = any(str((x or {}).get("source") or "") == "intraday_live" for x in snaps if isinstance(x, dict))
-    simulated_loaded = bool(snaps) and all(str((x or {}).get("source") or "") == "simulated_close" for x in snaps if isinstance(x, dict))
-    simulated_stale = simulated_loaded and any(
-        not isinstance(x, dict) or ("zt" not in x) or ("lianban" not in x) or ("zab" not in x) or ("shift_score" not in x)
-        for x in snaps
-    )
-    # 有实盘切片时：绝不写回「收盘模拟」覆盖磁盘，否则 CI 里 rebuild 会抹掉 watch_runtime 刚累积的时间轴。
-    if (len(snaps) < 4 or simulated_stale) and not has_live:
-        snaps = _simulate_intraday_snapshots(date=date, market_data=market_data)
-        simulated = True
-        # 仅注入内存供 HTML；intraday_slices-*.json 交给 watch_runtime 首条实盘创建/追加
-    elif simulated_loaded:
-        simulated = True
-    if snaps:
-        if has_live and not slices_path.exists():
-            _write_intraday_snapshots(root=root, date=date, snapshots=snaps, simulated=False)
-        market_data["intradaySnapshots"] = {
-            "date": date,
-            "count": len(snaps),
-            "snapshots": snaps,
-            "simulated": simulated,
-            "interval_min": None,
-        }
 
 
 def _inject_mood_history_and_delta(*, root: Path, date: str, market_data: dict) -> None:
@@ -1934,6 +1817,9 @@ def _inject_prd_v2_metrics(*, root: Path, date: str, market_data: dict) -> None:
             by_day[day8] = day_map
 
         cache["by_day"] = by_day
+        # 裁剪：只保留近 7 个交易日（day8 格式 YYYYMMDD）
+        keep8 = {d.replace("-", "") for d in trade_days}
+        cache["by_day"] = {k: v for k, v in by_day.items() if k in keep8}
         _write_money_flow_cache(root=root, data=cache)
 
         # 4) 聚合到题材：7日累计净流入（亿）
@@ -2054,20 +1940,44 @@ def _inject_prd_v2_metrics(*, root: Path, date: str, market_data: dict) -> None:
 
     # 4.2) plateRotateTop（短线侠板块轮动强度）：
     # - 优先读取本地缓存
-    # - 仅在“北京时间今天且收盘后”才尝试在线增量刷新一次
-    # - 命中后直接替换“板块题材排行 TOP10”模块的数据源
+    # - 缓存没有报告日期的数据则在线刷新
+    # - 命中后直接替换"板块题材排行 TOP10"模块的数据源
     try:
         plate_cache = _load_plate_rotate_cache(root=root)
-        try:
-            if _should_refresh_plate_rotate_cache(cache=plate_cache, report_date=date):
-                plate_cache = _refresh_plate_rotate_cache(root=root)
-        except Exception:
-            pass
-        plate_by_day = plate_cache.get("by_day") or {}
+        plate_by_day = plate_cache.get("by_day") if isinstance(plate_cache, dict) else {}
         if not isinstance(plate_by_day, dict):
             plate_by_day = {}
         date8 = date.replace("-", "")
+        # 精确匹配 date / date8，回退到最近可用日期
         plate_day = plate_by_day.get(date) or plate_by_day.get(date8) or {}
+        if not (isinstance(plate_day, dict) and plate_day.get("rows")):
+            all_keys = sorted(plate_by_day.keys(), reverse=True)
+            for k in all_keys:
+                if k <= date and k <= date8:
+                    candidate = plate_by_day[k]
+                    if isinstance(candidate, dict) and candidate.get("rows"):
+                        plate_day = candidate
+                        break
+        # 缓存中无精确匹配数据 → 在线刷新
+        exact_match = plate_by_day.get(date) or plate_by_day.get(date8) or {}
+        if not (isinstance(exact_match, dict) and exact_match.get("rows")):
+            try:
+                _log("板块轮动缓存无精确数据，在线刷新...")
+                plate_cache = _refresh_plate_rotate_cache(root=root)
+                plate_by_day = plate_cache.get("by_day") if isinstance(plate_cache, dict) else {}
+                if not isinstance(plate_by_day, dict):
+                    plate_by_day = {}
+                plate_day = plate_by_day.get(date) or plate_by_day.get(date8) or {}
+                if not (isinstance(plate_day, dict) and plate_day.get("rows")):
+                    all_keys2 = sorted(plate_by_day.keys(), reverse=True)
+                    for k in all_keys2:
+                        if k <= date and k <= date8:
+                            candidate = plate_by_day[k]
+                            if isinstance(candidate, dict) and candidate.get("rows"):
+                                plate_day = candidate
+                                break
+            except Exception:
+                pass
         if isinstance(plate_day, dict):
             plate_rows = plate_day.get("rows")
             if isinstance(plate_rows, list) and plate_rows:
@@ -2119,14 +2029,29 @@ def _inject_prd_v2_metrics(*, root: Path, date: str, market_data: dict) -> None:
         date8 = date.replace("-", "")
         rows = by_day.get(date8)
 
+        # 回退到最近可用日期
         if not isinstance(rows, list) or not rows:
-            # 仅当“报告日期=今天”才在线补齐，避免历史日期错配
-            if date == _now_bj_date10():
+            all_keys = sorted(by_day.keys(), reverse=True)
+            for k in all_keys:
+                if k <= date8:
+                    candidate = by_day[k]
+                    if isinstance(candidate, list) and candidate:
+                        rows = candidate
+                        break
+
+        # 缓存中无精确数据 → 在线补齐（AkShare，不需要 token）
+        if not by_day.get(date8):
+            try:
+                _log("概念资金流缓存无精确数据，在线抓取...")
                 rows = _fetch_concept_fund_flow_top(topn=60)
                 if rows:
                     by_day[date8] = rows
+                    keep8 = {d.replace("-", "") for d in trade_days}
+                    by_day = {k: v for k, v in by_day.items() if k in keep8}
                     cache["by_day"] = by_day
                     _write_concept_fund_flow_cache(root=root, data=cache)
+            except Exception:
+                pass
 
         if isinstance(rows, list) and rows:
             market_data["conceptFundFlowTop"] = rows[:20]
@@ -2285,6 +2210,7 @@ def run_partial(date: str, modules: list[str]) -> int:
         raise FileNotFoundError(f"找不到缓存 marketData：{market_path}（请先跑一次全量更新）")
 
     market_data = json.loads(market_path.read_text(encoding="utf-8"))
+    _log(f"partial 缓存已加载: {market_path.name}  modules={modules}")
 
     # 构造 Context（兼容旧缓存：features 已在 market_data 里）
     ctx = Context.from_market_data(market_data)
@@ -2420,6 +2346,18 @@ def main(argv: list[str] | None = None) -> int:
         help="运行模式：eod=收盘版（默认），intraday=盘中快照版（数据截止当前时刻）",
     )
     args = ap.parse_args(argv)
+
+    # === 入口日志 ===
+    if args.fetch:
+        print(f"▶ [fetch] 在线取数 + 离线重建  date={args.date or '自动'}")
+    elif args.rebuild:
+        print(f"▶ [rebuild] 离线重建  date={args.date}")
+    elif args.only:
+        print(f"▶ [partial] 部分更新  modules={args.only}  date={args.date}")
+    elif args.mode == "intraday":
+        print(f"▶ [intraday] 盘中快照  date={args.date or '自动'}")
+    else:
+        print(f"▶ [full] 全量模式  date={args.date or '自动'}")
 
     # === Python 环境校验（可选） ===
     if args.require_python or args.require_py:

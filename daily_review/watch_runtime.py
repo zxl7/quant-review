@@ -271,6 +271,10 @@ def append_intraday_slice(*, root: Path, snapshot: dict[str, Any]) -> dict[str, 
             continue
         if _row_ts_bj(row, date10) == seen_ts:
             continue
+        # 过滤掉非当天的旧数据（ts_bj 前 10 位是日期 YYYY-MM-DD）
+        row_ts = _row_ts_bj(row, date10)
+        if row_ts[:10] != date10:
+            continue
         merged.append(row)
     merged.append(rec)
     merged.sort(key=lambda x: _row_ts_bj(x, date10))

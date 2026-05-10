@@ -210,14 +210,14 @@
         max-width: 860px;
         margin: 0 auto;
         /* 顶部固定 Tab：给内容区预留空间，避免被遮挡 */
-        padding-top: 56px;
+        padding-top: 8px;
       }
 
       /* PC：杂志编辑风（均衡密度） */
       @media (min-width: 1100px) {
         body {
           /* PC：横向布局 + 全宽（减少花哨渐变） */
-          padding: 34px 36px 72px;
+          padding: 16px 36px 72px;
           background: var(--bg-base);
         }
         /* PC：主体宽度回到 66%（更适合阅读），并保持居中 */
@@ -1626,15 +1626,30 @@
       .evi-grid {
         display: grid;
         grid-template-columns: repeat(2, minmax(0, 1fr));
-        gap: 10px;
+        gap: 8px;
       }
       @media (max-width: 700px) {
         .evi-grid {
           grid-template-columns: 1fr;
         }
       }
+      .evidence-chain-header {
+        font-size: 12px;
+        font-weight: 950;
+        color: var(--text-muted);
+        margin-bottom: 10px;
+        padding-bottom: 6px;
+        border-bottom: 1px solid var(--border);
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+      .evidence-chain-header::before {
+        content: "🔗";
+        font-size: 11px;
+      }
       .evi-card {
-        border-radius: 16px;
+        border-radius: 10px;
         border: 1px solid color-mix(in oklab, var(--border) 74%, var(--theme-glow) 26%);
         background: linear-gradient(135deg, rgba(255, 255, 255, 0.7), color-mix(in oklab, var(--theme-soft) 10%, rgba(255, 255, 255, 0.48)));
         padding: 10px 12px;
@@ -4678,9 +4693,9 @@
       }
       .engine-kpi {
         border: 1px solid color-mix(in oklab, rgba(148, 163, 184, 0.18) 65%, var(--theme-glow) 35%);
-        border-radius: 16px;
+        border-radius: 10px;
         background: linear-gradient(135deg, color-mix(in oklab, var(--theme-soft) 18%, rgba(255, 255, 255, 0.55)), rgba(255, 255, 255, 0.55));
-        padding: 12px 12px;
+        padding: 10px 12px;
         overflow: hidden;
       }
       [data-theme="dark"] .engine-kpi {
@@ -4693,8 +4708,8 @@
         color: var(--text-muted);
       }
       .engine-kpi .v {
-        margin-top: 6px;
-        font-size: 22px;
+        margin-top: 4px;
+        font-size: 18px;
         font-weight: 1000;
         font-variant-numeric: tabular-nums;
       }
@@ -5770,7 +5785,7 @@
         justify-content: space-between;
         margin-bottom: 6px;
       }
-      .trend-v {
+      .trend-spark-row {
         display: flex;
         align-items: center;
         justify-content: space-between;
@@ -5994,6 +6009,12 @@
         color: var(--text-muted);
         opacity: 0.9;
       }
+      .trend-v { font-weight: 950; }
+      .trend-v.up { color: #ef4444; }
+      .trend-v.down { color: #10b981; }
+      .trend-v.flat { color: var(--text-muted); }
+      .trend-sep { color: var(--text-muted); opacity: 0.5; margin: 0 1px; }
+      code { white-space: normal; word-break: break-all; }
       .thermo-explain-value {
         font-size: 12px;
         font-weight: 1100;
@@ -6076,10 +6097,11 @@
         display: flex;
         align-items: center;
         justify-content: space-between;
-        gap: 10px;
+        gap: 6px;
         font-size: 11px;
         font-weight: 850;
         color: var(--text-muted);
+        flex-wrap: wrap;
       }
       .dim-chip {
         display: inline-flex;
@@ -6093,6 +6115,7 @@
         background: rgba(148, 163, 184, 0.1);
         color: var(--text-secondary);
         white-space: nowrap;
+        flex-shrink: 0;
       }
       .dim-mini code {
         font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
@@ -6102,9 +6125,11 @@
         background: rgba(148, 163, 184, 0.12);
         border: 1px solid rgba(148, 163, 184, 0.18);
         color: var(--text-secondary);
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
+        flex: 1;
+        min-width: 0;
+        white-space: normal;
+        word-break: break-all;
+        line-height: 1.5;
       }
       .dim-bar {
         height: 8px;
@@ -6530,7 +6555,7 @@
                 </div>
                 <div class="dim-mini">
                   <span class="dim-chip" v-if="it.vs">{{ it.vs }}</span>
-                  <code v-if="it.trend">趋势：{{ it.trend }}</code>
+                  <code v-if="it.trendHtml" v-html="'趋势：' + it.trendHtml"></code>
                 </div>
               </div>
             </div>
@@ -6685,8 +6710,8 @@
           </div>
         </div>
 
-        <details style="margin-top: 12px" v-if="marketData.structureV2?.evidence">
-          <summary style="cursor: pointer; color: var(--text-muted); font-weight: 900; font-size: 12px">展开证据链（看原因）</summary>
+        <div class="evidence-chain" style="margin-top: 12px" v-if="marketData.structureV2?.evidence">
+          <div class="evidence-chain-header">证据链</div>
 
           <div class="section-header" style="margin-top: 10px">梯队与断层</div>
           <div class="evi-grid">
@@ -6765,7 +6790,7 @@
               <div class="evi-v">{{ (marketData.structureV2.evidence.overlap?.themes || []).join(' / ') || '-' }}</div>
             </div>
           </div>
-        </details>
+        </div>
 
         <!-- 已移除：全景 & 风险（riskEngine / divergenceEngine 等内容） -->
       </div>
@@ -7116,7 +7141,6 @@
             </div>
             <div class="wb-actions">
               <span class="wb-chip on">{{ watchModeText }}</span>
-              <button class="wb-btn" type="button" @click="hardReload()">刷新页面</button>
             </div>
           </div>
 
@@ -7156,17 +7180,14 @@
                     </div>
                   </div>
                 </div>
-                <div class="wb-alerts" v-if="(marketData.live?.alerts || []).length && !marketData.intradaySnapshots?.simulated">
+                <div class="wb-alerts" v-if="(marketData.live?.alerts || []).length">
                   <span class="wb-alert" v-for="(a, i) in marketData.live.alerts" :key="'wba-'+i" :class="a.level">{{ a.text }}</span>
-                </div>
-                <div class="wb-alerts" v-if="marketData.intradaySnapshots?.simulated">
-                  <span class="wb-alert warn">当前为收盘模拟轨迹，每 30 分钟一个点位</span>
                 </div>
                 <div class="wb-alerts" v-if="liveError">
                   <span class="wb-alert error">{{ liveError }}</span>
                 </div>
                 <div v-if="!watchSnapshots.length && !marketData.live" style="margin-top: 10px; font-size: 12px; color: var(--text-muted); font-weight: 850">
-                  暂无盯盘快照，可先执行收盘重建生成模拟轨迹
+                  暂无盯盘快照，执行一次 fetch 即可生成
                 </div>
               </div>
 
@@ -7190,7 +7211,7 @@
                     </div>
                     <div class="dim-mini">
                       <span class="dim-chip">{{ item.deltaWord }} {{ item.deltaVal }}</span>
-                      <code v-if="item.trend">趋势：{{ item.trend }}</code>
+                      <code v-if="item.trendHtml" v-html="'趋势：' + item.trendHtml"></code>
                     </div>
                   </div>
                 </div>
@@ -7773,6 +7794,32 @@
               return `${sign}${v}${unit}`
             },
             /**
+             * 生成带主题色的趋势 HTML：增长红、下跌绿、持平灰
+             * @param {string} text - 趋势文本，如 "67-78-85" 或 "85→85→98"
+             * @param {string} sep - 分隔符，用于解析（- 或 →）
+             * @param {boolean} inverse - 反转颜色（如跌停：下跌=红、上涨=绿）
+             * @returns {string} 带 <span class="trend-v up/down/flat"> 的 HTML
+             */
+            trendColorHtml(text, sep, inverse = false) {
+              if (!text) return ""
+              const parts = text.split(sep).map((s) => s.trim()).filter(Boolean)
+              if (parts.length < 2) return `<span class="trend-v">${text}</span>`
+              const nums = parts.map((s) => parseFloat(s.replace(/[^0-9.\-]/g, "")))
+              let html = ""
+              for (let i = 0; i < parts.length; i++) {
+                if (i > 0) html += `<span class="trend-sep">${sep}</span>`
+                let cls = "trend-v flat"
+                if (i > 0 && Number.isFinite(nums[i]) && Number.isFinite(nums[i - 1])) {
+                  const diff = nums[i] - nums[i - 1]
+                  const up = inverse ? diff < 0 : diff > 0
+                  const dn = inverse ? diff > 0 : diff < 0
+                  cls = "trend-v " + (up ? "up" : dn ? "down" : "flat")
+                }
+                html += `<span class="${cls}">${parts[i]}</span>`
+              }
+              return html
+            },
+            /**
              * 纯函数：生成 sparkline 的 points（输入数字数组）
              */
             sparklinePoints(arr) {
@@ -8071,7 +8118,6 @@
               // 用 alerts 的最高等级作为“连接状态灯”
               const live = this.marketData?.live
               const alerts = live && Array.isArray(live.alerts) ? live.alerts : []
-              if (this.marketData?.intradaySnapshots?.simulated) return "on"
               if (!live) return "warn"
               if (alerts.some((a) => a && a.level === "error")) return "danger"
               if (alerts.some((a) => a && a.level === "danger")) return "danger"
@@ -8090,14 +8136,14 @@
               return rows.length > 1 ? rows[rows.length - 2] : null
             },
             watchModeText() {
-              return this.marketData?.intradaySnapshots?.simulated ? "收盘模拟·30分钟" : "快照流实时渲染"
+              return "快照流实时渲染"
             },
             watchIntervalText() {
               const n = this.normalizePollIntervalMin(this.marketData?.intradaySnapshots?.interval_min)
               return `${n}分钟/次`
             },
             watchSourceText() {
-              return this.marketData?.intradaySnapshots?.simulated ? "收盘模拟轨迹" : this.marketData.live?.source || "AkShare"
+              return this.marketData.live?.source || "AkShare"
             },
             watchCurrentShift() {
               const curr = this.watchCurrentSnap || {}
@@ -8178,6 +8224,7 @@
                   valueText: `${Number.isInteger(c) ? c : c.toFixed(1)}${cfg.unit}`,
                   barPct: this.clamp100((c / Math.max(cfg.max, 1)) * 100),
                   trend: trend || "—",
+                  trendHtml: this.trendColorHtml(trend, "→", cfg.inverse),
                 }
               })
             },
@@ -8555,10 +8602,10 @@
               const maxLbDesc = `高度：${Math.round(maxLb)}板；趋势：${fmtArr(maxLbHist)}。`
               const maxLbChg = chgMeta(maxLbD, "")
 
-              const item = (key, title, value, level, levelCls, desc, trend, vs, bar, kind = "heat") => ({ key, title, value, level, levelCls, desc, trend, vs, bar, kind })
+              const item = (key, title, value, level, levelCls, desc, trend, vs, bar, kind = "heat", inverse = false) => ({ key, title, value, level, levelCls, desc, trend, trendHtml: this.trendColorHtml(trend, "-", inverse), vs, bar, kind })
               return [
                 { ...item("zt", "涨停", `${Math.round(zt)}`, ztLvl.t, ztLvl.c, ztDesc, fmtArr(ztHist), "", barPct(zt, 150), "heat"), ...ztChg },
-                { ...item("dt", "跌停", `${Math.round(dt)}`, dtLvl.t, dtLvl.c, dtDesc, fmtArr(dtHist), "", barPct(dt, 30), "risk"), ...dtChg },
+                { ...item("dt", "跌停", `${Math.round(dt)}`, dtLvl.t, dtLvl.c, dtDesc, fmtArr(dtHist), "", barPct(dt, 30), "risk", true), ...dtChg },
                 { ...item("fb", "封板率", `${Math.round(fb)}%`, fbLvl.t, fbLvl.c, fbDesc, fmtArr(fbHist, "%"), "", this.clamp100(fb), "heat"), ...fbChg },
                 { ...item("jj", "晋级率", `${Math.round(jj)}%`, jjLvl.t, jjLvl.c, jjDesc, fmtArr(jjHist, "%"), "", this.clamp100(jj), "heat"), ...jjChg },
                 { ...item("max_lb", "高度", `${Math.round(maxLb)}板`, maxLbLvl.t, maxLbLvl.c, maxLbDesc, fmtArr(maxLbHist), "", barPct(maxLb, 10), "heat"), ...maxLbChg },

@@ -156,6 +156,10 @@ jobs:
         with:
           python-version: "3.11"
 
+      - name: Install dependencies
+        if: ${{ github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true' }}
+        run: pip install -r requirements.txt
+
       - name: Check A-share trade day
         id: tradeday
         if: ${{ github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true' }}

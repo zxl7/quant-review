@@ -13,7 +13,7 @@
 - `concept_fund_flow_cache.json`：板块排行兜底数据
 - `height_trend_cache.json`：高度趋势模块依赖
 - `index_kline_cache.json`：指数K线/量能模块依赖
-- `intraday_slices-20260508.json`：保留最近 2 个盘中切片
+- `intraday_slices-20260510.json`：保留最近 2 个盘中切片
 - `learning_notes_history.json`：学习语录去重历史
 - `market_data-20260428.json`：最近 7 个 market_data 快照
 - `market_data-20260429.json`：最近 7 个 market_data 快照
