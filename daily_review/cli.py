@@ -876,6 +876,14 @@ def run_intraday_snapshot(date: str | None) -> int:
     return 0
 
 
+def _normalize_date(date: str) -> str:
+    """统一日期格式：'20260508' → '2026-05-08'，已经是 YYYY-MM-DD 则原样返回。"""
+    d = str(date or "").strip().replace("/", "-")
+    if len(d) == 8 and d.isdigit():
+        return f"{d[:4]}-{d[4:6]}-{d[6:8]}"
+    return d
+
+
 def run_rebuild(date: str, modules: list[str] | None = None, suffix: str = "", source_market_path: Path | None = None) -> int:
     """
     离线重建（不请求接口）：
