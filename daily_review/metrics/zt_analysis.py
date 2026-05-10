@@ -333,6 +333,16 @@ def _market_gate(score: float, *, promo_ecology: float, break_risk_base: float, 
     return {"score": _round(score), "label": label, "action": action, "adjust": adjust}
 
 
+def _factor_label(score: float) -> str:
+    if score >= 82:
+        return "强"
+    if score >= 70:
+        return "偏强"
+    if score >= 58:
+        return "中性"
+    return "偏弱"
+
+
 def _safe_min_max(values: Iterable[float], default: Tuple[float, float] = (0.0, 0.0)) -> Tuple[float, float]:
     arr = [float(x) for x in values if math.isfinite(float(x))]
     return (min(arr), max(arr)) if arr else default
@@ -378,7 +388,10 @@ def build_zt_analysis(*, market_data: Dict[str, Any]) -> Dict[str, Any]:
     prev_features = prev.get("features") if isinstance(prev.get("features"), dict) else {}
     prev_mi = prev_features.get("mood_inputs") if isinstance(prev_features.get("mood_inputs"), dict) else {}
     mood_stage = market_data.get("moodStage") if isinstance(market_data.get("moodStage"), dict) else {}
+    action_advisor = market_data.get("actionAdvisor") if isinstance(market_data.get("actionAdvisor"), dict) else {}
     stage_type = str(mood_stage.get("type") or "warn")
+    cycle_code = str(mood_stage.get("cycle") or "")
+    day_state = str(mood_stage.get("dayState") or "")
     code_themes = market_data.get("zt_code_themes") if isinstance(market_data.get("zt_code_themes"), dict) else {}
     theme_panels = market_data.get("themePanels") if isinstance(market_data.get("themePanels"), dict) else {}
     theme_trend = market_data.get("themeTrend") if isinstance(market_data.get("themeTrend"), dict) else {}
@@ -569,6 +582,24 @@ def build_zt_analysis(*, market_data: Dict[str, Any]) -> Dict[str, Any]:
 
     plate_strengths = [_to_num(r.get("strength"), 0.0) for r in plate_rows if isinstance(r, dict)]
     plate_lo, plate_hi = _safe_min_max((x for x in plate_strengths if x > 0), (0.0, 0.0))
+    top_theme_rows = [r for r in strength_ranked if isinstance(r, dict) and not _is_broad_theme(r.get("name"))][:5]
+    top_theme_net_avg = _avg((_to_num(r.get("net"), 0.0) for r in top_theme_rows), 0.0)
+    top_theme_risk_avg = _avg((_to_num(r.get("risk"), 0.0) for r in top_theme_rows), 0.0)
+    top_theme_zt_avg = _avg((_to_num(r.get("zt"), 0.0) for r in top_theme_rows), 0.0)
+    top_plate_rows = [r for r in plate_rows if isinstance(r, dict)][:5]
+    plate_rank_avg = _avg((_clamp(100.0 - max(0.0, _to_num(r.get("rank"), 12.0) - 1.0) * 7.0, 28.0, 100.0) for r in top_plate_rows), 45.0)
+    plate_strength_avg = _avg((_to_num(r.get("strength"), 0.0) for r in top_plate_rows), 0.0)
+    plate_strength_score = _norm(plate_strength_avg, plate_lo, plate_hi) if plate_hi > plate_lo else 55.0
+    theme_env_score = _clamp(
+        26.0
+        + top_theme_net_avg * 2.9
+        + min(top_theme_zt_avg, 24.0) * 0.72
+        + len(tier_themes) * 2.4
+        + (8.0 if main_theme and not _is_broad_theme(main_theme) else 0.0)
+        + (plate_rank_avg - 50.0) * 0.14
+        + (plate_strength_score - 50.0) * 0.12
+        - top_theme_risk_avg * 1.95
+    )
 
     def matched_plate_row(theme_name: Any, code: Any = "", name: Any = "") -> Dict[str, Any] | None:
         target = str(theme_name or "")
@@ -738,8 +769,41 @@ def build_zt_analysis(*, market_data: Dict[str, Any]) -> Dict[str, Any]:
         - max(0.0, trend_broken_lb_rate) * 0.24
         + max(0.0, -trend_broken_lb_rate) * 0.08
     )
-    market_gate = _market_gate(market_sentiment_score, promo_ecology=promo_ecology, break_risk_base=break_risk_base, height_pressure=height_pressure)
-    env_boost = _clamp(env_liquidity_score * 0.40 + market_sentiment_score * 0.60)
+    posture = str(action_advisor.get("posture") or "")
+    position_text = str(action_advisor.get("position") or "")
+    posture_bonus = (
+        10.0 if posture == "进攻"
+        else 6.0 if posture in {"积极试探", "试探进攻"}
+        else 2.0 if posture in {"谨慎进攻", "谨慎试错"}
+        else -4.0 if posture in {"控仓试错", "防守"}
+        else -10.0 if posture == "空仓等待"
+        else 0.0
+    )
+    position_bonus = (
+        8.0 if position_text in {"5-7成", "3-5成"}
+        else 3.0 if position_text in {"2-4成", "2-3成"}
+        else -4.0 if position_text in {"1-2成", "1-3成或空仓"}
+        else -10.0 if position_text == "空仓"
+        else 0.0
+    )
+    day_state_penalty = 5.0 if day_state == "分歧" else 9.0 if "退潮" in day_state else 0.0
+    cycle_bonus = 7.0 if cycle_code == "FERMENT" else 4.0 if cycle_code == "START" else -8.0 if cycle_code == "ICE" else 0.0
+    env_score = _clamp(
+        market_sentiment_score * 0.46
+        + theme_env_score * 0.18
+        + env_liquidity_score * 0.12
+        + promo_ecology * 0.12
+        + height_context_score * 0.07
+        + (100.0 - break_risk_base) * 0.05
+        + posture_bonus
+        + position_bonus
+        + cycle_bonus
+        - day_state_penalty
+    )
+    market_gate = _market_gate(env_score, promo_ecology=promo_ecology, break_risk_base=break_risk_base, height_pressure=height_pressure)
+    env_score = _clamp(env_score + _to_num(market_gate.get("adjust"), 0.0) * 0.8)
+    market_gate = _market_gate(env_score, promo_ecology=promo_ecology, break_risk_base=break_risk_base, height_pressure=height_pressure)
+    env_boost = _clamp(env_liquidity_score * 0.22 + market_sentiment_score * 0.34 + theme_env_score * 0.18 + env_score * 0.26)
     max_lbc = max((_to_num(s.get("lbc"), 1.0) for s in zt if isinstance(s, dict)), default=1.0)
 
     ladder = market_data.get("ladder") if isinstance(market_data.get("ladder"), list) else []
@@ -985,8 +1049,29 @@ def build_zt_analysis(*, market_data: Dict[str, Any]) -> Dict[str, Any]:
             - yizi_penalty * 0.45
             - follower_penalty * 0.55
         )
+        leader_factor_score = _clamp(
+            leader_signal_score * 0.34
+            + board_score * 0.18
+            + quality_score * 0.14
+            + step_context_score * 0.12
+            + (86.0 if is_main else 62.0 if has_trade_theme else 38.0) * 0.08
+            + (82.0 if is_new_high else 46.0) * 0.08
+            + (76.0 if has_follow else 44.0) * 0.06
+            - follower_penalty * 1.05
+            - high_penalty * 0.95
+            - yizi_penalty * 0.28
+        )
         liquidity_band_score = 86.0 if 10.0 <= cje_yi <= 40.0 else 72.0 if 5.0 <= cje_yi < 10.0 else 66.0 if 40.0 < cje_yi <= 90.0 else 48.0 if cje_yi > 0 else 34.0
         capacity_score = _clamp(cje_target_score * 0.44 + vol_tier_score * 0.24 + cap_score * 0.17 + liquidity_band_score * 0.15)
+        relay_factor_score = _clamp(
+            step_context_score * 0.38
+            + quality_score * 0.18
+            + open_score * 0.12
+            + fund_score * 0.10
+            + promo_ecology * 0.10
+            + opportunity_score * 0.07
+            + max(0.0, 100.0 - individual_break_risk) * 0.05
+        )
         risk_pressure = _clamp(
             individual_break_risk * 0.52
             + break_risk_base * 0.18
@@ -1004,35 +1089,39 @@ def build_zt_analysis(*, market_data: Dict[str, Any]) -> Dict[str, Any]:
             + (1.5 if leader_bonus > 0 else 0.0)
             + (1.2 if is_new_high else 0.0)
             + max(0.0, capacity_score - 72.0) * 0.05
-            + max(0.0, stock_strength_score - 66.0) * 0.04
+            + max(0.0, leader_factor_score - 66.0) * 0.04
             - (1.8 if follow_leader else 0.0)
             - max(0.0, risk_pressure - 58.0) * 0.04
         )
         raw_score = _clamp(
-            market_sentiment_score * 0.06
-            + sector_sentiment_score * 0.26
-            + stock_strength_score * 0.31
-            + capacity_score * 0.15
-            + risk_control_score * 0.16
-            + opportunity_score * 0.04
+            env_score * 0.16
+            + sector_sentiment_score * 0.22
+            + leader_factor_score * 0.21
+            + relay_factor_score * 0.17
+            + capacity_score * 0.14
+            + risk_control_score * 0.08
+            + opportunity_score * 0.02
             + identity_edge
             + _to_num(market_gate.get("adjust"), 0.0)
         )
         score_band = _factor_band(_round(raw_score))
         factor_breakdown = {
+            "environment": _round(env_score),
             "market": _round(market_sentiment_score),
+            "themeEnv": _round(theme_env_score),
             "marketGate": _round(_to_num(market_gate.get("adjust"), 0.0)),
             "sector": _round(sector_sentiment_score),
-            "sectorTrend": _round(sector_trend_score),
-            "stock": _round(stock_strength_score),
+            "leader": _round(leader_factor_score),
+            "relay": _round(relay_factor_score),
             "capacity": _round(capacity_score),
             "risk": _round(risk_control_score),
             "opportunity": _round(opportunity_score),
             "edge": _round(identity_edge),
         }
         factor_hint = (
-            f"大盘{factor_breakdown['market']}({market_gate.get('label')}) / 板块{factor_breakdown['sector']} / "
-            f"个股{factor_breakdown['stock']} / 容量{factor_breakdown['capacity']} / "
+            f"环境{factor_breakdown['environment']}({market_gate.get('label')}) / "
+            f"板块{factor_breakdown['sector']} / 龙头{factor_breakdown['leader']} / "
+            f"接力{factor_breakdown['relay']} / 容量{factor_breakdown['capacity']} / "
             f"风险{factor_breakdown['risk']} / {score_band['label']}"
         )
 
@@ -1230,6 +1319,11 @@ def build_zt_analysis(*, market_data: Dict[str, Any]) -> Dict[str, Any]:
                 "stepContextScore": _round(step_context_score),
                 "promoEcology": _round(promo_ecology),
                 "heightContextScore": _round(height_context_score),
+                "environmentScore": _round(env_score),
+                "leaderFactorScore": _round(leader_factor_score),
+                "relayFactorScore": _round(relay_factor_score),
+                "capacityFactorScore": _round(capacity_score),
+                "riskControlScore": _round(risk_control_score),
                 "breakRisk": _round(individual_break_risk),
                 "themePersistScore": _round(theme_persist_score),
                 "isYizi": is_yizi,
@@ -1256,6 +1350,14 @@ def build_zt_analysis(*, market_data: Dict[str, Any]) -> Dict[str, Any]:
                 "sectorRankScore": _round(sector_rank_context_score),
                 "plateRank": plate_ctx.get("rank"),
                 "plateName": plate_ctx.get("name"),
+                "factorLabels": {
+                    "environment": _factor_label(env_score),
+                    "sector": _factor_label(sector_sentiment_score),
+                    "leader": _factor_label(leader_factor_score),
+                    "relay": _factor_label(relay_factor_score),
+                    "capacity": _factor_label(capacity_score),
+                    "risk": _factor_label(risk_control_score),
+                },
                 "tags": normalized_tags,
                 "tagRows": _tag_rows(normalized_tags),
                 "reason": f'<span class="reason-bits">{head}</span><div class="exp-wrap">{observe_point}</div>',
@@ -1266,13 +1368,14 @@ def build_zt_analysis(*, market_data: Dict[str, Any]) -> Dict[str, Any]:
     for idx, r in enumerate(ranked):
         r["factorRank"] = idx + 1
 
-    def relay_sort(r: Dict[str, Any]) -> Tuple[float, float, float, float, float]:
+    def relay_sort(r: Dict[str, Any]) -> Tuple[float, float, float, float, float, float]:
         return (
             _to_num(r.get("_raw"), 0),
-            _to_num(r.get("stepContextScore"), 0),
+            _to_num(r.get("leaderFactorScore"), 0),
+            _to_num(r.get("relayFactorScore"), 0),
+            _to_num(r.get("environmentScore"), 0),
+            _to_num(r.get("capacityFactorScore"), 0),
             -_to_num(r.get("breakRisk"), 0),
-            _to_num(r.get("qualityScore"), 0),
-            _to_num(r.get("fundYi"), 0),
         )
 
     relay_core = sorted(
@@ -1307,10 +1410,30 @@ def build_zt_analysis(*, market_data: Dict[str, Any]) -> Dict[str, Any]:
         reverse=True,
     )[:3]
     relay = sorted([*relay_core, *relay_one_to_two], key=relay_sort, reverse=True)[:8]
+    if not relay:
+        relay = sorted(
+            [
+                r
+                for r in scored
+                if r.get("hasTradeTheme")
+                and not r.get("isYizi")
+                and not r.get("isShrinkSeal")
+                and 2 <= _to_num(r.get("lbc"), 0) <= 4
+                and _to_num(r.get("open"), 0) < 8
+                and _to_num(r.get("stepContextScore"), 0) >= 50
+                and _to_num(r.get("breakRisk"), 0) < 90
+                and _to_num(r.get("leaderFactorScore"), 0) >= 58
+                and _to_num((r.get("factorBreakdown") or {}).get("sector"), 0) >= 70
+                and _to_num(r.get("capacityFactorScore"), 0) >= 55
+            ],
+            key=relay_sort,
+            reverse=True,
+        )[:3]
     for idx, r in enumerate(relay):
         r["relayRank"] = idx + 1
         r["scoreLabel"] = "推荐因子"
-        r["scoreSubLabel"] = str(r.get("scoreBand") or "")
+        gate_label = str(((r.get("marketGate") or {}).get("label") or "")).strip()
+        r["scoreSubLabel"] = f"{gate_label} · {r.get('scoreBand')}" if gate_label and r.get("scoreBand") else str(r.get("scoreBand") or gate_label)
     relay_names = {str(x.get("name") or "") for x in relay}
 
     cap_arr = sorted([_to_num(r.get("cjeYi"), 0) for r in scored if _to_num(r.get("cjeYi"), 0) > 0])
@@ -1350,13 +1473,13 @@ def build_zt_analysis(*, market_data: Dict[str, Any]) -> Dict[str, Any]:
         open_cnt = _to_num(r.get("open"), 0.0)
         lbc = _to_num(r.get("lbc"), 0.0)
         bucket = watch_bucket(r)
-        capacity = min(cje_yi, 90.0) * 0.92 + (18.0 if cje_yi >= cap_threshold else 0.0)
+        capacity = _to_num(r.get("capacityFactorScore"), 0.0) * 0.88 + min(cje_yi, 90.0) * 0.24 + (18.0 if cje_yi >= cap_threshold else 0.0)
         divergence = min(open_cnt, 12.0) * 5.0 + max(0.0, _to_num(r.get("breakRisk"), 0.0) - 60.0) * 0.95
-        height = lbc * 18.0 + _to_num(r.get("_leaderBonus"), 0.0) * 1.7 + (12.0 if r.get("_isThemeLeader") else 0.0) + (8.0 if r.get("_isNewHigh") else 0.0)
+        height = lbc * 18.0 + _to_num(r.get("_leaderBonus"), 0.0) * 1.7 + _to_num(r.get("leaderFactorScore"), 0.0) * 0.48 + (12.0 if r.get("_isThemeLeader") else 0.0) + (8.0 if r.get("_isNewHigh") else 0.0)
         theme_gap = 0.0 if r.get("hasTradeTheme") else 22.0 if r.get("isBroadOnly") else 16.0
-        theme_core = _to_num(r.get("_themeNet"), 0.0) * 1.8 + _to_num(r.get("stepContextScore"), 0.0) * 0.22
+        theme_core = _to_num(r.get("_themeNet"), 0.0) * 1.8 + _to_num(r.get("sectorTrendScore"), 0.0) * 0.18 + _to_num(r.get("environmentScore"), 0.0) * 0.14
         weak_step = max(0.0, 48.0 - _to_num(r.get("stepContextScore"), 0.0)) * 0.45
-        core = _to_num(r.get("_raw"), 0.0) * 0.35 + _to_num(r.get("qualityScore"), 0.0) * 0.15
+        core = _to_num(r.get("_raw"), 0.0) * 0.26 + _to_num(r.get("leaderFactorScore"), 0.0) * 0.18 + _to_num(r.get("relayFactorScore"), 0.0) * 0.14 + _to_num(r.get("qualityScore"), 0.0) * 0.10
         bucket_base = {0: 240.0, 1: 200.0, 2: 165.0, 3: 130.0, 4: 95.0}.get(bucket, 70.0)
         if bucket == 0:
             return bucket_base + height + theme_core * 0.55 + capacity * 0.22 + core * 0.22 - divergence * 0.15
@@ -1421,7 +1544,8 @@ def build_zt_analysis(*, market_data: Dict[str, Any]) -> Dict[str, Any]:
         r["watchRank"] = idx + 1
         r["watchGroup"] = watch_group(r)
         r["scoreLabel"] = "观察因子"
-        r["scoreSubLabel"] = f"{r['watchGroup']} · {r.get('scoreBand')}" if r.get("scoreBand") else r["watchGroup"]
+        gate_label = str(((r.get("marketGate") or {}).get("label") or "")).strip()
+        r["scoreSubLabel"] = " · ".join([x for x in (r["watchGroup"], r.get("scoreBand") or gate_label) if x])
 
     def strip(rows: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
         out: List[Dict[str, Any]] = []
@@ -1437,8 +1561,33 @@ def build_zt_analysis(*, market_data: Dict[str, Any]) -> Dict[str, Any]:
             "tierThemeCount": len(tier_themes),
             "tierThemeTop": tier_theme_top,
             "source": "python",
-            "model": "zt_analysis_factor_v4",
+            "model": "zt_analysis_factor_v5",
             "marketGate": market_gate,
+            "environment": {
+                "score": _round(env_score),
+                "label": market_gate.get("label"),
+                "action": market_gate.get("action"),
+                "components": {
+                    "market": _round(market_sentiment_score),
+                    "themeEnv": _round(theme_env_score),
+                    "liquidity": _round(env_liquidity_score),
+                    "ecology": _round(promo_ecology),
+                    "height": _round(height_context_score),
+                    "riskSafe": _round(100.0 - break_risk_base),
+                },
+            },
+            "factorModel": {
+                "order": ["environment", "sector", "leader", "relay", "capacity", "risk"],
+                "weights": {
+                    "environment": 0.16,
+                    "sector": 0.22,
+                    "leader": 0.21,
+                    "relay": 0.17,
+                    "capacity": 0.14,
+                    "risk": 0.08,
+                    "opportunity": 0.02,
+                },
+            },
             "promoEcology": _round(promo_ecology),
             "heightContext": "repair" if height_repair else "pressure" if height_pressure else "neutral",
             "breakRiskBase": _round(break_risk_base),

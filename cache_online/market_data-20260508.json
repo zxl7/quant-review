@@ -4,14 +4,14 @@
   "meta": {
     "asOf": {
       "indices": "收盘",
-      "pools": "17:50:30",
-      "themes": "17:50:30",
+      "pools": "23:21:58",
+      "themes": "23:21:58",
       "quotes": "15:00:03",
       "plate_rotate": "2026-05-08",
-      "concept_fund_flow": "17:50:30"
+      "concept_fund_flow": "23:21:58"
     },
     "version": "1.0",
-    "generatedAt": "2026-05-10 17:50:30"
+    "generatedAt": "2026-05-10 23:21:58"
   },
   "indices": [
     {
@@ -945,14 +945,14 @@
     "top5_sectors": "元件, 龙虎榜热门, OpenClaw概念, 6G概念"
   },
   "mood": {
-    "heat": 75,
-    "risk": 10,
-    "score": 80
+    "heat": 68,
+    "risk": 24,
+    "score": 71
   },
   "moodStage": {
-    "title": "亢奋期",
-    "type": "good",
-    "detail": "",
+    "title": "发酵·分歧",
+    "type": "warn",
+    "detail": "周期：发酵｜封板不差但结构承接偏弱（晋级/断板/大面其一走坏），按分歧处理：降低仓位，做回封与低位确定性。",
     "cycle": "FERMENT",
     "dayState": "分歧",
     "stance": "进攻",
@@ -1025,9 +1025,9 @@
   ],
   "actionGuideV2": {
     "meta": {
-      "title": "🧩 盘面基调：亢奋期｜主线：低价｜模式：接力｜仓位：进攻",
+      "title": "🧩 盘面基调：发酵·分歧｜主线：低价｜模式：接力｜仓位：进攻",
       "detail": "承接走强｜分歧收敛｜亏钱收敛｜量能缩量｜解读：震荡中性。｜动作：优先主线核心/回封确认，避免追高一致；若扩散继续走高则降级为低位试错/休息。",
-      "type": "good"
+      "type": "warn"
     },
     "confirm": [
       {
@@ -1070,7 +1070,7 @@
         "desc": "亏钱扩散7（休息阈值≥15）｜炸板14.8%",
         "tags": [
           {
-            "text": "风险10",
+            "text": "风险24",
             "cls": "ladder-chip-cool blue-text"
           }
         ],
@@ -1092,7 +1092,8 @@
   },
   "summary3": {
     "lines": [
-      "今天不只是情绪波动，关键在于修复是否站稳： ⚠️ 断板率73.7%偏高 = 高位承接还不够稳，别把修复当成一致加速 ✅ 跌停从4降到2 = 亏钱效应大幅收窄 ✅ 封板率85% + 连板18只 = 短线资金信心回归 ✅ 晋级率回暖 = 接力链条开始恢复，不再只有首板热闹"
+      "今日：发酵·分歧，情绪回暖，承接占优。赚钱效应回暖；亏钱效应收敛；承接偏强，接力可尝试；空间走弱，谨慎高位。动作：承接偏强，可聚焦主线核心的回封/换手确认，避免追高一致。",
+      "主线：华为概念；空间锚：👑 福达合金（4板）。"
     ]
   },
   "learningNotes": {
@@ -1105,7 +1106,7 @@
     ],
     "meta": {
       "cycle": "FERMENT",
-      "stageType": "good",
+      "stageType": "warn",
       "tipKeys": [
         "FERMENT",
         "good",
@@ -3171,6 +3172,7 @@
       "zb_high_count": 2,
       "zb_high_names": "华电辽能、永杉锂业",
       "avg_zt_zbc": 0.85,
+      "zbc_ge3_ratio": 10.2,
       "zt_zbc_ge3_ratio": 10.2,
       "smallcap_ratio": 25.5,
       "smallcap_cnt": 25,
@@ -3185,6 +3187,9 @@
       "trend_fb_rate": 3.0,
       "trend_jj_rate": -18.1,
       "trend_broken_lb_rate": 18.1,
+      "trend_zb_rate": -3.0,
+      "trend_zt_early_ratio": -15.1,
+      "trend_loss": -55.0,
       "hist_days": [
         "2026-04-28",
         "2026-04-29",
@@ -3224,6 +3229,30 @@
         66.7,
         82.4,
         73.7
+      ],
+      "hist_zb_rate": [
+        17.8,
+        18.7,
+        15.1,
+        15.8,
+        23.7,
+        14.8
+      ],
+      "hist_zt_early_ratio": [
+        60.0,
+        55.0,
+        57.0,
+        61.2,
+        41.0,
+        44.9
+      ],
+      "hist_loss": [
+        62.0,
+        29.0,
+        27.0,
+        4.0,
+        11.0,
+        7.0
       ],
       "qs_avg_zf": 3.59,
       "qs_best_name": "戈碧迦",
@@ -3509,7 +3538,7 @@
     }
   ],
   "moodSignals": {
-    "updatedAt": "2026-05-10 17:50:30",
+    "updatedAt": "2026-05-10 23:21:58",
     "headline": "震荡中性，等待确认点",
     "pos": [
       {
@@ -3544,7 +3573,7 @@
       {
         "key": "diverge",
         "title": "分歧是否升级",
-        "value": "炸 14.8% · ≥3开 0.0% · 均开 0.85",
+        "value": "炸 14.8% · ≥3开 10.2% · 均开 0.85",
         "delta": "-8.9pp",
         "status": "off",
         "why": "对比近20日中位数 炸14.8%",
@@ -3633,7 +3662,7 @@
         "statusText": "可控",
         "statusClass": "good",
         "brief": "分歧大时只做回封确认",
-        "driver": "炸14.8% · ≥3开0.0% · 均开0.85"
+        "driver": "炸14.8% · ≥3开10.2% · 均开0.85"
       },
       {
         "key": "crowd",
@@ -3674,10 +3703,48 @@
       "tierThemeCount": 11,
       "tierThemeTop": "华为概念24只 / 新能源车20只 / 机器人概念21只",
       "source": "python",
-      "model": "zt_analysis_factor_v2",
-      "promoEcology": 56,
+      "model": "zt_analysis_factor_v5",
+      "marketGate": {
+        "score": 56,
+        "label": "防守观察",
+        "action": "只看回封确认",
+        "adjust": -10.0
+      },
+      "environment": {
+        "score": 56,
+        "label": "防守观察",
+        "action": "只看回封确认",
+        "components": {
+          "market": 74,
+          "themeEnv": 100,
+          "liquidity": 47,
+          "ecology": 47,
+          "height": 39,
+          "riskSafe": 9
+        }
+      },
+      "factorModel": {
+        "order": [
+          "environment",
+          "sector",
+          "leader",
+          "relay",
+          "capacity",
+          "risk"
+        ],
+        "weights": {
+          "environment": 0.16,
+          "sector": 0.22,
+          "leader": 0.21,
+          "relay": 0.17,
+          "capacity": 0.14,
+          "risk": 0.08,
+          "opportunity": 0.02
+        }
+      },
+      "promoEcology": 47,
       "heightContext": "pressure",
-      "breakRiskBase": 68
+      "breakRiskBase": 91
     },
     "relay": [
       {
@@ -3694,39 +3761,55 @@
         "qualityScore": 78.0,
         "nextStep": "3进4",
         "stepRate": 50.0,
-        "stepContextScore": 70,
-        "promoEcology": 56,
-        "heightContextScore": 50,
-        "breakRisk": 55,
+        "stepContextScore": 62,
+        "promoEcology": 47,
+        "heightContextScore": 39,
+        "environmentScore": 56,
+        "leaderFactorScore": 70,
+        "relayFactorScore": 62,
+        "capacityFactorScore": 76,
+        "riskControlScore": 37,
+        "breakRisk": 79,
         "themePersistScore": 90,
-        "score": 90,
+        "score": 63,
+        "factorScore": 63,
+        "factorBreakdown": {
+          "environment": 56,
+          "market": 74,
+          "themeEnv": 100,
+          "marketGate": -10,
+          "sector": 85,
+          "leader": 70,
+          "relay": 62,
+          "capacity": 76,
+          "risk": 37,
+          "opportunity": 81,
+          "edge": 5
+        },
+        "factorHint": "环境56(防守观察) / 板块85 / 龙头70 / 接力62 / 容量76 / 风险37 / 条件触发",
+        "scoreBand": "条件触发",
+        "scoreBandTone": "watch",
+        "scoreAction": "需要超预期",
+        "marketGate": {
+          "score": 56,
+          "label": "防守观察",
+          "action": "只看回封确认"
+        },
+        "sectorTrendScore": 94,
+        "sectorRankScore": 83,
+        "plateRank": 1,
+        "plateName": "机器人概念",
+        "factorLabels": {
+          "environment": "偏弱",
+          "sector": "强",
+          "leader": "中性",
+          "relay": "中性",
+          "capacity": "偏强",
+          "risk": "偏弱"
+        },
         "tags": [
           {
-            "text": "高换手承接",
-            "cls": "ladder-chip-warn orange-text"
-          },
-          {
-            "text": "核心梯队",
-            "cls": "ladder-chip-warn orange-text"
-          },
-          {
-            "text": "有梯队",
-            "cls": "ladder-chip-warn orange-text"
-          },
-          {
-            "text": "跟风润建股份、泰晶科技",
-            "cls": "ladder-chip-cool blue-text"
-          },
-          {
             "text": "3进4",
-            "cls": "ladder-chip-strong red-text"
-          },
-          {
-            "text": "高度压制",
-            "cls": "ladder-chip-warn orange-text"
-          },
-          {
-            "text": "题材持续",
             "cls": "ladder-chip-strong red-text"
           },
           {
@@ -3734,8 +3817,32 @@
             "cls": "ladder-chip-cool blue-text"
           },
           {
-            "text": "封单0.96亿",
+            "text": "极强主线",
+            "cls": "ladder-chip-strong red-text"
+          },
+          {
+            "text": "核心梯队",
+            "cls": "ladder-chip-strong red-text"
+          },
+          {
+            "text": "带动润建股份、泰晶科技",
+            "cls": "ladder-chip-strong red-text"
+          },
+          {
+            "text": "高度压制",
+            "cls": "ladder-chip-warn orange-text"
+          },
+          {
+            "text": "断板风险高",
+            "cls": "ladder-chip-warn orange-text"
+          },
+          {
+            "text": "温和放量",
             "cls": "ladder-chip-cool blue-text"
+          },
+          {
+            "text": "高换手承接",
+            "cls": "ladder-chip-warn orange-text"
           },
           {
             "text": "未开",
@@ -3743,46 +3850,368 @@
           },
           {
             "text": "首封10:15",
-            "cls": "ladder-chip-strong red-text"
-          },
-          {
-            "text": "市值51亿",
-            "cls": "ladder-chip-warn orange-text"
-          },
-          {
-            "text": "成交额8.68亿",
-            "cls": "ladder-chip-warn orange-text"
-          },
-          {
-            "text": "18.0%换手",
-            "cls": "ladder-chip-warn orange-text"
-          },
-          {
-            "text": "温和放量",
-            "cls": "ladder-chip-strong red-text"
-          },
-          {
-            "text": "极强主线",
-            "cls": "ladder-chip-strong red-text"
+            "cls": "ladder-chip-cool blue-text"
           },
           {
             "text": "量价共振",
-            "cls": "ladder-chip-strong red-text"
+            "cls": "ladder-chip-cool blue-text"
           },
           {
             "text": "题材发散",
             "cls": "ladder-chip-cool blue-text"
           },
           {
+            "text": "封单0.96亿",
+            "cls": "ladder-chip-cool blue-text"
+          },
+          {
+            "text": "18.0%换手",
+            "cls": "ladder-chip-cool blue-text"
+          },
+          {
+            "text": "成交额8.68亿",
+            "cls": "ladder-chip-cool blue-text"
+          },
+          {
+            "text": "市值51亿",
+            "cls": "ladder-chip-cool blue-text"
+          },
+          {
             "text": "机器人概念",
-            "cls": "ladder-chip-warn orange-text"
+            "cls": "ladder-chip-cool blue-text"
           },
           {
             "text": "商业航天",
-            "cls": ""
+            "cls": "ladder-chip-cool blue-text"
           }
         ],
-        "reason": "<span class=\"reason-bits\">封板质量：高换手承接 · 开板少/封板稳 · 早封 · 板块归属：机器人概念、商业航天 · 梯队+跟风 · 3进4生态70分 · 高度压制 · 题材持续 · 梯队内有辨识度 · 小市值 · 温和放量 · 题材联动 · 极强主线(板块净强≥12) · 量价共振(温和放量+强板块) · 换手 18.0% 较高，但仍能封住，说明承接充分、筹码交换完成。</span><div class=\"exp-wrap\"><div class=\"exp-row\"><span class=\"exp-pill pill-pre\">预期</span>高开（+2%~+5%）</div><div class=\"exp-row\"><span class=\"exp-pill pill-hi\">超预期</span>高开≥+5% + 竞价成交额≥0.61亿（≈今8.68亿×7%） + 开板≤1</div><div class=\"exp-row\"><span class=\"exp-pill pill-lo\">低预期</span>低于+2% 或 竞价量能<0.43亿</div></div>"
+        "tagRows": [
+          {
+            "tone": "red",
+            "tags": [
+              {
+                "text": "3进4",
+                "cls": "ladder-chip-strong red-text"
+              },
+              {
+                "text": "极强主线",
+                "cls": "ladder-chip-strong red-text"
+              },
+              {
+                "text": "核心梯队",
+                "cls": "ladder-chip-strong red-text"
+              },
+              {
+                "text": "带动润建股份、泰晶科技",
+                "cls": "ladder-chip-strong red-text"
+              }
+            ]
+          },
+          {
+            "tone": "orange",
+            "tags": [
+              {
+                "text": "高度压制",
+                "cls": "ladder-chip-warn orange-text"
+              },
+              {
+                "text": "断板风险高",
+                "cls": "ladder-chip-warn orange-text"
+              },
+              {
+                "text": "高换手承接",
+                "cls": "ladder-chip-warn orange-text"
+              }
+            ]
+          },
+          {
+            "tone": "blue",
+            "tags": [
+              {
+                "text": "3板",
+                "cls": "ladder-chip-cool blue-text"
+              },
+              {
+                "text": "温和放量",
+                "cls": "ladder-chip-cool blue-text"
+              },
+              {
+                "text": "未开",
+                "cls": "ladder-chip-cool blue-text"
+              },
+              {
+                "text": "首封10:15",
+                "cls": "ladder-chip-cool blue-text"
+              },
+              {
+                "text": "量价共振",
+                "cls": "ladder-chip-cool blue-text"
+              },
+              {
+                "text": "题材发散",
+                "cls": "ladder-chip-cool blue-text"
+              },
+              {
+                "text": "封单0.96亿",
+                "cls": "ladder-chip-cool blue-text"
+              },
+              {
+                "text": "18.0%换手",
+                "cls": "ladder-chip-cool blue-text"
+              },
+              {
+                "text": "成交额8.68亿",
+                "cls": "ladder-chip-cool blue-text"
+              },
+              {
+                "text": "市值51亿",
+                "cls": "ladder-chip-cool blue-text"
+              },
+              {
+                "text": "机器人概念",
+                "cls": "ladder-chip-cool blue-text"
+              },
+              {
+                "text": "商业航天",
+                "cls": "ladder-chip-cool blue-text"
+              }
+            ]
+          }
+        ],
+        "reason": "<span class=\"reason-bits\">封板质量：高换手承接 · 开板少/封板稳 · 早封 · 板块归属：机器人概念、商业航天 · 梯队带动 · 高度压制 · 题材持续 · 断板风险高 · 梯队内有辨识度 · 小市值 · 温和放量 · 题材联动 · 极强主线(板块净强≥12) · 量价共振(温和放量+强板块)</span><div class=\"exp-wrap\"><div class=\"exp-row\"><span class=\"exp-pill pill-pre\">预期</span>平开（-1%~+1%）</div><div class=\"exp-row\"><span class=\"exp-pill pill-hi\">超预期</span>高开≥+1% + 竞价成交额≥0.52亿（≈今8.68亿×6%） + 开板≤1</div><div class=\"exp-row\"><span class=\"exp-pill pill-lo\">低预期</span>低于-1% 或 竞价量能<0.36亿</div></div>",
+        "factorRank": 1,
+        "relayRank": 1,
+        "scoreLabel": "推荐因子",
+        "scoreSubLabel": "防守观察 · 条件触发"
+      },
+      {
+        "name": "泰晶科技",
+        "code": "603738",
+        "lbc": 2,
+        "hy": "元件",
+        "fundYi": 1.96910081,
+        "open": 3,
+        "predTheme": "华为概念",
+        "hasTier": true,
+        "cjeYi": 9.30097984,
+        "qualityLabel": "反复回封",
+        "qualityScore": 54.0,
+        "nextStep": "2进3",
+        "stepRate": 25.0,
+        "stepContextScore": 58,
+        "promoEcology": 47,
+        "heightContextScore": 39,
+        "environmentScore": 56,
+        "leaderFactorScore": 64,
+        "relayFactorScore": 55,
+        "capacityFactorScore": 59,
+        "riskControlScore": 23,
+        "breakRisk": 88,
+        "themePersistScore": 91,
+        "score": 55,
+        "factorScore": 55,
+        "factorBreakdown": {
+          "environment": 56,
+          "market": 74,
+          "themeEnv": 100,
+          "marketGate": -10,
+          "sector": 88,
+          "leader": 64,
+          "relay": 55,
+          "capacity": 59,
+          "risk": 23,
+          "opportunity": 81,
+          "edge": 3
+        },
+        "factorHint": "环境56(防守观察) / 板块88 / 龙头64 / 接力55 / 容量59 / 风险23 / 只观察",
+        "scoreBand": "只观察",
+        "scoreBandTone": "cool",
+        "scoreAction": "不主动接力",
+        "marketGate": {
+          "score": 56,
+          "label": "防守观察",
+          "action": "只看回封确认"
+        },
+        "sectorTrendScore": 91,
+        "sectorRankScore": 92,
+        "plateRank": 2,
+        "plateName": "通信",
+        "factorLabels": {
+          "environment": "偏弱",
+          "sector": "强",
+          "leader": "中性",
+          "relay": "偏弱",
+          "capacity": "中性",
+          "risk": "偏弱"
+        },
+        "tags": [
+          {
+            "text": "2进3",
+            "cls": "ladder-chip-strong red-text"
+          },
+          {
+            "text": "2板",
+            "cls": "ladder-chip-cool blue-text"
+          },
+          {
+            "text": "极强主线",
+            "cls": "ladder-chip-strong red-text"
+          },
+          {
+            "text": "带动润建股份、南威软件",
+            "cls": "ladder-chip-strong red-text"
+          },
+          {
+            "text": "反复回封",
+            "cls": "ladder-chip-warn orange-text"
+          },
+          {
+            "text": "高度压制",
+            "cls": "ladder-chip-warn orange-text"
+          },
+          {
+            "text": "断板风险高",
+            "cls": "ladder-chip-warn orange-text"
+          },
+          {
+            "text": "3次开板",
+            "cls": "ladder-chip-warn orange-text"
+          },
+          {
+            "text": "温和放量",
+            "cls": "ladder-chip-cool blue-text"
+          },
+          {
+            "text": "首封09:25",
+            "cls": "ladder-chip-cool blue-text"
+          },
+          {
+            "text": "量价共振",
+            "cls": "ladder-chip-cool blue-text"
+          },
+          {
+            "text": "题材发散",
+            "cls": "ladder-chip-cool blue-text"
+          },
+          {
+            "text": "封单1.97亿",
+            "cls": "ladder-chip-cool blue-text"
+          },
+          {
+            "text": "5.2%换手",
+            "cls": "ladder-chip-cool blue-text"
+          },
+          {
+            "text": "成交额9.30亿",
+            "cls": "ladder-chip-cool blue-text"
+          },
+          {
+            "text": "市值181亿",
+            "cls": "ladder-chip-cool blue-text"
+          },
+          {
+            "text": "华为概念",
+            "cls": "ladder-chip-cool blue-text"
+          },
+          {
+            "text": "机器人概念",
+            "cls": "ladder-chip-cool blue-text"
+          }
+        ],
+        "tagRows": [
+          {
+            "tone": "red",
+            "tags": [
+              {
+                "text": "2进3",
+                "cls": "ladder-chip-strong red-text"
+              },
+              {
+                "text": "极强主线",
+                "cls": "ladder-chip-strong red-text"
+              },
+              {
+                "text": "带动润建股份、南威软件",
+                "cls": "ladder-chip-strong red-text"
+              }
+            ]
+          },
+          {
+            "tone": "orange",
+            "tags": [
+              {
+                "text": "反复回封",
+                "cls": "ladder-chip-warn orange-text"
+              },
+              {
+                "text": "高度压制",
+                "cls": "ladder-chip-warn orange-text"
+              },
+              {
+                "text": "断板风险高",
+                "cls": "ladder-chip-warn orange-text"
+              },
+              {
+                "text": "3次开板",
+                "cls": "ladder-chip-warn orange-text"
+              }
+            ]
+          },
+          {
+            "tone": "blue",
+            "tags": [
+              {
+                "text": "2板",
+                "cls": "ladder-chip-cool blue-text"
+              },
+              {
+                "text": "温和放量",
+                "cls": "ladder-chip-cool blue-text"
+              },
+              {
+                "text": "首封09:25",
+                "cls": "ladder-chip-cool blue-text"
+              },
+              {
+                "text": "量价共振",
+                "cls": "ladder-chip-cool blue-text"
+              },
+              {
+                "text": "题材发散",
+                "cls": "ladder-chip-cool blue-text"
+              },
+              {
+                "text": "封单1.97亿",
+                "cls": "ladder-chip-cool blue-text"
+              },
+              {
+                "text": "5.2%换手",
+                "cls": "ladder-chip-cool blue-text"
+              },
+              {
+                "text": "成交额9.30亿",
+                "cls": "ladder-chip-cool blue-text"
+              },
+              {
+                "text": "市值181亿",
+                "cls": "ladder-chip-cool blue-text"
+              },
+              {
+                "text": "华为概念",
+                "cls": "ladder-chip-cool blue-text"
+              },
+              {
+                "text": "机器人概念",
+                "cls": "ladder-chip-cool blue-text"
+              }
+            ]
+          }
+        ],
+        "reason": "<span class=\"reason-bits\">封板质量：反复回封 · 早封 · 板块归属：华为概念、机器人概念 · 主线加成 · 梯队带动 · 高度压制 · 题材持续 · 断板风险高 · 梯队内有辨识度 · 温和放量 · 题材联动 · 极强主线(板块净强≥12) · 量价共振(温和放量+强板块) · 分歧偏大</span><div class=\"exp-wrap\"><div class=\"exp-row\"><span class=\"exp-pill pill-pre\">预期</span>低开（-2%~+0%）</div><div class=\"exp-row\"><span class=\"exp-pill pill-hi\">超预期</span>高开≥+0% + 回封后封单≥0.69亿（≈今1.97亿×35%） + 竞价成交额≥0.42亿</div><div class=\"exp-row\"><span class=\"exp-pill pill-lo\">低预期</span>低开≤-2% 或 开板继续放大</div></div>",
+        "factorRank": 2,
+        "relayRank": 2,
+        "scoreLabel": "推荐因子",
+        "scoreSubLabel": "防守观察 · 只观察"
       },
       {
         "name": "杭电股份",
@@ -3798,43 +4227,95 @@
         "qualityScore": 68.0,
         "nextStep": "3进4",
         "stepRate": 50.0,
-        "stepContextScore": 70,
-        "promoEcology": 56,
-        "heightContextScore": 50,
-        "breakRisk": 55,
+        "stepContextScore": 62,
+        "promoEcology": 47,
+        "heightContextScore": 39,
+        "environmentScore": 56,
+        "leaderFactorScore": 59,
+        "relayFactorScore": 58,
+        "capacityFactorScore": 78,
+        "riskControlScore": 31,
+        "breakRisk": 79,
         "themePersistScore": 91,
-        "score": 68,
+        "score": 54,
+        "factorScore": 54,
+        "factorBreakdown": {
+          "environment": 56,
+          "market": 74,
+          "themeEnv": 100,
+          "marketGate": -10,
+          "sector": 83,
+          "leader": 59,
+          "relay": 58,
+          "capacity": 78,
+          "risk": 31,
+          "opportunity": 81,
+          "edge": 0
+        },
+        "factorHint": "环境56(防守观察) / 板块83 / 龙头59 / 接力58 / 容量78 / 风险31 / 只观察",
+        "scoreBand": "只观察",
+        "scoreBandTone": "cool",
+        "scoreAction": "不主动接力",
+        "marketGate": {
+          "score": 56,
+          "label": "防守观察",
+          "action": "只看回封确认"
+        },
+        "sectorTrendScore": 85,
+        "sectorRankScore": 88,
+        "plateRank": 2,
+        "plateName": "通信",
+        "factorLabels": {
+          "environment": "偏弱",
+          "sector": "强",
+          "leader": "中性",
+          "relay": "偏弱",
+          "capacity": "偏强",
+          "risk": "偏弱"
+        },
         "tags": [
-          {
-            "text": "常规封板",
-            "cls": "ladder-chip-cool blue-text"
-          },
-          {
-            "text": "核心梯队",
-            "cls": "ladder-chip-warn orange-text"
-          },
-          {
-            "text": "有梯队",
-            "cls": "ladder-chip-warn orange-text"
-          },
-          {
-            "text": "跟风福达合金",
-            "cls": "ladder-chip-cool blue-text"
-          },
           {
             "text": "3进4",
             "cls": "ladder-chip-strong red-text"
+          },
+          {
+            "text": "3板",
+            "cls": "ladder-chip-cool blue-text"
+          },
+          {
+            "text": "极强主线",
+            "cls": "ladder-chip-strong red-text"
+          },
+          {
+            "text": "核心梯队",
+            "cls": "ladder-chip-strong red-text"
+          },
+          {
+            "text": "跟风福达合金",
+            "cls": "ladder-chip-warn orange-text"
           },
           {
             "text": "高度压制",
             "cls": "ladder-chip-warn orange-text"
           },
           {
-            "text": "题材持续",
-            "cls": "ladder-chip-strong red-text"
+            "text": "断板风险高",
+            "cls": "ladder-chip-warn orange-text"
           },
           {
-            "text": "3板",
+            "text": "2次开板",
+            "cls": "ladder-chip-warn orange-text"
+          },
+          {
+            "text": "常规封板",
+            "cls": "ladder-chip-cool blue-text"
+          },
+          {
+            "text": "首封09:48",
+            "cls": "ladder-chip-cool blue-text"
+          },
+          {
+            "text": "题材发散",
             "cls": "ladder-chip-cool blue-text"
           },
           {
@@ -3842,836 +4323,119 @@
             "cls": "ladder-chip-cool blue-text"
           },
           {
-            "text": "2次开板",
+            "text": "13.9%换手",
             "cls": "ladder-chip-cool blue-text"
           },
           {
-            "text": "首封09:48",
-            "cls": "ladder-chip-strong red-text"
+            "text": "成交额35.38亿",
+            "cls": "ladder-chip-cool blue-text"
           },
           {
             "text": "市值260亿",
             "cls": "ladder-chip-cool blue-text"
           },
           {
-            "text": "成交额35.38亿",
-            "cls": "ladder-chip-strong red-text"
-          },
-          {
-            "text": "13.9%换手",
-            "cls": "ladder-chip-cool blue-text"
-          },
-          {
-            "text": "极强主线",
-            "cls": "ladder-chip-strong red-text"
-          },
-          {
-            "text": "题材发散",
-            "cls": "ladder-chip-cool blue-text"
-          },
-          {
             "text": "新能源车",
-            "cls": "ladder-chip-warn orange-text"
+            "cls": "ladder-chip-cool blue-text"
           },
           {
             "text": "5G",
-            "cls": "ladder-chip-warn orange-text"
-          }
-        ],
-        "reason": "<span class=\"reason-bits\">封板质量：常规封板 · 早封 · 板块归属：新能源车、5G · 梯队+跟风 · 3进4生态70分 · 高度压制 · 题材持续 · 梯队内有辨识度 · 成交额>10亿 · 题材联动 · 极强主线(板块净强≥12) · 质量中性，需结合位阶与次日承接再看。</span><div class=\"exp-wrap\"><div class=\"exp-row\"><span class=\"exp-pill pill-pre\">预期</span>高开（+2%~+5%）</div><div class=\"exp-row\"><span class=\"exp-pill pill-hi\">超预期</span>高开≥+5% + 竞价成交额≥2.48亿（≈今35.38亿×7%） + 开板≤1</div><div class=\"exp-row\"><span class=\"exp-pill pill-lo\">低预期</span>低于+2% 或 竞价量能<1.73亿</div></div>"
-      },
-      {
-        "name": "宝鼎科技",
-        "code": "002552",
-        "lbc": 2,
-        "hy": "通用设备",
-        "fundYi": 1.33718165,
-        "open": 0,
-        "predTheme": "航天军工",
-        "hasTier": true,
-        "cjeYi": 3.06876656,
-        "qualityLabel": "封单充足",
-        "qualityScore": 90.0,
-        "nextStep": "2进3",
-        "stepRate": 25.0,
-        "stepContextScore": 65,
-        "promoEcology": 56,
-        "heightContextScore": 50,
-        "breakRisk": 56,
-        "themePersistScore": 86,
-        "score": 98,
-        "tags": [
-          {
-            "text": "封单充足",
-            "cls": "ladder-chip-strong red-text"
-          },
-          {
-            "text": "有梯队",
-            "cls": "ladder-chip-warn orange-text"
-          },
-          {
-            "text": "跟风泰晶科技",
-            "cls": "ladder-chip-cool blue-text"
-          },
-          {
-            "text": "2进3",
-            "cls": "ladder-chip-warn orange-text"
-          },
-          {
-            "text": "高度压制",
-            "cls": "ladder-chip-warn orange-text"
-          },
-          {
-            "text": "题材持续",
-            "cls": "ladder-chip-strong red-text"
-          },
-          {
-            "text": "2板",
-            "cls": "ladder-chip-cool blue-text"
-          },
-          {
-            "text": "封单1.34亿",
-            "cls": "ladder-chip-warn orange-text"
-          },
-          {
-            "text": "未开",
-            "cls": "ladder-chip-cool blue-text"
-          },
-          {
-            "text": "首封09:34",
-            "cls": "ladder-chip-strong red-text"
-          },
-          {
-            "text": "市值107亿",
-            "cls": "ladder-chip-warn orange-text"
-          },
-          {
-            "text": "成交额3.07亿",
-            "cls": "ladder-chip-warn orange-text"
-          },
-          {
-            "text": "3.1%换手",
-            "cls": "ladder-chip-warn orange-text"
-          },
-          {
-            "text": "温和放量",
-            "cls": "ladder-chip-strong red-text"
-          },
-          {
-            "text": "极强主线",
-            "cls": "ladder-chip-strong red-text"
-          },
-          {
-            "text": "量价共振",
-            "cls": "ladder-chip-strong red-text"
-          },
-          {
-            "text": "题材发散",
-            "cls": "ladder-chip-cool blue-text"
-          },
-          {
-            "text": "航天军工",
-            "cls": "ladder-chip-warn orange-text"
-          },
-          {
-            "text": "国资改革",
-            "cls": "ladder-chip-warn orange-text"
-          }
-        ],
-        "reason": "<span class=\"reason-bits\">封板质量：封单充足 · 开板少/封板稳 · 早封 · 板块归属：航天军工、国资改革 · 梯队+跟风 · 2进3生态65分 · 高度压制 · 题材持续 · 梯队内有辨识度 · 小市值 · 温和放量 · 题材联动 · 极强主线(板块净强≥12) · 量价共振(温和放量+强板块) · 早盘封单相对充足，全天一致性较强，属于偏强质量板。</span><div class=\"exp-wrap\"><div class=\"exp-row\"><span class=\"exp-pill pill-pre\">预期</span>高开（+2%~+5%）</div><div class=\"exp-row\"><span class=\"exp-pill pill-hi\">超预期</span>高开≥+5% + 竞价成交额≥0.25亿（≈今3.07亿×8%） + 开板≤1</div><div class=\"exp-row\"><span class=\"exp-pill pill-lo\">低预期</span>低于+2% 或 竞价量能<0.17亿</div></div>"
-      },
-      {
-        "name": "巨轮智能",
-        "code": "002031",
-        "lbc": 2,
-        "hy": "专用设备",
-        "fundYi": 1.7693772,
-        "open": 0,
-        "predTheme": "机器人概念",
-        "hasTier": true,
-        "cjeYi": 15.5417912,
-        "qualityLabel": "温和放量",
-        "qualityScore": 84.0,
-        "nextStep": "2进3",
-        "stepRate": 25.0,
-        "stepContextScore": 65,
-        "promoEcology": 56,
-        "heightContextScore": 50,
-        "breakRisk": 56,
-        "themePersistScore": 90,
-        "score": 96,
-        "tags": [
-          {
-            "text": "温和放量",
-            "cls": "ladder-chip-warn orange-text"
-          },
-          {
-            "text": "有梯队",
-            "cls": "ladder-chip-warn orange-text"
-          },
-          {
-            "text": "跟风大业股份",
-            "cls": "ladder-chip-cool blue-text"
-          },
-          {
-            "text": "2进3",
-            "cls": "ladder-chip-warn orange-text"
-          },
-          {
-            "text": "高度压制",
-            "cls": "ladder-chip-warn orange-text"
-          },
-          {
-            "text": "题材持续",
-            "cls": "ladder-chip-strong red-text"
-          },
-          {
-            "text": "2板",
-            "cls": "ladder-chip-cool blue-text"
-          },
-          {
-            "text": "封单1.77亿",
-            "cls": "ladder-chip-warn orange-text"
-          },
-          {
-            "text": "未开",
-            "cls": "ladder-chip-cool blue-text"
-          },
-          {
-            "text": "首封09:48",
-            "cls": "ladder-chip-strong red-text"
-          },
-          {
-            "text": "市值155亿",
-            "cls": "ladder-chip-cool blue-text"
-          },
-          {
-            "text": "成交额15.54亿",
-            "cls": "ladder-chip-strong red-text"
-          },
-          {
-            "text": "11.9%换手",
-            "cls": "ladder-chip-warn orange-text"
-          },
-          {
-            "text": "温和放量",
-            "cls": "ladder-chip-strong red-text"
-          },
-          {
-            "text": "极强主线",
-            "cls": "ladder-chip-strong red-text"
-          },
-          {
-            "text": "量价共振",
-            "cls": "ladder-chip-strong red-text"
-          },
-          {
-            "text": "机器人概念",
-            "cls": "ladder-chip-warn orange-text"
-          },
-          {
-            "text": "低价",
             "cls": "ladder-chip-cool blue-text"
           }
         ],
-        "reason": "<span class=\"reason-bits\">封板质量：温和放量 · 开板少/封板稳 · 早封 · 板块归属：机器人概念、低价 · 梯队+跟风 · 2进3生态65分 · 高度压制 · 题材持续 · 梯队内有辨识度 · 成交额>10亿 · 温和放量 · 题材联动 · 极强主线(板块净强≥12) · 量价共振(温和放量+强板块) · 换手 11.9% 且开板不多，量能释放适中，承接结构相对健康。</span><div class=\"exp-wrap\"><div class=\"exp-row\"><span class=\"exp-pill pill-pre\">预期</span>高开（+2%~+5%）</div><div class=\"exp-row\"><span class=\"exp-pill pill-hi\">超预期</span>高开≥+5% + 竞价成交额≥1.24亿（≈今15.54亿×8%） + 开板≤1</div><div class=\"exp-row\"><span class=\"exp-pill pill-lo\">低预期</span>低于+2% 或 竞价量能<0.87亿</div></div>"
-      },
-      {
-        "name": "润建股份",
-        "code": "002929",
-        "lbc": 2,
-        "hy": "通信服务",
-        "fundYi": 1.65107074,
-        "open": 1,
-        "predTheme": "华为概念",
-        "hasTier": true,
-        "cjeYi": 16.62450144,
-        "qualityLabel": "温和放量",
-        "qualityScore": 84.0,
-        "nextStep": "2进3",
-        "stepRate": 25.0,
-        "stepContextScore": 65,
-        "promoEcology": 56,
-        "heightContextScore": 50,
-        "breakRisk": 56,
-        "themePersistScore": 91,
-        "score": 95,
-        "tags": [
+        "tagRows": [
           {
-            "text": "温和放量",
-            "cls": "ladder-chip-warn orange-text"
+            "tone": "red",
+            "tags": [
+              {
+                "text": "3进4",
+                "cls": "ladder-chip-strong red-text"
+              },
+              {
+                "text": "极强主线",
+                "cls": "ladder-chip-strong red-text"
+              },
+              {
+                "text": "核心梯队",
+                "cls": "ladder-chip-strong red-text"
+              }
+            ]
           },
           {
-            "text": "主线",
-            "cls": "ladder-chip-strong red-text"
+            "tone": "orange",
+            "tags": [
+              {
+                "text": "跟风福达合金",
+                "cls": "ladder-chip-warn orange-text"
+              },
+              {
+                "text": "高度压制",
+                "cls": "ladder-chip-warn orange-text"
+              },
+              {
+                "text": "断板风险高",
+                "cls": "ladder-chip-warn orange-text"
+              },
+              {
+                "text": "2次开板",
+                "cls": "ladder-chip-warn orange-text"
+              }
+            ]
           },
           {
-            "text": "有梯队",
-            "cls": "ladder-chip-warn orange-text"
-          },
-          {
-            "text": "跟风泰晶科技",
-            "cls": "ladder-chip-cool blue-text"
-          },
-          {
-            "text": "2进3",
-            "cls": "ladder-chip-warn orange-text"
-          },
-          {
-            "text": "高度压制",
-            "cls": "ladder-chip-warn orange-text"
-          },
-          {
-            "text": "题材持续",
-            "cls": "ladder-chip-strong red-text"
-          },
-          {
-            "text": "2板",
-            "cls": "ladder-chip-cool blue-text"
-          },
-          {
-            "text": "封单1.65亿",
-            "cls": "ladder-chip-warn orange-text"
-          },
-          {
-            "text": "1次开板",
-            "cls": "ladder-chip-cool blue-text"
-          },
-          {
-            "text": "首封09:25",
-            "cls": "ladder-chip-strong red-text"
-          },
-          {
-            "text": "市值222亿",
-            "cls": "ladder-chip-cool blue-text"
-          },
-          {
-            "text": "成交额16.62亿",
-            "cls": "ladder-chip-strong red-text"
-          },
-          {
-            "text": "10.0%换手",
-            "cls": "ladder-chip-warn orange-text"
-          },
-          {
-            "text": "温和放量",
-            "cls": "ladder-chip-strong red-text"
-          },
-          {
-            "text": "极强主线",
-            "cls": "ladder-chip-strong red-text"
-          },
-          {
-            "text": "量价共振",
-            "cls": "ladder-chip-strong red-text"
-          },
-          {
-            "text": "题材发散",
-            "cls": "ladder-chip-cool blue-text"
-          },
-          {
-            "text": "华为概念",
-            "cls": "ladder-chip-warn orange-text"
-          },
-          {
-            "text": "机器人概念",
-            "cls": "ladder-chip-warn orange-text"
+            "tone": "blue",
+            "tags": [
+              {
+                "text": "3板",
+                "cls": "ladder-chip-cool blue-text"
+              },
+              {
+                "text": "常规封板",
+                "cls": "ladder-chip-cool blue-text"
+              },
+              {
+                "text": "首封09:48",
+                "cls": "ladder-chip-cool blue-text"
+              },
+              {
+                "text": "题材发散",
+                "cls": "ladder-chip-cool blue-text"
+              },
+              {
+                "text": "封单0.64亿",
+                "cls": "ladder-chip-cool blue-text"
+              },
+              {
+                "text": "13.9%换手",
+                "cls": "ladder-chip-cool blue-text"
+              },
+              {
+                "text": "成交额35.38亿",
+                "cls": "ladder-chip-cool blue-text"
+              },
+              {
+                "text": "市值260亿",
+                "cls": "ladder-chip-cool blue-text"
+              },
+              {
+                "text": "新能源车",
+                "cls": "ladder-chip-cool blue-text"
+              },
+              {
+                "text": "5G",
+                "cls": "ladder-chip-cool blue-text"
+              }
+            ]
           }
         ],
-        "reason": "<span class=\"reason-bits\">封板质量：温和放量 · 开板少/封板稳 · 早封 · 板块归属：华为概念、机器人概念 · 主线加成 · 梯队+跟风 · 2进3生态65分 · 高度压制 · 题材持续 · 梯队内有辨识度 · 成交额>10亿 · 温和放量 · 题材联动 · 极强主线(板块净强≥12) · 量价共振(温和放量+强板块) · 换手 10.0% 且开板不多，量能释放适中，承接结构相对健康。</span><div class=\"exp-wrap\"><div class=\"exp-row\"><span class=\"exp-pill pill-pre\">预期</span>高开（+2%~+5%）</div><div class=\"exp-row\"><span class=\"exp-pill pill-hi\">超预期</span>高开≥+5% + 竞价成交额≥1.33亿（≈今16.62亿×8%） + 开板≤1</div><div class=\"exp-row\"><span class=\"exp-pill pill-lo\">低预期</span>低于+2% 或 竞价量能<0.93亿</div></div>"
-      },
-      {
-        "name": "北投科技",
-        "code": "600936",
-        "lbc": 2,
-        "hy": "IT服务Ⅱ",
-        "fundYi": 1.20089173,
-        "open": 0,
-        "predTheme": "机器人概念",
-        "hasTier": true,
-        "cjeYi": 3.8140008,
-        "qualityLabel": "温和放量",
-        "qualityScore": 84.0,
-        "nextStep": "2进3",
-        "stepRate": 25.0,
-        "stepContextScore": 65,
-        "promoEcology": 56,
-        "heightContextScore": 50,
-        "breakRisk": 56,
-        "themePersistScore": 90,
-        "score": 94,
-        "tags": [
-          {
-            "text": "温和放量",
-            "cls": "ladder-chip-warn orange-text"
-          },
-          {
-            "text": "有梯队",
-            "cls": "ladder-chip-warn orange-text"
-          },
-          {
-            "text": "跟风大业股份",
-            "cls": "ladder-chip-cool blue-text"
-          },
-          {
-            "text": "2进3",
-            "cls": "ladder-chip-warn orange-text"
-          },
-          {
-            "text": "高度压制",
-            "cls": "ladder-chip-warn orange-text"
-          },
-          {
-            "text": "题材持续",
-            "cls": "ladder-chip-strong red-text"
-          },
-          {
-            "text": "2板",
-            "cls": "ladder-chip-cool blue-text"
-          },
-          {
-            "text": "封单1.20亿",
-            "cls": "ladder-chip-warn orange-text"
-          },
-          {
-            "text": "未开",
-            "cls": "ladder-chip-cool blue-text"
-          },
-          {
-            "text": "首封09:31",
-            "cls": "ladder-chip-strong red-text"
-          },
-          {
-            "text": "市值86亿",
-            "cls": "ladder-chip-warn orange-text"
-          },
-          {
-            "text": "成交额3.81亿",
-            "cls": "ladder-chip-warn orange-text"
-          },
-          {
-            "text": "4.5%换手",
-            "cls": "ladder-chip-warn orange-text"
-          },
-          {
-            "text": "温和放量",
-            "cls": "ladder-chip-strong red-text"
-          },
-          {
-            "text": "极强主线",
-            "cls": "ladder-chip-strong red-text"
-          },
-          {
-            "text": "量价共振",
-            "cls": "ladder-chip-strong red-text"
-          },
-          {
-            "text": "题材发散",
-            "cls": "ladder-chip-cool blue-text"
-          },
-          {
-            "text": "机器人概念",
-            "cls": "ladder-chip-warn orange-text"
-          },
-          {
-            "text": "国资改革",
-            "cls": "ladder-chip-warn orange-text"
-          }
-        ],
-        "reason": "<span class=\"reason-bits\">封板质量：温和放量 · 开板少/封板稳 · 早封 · 板块归属：机器人概念、国资改革 · 梯队+跟风 · 2进3生态65分 · 高度压制 · 题材持续 · 梯队内有辨识度 · 小市值 · 温和放量 · 题材联动 · 极强主线(板块净强≥12) · 量价共振(温和放量+强板块) · 换手 4.5% 且开板不多，量能释放适中，承接结构相对健康。</span><div class=\"exp-wrap\"><div class=\"exp-row\"><span class=\"exp-pill pill-pre\">预期</span>高开（+2%~+5%）</div><div class=\"exp-row\"><span class=\"exp-pill pill-hi\">超预期</span>高开≥+5% + 竞价成交额≥0.31亿（≈今3.81亿×8%） + 开板≤1</div><div class=\"exp-row\"><span class=\"exp-pill pill-lo\">低预期</span>低于+2% 或 竞价量能<0.21亿</div></div>"
-      },
-      {
-        "name": "共达电声",
-        "code": "002655",
-        "lbc": 2,
-        "hy": "消费电子",
-        "fundYi": 1.08365829,
-        "open": 0,
-        "predTheme": "华为概念",
-        "hasTier": true,
-        "cjeYi": 16.87022112,
-        "qualityLabel": "温和放量",
-        "qualityScore": 84.0,
-        "nextStep": "2进3",
-        "stepRate": 25.0,
-        "stepContextScore": 65,
-        "promoEcology": 56,
-        "heightContextScore": 50,
-        "breakRisk": 56,
-        "themePersistScore": 91,
-        "score": 93,
-        "tags": [
-          {
-            "text": "温和放量",
-            "cls": "ladder-chip-warn orange-text"
-          },
-          {
-            "text": "主线",
-            "cls": "ladder-chip-strong red-text"
-          },
-          {
-            "text": "有梯队",
-            "cls": "ladder-chip-warn orange-text"
-          },
-          {
-            "text": "跟风泰晶科技",
-            "cls": "ladder-chip-cool blue-text"
-          },
-          {
-            "text": "2进3",
-            "cls": "ladder-chip-warn orange-text"
-          },
-          {
-            "text": "高度压制",
-            "cls": "ladder-chip-warn orange-text"
-          },
-          {
-            "text": "题材持续",
-            "cls": "ladder-chip-strong red-text"
-          },
-          {
-            "text": "2板",
-            "cls": "ladder-chip-cool blue-text"
-          },
-          {
-            "text": "封单1.08亿",
-            "cls": "ladder-chip-warn orange-text"
-          },
-          {
-            "text": "未开",
-            "cls": "ladder-chip-cool blue-text"
-          },
-          {
-            "text": "首封11:11",
-            "cls": "ladder-chip-cool blue-text"
-          },
-          {
-            "text": "市值143亿",
-            "cls": "ladder-chip-warn orange-text"
-          },
-          {
-            "text": "成交额16.87亿",
-            "cls": "ladder-chip-strong red-text"
-          },
-          {
-            "text": "12.1%换手",
-            "cls": "ladder-chip-warn orange-text"
-          },
-          {
-            "text": "温和放量",
-            "cls": "ladder-chip-strong red-text"
-          },
-          {
-            "text": "极强主线",
-            "cls": "ladder-chip-strong red-text"
-          },
-          {
-            "text": "量价共振",
-            "cls": "ladder-chip-strong red-text"
-          },
-          {
-            "text": "题材发散",
-            "cls": "ladder-chip-cool blue-text"
-          },
-          {
-            "text": "华为概念",
-            "cls": "ladder-chip-warn orange-text"
-          },
-          {
-            "text": "股权转让",
-            "cls": ""
-          }
-        ],
-        "reason": "<span class=\"reason-bits\">封板质量：温和放量 · 开板少/封板稳 · 板块归属：华为概念、股权转让 · 主线加成 · 梯队+跟风 · 2进3生态65分 · 高度压制 · 题材持续 · 梯队内有辨识度 · 小市值 · 成交额>10亿 · 温和放量 · 题材联动 · 极强主线(板块净强≥12) · 量价共振(温和放量+强板块) · 换手 12.1% 且开板不多，量能释放适中，承接结构相对健康。</span><div class=\"exp-wrap\"><div class=\"exp-row\"><span class=\"exp-pill pill-pre\">预期</span>高开（+2%~+5%）</div><div class=\"exp-row\"><span class=\"exp-pill pill-hi\">超预期</span>高开≥+5% + 竞价成交额≥1.35亿（≈今16.87亿×8%） + 开板≤1</div><div class=\"exp-row\"><span class=\"exp-pill pill-lo\">低预期</span>低于+2% 或 竞价量能<0.94亿</div></div>"
-      },
-      {
-        "name": "山东玻纤",
-        "code": "605006",
-        "lbc": 2,
-        "hy": "玻璃玻纤",
-        "fundYi": 0.89716553,
-        "open": 0,
-        "predTheme": "国资改革",
-        "hasTier": true,
-        "cjeYi": 4.6878808,
-        "qualityLabel": "温和放量",
-        "qualityScore": 84.0,
-        "nextStep": "2进3",
-        "stepRate": 25.0,
-        "stepContextScore": 65,
-        "promoEcology": 56,
-        "heightContextScore": 50,
-        "breakRisk": 56,
-        "themePersistScore": 85,
-        "score": 92,
-        "tags": [
-          {
-            "text": "温和放量",
-            "cls": "ladder-chip-warn orange-text"
-          },
-          {
-            "text": "有梯队",
-            "cls": "ladder-chip-warn orange-text"
-          },
-          {
-            "text": "跟风宝鼎科技",
-            "cls": "ladder-chip-cool blue-text"
-          },
-          {
-            "text": "2进3",
-            "cls": "ladder-chip-warn orange-text"
-          },
-          {
-            "text": "高度压制",
-            "cls": "ladder-chip-warn orange-text"
-          },
-          {
-            "text": "题材持续",
-            "cls": "ladder-chip-strong red-text"
-          },
-          {
-            "text": "2板",
-            "cls": "ladder-chip-cool blue-text"
-          },
-          {
-            "text": "封单0.90亿",
-            "cls": "ladder-chip-cool blue-text"
-          },
-          {
-            "text": "未开",
-            "cls": "ladder-chip-cool blue-text"
-          },
-          {
-            "text": "首封09:36",
-            "cls": "ladder-chip-strong red-text"
-          },
-          {
-            "text": "市值89亿",
-            "cls": "ladder-chip-warn orange-text"
-          },
-          {
-            "text": "成交额4.69亿",
-            "cls": "ladder-chip-warn orange-text"
-          },
-          {
-            "text": "5.5%换手",
-            "cls": "ladder-chip-warn orange-text"
-          },
-          {
-            "text": "温和放量",
-            "cls": "ladder-chip-strong red-text"
-          },
-          {
-            "text": "极强主线",
-            "cls": "ladder-chip-strong red-text"
-          },
-          {
-            "text": "量价共振",
-            "cls": "ladder-chip-strong red-text"
-          },
-          {
-            "text": "国资改革",
-            "cls": "ladder-chip-warn orange-text"
-          }
-        ],
-        "reason": "<span class=\"reason-bits\">封板质量：温和放量 · 开板少/封板稳 · 早封 · 板块归属：国资改革 · 梯队+跟风 · 2进3生态65分 · 高度压制 · 题材持续 · 梯队内有辨识度 · 小市值 · 温和放量 · 题材联动 · 极强主线(板块净强≥12) · 量价共振(温和放量+强板块) · 换手 5.5% 且开板不多，量能释放适中，承接结构相对健康。</span><div class=\"exp-wrap\"><div class=\"exp-row\"><span class=\"exp-pill pill-pre\">预期</span>高开（+2%~+5%）</div><div class=\"exp-row\"><span class=\"exp-pill pill-hi\">超预期</span>高开≥+5% + 竞价成交额≥0.38亿（≈今4.69亿×8%） + 开板≤1</div><div class=\"exp-row\"><span class=\"exp-pill pill-lo\">低预期</span>低于+2% 或 竞价量能<0.26亿</div></div>"
+        "reason": "<span class=\"reason-bits\">封板质量：常规封板 · 早封 · 板块归属：新能源车、5G · 梯队+跟风 · 高度压制 · 题材持续 · 断板风险高 · 梯队内有辨识度 · 成交额>10亿 · 题材联动 · 极强主线(板块净强≥12)</span><div class=\"exp-wrap\"><div class=\"exp-row\"><span class=\"exp-pill pill-pre\">预期</span>低开（-2%~+0%）</div><div class=\"exp-row\"><span class=\"exp-pill pill-hi\">超预期</span>高开≥+0% + 竞价成交额≥1.59亿（≈今35.38亿×5%） + 开板≤1</div><div class=\"exp-row\"><span class=\"exp-pill pill-lo\">低预期</span>低于-2% 或 竞价量能<1.11亿</div></div>",
+        "factorRank": 6,
+        "relayRank": 3,
+        "scoreLabel": "推荐因子",
+        "scoreSubLabel": "防守观察 · 只观察"
       }
     ],
     "watch": [
-      {
-        "name": "大唐发电",
-        "code": "601991",
-        "lbc": 3,
-        "hy": "电力",
-        "fundYi": 1.99275345,
-        "open": 11,
-        "predTheme": "光伏玻璃",
-        "hasTier": true,
-        "cjeYi": 66.75181824,
-        "qualityLabel": "分歧烂板",
-        "qualityScore": 36.0,
-        "nextStep": "3进4",
-        "stepRate": 50.0,
-        "stepContextScore": 70,
-        "promoEcology": 56,
-        "heightContextScore": 50,
-        "breakRisk": 73,
-        "themePersistScore": 79,
-        "score": 46,
-        "tags": [
-          {
-            "text": "分歧烂板",
-            "cls": "ladder-chip-cool blue-text"
-          },
-          {
-            "text": "核心梯队",
-            "cls": "ladder-chip-warn orange-text"
-          },
-          {
-            "text": "有梯队",
-            "cls": "ladder-chip-warn orange-text"
-          },
-          {
-            "text": "跟风福达合金",
-            "cls": "ladder-chip-cool blue-text"
-          },
-          {
-            "text": "3进4",
-            "cls": "ladder-chip-strong red-text"
-          },
-          {
-            "text": "高度压制",
-            "cls": "ladder-chip-warn orange-text"
-          },
-          {
-            "text": "题材持续",
-            "cls": "ladder-chip-strong red-text"
-          },
-          {
-            "text": "断板风险高",
-            "cls": "ladder-chip-warn orange-text"
-          },
-          {
-            "text": "3板",
-            "cls": "ladder-chip-cool blue-text"
-          },
-          {
-            "text": "封单1.99亿",
-            "cls": "ladder-chip-warn orange-text"
-          },
-          {
-            "text": "11次开板",
-            "cls": "ladder-chip-warn orange-text"
-          },
-          {
-            "text": "首封09:25",
-            "cls": "ladder-chip-strong red-text"
-          },
-          {
-            "text": "市值1025亿",
-            "cls": "ladder-chip-cool blue-text"
-          },
-          {
-            "text": "成交额66.75亿",
-            "cls": "ladder-chip-strong red-text"
-          },
-          {
-            "text": "9.8%换手",
-            "cls": "ladder-chip-warn orange-text"
-          },
-          {
-            "text": "温和放量",
-            "cls": "ladder-chip-strong red-text"
-          },
-          {
-            "text": "极强主线",
-            "cls": "ladder-chip-strong red-text"
-          },
-          {
-            "text": "量价共振",
-            "cls": "ladder-chip-strong red-text"
-          },
-          {
-            "text": "光伏玻璃",
-            "cls": "ladder-chip-warn orange-text"
-          },
-          {
-            "text": "低价",
-            "cls": "ladder-chip-cool blue-text"
-          }
-        ],
-        "reason": "<span class=\"reason-bits\">封板质量：分歧烂板 · 早封 · 板块归属：光伏玻璃、低价 · 梯队+跟风 · 3进4生态70分 · 高度压制 · 题材持续 · 断板风险高 · 梯队内有辨识度 · 成交额>10亿 · 温和放量 · 题材联动 · 极强主线(板块净强≥12) · 量价共振(温和放量+强板块) · 强分歧(多开板) · 开板 11 次、换手 9.8%，封板过程反复，次日承接压力偏大。</span><div class=\"exp-wrap\"><div class=\"exp-row\"><span class=\"exp-pill pill-pre\">预期</span>高开（+0%~+2%）</div><div class=\"exp-row\"><span class=\"exp-pill pill-hi\">超预期</span>回封 + 封单回补≥1.00亿（≈今1.99亿×50%） + 竞价成交额≥6.34亿（≈今66.75亿×10%）</div><div class=\"exp-row\"><span class=\"exp-pill pill-lo\">低预期</span>不回封 或 多开板继续放大</div></div>",
-        "watchRank": 142
-      },
-      {
-        "name": "圣阳股份",
-        "code": "002580",
-        "lbc": 1,
-        "hy": "电池",
-        "fundYi": 1.55951658,
-        "open": 5,
-        "predTheme": "航天军工",
-        "hasTier": true,
-        "cjeYi": 27.7857664,
-        "qualityLabel": "",
-        "qualityScore": 58.22927757843347,
-        "nextStep": "1进2",
-        "stepRate": 26.3,
-        "stepContextScore": 62,
-        "promoEcology": 56,
-        "heightContextScore": 50,
-        "breakRisk": 65,
-        "themePersistScore": 86,
-        "score": 31,
-        "tags": [
-          {
-            "text": "有梯队",
-            "cls": "ladder-chip-warn orange-text"
-          },
-          {
-            "text": "跟风泰晶科技",
-            "cls": "ladder-chip-cool blue-text"
-          },
-          {
-            "text": "1进2",
-            "cls": "ladder-chip-warn orange-text"
-          },
-          {
-            "text": "高度压制",
-            "cls": "ladder-chip-warn orange-text"
-          },
-          {
-            "text": "题材持续",
-            "cls": "ladder-chip-strong red-text"
-          },
-          {
-            "text": "1板",
-            "cls": "ladder-chip-cool blue-text"
-          },
-          {
-            "text": "封单1.56亿",
-            "cls": "ladder-chip-warn orange-text"
-          },
-          {
-            "text": "5次开板",
-            "cls": "ladder-chip-warn orange-text"
-          },
-          {
-            "text": "首封09:35",
-            "cls": "ladder-chip-strong red-text"
-          },
-          {
-            "text": "市值149亿",
-            "cls": "ladder-chip-warn orange-text"
-          },
-          {
-            "text": "成交额27.79亿",
-            "cls": "ladder-chip-strong red-text"
-          },
-          {
-            "text": "19.0%换手",
-            "cls": "ladder-chip-cool blue-text"
-          },
-          {
-            "text": "极强主线",
-            "cls": "ladder-chip-strong red-text"
-          },
-          {
-            "text": "题材发散",
-            "cls": "ladder-chip-cool blue-text"
-          },
-          {
-            "text": "航天军工",
-            "cls": "ladder-chip-warn orange-text"
-          },
-          {
-            "text": "国资改革",
-            "cls": "ladder-chip-warn orange-text"
-          }
-        ],
-        "reason": "<span class=\"reason-bits\">早封 · 板块归属：航天军工、国资改革 · 梯队+跟风 · 1进2生态61分 · 高度压制 · 题材持续 · 小市值 · 成交额>10亿 · 题材联动 · 极强主线(板块净强≥12) · 分歧偏大</span><div class=\"exp-wrap\"><div class=\"exp-row\"><span class=\"exp-pill pill-pre\">预期</span>高开（+0%~+5%）</div><div class=\"exp-row\"><span class=\"exp-pill pill-hi\">超预期</span>高开≥+5% + 回封后封单≥0.55亿（≈今1.56亿×35%） + 竞价成交额≥2.22亿</div><div class=\"exp-row\"><span class=\"exp-pill pill-lo\">低预期</span>低开≤+2% 或 开板继续放大</div></div>",
-        "watchRank": 98
-      },
       {
         "name": "福达合金",
         "code": "603045",
@@ -4686,15 +4450,63 @@
         "qualityScore": 96.0,
         "nextStep": "4进5",
         "stepRate": 26.3,
-        "stepContextScore": 43,
-        "promoEcology": 56,
-        "heightContextScore": 50,
-        "breakRisk": 80,
+        "stepContextScore": 37,
+        "promoEcology": 47,
+        "heightContextScore": 39,
+        "environmentScore": 56,
+        "leaderFactorScore": 70,
+        "relayFactorScore": 56,
+        "capacityFactorScore": 41,
+        "riskControlScore": 5,
+        "breakRisk": 100,
         "themePersistScore": 91,
-        "score": 99,
+        "score": 54,
+        "factorScore": 54,
+        "factorBreakdown": {
+          "environment": 56,
+          "market": 74,
+          "themeEnv": 100,
+          "marketGate": -10,
+          "sector": 82,
+          "leader": 70,
+          "relay": 56,
+          "capacity": 41,
+          "risk": 5,
+          "opportunity": 81,
+          "edge": 5
+        },
+        "factorHint": "环境56(防守观察) / 板块82 / 龙头70 / 接力56 / 容量41 / 风险5 / 只观察",
+        "scoreBand": "只观察",
+        "scoreBandTone": "cool",
+        "scoreAction": "不主动接力",
+        "marketGate": {
+          "score": 56,
+          "label": "防守观察",
+          "action": "只看回封确认"
+        },
+        "sectorTrendScore": 85,
+        "sectorRankScore": 88,
+        "plateRank": 5,
+        "plateName": "算力",
+        "factorLabels": {
+          "environment": "偏弱",
+          "sector": "强",
+          "leader": "中性",
+          "relay": "偏弱",
+          "capacity": "偏弱",
+          "risk": "偏弱"
+        },
         "tags": [
           {
-            "text": "加速确认",
+            "text": "4进5",
+            "cls": "ladder-chip-warn orange-text"
+          },
+          {
+            "text": "4板",
+            "cls": "ladder-chip-cool blue-text"
+          },
+          {
+            "text": "极强主线",
             "cls": "ladder-chip-strong red-text"
           },
           {
@@ -4702,36 +4514,24 @@
             "cls": "ladder-chip-strong red-text"
           },
           {
-            "text": "有梯队",
-            "cls": "ladder-chip-warn orange-text"
-          },
-          {
-            "text": "跟风红板科技、杭电股份",
-            "cls": "ladder-chip-cool blue-text"
-          },
-          {
-            "text": "4进5",
-            "cls": "ladder-chip-cool blue-text"
+            "text": "带动红板科技、杭电股份",
+            "cls": "ladder-chip-strong red-text"
           },
           {
             "text": "高度压制",
             "cls": "ladder-chip-warn orange-text"
           },
           {
-            "text": "题材持续",
-            "cls": "ladder-chip-strong red-text"
-          },
-          {
             "text": "断板风险高",
             "cls": "ladder-chip-warn orange-text"
           },
           {
-            "text": "4板",
+            "text": "一字板",
             "cls": "ladder-chip-warn orange-text"
           },
           {
-            "text": "封单1.14亿",
-            "cls": "ladder-chip-warn orange-text"
+            "text": "加速确认",
+            "cls": "ladder-chip-strong red-text"
           },
           {
             "text": "未开",
@@ -4739,18 +4539,6 @@
           },
           {
             "text": "首封09:25",
-            "cls": "ladder-chip-strong red-text"
-          },
-          {
-            "text": "市值84亿",
-            "cls": "ladder-chip-warn orange-text"
-          },
-          {
-            "text": "成交额1.04亿",
-            "cls": "ladder-chip-cool blue-text"
-          },
-          {
-            "text": "1.2%换手",
             "cls": "ladder-chip-cool blue-text"
           },
           {
@@ -4758,28 +4546,363 @@
             "cls": "ladder-chip-strong red-text"
           },
           {
-            "text": "极强主线",
-            "cls": "ladder-chip-strong red-text"
-          },
-          {
-            "text": "一字板",
-            "cls": "ladder-chip-cool blue-text"
-          },
-          {
             "text": "题材发散",
             "cls": "ladder-chip-cool blue-text"
           },
           {
+            "text": "封单1.14亿",
+            "cls": "ladder-chip-cool blue-text"
+          },
+          {
+            "text": "1.2%换手",
+            "cls": "ladder-chip-cool blue-text"
+          },
+          {
+            "text": "成交额1.04亿",
+            "cls": "ladder-chip-cool blue-text"
+          },
+          {
+            "text": "市值84亿",
+            "cls": "ladder-chip-cool blue-text"
+          },
+          {
             "text": "新能源车",
-            "cls": "ladder-chip-warn orange-text"
+            "cls": "ladder-chip-cool blue-text"
           },
           {
             "text": "5G",
-            "cls": "ladder-chip-warn orange-text"
+            "cls": "ladder-chip-cool blue-text"
           }
         ],
-        "reason": "<span class=\"reason-bits\">封板质量：加速确认 · 开板少/封板稳 · 早封 · 板块归属：新能源车、5G · 龙头梯队 · 梯队+跟风 · 4进5生态42分 · 高度压制 · 题材持续 · 断板风险高 · 梯队内有辨识度 · 小市值 · 突破新高(4板) · 一字板(参与难度大) · 题材联动 · 极强主线(板块净强≥12) · 晋级板早盘直接确认，几乎不给分歧，属于一致性较强的加速板。</span><div class=\"exp-wrap\"><div class=\"exp-row\"><span class=\"exp-pill pill-pre\">预期</span>高开（+1%~+4%）</div><div class=\"exp-row\"><span class=\"exp-pill pill-hi\">超预期</span>高开≥+4% + 竞价成交额≥0.15亿（≈今1.04亿×10%） + 开板≤1</div><div class=\"exp-row\"><span class=\"exp-pill pill-lo\">低预期</span>低于+1% 或 竞价量能<0.10亿</div></div>",
-        "watchRank": 90
+        "tagRows": [
+          {
+            "tone": "red",
+            "tags": [
+              {
+                "text": "极强主线",
+                "cls": "ladder-chip-strong red-text"
+              },
+              {
+                "text": "前龙头",
+                "cls": "ladder-chip-strong red-text"
+              },
+              {
+                "text": "带动红板科技、杭电股份",
+                "cls": "ladder-chip-strong red-text"
+              },
+              {
+                "text": "加速确认",
+                "cls": "ladder-chip-strong red-text"
+              },
+              {
+                "text": "突破新高",
+                "cls": "ladder-chip-strong red-text"
+              }
+            ]
+          },
+          {
+            "tone": "orange",
+            "tags": [
+              {
+                "text": "4进5",
+                "cls": "ladder-chip-warn orange-text"
+              },
+              {
+                "text": "高度压制",
+                "cls": "ladder-chip-warn orange-text"
+              },
+              {
+                "text": "断板风险高",
+                "cls": "ladder-chip-warn orange-text"
+              },
+              {
+                "text": "一字板",
+                "cls": "ladder-chip-warn orange-text"
+              }
+            ]
+          },
+          {
+            "tone": "blue",
+            "tags": [
+              {
+                "text": "4板",
+                "cls": "ladder-chip-cool blue-text"
+              },
+              {
+                "text": "未开",
+                "cls": "ladder-chip-cool blue-text"
+              },
+              {
+                "text": "首封09:25",
+                "cls": "ladder-chip-cool blue-text"
+              },
+              {
+                "text": "题材发散",
+                "cls": "ladder-chip-cool blue-text"
+              },
+              {
+                "text": "封单1.14亿",
+                "cls": "ladder-chip-cool blue-text"
+              },
+              {
+                "text": "1.2%换手",
+                "cls": "ladder-chip-cool blue-text"
+              },
+              {
+                "text": "成交额1.04亿",
+                "cls": "ladder-chip-cool blue-text"
+              },
+              {
+                "text": "市值84亿",
+                "cls": "ladder-chip-cool blue-text"
+              },
+              {
+                "text": "新能源车",
+                "cls": "ladder-chip-cool blue-text"
+              },
+              {
+                "text": "5G",
+                "cls": "ladder-chip-cool blue-text"
+              }
+            ]
+          }
+        ],
+        "reason": "<span class=\"reason-bits\">封板质量：加速确认 · 开板少/封板稳 · 早封 · 板块归属：新能源车、5G · 龙头梯队 · 梯队带动 · 高度压制 · 题材持续 · 断板风险高 · 梯队内有辨识度 · 小市值 · 突破新高(4板) · 一字板(参与难度大) · 题材联动 · 极强主线(板块净强≥12)</span><div class=\"exp-wrap\"><div class=\"exp-row\"><span class=\"exp-pill pill-pre\">预期</span>低开（-2%~+0%）</div><div class=\"exp-row\"><span class=\"exp-pill pill-hi\">超预期</span>高开≥+0% + 竞价成交额≥0.15亿（≈今1.04亿×5%） + 开板≤1</div><div class=\"exp-row\"><span class=\"exp-pill pill-lo\">低预期</span>低于-2% 或 竞价量能<0.10亿</div></div>",
+        "factorRank": 3,
+        "watchRank": 1,
+        "watchGroup": "高标/题材核心",
+        "scoreLabel": "观察因子",
+        "scoreSubLabel": "高标/题材核心 · 只观察"
+      },
+      {
+        "name": "大唐发电",
+        "code": "601991",
+        "lbc": 3,
+        "hy": "电力",
+        "fundYi": 1.99275345,
+        "open": 11,
+        "predTheme": "光伏玻璃",
+        "hasTier": true,
+        "cjeYi": 66.75181824,
+        "qualityLabel": "分歧烂板",
+        "qualityScore": 36.0,
+        "nextStep": "3进4",
+        "stepRate": 50.0,
+        "stepContextScore": 62,
+        "promoEcology": 47,
+        "heightContextScore": 39,
+        "environmentScore": 56,
+        "leaderFactorScore": 54,
+        "relayFactorScore": 44,
+        "capacityFactorScore": 70,
+        "riskControlScore": 0,
+        "breakRisk": 97,
+        "themePersistScore": 79,
+        "score": 42,
+        "factorScore": 42,
+        "factorBreakdown": {
+          "environment": 56,
+          "market": 74,
+          "themeEnv": 100,
+          "marketGate": -10,
+          "sector": 67,
+          "leader": 54,
+          "relay": 44,
+          "capacity": 70,
+          "risk": 0,
+          "opportunity": 81,
+          "edge": -2
+        },
+        "factorHint": "环境56(防守观察) / 板块67 / 龙头54 / 接力44 / 容量70 / 风险0 / 只观察",
+        "scoreBand": "只观察",
+        "scoreBandTone": "cool",
+        "scoreAction": "不主动接力",
+        "marketGate": {
+          "score": 56,
+          "label": "防守观察",
+          "action": "只看回封确认"
+        },
+        "sectorTrendScore": 67,
+        "sectorRankScore": 61,
+        "plateRank": 0,
+        "plateName": "",
+        "factorLabels": {
+          "environment": "偏弱",
+          "sector": "中性",
+          "leader": "偏弱",
+          "relay": "偏弱",
+          "capacity": "偏强",
+          "risk": "偏弱"
+        },
+        "tags": [
+          {
+            "text": "3进4",
+            "cls": "ladder-chip-strong red-text"
+          },
+          {
+            "text": "3板",
+            "cls": "ladder-chip-cool blue-text"
+          },
+          {
+            "text": "极强主线",
+            "cls": "ladder-chip-strong red-text"
+          },
+          {
+            "text": "核心梯队",
+            "cls": "ladder-chip-strong red-text"
+          },
+          {
+            "text": "跟风福达合金",
+            "cls": "ladder-chip-warn orange-text"
+          },
+          {
+            "text": "分歧烂板",
+            "cls": "ladder-chip-warn orange-text"
+          },
+          {
+            "text": "高度压制",
+            "cls": "ladder-chip-warn orange-text"
+          },
+          {
+            "text": "断板风险高",
+            "cls": "ladder-chip-warn orange-text"
+          },
+          {
+            "text": "11次开板",
+            "cls": "ladder-chip-warn orange-text"
+          },
+          {
+            "text": "温和放量",
+            "cls": "ladder-chip-cool blue-text"
+          },
+          {
+            "text": "首封09:25",
+            "cls": "ladder-chip-cool blue-text"
+          },
+          {
+            "text": "量价共振",
+            "cls": "ladder-chip-cool blue-text"
+          },
+          {
+            "text": "封单1.99亿",
+            "cls": "ladder-chip-cool blue-text"
+          },
+          {
+            "text": "9.8%换手",
+            "cls": "ladder-chip-cool blue-text"
+          },
+          {
+            "text": "成交额66.75亿",
+            "cls": "ladder-chip-cool blue-text"
+          },
+          {
+            "text": "市值1025亿",
+            "cls": "ladder-chip-cool blue-text"
+          },
+          {
+            "text": "光伏玻璃",
+            "cls": "ladder-chip-cool blue-text"
+          },
+          {
+            "text": "低价",
+            "cls": "ladder-chip-cool blue-text"
+          }
+        ],
+        "tagRows": [
+          {
+            "tone": "red",
+            "tags": [
+              {
+                "text": "3进4",
+                "cls": "ladder-chip-strong red-text"
+              },
+              {
+                "text": "极强主线",
+                "cls": "ladder-chip-strong red-text"
+              },
+              {
+                "text": "核心梯队",
+                "cls": "ladder-chip-strong red-text"
+              }
+            ]
+          },
+          {
+            "tone": "orange",
+            "tags": [
+              {
+                "text": "跟风福达合金",
+                "cls": "ladder-chip-warn orange-text"
+              },
+              {
+                "text": "分歧烂板",
+                "cls": "ladder-chip-warn orange-text"
+              },
+              {
+                "text": "高度压制",
+                "cls": "ladder-chip-warn orange-text"
+              },
+              {
+                "text": "断板风险高",
+                "cls": "ladder-chip-warn orange-text"
+              },
+              {
+                "text": "11次开板",
+                "cls": "ladder-chip-warn orange-text"
+              }
+            ]
+          },
+          {
+            "tone": "blue",
+            "tags": [
+              {
+                "text": "3板",
+                "cls": "ladder-chip-cool blue-text"
+              },
+              {
+                "text": "温和放量",
+                "cls": "ladder-chip-cool blue-text"
+              },
+              {
+                "text": "首封09:25",
+                "cls": "ladder-chip-cool blue-text"
+              },
+              {
+                "text": "量价共振",
+                "cls": "ladder-chip-cool blue-text"
+              },
+              {
+                "text": "封单1.99亿",
+                "cls": "ladder-chip-cool blue-text"
+              },
+              {
+                "text": "9.8%换手",
+                "cls": "ladder-chip-cool blue-text"
+              },
+              {
+                "text": "成交额66.75亿",
+                "cls": "ladder-chip-cool blue-text"
+              },
+              {
+                "text": "市值1025亿",
+                "cls": "ladder-chip-cool blue-text"
+              },
+              {
+                "text": "光伏玻璃",
+                "cls": "ladder-chip-cool blue-text"
+              },
+              {
+                "text": "低价",
+                "cls": "ladder-chip-cool blue-text"
+              }
+            ]
+          }
+        ],
+        "reason": "<span class=\"reason-bits\">封板质量：分歧烂板 · 早封 · 板块归属：光伏玻璃、低价 · 梯队+跟风 · 高度压制 · 题材持续 · 断板风险高 · 梯队内有辨识度 · 成交额>10亿 · 温和放量 · 题材联动 · 极强主线(板块净强≥12) · 量价共振(温和放量+强板块) · 强分歧(多开板)</span><div class=\"exp-wrap\"><div class=\"exp-row\"><span class=\"exp-pill pill-pre\">预期</span>低开（-4%~-1%）</div><div class=\"exp-row\"><span class=\"exp-pill pill-hi\">超预期</span>回封 + 封单回补≥1.00亿（≈今1.99亿×50%） + 竞价成交额≥3.00亿（≈今66.75亿×5%）</div><div class=\"exp-row\"><span class=\"exp-pill pill-lo\">低预期</span>不回封 或 多开板继续放大</div></div>",
+        "factorRank": 70,
+        "watchRank": 2,
+        "watchGroup": "高位分歧",
+        "scoreLabel": "观察因子",
+        "scoreSubLabel": "高位分歧 · 只观察"
       },
       {
         "name": "波导股份",
@@ -4795,27 +4918,63 @@
         "qualityScore": 84.0,
         "nextStep": "3进4",
         "stepRate": 50.0,
-        "stepContextScore": 70,
-        "promoEcology": 56,
-        "heightContextScore": 50,
-        "breakRisk": 65,
+        "stepContextScore": 62,
+        "promoEcology": 47,
+        "heightContextScore": 39,
+        "environmentScore": 56,
+        "leaderFactorScore": 61,
+        "relayFactorScore": 62,
+        "capacityFactorScore": 54,
+        "riskControlScore": 23,
+        "breakRisk": 89,
         "themePersistScore": 76,
-        "score": 23,
+        "score": 41,
+        "factorScore": 41,
+        "factorBreakdown": {
+          "environment": 56,
+          "market": 74,
+          "themeEnv": 100,
+          "marketGate": -10,
+          "sector": 33,
+          "leader": 61,
+          "relay": 62,
+          "capacity": 54,
+          "risk": 23,
+          "opportunity": 66,
+          "edge": 1
+        },
+        "factorHint": "环境56(防守观察) / 板块33 / 龙头61 / 接力62 / 容量54 / 风险23 / 只观察",
+        "scoreBand": "只观察",
+        "scoreBandTone": "cool",
+        "scoreAction": "不主动接力",
+        "marketGate": {
+          "score": 56,
+          "label": "防守观察",
+          "action": "只看回封确认"
+        },
+        "sectorTrendScore": 41,
+        "sectorRankScore": 43,
+        "plateRank": 0,
+        "plateName": "",
+        "factorLabels": {
+          "environment": "偏弱",
+          "sector": "偏弱",
+          "leader": "中性",
+          "relay": "中性",
+          "capacity": "偏弱",
+          "risk": "偏弱"
+        },
         "tags": [
           {
-            "text": "温和放量",
-            "cls": "ladder-chip-warn orange-text"
+            "text": "3进4",
+            "cls": "ladder-chip-strong red-text"
           },
           {
-            "text": "核心梯队",
-            "cls": "ladder-chip-warn orange-text"
-          },
-          {
-            "text": "属性标签",
+            "text": "3板",
             "cls": "ladder-chip-cool blue-text"
           },
           {
-            "text": "3进4",
+            "text": "核心梯队",
             "cls": "ladder-chip-strong red-text"
           },
           {
@@ -4823,11 +4982,11 @@
             "cls": "ladder-chip-warn orange-text"
           },
           {
-            "text": "3板",
-            "cls": "ladder-chip-cool blue-text"
+            "text": "断板风险高",
+            "cls": "ladder-chip-warn orange-text"
           },
           {
-            "text": "封单0.90亿",
+            "text": "温和放量",
             "cls": "ladder-chip-cool blue-text"
           },
           {
@@ -4836,31 +4995,318 @@
           },
           {
             "text": "首封09:31",
-            "cls": "ladder-chip-strong red-text"
+            "cls": "ladder-chip-cool blue-text"
           },
           {
-            "text": "市值46亿",
-            "cls": "ladder-chip-warn orange-text"
+            "text": "属性标签",
+            "cls": "ladder-chip-cool blue-text"
           },
           {
-            "text": "成交额3.61亿",
-            "cls": "ladder-chip-warn orange-text"
+            "text": "封单0.90亿",
+            "cls": "ladder-chip-cool blue-text"
           },
           {
             "text": "8.0%换手",
-            "cls": "ladder-chip-warn orange-text"
+            "cls": "ladder-chip-cool blue-text"
           },
           {
-            "text": "温和放量",
-            "cls": "ladder-chip-strong red-text"
+            "text": "成交额3.61亿",
+            "cls": "ladder-chip-cool blue-text"
+          },
+          {
+            "text": "市值46亿",
+            "cls": "ladder-chip-cool blue-text"
           },
           {
             "text": "低价",
             "cls": "ladder-chip-cool blue-text"
           }
         ],
-        "reason": "<span class=\"reason-bits\">封板质量：温和放量 · 开板少/封板稳 · 早封 · 属性标签：低价 · 3进4生态70分 · 高度压制 · 梯队内有辨识度 · 小市值 · 温和放量 · 换手 8.0% 且开板不多，量能释放适中，承接结构相对健康。</span><div class=\"exp-wrap\"><div class=\"exp-row\"><span class=\"exp-pill pill-pre\">预期</span>高开（+0%~+3%）</div><div class=\"exp-row\"><span class=\"exp-pill pill-hi\">超预期</span>高开≥+3% + 竞价成交额≥0.22亿（≈今3.61亿×6%） + 开板≤1</div><div class=\"exp-row\"><span class=\"exp-pill pill-lo\">低预期</span>低于+0% 或 竞价量能<0.15亿</div></div>",
-        "watchRank": 90
+        "tagRows": [
+          {
+            "tone": "red",
+            "tags": [
+              {
+                "text": "3进4",
+                "cls": "ladder-chip-strong red-text"
+              },
+              {
+                "text": "核心梯队",
+                "cls": "ladder-chip-strong red-text"
+              }
+            ]
+          },
+          {
+            "tone": "orange",
+            "tags": [
+              {
+                "text": "高度压制",
+                "cls": "ladder-chip-warn orange-text"
+              },
+              {
+                "text": "断板风险高",
+                "cls": "ladder-chip-warn orange-text"
+              }
+            ]
+          },
+          {
+            "tone": "blue",
+            "tags": [
+              {
+                "text": "3板",
+                "cls": "ladder-chip-cool blue-text"
+              },
+              {
+                "text": "温和放量",
+                "cls": "ladder-chip-cool blue-text"
+              },
+              {
+                "text": "未开",
+                "cls": "ladder-chip-cool blue-text"
+              },
+              {
+                "text": "首封09:31",
+                "cls": "ladder-chip-cool blue-text"
+              },
+              {
+                "text": "属性标签",
+                "cls": "ladder-chip-cool blue-text"
+              },
+              {
+                "text": "封单0.90亿",
+                "cls": "ladder-chip-cool blue-text"
+              },
+              {
+                "text": "8.0%换手",
+                "cls": "ladder-chip-cool blue-text"
+              },
+              {
+                "text": "成交额3.61亿",
+                "cls": "ladder-chip-cool blue-text"
+              },
+              {
+                "text": "市值46亿",
+                "cls": "ladder-chip-cool blue-text"
+              },
+              {
+                "text": "低价",
+                "cls": "ladder-chip-cool blue-text"
+              }
+            ]
+          }
+        ],
+        "reason": "<span class=\"reason-bits\">封板质量：温和放量 · 开板少/封板稳 · 早封 · 属性标签：低价 · 高度压制 · 断板风险高 · 梯队内有辨识度 · 小市值 · 温和放量</span><div class=\"exp-wrap\"><div class=\"exp-row\"><span class=\"exp-pill pill-pre\">预期</span>低开（-4%~-1%）</div><div class=\"exp-row\"><span class=\"exp-pill pill-hi\">超预期</span>高开≥-1% + 竞价成交额≥0.16亿（≈今3.61亿×5%） + 开板≤1</div><div class=\"exp-row\"><span class=\"exp-pill pill-lo\">低预期</span>低于-4% 或 竞价量能<0.11亿</div></div>",
+        "factorRank": 71,
+        "watchRank": 3,
+        "watchGroup": "高位分歧",
+        "scoreLabel": "观察因子",
+        "scoreSubLabel": "高位分歧 · 只观察"
+      },
+      {
+        "name": "圣阳股份",
+        "code": "002580",
+        "lbc": 1,
+        "hy": "电池",
+        "fundYi": 1.55951658,
+        "open": 5,
+        "predTheme": "航天军工",
+        "hasTier": true,
+        "cjeYi": 27.7857664,
+        "qualityLabel": "",
+        "qualityScore": 58.22927757843347,
+        "nextStep": "1进2",
+        "stepRate": 26.3,
+        "stepContextScore": 55,
+        "promoEcology": 47,
+        "heightContextScore": 39,
+        "environmentScore": 56,
+        "leaderFactorScore": 43,
+        "relayFactorScore": 51,
+        "capacityFactorScore": 81,
+        "riskControlScore": 21,
+        "breakRisk": 88,
+        "themePersistScore": 86,
+        "score": 46,
+        "factorScore": 46,
+        "factorBreakdown": {
+          "environment": 56,
+          "market": 74,
+          "themeEnv": 100,
+          "marketGate": -10,
+          "sector": 76,
+          "leader": 43,
+          "relay": 51,
+          "capacity": 81,
+          "risk": 21,
+          "opportunity": 70,
+          "edge": -2
+        },
+        "factorHint": "环境56(防守观察) / 板块76 / 龙头43 / 接力51 / 容量81 / 风险21 / 只观察",
+        "scoreBand": "只观察",
+        "scoreBandTone": "cool",
+        "scoreAction": "不主动接力",
+        "marketGate": {
+          "score": 56,
+          "label": "防守观察",
+          "action": "只看回封确认"
+        },
+        "sectorTrendScore": 75,
+        "sectorRankScore": 79,
+        "plateRank": 0,
+        "plateName": "",
+        "factorLabels": {
+          "environment": "偏弱",
+          "sector": "偏强",
+          "leader": "偏弱",
+          "relay": "偏弱",
+          "capacity": "偏强",
+          "risk": "偏弱"
+        },
+        "tags": [
+          {
+            "text": "1进2",
+            "cls": "ladder-chip-cool blue-text"
+          },
+          {
+            "text": "1板",
+            "cls": "ladder-chip-cool blue-text"
+          },
+          {
+            "text": "极强主线",
+            "cls": "ladder-chip-strong red-text"
+          },
+          {
+            "text": "跟风泰晶科技",
+            "cls": "ladder-chip-warn orange-text"
+          },
+          {
+            "text": "高度压制",
+            "cls": "ladder-chip-warn orange-text"
+          },
+          {
+            "text": "断板风险高",
+            "cls": "ladder-chip-warn orange-text"
+          },
+          {
+            "text": "5次开板",
+            "cls": "ladder-chip-warn orange-text"
+          },
+          {
+            "text": "首封09:35",
+            "cls": "ladder-chip-cool blue-text"
+          },
+          {
+            "text": "题材发散",
+            "cls": "ladder-chip-cool blue-text"
+          },
+          {
+            "text": "封单1.56亿",
+            "cls": "ladder-chip-cool blue-text"
+          },
+          {
+            "text": "19.0%换手",
+            "cls": "ladder-chip-cool blue-text"
+          },
+          {
+            "text": "成交额27.79亿",
+            "cls": "ladder-chip-cool blue-text"
+          },
+          {
+            "text": "市值149亿",
+            "cls": "ladder-chip-cool blue-text"
+          },
+          {
+            "text": "航天军工",
+            "cls": "ladder-chip-cool blue-text"
+          },
+          {
+            "text": "国资改革",
+            "cls": "ladder-chip-cool blue-text"
+          }
+        ],
+        "tagRows": [
+          {
+            "tone": "red",
+            "tags": [
+              {
+                "text": "极强主线",
+                "cls": "ladder-chip-strong red-text"
+              }
+            ]
+          },
+          {
+            "tone": "orange",
+            "tags": [
+              {
+                "text": "跟风泰晶科技",
+                "cls": "ladder-chip-warn orange-text"
+              },
+              {
+                "text": "高度压制",
+                "cls": "ladder-chip-warn orange-text"
+              },
+              {
+                "text": "断板风险高",
+                "cls": "ladder-chip-warn orange-text"
+              },
+              {
+                "text": "5次开板",
+                "cls": "ladder-chip-warn orange-text"
+              }
+            ]
+          },
+          {
+            "tone": "blue",
+            "tags": [
+              {
+                "text": "1进2",
+                "cls": "ladder-chip-cool blue-text"
+              },
+              {
+                "text": "1板",
+                "cls": "ladder-chip-cool blue-text"
+              },
+              {
+                "text": "首封09:35",
+                "cls": "ladder-chip-cool blue-text"
+              },
+              {
+                "text": "题材发散",
+                "cls": "ladder-chip-cool blue-text"
+              },
+              {
+                "text": "封单1.56亿",
+                "cls": "ladder-chip-cool blue-text"
+              },
+              {
+                "text": "19.0%换手",
+                "cls": "ladder-chip-cool blue-text"
+              },
+              {
+                "text": "成交额27.79亿",
+                "cls": "ladder-chip-cool blue-text"
+              },
+              {
+                "text": "市值149亿",
+                "cls": "ladder-chip-cool blue-text"
+              },
+              {
+                "text": "航天军工",
+                "cls": "ladder-chip-cool blue-text"
+              },
+              {
+                "text": "国资改革",
+                "cls": "ladder-chip-cool blue-text"
+              }
+            ]
+          }
+        ],
+        "reason": "<span class=\"reason-bits\">早封 · 板块归属：航天军工、国资改革 · 梯队+跟风 · 高度压制 · 题材持续 · 断板风险高 · 小市值 · 成交额>10亿 · 题材联动 · 极强主线(板块净强≥12) · 分歧偏大</span><div class=\"exp-wrap\"><div class=\"exp-row\"><span class=\"exp-pill pill-pre\">预期</span>低开（-2%~+0%）</div><div class=\"exp-row\"><span class=\"exp-pill pill-hi\">超预期</span>高开≥+0% + 回封后封单≥0.55亿（≈今1.56亿×35%） + 竞价成交额≥1.25亿</div><div class=\"exp-row\"><span class=\"exp-pill pill-lo\">低预期</span>低开≤-2% 或 开板继续放大</div></div>",
+        "factorRank": 36,
+        "watchRank": 4,
+        "watchGroup": "风险观察",
+        "scoreLabel": "观察因子",
+        "scoreSubLabel": "风险观察 · 只观察"
       },
       {
         "name": "大位科技",
@@ -4876,23 +5322,67 @@
         "qualityScore": 36.37742076835215,
         "nextStep": "1进2",
         "stepRate": 26.3,
-        "stepContextScore": 62,
-        "promoEcology": 56,
-        "heightContextScore": 50,
-        "breakRisk": 83,
+        "stepContextScore": 55,
+        "promoEcology": 47,
+        "heightContextScore": 39,
+        "environmentScore": 56,
+        "leaderFactorScore": 40,
+        "relayFactorScore": 44,
+        "capacityFactorScore": 68,
+        "riskControlScore": 19,
+        "breakRisk": 100,
         "themePersistScore": 42,
-        "score": 1,
+        "score": 29,
+        "factorScore": 29,
+        "factorBreakdown": {
+          "environment": 56,
+          "market": 74,
+          "themeEnv": 100,
+          "marketGate": -10,
+          "sector": 23,
+          "leader": 40,
+          "relay": 44,
+          "capacity": 68,
+          "risk": 19,
+          "opportunity": 31,
+          "edge": -3
+        },
+        "factorHint": "环境56(防守观察) / 板块23 / 龙头40 / 接力44 / 容量68 / 风险19 / 只观察",
+        "scoreBand": "只观察",
+        "scoreBandTone": "cool",
+        "scoreAction": "不主动接力",
+        "marketGate": {
+          "score": 56,
+          "label": "防守观察",
+          "action": "只看回封确认"
+        },
+        "sectorTrendScore": 30,
+        "sectorRankScore": 42,
+        "plateRank": 5,
+        "plateName": "算力",
+        "factorLabels": {
+          "environment": "偏弱",
+          "sector": "偏弱",
+          "leader": "偏弱",
+          "relay": "偏弱",
+          "capacity": "中性",
+          "risk": "偏弱"
+        },
         "tags": [
           {
-            "text": "无梯队",
+            "text": "1进2",
+            "cls": "ladder-chip-cool blue-text"
+          },
+          {
+            "text": "1板",
             "cls": "ladder-chip-cool blue-text"
           },
           {
             "text": "跟风福达合金",
-            "cls": "ladder-chip-cool blue-text"
+            "cls": "ladder-chip-warn orange-text"
           },
           {
-            "text": "1进2",
+            "text": "无梯队",
             "cls": "ladder-chip-warn orange-text"
           },
           {
@@ -4908,14 +5398,6 @@
             "cls": "ladder-chip-warn orange-text"
           },
           {
-            "text": "1板",
-            "cls": "ladder-chip-cool blue-text"
-          },
-          {
-            "text": "封单1.21亿",
-            "cls": "ladder-chip-warn orange-text"
-          },
-          {
             "text": "4次开板",
             "cls": "ladder-chip-warn orange-text"
           },
@@ -4924,24 +5406,104 @@
             "cls": "ladder-chip-cool blue-text"
           },
           {
-            "text": "市值186亿",
+            "text": "封单1.21亿",
             "cls": "ladder-chip-cool blue-text"
-          },
-          {
-            "text": "成交额42.97亿",
-            "cls": "ladder-chip-strong red-text"
           },
           {
             "text": "24.3%换手",
             "cls": "ladder-chip-cool blue-text"
           },
           {
+            "text": "成交额42.97亿",
+            "cls": "ladder-chip-cool blue-text"
+          },
+          {
+            "text": "市值186亿",
+            "cls": "ladder-chip-cool blue-text"
+          },
+          {
             "text": "算力",
-            "cls": ""
+            "cls": "ladder-chip-cool blue-text"
           }
         ],
-        "reason": "<span class=\"reason-bits\">板块归属：算力 · 1进2生态61分 · 高度压制 · 题材转弱 · 断板风险高 · 成交额>10亿 · 分歧偏大</span><div class=\"exp-wrap\"><div class=\"exp-row\"><span class=\"exp-pill pill-pre\">预期</span>低开（-4%~-1%）</div><div class=\"exp-row\"><span class=\"exp-pill pill-hi\">超预期</span>高开≥-1% + 回封后封单≥0.42亿（≈今1.21亿×35%） + 竞价成交额≥1.93亿</div><div class=\"exp-row\"><span class=\"exp-pill pill-lo\">低预期</span>低开≤-4% 或 开板继续放大</div></div>",
-        "watchRank": 87
+        "tagRows": [
+          {
+            "tone": "red",
+            "tags": []
+          },
+          {
+            "tone": "orange",
+            "tags": [
+              {
+                "text": "跟风福达合金",
+                "cls": "ladder-chip-warn orange-text"
+              },
+              {
+                "text": "无梯队",
+                "cls": "ladder-chip-warn orange-text"
+              },
+              {
+                "text": "高度压制",
+                "cls": "ladder-chip-warn orange-text"
+              },
+              {
+                "text": "题材转弱",
+                "cls": "ladder-chip-warn orange-text"
+              },
+              {
+                "text": "断板风险高",
+                "cls": "ladder-chip-warn orange-text"
+              },
+              {
+                "text": "4次开板",
+                "cls": "ladder-chip-warn orange-text"
+              }
+            ]
+          },
+          {
+            "tone": "blue",
+            "tags": [
+              {
+                "text": "1进2",
+                "cls": "ladder-chip-cool blue-text"
+              },
+              {
+                "text": "1板",
+                "cls": "ladder-chip-cool blue-text"
+              },
+              {
+                "text": "首封14:16",
+                "cls": "ladder-chip-cool blue-text"
+              },
+              {
+                "text": "封单1.21亿",
+                "cls": "ladder-chip-cool blue-text"
+              },
+              {
+                "text": "24.3%换手",
+                "cls": "ladder-chip-cool blue-text"
+              },
+              {
+                "text": "成交额42.97亿",
+                "cls": "ladder-chip-cool blue-text"
+              },
+              {
+                "text": "市值186亿",
+                "cls": "ladder-chip-cool blue-text"
+              },
+              {
+                "text": "算力",
+                "cls": "ladder-chip-cool blue-text"
+              }
+            ]
+          }
+        ],
+        "reason": "<span class=\"reason-bits\">板块归属：算力 · 高度压制 · 题材转弱 · 断板风险高 · 成交额>10亿 · 分歧偏大</span><div class=\"exp-wrap\"><div class=\"exp-row\"><span class=\"exp-pill pill-pre\">预期</span>低开（-4%~-1%）</div><div class=\"exp-row\"><span class=\"exp-pill pill-hi\">超预期</span>高开≥-1% + 回封后封单≥0.42亿（≈今1.21亿×35%） + 竞价成交额≥1.93亿</div><div class=\"exp-row\"><span class=\"exp-pill pill-lo\">低预期</span>低开≤-4% 或 开板继续放大</div></div>",
+        "factorRank": 97,
+        "watchRank": 5,
+        "watchGroup": "风险观察",
+        "scoreLabel": "观察因子",
+        "scoreSubLabel": "风险观察 · 只观察"
       },
       {
         "name": "汇绿生态",
@@ -4957,19 +5519,63 @@
         "qualityScore": 48.24727713614035,
         "nextStep": "1进2",
         "stepRate": 26.3,
-        "stepContextScore": 62,
-        "promoEcology": 56,
-        "heightContextScore": 50,
-        "breakRisk": 67,
+        "stepContextScore": 55,
+        "promoEcology": 47,
+        "heightContextScore": 39,
+        "environmentScore": 56,
+        "leaderFactorScore": 45,
+        "relayFactorScore": 50,
+        "capacityFactorScore": 78,
+        "riskControlScore": 25,
+        "breakRisk": 90,
         "themePersistScore": 0,
-        "score": 13,
+        "score": 40,
+        "factorScore": 40,
+        "factorBreakdown": {
+          "environment": 56,
+          "market": 74,
+          "themeEnv": 100,
+          "marketGate": -10,
+          "sector": 42,
+          "leader": 45,
+          "relay": 50,
+          "capacity": 78,
+          "risk": 25,
+          "opportunity": 56,
+          "edge": 0
+        },
+        "factorHint": "环境56(防守观察) / 板块42 / 龙头45 / 接力50 / 容量78 / 风险25 / 只观察",
+        "scoreBand": "只观察",
+        "scoreBandTone": "cool",
+        "scoreAction": "不主动接力",
+        "marketGate": {
+          "score": 56,
+          "label": "防守观察",
+          "action": "只看回封确认"
+        },
+        "sectorTrendScore": 21,
+        "sectorRankScore": 42,
+        "plateRank": 0,
+        "plateName": "",
+        "factorLabels": {
+          "environment": "偏弱",
+          "sector": "偏弱",
+          "leader": "偏弱",
+          "relay": "偏弱",
+          "capacity": "偏强",
+          "risk": "偏弱"
+        },
         "tags": [
           {
-            "text": "题材待确认",
+            "text": "1进2",
             "cls": "ladder-chip-cool blue-text"
           },
           {
-            "text": "1进2",
+            "text": "1板",
+            "cls": "ladder-chip-cool blue-text"
+          },
+          {
+            "text": "题材待确认",
             "cls": "ladder-chip-warn orange-text"
           },
           {
@@ -4977,15 +5583,15 @@
             "cls": "ladder-chip-warn orange-text"
           },
           {
-            "text": "1板",
-            "cls": "ladder-chip-cool blue-text"
-          },
-          {
-            "text": "封单0.95亿",
-            "cls": "ladder-chip-cool blue-text"
+            "text": "断板风险高",
+            "cls": "ladder-chip-warn orange-text"
           },
           {
             "text": "2次开板",
+            "cls": "ladder-chip-warn orange-text"
+          },
+          {
+            "text": "温和放量",
             "cls": "ladder-chip-cool blue-text"
           },
           {
@@ -4993,100 +5599,168 @@
             "cls": "ladder-chip-cool blue-text"
           },
           {
-            "text": "市值490亿",
+            "text": "封单0.95亿",
+            "cls": "ladder-chip-cool blue-text"
+          },
+          {
+            "text": "9.6%换手",
             "cls": "ladder-chip-cool blue-text"
           },
           {
             "text": "成交额34.66亿",
-            "cls": "ladder-chip-strong red-text"
+            "cls": "ladder-chip-cool blue-text"
           },
           {
-            "text": "9.6%换手",
-            "cls": "ladder-chip-warn orange-text"
-          },
-          {
-            "text": "温和放量",
-            "cls": "ladder-chip-strong red-text"
+            "text": "市值490亿",
+            "cls": "ladder-chip-cool blue-text"
           },
           {
             "text": "通信设备×6",
-            "cls": ""
+            "cls": "ladder-chip-cool blue-text"
           }
         ],
-        "reason": "<span class=\"reason-bits\">1进2生态61分 · 高度压制 · 成交额>10亿 · 温和放量</span><div class=\"exp-wrap\"><div class=\"exp-row\"><span class=\"exp-pill pill-pre\">预期</span>平开（-1%~+1%）</div><div class=\"exp-row\"><span class=\"exp-pill pill-hi\">超预期</span>高开≥+1% + 竞价成交额≥1.56亿（≈今34.66亿×5%） + 开板≤1</div><div class=\"exp-row\"><span class=\"exp-pill pill-lo\">低预期</span>低于-1% 或 竞价量能<1.09亿</div></div>",
-        "watchRank": 85
+        "tagRows": [
+          {
+            "tone": "red",
+            "tags": []
+          },
+          {
+            "tone": "orange",
+            "tags": [
+              {
+                "text": "题材待确认",
+                "cls": "ladder-chip-warn orange-text"
+              },
+              {
+                "text": "高度压制",
+                "cls": "ladder-chip-warn orange-text"
+              },
+              {
+                "text": "断板风险高",
+                "cls": "ladder-chip-warn orange-text"
+              },
+              {
+                "text": "2次开板",
+                "cls": "ladder-chip-warn orange-text"
+              }
+            ]
+          },
+          {
+            "tone": "blue",
+            "tags": [
+              {
+                "text": "1进2",
+                "cls": "ladder-chip-cool blue-text"
+              },
+              {
+                "text": "1板",
+                "cls": "ladder-chip-cool blue-text"
+              },
+              {
+                "text": "温和放量",
+                "cls": "ladder-chip-cool blue-text"
+              },
+              {
+                "text": "首封13:09",
+                "cls": "ladder-chip-cool blue-text"
+              },
+              {
+                "text": "封单0.95亿",
+                "cls": "ladder-chip-cool blue-text"
+              },
+              {
+                "text": "9.6%换手",
+                "cls": "ladder-chip-cool blue-text"
+              },
+              {
+                "text": "成交额34.66亿",
+                "cls": "ladder-chip-cool blue-text"
+              },
+              {
+                "text": "市值490亿",
+                "cls": "ladder-chip-cool blue-text"
+              },
+              {
+                "text": "通信设备×6",
+                "cls": "ladder-chip-cool blue-text"
+              }
+            ]
+          }
+        ],
+        "reason": "<span class=\"reason-bits\">高度压制 · 断板风险高 · 成交额>10亿 · 温和放量</span><div class=\"exp-wrap\"><div class=\"exp-row\"><span class=\"exp-pill pill-pre\">预期</span>低开（-4%~-1%）</div><div class=\"exp-row\"><span class=\"exp-pill pill-hi\">超预期</span>高开≥-1% + 竞价成交额≥1.56亿（≈今34.66亿×5%） + 开板≤1</div><div class=\"exp-row\"><span class=\"exp-pill pill-lo\">低预期</span>低于-4% 或 竞价量能<1.09亿</div></div>",
+        "factorRank": 78,
+        "watchRank": 6,
+        "watchGroup": "风险观察",
+        "scoreLabel": "观察因子",
+        "scoreSubLabel": "风险观察 · 只观察"
       },
       {
-        "name": "航天发展",
-        "code": "000547",
-        "lbc": 1,
-        "hy": "军工电子",
-        "fundYi": 5.55436003,
-        "open": 0,
-        "predTheme": "华为概念",
+        "name": "通鼎互联",
+        "code": "002491",
+        "lbc": 2,
+        "hy": "通信设备",
+        "fundYi": 1.68714869,
+        "open": 2,
+        "predTheme": "5G",
         "hasTier": true,
-        "cjeYi": 64.84442368,
-        "qualityLabel": "",
-        "qualityScore": 77.41389728096676,
-        "nextStep": "1进2",
-        "stepRate": 26.3,
-        "stepContextScore": 62,
-        "promoEcology": 56,
-        "heightContextScore": 50,
-        "breakRisk": 57,
-        "themePersistScore": 91,
-        "score": 89,
+        "cjeYi": 23.61947008,
+        "qualityLabel": "常规封板",
+        "qualityScore": 68.0,
+        "nextStep": "2进3",
+        "stepRate": 25.0,
+        "stepContextScore": 58,
+        "promoEcology": 47,
+        "heightContextScore": 39,
+        "environmentScore": 56,
+        "leaderFactorScore": 49,
+        "relayFactorScore": 58,
+        "capacityFactorScore": 85,
+        "riskControlScore": 33,
+        "breakRisk": 80,
+        "themePersistScore": 83,
+        "score": 50,
+        "factorScore": 50,
+        "factorBreakdown": {
+          "environment": 56,
+          "market": 74,
+          "themeEnv": 100,
+          "marketGate": -10,
+          "sector": 75,
+          "leader": 49,
+          "relay": 58,
+          "capacity": 85,
+          "risk": 33,
+          "opportunity": 81,
+          "edge": -2
+        },
+        "factorHint": "环境56(防守观察) / 板块75 / 龙头49 / 接力58 / 容量85 / 风险33 / 只观察",
+        "scoreBand": "只观察",
+        "scoreBandTone": "cool",
+        "scoreAction": "不主动接力",
+        "marketGate": {
+          "score": 56,
+          "label": "防守观察",
+          "action": "只看回封确认"
+        },
+        "sectorTrendScore": 77,
+        "sectorRankScore": 70,
+        "plateRank": 2,
+        "plateName": "通信",
+        "factorLabels": {
+          "environment": "偏弱",
+          "sector": "偏强",
+          "leader": "偏弱",
+          "relay": "中性",
+          "capacity": "强",
+          "risk": "偏弱"
+        },
         "tags": [
           {
-            "text": "主线",
+            "text": "2进3",
             "cls": "ladder-chip-strong red-text"
           },
           {
-            "text": "有梯队",
-            "cls": "ladder-chip-warn orange-text"
-          },
-          {
-            "text": "跟风泰晶科技",
-            "cls": "ladder-chip-cool blue-text"
-          },
-          {
-            "text": "1进2",
-            "cls": "ladder-chip-warn orange-text"
-          },
-          {
-            "text": "高度压制",
-            "cls": "ladder-chip-warn orange-text"
-          },
-          {
-            "text": "题材持续",
-            "cls": "ladder-chip-strong red-text"
-          },
-          {
-            "text": "1板",
-            "cls": "ladder-chip-cool blue-text"
-          },
-          {
-            "text": "封单5.55亿",
-            "cls": "ladder-chip-strong red-text"
-          },
-          {
-            "text": "未开",
-            "cls": "ladder-chip-cool blue-text"
-          },
-          {
-            "text": "首封13:52",
-            "cls": "ladder-chip-cool blue-text"
-          },
-          {
-            "text": "市值441亿",
-            "cls": "ladder-chip-cool blue-text"
-          },
-          {
-            "text": "成交额64.84亿",
-            "cls": "ladder-chip-strong red-text"
-          },
-          {
-            "text": "15.5%换手",
+            "text": "2板",
             "cls": "ladder-chip-cool blue-text"
           },
           {
@@ -5094,123 +5768,389 @@
             "cls": "ladder-chip-strong red-text"
           },
           {
+            "text": "跟风福达合金",
+            "cls": "ladder-chip-warn orange-text"
+          },
+          {
+            "text": "高度压制",
+            "cls": "ladder-chip-warn orange-text"
+          },
+          {
+            "text": "断板风险高",
+            "cls": "ladder-chip-warn orange-text"
+          },
+          {
+            "text": "2次开板",
+            "cls": "ladder-chip-warn orange-text"
+          },
+          {
+            "text": "温和放量",
+            "cls": "ladder-chip-cool blue-text"
+          },
+          {
+            "text": "常规封板",
+            "cls": "ladder-chip-cool blue-text"
+          },
+          {
+            "text": "首封09:32",
+            "cls": "ladder-chip-cool blue-text"
+          },
+          {
+            "text": "量价共振",
+            "cls": "ladder-chip-cool blue-text"
+          },
+          {
             "text": "题材发散",
+            "cls": "ladder-chip-cool blue-text"
+          },
+          {
+            "text": "封单1.69亿",
+            "cls": "ladder-chip-cool blue-text"
+          },
+          {
+            "text": "9.8%换手",
+            "cls": "ladder-chip-cool blue-text"
+          },
+          {
+            "text": "成交额23.62亿",
+            "cls": "ladder-chip-cool blue-text"
+          },
+          {
+            "text": "市值254亿",
+            "cls": "ladder-chip-cool blue-text"
+          },
+          {
+            "text": "5G",
+            "cls": "ladder-chip-cool blue-text"
+          },
+          {
+            "text": "储能",
+            "cls": "ladder-chip-cool blue-text"
+          }
+        ],
+        "tagRows": [
+          {
+            "tone": "red",
+            "tags": [
+              {
+                "text": "2进3",
+                "cls": "ladder-chip-strong red-text"
+              },
+              {
+                "text": "极强主线",
+                "cls": "ladder-chip-strong red-text"
+              }
+            ]
+          },
+          {
+            "tone": "orange",
+            "tags": [
+              {
+                "text": "跟风福达合金",
+                "cls": "ladder-chip-warn orange-text"
+              },
+              {
+                "text": "高度压制",
+                "cls": "ladder-chip-warn orange-text"
+              },
+              {
+                "text": "断板风险高",
+                "cls": "ladder-chip-warn orange-text"
+              },
+              {
+                "text": "2次开板",
+                "cls": "ladder-chip-warn orange-text"
+              }
+            ]
+          },
+          {
+            "tone": "blue",
+            "tags": [
+              {
+                "text": "2板",
+                "cls": "ladder-chip-cool blue-text"
+              },
+              {
+                "text": "温和放量",
+                "cls": "ladder-chip-cool blue-text"
+              },
+              {
+                "text": "常规封板",
+                "cls": "ladder-chip-cool blue-text"
+              },
+              {
+                "text": "首封09:32",
+                "cls": "ladder-chip-cool blue-text"
+              },
+              {
+                "text": "量价共振",
+                "cls": "ladder-chip-cool blue-text"
+              },
+              {
+                "text": "题材发散",
+                "cls": "ladder-chip-cool blue-text"
+              },
+              {
+                "text": "封单1.69亿",
+                "cls": "ladder-chip-cool blue-text"
+              },
+              {
+                "text": "9.8%换手",
+                "cls": "ladder-chip-cool blue-text"
+              },
+              {
+                "text": "成交额23.62亿",
+                "cls": "ladder-chip-cool blue-text"
+              },
+              {
+                "text": "市值254亿",
+                "cls": "ladder-chip-cool blue-text"
+              },
+              {
+                "text": "5G",
+                "cls": "ladder-chip-cool blue-text"
+              },
+              {
+                "text": "储能",
+                "cls": "ladder-chip-cool blue-text"
+              }
+            ]
+          }
+        ],
+        "reason": "<span class=\"reason-bits\">封板质量：常规封板 · 早封 · 板块归属：5G、储能 · 梯队+跟风 · 高度压制 · 题材持续 · 断板风险高 · 梯队内有辨识度 · 成交额>10亿 · 温和放量 · 题材联动 · 极强主线(板块净强≥12) · 量价共振(温和放量+强板块)</span><div class=\"exp-wrap\"><div class=\"exp-row\"><span class=\"exp-pill pill-pre\">预期</span>低开（-2%~+0%）</div><div class=\"exp-row\"><span class=\"exp-pill pill-hi\">超预期</span>高开≥+0% + 竞价成交额≥1.06亿（≈今23.62亿×5%） + 开板≤1</div><div class=\"exp-row\"><span class=\"exp-pill pill-lo\">低预期</span>低于-2% 或 竞价量能<0.74亿</div></div>",
+        "factorRank": 15,
+        "watchRank": 7,
+        "watchGroup": "风险观察",
+        "scoreLabel": "观察因子",
+        "scoreSubLabel": "风险观察 · 只观察"
+      },
+      {
+        "name": "北部湾港",
+        "code": "000582",
+        "lbc": 1,
+        "hy": "航运港口",
+        "fundYi": 0.45239087,
+        "open": 5,
+        "predTheme": "华为概念",
+        "hasTier": true,
+        "cjeYi": 13.69663232,
+        "qualityLabel": "",
+        "qualityScore": 52.09366907875525,
+        "nextStep": "1进2",
+        "stepRate": 26.3,
+        "stepContextScore": 55,
+        "promoEcology": 47,
+        "heightContextScore": 39,
+        "environmentScore": 56,
+        "leaderFactorScore": 44,
+        "relayFactorScore": 49,
+        "capacityFactorScore": 73,
+        "riskControlScore": 13,
+        "breakRisk": 88,
+        "themePersistScore": 91,
+        "score": 45,
+        "factorScore": 45,
+        "factorBreakdown": {
+          "environment": 56,
+          "market": 74,
+          "themeEnv": 100,
+          "marketGate": -10,
+          "sector": 84,
+          "leader": 44,
+          "relay": 49,
+          "capacity": 73,
+          "risk": 13,
+          "opportunity": 81,
+          "edge": -3
+        },
+        "factorHint": "环境56(防守观察) / 板块84 / 龙头44 / 接力49 / 容量73 / 风险13 / 只观察",
+        "scoreBand": "只观察",
+        "scoreBandTone": "cool",
+        "scoreAction": "不主动接力",
+        "marketGate": {
+          "score": 56,
+          "label": "防守观察",
+          "action": "只看回封确认"
+        },
+        "sectorTrendScore": 82,
+        "sectorRankScore": 92,
+        "plateRank": 0,
+        "plateName": "",
+        "factorLabels": {
+          "environment": "偏弱",
+          "sector": "强",
+          "leader": "偏弱",
+          "relay": "偏弱",
+          "capacity": "偏强",
+          "risk": "偏弱"
+        },
+        "tags": [
+          {
+            "text": "1进2",
+            "cls": "ladder-chip-cool blue-text"
+          },
+          {
+            "text": "1板",
+            "cls": "ladder-chip-cool blue-text"
+          },
+          {
+            "text": "极强主线",
+            "cls": "ladder-chip-strong red-text"
+          },
+          {
+            "text": "跟风泰晶科技",
+            "cls": "ladder-chip-warn orange-text"
+          },
+          {
+            "text": "高度压制",
+            "cls": "ladder-chip-warn orange-text"
+          },
+          {
+            "text": "断板风险高",
+            "cls": "ladder-chip-warn orange-text"
+          },
+          {
+            "text": "5次开板",
+            "cls": "ladder-chip-warn orange-text"
+          },
+          {
+            "text": "温和放量",
+            "cls": "ladder-chip-cool blue-text"
+          },
+          {
+            "text": "首封09:36",
+            "cls": "ladder-chip-cool blue-text"
+          },
+          {
+            "text": "量价共振",
+            "cls": "ladder-chip-cool blue-text"
+          },
+          {
+            "text": "题材发散",
+            "cls": "ladder-chip-cool blue-text"
+          },
+          {
+            "text": "封单0.45亿",
+            "cls": "ladder-chip-cool blue-text"
+          },
+          {
+            "text": "4.7%换手",
+            "cls": "ladder-chip-cool blue-text"
+          },
+          {
+            "text": "成交额13.70亿",
+            "cls": "ladder-chip-cool blue-text"
+          },
+          {
+            "text": "市值344亿",
             "cls": "ladder-chip-cool blue-text"
           },
           {
             "text": "华为概念",
-            "cls": "ladder-chip-warn orange-text"
+            "cls": "ladder-chip-cool blue-text"
           },
           {
-            "text": "航天军工",
-            "cls": "ladder-chip-warn orange-text"
+            "text": "国资改革",
+            "cls": "ladder-chip-cool blue-text"
           }
         ],
-        "reason": "<span class=\"reason-bits\">封单偏强 · 开板少/封板稳 · 板块归属：华为概念、航天军工 · 主线加成 · 梯队+跟风 · 1进2生态61分 · 高度压制 · 题材持续 · 成交额>10亿 · 题材联动 · 极强主线(板块净强≥12)</span><div class=\"exp-wrap\"><div class=\"exp-row\"><span class=\"exp-pill pill-pre\">预期</span>高开（+2%~+5%）</div><div class=\"exp-row\"><span class=\"exp-pill pill-hi\">超预期</span>高开≥+5% + 竞价成交额≥5.19亿（≈今64.84亿×8%） + 开板≤1</div><div class=\"exp-row\"><span class=\"exp-pill pill-lo\">低预期</span>低于+2% 或 竞价量能<3.63亿</div></div>",
-        "watchRank": 83
-      },
-      {
-        "name": "五洲新春",
-        "code": "603667",
-        "lbc": 1,
-        "hy": "通用设备",
-        "fundYi": 1.8031466,
-        "open": 0,
-        "predTheme": "新能源车",
-        "hasTier": true,
-        "cjeYi": 28.87365872,
-        "qualityLabel": "",
-        "qualityScore": 75.26806531728403,
-        "nextStep": "1进2",
-        "stepRate": 26.3,
-        "stepContextScore": 62,
-        "promoEcology": 56,
-        "heightContextScore": 50,
-        "breakRisk": 57,
-        "themePersistScore": 91,
-        "score": 86,
-        "tags": [
+        "tagRows": [
           {
-            "text": "有梯队",
-            "cls": "ladder-chip-warn orange-text"
+            "tone": "red",
+            "tags": [
+              {
+                "text": "极强主线",
+                "cls": "ladder-chip-strong red-text"
+              }
+            ]
           },
           {
-            "text": "跟风福达合金",
-            "cls": "ladder-chip-cool blue-text"
+            "tone": "orange",
+            "tags": [
+              {
+                "text": "跟风泰晶科技",
+                "cls": "ladder-chip-warn orange-text"
+              },
+              {
+                "text": "高度压制",
+                "cls": "ladder-chip-warn orange-text"
+              },
+              {
+                "text": "断板风险高",
+                "cls": "ladder-chip-warn orange-text"
+              },
+              {
+                "text": "5次开板",
+                "cls": "ladder-chip-warn orange-text"
+              }
+            ]
           },
           {
-            "text": "1进2",
-            "cls": "ladder-chip-warn orange-text"
-          },
-          {
-            "text": "高度压制",
-            "cls": "ladder-chip-warn orange-text"
-          },
-          {
-            "text": "题材持续",
-            "cls": "ladder-chip-strong red-text"
-          },
-          {
-            "text": "1板",
-            "cls": "ladder-chip-cool blue-text"
-          },
-          {
-            "text": "封单1.80亿",
-            "cls": "ladder-chip-warn orange-text"
-          },
-          {
-            "text": "未开",
-            "cls": "ladder-chip-cool blue-text"
-          },
-          {
-            "text": "首封10:15",
-            "cls": "ladder-chip-strong red-text"
-          },
-          {
-            "text": "市值300亿",
-            "cls": "ladder-chip-cool blue-text"
-          },
-          {
-            "text": "成交额28.87亿",
-            "cls": "ladder-chip-strong red-text"
-          },
-          {
-            "text": "10.4%换手",
-            "cls": "ladder-chip-warn orange-text"
-          },
-          {
-            "text": "温和放量",
-            "cls": "ladder-chip-strong red-text"
-          },
-          {
-            "text": "极强主线",
-            "cls": "ladder-chip-strong red-text"
-          },
-          {
-            "text": "量价共振",
-            "cls": "ladder-chip-strong red-text"
-          },
-          {
-            "text": "题材发散",
-            "cls": "ladder-chip-cool blue-text"
-          },
-          {
-            "text": "新能源车",
-            "cls": "ladder-chip-warn orange-text"
-          },
-          {
-            "text": "机器人概念",
-            "cls": "ladder-chip-warn orange-text"
+            "tone": "blue",
+            "tags": [
+              {
+                "text": "1进2",
+                "cls": "ladder-chip-cool blue-text"
+              },
+              {
+                "text": "1板",
+                "cls": "ladder-chip-cool blue-text"
+              },
+              {
+                "text": "温和放量",
+                "cls": "ladder-chip-cool blue-text"
+              },
+              {
+                "text": "首封09:36",
+                "cls": "ladder-chip-cool blue-text"
+              },
+              {
+                "text": "量价共振",
+                "cls": "ladder-chip-cool blue-text"
+              },
+              {
+                "text": "题材发散",
+                "cls": "ladder-chip-cool blue-text"
+              },
+              {
+                "text": "封单0.45亿",
+                "cls": "ladder-chip-cool blue-text"
+              },
+              {
+                "text": "4.7%换手",
+                "cls": "ladder-chip-cool blue-text"
+              },
+              {
+                "text": "成交额13.70亿",
+                "cls": "ladder-chip-cool blue-text"
+              },
+              {
+                "text": "市值344亿",
+                "cls": "ladder-chip-cool blue-text"
+              },
+              {
+                "text": "华为概念",
+                "cls": "ladder-chip-cool blue-text"
+              },
+              {
+                "text": "国资改革",
+                "cls": "ladder-chip-cool blue-text"
+              }
+            ]
           }
         ],
-        "reason": "<span class=\"reason-bits\">开板少/封板稳 · 早封 · 板块归属：新能源车、机器人概念 · 梯队+跟风 · 1进2生态61分 · 高度压制 · 题材持续 · 成交额>10亿 · 温和放量 · 题材联动 · 极强主线(板块净强≥12) · 量价共振(温和放量+强板块)</span><div class=\"exp-wrap\"><div class=\"exp-row\"><span class=\"exp-pill pill-pre\">预期</span>高开（+2%~+5%）</div><div class=\"exp-row\"><span class=\"exp-pill pill-hi\">超预期</span>高开≥+5% + 竞价成交额≥2.31亿（≈今28.87亿×8%） + 开板≤1</div><div class=\"exp-row\"><span class=\"exp-pill pill-lo\">低预期</span>低于+2% 或 竞价量能<1.62亿</div></div>",
-        "watchRank": 82
+        "reason": "<span class=\"reason-bits\">早封 · 板块归属：华为概念、国资改革 · 主线加成 · 梯队+跟风 · 高度压制 · 题材持续 · 断板风险高 · 成交额>10亿 · 温和放量 · 题材联动 · 极强主线(板块净强≥12) · 量价共振(温和放量+强板块) · 分歧偏大</span><div class=\"exp-wrap\"><div class=\"exp-row\"><span class=\"exp-pill pill-pre\">预期</span>低开（-2%~+0%）</div><div class=\"exp-row\"><span class=\"exp-pill pill-hi\">超预期</span>高开≥+0% + 回封后封单≥0.16亿（≈今0.45亿×35%） + 竞价成交额≥0.62亿</div><div class=\"exp-row\"><span class=\"exp-pill pill-lo\">低预期</span>低开≤-2% 或 开板继续放大</div></div>",
+        "factorRank": 50,
+        "watchRank": 8,
+        "watchGroup": "风险观察",
+        "scoreLabel": "观察因子",
+        "scoreSubLabel": "风险观察 · 只观察"
       }
     ]
   },
   "intradaySnapshots": {
     "date": "2026-05-10",
-    "count": 25,
+    "count": 28,
     "snapshots": [
       {
         "time": "10:56:29",
@@ -6253,6 +7193,156 @@
         "shift_score": 67,
         "shift_label": "修复",
         "note": "情绪整体平稳，维持当前节奏。"
+      },
+      {
+        "time": "22:54:54",
+        "ts_bj": "2026-05-10 22:54:54",
+        "date": "2026-05-10",
+        "source": "intraday_live",
+        "provider": "fetch",
+        "zt": 98,
+        "dt": 2,
+        "zab": 17,
+        "zb": 14.8,
+        "fb": 85.2,
+        "jj": 18.4,
+        "lianban": 18,
+        "max_lb": 4,
+        "bf": 0,
+        "heat": 65,
+        "risk": 19,
+        "headline": "修复",
+        "concepts": [
+          {
+            "name": "机器人概念",
+            "lead": "大业股份",
+            "chg_pct": null
+          },
+          {
+            "name": "通信",
+            "lead": "杭电股份",
+            "chg_pct": null
+          },
+          {
+            "name": "商业航天",
+            "lead": "大业股份",
+            "chg_pct": null
+          },
+          {
+            "name": "ST板块",
+            "lead": "*ST宇顺",
+            "chg_pct": null
+          },
+          {
+            "name": "算力",
+            "lead": "福达合金",
+            "chg_pct": null
+          }
+        ],
+        "alerts": [],
+        "shift_score": 67,
+        "shift_label": "修复",
+        "note": "情绪整体平稳，维持当前节奏。"
+      },
+      {
+        "time": "23:12:17",
+        "ts_bj": "2026-05-10 23:12:17",
+        "date": "2026-05-10",
+        "source": "intraday_live",
+        "provider": "fetch",
+        "zt": 98,
+        "dt": 2,
+        "zab": 17,
+        "zb": 14.8,
+        "fb": 85.2,
+        "jj": 18.4,
+        "lianban": 18,
+        "max_lb": 4,
+        "bf": 0,
+        "heat": 65,
+        "risk": 19,
+        "headline": "修复",
+        "concepts": [
+          {
+            "name": "机器人概念",
+            "lead": "大业股份",
+            "chg_pct": null
+          },
+          {
+            "name": "通信",
+            "lead": "杭电股份",
+            "chg_pct": null
+          },
+          {
+            "name": "商业航天",
+            "lead": "大业股份",
+            "chg_pct": null
+          },
+          {
+            "name": "ST板块",
+            "lead": "*ST宇顺",
+            "chg_pct": null
+          },
+          {
+            "name": "算力",
+            "lead": "福达合金",
+            "chg_pct": null
+          }
+        ],
+        "alerts": [],
+        "shift_score": 67,
+        "shift_label": "修复",
+        "note": "情绪整体平稳，维持当前节奏。"
+      },
+      {
+        "time": "23:22:09",
+        "ts_bj": "2026-05-10 23:22:09",
+        "date": "2026-05-10",
+        "source": "intraday_live",
+        "provider": "fetch",
+        "zt": 98,
+        "dt": 2,
+        "zab": 17,
+        "zb": 14.8,
+        "fb": 85.2,
+        "jj": 18.4,
+        "lianban": 18,
+        "max_lb": 4,
+        "bf": 0,
+        "heat": 65,
+        "risk": 19,
+        "headline": "修复",
+        "concepts": [
+          {
+            "name": "机器人概念",
+            "lead": "大业股份",
+            "chg_pct": null
+          },
+          {
+            "name": "通信",
+            "lead": "杭电股份",
+            "chg_pct": null
+          },
+          {
+            "name": "商业航天",
+            "lead": "大业股份",
+            "chg_pct": null
+          },
+          {
+            "name": "ST板块",
+            "lead": "*ST宇顺",
+            "chg_pct": null
+          },
+          {
+            "name": "算力",
+            "lead": "福达合金",
+            "chg_pct": null
+          }
+        ],
+        "alerts": [],
+        "shift_score": 67,
+        "shift_label": "修复",
+        "note": "情绪整体平稳，维持当前节奏。"
       }
     ],
     "simulated": false,
@@ -6576,19 +7666,19 @@
     "lianban": -1,
     "up": -87,
     "down": -60,
-    "heat": 1.0,
-    "risk": -16.0
+    "heat": -6.0,
+    "risk": -2.0
   },
   "actionAdvisor": {
-    "cycle": "亢奋期",
-    "score": 80.0,
-    "heat": 75.0,
-    "risk": 10.0,
-    "posture": "积极试探",
-    "position": "3-5成",
-    "action_line": "今天不只是情绪波动，关键在于修复是否站稳： ⚠️ 断板率73.7%偏高 = 高位承接还不够稳，别把修复当成一致加速 ✅ 跌停从4降到2 = 亏钱效应大幅收窄 ✅ 封板率85% + 连板18只 = 短线资金信心回归 ✅ 晋级率回暖 = 接力链条开始恢复，不再只有首板热闹",
-    "summary": "今天不只是情绪波动，关键在于修复是否站稳：",
-    "posture_line": "姿态：积极试探（3-5成）",
+    "cycle": "发酵·分歧",
+    "score": 71.0,
+    "heat": 68.0,
+    "risk": 24.0,
+    "posture": "控仓试错",
+    "position": "1-2成",
+    "action_line": "修复在延续，但分歧还在，承接在转强、亏钱效应收敛，但高位断板负反馈仍重。次日只做主线核心回封/换手确认，不追高一致。 ⚠️ 断板率73.7%偏高 = 高位承接还不够稳，别把修复当成一致加速 ✅ 跌停从4降到2 = 亏钱效应大幅收窄 ✅ 封板率85% + 连板18只 = 短线资金信心回归 ✅ 晋级率回暖 = 接力链条开始恢复，不再只有首板热闹",
+    "summary": "修复在延续，但分歧还在，承接在转强、亏钱效应收敛，但高位断板负反馈仍重。次日只做主线核心回封/换手确认，不追高一致。",
+    "posture_line": "姿态：控仓试错（1-2成）",
     "evidences": [
       {
         "icon": "⚠️",
@@ -6749,7 +7839,7 @@
     ]
   },
   "sectorHeatmap": {
-    "globalScore": 80,
+    "globalScore": 71,
     "rows": [
       {
         "name": "比亚迪概念",
@@ -8117,244 +9207,244 @@
   ],
   "conceptFundFlowTop": [
     {
+      "name": "国家大基金持股",
+      "index": 2579.78,
+      "chg_pct": 5.05,
+      "inflow": 395.61,
+      "outflow": 346.32,
+      "net": 49.29,
+      "companies": 48,
+      "lead": "江波龙",
+      "lead_chg_pct": 20.0,
+      "price": 481.34
+    },
+    {
       "name": "F5G概念",
-      "index": 4891.05,
-      "chg_pct": 3.13,
-      "inflow": 446.7,
-      "outflow": 418.09,
-      "net": 28.61,
+      "index": 4580.01,
+      "chg_pct": 4.92,
+      "inflow": 287.11,
+      "outflow": 237.24,
+      "net": 49.88,
       "companies": 36,
-      "lead": "东田微",
+      "lead": "仕佳光子",
+      "lead_chg_pct": 17.78,
+      "price": 155.26
+    },
+    {
+      "name": "存储芯片",
+      "index": 2436.77,
+      "chg_pct": 4.88,
+      "inflow": 913.05,
+      "outflow": 827.69,
+      "net": 85.35,
+      "companies": 179,
+      "lead": "大普微",
       "lead_chg_pct": 20.0,
-      "price": 240.4
+      "price": 381.6
     },
     {
-      "name": "减速器",
-      "index": 2197.82,
-      "chg_pct": 3.06,
-      "inflow": 285.64,
-      "outflow": 247.31,
-      "net": 38.34,
-      "companies": 133,
-      "lead": "恒锋工具",
-      "lead_chg_pct": 20.01,
-      "price": 41.56
-    },
-    {
-      "name": "科创次新股",
-      "index": 776.005,
-      "chg_pct": 2.81,
-      "inflow": 89.3,
-      "outflow": 98.16,
-      "net": -8.86,
-      "companies": 23,
-      "lead": "电科蓝天",
-      "lead_chg_pct": 19.99,
-      "price": 85.64
-    },
-    {
-      "name": "新股与次新股",
-      "index": 17683.2,
-      "chg_pct": 2.81,
-      "inflow": 169.87,
-      "outflow": 178.08,
-      "net": -8.22,
-      "companies": 129,
-      "lead": "电科蓝天",
-      "lead_chg_pct": 19.99,
-      "price": 85.64
-    },
-    {
-      "name": "注册制次新股",
-      "index": 218.26,
-      "chg_pct": 2.74,
-      "inflow": 169.87,
-      "outflow": 178.08,
-      "net": -8.22,
-      "companies": 81,
-      "lead": "电科蓝天",
-      "lead_chg_pct": 19.99,
-      "price": 85.64
-    },
-    {
-      "name": "成飞概念",
-      "index": 2093.15,
-      "chg_pct": 2.46,
-      "inflow": 88.11,
-      "outflow": 77.75,
-      "net": 10.36,
-      "companies": 43,
-      "lead": "*ST天宜",
-      "lead_chg_pct": 14.93,
-      "price": 7.93
-    },
-    {
-      "name": "航空发动机",
-      "index": 3869.48,
-      "chg_pct": 2.43,
-      "inflow": 308.74,
-      "outflow": 301.9,
-      "net": 6.84,
-      "companies": 96,
-      "lead": "恒锋工具",
-      "lead_chg_pct": 20.01,
-      "price": 41.56
-    },
-    {
-      "name": "军工信息化",
-      "index": 2026.46,
-      "chg_pct": 2.32,
-      "inflow": 239.44,
-      "outflow": 212.51,
-      "net": 26.93,
-      "companies": 111,
-      "lead": "天微电子",
-      "lead_chg_pct": 11.57,
-      "price": 24.1
-    },
-    {
-      "name": "光纤概念",
-      "index": 3972.74,
-      "chg_pct": 2.28,
-      "inflow": 853.92,
-      "outflow": 873.94,
-      "net": -20.02,
-      "companies": 96,
-      "lead": "昀冢科技",
+      "name": "EDR概念",
+      "index": 1735.37,
+      "chg_pct": 4.83,
+      "inflow": 99.63,
+      "outflow": 71.71,
+      "net": 27.92,
+      "companies": 20,
+      "lead": "江波龙",
       "lead_chg_pct": 20.0,
-      "price": 45.72
+      "price": 481.34
     },
     {
-      "name": "大飞机",
-      "index": 4383.79,
-      "chg_pct": 2.18,
-      "inflow": 425.7,
-      "outflow": 408.09,
-      "net": 17.61,
-      "companies": 152,
-      "lead": "*ST天宜",
-      "lead_chg_pct": 14.93,
-      "price": 7.93
+      "name": "MLOps概念",
+      "index": 1155.23,
+      "chg_pct": 4.71,
+      "inflow": 46.67,
+      "outflow": 36.7,
+      "net": 9.97,
+      "companies": 18,
+      "lead": "东方国信",
+      "lead_chg_pct": 20.01,
+      "price": 18.53
     },
     {
-      "name": "兵装重组概念",
-      "index": 1315.79,
-      "chg_pct": 2.15,
-      "inflow": 6.91,
-      "outflow": 7.44,
-      "net": -0.53,
-      "companies": 14,
-      "lead": "中光学",
-      "lead_chg_pct": 6.23,
-      "price": 24.05
-    },
-    {
-      "name": "卫星导航",
-      "index": 5484.56,
-      "chg_pct": 2.13,
-      "inflow": 1025.88,
-      "outflow": 1000.17,
-      "net": 25.71,
-      "companies": 275,
-      "lead": "电科蓝天",
-      "lead_chg_pct": 19.99,
-      "price": 85.64
+      "name": "太赫兹",
+      "index": 2520.63,
+      "chg_pct": 4.47,
+      "inflow": 125.99,
+      "outflow": 83.67,
+      "net": 42.32,
+      "companies": 21,
+      "lead": "赛微电子",
+      "lead_chg_pct": 16.54,
+      "price": 53.4
     },
     {
       "name": "6G概念",
-      "index": 2815.7,
-      "chg_pct": 2.12,
-      "inflow": 641.31,
-      "outflow": 626.74,
-      "net": 14.57,
-      "companies": 95,
-      "lead": "戈碧迦",
-      "lead_chg_pct": 22.55,
-      "price": 70.1
+      "index": 2689.04,
+      "chg_pct": 4.34,
+      "inflow": 427.37,
+      "outflow": 340.89,
+      "net": 86.48,
+      "companies": 94,
+      "lead": "赛微电子",
+      "lead_chg_pct": 16.54,
+      "price": 53.4
     },
     {
-      "name": "军民融合",
-      "index": 1856.15,
-      "chg_pct": 2.09,
-      "inflow": 594.06,
-      "outflow": 552.22,
-      "net": 41.84,
-      "companies": 245,
-      "lead": "恒锋工具",
+      "name": "华为海思概念股",
+      "index": 4329.12,
+      "chg_pct": 4.27,
+      "inflow": 167.28,
+      "outflow": 150.78,
+      "net": 16.5,
+      "companies": 50,
+      "lead": "卓易信息",
+      "lead_chg_pct": 20.0,
+      "price": 144.49
+    },
+    {
+      "name": "算力租赁",
+      "index": 1646.68,
+      "chg_pct": 4.08,
+      "inflow": 507.55,
+      "outflow": 405.45,
+      "net": 102.1,
+      "companies": 176,
+      "lead": "东方国信",
       "lead_chg_pct": 20.01,
-      "price": 41.56
+      "price": 18.53
     },
     {
-      "name": "摘帽",
-      "index": 1094.56,
-      "chg_pct": 2.08,
-      "inflow": 112.41,
-      "outflow": 118.46,
-      "net": -6.05,
-      "companies": 46,
-      "lead": "天微电子",
-      "lead_chg_pct": 11.57,
-      "price": 24.1
+      "name": "英伟达概念",
+      "index": 1914.73,
+      "chg_pct": 4.07,
+      "inflow": 390.04,
+      "outflow": 328.23,
+      "net": 61.8,
+      "companies": 78,
+      "lead": "大普微",
+      "lead_chg_pct": 20.0,
+      "price": 381.6
     },
     {
-      "name": "人形机器人",
-      "index": 2730.98,
-      "chg_pct": 2.07,
-      "inflow": 1426.02,
-      "outflow": 1420.65,
-      "net": 5.36,
-      "companies": 434,
-      "lead": "恒锋工具",
+      "name": "共封装光学(CPO)",
+      "index": 5726.47,
+      "chg_pct": 3.99,
+      "inflow": 1107.29,
+      "outflow": 976.05,
+      "net": 131.24,
+      "companies": 169,
+      "lead": "泰金新能",
+      "lead_chg_pct": 20.0,
+      "price": 110.88
+    },
+    {
+      "name": "快手概念",
+      "index": 2175.6,
+      "chg_pct": 3.98,
+      "inflow": 108.06,
+      "outflow": 78.01,
+      "net": 30.05,
+      "companies": 50,
+      "lead": "大普微",
+      "lead_chg_pct": 20.0,
+      "price": 381.6
+    },
+    {
+      "name": "先进封装",
+      "index": 2443.69,
+      "chg_pct": 3.98,
+      "inflow": 722.99,
+      "outflow": 623.79,
+      "net": 99.2,
+      "companies": 167,
+      "lead": "瑞华泰",
       "lead_chg_pct": 20.01,
-      "price": 41.56
+      "price": 28.79
     },
     {
-      "name": "国产航母",
-      "index": 2445.27,
-      "chg_pct": 2.06,
-      "inflow": 138.02,
-      "outflow": 116.0,
-      "net": 22.02,
-      "companies": 36,
-      "lead": "贵绳股份",
-      "lead_chg_pct": 10.03,
-      "price": 12.51
+      "name": "科创次新股",
+      "index": 734.159,
+      "chg_pct": 3.96,
+      "inflow": 54.75,
+      "outflow": 59.87,
+      "net": -5.12,
+      "companies": 23,
+      "lead": "泰金新能",
+      "lead_chg_pct": 20.0,
+      "price": 110.88
     },
     {
-      "name": "工业母机",
-      "index": 2228.51,
-      "chg_pct": 2.06,
-      "inflow": 298.56,
-      "outflow": 304.49,
-      "net": -5.92,
-      "companies": 111,
-      "lead": "恒锋工具",
+      "name": "华为昇腾",
+      "index": 1810.51,
+      "chg_pct": 3.92,
+      "inflow": 201.82,
+      "outflow": 160.44,
+      "net": 41.38,
+      "companies": 105,
+      "lead": "东方国信",
       "lead_chg_pct": 20.01,
-      "price": 41.56
+      "price": 18.53
     },
     {
-      "name": "汽车热管理",
-      "index": 2436.17,
-      "chg_pct": 2.06,
-      "inflow": 313.86,
-      "outflow": 303.41,
-      "net": 10.45,
-      "companies": 137,
-      "lead": "精锻科技",
-      "lead_chg_pct": 19.97,
-      "price": 14.06
+      "name": "汽车芯片",
+      "index": 1414.06,
+      "chg_pct": 3.73,
+      "inflow": 581.23,
+      "outflow": 523.22,
+      "net": 58.0,
+      "companies": 140,
+      "lead": "朗科科技",
+      "lead_chg_pct": 19.99,
+      "price": 62.72
     },
     {
-      "name": "赛马概念",
-      "index": 1399.9,
-      "chg_pct": 1.98,
-      "inflow": 6.02,
-      "outflow": 6.83,
-      "net": -0.81,
-      "companies": 4,
-      "lead": "*ST正平",
-      "lead_chg_pct": 5.03,
-      "price": 9.4
+      "name": "光纤概念",
+      "index": 3731.59,
+      "chg_pct": 3.72,
+      "inflow": 477.24,
+      "outflow": 372.29,
+      "net": 104.95,
+      "companies": 94,
+      "lead": "仕佳光子",
+      "lead_chg_pct": 17.78,
+      "price": 155.26
+    },
+    {
+      "name": "中芯国际概念",
+      "index": 2949.13,
+      "chg_pct": 3.69,
+      "inflow": 376.55,
+      "outflow": 343.12,
+      "net": 33.43,
+      "companies": 89,
+      "lead": "澜起科技",
+      "lead_chg_pct": 17.96,
+      "price": 204.42
+    },
+    {
+      "name": "东数西算(算力)",
+      "index": 2496.61,
+      "chg_pct": 3.63,
+      "inflow": 1184.48,
+      "outflow": 976.81,
+      "net": 207.67,
+      "companies": 381,
+      "lead": "东方国信",
+      "lead_chg_pct": 20.01,
+      "price": 18.53
+    },
+    {
+      "name": "MCU芯片",
+      "index": 1809.75,
+      "chg_pct": 3.54,
+      "inflow": 258.49,
+      "outflow": 246.79,
+      "net": 11.71,
+      "companies": 93,
+      "lead": "普冉股份",
+      "lead_chg_pct": 15.82,
+      "price": 313.98
     }
   ],
   "highPositionRisk": {
@@ -8475,11 +9565,11 @@
   },
   "actionSheet": {
     "summary": {
-      "stage": "亢奋期",
+      "stage": "发酵·分歧",
       "sublabel": "",
-      "stance": "进攻",
+      "stance": "均衡",
       "mode": "接力",
-      "oneLine": "🟢 亢奋期 | 主线:低价 | 龙头:👑 福达合金(4板) | 建议:进攻"
+      "oneLine": "🟡 发酵·分歧 | 主线:低价 | 龙头:👑 福达合金(4板) | 建议:均衡"
     },
     "buy": [
       {
@@ -8503,8 +9593,8 @@
       "jj": 26.3,
       "zb": 14.8,
       "dt": 2,
-      "heat": 75.0,
-      "risk": 10.0,
+      "heat": 68.0,
+      "risk": 24.0,
       "maxLb": 4,
       "volChg": -3.0
     },

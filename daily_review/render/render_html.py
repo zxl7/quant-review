@@ -225,6 +225,137 @@ def build_mood_tri_cards(market_data: Dict[str, Any]) -> list[Dict[str, Any]]:
     ]
 
 
+def build_sentiment_explain_dims(market_data: Dict[str, Any]) -> list[Dict[str, Any]]:
+    """
+    情绪页解释维度（后端统一口径）：
+    - 只输出客观维度与趋势
+    - 前端不再做分位/趋势/文案推导
+    """
+
+    md = market_data or {}
+    mi = ((md.get("features") or {}).get("mood_inputs") or {}) if isinstance(md.get("features"), dict) else {}
+    pan = md.get("panorama") or {}
+    prev = md.get("prev") or {}
+    prev_pan = prev.get("panorama") or {}
+    delta = md.get("delta") or {}
+    mp = md.get("marketPanorama") or {}
+    kpis = (mp.get("kpis") or {}) if isinstance(mp, dict) else {}
+
+    def last_n(arr: Any, n: int = 7) -> list[float]:
+        if not isinstance(arr, list):
+            return []
+        out: list[float] = []
+        for x in arr[-n:]:
+            n0 = _to_num(x, float("nan"))
+            if n0 == n0:
+                out.append(n0)
+        return out
+
+    def q(arr: list[float], p: float) -> float | None:
+        if not arr:
+            return None
+        rows = sorted(arr)
+        idx = max(0, min(len(rows) - 1, round((len(rows) - 1) * p)))
+        return rows[idx]
+
+    def level_by_hist(v: float, hist: list[float], *, reverse: bool = False, fallback_a: float = 0.0, fallback_b: float = 0.0) -> tuple[str, str]:
+        a = q(hist, 0.33)
+        b = q(hist, 0.66)
+        aa = fallback_a if a is None else a
+        bb = fallback_b if b is None else b
+        if reverse:
+            if v >= bb:
+                return ("高位", "high")
+            if v >= aa:
+                return ("中位", "mid")
+            return ("低位", "low")
+        if v >= bb:
+            return ("高位", "high")
+        if v >= aa:
+            return ("中位", "mid")
+        return ("低位", "low")
+
+    def fmt_trend(arr: list[float], *, unit: str = "") -> str:
+        if not arr:
+            return ""
+        parts: list[str] = []
+        for x in arr:
+            if unit == "%":
+                parts.append(f"{x:.1f}%")
+            else:
+                parts.append(str(int(round(x))) if float(x).is_integer() else f"{x:.1f}")
+        return "-".join(parts)
+
+    def delta_meta(v: float, prev_v: float, key: str, *, unit: str = "") -> tuple[str, str, Any]:
+        d = _to_num(delta.get(key), v - prev_v)
+        if abs(d) < 1e-9:
+            return ("", "flat", "")
+        abs_text = f"{abs(d):.1f}{unit}" if unit in {"%", "pp"} else (f"{abs(d):.1f}" if not float(abs(d)).is_integer() else f"{int(round(abs(d)))}")
+        sign = "+" if d > 0 else "-"
+        return (f"{'上升' if d > 0 else '下降'} {sign}{abs_text}", "up" if d > 0 else "down", d)
+
+    zt = _to_num(pan.get("limitUp"), _to_num(mi.get("zt_count"), 0))
+    zt_prev = _to_num(prev_pan.get("limitUp"), _to_num((((prev.get("features") or {}) if isinstance(prev.get("features"), dict) else {}).get("mood_inputs") or {}).get("zt_count"), 0))
+    zt_hist = last_n(mi.get("hist_zt"))
+
+    lb = _to_num(mi.get("lianban_count"), _to_num(kpis.get("link_board"), 0))
+    lb_prev = _to_num((((prev.get("features") or {}) if isinstance(prev.get("features"), dict) else {}).get("mood_inputs") or {}).get("lianban_count"), lb)
+    lb_hist = last_n(mi.get("hist_lianban"))
+
+    max_lb = _to_num(mi.get("max_lb"), _to_num(kpis.get("max_lianban"), 0))
+    max_lb_prev = _to_num((((prev.get("features") or {}) if isinstance(prev.get("features"), dict) else {}).get("mood_inputs") or {}).get("max_lb"), max_lb)
+    max_lb_hist = last_n(mi.get("hist_max_lb"))
+
+    dt = _to_num(pan.get("limitDown"), _to_num(mi.get("dt_count"), 0))
+    dt_prev = _to_num(prev_pan.get("limitDown"), _to_num((((prev.get("features") or {}) if isinstance(prev.get("features"), dict) else {}).get("mood_inputs") or {}).get("dt_count"), dt))
+    dt_hist = last_n(mi.get("hist_dt"))
+
+    fb = _to_num(mi.get("fb_rate"), _to_num(pan.get("ratio"), 0))
+    fb_prev = _to_num((((prev.get("features") or {}) if isinstance(prev.get("features"), dict) else {}).get("mood_inputs") or {}).get("fb_rate"), fb)
+    fb_hist = last_n(mi.get("hist_fb_rate"))
+
+    jj = _to_num(mi.get("jj_rate_adj", mi.get("jj_rate")), 0)
+    jj_prev = _to_num((((prev.get("features") or {}) if isinstance(prev.get("features"), dict) else {}).get("mood_inputs") or {}).get("jj_rate_adj", (((prev.get("features") or {}) if isinstance(prev.get("features"), dict) else {}).get("mood_inputs") or {}).get("jj_rate")), jj)
+    jj_hist = last_n(mi.get("hist_jj_rate"))
+
+    specs = [
+        ("zt", "涨停家数", zt, zt_prev, zt_hist, False, 50.0, 90.0, "", 120.0),
+        ("lianban", "连板家数", lb, lb_prev, lb_hist, False, 10.0, 20.0, "", 40.0),
+        ("max_lb", "空间高度", max_lb, max_lb_prev, max_lb_hist, False, 3.0, 5.0, "板", 10.0),
+        ("dt", "跌停家数", dt, dt_prev, dt_hist, True, 3.0, 10.0, "", 30.0),
+        ("fb_rate", "封板率", fb, fb_prev, fb_hist, False, 55.0, 75.0, "%", 100.0),
+        ("jj_rate", "晋级率", jj, jj_prev, jj_hist, False, 18.0, 30.0, "%", 100.0),
+    ]
+
+    rows: list[Dict[str, Any]] = []
+    for key, title, value, prev_v, hist, reverse, fallback_a, fallback_b, unit, cap in specs:
+        level, level_cls = level_by_hist(value, hist, reverse=reverse, fallback_a=fallback_a, fallback_b=fallback_b)
+        chg_unit = "pp" if unit == "%" else unit
+        chg_str, chg_cls, _ = delta_meta(value, prev_v, key, unit=chg_unit)
+        if unit == "%":
+            value_text = f"{value:.1f}%"
+        elif unit == "板":
+            value_text = f"{int(round(value))}板"
+        else:
+            value_text = str(int(round(value))) if float(value).is_integer() else f"{value:.1f}"
+        rows.append(
+            {
+                "key": key,
+                "title": title,
+                "value": value_text,
+                "level": level,
+                "levelCls": level_cls,
+                "chgStr": chg_str,
+                "chgCls": chg_cls,
+                "bar": _clamp100((value / max(1.0, cap)) * 100.0),
+                "kind": "risk" if reverse else "heat",
+                "vs": f"近7日：{fmt_trend(hist, unit=unit)}" if hist else "",
+                "trendHtml": "",
+            }
+        )
+    return rows
+
+
 def build_plate_rank_top10(market_data: Dict[str, Any]) -> list[Dict[str, Any]]:
     md = market_data or {}
     plate_rows = list(md.get("plateRotateTop") or [])
@@ -1180,6 +1311,11 @@ if __name__ == "__main__":
         market_data.setdefault("moodTriCards", build_mood_tri_cards(market_data))
     except Exception:
         market_data.setdefault("moodTriCards", [])
+
+    try:
+        market_data.setdefault("sentimentExplainDims", build_sentiment_explain_dims(market_data))
+    except Exception:
+        market_data.setdefault("sentimentExplainDims", [])
 
     try:
         market_data.setdefault("plateRankTop10", build_plate_rank_top10(market_data))

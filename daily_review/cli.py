@@ -44,6 +44,12 @@ def _workspace_root() -> Path:
     return Path(__file__).resolve().parent.parent
 
 
+def _now_bj_date8() -> str:
+    import datetime as _dt
+
+    return _dt.datetime.now(_dt.timezone(_dt.timedelta(hours=8))).strftime("%Y%m%d")
+
+
 def _build_plan_guide(market_data: dict) -> dict | None:
     """
     为前端生成轻量版“明日行动指南”字段，避免模板直接依赖 v2/v3 大对象。
@@ -1098,13 +1104,23 @@ def run_rebuild(
     except Exception:
         pass
 
+    # ztAnalysis：接力/观察排序已引入 actionAdvisor 的环境姿态，需在 actionAdvisor 之后重算一次
+    try:
+        from daily_review.metrics.zt_analysis import build_zt_analysis
+
+        market_data["ztAnalysis"] = build_zt_analysis(market_data=market_data)
+        _log("ztAnalysis 已按最新环境姿态重算")
+    except Exception:
+        pass
+
     # summary3（二句话）：依赖“历史趋势/昨日对比”等注入字段，故在注入后再重算一次，保证口径一致
     try:
-        from daily_review.render.render_html import build_market_overview_7d, build_summary3
+        from daily_review.render.render_html import build_market_overview_7d, build_sentiment_explain_dims, build_summary3
 
         market_data["summary3"] = build_summary3(market_data=market_data)
         market_data["marketOverview7d"] = build_market_overview_7d(market_data=market_data)
-        _log("summary3 / marketOverview7d 已生成")
+        market_data["sentimentExplainDims"] = build_sentiment_explain_dims(market_data=market_data)
+        _log("summary3 / marketOverview7d / sentimentExplainDims 已生成")
     except Exception:
         pass
 
@@ -1129,8 +1145,9 @@ def run_rebuild(
     out_dir = root / "html"
     out_dir.mkdir(parents=True, exist_ok=True)
     suffix_part = f"-{suffix}" if suffix else ""
-    # 文件名与报告日期保持一致，便于历史回放、留档和线上产物追踪
-    out_path = out_dir / f"复盘日记-{date_compact}{suffix_part}-tab-v1.html"
+    # 文件名使用北京时间更新时间，报告正文仍保留 report_date 作为内容日期
+    update_date8 = _now_bj_date8()
+    out_path = out_dir / f"复盘日记-{update_date8}{suffix_part}-tab-v1.html"
 
     render_html_template(
         template_path=template_path,
@@ -2336,10 +2353,18 @@ def run_partial(date: str, modules: list[str]) -> int:
         pass
 
     try:
-        from daily_review.render.render_html import build_market_overview_7d, build_summary3
+        from daily_review.metrics.zt_analysis import build_zt_analysis
+
+        market_data["ztAnalysis"] = build_zt_analysis(market_data=market_data)
+    except Exception:
+        pass
+
+    try:
+        from daily_review.render.render_html import build_market_overview_7d, build_sentiment_explain_dims, build_summary3
 
         market_data["summary3"] = build_summary3(market_data=market_data)
         market_data["marketOverview7d"] = build_market_overview_7d(market_data=market_data)
+        market_data["sentimentExplainDims"] = build_sentiment_explain_dims(market_data=market_data)
     except Exception:
         pass
 
@@ -2353,7 +2378,8 @@ def run_partial(date: str, modules: list[str]) -> int:
     out_dir = root / "html"
     out_dir.mkdir(parents=True, exist_ok=True)
     suffix = "-".join(modules)
-    out_path = out_dir / f"复盘日记-{date_compact}-partial-{suffix}.html"
+    update_date8 = _now_bj_date8()
+    out_path = out_dir / f"复盘日记-{update_date8}-partial-{suffix}.html"
 
     render_html_template(
         template_path=template_path,
