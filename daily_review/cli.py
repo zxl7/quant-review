@@ -2345,7 +2345,7 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument(
         "--only",
         nargs="+",
-        help="部分更新：指定模块名，可选：panorama, ladder, ztgc, theme_panels, volume, height_trend, top10, mood, leader, action_guide, summary3, learning_notes",
+        help="部分更新：指定模块名，可选：panorama, ladder, ztgc, theme_panels, volume, height_trend, top10, mood, leader, action_guide, zt_analysis, summary3, learning_notes",
     )
     ap.add_argument(
         "--mode",

@@ -20,6 +20,7 @@
 - trade_nature_v2: 交易性质 v2
 - summary3: 总结 v3
 - learning_notes: 学习笔记
+- zt_analysis: 涨停接力/观察池
 """
 
 from .action_guide import ACTION_GUIDE_MODULE
@@ -37,6 +38,7 @@ from .rightside_v2 import RIGHTSIDE_V2_MODULE
 from .trade_nature_v2 import TRADE_NATURE_V2_MODULE
 from .summary3 import SUMMARY3_MODULE
 from .learning_notes import LEARNING_NOTES_MODULE
+from .zt_analysis import ZT_ANALYSIS_MODULE
 
 __all__ = [
     "ACTION_GUIDE_MODULE",
@@ -54,4 +56,5 @@ __all__ = [
     "TRADE_NATURE_V2_MODULE",
     "SUMMARY3_MODULE",
     "LEARNING_NOTES_MODULE",
+    "ZT_ANALYSIS_MODULE",
 ]

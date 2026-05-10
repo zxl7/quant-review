@@ -42,6 +42,7 @@ from .plan.v3_rebound import V3_REBOUND_MODULE
 from .plan.v3_fullpos import V3_FULLPOS_MODULE
 from .plan.summary3 import SUMMARY3_MODULE
 from .plan.learning_notes import LEARNING_NOTES_MODULE
+from .plan.zt_analysis import ZT_ANALYSIS_MODULE
 from .plan.v3_trading import V3_TRADING_MODULE
 from .plan.v3_rightside import V3_RIGHTSIDE_MODULE
 from .plan.rebound_v2 import REBOUND_V2_MODULE
@@ -110,6 +111,7 @@ ALL_MODULES = [
     PSYCHOLOGY_V2_MODULE,
     STRATEGY_V2_MODULE,
     SENTIMENT_SPEC_MODULE,
+    ZT_ANALYSIS_MODULE,
     ACTION_GUIDE_MODULE,
     SUMMARY3_MODULE,
     LEARNING_NOTES_MODULE,

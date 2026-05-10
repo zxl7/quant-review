@@ -3399,9 +3399,19 @@
       }
       .zt-tags {
         margin-top: 10px;
+        display: grid;
+        gap: 5px;
+      }
+      .zt-tag-row {
+        min-height: 24px;
         display: flex;
+        align-items: flex-start;
         gap: 6px;
         flex-wrap: wrap;
+        padding: 0;
+      }
+      .zt-tag-row:empty {
+        display: none;
       }
       .zt-score {
         display: inline-flex;
@@ -7543,7 +7553,9 @@
                   </div>
                 </div>
                 <div class="zt-tags">
-                  <span class="ladder-chip" v-for="(t, ti) in row.tags" :key="'relay-tag-'+i+'-'+ti" :class="t.cls">{{ t.text }}</span>
+                  <div class="zt-tag-row" v-for="tagRow in ztTagRows(row)" :key="'relay-tag-row-'+i+'-'+tagRow.tone" :class="'zt-tag-row-' + tagRow.tone">
+                    <span class="ladder-chip" v-for="(t, ti) in tagRow.tags" :key="'relay-tag-'+i+'-'+tagRow.tone+'-'+ti" :class="t.cls">{{ t.text }}</span>
+                  </div>
                 </div>
               </div>
             </div>
@@ -7562,11 +7574,13 @@
                   </div>
                   <div class="zt-score">
                     <div class="v">{{ row.score }}</div>
-                    <div class="k">观察参考</div>
+                    <div class="k">{{ row.watchGroup || '观察参考' }}</div>
                   </div>
                 </div>
                 <div class="zt-tags">
-                  <span class="ladder-chip" v-for="(t, ti) in row.tags" :key="'watch-tag-'+i+'-'+ti" :class="t.cls">{{ t.text }}</span>
+                  <div class="zt-tag-row" v-for="tagRow in ztTagRows(row)" :key="'watch-tag-row-'+i+'-'+tagRow.tone" :class="'zt-tag-row-' + tagRow.tone">
+                    <span class="ladder-chip" v-for="(t, ti) in tagRow.tags" :key="'watch-tag-'+i+'-'+tagRow.tone+'-'+ti" :class="t.cls">{{ t.text }}</span>
+                  </div>
                 </div>
               </div>
             </div>
@@ -7798,6 +7812,23 @@
               if (!c) return "https://xueqiu.com/S"
               const prefix = c.startsWith("6") || c.startsWith("688") || c.startsWith("900") ? "SH" : "SZ"
               return `https://xueqiu.com/S/${prefix}${c}`
+            },
+            ztTagRows(row) {
+              if (Array.isArray(row?.tagRows) && row.tagRows.length) {
+                return row.tagRows.filter((x) => Array.isArray(x?.tags) && x.tags.length)
+              }
+              const rows = [
+                { tone: "red", tags: [] },
+                { tone: "orange", tags: [] },
+                { tone: "blue", tags: [] },
+              ]
+              const byTone = { red: rows[0], orange: rows[1], blue: rows[2] }
+              for (const tag of row?.tags || []) {
+                const cls = String(tag?.cls || "")
+                const tone = cls.includes("red-text") ? "red" : cls.includes("orange-text") ? "orange" : "blue"
+                byTone[tone].tags.push(tag)
+              }
+              return rows.filter((x) => x.tags.length)
             },
             selectPlateTheme(row) {
               const key = String(row?.code || row?.name || "")
@@ -8476,12 +8507,10 @@
             },
             ztRelaySorted() {
               const rows = (this.marketData?.ztAnalysis?.relay || []).slice()
-              rows.sort((a, b) => Number(b?.score || 0) - Number(a?.score || 0) || Number(b?.qualityScore || 0) - Number(a?.qualityScore || 0) || Number(b?.fundYi || 0) - Number(a?.fundYi || 0))
               return rows
             },
             ztWatchSorted() {
               const rows = (this.marketData?.ztAnalysis?.watch || []).slice()
-              rows.sort((a, b) => Number(b?.watchRank || 0) - Number(a?.watchRank || 0) || Number(b?.score || 0) - Number(a?.score || 0) || Number(b?.qualityScore || 0) - Number(a?.qualityScore || 0) || Number(b?.cjeYi || 0) - Number(a?.cjeYi || 0))
               return rows
             },
             sectorHeat() {
@@ -10112,758 +10141,21 @@
 
         marketData.actionGuideV2 = marketData.actionGuideV2 || { observe: [], do: [], avoid: [] }
 
-        // 涨停个股数据分析：结合 封单大小 + 板块归属(优先用题材映射，其次行业集中度) + 量能 + 炸板次数 + 连板梯队
-        const buildZtAnalysis = (md) => {
-          const zt = Array.isArray(md?.ztgc) ? md.ztgc : []
-          if (!zt.length) return { meta: { tierThemeCount: 0, tierThemeTop: "" }, relay: [], watch: [] }
-
-          const mi = md?.features?.mood_inputs || {}
-          const stageType = md?.moodStage?.type || "warn"
-          const codeThemes = md?.zt_code_themes || {}
-          const mainTheme = md?.themePanels?.ztTop?.[0]?.name || ""
-          const leaderMaxB = Number(mi.max_lb ?? 0) || 0
-
-          const toNum = (v, d = 0) => {
-            const n = Number(String(v ?? "").replace("%", ""))
-            return Number.isFinite(n) ? n : d
-          }
-          const normCode6 = (v) => {
-            const digits = String(v ?? "").replace(/\D/g, "")
-            return digits.length >= 6 ? digits.slice(-6) : digits
-          }
-          const themeKeysForCode = (code) => {
-            const c6 = normCode6(code)
-            const noZero = c6.replace(/^0+/, "")
-            return [...new Set([c6, noZero].filter(Boolean))]
-          }
-          const getCodeThemeList = (code) => {
-            for (const k of themeKeysForCode(code)) {
-              if (Array.isArray(codeThemes?.[k])) return codeThemes[k]
-            }
-            return []
-          }
-          const extractKw = (s) => {
-            const text = String(s || "")
-            const kws = new Set()
-            for (let i = 0; i < text.length - 1; i++) {
-              if (/[\s()（）]/.test(text[i])) continue
-              kws.add(text.substring(i, i + 2))
-            }
-            return kws
-          }
-          const fuzzyMatch = (a, b) => {
-            const left = String(a || "")
-            const right = String(b || "")
-            if (!left || !right) return false
-            if (left === right || left.includes(right) || right.includes(left)) return true
-            const ak = extractKw(left)
-            const bk = extractKw(right)
-            let ov = 0
-            for (const k of ak) {
-              if (bk.has(k)) ov++
-            }
-            return ov >= 2
-          }
-          const tag = (text, cls = "") => ({ text, cls })
-
-          // 题材强度表：来自 themePanels.strengthRows（net 越高=净强越强；risk 越高=风险越大）
-          const strengthRows = Array.isArray(md?.themePanels?.strengthRows) ? md.themePanels.strengthRows : []
-          const themeStrength = new Map(strengthRows.map((r) => [String(r.name), r]))
-          const strengthNames = [...themeStrength.keys()]
-          const matchStrength = (themeName) => {
-            const exact = themeStrength.get(String(themeName || ""))
-            if (exact) return exact
-            for (const sn of strengthNames) {
-              if (fuzzyMatch(themeName, sn)) return themeStrength.get(sn)
-            }
-            return null
-          }
-          const matchedStrengthNameOf = (themeName) => {
-            const t = String(themeName || "")
-            if (!t) return ""
-            if (themeStrength.has(t)) return t
-            for (const sn of strengthNames) {
-              if (fuzzyMatch(t, sn)) return sn
-            }
-            return ""
-          }
-          const broadThemePatterns = [
-            /低价/,
-            /破净/,
-            /基金重仓/,
-            /养老金/,
-            /融资融券/,
-            /沪股通/,
-            /深股通/,
-            /QFII/,
-            /小盘|中盘|大盘/,
-            /年度强势/,
-            /增持|回购/,
-            /参股/,
-            /退市警示/,
-          ]
-          const isBroadTheme = (name) => broadThemePatterns.some((re) => re.test(String(name || "")))
-          const canonicalThemeName = (name) => matchedStrengthNameOf(name) || String(name || "")
-          const themePickScore = (entry) => {
-            const name = canonicalThemeName(entry?.name || entry?.themeName)
-            const net = toNum(entry?.net ?? entry?.sr?.net, 0)
-            const risk = toNum(entry?.risk ?? entry?.sr?.risk, 0)
-            const ztCnt = toNum(entry?.zt ?? entry?.sr?.zt, 0)
-            return net - risk * 0.35 + Math.min(ztCnt, 12) * 0.2 - (isBroadTheme(name) ? 8 : 0)
-          }
-          const splitThemeEntries = (items) => {
-            const ordered = (items || []).slice().sort((a, b) => themePickScore(b) - themePickScore(a) || b.net - a.net)
-            const tradeable = ordered.filter((r) => !isBroadTheme(r.name))
-            const broad = ordered.filter((r) => isBroadTheme(r.name))
-            return {
-              tradeable,
-              broad,
-              ordered: tradeable.length ? [...tradeable, ...broad] : ordered,
-            }
-          }
-          // 顶部摘要：用“同题材≥3只涨停”近似“有梯队的板块”
-          const tierThemesRaw = strengthRows.filter((r) => Number(r.zt ?? 0) >= 3).sort((a, b) => Number(b.zt ?? 0) - Number(a.zt ?? 0))
-          const tierThemes = splitThemeEntries(tierThemesRaw).tradeable
-          const tierThemeCount = tierThemes.length
-          const tierThemeTop = tierThemes
-            .slice(0, 3)
-            .map((r) => `${r.name}${Number(r.zt ?? 0)}只`)
-            .join(" / ")
-          const tierThemeSet = new Set(tierThemes.map((r) => String(r.name)))
-
-          // ★★★ 双重比对：从板块数据反查个股所属题材 ★★★
-          // plateRotateTop：每个板块有 leaders=[{code, name, rank}, ...]（当日领涨龙头）
-          // themePanels ztTop/zbTop/dtTop：每个板块有 examples="品高股份·共进股份·盛视科技"
-          // strengthRows：每个板块有 name/zt/zb/dt/net/risk
-          // 涨停票几乎一定会出现在所属板块的 leaders 或 examples 里
-          // 构建 code -> [{themeName, strengthRow}] 反向索引（精确匹配，比 bigram 模糊匹配靠谱得多）
-          const themeReverseMap = new Map() // code -> [{themeName, sr}]
-          // 1) 从 plateRotateTop 构建（最精确：有 code）
-          const plateRows = Array.isArray(md?.plateRotateTop) ? md.plateRotateTop : []
-          plateRows.forEach((pr) => {
-            const prName = String(pr.name || "")
-            const prCode = String(pr.code || "")
-            if (!prName) return
-            const sr = themeStrength.get(prName) || null
-            const leaders = Array.isArray(pr.leaders) ? pr.leaders : []
-            leaders.forEach((ld) => {
-              const ldCode = normCode6(ld.code)
-              const ldName = String(ld.name || "")
-              if (!ldCode && !ldName) return
-              // key: 用 code（6位/去前导0）和 name 多键，提高匹配稳定性
-              const entry = { themeName: prName, sr }
-              if (ldCode) {
-                themeKeysForCode(ldCode).forEach((ck) => {
-                  const arr = themeReverseMap.get("c_" + ck) || []
-                  if (!arr.some((e) => e.themeName === prName)) arr.push(entry)
-                  themeReverseMap.set("c_" + ck, arr)
-                })
-              }
-              if (ldName) {
-                const arr = themeReverseMap.get("n_" + ldName) || []
-                if (!arr.some((e) => e.themeName === prName)) arr.push(entry)
-                themeReverseMap.set("n_" + ldName, arr)
-              }
-            })
-          })
-          // 2) 从 themePanels ztTop/zbTop/dtTop 的 examples 补充（名称匹配）
-          const tpKeys = ["ztTop", "zbTop", "dtTop"]
-          tpKeys.forEach((k) => {
-            const items = md?.themePanels?.[k] || []
-            items.forEach((item) => {
-              const tName = String(item.name || "")
-              if (!tName) return
-              const sr = themeStrength.get(tName) || null
-              const exStr = String(item.examples || "")
-              if (!exStr) return
-              // examples 格式："品高股份·共进股份·盛视科技"（中点分隔）
-              const names = exStr.split(/[·\.\s,，、]+/).filter(Boolean)
-              names.forEach((n) => {
-                const arr = themeReverseMap.get("n_" + n) || []
-                if (!arr.some((e) => e.themeName === tName)) arr.push({ themeName: tName, sr })
-                themeReverseMap.set("n_" + n, arr)
-              })
-            })
-          })
-          // 查询函数：根据 code + name 反查所属题材（返回 [{themeName, net, risk, zt, sr}]）
-          const lookupThemeByPlate = (code, name) => {
-            const seen = new Set()
-            const results = []
-            const dedup = (arr) => arr.filter((e) => { if (seen.has(e.themeName)) return false; seen.add(e.themeName); return true })
-            // code 精确匹配权重最高
-            if (code) {
-              themeKeysForCode(code).forEach((ck) => {
-                results.push(...dedup(themeReverseMap.get("c_" + ck) || []))
-              })
-            }
-            // name 匹配
-            if (name) {
-              results.push(...dedup(themeReverseMap.get("n_" + name) || []))
-            }
-            // 补充：strengthRows 精确名匹配（codeThemes 可能直接命中）
-            if (code) {
-              const ths = getCodeThemeList(code)
-              ths.forEach((t) => {
-                const tn = String(t)
-                const sr = matchStrength(tn)
-                const canon = canonicalThemeName(tn)
-                if (sr && canon && !seen.has(canon)) { seen.add(canon); results.push({ themeName: canon, sr }) }
-              })
-            }
-            return results
-          }
-          // 转换为 strengthRow 格式方便下游使用
-          const getThemeEntries = (code, name) => {
-            const seen = new Set()
-            return lookupThemeByPlate(code, name)
-              .map((e) => {
-                const canon = canonicalThemeName(e.themeName)
-                return {
-                  name: canon || e.themeName,
-                  net: toNum(e.sr?.net, 0),
-                  risk: toNum(e.sr?.risk, 0),
-                  zt: toNum(e.sr?.zt, 0),
-                  zb: toNum(e.sr?.zb, 0),
-                  dt: toNum(e.sr?.dt, 0),
-                  _sr: e.sr,
-                }
-              })
-              .filter((e) => {
-                if (!e.name || seen.has(e.name)) return false
-                seen.add(e.name)
-                return true
-              })
-              .sort((a, b) => themePickScore(b) - themePickScore(a) || b.net - a.net)
-          }
-
-          // 题材"小弟"统计：同一题材下，连板(>=2)名单（用于判断是否"有梯队有小弟"）
-          const themeLbNames = new Map() // theme -> [names...]
-          zt.forEach((s) => {
-            const code = String(s.dm || s.code || "")
-            const name = String(s.mc || s.name || "")
-            const lbc = toNum(s.lbc, 1)
-            if (!name || lbc < 2) return
-            // ★ 双重索引：同时用 codeThemes 名和板块反查的标准名
-            const cThs = getCodeThemeList(code)
-            const pThs = getThemeEntries(code, name).map((e) => e.name)
-            const allThs = [...new Set([...cThs.map((t) => canonicalThemeName(t)), ...pThs])]
-            allThs.forEach((tn) => {
-              if (!tn) return
-              const arr = themeLbNames.get(tn) || []
-              if (!arr.includes(name)) arr.push(name)
-              themeLbNames.set(tn, arr)
-            })
-          })
-
-          // 题材"带头股"识别：避免互相当"小弟"
-          // 规则：同题材内按 板数(lbc) 优先，其次封单(zj) 其次首封时间更早
-          const themeLeader = new Map() // theme -> {name,lbc,fund,t}
-          zt.forEach((s) => {
-            const code = String(s.dm || s.code || "")
-            const name = String(s.mc || s.name || "")
-            if (!name || !code) return
-            const lbc = toNum(s.lbc, 1)
-            if (lbc < 2) return
-            const fundYi = toNum(s.zj, 0) / 1e8
-            const fbt = String(s.fbt || "").trim()
-            let t = 0
-            if (fbt.includes(":")) {
-              const [hh, mm] = fbt.split(":").map((x) => Number(x))
-              if (Number.isFinite(hh) && Number.isFinite(mm)) t = hh * 60 + mm
-            } else if (fbt.length >= 4) {
-              const hh = Number(fbt.slice(0, 2)),
-                mm = Number(fbt.slice(2, 4))
-              if (Number.isFinite(hh) && Number.isFinite(mm)) t = hh * 60 + mm
-            }
-            // ★ 双重索引：同时用 codeThemes 名和板块反查的标准名
-            const cThs = getCodeThemeList(code)
-            const pThs = getThemeEntries(code, name).map((e) => e.name)
-            const allThs = [...new Set([...cThs.map((t) => canonicalThemeName(t)), ...pThs])]
-            allThs.forEach((tn) => {
-              if (!tn) return
-              const cur = themeLeader.get(tn)
-              if (!cur) return themeLeader.set(tn, { name, lbc, fundYi, t })
-              const better = lbc > cur.lbc || (lbc === cur.lbc && fundYi > cur.fundYi) || (lbc === cur.lbc && fundYi === cur.fundYi && t > 0 && (cur.t <= 0 || t < cur.t))
-              if (better) themeLeader.set(tn, { name, lbc, fundYi, t })
-            })
-          })
-          const fmtHhmm = (fbt) => {
-            const s = String(fbt || "").trim()
-            if (!s) return ""
-            if (s.includes(":")) return s.slice(0, 5)
-            if (s.length >= 4) return `${s.slice(0, 2)}:${s.slice(2, 4)}`
-            return s
-          }
-          const minutes = (hhmm) => {
-            const s = String(hhmm || "")
-            if (!s.includes(":")) return 0
-            const [hh, mm] = s.split(":").map((x) => Number(x))
-            return hh * 60 + mm
-          }
-          const clamp = (v, lo = 0, hi = 100) => Math.max(lo, Math.min(hi, v))
-          const norm = (x, lo, hi) => (hi === lo ? 50 : clamp(((x - lo) / (hi - lo)) * 100))
-          const invNorm = (x, lo, hi) => 100 - norm(x, lo, hi)
-
-          // 行业热度：用“同一行业涨停数”近似（板块情绪 proxy）
-          const hyCnt = new Map()
-          zt.forEach((s) => {
-            const hy = String(s.hy || "其他")
-            hyCnt.set(hy, (hyCnt.get(hy) || 0) + 1)
-          })
-          const maxHy = Math.max(...Array.from(hyCnt.values()))
-
-          // 预计算区间（归一化）
-          const fundArr = zt.map((s) => toNum(s.zj, 0) / 1e8).filter((v) => v > 0)
-          const openArr = zt.map((s) => toNum(s.zbc, 0))
-          const timeArr = zt.map((s) => minutes(fmtHhmm(s.fbt))).filter((v) => v > 0)
-
-          const fundLo = Math.min(...fundArr),
-            fundHi = Math.max(...fundArr)
-          const openLo = Math.min(...openArr),
-            openHi = Math.max(...openArr)
-          const timeLo = Math.min(...timeArr),
-            timeHi = Math.max(...timeArr)
-
-          // 市场环境因子（量能/炸板）
-          const volChg = toNum(md?.volume?.change, 0) // %
-          const zbRate = toNum(mi.zb_rate, toNum(md?.fear?.broken, 0)) // %
-          const highOpenRatio = toNum(mi.zt_zbc_ge3_ratio, 0) // %
-
-          // 环境越强，允许更积极；环境越弱，分数整体收敛
-          const envBoost = clamp(50 + volChg * 2 - (zbRate - 20) * 0.6)
-
-          const ladderMap = new Map((md?.ladder || []).map((r) => [String(r.code || r.dm || r.name), r]))
-
-          const scored = zt.map((s) => {
-            const name = s.mc || s.name || ""
-            const code = String(s.dm || s.code || "")
-            const lbc = toNum(s.lbc, 1)
-            const hy = String(s.hy || "其他")
-            const fundYi = toNum(s.zj, 0) / 1e8
-            const open = toNum(s.zbc, 0)
-            const t = minutes(fmtHhmm(s.fbt))
-
-            const fundScore = norm(fundYi, fundLo, fundHi)
-            const openScore = invNorm(open, openLo, openHi)
-            const timeScore = t ? invNorm(t, timeLo, timeHi) : 50 // 越早越好
-            const hyScore = maxHy ? clamp((hyCnt.get(hy) / maxHy) * 100) : 0
-
-            // 一字板识别与惩罚：缩量无换手 = 参与难度极大，大幅降权
-            const cjeYiRaw = toNum(s.cje, 0) / 1e8
-            const hsRaw = toNum(s.hs, 0)
-            const fbtRaw = String(s.fbt || "")
-            const isYizi = (hsRaw < 2 && cjeYiRaw < 3 && open === 0 && /^0925/.test(fbtRaw))
-            // 缩量板（非一字但换手也极低，参与难度大）：hs<3 且 cje<5 且 zbc=0
-            const isShrinkSeal = !isYizi && (hsRaw < 3 && cjeYiRaw < 5 && open === 0)
-            const yiziPenalty = isYizi ? 22 : isShrinkSeal ? 12 : 0
-            const ladderRow = ladderMap.get(code) || null
-            const qualityLabel = String(ladderRow?.qualityLabel || "")
-            const qualityScore = Number.isFinite(Number(ladderRow?.qualityScore)) ? Number(ladderRow.qualityScore) : clamp(fundScore * 0.3 + openScore * 0.42 + timeScore * 0.28)
-            const qualityNote = String(ladderRow?.note || "")
-
-            // 题材：★★★ 双重比对优先：先从板块数据反查（精确），未命中再 fallback bigram ★★★
-            const plateThemes = getThemeEntries(code, name) // 精确匹配
-            let topThemes = []
-            let allThemeMatches = []
-            let predTheme = ""
-            let themeNet = 0
-            let themeRisk = 0
-            let themeScore = 0
-            if (plateThemes.length > 0) {
-              // 精确命中板块数据 → 直接取 top2（按 net 排序已在 getThemeEntries 完成）
-              allThemeMatches = plateThemes
-              topThemes = plateThemes.slice(0, 2)
-              predTheme = topThemes[0].name
-              themeNet = topThemes[0].net
-              themeRisk = topThemes[0].risk
-              themeScore = clamp(themeNet * 8)
-            } else {
-              // fallback: bigram 模糊匹配（保留兼容性）
-              const themes = getCodeThemeList(code)
-              allThemeMatches = themes.map((t) => ({ name: String(t), row: matchStrength(t) })).filter((x) => x.row)
-                .map((x) => ({ name: canonicalThemeName(x.name), net: toNum(x.row.net, 0), risk: toNum(x.row.risk, 0), zt: toNum(x.row.zt, 0) }))
-                .filter((x, idx, arr) => x.name && arr.findIndex((y) => y.name === x.name) === idx)
-                .sort((a, b) => themePickScore(b) - themePickScore(a) || b.net - a.net)
-              topThemes = allThemeMatches.slice(0, 2)
-              predTheme = topThemes.length ? topThemes[0].name : ""
-              themeNet = topThemes.length ? topThemes[0].net : 0
-              themeRisk = topThemes.length ? topThemes[0].risk : 0
-              themeScore = topThemes.length ? clamp(themeNet * 8) : 0
-            }
-            const themeGroups = splitThemeEntries(allThemeMatches)
-            const displayThemes = themeGroups.ordered.slice(0, 2)
-            const actionTheme = themeGroups.tradeable[0] || null
-            const hasTradeTheme = !!actionTheme
-            const isBroadOnly = !hasTradeTheme && displayThemes.some((t) => isBroadTheme(t.name))
-            topThemes = displayThemes
-            predTheme = (actionTheme || displayThemes[0] || {}).name || ""
-            themeNet = actionTheme ? actionTheme.net : 0
-            themeRisk = actionTheme ? actionTheme.risk : 0
-            themeScore = actionTheme ? clamp(themeNet * 8) : 0
-
-            // hasTier / matchedStrengthName / isMain：
-            // 通过板块反查命中的 topThemes.name 已经是 strengthRows 标准名，可直接查 tierThemeSet
-            // fallback 路径的 topThemes.name 是 codeThemes 名，仍需模糊匹配
-            const hasTier = hasTradeTheme && !!predTheme && (tierThemeSet.has(predTheme) || [...tierThemeSet].some((tn) => fuzzyMatch(predTheme, tn)))
-            const matchedStrengthName = matchedStrengthNameOf(predTheme)
-            // lbList/leaderName：先查 predTheme 名（精确命中时直接是标准名），再查 matchedStrengthName
-            const lbList = hasTradeTheme && predTheme ? (themeLbNames.get(predTheme) || (matchedStrengthName ? themeLbNames.get(matchedStrengthName) || [] : [])) : []
-            const leaderName = hasTradeTheme && predTheme ? (themeLeader.get(predTheme)?.name || (matchedStrengthName ? themeLeader.get(matchedStrengthName)?.name || "" : "")) : ""
-            const isThemeLeader = !!leaderName && leaderName === name
-            const followers = lbList.filter((n) => n !== leaderName).slice(0, 2)
-            const followLeader = !isThemeLeader && leaderName ? leaderName : ""
-            const hasFollow = hasTradeTheme && ((isThemeLeader && followers.length > 0) || !!followLeader)
-
-            // 主线判断：topThemes.name 是标准名时可直接比较，否则模糊匹配
-            const isMain = hasTradeTheme && !!mainTheme && !isBroadTheme(mainTheme) && (topThemes.some((t) => t.name === mainTheme) || topThemes.some((t) => fuzzyMatch(t.name, mainTheme)))
-            const mainBonus = isMain ? 10 : 0
-            const leaderBonus = leaderMaxB ? (lbc === leaderMaxB ? 12 : lbc === leaderMaxB - 1 ? 6 : 0) : 0
-
-            // 梯队：2-4板偏利于接力；过高在高潮日需保守
-            const boardScore = clamp(20 + (lbc - 1) * 22)
-            // 高位惩罚（下调）：给高位核心“展示+打分”，而不是直接压没
-            const highPenalty = stageType === "good" ? (lbc >= 7 ? 6 : lbc >= 6 ? 4 : lbc >= 5 ? 2 : 0) : 0
-
-            // 多开板惩罚（尤其高开板）
-            const multiPenalty = open >= 3 ? 18 : open === 2 ? 8 : 0
-
-            // 题材风险惩罚：同题材 risk 越高，回避倾向越强（轻量）
-            const themePenalty = hasTradeTheme ? clamp(themeRisk * 2.0, 0, 12) : 0
-            const themeClarityPenalty = hasTradeTheme ? 0 : isBroadOnly ? 12 : 8
-
-            const base =
-              fundScore * 0.34 +
-              openScore * 0.24 +
-              timeScore * 0.16 +
-              // 题材优先，其次行业集中度兜底
-              (hasTradeTheme ? themeScore : hyScore) * 0.14 +
-              boardScore * 0.12
-
-            // === 明日计划推荐个股：偏好“更容易连板晋级”的结构条件 ===
-            // 1) 小市值（尽量 <150亿）
-            // 2) 成交额严格>10 亿才进高分档（≤10 亿明显偏低；10~40 亿舒适上沿，过大略衰减）
-            // 3) 温和放量：换手 3%~12% 加分；同时满足「>10亿 + 温和换手」再叠加 mildVolExtra
-            // 4) 题材整体行动：有领涨（题材leader）+ 有跟风（followers）+ 有扩散（多题材/强度）
-            const cjeYi = toNum(s.cje, 0) / 1e8
-            const zszYi = toNum(s.zsz, 0) / 1e8
-            const hsPct = toNum(s.hs, 0) // %（涨停池口径）
-
-            // 小市值：<=150亿优先；>150亿逐步衰减
-            const capScore = zszYi
-              ? clamp(100 - Math.max(0, zszYi - 150) * 0.55) // 150->100, 330->0
-              : 55
-            const capBonus = (capScore - 55) * 0.1 // roughly [-5, +4.5]
-
-            // 成交额：>10 亿高分舒适区；但对三板以上未开板+小市值+强题材放宽（这类票市值小，成交额天然偏低）
-            const cjeRelaxed = (lbc >= 3 && open === 0 && zszYi < 100 && topThemes.length && themeNet >= 8)
-            const cjeThreshold = cjeRelaxed ? 5 : 10
-            let cjeTargetScore = 0
-            if (cjeYi > 0) {
-              if (cjeYi <= cjeThreshold) {
-                cjeTargetScore = clamp(36 * (cjeYi / cjeThreshold), 0, 36)
-              } else {
-                cjeTargetScore = clamp(92 + Math.min(cjeYi - 10, 25) * 0.38 - Math.max(0, cjeYi - 40) * 0.85, 76, 100)
-              }
-            }
-            const cjeBonus = (cjeTargetScore / 100) * 16.0 // 0~16，突出>10亿
-
-            // 温和放量：换手 8% 最舒适
-            // 未开板(zbc=0)的连板票：上限放宽到 20%（三板+未开板说明筹码锁定好，高换手=资金涌入而非分歧）
-            // 其他票：3~12% 视作温和
-            const sealVolCap = (open === 0 && lbc >= 2) ? 20 : 12
-            const volTierScore = hsPct
-              ? clamp(100 - Math.abs(hsPct - 8) * 6.5)
-              : 55
-            const volBonus = (volTierScore / 100) * 18.0 // 0~18（大幅提升）
-            const isModerateVolume = hsPct >= 3 && hsPct <= sealVolCap
-            const mildVolExtra = isModerateVolume ? (cjeYi > cjeThreshold ? 14 : 8) : 0 // 大幅提升
-
-            // 突破新高：连板高度达到或超过当日市场最高板（>=3板才谈突破）
-            const maxLbc = Math.max(...zt.map((s) => toNum(s.lbc, 1)))
-            const isNewHigh = lbc >= maxLbc && maxLbc >= 3
-            const newHighBonus = isNewHigh ? (maxLbc >= 6 ? 12 : maxLbc >= 4 ? 8 : 5) : 0
-
-            // 题材联动/扩散：有梯队 + 有领涨/跟风 + 题材净强（net）
-            const hasSpread = themeGroups.tradeable.length >= 2 // 多个可交易题材，不用属性标签凑数
-            const themeActionBonus = (hasTier ? 5 : 0) + (hasFollow ? 5 : 0) + (isThemeLeader ? 2 : 0) + (hasSpread ? 3 : 0)
-
-            // ★ 板块强度直接加分：net 越高 = 板块越有共识 = 越值得参与
-            //    net 来自题材强度表（zt-zb-dt 净强），通常 0~15
-            //    ≥12 极强主线 +16，≥8 强主线 +10，≥5 中等 +5
-            const themeNetBonus = hasTradeTheme ? (themeNet >= 12 ? 16 : themeNet >= 8 ? 10 : themeNet >= 5 ? 5 : 0) : 0
-
-            // ★ 温和放量 × 强板块 combo：声音洪亮 + 深挚支持 = 量价共振
-            //    换手 3~12% 且板块净强≥8 → 最佳参与结构，大幅加分
-            const warmVolThemeCombo = (isModerateVolume && hasTradeTheme && themeNet >= 8) ? 16 : (isModerateVolume && hasTradeTheme && themeNet >= 5) ? 8 : 0
-
-            // 最终加权：温和放量 + 板块强度 为双核心驱动，大幅提升这两项权重
-            // 注意：这里得到的是 rawScore（0~100）。最终用于页面展示/排序的 score 会在下方做"百分位映射"，
-            // 让高分更稀缺，避免"整体都很高"。
-            const rawScore = clamp(
-              base * 0.44 + qualityScore * 0.22 + envBoost * 0.10 + mainBonus + leaderBonus + themeActionBonus + capBonus + cjeBonus + volBonus + mildVolExtra + newHighBonus + themeNetBonus + warmVolThemeCombo - highPenalty - multiPenalty - themePenalty - themeClarityPenalty - yiziPenalty,
-            )
-
-            const tags = [
-              ...(qualityLabel ? [tag(qualityLabel, qualityScore >= 88 ? "ladder-chip-strong red-text" : qualityScore >= 72 ? "ladder-chip-warn orange-text" : "ladder-chip-cool blue-text")] : []),
-              ...(isMain ? [tag("主线", "ladder-chip-strong red-text")] : []),
-              ...(leaderBonus >= 10 ? [tag("前龙头", "ladder-chip-strong red-text")] : leaderBonus > 0 ? [tag("核心梯队", "ladder-chip-warn orange-text")] : []),
-              ...(hasTradeTheme ? (hasTier ? [tag("有梯队", "ladder-chip-warn orange-text")] : [tag("无梯队", "ladder-chip-cool blue-text")]) : [tag(isBroadOnly ? "属性标签" : "题材待确认", "ladder-chip-cool blue-text")]),
-              ...(hasTradeTheme ? (hasFollow ? [tag(isThemeLeader ? `跟风${followers.join("、") || "—"}` : `跟风${followLeader}`, "ladder-chip-cool blue-text")] : [tag("无跟风", "ladder-chip-cool blue-text")]) : []),
-              tag(`${lbc}板`, lbc >= 6 ? "ladder-chip-strong red-text" : lbc >= 4 ? "ladder-chip-warn orange-text" : "ladder-chip-cool blue-text"),
-              tag(`封单${fundYi ? fundYi.toFixed(2) : "-"}亿`, fundYi >= 3 ? "ladder-chip-strong red-text" : fundYi >= 1 ? "ladder-chip-warn orange-text" : "ladder-chip-cool blue-text"),
-              open ? tag(`${open}次开板`, open >= 3 ? "ladder-chip-warn orange-text" : "ladder-chip-cool blue-text") : tag("未开", "ladder-chip-cool blue-text"),
-              fmtHhmm(s.fbt) ? tag(`首封${fmtHhmm(s.fbt)}`, timeScore >= 70 ? "ladder-chip-strong red-text" : "ladder-chip-cool blue-text") : null,
-              zszYi ? tag(`市值${zszYi.toFixed(0)}亿`, zszYi <= 150 ? "ladder-chip-warn orange-text" : "ladder-chip-cool blue-text") : null,
-              cjeYi ? tag(`成交额${cjeYi.toFixed(2)}亿`, cjeYi > 10 ? "ladder-chip-strong red-text" : cjeYi >= 8 ? "ladder-chip-warn orange-text" : cjeYi >= 3 ? "ladder-chip-warn orange-text" : "ladder-chip-cool blue-text") : null,
-              hsPct ? tag(`${hsPct.toFixed(1)}%换手`, isModerateVolume ? "ladder-chip-warn orange-text" : "ladder-chip-cool blue-text") : null,
-              isModerateVolume ? tag("温和放量", "ladder-chip-strong red-text") : null,
-              isNewHigh ? tag("突破新高", "ladder-chip-strong red-text") : null,
-              ...(hasTradeTheme && themeNet >= 12 ? [tag("极强主线", "ladder-chip-strong red-text")] : hasTradeTheme && themeNet >= 8 ? [tag("强主线", "ladder-chip-strong red-text")] : hasTradeTheme && themeNet >= 5 ? [tag("中等主线", "ladder-chip-warn orange-text")] : []),
-              ...(warmVolThemeCombo >= 16 ? [tag("量价共振", "ladder-chip-strong red-text")] : warmVolThemeCombo >= 8 ? [tag("放量+板块", "ladder-chip-warn orange-text")] : []),
-              isYizi ? tag("一字板", "ladder-chip-cool blue-text") : null,
-              isShrinkSeal ? tag("缩量封板", "ladder-chip-cool blue-text") : null,
-              hasSpread ? tag("题材发散", "ladder-chip-cool blue-text") : null,
-              ...(topThemes.length
-                ? topThemes.map((t) => tag(t.name, isBroadTheme(t.name) ? "ladder-chip-cool blue-text" : t.net >= 12 ? "ladder-chip-warn orange-text" : ""))
-                : [tag(`${hy}×${hyCnt.get(hy) || 1}`, hyScore >= 60 ? "ladder-chip-warn orange-text" : "")]),
-            ].filter(Boolean)
-
-            // 解释：复盘一句话归因 + 明日观察点（更贴复盘）
-            const reasonBits = []
-            if (qualityLabel) reasonBits.push(`封板质量：${qualityLabel}`)
-            if (fundYi >= fundLo + (fundHi - fundLo) * 0.6) reasonBits.push("封单偏强")
-            if (open <= 1) reasonBits.push("开板少/封板稳")
-            if (timeScore >= 70) reasonBits.push("早封")
-            if (topThemes.length) reasonBits.push(`${hasTradeTheme ? "板块归属" : "属性标签"}：${topThemes.map((x) => x.name).join("、")}`)
-            else if (hyScore >= 60) reasonBits.push("行业内涨停集中")
-            if (isMain) reasonBits.push("主线加成")
-            if (leaderBonus >= 10) reasonBits.push("龙头梯队")
-            if (hasTier && hasFollow) reasonBits.push("梯队+跟风")
-            if (lbc >= 2) reasonBits.push("梯队内有辨识度")
-            if (zszYi && zszYi <= 150) reasonBits.push("小市值")
-            if (cjeYi && cjeYi > 10) reasonBits.push("成交额>10亿")
-            if (isModerateVolume) reasonBits.push("温和放量")
-            if (isNewHigh) reasonBits.push(`突破新高(${maxLbc}板)`)
-            if (isYizi) reasonBits.push("一字板(参与难度大)")
-            else if (isShrinkSeal) reasonBits.push("缩量封板(参与难度大)")
-            if (hasTier && hasFollow && (hasSpread || themeNet >= 10)) reasonBits.push("题材联动")
-            if (hasTradeTheme && themeNet >= 12) reasonBits.push("极强主线(板块净强≥12)")
-            else if (hasTradeTheme && themeNet >= 8) reasonBits.push("强主线(板块净强≥8)")
-            if (warmVolThemeCombo >= 16) reasonBits.push("量价共振(温和放量+强板块)")
-            else if (warmVolThemeCombo >= 8) reasonBits.push("放量+板块共振")
-            if (open >= 8) reasonBits.push("强分歧(多开板)")
-            else if (open >= 3) reasonBits.push("分歧偏大")
-            if (stageType === "good" && lbc >= 5) reasonBits.push("高位谨慎")
-
-            // 明日观察点：必须包含“可量化条件”，避免固定话术
-            // 说明：使用今日 成交额(亿) + 封单(亿) + 开板次数 + 首封时间 来构建
-            // 明日 3态推测：超预期 / 符合 / 低预期（用于管理预期，而不是一句空话）
-            const fundRef = fundYi > 0 ? fundYi : 0 // 亿
-            const fundNeed = (k) => (fundRef ? fundRef * k : 0)
-            const fundStr = (x) => (x ? Number(x).toFixed(2) : "-")
-            // 首封时间只保留在标签里，不拼到“预期管理”末尾，避免冗余
-
-            const gapRange = (() => {
-              // rawScore 越高，预期开盘溢价越高（经验分段）
-              if (rawScore >= 82) return { lo: 3, hi: 6 }
-              if (rawScore >= 70) return { lo: 1, hi: 4 }
-              if (rawScore >= 58) return { lo: 0, hi: 2 }
-              if (rawScore >= 45) return { lo: -1, hi: 1 }
-              return { lo: -3, hi: 0 }
-            })()
-            const pct = (x) => `${x >= 0 ? "+" : ""}${x}%`
-            const gapLabel = (lo, hi) => {
-              if (hi <= 0) return "低开"
-              if (lo >= 0) return "高开"
-              return "平开"
-            }
-            const aucRatio = (() => {
-              // 用“竞价成交额(估) / 今日成交额”做明日开盘量能预期（比“竞价封单”更有意义）
-              if (rawScore >= 82) return 0.08
-              if (rawScore >= 70) return 0.06
-              if (rawScore >= 58) return 0.045
-              return 0.03
-            })()
-            const aucNeed = cjeYi ? Math.max(0.15, cjeYi * aucRatio) : 0 // 亿，最低给个小门槛
-            const aucStr = (x) => (x ? Number(x).toFixed(2) : "-")
-            const observePoint = (() => {
-              // 强分歧：只做“回封+封单回补”这一件事
-              if (open >= 8) {
-                const need = fundNeed(0.5)
-                const lo = Math.min(gapRange.lo, 0),
-                  hi = Math.min(gapRange.hi, 2)
-                return `
-                  <div class="exp-row"><span class="exp-pill pill-pre">预期</span>${gapLabel(lo, hi)}（${pct(lo)}~${pct(hi)}）</div>
-                  <div class="exp-row"><span class="exp-pill pill-hi">超预期</span>回封 + 封单回补≥${fundStr(need)}亿（≈今${fundStr(fundRef)}亿×50%） + 竞价成交额≥${aucStr(aucNeed)}亿（≈今${aucStr(cjeYi)}亿×${Math.round(aucRatio * 100)}%）</div>
-                  <div class="exp-row"><span class="exp-pill pill-lo">低预期</span>不回封 或 多开板继续放大</div>
-                `.trim()
-              }
-              // 中分歧：回封 + 封单/量能门槛
-              if (open >= 3) {
-                const need = fundNeed(0.35)
-                const lo = Math.min(gapRange.lo, 0),
-                  hi = gapRange.hi
-                return `
-                  <div class="exp-row"><span class="exp-pill pill-pre">预期</span>${gapLabel(lo, hi)}（${pct(lo)}~${pct(hi)}）</div>
-                  <div class="exp-row"><span class="exp-pill pill-hi">超预期</span>高开≥${pct(hi)} + 回封后封单≥${fundStr(need)}亿（≈今${fundStr(fundRef)}亿×35%） + 竞价成交额≥${aucStr(aucNeed)}亿</div>
-                  <div class="exp-row"><span class="exp-pill pill-lo">低预期</span>低开≤${pct(gapRange.lo)} 或 开板继续放大</div>
-                `.trim()
-              }
-              // 稳定票：用“竞价成交额(估)”+“高开区间”管理预期
-              const lo = gapRange.lo,
-                hi = gapRange.hi
-              return `
-                <div class="exp-row"><span class="exp-pill pill-pre">预期</span>${gapLabel(lo, hi)}（${pct(lo)}~${pct(hi)}）</div>
-                <div class="exp-row"><span class="exp-pill pill-hi">超预期</span>高开≥${pct(hi)} + 竞价成交额≥${aucStr(aucNeed)}亿（≈今${aucStr(cjeYi)}亿×${Math.round(aucRatio * 100)}%） + 开板≤1</div>
-                <div class="exp-row"><span class="exp-pill pill-lo">低预期</span>低于${pct(lo)} 或 竞价量能<${aucStr(aucNeed * 0.7)}亿</div>
-              `.trim()
-            })()
-            if (qualityNote) reasonBits.push(qualityNote)
-            const head = reasonBits.length ? reasonBits.join(" · ") : "综合条件一般"
-            const reason = `<span class="reason-bits">${head}</span><div class="exp-wrap">${observePoint}</div>`
-            // score 会在下方做“百分位映射”；这里用内部字段 _raw 暂存 rawScore（最终会删除，不输出到页面数据）
-            return { name, code, lbc, hy, fundYi, open, predTheme, hasTier, hasTradeTheme, isBroadOnly, cjeYi, qualityLabel, qualityScore, isYizi, isShrinkSeal, _raw: Math.round(rawScore), score: Math.round(rawScore), tags, reason }
-          })
-
-          // === 百分位映射：让高分更稀缺（解决"整体打分偏高"）===
-          // 用 rawScore 排名后，将 score 映射为 1~100 的百分位分数（Top 越靠前，score 越接近 100）
-          // 这样市场强弱/分布变化时，分数依旧可比较：高分永远稀缺。
-          try {
-            const ranked = scored
-              .slice()
-              .sort(
-                (a, b) =>
-                  Number(b._raw || 0) - Number(a._raw || 0) ||
-                  Number(b.qualityScore || 0) - Number(a.qualityScore || 0) ||
-                  Number(b.fundYi || 0) - Number(a.fundYi || 0) ||
-                  Number(b.lbc || 0) - Number(a.lbc || 0),
-              )
-            const n = ranked.length || 1
-            ranked.forEach((r, idx) => {
-              const pct = Math.round(((n - idx) / n) * 100) // top=100, bottom≈(1/n)*100
-              r.score = clamp(pct, 1, 100)
-            })
-          } catch (e) {
-            // ignore
-          }
-
-          // === 分组策略：数据宽松放出、评分严格排序（避免"没数据"） ===
-          // 接力：宽松入池（只做基本约束），用分数把高风险自然压下去
-          // - 主要看 2-5 板；1进2只放少量强题材候选
-          // - 开板太夸张（>=8）直接排除（这类属于纯情绪票，放观察池）
-          // - 一字板/缩量封板直接排除（参与难度极大，无买入机会，放观察池备注即可）
-          const relaySort = (a, b) => b._raw - a._raw || b.qualityScore - a.qualityScore || b.fundYi - a.fundYi
-          const relayCore = scored
-            .filter((r) => r.hasTradeTheme && !r.isYizi && !r.isShrinkSeal && r.lbc >= 2 && r.lbc <= 5 && r.open < 8)
-            .sort(relaySort)
-          const relayOneToTwo = scored
-            .filter(
-              (r) =>
-                r.hasTradeTheme &&
-                !r.isYizi && !r.isShrinkSeal &&
-                // 允许少量"1进2"候选：必须满足更强的综合条件（尤其题材联动/量能/小市值）
-                r.lbc === 1 && r.open < 3 && Number(r._raw || 0) >= 72,
-            )
-            .sort(relaySort)
-            .slice(0, 3)
-          let relay = [...relayCore, ...relayOneToTwo].sort(relaySort).slice(0, 8)
-          const relayNames = new Set(relay.map((x) => x.name))
-
-          // 观察：大容量/前龙头/强分歧（用来观察情绪反馈），不与接力重复
-          const capArr = scored
-            .map((r) => Number(r.cjeYi || 0))
-            .filter((v) => v > 0)
-            .sort((a, b) => a - b)
-          const capP80 = capArr.length ? capArr[Math.floor(capArr.length * 0.8)] : 0
-          const watchRank = (r) => {
-            const capacity = r.cjeYi && r.cjeYi >= Math.max(20, capP80) ? 36 : 0
-            const divergence = r.open >= 8 ? 32 : r.open >= 3 ? 20 : 0
-            const height = r.lbc >= 7 ? 34 : r.lbc >= 5 ? 30 : r.lbc >= 3 ? 24 : !r.hasTradeTheme && r.lbc >= 2 ? 16 : 0
-            const themeGap = r.hasTradeTheme ? 0 : r.isBroadOnly ? 22 : 16
-            const core = Number(r._raw || 0) * 0.35 + Number(r.qualityScore || 0) * 0.15
-            return core + capacity + divergence + height + themeGap
-          }
-          let watchPool = scored
-            .filter((r) => !relayNames.has(r.name))
-            .filter(
-              (r) =>
-                (r.cjeYi && r.cjeYi >= Math.max(20, capP80)) || // 大容量（成交额较大）
-                r.lbc >= 5 || // 高位/前龙头观察
-                r.open >= 3 || // 强分歧看反馈
-                !r.hasTradeTheme, // 无明确可交易题材：观察属性票/新线反馈
-            )
-            .sort((a, b) => watchRank(b) - watchRank(a) || b._raw - a._raw || Number(b.lbc || 0) - Number(a.lbc || 0) || Number(b.cjeYi || 0) - Number(a.cjeYi || 0) || Number(b.score || 0) - Number(a.score || 0))
-          let watch = watchPool.slice(0, 10)
-          // 兜底：若观察条件为空，就用“剩余里容量/分歧/高位”优先补齐
-          if (!watch.length) {
-            watchPool = scored.filter((r) => !relayNames.has(r.name)).sort((a, b) => watchRank(b) - watchRank(a) || b._raw - a._raw || b.cjeYi - a.cjeYi || b.open - a.open || b.lbc - a.lbc || b.score - a.score)
-            watch = watchPool.slice(0, 10)
-          }
-
-          // 最终展示数量：各取 8，避免版面过长
-          relay = relay.slice(0, 8)
-
-          // 强制放出“高位核心/高度票”做情绪观察（即使分数偏低，也要给你看到并打分）
-          const ladderMust = (md?.ladder || [])
-            .filter((x) => Number(x.badge || 0) >= 5)
-            .map((x) =>
-              String(x.name || "")
-                .replace("👑", "")
-                .trim(),
-            )
-            .filter(Boolean)
-          const mustSet = new Set(ladderMust)
-          const mustObjs = scored.filter((x) => mustSet.has(x.name) && !relayNames.has(x.name))
-          const merged = []
-          const seen = new Set()
-          mustObjs.forEach((x) => {
-            if (!seen.has(x.name)) {
-              merged.push(x)
-              seen.add(x.name)
-            }
-          })
-          watch.forEach((x) => {
-            if (!seen.has(x.name)) {
-              merged.push(x)
-              seen.add(x.name)
-            }
-          })
-          watch = merged.slice(0, 8)
-
-          watch.forEach((r) => {
-            r.watchRank = Math.round(watchRank(r))
-          })
-          watch.sort((a, b) => Number(b.watchRank || 0) - Number(a.watchRank || 0) || Number(b.score || 0) - Number(a.score || 0) || Number(b.qualityScore || 0) - Number(a.qualityScore || 0))
-
-          // 清理内部辅助字段：不向页面/全局数据暴露
-          const strip = (arr) =>
-            (arr || []).map((x) => {
-              const y = { ...x }
-              delete y._raw
-              delete y.hasTradeTheme
-              delete y.isBroadOnly
-              delete y.isYizi
-              delete y.isShrinkSeal
-              return y
-            })
-          return { meta: { tierThemeCount, tierThemeTop }, relay: strip(relay), watch: strip(watch) }
-        }
+        // 涨停个股数据分析由 Python 注入，前端只负责展示。
         let ztAnalysisReady = false
         ensurePlanDerived = () => {
-          const hasRows = !!(
-            marketData?.ztAnalysis &&
-            ((Array.isArray(marketData.ztAnalysis.relay) && marketData.ztAnalysis.relay.length) || (Array.isArray(marketData.ztAnalysis.watch) && marketData.ztAnalysis.watch.length))
-          )
-          if (ztAnalysisReady && hasRows) return
-          try {
-            marketData.ztAnalysis = buildZtAnalysis(marketData)
-          } catch (e) {
-            marketData.ztAnalysis = { meta: { tierThemeCount: 0, tierThemeTop: "", error: true }, relay: [], watch: [] }
+          if (ztAnalysisReady) return
+          if (!marketData.ztAnalysis || typeof marketData.ztAnalysis !== "object") {
+            marketData.ztAnalysis = { meta: { tierThemeCount: 0, tierThemeTop: "", source: "python_missing" }, relay: [], watch: [] }
+          } else {
+            marketData.ztAnalysis.meta = marketData.ztAnalysis.meta || { tierThemeCount: 0, tierThemeTop: "" }
+            marketData.ztAnalysis.relay = Array.isArray(marketData.ztAnalysis.relay) ? marketData.ztAnalysis.relay : []
+            marketData.ztAnalysis.watch = Array.isArray(marketData.ztAnalysis.watch) ? marketData.ztAnalysis.watch : []
           }
           ztAnalysisReady = true
         }
 
-        // 稳定优先：启动时先完成一次计算，避免切页时出现"涨停个股数据分析"空白/延迟
+        // 明日涨停分析只消费 Python 注入结果；前端不再做二次推导。
         ensurePlanDerived()
 
         mountVueApp()
