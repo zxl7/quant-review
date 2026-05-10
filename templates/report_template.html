@@ -4126,6 +4126,16 @@
         font-weight: 760;
         color: var(--text-secondary);
       }
+      .wb-kpi-row {
+        display: flex;
+        align-items: baseline;
+        gap: 8px;
+        margin-top: 2px;
+      }
+      .wb-kpi-row .v,
+      .wb-kpi-row .n {
+        margin-top: 0;
+      }
       .wb-dim-grid {
         display: grid;
         grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -4708,7 +4718,6 @@
         color: var(--text-muted);
       }
       .engine-kpi .v {
-        margin-top: 4px;
         font-size: 18px;
         font-weight: 1000;
         font-variant-numeric: tabular-nums;
@@ -4718,6 +4727,14 @@
         font-size: 11px;
         font-weight: 750;
         color: var(--text-secondary);
+      }
+      .ek-row {
+        display: flex;
+        align-items: baseline;
+        gap: 6px;
+      }
+      .ek-row .v {
+        margin-left: auto;
       }
       .engine-kpi .act {
         margin-top: 6px;
@@ -6594,8 +6611,7 @@
         <div class="inset" v-if="marketData.marketOverview7d">
           <div class="ov7-head" v-if="(marketData.marketOverview7d.series || []).length">
             <div class="ov7-item" v-for="it in (marketData.marketOverview7d.series || []).slice(0, 4)" :key="'ov7-'+it.key">
-              <div class="k">{{ it.label }}</div>
-              <div class="v">{{ it.current }}</div>
+              <div class="ek-row"><span class="k">{{ it.label }}</span><span class="v">{{ it.current }}</span></div>
               <div class="s">{{ it.note }}</div>
             </div>
           </div>
@@ -6704,8 +6720,7 @@
 
         <div class="engine-kpis" v-if="(marketData.structureV2?.summary || []).length" style="margin-top: 10px">
           <div class="engine-kpi" v-for="(c, i) in marketData.structureV2.summary" :key="'sv2-'+c.key+'-'+i">
-            <div class="k">{{ c.title }}</div>
-            <div class="v" :class="c.status==='good'?'red-text':(c.status==='warn'?'orange-text':'green-text')">{{ c.value }}</div>
+            <div class="ek-row"><span class="k">{{ c.title }}</span><span class="v" :class="c.status==='good'?'red-text':(c.status==='warn'?'orange-text':'green-text')">{{ c.value }}</span></div>
             <div class="s">{{ c.note }}</div>
           </div>
         </div>
@@ -7161,18 +7176,24 @@
                   <div class="wb-mini-kpis">
                     <div class="wb-mini-kpi">
                       <div class="k">热 / 险</div>
-                      <div class="v">热{{ watchCurrentSnap?.heat ?? '-' }}</div>
-                      <div class="n">险 {{ watchCurrentSnap?.risk ?? '-' }}</div>
+                      <div class="wb-kpi-row">
+                        <span class="v">热{{ watchCurrentSnap?.heat ?? '-' }}</span>
+                        <span class="n">险 {{ watchCurrentSnap?.risk ?? '-' }}</span>
+                      </div>
                     </div>
                     <div class="wb-mini-kpi">
                       <div class="k">涨停 / 跌停</div>
-                      <div class="v">{{ watchMarket.zt ?? '-' }} / {{ watchMarket.dt ?? '-' }}</div>
-                      <div class="n">炸板 {{ watchMarket.zab ?? '-' }}</div>
+                      <div class="wb-kpi-row">
+                        <span class="v">{{ watchMarket.zt ?? '-' }} / {{ watchMarket.dt ?? '-' }}</span>
+                        <span class="n">炸板 {{ watchMarket.zab ?? '-' }}</span>
+                      </div>
                     </div>
                     <div class="wb-mini-kpi">
                       <div class="k">连板 / 高度</div>
-                      <div class="v">{{ watchMarket.lianban ?? '-' }} / {{ watchMarket.max_lianban ?? '-' }}</div>
-                      <div class="n">炸板率 {{ watchMarket.zab_rate ?? '-' }}%</div>
+                      <div class="wb-kpi-row">
+                        <span class="v">{{ watchMarket.lianban ?? '-' }} / {{ watchMarket.max_lianban ?? '-' }}</span>
+                        <span class="n">炸板率 {{ watchMarket.zab_rate ?? '-' }}%</span>
+                      </div>
                     </div>
                     <div class="wb-mini-kpi">
                       <div class="k">成交额</div>
