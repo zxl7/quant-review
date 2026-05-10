@@ -4081,11 +4081,48 @@
         color: var(--text-primary);
         font-variant-numeric: tabular-nums;
       }
+      .wb-shift-delta {
+        font-size: 13px;
+        font-weight: 1000;
+        font-variant-numeric: tabular-nums;
+      }
+      .tone-bull .wb-shift-delta { color: #dc2626; }
+      .tone-bear .wb-shift-delta { color: #059669; }
+      .tone-mixed .wb-shift-delta { color: #d97706; }
+      .wb-shift-right {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
       .wb-shift-label {
         font-size: 13px;
         font-weight: 1000;
         color: var(--theme-accent);
         letter-spacing: 0.18px;
+      }
+      .wb-shift-bar {
+        position: relative;
+        height: 6px;
+        border-radius: 3px;
+        background: rgba(148, 163, 184, 0.15);
+        overflow: hidden;
+      }
+      .wb-shift-bar-fill {
+        height: 100%;
+        border-radius: 3px;
+        transition: width 0.6s ease;
+      }
+      .tone-bull .wb-shift-bar-fill { background: linear-gradient(90deg, #dc2626, #f87171); }
+      .tone-bear .wb-shift-bar-fill { background: linear-gradient(90deg, #059669, #34d399); }
+      .tone-mixed .wb-shift-bar-fill { background: linear-gradient(90deg, #d97706, #fbbf24); }
+      .wb-shift-bar-pct {
+        position: absolute;
+        right: 0;
+        top: -15px;
+        font-size: 10px;
+        font-weight: 800;
+        color: var(--text-muted);
+        font-variant-numeric: tabular-nums;
       }
       .wb-shift-note {
         font-size: 11px;
@@ -4093,6 +4130,41 @@
         font-weight: 780;
         color: var(--text-secondary);
       }
+      .wb-shift-drivers {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        margin-top: 2px;
+      }
+      .wb-driver {
+        font-size: 10px;
+        font-weight: 850;
+        padding: 2px 7px;
+        border-radius: 6px;
+        font-variant-numeric: tabular-nums;
+        background: rgba(148, 163, 184, 0.1);
+        color: var(--text-secondary);
+      }
+      .wb-driver.up {
+        background: rgba(220, 38, 38, 0.1);
+        color: #dc2626;
+      }
+      .wb-driver.down {
+        background: rgba(5, 150, 105, 0.1);
+        color: #059669;
+      }
+      .wb-driver.flat {
+        background: rgba(148, 163, 184, 0.08);
+        color: var(--text-muted);
+      }
+      .dim-chip-inline {
+        font-style: normal;
+        font-size: 9px;
+        margin-left: 4px;
+      }
+      .dim-chip-inline.up { color: #dc2626; }
+      .dim-chip-inline.down { color: #059669; }
+      .dim-chip-inline.flat { color: var(--text-muted); }
       .wb-mini-kpis {
         display: grid;
         grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -7169,10 +7241,29 @@
                 </div>
                 <div class="wb-shift">
                   <div class="wb-shift-top">
-                    <div class="wb-shift-score">{{ watchCurrentShift.score }}</div>
-                    <div class="wb-shift-label">{{ watchCurrentShift.label }}</div>
+                    <div style="display:flex;align-items:baseline;gap:6px">
+                      <div class="wb-shift-score">{{ watchCurrentShift.score }}</div>
+                      <div class="wb-shift-delta" v-if="watchPrevSnap?.shift_score != null && watchCurrentSnap?.shift_score != null && watchCurrentSnap.shift_score !== watchPrevSnap.shift_score">
+                        <template v-if="watchCurrentSnap.shift_score > watchPrevSnap.shift_score">↑{{ watchCurrentSnap.shift_score - watchPrevSnap.shift_score }}</template>
+                        <template v-else>↓{{ watchPrevSnap.shift_score - watchCurrentSnap.shift_score }}</template>
+                      </div>
+                    </div>
+                    <div class="wb-shift-right">
+                      <div class="wb-shift-label">{{ watchCurrentShift.label }}</div>
+                    </div>
+                  </div>
+                  <div class="wb-shift-bar">
+                    <div class="wb-shift-bar-fill" :style="{width: Math.max(0, Math.min(100, watchCurrentShift.score)) + '%'}"></div>
+                    <span class="wb-shift-bar-pct">{{ watchCurrentShift.score }}%</span>
                   </div>
                   <div class="wb-shift-note">{{ watchCurrentShift.note }}</div>
+                  <div class="wb-shift-drivers" v-if="watchTempCards.length">
+                    <span class="wb-driver" v-for="item in watchTempCards" :key="'drv-'+item.key">
+                      {{ item.label }} {{ item.valueText }}
+                      <i v-if="item.deltaWord !== '持平' && item.deltaVal !== '0' && item.deltaVal !== '+0' && item.deltaVal !== '-0'"
+                         :class="['dim-chip-inline', item.deltaWord === '上升' ? 'up' : 'down']">{{ item.deltaVal }}</i>
+                    </span>
+                  </div>
                   <div class="wb-mini-kpis">
                     <div class="wb-mini-kpi">
                       <div class="k">热 / 险</div>
@@ -7345,8 +7436,8 @@
           </div>
           <div class="pos-card" v-if="marketData.mood">
             <div class="pos-left">
-              <div class="pos-k">仓位建议</div>
-              <div class="pos-v" :class="pos.cls">{{ pos.range }}</div>
+              <span class="pos-k">仓位建议：</span>
+              <span class="pos-v" :class="pos.cls">{{ pos.range }}</span>
               <div class="pos-sub">{{ pos.note }}</div>
             </div>
             <div class="pos-tags">
@@ -7365,7 +7456,7 @@
       <div class="card" data-page="plan" id="sec-zt-analysis">
         <div class="card-header">
           <div>
-            <div class="card-title">涨停个股数据分析（明日接力 / 观察）</div>
+            <div class="card-title">涨停数据分析（明日接力 / 观察）</div>
             <div style="margin-top: 6px; font-size: 12px; color: var(--text-muted); font-weight: 750">
               梯队板块（≥3只涨停）：
               <span class="blue-text" style="font-weight: 900">{{ marketData.ztAnalysis?.meta?.tierThemeCount ?? '-' }}</span>
@@ -8188,26 +8279,6 @@
               const zab_rate = snap.zb ?? live.zab_rate ?? this.getMoodInput("zb_rate", "-")
               const amount = snap.amount ?? live.amount ?? (this.marketData?.volume?.total || "-")
               return { zt, zab, dt, lianban, max_lianban, zab_rate, amount }
-            },
-            watchSixDims() {
-              const curr = this.watchCurrentSnap || {}
-              const prev = this.watchPrevSnap || {}
-              const mk = (key, label, unit = "") => {
-                const c = this.toNum(curr?.[key], 0)
-                const p = this.toNum(prev?.[key], c)
-                const delta = c - p
-                const deltaClass = Math.abs(delta) < 0.05 ? "flat" : delta > 0 ? "up" : "down"
-                const text = `${delta > 0 ? "+" : ""}${Number.isInteger(delta) ? delta : delta.toFixed(1)}${unit}`
-                return {
-                  key,
-                  label,
-                  value: `${Number.isInteger(c) ? c : c.toFixed(1)}${unit}`,
-                  deltaText: prev?.[key] === undefined ? "—" : text,
-                  deltaClass,
-                  note: prev?.[key] === undefined ? "首个点位" : `上一时点 ${Number.isInteger(p) ? p : p.toFixed(1)}${unit}`,
-                }
-              }
-              return [mk("fb", "封板率", "%"), mk("jj", "晋级率", "%"), mk("zb", "炸板率", "%"), mk("dt", "跌停数", "家"), mk("max_lb", "最高板", "板")]
             },
             watchTempCards() {
               const rows = this.watchSnapshots || []
