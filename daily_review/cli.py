@@ -483,7 +483,14 @@ def run_fetch_and_rebuild(date: str | None) -> int:
             "generatedAt": gen_time,
         },
         "indices": indices_for_report or [
-            _norm_index_chg(i["name"], float(i["val"]), float(i["chg"])) for i in (indices_rt or [])
+            {
+                "name": i.get("name", ""),
+                "code": i.get("code", ""),
+                "val": i.get("val", ""),
+                "chg": i.get("chg", ""),
+            }
+            for i in (indices_rt or [])
+            if isinstance(i, dict) and i.get("name")
         ],
         "panorama": {},
         "volume": {},
@@ -577,32 +584,59 @@ def run_fetch_and_rebuild(date: str | None) -> int:
     rc = run_rebuild(actual_date)
 
     # 同步生成盯盘快照：每次 fetch 都追加一条盘中切片 + 发布 latest_intraday*.json
+    # 注意：run_rebuild 会将完整 market_data（含 volume/plateRankTop10/mood_inputs）写回缓存文件
+    # 快照构建需从缓存文件重新读取，确保拿到 rebuild 后的完整数据
     try:
         import datetime as _dt
         from daily_review.watch_runtime import (
+            _purge_previous_day_slices,
+            _purge_previous_day_published,
             append_intraday_slice,
             publish_runtime_files,
         )
+        # 从 rebuild 后的缓存重新读取完整 market_data
+        rebuilt_data = json.loads(market_path.read_text(encoding="utf-8")) if market_path.exists() else market_data
+        rebuilt_mi = (rebuilt_data.get("features") or {}).get("mood_inputs") or mood_inputs
+        # 跨日清理：确保只保留当日数据
+        _purge_previous_day_slices(root=root, keep_date10=actual_date)
+        _purge_previous_day_published(root=root, keep_date10=actual_date)
         now_bj = _dt.datetime.now(
             _dt.timezone(_dt.timedelta(hours=8))
         ).strftime("%Y-%m-%d %H:%M:%S")
-        mi = mood_inputs or {}
+        # lianban_count：优先用 rebuild 注入值，兜底从 lb_2+lb_3+lb_4p+lb_5p 计算
+        lb_cnt = int(rebuilt_mi.get("lianban_count", 0) or 0)
+        if not lb_cnt:
+            lb_cnt = (
+                int(rebuilt_mi.get("lb_2", 0) or 0)
+                + int(rebuilt_mi.get("lb_3", 0) or 0)
+                + int(rebuilt_mi.get("lb_4p", 0) or 0)
+                + int(rebuilt_mi.get("lb_5p", 0) or 0)
+            )
+        max_lb = int(rebuilt_mi.get("max_lb", 0) or 0)
+        # volume/amount：从 rebuild 后的 market_data 获取
+        vol_total = rebuilt_data.get("volume", {}).get("total", "") or ""
+        # concepts：优先 plateRankTop10，其次 conceptFundFlowTop
+        concepts_src = (
+            rebuilt_data.get("plateRankTop10")
+            or rebuilt_data.get("conceptFundFlowTop")
+            or []
+        )
         watch_snap = {
             "source": market_data.get("meta", {}).get("source", {}).get("indices", "fetch"),
             "ts_bj": now_bj,
             "date": actual_date,
             "market": {
-                "zt": int(mi.get("zt_count", 0) or 0),
-                "dt": int(mi.get("dt_count", 0) or 0),
-                "zab": int(mi.get("zb_count", 0) or 0),
-                "zab_rate": float(mi.get("zb_rate", 0) or 0.0),
-                "lianban": int(mi.get("lianban_count", 0) or 0),
-                "max_lianban": int(mi.get("max_lb", 0) or 0),
-                "amount": str(market_data.get("volume", {}).get("total", "") or ""),
+                "zt": int(rebuilt_mi.get("zt_count", 0) or 0),
+                "dt": int(rebuilt_mi.get("dt_count", 0) or 0),
+                "zab": int(rebuilt_mi.get("zb_count", 0) or 0),
+                "zab_rate": float(rebuilt_mi.get("zb_rate", 0) or 0.0),
+                "lianban": lb_cnt,
+                "max_lianban": max_lb,
+                "amount": str(vol_total),
             },
             "concepts": [
                 {"name": c.get("name"), "lead": c.get("lead"), "chg_pct": c.get("chg_pct")}
-                for c in (market_data.get("plateRankTop10") or [])[:5]
+                for c in concepts_src[:5]
                 if isinstance(c, dict) and c.get("name")
             ],
             "alerts": [],

@@ -23,8 +23,8 @@ from daily_review.render.render_html import build_learning_notes
 
 
 def _workspace_root() -> Path:
-    # .../daily_review/modules_v2/learning_notes.py -> .../workspace
-    return Path(__file__).resolve().parents[2]
+    # .../daily_review/modules_v2/plan/learning_notes.py -> .../workspace
+    return Path(__file__).resolve().parents[3]
 
 
 def _compute(ctx: Context) -> Dict[str, Any]:

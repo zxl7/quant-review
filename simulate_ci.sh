@@ -144,7 +144,6 @@ chmod +x ./qr.sh 2>/dev/null || true
 
 if [ "${MODE}" = "intraday" ]; then
     ./qr.sh fetch "${RUN_DATE}"
-    PYTHONPATH=. python3 -m daily_review.watch_runtime --date "$(echo "${RUN_DATE}" | tr -d '-')" --publish 2>/dev/null || true
 elif [ "${MODE}" = "push" ]; then
     # push 模式：强制在线拉取
     ./qr.sh fetch "${RUN_DATE}"

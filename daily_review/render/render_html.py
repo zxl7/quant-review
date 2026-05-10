@@ -1186,7 +1186,9 @@ if __name__ == "__main__":
 
     # 离线增强：学习短线提醒 + 语录（随情绪阶段动态切换）
     try:
-        market_data.setdefault("learningNotes", build_learning_notes(market_data=market_data, cache_dir=market_json_path.parent))
+        ln = market_data.get("learningNotes") or {}
+        if not ln.get("tips"):
+            market_data["learningNotes"] = build_learning_notes(market_data=market_data, cache_dir=market_json_path.parent)
     except Exception:
         market_data.setdefault("learningNotes", {"tips": [], "quotes": []})
 

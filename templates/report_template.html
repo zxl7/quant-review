@@ -3700,13 +3700,13 @@
       }
 
       .wb-body {
-        padding: 14px 16px 16px;
+        padding: 8px 12px 10px;
       }
       .wb-card {
-        border-radius: 16px;
+        border-radius: 12px;
         border: 1px solid rgba(148, 163, 184, 0.18);
         background: rgba(255, 255, 255, 0.44);
-        padding: 12px 12px;
+        padding: 8px 10px;
         min-width: 0;
       }
       [data-theme="dark"] .wb-card {
@@ -3718,7 +3718,7 @@
         align-items: baseline;
         justify-content: space-between;
         gap: 10px;
-        margin-bottom: 10px;
+        margin-bottom: 6px;
       }
       .wb-card .t {
         font-size: 12px;
@@ -3765,7 +3765,7 @@
         border-radius: 14px;
         border: 1px solid rgba(148, 163, 184, 0.16);
         background: rgba(255, 255, 255, 0.52);
-        padding: 10px 10px;
+        padding: 6px 8px;
       }
       [data-theme="dark"] .wb-kpi {
         background: rgba(2, 6, 23, 0.22);
@@ -3777,7 +3777,7 @@
         color: var(--text-muted);
       }
       .wb-kpi .v {
-        margin-top: 6px;
+        margin-top: 3px;
         font-size: 17px;
         font-weight: 1100;
         color: var(--text-primary);
@@ -4029,7 +4029,7 @@
       .wb-shift {
         display: flex;
         flex-direction: column;
-        gap: 12px;
+        gap: 8px;
       }
       .wb-shift-card {
         position: relative;
@@ -4060,7 +4060,7 @@
         gap: 12px;
       }
       .wb-shift-score {
-        font-size: 34px;
+        font-size: 26px;
         line-height: 1;
         font-weight: 1100;
         color: var(--text-primary);
@@ -4073,21 +4073,21 @@
         letter-spacing: 0.18px;
       }
       .wb-shift-note {
-        font-size: 12px;
-        line-height: 1.55;
+        font-size: 11px;
+        line-height: 1.4;
         font-weight: 780;
         color: var(--text-secondary);
       }
       .wb-mini-kpis {
         display: grid;
-        grid-template-columns: repeat(3, minmax(0, 1fr));
+        grid-template-columns: repeat(4, minmax(0, 1fr));
         gap: 10px;
       }
       .wb-mini-kpi {
         border-radius: 14px;
         border: 1px solid rgba(148, 163, 184, 0.16);
         background: rgba(255, 255, 255, 0.52);
-        padding: 10px 10px;
+        padding: 6px 8px;
       }
       [data-theme="dark"] .wb-mini-kpi {
         background: rgba(2, 6, 23, 0.22);
@@ -4099,8 +4099,8 @@
         color: var(--text-muted);
       }
       .wb-mini-kpi .v {
-        margin-top: 4px;
-        font-size: 19px;
+        margin-top: 2px;
+        font-size: 15px;
         font-weight: 1050;
         color: var(--text-primary);
         font-variant-numeric: tabular-nums;
@@ -8119,7 +8119,8 @@
               const lianban = snap.lianban ?? live.lianban ?? this.getMoodInput("lianban_count", "-")
               const max_lianban = snap.max_lb ?? live.max_lianban ?? this.getMoodInput("max_lb", "-")
               const zab_rate = snap.zb ?? live.zab_rate ?? this.getMoodInput("zb_rate", "-")
-              return { zt, zab, dt, lianban, max_lianban, zab_rate }
+              const amount = snap.amount ?? live.amount ?? (this.marketData?.volume?.total || "-")
+              return { zt, zab, dt, lianban, max_lianban, zab_rate, amount }
             },
             watchSixDims() {
               const curr = this.watchCurrentSnap || {}

@@ -317,9 +317,8 @@ jobs:
             run_date="${{ steps.tradeday.outputs.today_bj }}"
           fi
           if [ "${mode}" = "intraday" ]; then
-            # 盘中：先在线全量 fetch（最新 pools/theme/market_data + 重建 tab-v1），再打实时切片 JSON
+            # 盘中：在线全量 fetch（内部已包含切片追加+发布）
             ./qr.sh fetch "${run_date}"
-            PYTHONPATH=. python3 -m daily_review.watch_runtime --date "$(echo "${run_date}" | tr -d '-')" --publish
           else
             # 日终定时 / push / workflow_dispatch：在线全量 fetch
             ./qr.sh fetch "${run_date}"
