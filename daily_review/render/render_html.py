@@ -684,13 +684,6 @@ def build_summary3(*, market_data: Dict[str, Any]) -> Dict[str, Any]:
     2) 主线与空间锚（题材/最高板）
     """
 
-    # 若已生成 actionAdvisor，则 summary3 仅做“兼容输出”（避免页面/旧逻辑依赖 summary3 时丢失展示）
-    adv = market_data.get("actionAdvisor") if isinstance(market_data.get("actionAdvisor"), dict) else {}
-    if isinstance(adv, dict) and adv.get("action_line"):
-        # 兼容：只输出一行建议（不含主线/空间锚）
-        line1 = str(adv.get("action_line") or "").strip()
-        return {"lines": [line1]}
-
     def _num(x, d=0.0) -> float:
         try:
             if x is None:
@@ -1081,6 +1074,9 @@ if __name__ == "__main__":
                             "fb_rate": float(mi.get("fb_rate", 0) or 0),
                             "jj_rate": float(mi.get("jj_rate_adj", mi.get("jj_rate", 0)) or 0),
                             "broken_lb_rate": float(mi.get("broken_lb_rate_adj", mi.get("broken_lb_rate", 0)) or 0),
+                            "zb_rate": float(mi.get("zb_rate", 0) or 0),
+                            "zt_early_ratio": float(mi.get("zt_early_ratio", 0) or 0),
+                            "loss": float(mi.get("loss", (float(mi.get("bf_count", 0) or 0) + float(mi.get("dt_count", 0) or 0))) or 0),
                         }
                     )
                 except Exception:
@@ -1093,10 +1089,16 @@ if __name__ == "__main__":
                 mood_inputs["hist_fb_rate"] = [round(r["fb_rate"], 1) for r in rows]
                 mood_inputs["hist_jj_rate"] = [round(r["jj_rate"], 1) for r in rows]
                 mood_inputs["hist_broken_lb_rate"] = [round(r["broken_lb_rate"], 1) for r in rows]
+                mood_inputs["hist_zb_rate"] = [round(r["zb_rate"], 1) for r in rows]
+                mood_inputs["hist_zt_early_ratio"] = [round(r["zt_early_ratio"], 1) for r in rows]
+                mood_inputs["hist_loss"] = [round(r["loss"], 1) for r in rows]
                 mood_inputs["trend_max_lb"] = round(float(last["max_lb"]) - float(first["max_lb"]), 2)
                 mood_inputs["trend_fb_rate"] = round(float(last["fb_rate"]) - float(first["fb_rate"]), 2)
                 mood_inputs["trend_jj_rate"] = round(float(last["jj_rate"]) - float(first["jj_rate"]), 2)
                 mood_inputs["trend_broken_lb_rate"] = round(float(last["broken_lb_rate"]) - float(first["broken_lb_rate"]), 2)
+                mood_inputs["trend_zb_rate"] = round(float(last["zb_rate"]) - float(first["zb_rate"]), 2)
+                mood_inputs["trend_zt_early_ratio"] = round(float(last["zt_early_ratio"]) - float(first["zt_early_ratio"]), 2)
+                mood_inputs["trend_loss"] = round(float(last["loss"]) - float(first["loss"]), 2)
     except Exception:
         pass
 

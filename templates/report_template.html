@@ -3437,6 +3437,12 @@
         color: var(--text-muted);
         font-weight: 800;
       }
+      .zt-score .g {
+        font-size: 10px;
+        color: var(--text-muted);
+        font-weight: 750;
+        line-height: 1.1;
+      }
       /* 预期管理：用“胶囊标签 + 分行”避免一坨文字 */
       .exp-wrap {
         margin-top: 6px;
@@ -7508,9 +7514,9 @@
             </div>
           </div>
         </div>
-        <!-- <div class="summary3" v-if="marketData.summary3?.lines && marketData.summary3.lines.length">
+        <div class="summary3" v-if="marketData.summary3?.lines && marketData.summary3.lines.length">
           <div class="summary3-line" v-for="(l, i) in marketData.summary3.lines" :key="'plan-s3-'+i"><strong>{{ i+1 }}.</strong> {{ l }}</div>
-        </div> -->
+        </div>
       </div>
 
       <!-- 涨停个股数据分析 -->
@@ -7547,9 +7553,10 @@
                     </div>
                     <div class="zt-sub" v-html="row.reason"></div>
                   </div>
-                  <div class="zt-score">
-                    <div class="v">{{ row.score }}</div>
-                    <div class="k">质量优先</div>
+                  <div class="zt-score" :title="row.factorHint || ''">
+                    <div class="v">{{ row.factorScore ?? row.score }}</div>
+                    <div class="k">{{ row.scoreLabel || '接力优先' }}</div>
+                    <div class="g" v-if="row.scoreSubLabel">{{ row.scoreSubLabel }}</div>
                   </div>
                 </div>
                 <div class="zt-tags">
@@ -7572,9 +7579,10 @@
                     </div>
                     <div class="zt-sub" v-html="row.reason"></div>
                   </div>
-                  <div class="zt-score">
-                    <div class="v">{{ row.score }}</div>
-                    <div class="k">{{ row.watchGroup || '观察参考' }}</div>
+                  <div class="zt-score" :title="row.factorHint || ''">
+                    <div class="v">{{ row.factorScore ?? row.score }}</div>
+                    <div class="k">{{ row.scoreLabel || row.watchGroup || '观察参考' }}</div>
+                    <div class="g" v-if="row.scoreSubLabel || row.watchGroup">{{ row.scoreSubLabel || row.watchGroup }}</div>
                   </div>
                 </div>
                 <div class="zt-tags">

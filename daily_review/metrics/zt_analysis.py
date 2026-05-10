@@ -305,6 +305,34 @@ def _yi(v: Any) -> float:
     return _to_num(v, 0.0) / 1e8
 
 
+def _factor_band(score: float) -> Dict[str, str]:
+    if score >= 80:
+        return {"label": "强候选", "tone": "strong", "action": "只等竞价确认"}
+    if score >= 70:
+        return {"label": "重点候选", "tone": "good", "action": "优先看确认点"}
+    if score >= 60:
+        return {"label": "条件触发", "tone": "watch", "action": "需要超预期"}
+    return {"label": "只观察", "tone": "cool", "action": "不主动接力"}
+
+
+def _market_gate(score: float, *, promo_ecology: float, break_risk_base: float, height_pressure: bool) -> Dict[str, Any]:
+    if score >= 82 and promo_ecology >= 52 and break_risk_base < 72:
+        label, action, adjust = "进攻窗口", "可做主线核心", 2.0
+    elif score >= 70:
+        label, action, adjust = "接力可做", "优先核心确认", 0.0
+    elif score >= 58:
+        label, action, adjust = "只做核心", "降低出手频次", -4.0
+    elif score >= 45:
+        label, action, adjust = "防守观察", "只看回封确认", -8.0
+    else:
+        label, action, adjust = "休息优先", "不主动接力", -14.0
+    if height_pressure:
+        adjust -= 2.0
+        if label in {"进攻窗口", "接力可做"}:
+            action = f"{action}，高位降档"
+    return {"score": _round(score), "label": label, "action": action, "adjust": adjust}
+
+
 def _safe_min_max(values: Iterable[float], default: Tuple[float, float] = (0.0, 0.0)) -> Tuple[float, float]:
     arr = [float(x) for x in values if math.isfinite(float(x))]
     return (min(arr), max(arr)) if arr else default
@@ -475,6 +503,22 @@ def build_zt_analysis(*, market_data: Dict[str, Any]) -> Dict[str, Any]:
         broad = [r for r in ordered if _is_broad_theme(r.get("name"))]
         return {"tradeable": tradeable, "broad": broad, "ordered": [*tradeable, *broad] if tradeable else ordered}
 
+    strength_ranked = sorted(
+        [r for r in strength_rows if isinstance(r, dict) and str(r.get("name") or "")],
+        key=lambda r: theme_pick_score(r),
+        reverse=True,
+    )
+
+    def theme_rank_score(theme_name: Any) -> float:
+        name = canonical_theme_name(theme_name)
+        if not name:
+            return 42.0
+        for idx, row in enumerate(strength_ranked):
+            rname = str(row.get("name") or "")
+            if rname == name or _fuzzy_match(rname, name):
+                return _clamp(92.0 - idx * 4.5, 35.0, 92.0)
+        return 42.0
+
     tier_themes_raw = sorted(
         [r for r in strength_rows if isinstance(r, dict) and _to_num(r.get("zt"), 0.0) >= 3],
         key=lambda r: _to_num(r.get("zt"), 0.0),
@@ -522,6 +566,43 @@ def build_zt_analysis(*, market_data: Dict[str, Any]) -> Dict[str, Any]:
                 continue
             for n in [x for x in re.split(r"[·\.\s,，、]+", ex_str) if x]:
                 add_reverse("n_" + n, {"themeName": t_name, "sr": theme_strength.get(t_name)})
+
+    plate_strengths = [_to_num(r.get("strength"), 0.0) for r in plate_rows if isinstance(r, dict)]
+    plate_lo, plate_hi = _safe_min_max((x for x in plate_strengths if x > 0), (0.0, 0.0))
+
+    def matched_plate_row(theme_name: Any, code: Any = "", name: Any = "") -> Dict[str, Any] | None:
+        target = str(theme_name or "")
+        for row in plate_rows:
+            if not isinstance(row, dict):
+                continue
+            rname = str(row.get("name") or "")
+            if target and (rname == target or _fuzzy_match(rname, target)):
+                return row
+            leaders = row.get("leaders") if isinstance(row.get("leaders"), list) else []
+            for leader in leaders:
+                if not isinstance(leader, dict):
+                    continue
+                lcode = _norm_code6(leader.get("code"))
+                lname = str(leader.get("name") or "")
+                if (code and lcode and lcode == _norm_code6(code)) or (name and lname == str(name)):
+                    return row
+        return None
+
+    def plate_rotation_context(theme_name: Any, code: Any = "", name: Any = "") -> Dict[str, Any]:
+        row = matched_plate_row(theme_name, code, name)
+        if not row:
+            return {"score": 50.0, "rank": 0, "name": "", "lead": "", "strength": 0.0}
+        rank = _to_num(row.get("rank"), 12.0)
+        strength = _to_num(row.get("strength"), 0.0)
+        rank_score = _clamp(100.0 - max(0.0, rank - 1.0) * 7.0, 28.0, 100.0)
+        strength_score = _norm(strength, plate_lo, plate_hi) if plate_hi > plate_lo else 55.0
+        return {
+            "score": _clamp(rank_score * 0.58 + strength_score * 0.42),
+            "rank": int(rank) if rank else 0,
+            "name": str(row.get("name") or ""),
+            "lead": str(row.get("lead") or ""),
+            "strength": strength,
+        }
 
     def lookup_theme_by_plate(code: Any, name: Any) -> List[Dict[str, Any]]:
         seen: set[str] = set()
@@ -628,9 +709,37 @@ def build_zt_analysis(*, market_data: Dict[str, Any]) -> Dict[str, Any]:
 
     volume = market_data.get("volume") if isinstance(market_data.get("volume"), dict) else {}
     fear = market_data.get("fear") if isinstance(market_data.get("fear"), dict) else {}
+    mood = market_data.get("mood") if isinstance(market_data.get("mood"), dict) else {}
+    panorama = market_data.get("panorama") if isinstance(market_data.get("panorama"), dict) else {}
     vol_chg = _to_num(volume.get("change"), 0.0)
     zb_rate = _to_num(mi.get("zb_rate"), _to_num(fear.get("broken"), 0.0))
-    env_boost = _clamp(50 + vol_chg * 2 - (zb_rate - 20) * 0.6)
+    fb_rate = _to_num(mi.get("fb_rate"), _to_num(panorama.get("ratio"), 50.0))
+    mood_score = _to_num(mood.get("score"), 50.0)
+    mood_heat = _to_num(mood.get("heat"), mood_score)
+    mood_risk = _to_num(mood.get("risk"), 50.0)
+    limit_up_count = _to_num(mi.get("zt_count"), _to_num(panorama.get("limitUp"), len(zt)))
+    dt_count = _to_num(mi.get("dt_count"), _to_num(panorama.get("limitDown"), 0.0))
+    env_liquidity_score = _clamp(50 + vol_chg * 2 - (zb_rate - 20) * 0.6)
+    market_sentiment_score = _clamp(
+        32.0
+        + mood_score * 0.18
+        + mood_heat * 0.12
+        + fb_rate * 0.12
+        + jj_rate * 0.26
+        + rate_2to3 * 0.10
+        + rate_3to4 * 0.08
+        + height_context_score * 0.10
+        + min(limit_up_count, 120.0) * 0.08
+        - mood_risk * 0.12
+        - max(0.0, broken_lb_rate - 62.0) * 0.30
+        - max(0.0, zb_rate - 18.0) * 0.20
+        - max(0.0, dt_count - 3.0) * 1.40
+        + trend_jj_rate * 0.18
+        - max(0.0, trend_broken_lb_rate) * 0.24
+        + max(0.0, -trend_broken_lb_rate) * 0.08
+    )
+    market_gate = _market_gate(market_sentiment_score, promo_ecology=promo_ecology, break_risk_base=break_risk_base, height_pressure=height_pressure)
+    env_boost = _clamp(env_liquidity_score * 0.40 + market_sentiment_score * 0.60)
     max_lbc = max((_to_num(s.get("lbc"), 1.0) for s in zt if isinstance(s, dict)), default=1.0)
 
     ladder = market_data.get("ladder") if isinstance(market_data.get("ladder"), list) else []
@@ -702,6 +811,9 @@ def build_zt_analysis(*, market_data: Dict[str, Any]) -> Dict[str, Any]:
         pred_theme = str((action_theme or (top_themes[0] if top_themes else {})).get("name") or "")
         theme_net = _to_num(action_theme.get("net"), 0.0) if action_theme else 0.0
         theme_risk = _to_num(action_theme.get("risk"), 0.0) if action_theme else 0.0
+        theme_zt = _to_num(action_theme.get("zt"), 0.0) if action_theme else 0.0
+        theme_zb = _to_num(action_theme.get("zb"), 0.0) if action_theme else 0.0
+        theme_dt = _to_num(action_theme.get("dt"), 0.0) if action_theme else 0.0
         theme_score = _clamp(theme_net * 8.0) if action_theme else 0.0
         theme_persist = theme_persistence(pred_theme, action_theme if isinstance(action_theme, dict) else None) if pred_theme else {"score": 0.0, "delta": 0.0, "state": "none"}
         theme_persist_score = _to_num(theme_persist.get("score"), 0.0)
@@ -795,7 +907,7 @@ def build_zt_analysis(*, market_data: Dict[str, Any]) -> Dict[str, Any]:
         theme_net_bonus = 16.0 if has_trade_theme and theme_net >= 12 else 10.0 if has_trade_theme and theme_net >= 8 else 5.0 if has_trade_theme and theme_net >= 5 else 0.0
         warm_vol_theme_combo = 16.0 if is_moderate_volume and has_trade_theme and theme_net >= 8 else 8.0 if is_moderate_volume and has_trade_theme and theme_net >= 5 else 0.0
 
-        raw_score = _clamp(
+        opportunity_signal = _clamp(
             base * 0.44
             + quality_score * 0.22
             + env_boost * 0.10
@@ -821,6 +933,107 @@ def build_zt_analysis(*, market_data: Dict[str, Any]) -> Dict[str, Any]:
             - yizi_penalty
             - follower_penalty
             - break_risk_penalty
+        )
+        opportunity_score = _clamp(50.0 + (opportunity_signal - 50.0) * 0.62)
+        sector_rank_context_score = theme_rank_score(pred_theme) if pred_theme else 42.0
+        plate_ctx = plate_rotation_context(pred_theme, code, name)
+        plate_score = _to_num(plate_ctx.get("score"), 50.0)
+        sector_trend_score = _clamp(
+            theme_persist_score * 0.34
+            + sector_rank_context_score * 0.24
+            + plate_score * 0.22
+            + min(theme_net, 20.0) * 0.55
+            + (5.0 if has_tier else 0.0)
+            + (4.0 if is_theme_leader else 0.0)
+            + (2.0 if has_follow else 0.0)
+            - (8.0 if theme_is_fading else 0.0)
+            - (6.0 if is_broad_only else 0.0)
+        )
+        if has_trade_theme:
+            sector_panel_score = _clamp(
+                28.0
+                + theme_net * 1.65
+                + min(theme_zt, 24.0) * 0.55
+                + (theme_persist_score - 50.0) * 0.16
+                + (6.0 if has_tier else 0.0)
+                + (5.0 if is_main else 0.0)
+                + (3.0 if has_spread else 0.0)
+                - theme_risk * 1.80
+                - theme_zb * 0.70
+                - theme_dt * 3.00
+                - (8.0 if theme_is_fading else 0.0)
+            )
+            sector_sentiment_score = _clamp(sector_panel_score * 0.64 + sector_trend_score * 0.36)
+        elif is_broad_only:
+            sector_panel_score = _clamp(34.0 + hy_score * 0.20 - 10.0)
+            sector_sentiment_score = _clamp(sector_panel_score * 0.76 + sector_trend_score * 0.24)
+        else:
+            sector_panel_score = _clamp(30.0 + hy_score * 0.32)
+            sector_sentiment_score = _clamp(sector_panel_score * 0.84 + sector_trend_score * 0.16)
+
+        leader_signal_score = 78.0 if is_theme_leader else 70.0 if leader_bonus >= 10 else 62.0 if leader_bonus > 0 else 46.0 if follow_leader else 54.0
+        stock_strength_score = _clamp(
+            quality_score * 0.24
+            + fund_score * 0.16
+            + open_score * 0.13
+            + time_score * 0.09
+            + board_score * 0.09
+            + step_context_score * 0.18
+            + leader_signal_score * 0.11
+            + (6.0 if is_new_high else 0.0)
+            - multi_penalty * 0.32
+            - yizi_penalty * 0.45
+            - follower_penalty * 0.55
+        )
+        liquidity_band_score = 86.0 if 10.0 <= cje_yi <= 40.0 else 72.0 if 5.0 <= cje_yi < 10.0 else 66.0 if 40.0 < cje_yi <= 90.0 else 48.0 if cje_yi > 0 else 34.0
+        capacity_score = _clamp(cje_target_score * 0.44 + vol_tier_score * 0.24 + cap_score * 0.17 + liquidity_band_score * 0.15)
+        risk_pressure = _clamp(
+            individual_break_risk * 0.52
+            + break_risk_base * 0.18
+            + theme_clarity_penalty * 1.15
+            + theme_penalty * 1.35
+            + high_penalty * 1.45
+            + yizi_penalty * 1.05
+            + follower_penalty * 1.15
+            + max(0.0, open_cnt - 1.0) * 2.60
+            - max(0.0, step_context_score - 62.0) * 0.18
+        )
+        risk_control_score = _clamp(100.0 - risk_pressure)
+        identity_edge = (
+            (3.5 if is_theme_leader else 0.0)
+            + (1.5 if leader_bonus > 0 else 0.0)
+            + (1.2 if is_new_high else 0.0)
+            + max(0.0, capacity_score - 72.0) * 0.05
+            + max(0.0, stock_strength_score - 66.0) * 0.04
+            - (1.8 if follow_leader else 0.0)
+            - max(0.0, risk_pressure - 58.0) * 0.04
+        )
+        raw_score = _clamp(
+            market_sentiment_score * 0.06
+            + sector_sentiment_score * 0.26
+            + stock_strength_score * 0.31
+            + capacity_score * 0.15
+            + risk_control_score * 0.16
+            + opportunity_score * 0.04
+            + identity_edge
+            + _to_num(market_gate.get("adjust"), 0.0)
+        )
+        score_band = _factor_band(_round(raw_score))
+        factor_breakdown = {
+            "market": _round(market_sentiment_score),
+            "marketGate": _round(_to_num(market_gate.get("adjust"), 0.0)),
+            "sector": _round(sector_sentiment_score),
+            "sectorTrend": _round(sector_trend_score),
+            "stock": _round(stock_strength_score),
+            "capacity": _round(capacity_score),
+            "risk": _round(risk_control_score),
+            "opportunity": _round(opportunity_score),
+            "edge": _round(identity_edge),
+        }
+        factor_hint = (
+            f"大盘{factor_breakdown['market']}({market_gate.get('label')}) / 板块{factor_breakdown['sector']} / "
+            f"个股{factor_breakdown['stock']} / 容量{factor_breakdown['capacity']} / "
+            f"风险{factor_breakdown['risk']} / {score_band['label']}"
         )
 
         tags: List[Dict[str, str]] = []
@@ -1028,6 +1241,21 @@ def build_zt_analysis(*, market_data: Dict[str, Any]) -> Dict[str, Any]:
                 "_isMain": is_main,
                 "_raw": _round(raw_score),
                 "score": _round(raw_score),
+                "factorScore": _round(raw_score),
+                "factorBreakdown": factor_breakdown,
+                "factorHint": factor_hint,
+                "scoreBand": score_band["label"],
+                "scoreBandTone": score_band["tone"],
+                "scoreAction": score_band["action"],
+                "marketGate": {
+                    "score": market_gate.get("score"),
+                    "label": market_gate.get("label"),
+                    "action": market_gate.get("action"),
+                },
+                "sectorTrendScore": _round(sector_trend_score),
+                "sectorRankScore": _round(sector_rank_context_score),
+                "plateRank": plate_ctx.get("rank"),
+                "plateName": plate_ctx.get("name"),
                 "tags": normalized_tags,
                 "tagRows": _tag_rows(normalized_tags),
                 "reason": f'<span class="reason-bits">{head}</span><div class="exp-wrap">{observe_point}</div>',
@@ -1035,9 +1263,8 @@ def build_zt_analysis(*, market_data: Dict[str, Any]) -> Dict[str, Any]:
         )
 
     ranked = sorted(scored, key=lambda r: (_to_num(r.get("_raw"), 0), _to_num(r.get("qualityScore"), 0), _to_num(r.get("fundYi"), 0), _to_num(r.get("lbc"), 0)), reverse=True)
-    n = len(ranked) or 1
     for idx, r in enumerate(ranked):
-        r["score"] = int(_clamp(_round(((n - idx) / n) * 100.0), 1, 100))
+        r["factorRank"] = idx + 1
 
     def relay_sort(r: Dict[str, Any]) -> Tuple[float, float, float, float, float]:
         return (
@@ -1080,9 +1307,10 @@ def build_zt_analysis(*, market_data: Dict[str, Any]) -> Dict[str, Any]:
         reverse=True,
     )[:3]
     relay = sorted([*relay_core, *relay_one_to_two], key=relay_sort, reverse=True)[:8]
-    relay_n = len(relay) or 1
     for idx, r in enumerate(relay):
-        r["score"] = int(_clamp(_round(((relay_n - idx) / relay_n) * 100.0), 1, 100))
+        r["relayRank"] = idx + 1
+        r["scoreLabel"] = "推荐因子"
+        r["scoreSubLabel"] = str(r.get("scoreBand") or "")
     relay_names = {str(x.get("name") or "") for x in relay}
 
     cap_arr = sorted([_to_num(r.get("cjeYi"), 0) for r in scored if _to_num(r.get("cjeYi"), 0) > 0])
@@ -1189,12 +1417,11 @@ def build_zt_analysis(*, market_data: Dict[str, Any]) -> Dict[str, Any]:
             merged.append(x)
             seen_names.add(nm)
     watch = sorted(merged, key=watch_sort_key, reverse=True)[:8]
-    watch_n = len(watch) or 1
     for idx, r in enumerate(watch):
-        rank_score = int(_clamp(_round(((watch_n - idx) / watch_n) * 100.0), 1, 100))
-        r["watchRank"] = rank_score
+        r["watchRank"] = idx + 1
         r["watchGroup"] = watch_group(r)
-        r["score"] = rank_score
+        r["scoreLabel"] = "观察因子"
+        r["scoreSubLabel"] = f"{r['watchGroup']} · {r.get('scoreBand')}" if r.get("scoreBand") else r["watchGroup"]
 
     def strip(rows: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
         out: List[Dict[str, Any]] = []
@@ -1210,7 +1437,8 @@ def build_zt_analysis(*, market_data: Dict[str, Any]) -> Dict[str, Any]:
             "tierThemeCount": len(tier_themes),
             "tierThemeTop": tier_theme_top,
             "source": "python",
-            "model": "zt_analysis_factor_v2",
+            "model": "zt_analysis_factor_v4",
+            "marketGate": market_gate,
             "promoEcology": _round(promo_ecology),
             "heightContext": "repair" if height_repair else "pressure" if height_pressure else "neutral",
             "breakRiskBase": _round(break_risk_base),

@@ -78,7 +78,7 @@ def build_mood_signals(market_data: Dict[str, Any]) -> Dict[str, Any]:
     zb = _to_num(mi.get("zb_rate"), 0.0)
     early = _to_num(mi.get("zt_early_ratio"), 0.0)
     avg_zbc = _to_num(mi.get("avg_zt_zbc"), 0.0)
-    ge3 = _to_num(mi.get("zbc_ge3_ratio"), 0.0)
+    ge3 = _to_num(mi.get("zt_zbc_ge3_ratio", mi.get("zbc_ge3_ratio")), 0.0)
     loss = _to_num(mi.get("loss"), 0.0)
 
     # 拥挤/集中（来自 style_radar/theme_panels，若不存在则兜底）
@@ -231,7 +231,7 @@ def build_hm2_compare(market_data: Dict[str, Any]) -> Dict[str, Any]:
     early = _to_num(mi.get("zt_early_ratio"), 0.0)
     zb = _to_num(mi.get("zb_rate"), 0.0)
     loss = _to_num(mi.get("loss"), 0.0)
-    ge3 = _to_num(mi.get("zbc_ge3_ratio"), 0.0)
+    ge3 = _to_num(mi.get("zt_zbc_ge3_ratio", mi.get("zbc_ge3_ratio")), 0.0)
     avg_zbc = _to_num(mi.get("avg_zt_zbc"), 0.0)
     top3 = _to_num(style.get("top3ThemeRatio"), _to_num(mi.get("top3_theme_ratio"), 0.0))
     overlap = _to_num((theme_panels.get("overlap") or {}).get("score"), _to_num(mi.get("overlap_score"), 0.0))

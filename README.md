@@ -1,6 +1,6 @@
 # quant-review（复盘日记生成器）
 
-一个脚本覆盖日常使用：在线取数生成、离线渲染、（可选）本地发布到 `gh-pages`。
+一个脚本覆盖日常使用：在线取数生成、离线重建、（可选）本地发布到 `gh-pages`。
 输出 HTML 在 `html/` 目录（运行产物默认不提交 Git，见 `.gitignore`）。
 
 ## 环境要求
@@ -46,13 +46,27 @@ chmod +x ./qr.sh
 - `cache/market_data-YYYYMMDD.json`
 - `html/复盘日记-YYYYMMDD-tab-v1.html`
 
-### 2) 只离线渲染（无成本，不请求接口）
+### 2) 只离线重建（无成本，不请求接口）
 ```bash
 ./qr.sh render               # 使用 cache 里最新的 market_data-*.json
 ./qr.sh render 2026-04-17
 ```
 
-### 3) 仅在线取数/计算（便于你本地调试计算逻辑）
+说明：
+- `render` 实际会调用 `python -m daily_review.cli --rebuild`
+- 默认只使用本地 `cache/market_data-YYYYMMDD.json` 和已有缓存，不在线补抓
+- 适合你本地做算法调参、页面调试、历史回放
+
+### 2.1) 本地重建时需要在线补抓（可选）
+```bash
+PYTHONPATH=. python3 -m daily_review.cli --rebuild --date 2026-04-17 --allow-network
+```
+
+说明：
+- 只建议在本地明确需要补齐个别缺失缓存时使用
+- 常规本地调试更推荐默认离线 rebuild，这样结果更可复现
+
+### 3) 仅在线取数/计算（便于你本地调试取数逻辑）
 ```bash
 ./qr.sh gen                  # 只跑 gen_report_v4.py（会取数，会写 cache，会生成留档 HTML）
 ./qr.sh gen 2026-04-17
@@ -69,7 +83,7 @@ chmod +x ./qr.sh
 ## 自动发布到 GitHub Pages（推荐：GitHub Actions）
 
 仓库内已提供工作流：`.github/workflows/publish_pages.yml`，会：
-- 云端执行 `./qr.sh fetch` 生成最新 HTML
+- 云端执行 `./qr.sh fetch` 在线抓取最新数据，再自动走离线 pipeline rebuild
 - 将最新产物写入 `gh-pages` 分支（`index.html` + 同步保留当日报告文件）
 - GitHub Pages 使用 **Deploy from branch: gh-pages（/root）** 发布
 
@@ -86,6 +100,11 @@ chmod +x ./qr.sh
 - **提交代码触发**：push 到 `main` 会自动发布
 - **定时触发**：工作日定时（时间用脚本按北京时间 15:01 放行；cron 本身为 UTC）
 
+### GitHub Actions 和本地运行的分工
+- **GitHub Actions / 定时任务**：主流程，走 `./qr.sh fetch`，允许在线抓取和在线补齐
+- **本地 `render` / `--rebuild`**：调试流程，默认离线，不依赖你每次都重新抓数据
+- **本地 `fetch`**：需要手动验证抓取链路、更新缓存、或排查线上数据问题时再用
+
 ---
 
 ## 常见问题
@@ -93,7 +112,7 @@ chmod +x ./qr.sh
 ### 1) 为什么日期会自动变化？
 当输入日期是周末/非交易日，取数脚本会自动回退到最近交易日，并在日志里提示。
 
-### 2) 离线渲染提示找不到 `market_data-YYYYMMDD.json`
+### 2) 离线重建提示找不到 `market_data-YYYYMMDD.json`
 说明本地还没有这一天的缓存。先跑一次：
 ```bash
 ./qr.sh fetch 2026-04-17
@@ -104,7 +123,8 @@ chmod +x ./qr.sh
 ## 关键文件
 
 - `qr.sh`：统一入口脚本
-- `gen_report_v4.py`：在线取数/计算主脚本（生成 cache + 留档 HTML）
+- `daily_review/cli.py`：主入口（在线 fetch + 离线 rebuild）
+- `gen_report_v4.py`：兼容壳，直接执行时会转调 `daily_review.cli --fetch`
 - `daily_review/render/render_html.py`：离线渲染器（模板注入）
 - `templates/report_template.html`：主模板
 

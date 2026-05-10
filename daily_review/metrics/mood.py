@@ -110,8 +110,10 @@ def calc_stage(*, heat_score: float, risk_score: float, inputs: Dict[str, Any]) 
         t = str(out.get("type") or "warn")
         if day_state == "退潮确认":
             t = "fire"
+        elif day_state == "分歧":
+            t = "warn"
         else:
-            # 让周期决定主色
+            # 让周期决定主色，但分歧日不再用强周期颜色误导情绪判断
             t = STAGE_TO_TYPE.get(cycle, t) or t
 
         tpl = ACTION_TEMPLATES.get(cycle, {})

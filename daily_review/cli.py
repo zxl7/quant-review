@@ -597,7 +597,7 @@ def run_fetch_and_rebuild(date: str | None) -> int:
 
     # 离线重建（pipeline）并渲染 tab-v1
     _log("开始离线重建 pipeline...")
-    rc = run_rebuild(actual_date)
+    rc = run_rebuild(actual_date, allow_network=True)
 
     # 同步生成盯盘快照：每次 fetch 都追加一条盘中切片 + 发布 latest_intraday*.json
     # 注意：run_rebuild 会将完整 market_data（含 volume/plateRankTop10/mood_inputs）写回缓存文件
@@ -845,7 +845,7 @@ def run_intraday_snapshot(date: str | None) -> int:
     # 跑 pipeline + 渲染（复用 rebuild 的大部分逻辑）
     # 第一次：先把计算结果写回 intraday market_data（用于生成快照记录）
     _log("pipeline 初次重建...")
-    run_rebuild(actual_date, suffix="intraday", source_market_path=market_path)
+    run_rebuild(actual_date, suffix="intraday", source_market_path=market_path, allow_network=True)
 
     # 追加快照记录（写入 cache/intraday_snapshots-YYYYMMDD.json）
     try:
@@ -859,7 +859,7 @@ def run_intraday_snapshot(date: str | None) -> int:
 
     # 第二次：把"半小时快照列表"注入页面后再渲染一次（离线，成本很低）
     _log("pipeline 二次重建（含快照注入）...")
-    run_rebuild(actual_date, suffix="intraday", source_market_path=market_path)
+    run_rebuild(actual_date, suffix="intraday", source_market_path=market_path, allow_network=True)
 
     # 在输出 HTML 中注入盘中快照标记
     out_dir = root / "html"
@@ -884,7 +884,13 @@ def _normalize_date(date: str) -> str:
     return d
 
 
-def run_rebuild(date: str, modules: list[str] | None = None, suffix: str = "", source_market_path: Path | None = None) -> int:
+def run_rebuild(
+    date: str,
+    modules: list[str] | None = None,
+    suffix: str = "",
+    source_market_path: Path | None = None,
+    allow_network: bool = False,
+) -> int:
     """
     离线重建（不请求接口）：
     - 从 cache/market_data-YYYYMMDD.json 读取
@@ -1106,7 +1112,7 @@ def run_rebuild(date: str, modules: list[str] | None = None, suffix: str = "", s
     # - sectorHeatmap（多板块情绪热力图）
     # - threeQuadrants（盘面三象限）
     try:
-        _inject_prd_v2_metrics(root=root, date=date, market_data=market_data)
+        _inject_prd_v2_metrics(root=root, date=date, market_data=market_data, allow_network=allow_network)
         _log("PRD v2 指标已注入 (sectorHeatmap/threeQuadrants)")
     except Exception:
         pass
@@ -1123,10 +1129,8 @@ def run_rebuild(date: str, modules: list[str] | None = None, suffix: str = "", s
     out_dir = root / "html"
     out_dir.mkdir(parents=True, exist_ok=True)
     suffix_part = f"-{suffix}" if suffix else ""
-    # 文件名用当天日期（实时日期），不用交易日期
-    from datetime import date as date_cls
-    today_compact = date_cls.today().strftime("%Y%m%d")
-    out_path = out_dir / f"复盘日记-{today_compact}{suffix_part}-tab-v1.html"
+    # 文件名与报告日期保持一致，便于历史回放、留档和线上产物追踪
+    out_path = out_dir / f"复盘日记-{date_compact}{suffix_part}-tab-v1.html"
 
     render_html_template(
         template_path=template_path,
@@ -1400,6 +1404,9 @@ def _inject_mood_history_and_delta(*, root: Path, date: str, market_data: dict) 
                         "fb_rate": _to_num(s_mi.get("fb_rate", 0), 0),
                         "jj_rate": _to_num(s_mi.get("jj_rate_adj", s_mi.get("jj_rate", 0)), 0),
                         "broken_lb_rate": _to_num(s_mi.get("broken_lb_rate_adj", s_mi.get("broken_lb_rate", 0)), 0),
+                        "zb_rate": _to_num(s_mi.get("zb_rate", 0), 0),
+                        "zt_early_ratio": _to_num(s_mi.get("zt_early_ratio", 0), 0),
+                        "loss": _to_num(s_mi.get("loss", _to_num(s_mi.get("bf_count", 0), 0) + _to_num(s_mi.get("dt_count", 0), 0)), 0),
                         "zt": int(_to_num((snap.get("panorama") or {}).get("limitUp", 0), 0)),
                         "dt": int(_to_num((snap.get("panorama") or {}).get("limitDown", 0), 0)),
                         "lianban": lianban,
@@ -1417,6 +1424,9 @@ def _inject_mood_history_and_delta(*, root: Path, date: str, market_data: dict) 
             mi["hist_fb_rate"] = [round(r["fb_rate"], 1) for r in rows]
             mi["hist_jj_rate"] = [round(r["jj_rate"], 1) for r in rows]
             mi["hist_broken_lb_rate"] = [round(r["broken_lb_rate"], 1) for r in rows]
+            mi["hist_zb_rate"] = [round(r["zb_rate"], 1) for r in rows]
+            mi["hist_zt_early_ratio"] = [round(r["zt_early_ratio"], 1) for r in rows]
+            mi["hist_loss"] = [round(r["loss"], 1) for r in rows]
             mi["hist_zt"] = [int(r.get("zt", 0)) for r in rows]
             mi["hist_dt"] = [int(r.get("dt", 0)) for r in rows]
             mi["hist_lianban"] = [int(r.get("lianban", 0)) for r in rows]
@@ -1427,6 +1437,9 @@ def _inject_mood_history_and_delta(*, root: Path, date: str, market_data: dict) 
             mi["trend_fb_rate"] = round(float(last["fb_rate"]) - float(first["fb_rate"]), 2)
             mi["trend_jj_rate"] = round(float(last["jj_rate"]) - float(first["jj_rate"]), 2)
             mi["trend_broken_lb_rate"] = round(float(last["broken_lb_rate"]) - float(first["broken_lb_rate"]), 2)
+            mi["trend_zb_rate"] = round(float(last["zb_rate"]) - float(first["zb_rate"]), 2)
+            mi["trend_zt_early_ratio"] = round(float(last["zt_early_ratio"]) - float(first["zt_early_ratio"]), 2)
+            mi["trend_loss"] = round(float(last["loss"]) - float(first["loss"]), 2)
             mi["trend_zt"] = int(last.get("zt", 0)) - int(first.get("zt", 0))
             mi["trend_dt"] = int(last.get("dt", 0)) - int(first.get("dt", 0))
             mi["trend_lianban"] = int(last.get("lianban", 0)) - int(first.get("lianban", 0))
@@ -1488,7 +1501,7 @@ def _inject_mood_history_and_delta(*, root: Path, date: str, market_data: dict) 
     }
 
 
-def _inject_prd_v2_metrics(*, root: Path, date: str, market_data: dict) -> None:
+def _inject_prd_v2_metrics(*, root: Path, date: str, market_data: dict, allow_network: bool = False) -> None:
     """
     PRD v2 派生字段注入：
     - 严格使用现有 marketData + raw.pools + 缓存历史文件复算
@@ -1968,7 +1981,7 @@ def _inject_prd_v2_metrics(*, root: Path, date: str, market_data: dict) -> None:
                         break
         # 缓存中无精确匹配数据 → 在线刷新
         exact_match = plate_by_day.get(date) or plate_by_day.get(date8) or {}
-        if not (isinstance(exact_match, dict) and exact_match.get("rows")):
+        if allow_network and not (isinstance(exact_match, dict) and exact_match.get("rows")):
             try:
                 _log("板块轮动缓存无精确数据，在线刷新...")
                 plate_cache = _refresh_plate_rotate_cache(root=root)
@@ -2048,7 +2061,7 @@ def _inject_prd_v2_metrics(*, root: Path, date: str, market_data: dict) -> None:
                         break
 
         # 缓存中无精确数据 → 在线补齐（AkShare，不需要 token）
-        if not by_day.get(date8):
+        if allow_network and not by_day.get(date8):
             try:
                 _log("概念资金流缓存无精确数据，在线抓取...")
                 rows = _fetch_concept_fund_flow_top(topn=60)
@@ -2309,6 +2322,27 @@ def run_partial(date: str, modules: list[str]) -> int:
     runner.run(ctx, targets=modules)
     market_data = ctx.market_data
 
+    # partial 也补齐趋势/昨日对比，并重算展示层摘要，避免局部调参后页面保留旧文案
+    try:
+        _inject_mood_history_and_delta(root=root, date=date, market_data=market_data)
+    except Exception:
+        pass
+
+    try:
+        from daily_review.metrics.action_advisor import build_action_advisor
+
+        market_data["actionAdvisor"] = build_action_advisor(market_data=market_data)
+    except Exception:
+        pass
+
+    try:
+        from daily_review.render.render_html import build_market_overview_7d, build_summary3
+
+        market_data["summary3"] = build_summary3(market_data=market_data)
+        market_data["marketOverview7d"] = build_market_overview_7d(market_data=market_data)
+    except Exception:
+        pass
+
     # 清理前端已不用的大字段：避免 partial 更新时把旧 compat/default_page 等写回
     try:
         _prune_frontend_unused_fields(market_data)
@@ -2342,6 +2376,7 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--require-py", default="", help="强制要求 Python 版本前缀（例如 3.14）")
     ap.add_argument("--rebuild", action="store_true", help="离线重建（不请求接口）：重算并输出 tab-v1 HTML")
     ap.add_argument("--fetch", action="store_true", help="在线取数并生成缓存，然后离线重建输出 tab-v1（有成本）")
+    ap.add_argument("--allow-network", action="store_true", help="允许 rebuild 在缺失缓存时在线补齐部分数据源")
     ap.add_argument(
         "--only",
         nargs="+",
@@ -2386,7 +2421,7 @@ def main(argv: list[str] | None = None) -> int:
     if args.rebuild:
         if not args.date:
             raise SystemExit("--rebuild 模式必须指定 --date")
-        return run_rebuild(args.date)
+        return run_rebuild(args.date, allow_network=args.allow_network)
 
     if args.fetch:
         return run_fetch_and_rebuild(args.date)

@@ -234,7 +234,94 @@ def build_action_advisor(*, market_data: Dict[str, Any]) -> Dict[str, Any]:
         base["posture"] = "冲高兑现"
         base["position"] = "2-4成"
 
+    # 高位负反馈是短线接力的硬约束，避免“修复日 = 必须出手”的错觉
+    if negative_broken and broken_rate >= 65:
+        base["posture"] = "控仓试错" if cycle_key in ("修复", "亢奋") else "防守"
+        base["position"] = "1-2成"
+    elif negative_broken and (day_state == "分歧" or maxlb_now < max(5, recent_high_7d)):
+        base["posture"] = "谨慎试错" if cycle_key in ("修复", "亢奋") else "防守"
+        base["position"] = "2-3成"
+    elif negative_loss and day_state == "分歧" and base["position"] not in ("空仓", "1-2成", "1-3成或空仓"):
+        base["posture"] = "谨慎试错"
+        base["position"] = "2-3成"
+
     posture_line = f"姿态：{base['posture']}（{base['position']}）"
+
+    support_ok = fb_now >= 75 or (fb_dir == "up" and fb_pct > 5)
+    loss_shrinking = dt_prev > 0 and dt_now < dt_prev
+    relay_ok = (jj_dir == "up" and jj_pct > 10) or (lb_dir == "up" and lb_pct > 40)
+    height_open = maxlb_now >= 5 and maxlb_now >= recent_high_7d
+    height_capped = (recent_high_7d >= 5 and maxlb_now < recent_high_7d) or maxlb_now < 5
+
+    def _action_clause() -> str:
+        posture = str(base.get("posture") or "")
+        position = str(base.get("position") or "")
+        if posture == "空仓等待" or position == "空仓":
+            return "次日先观察分歧是否释放，再看低位修复。"
+        if posture == "防守" or "空仓" in position:
+            return "次日先控仓观察，只看低位确定性回流。"
+        if posture in ("控仓试错", "谨慎试错", "谨慎进攻"):
+            if cycle_key == "修复":
+                return "次日只做主线核心回封/换手确认，不追高一致。"
+            return "次日只做分歧后的确定性回流，不追高加速。"
+        if posture in ("积极试探", "试探进攻"):
+            if negative_broken or day_state == "分歧":
+                return "次日可小仓位围绕主线核心试错，优先回封和换手板。"
+            return "次日可围绕主线核心做回封/换手试错。"
+        if posture == "进攻":
+            return "次日可围绕主线核心和空间龙头做分歧转强。"
+        return "次日按核心主线做确认，不做无辨识度跟风。"
+
+    state_clause = "盘面仍在拉扯"
+    if cycle_key == "冰点":
+        if support_ok and loss_shrinking:
+            state_clause = "退潮末端出现止跌修复"
+        else:
+            state_clause = "退潮还没走完"
+    elif cycle_key == "修复":
+        if day_state == "分歧":
+            state_clause = "修复在延续，但分歧还在"
+        elif support_ok and loss_shrinking:
+            state_clause = "修复继续推进"
+        else:
+            state_clause = "修复有延续，但还没形成一致"
+    elif cycle_key == "亢奋":
+        state_clause = "情绪仍强，但高位波动会放大" if risk_expand else "情绪处在强势加速段"
+    elif day_state == "分歧":
+        state_clause = "分歧还在主导盘面"
+
+    edge_parts: list[str] = []
+    if support_ok:
+        edge_parts.append("承接在转强")
+    if loss_shrinking:
+        edge_parts.append("亏钱效应收敛")
+    if relay_ok:
+        edge_parts.append("接力链条回暖")
+    if height_open:
+        edge_parts.append("龙头空间保持打开")
+    edge_clause = "、".join(edge_parts[:2])
+
+    risk_clause = ""
+    if broken_rate >= 65:
+        risk_clause = "但高位断板负反馈仍重"
+    elif negative_broken:
+        risk_clause = "但高位承接还不稳"
+    elif negative_loss:
+        risk_clause = "但亏钱效应还没真正出清"
+    elif negative_dt:
+        risk_clause = "但负反馈有回流迹象"
+    elif height_capped:
+        risk_clause = "但龙头空间还没真正打开"
+    elif negative_diverge or risk >= 68:
+        risk_clause = "但高位分歧仍在累积"
+
+    summary = state_clause
+    if edge_clause:
+        summary += f"，{edge_clause}"
+    if risk_clause:
+        summary += f"，{risk_clause}"
+    summary = summary.rstrip("，") + "。"
+    summary += _action_clause()
 
     # === 动态证据池：先生成候选，再按权重调配输出 ===
     evidence_pool: list[dict[str, Any]] = []
@@ -434,17 +521,11 @@ def build_action_advisor(*, market_data: Dict[str, Any]) -> Dict[str, Any]:
     picked_groups = {str(v.get("group")) for v in sorted(best_by_group.values(), key=lambda x: float(x.get("score") or 0), reverse=True)[:4]}
 
     if cycle_key == "修复" and {"seal", "loss", "height"} <= picked_groups and pos_cnt >= 3:
-        headline = "这不是普通的反弹日，是情绪周期的一次确认："
-    elif cycle_key == "亢奋" and pos_cnt >= 2 and ("height" in picked_groups or "heat" in picked_groups):
-        headline = "这不是普通的强势日，更像情绪加速后的高位确认："
-    elif cycle_key == "冰点" and warn_cnt >= 2:
-        headline = "这不是普通的分歧，而是退潮是否止跌的关口："
-    elif warn_cnt >= 3:
-        headline = "这不是普通的震荡，而是风险是否重新扩散的观察点："
-    else:
-        headline = "今天不只是情绪波动，关键在于修复是否站稳："
+        summary = summary.replace("修复在延续", "修复确认在推进", 1)
+    elif cycle_key == "冰点" and warn_cnt >= 3 and summary.startswith("退潮还没走完"):
+        summary = "退潮还没走完，风险释放优先。" + _action_clause()
 
-    action_line = " ".join([headline] + [f"{x['icon']} {x['text']}" for x in evidences])
+    action_line = " ".join([summary] + [f"{x['icon']} {x['text']}" for x in evidences])
 
     return {
         "cycle": stage_title,
@@ -454,7 +535,7 @@ def build_action_advisor(*, market_data: Dict[str, Any]) -> Dict[str, Any]:
         "posture": base["posture"],
         "position": base["position"],
         "action_line": action_line,
-        "summary": headline,
+        "summary": summary,
         "posture_line": posture_line,
         "evidences": evidences,
         "tags": tags,

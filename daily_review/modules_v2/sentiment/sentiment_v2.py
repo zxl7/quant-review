@@ -5,8 +5,8 @@
 sentiment_v2 模块：按 v2 规格书输出 marketData.v2.summary
 
 并做兼容：
-- 覆盖 marketData.sentiment / dual_dimension 的核心字段（让 UI 先跑起来）
-- 覆盖 marketData.moodStage.title 为 v2.phase（用于情绪温度标题）
+- 输出 marketData.sentiment 的核心字段（让 UI 先跑起来）
+- 不再覆写 marketData.mood / marketData.moodStage，避免与主情绪引擎口径打架
 """
 
 from __future__ import annotations
@@ -227,26 +227,15 @@ def _derive_inputs(ctx: Context) -> Dict[str, Any]:
 
 
 def _compute(ctx: Context) -> Dict[str, Any]:
-    md = ctx.market_data or {}
     inputs = _derive_inputs(ctx)
     s = calc_sentiment_score(inputs)
 
     # v2 收口输出
     v2 = {"sentiment": s}
 
-    # moodStage：让标题与 phase 对齐（你现在 UI 依赖它）
-    mood_stage = {**(md.get("moodStage") or {}), "title": s.get("phase") or "-", "detail": "；".join(s.get("warnings") or [])}
-
-    # ─────────────────────────────────────────────────────────────
-    # 情绪/风险合并为 100 分制（UI 口径）
-    # - heat：情绪热度（0~100，越高越强）
-    # - risk：风险分（0~100，越高越危险）
-    # - score：综合分（0~100），把“强度”和“风险”合并成一个总分
-    # ─────────────────────────────────────────────────────────────
     score10 = float(s.get("score") or 0)  # 保留 0~10 给算法/调试
     heat100 = int(round(_clamp(score10 * 10.0, 0.0, 100.0)))
     risk100 = _calc_risk100(inputs)
-    # 总分：强度占主导，风险做扣分项（高风险会明显拉低总分）
     total100 = int(round(_clamp(0.70 * heat100 + 0.30 * (100 - risk100), 0.0, 100.0)))
     risk_level = _risk_level_from_score(risk100)
 
@@ -263,13 +252,9 @@ def _compute(ctx: Context) -> Dict[str, Any]:
         "warnings": s.get("warnings"),
     }
 
-    mood = {**(md.get("mood") or {}), "heat": heat100, "risk": risk100, "score": total100}
-
     return {
         "marketData.v2": v2,
         "marketData.sentiment": compat_sentiment,
-        "marketData.moodStage": mood_stage,
-        "marketData.mood": mood,
     }
 
 
@@ -282,6 +267,6 @@ SENTIMENT_V2_MODULE = Module(
         "marketData.themePanels",
         "marketData.themeTrend",
     ],
-    provides=["marketData.v2", "marketData.sentiment", "marketData.moodStage", "marketData.mood"],
+    provides=["marketData.v2", "marketData.sentiment"],
     compute=_compute,
 )

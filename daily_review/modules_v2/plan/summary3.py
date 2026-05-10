@@ -27,8 +27,7 @@ def _compute(ctx: Context) -> Dict[str, Any]:
 
 SUMMARY3_MODULE = Module(
     name="summary3",
-    requires=["marketData.actionGuideV2", "marketData.moodStage", "marketData.ladder", "marketData.themePanels"],
+    requires=["features.mood_inputs", "marketData.moodStage", "marketData.ladder", "marketData.themePanels"],
     provides=["marketData.summary3"],
     compute=_compute,
 )
-

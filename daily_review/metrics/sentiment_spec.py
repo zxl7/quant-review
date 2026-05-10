@@ -208,7 +208,7 @@ def build_dual_dimension(market_data: Dict[str, Any], sentiment: Dict[str, Any])
     dt_count = _to_int(mi.get("dt_count"), 0)
     bf_count = _to_int(mi.get("bf_count"), 0)
     loss = _to_num(mi.get("loss"), 0.0)
-    zbc_ge3 = _to_num(mi.get("zbc_ge3_ratio"), 0.0)
+    zbc_ge3 = _to_num(mi.get("zt_zbc_ge3_ratio", mi.get("zbc_ge3_ratio")), 0.0)
 
     # 赚钱效应（1~5 星）：用“昨日反馈 + 晋级承接 + 封板一致性”融合（语义化）
     star_raw = (
@@ -311,4 +311,3 @@ def apply_compat_to_mood(sentiment: Dict[str, Any], dual: Dict[str, Any]) -> Tup
     }
     mood_stage = {"title": phase, "type": t, "detail": f"风险：{risk_level}｜{dual.get('earning_effect','')}/{dual.get('loss_effect','')}"}
     return mood, mood_stage
-
