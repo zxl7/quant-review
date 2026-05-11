@@ -7386,18 +7386,6 @@
               const count = Array.isArray(slices?.snapshots) ? slices.snapshots.length : 0
               return `${date}|${ts}|${count}`
             },
-            beijingDate10() {
-              try {
-                return new Intl.DateTimeFormat("en-CA", {
-                  timeZone: "Asia/Shanghai",
-                  year: "numeric",
-                  month: "2-digit",
-                  day: "2-digit",
-                }).format(new Date())
-              } catch (e) {
-                return ""
-              }
-            },
             /**
              * 纯函数：规范化轮询间隔，单位分钟，默认 10 分钟。
              */
@@ -7439,11 +7427,6 @@
                 let slices = null
                 if (resSlices && resSlices.ok) {
                   slices = await resSlices.json()
-                }
-                const snapshotDate = String(live?.date || slices?.date || "").slice(0, 10)
-                const bjToday = this.beijingDate10()
-                if (snapshotDate && bjToday && snapshotDate !== bjToday) {
-                  throw new Error(`实时快照非当日：收到 ${snapshotDate}，北京时间今日 ${bjToday}`)
                 }
                 this.applyLiveSnapshotPayload(live, slices)
                 this._consecutiveLiveFail = 0

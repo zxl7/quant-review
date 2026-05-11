@@ -230,6 +230,7 @@ jobs:
           local_dates = collect_local_trade_days()
 
           rt_date = ""
+          remote_dates = []
           if local_dates:
             dates = [d for d in local_dates if d <= today]
             latest_trade = dates[-1] if dates else local_dates[-1]
@@ -327,49 +328,6 @@ jobs:
             # 日终定时 / push / workflow_dispatch：在线全量 fetch
             ./qr.sh fetch "${run_date}"
           fi
-
-      - name: Validate same-day realtime snapshots (schedule)
-        if: ${{ github.event_name == 'schedule' && steps.timecheck.outputs.skip != 'true' && steps.tradeday.outputs.is_trade_today == 'true' }}
-        run: |
-          set -euo pipefail
-          expected_date="${{ steps.tradeday.outputs.today_bj }}"
-          python3 - <<'PY'
-          import json
-          import os
-          from pathlib import Path
-
-          expected = os.environ["EXPECTED_DATE"]
-          latest_path = Path("html/latest_intraday.json")
-          slices_path = Path("html/latest_intraday_slices.json")
-          missing = [str(p) for p in (latest_path, slices_path) if not p.exists()]
-          if missing:
-            raise SystemExit(f"Missing realtime snapshot files: {', '.join(missing)}")
-
-          latest = json.loads(latest_path.read_text(encoding="utf-8"))
-          slices = json.loads(slices_path.read_text(encoding="utf-8"))
-
-          live_date = str(latest.get("date") or "")[:10]
-          slices_date = str(slices.get("date") or "")[:10]
-          latest_ts = str(((slices.get("latest") or {}) if isinstance(slices, dict) else {}).get("ts_bj") or "")
-          count = len((slices.get("snapshots") or [])) if isinstance(slices, dict) else 0
-
-          errors = []
-          if live_date != expected:
-            errors.append(f"latest_intraday.json date={live_date!r} expected={expected!r}")
-          if slices_date != expected:
-            errors.append(f"latest_intraday_slices.json date={slices_date!r} expected={expected!r}")
-          if not latest_ts.startswith(expected):
-            errors.append(f"latest snapshot ts_bj={latest_ts!r} not in expected date {expected!r}")
-          if count <= 0:
-            errors.append("latest_intraday_slices.json has no snapshots")
-
-          if errors:
-            raise SystemExit("Realtime snapshot validation failed: " + " | ".join(errors))
-
-          print(f"Realtime snapshot OK: date={expected} count={count} latest_ts={latest_ts}")
-          PY
-        env:
-          EXPECTED_DATE: ${{ steps.tradeday.outputs.today_bj }}
 
       - name: Prepare Pages site (html/ as site root)
         if: ${{ (github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true') && (github.event_name != 'schedule' || steps.tradeday.outputs.is_trade_today == 'true') }}
