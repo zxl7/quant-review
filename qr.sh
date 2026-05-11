@@ -169,7 +169,7 @@ render_offline() {
 
   # 收口阶段：离线渲染前先跑一遍 v2 pipeline 重建 market_data（不请求接口）
   # 这样你改算法/模块后，render 会直接反映最新结果。
-  PYTHONPATH=. python3 -m daily_review.cli --date "${date10}" --rebuild
+  PYTHONPATH=. python3 -u -m daily_review.cli --date "${date10}" --rebuild
 
   echo "✅ 离线渲染完成: ${out_html}"
   # 本地策略：报告只保留最新一份
@@ -183,7 +183,7 @@ cmd_fetch() {
   info "在线取数生成缓存（会请求接口，有成本） -> 离线 pipeline 重建 -> 输出 tab-v1"
   if [[ -n "${DATE_ARG}" ]]; then
     # 新 FULL：走 daily_review.cli --fetch（data/cache 层），最终产物仍由 pipeline 生成
-    PYTHONPATH=. python3 -m daily_review.cli --fetch --date "${DATE_ARG}"
+    PYTHONPATH=. python3 -u -m daily_review.cli --fetch --date "${DATE_ARG}"
     cleanup_timestamp_html "$(date10_to_date8 "${DATE_ARG}")"
     prune_cache_keep_latest_n 7
     prune_extra_cache_artifacts
@@ -192,7 +192,7 @@ cmd_fetch() {
   fi
 
   # 不指定日期：由 cli 负责自动回退到最近交易日
-  PYTHONPATH=. python3 -m daily_review.cli --fetch
+  PYTHONPATH=. python3 -u -m daily_review.cli --fetch
 
   # 用缓存里最新的 market_data-*.json 再离线渲染一份 v1（不再取数）
   local d8 d10
@@ -217,10 +217,10 @@ cmd_gen() {
   info "仅在线取数并生成缓存（不做离线 pipeline 重建/渲染）"
   if [[ -n "${DATE_ARG}" ]]; then
     # 兼容：暂时仍保留 gen_report_v4，但推荐用 daily_review.cli --fetch
-    python3 gen_report_v4.py "${DATE_ARG}"
+    python3 -u gen_report_v4.py "${DATE_ARG}"
     sync_online_cache_dir "${DATE_ARG}"
   else
-    python3 gen_report_v4.py
+    python3 -u gen_report_v4.py
     local d8 d10
     d8="$(pick_latest_cache_date8)" || die "未找到 cache/market_data-*.json（gen_report_v4.py 未生成缓存？）"
     d10="$(date8_to_date10 "${d8}")"
@@ -266,9 +266,9 @@ cmd_watch_slice() {
   local date_arg="${DATE_ARG:-}"
   info "生成实时盯盘切片 JSON（独立请求层，不重建整份报告）"
   if [[ -n "${date_arg}" ]]; then
-    PYTHONPATH=. python3 -m daily_review.watch_runtime --date "$(date10_to_date8 "${date_arg}")" --publish
+    PYTHONPATH=. python3 -u -m daily_review.watch_runtime --date "$(date10_to_date8 "${date_arg}")" --publish
   else
-    PYTHONPATH=. python3 -m daily_review.watch_runtime --publish
+    PYTHONPATH=. python3 -u -m daily_review.watch_runtime --publish
   fi
   prune_extra_cache_artifacts
 }

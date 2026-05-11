@@ -346,7 +346,7 @@ def _prune_frontend_unused_fields(market_data: dict) -> None:
 
 def _log(msg: str) -> None:
     ts = time.strftime("%H:%M:%S")
-    print(f"  [{ts}] {msg}")
+    print(f"  [{ts}] {msg}", flush=True)
 
 
 def run_full(date: str | None) -> int:

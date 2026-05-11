@@ -33,10 +33,13 @@ env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
   # 统一时区（日志/生成时间/写入站点元信息）
   TZ: Asia/Shanghai
+  # Actions 日志需要实时吐出，避免长时间在线 fetch 时看起来像卡死
+  PYTHONUNBUFFERED: "1"
 
 jobs:
   build:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     outputs:
       skip: ${{ steps.timecheck.outputs.skip }}
     steps:
@@ -74,18 +77,18 @@ jobs:
 
           t_close=$((15*60+12))
           hit_close=false
-          if [ $(( now_min > t_close - 20 && now_min < t_close + 20 )) -eq 1 ]; then
+          if [ $(( now_min >= 15*60 && now_min < t_close + 20 )) -eq 1 ]; then
             hit_close=true
           fi
 
-          if [ "${hit_intraday}" = "true" ]; then
-            echo "skip=false" >> "$GITHUB_OUTPUT"
-            echo "mode=intraday" >> "$GITHUB_OUTPUT"
-            echo "Intraday window hit → intraday"
-          elif [ "${hit_close}" = "true" ]; then
+          if [ "${hit_close}" = "true" ]; then
             echo "skip=false" >> "$GITHUB_OUTPUT"
             echo "mode=eod" >> "$GITHUB_OUTPUT"
-            echo "Close window hit → eod"
+            echo "Close window hit -> eod"
+          elif [ "${hit_intraday}" = "true" ]; then
+            echo "skip=false" >> "$GITHUB_OUTPUT"
+            echo "mode=intraday" >> "$GITHUB_OUTPUT"
+            echo "Intraday window hit -> intraday"
           else
             echo "skip=true" >> "$GITHUB_OUTPUT"
             echo "mode=skip" >> "$GITHUB_OUTPUT"
@@ -304,10 +307,12 @@ jobs:
 
       - name: Generate latest report (online fetch -> offline pipeline rebuild)
         if: ${{ (github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true') && (github.event_name != 'schedule' || steps.tradeday.outputs.is_trade_today == 'true') }}
+        timeout-minutes: 9
         env:
           BIYING_TOKEN: ${{ secrets.BIYING_TOKEN }}
           BIYING_BASE_URL: ${{ secrets.BIYING_BASE_URL }}
         run: |
+          set -euo pipefail
           if [ -z "${BIYING_TOKEN}" ]; then
             echo "Missing secrets.BIYING_TOKEN"
             exit 2
