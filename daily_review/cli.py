@@ -51,6 +51,165 @@ def _now_bj_date8() -> str:
     return _dt.datetime.now(_dt.timezone(_dt.timedelta(hours=8))).strftime("%Y%m%d")
 
 
+def _display_float(v, default: float = 0.0) -> float:
+    try:
+        if v is None or v == "":
+            return default
+        if isinstance(v, str):
+            return float(v.replace("%", "").replace("亿", "").replace(",", "").strip())
+        return float(v)
+    except Exception:
+        return default
+
+
+def _fmt_index_pct(v) -> str:
+    if v is None or v == "":
+        return ""
+    if isinstance(v, str):
+        s = v.strip()
+        if not s:
+            return ""
+        if s.endswith("%"):
+            return f"{_display_float(s):+.2f}%"
+        try:
+            return f"{float(s):+.2f}%"
+        except Exception:
+            return s
+    return f"{_display_float(v):+.2f}%"
+
+
+def _fmt_index_val(v) -> str:
+    if v is None or v == "":
+        return ""
+    if isinstance(v, str):
+        s = v.strip()
+        if not s:
+            return ""
+        try:
+            return f"{float(s):.2f}"
+        except Exception:
+            return s
+    return f"{_display_float(v):.2f}"
+
+
+def _normalize_indices_display(market_data: dict) -> None:
+    rows = market_data.get("indices")
+    if not isinstance(rows, list):
+        return
+    for row in rows:
+        if not isinstance(row, dict):
+            continue
+        if "val" in row:
+            row["val"] = _fmt_index_val(row.get("val"))
+        if "chg" in row:
+            row["chg"] = _fmt_index_pct(row.get("chg"))
+
+
+def _realtime_index_items(market_data: dict) -> list[dict]:
+    raw = market_data.get("raw") if isinstance(market_data.get("raw"), dict) else {}
+    realtime = raw.get("indices_realtime") if isinstance(raw.get("indices_realtime"), dict) else {}
+    items = realtime.get("items") if isinstance(realtime.get("items"), list) else []
+    if items:
+        return [x for x in items if isinstance(x, dict)]
+
+    # final cache 会清理 raw；保留在 indices 里的 cje 可作为同一次 fetch 后的轻量兜底。
+    rows = market_data.get("indices") if isinstance(market_data.get("indices"), list) else []
+    return [x for x in rows if isinstance(x, dict) and _display_float(x.get("cje"), 0.0) > 0]
+
+
+def _apply_realtime_indices_display(market_data: dict) -> None:
+    items = _realtime_index_items(market_data)
+    if not items:
+        return
+
+    current = market_data.get("indices") if isinstance(market_data.get("indices"), list) else []
+    by_code = {str(x.get("code") or ""): x for x in current if isinstance(x, dict) and x.get("code")}
+    by_name = {str(x.get("name") or ""): x for x in current if isinstance(x, dict) and x.get("name")}
+    rows = []
+    for item in items:
+        code = str(item.get("code") or "").strip()
+        name = str(item.get("name") or "").strip()
+        val = _display_float(item.get("val"), 0.0)
+        if not name or val <= 0:
+            continue
+        base = dict(by_code.get(code) or by_name.get(name) or {})
+        base.update(
+            {
+                "name": name,
+                "code": code,
+                "val": _fmt_index_val(item.get("val")),
+                "chg": _fmt_index_pct(item.get("chg")),
+                "price": val,
+            }
+        )
+        cje = _display_float(item.get("cje"), 0.0)
+        if cje > 0:
+            base["cje"] = cje
+        rows.append(base)
+
+    if rows:
+        market_data["indices"] = rows
+
+
+def _two_market_amount_yi_from_realtime_indices(items: list[dict]) -> float:
+    total_yuan = 0.0
+    matched = 0
+    for item in items:
+        code = str(item.get("code") or "").strip().upper()
+        name = str(item.get("name") or "").strip()
+        is_two_market = code in {"000001.SH", "399001.SZ"} or name in {"上证指数", "深证成指"}
+        if not is_two_market:
+            continue
+        cje = _display_float(item.get("cje"), 0.0)
+        if cje <= 0:
+            continue
+        total_yuan += cje
+        matched += 1
+    if matched < 2 or total_yuan <= 0:
+        return 0.0
+    return round(total_yuan / 1e8, 2)
+
+
+def _apply_intraday_volume_from_realtime_indices(market_data: dict) -> None:
+    live_yi = _two_market_amount_yi_from_realtime_indices(_realtime_index_items(market_data))
+    if live_yi <= 0:
+        return
+
+    date10 = str(market_data.get("date") or "")
+    label = date10[5:] if len(date10) >= 10 else date10
+    volume = market_data.get("volume") if isinstance(market_data.get("volume"), dict) else {}
+    dates = [str(x) for x in (volume.get("dates") or []) if str(x)]
+    values = [_display_float(x, 0.0) for x in (volume.get("values") or [])]
+    n = min(len(dates), len(values))
+    dates = dates[:n]
+    values = values[:n]
+
+    if label:
+        if label in dates:
+            values[dates.index(label)] = live_yi
+        else:
+            dates.append(label)
+            values.append(live_yi)
+    if len(dates) > 7:
+        dates = dates[-7:]
+        values = values[-7:]
+
+    prev = values[-2] if len(values) >= 2 else 0.0
+    chg_pct = ((live_yi - prev) / prev * 100.0) if prev else 0.0
+    diff = live_yi - prev
+    direction_text = "放量" if diff >= 0 else "缩量"
+    magnitude_text = "大幅" if abs(chg_pct) >= 5 else "小幅"
+
+    market_data["volume"] = {
+        **volume,
+        "total": f"{live_yi:.2f}亿",
+        "change": f"{chg_pct:+.2f}%",
+        "increase": f"{magnitude_text}{direction_text} {abs(diff):.2f}亿",
+        "dates": dates,
+        "values": values,
+    }
+
+
 def _build_plan_guide(market_data: dict) -> dict | None:
     """
     为前端生成轻量版“明日行动指南”字段，避免模板直接依赖 v2/v3 大对象。
@@ -508,8 +667,9 @@ def run_fetch_and_rebuild(date: str | None) -> int:
             {
                 "name": i.get("name", ""),
                 "code": i.get("code", ""),
-                "val": i.get("val", ""),
-                "chg": i.get("chg", ""),
+                "val": _fmt_index_val(i.get("val", "")),
+                "chg": _fmt_index_pct(i.get("chg", "")),
+                "cje": i.get("cje", 0),
             }
             for i in (indices_rt or [])
             if isinstance(i, dict) and i.get("name")
@@ -540,6 +700,7 @@ def run_fetch_and_rebuild(date: str | None) -> int:
         "pools": raw_pools,
         "themes": {"code2themes": codes_map},
         "index_klines": {"codes": codes_entry},
+        "indices_realtime": {"as_of": indices_asof, "items": indices_rt or []},
         "theme_trend_cache": {"as_of": actual_date, "by_day": by_day},
     }
 
@@ -1051,6 +1212,13 @@ def run_rebuild(
     market_data = ctx.market_data
     _log("pipeline 已执行")
 
+    try:
+        _apply_realtime_indices_display(market_data)
+        _normalize_indices_display(market_data)
+        _apply_intraday_volume_from_realtime_indices(market_data)
+    except Exception:
+        pass
+
     # === 注入盘中快照列表（供"实时盯盘"页面展示）===
     try:
         import datetime as _dt2
@@ -1264,6 +1432,7 @@ def _append_intraday_snapshot(*, root: Path, date: str, market_data: dict) -> No
     ms = market_data.get("moodSignals") or {}
     hm2 = market_data.get("hm2Compare") or {}
     panorama = market_data.get("panorama") or {}
+    volume = market_data.get("volume") if isinstance(market_data.get("volume"), dict) else {}
 
     rec = {
         "time": t_label,
@@ -1279,6 +1448,7 @@ def _append_intraday_snapshot(*, root: Path, date: str, market_data: dict) -> No
         "dt": panorama.get("limitDown"),
         "bf": mi.get("bf_count"),
         "max_lb": mi.get("max_lb"),
+        "amount": volume.get("total") or "",
         "loss": mi.get("loss"),
         "hm2": hm2.get("score"),
         "pos": ms.get("pos") or [],
@@ -1313,6 +1483,7 @@ def _inject_intraday_snapshots(*, root: Path, date: str, market_data: dict, now_
         "snapshots": snaps,
         "simulated": False,
         "interval_min": None,
+        "latest": snaps[-1] if snaps else None,
     }
 
 
