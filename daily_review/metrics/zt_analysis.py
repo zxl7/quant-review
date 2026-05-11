@@ -1378,26 +1378,20 @@ def build_zt_analysis(*, market_data: Dict[str, Any]) -> Dict[str, Any]:
             -_to_num(r.get("breakRisk"), 0),
         )
 
-    relay_core = sorted(
-        [
-            r
-            for r in scored
-            if r.get("hasTradeTheme")
+    def relay_core_ok(r: Dict[str, Any]) -> bool:
+        return bool(
+            r.get("hasTradeTheme")
             and not r.get("isYizi")
             and not r.get("isShrinkSeal")
             and 2 <= _to_num(r.get("lbc"), 0) <= 5
             and _to_num(r.get("open"), 0) < 8
             and _to_num(r.get("breakRisk"), 0) < 76
             and _to_num(r.get("stepContextScore"), 0) >= 38
-        ],
-        key=relay_sort,
-        reverse=True,
-    )
-    relay_one_to_two = sorted(
-        [
-            r
-            for r in scored
-            if r.get("hasTradeTheme")
+        )
+
+    def relay_one_to_two_ok(r: Dict[str, Any]) -> bool:
+        return bool(
+            r.get("hasTradeTheme")
             and not r.get("isYizi")
             and not r.get("isShrinkSeal")
             and _to_num(r.get("lbc"), 0) == 1
@@ -1405,35 +1399,79 @@ def build_zt_analysis(*, market_data: Dict[str, Any]) -> Dict[str, Any]:
             and _to_num(r.get("_raw"), 0) >= 72
             and _to_num(r.get("stepContextScore"), 0) >= 55
             and _to_num(r.get("breakRisk"), 0) < 68
-        ],
+        )
+
+    def relay_relaxed_ok(r: Dict[str, Any]) -> bool:
+        return bool(
+            r.get("hasTradeTheme")
+            and not r.get("isYizi")
+            and not r.get("isShrinkSeal")
+            and 2 <= _to_num(r.get("lbc"), 0) <= 4
+            and _to_num(r.get("open"), 0) < 8
+            and _to_num(r.get("stepContextScore"), 0) >= 50
+            and _to_num(r.get("breakRisk"), 0) < 90
+            and _to_num(r.get("leaderFactorScore"), 0) >= 58
+            and _to_num((r.get("factorBreakdown") or {}).get("sector"), 0) >= 70
+            and _to_num(r.get("capacityFactorScore"), 0) >= 55
+        )
+
+    def relay_broad_ok(r: Dict[str, Any]) -> bool:
+        # 线上字段不完整时，避免接力池直接空白；但仍排除明显不可参与/高风险品种。
+        return bool(
+            not r.get("isYizi")
+            and not r.get("isShrinkSeal")
+            and 1 <= _to_num(r.get("lbc"), 0) <= 5
+            and _to_num(r.get("open"), 0) < 12
+            and _to_num(r.get("breakRisk"), 0) < 94
+            and _to_num(r.get("_raw"), 0) >= 58
+        )
+
+    relay_diagnostics = {
+        "scored": len(scored),
+        "themeRows": sum(1 for r in scored if r.get("hasTradeTheme")),
+        "coreEligible": sum(1 for r in scored if relay_core_ok(r)),
+        "oneToTwoEligible": sum(1 for r in scored if relay_one_to_two_ok(r)),
+        "relaxedEligible": sum(1 for r in scored if relay_relaxed_ok(r)),
+        "broadEligible": sum(1 for r in scored if relay_broad_ok(r)),
+        "riskBlocked": sum(1 for r in scored if _to_num(r.get("breakRisk"), 0) >= 76),
+        "openBlocked": sum(1 for r in scored if _to_num(r.get("open"), 0) >= 8),
+        "stepWeak": sum(1 for r in scored if _to_num(r.get("stepContextScore"), 0) < 38),
+        "yiziBlocked": sum(1 for r in scored if r.get("isYizi")),
+        "shrinkBlocked": sum(1 for r in scored if r.get("isShrinkSeal")),
+    }
+
+    relay_core = sorted(
+        [r for r in scored if relay_core_ok(r)],
+        key=relay_sort,
+        reverse=True,
+    )
+    relay_one_to_two = sorted(
+        [r for r in scored if relay_one_to_two_ok(r)],
         key=relay_sort,
         reverse=True,
     )[:3]
     relay = sorted([*relay_core, *relay_one_to_two], key=relay_sort, reverse=True)[:8]
+    relay_selection_mode = "strict" if relay else "relaxed"
     if not relay:
         relay = sorted(
-            [
-                r
-                for r in scored
-                if r.get("hasTradeTheme")
-                and not r.get("isYizi")
-                and not r.get("isShrinkSeal")
-                and 2 <= _to_num(r.get("lbc"), 0) <= 4
-                and _to_num(r.get("open"), 0) < 8
-                and _to_num(r.get("stepContextScore"), 0) >= 50
-                and _to_num(r.get("breakRisk"), 0) < 90
-                and _to_num(r.get("leaderFactorScore"), 0) >= 58
-                and _to_num((r.get("factorBreakdown") or {}).get("sector"), 0) >= 70
-                and _to_num(r.get("capacityFactorScore"), 0) >= 55
-            ],
+            [r for r in scored if relay_relaxed_ok(r)],
             key=relay_sort,
             reverse=True,
         )[:3]
+    if not relay:
+        relay_selection_mode = "broad"
+        relay = sorted([r for r in scored if relay_broad_ok(r)], key=relay_sort, reverse=True)[:3]
+    if not relay:
+        relay_selection_mode = "none"
     for idx, r in enumerate(relay):
         r["relayRank"] = idx + 1
+        r["relaySelectionMode"] = relay_selection_mode
         r["scoreLabel"] = "推荐因子"
-        gate_label = str(((r.get("marketGate") or {}).get("label") or "")).strip()
-        r["scoreSubLabel"] = f"{gate_label} · {r.get('scoreBand')}" if gate_label and r.get("scoreBand") else str(r.get("scoreBand") or gate_label)
+        if relay_selection_mode == "broad":
+            r["scoreSubLabel"] = "兜底候选 · 仅超预期"
+        else:
+            gate_label = str(((r.get("marketGate") or {}).get("label") or "")).strip()
+            r["scoreSubLabel"] = f"{gate_label} · {r.get('scoreBand')}" if gate_label and r.get("scoreBand") else str(r.get("scoreBand") or gate_label)
     relay_names = {str(x.get("name") or "") for x in relay}
 
     cap_arr = sorted([_to_num(r.get("cjeYi"), 0) for r in scored if _to_num(r.get("cjeYi"), 0) > 0])
@@ -1562,6 +1600,8 @@ def build_zt_analysis(*, market_data: Dict[str, Any]) -> Dict[str, Any]:
             "tierThemeTop": tier_theme_top,
             "source": "python",
             "model": "zt_analysis_factor_v5",
+            "relaySelectionMode": relay_selection_mode,
+            "relayDiagnostics": relay_diagnostics,
             "marketGate": market_gate,
             "environment": {
                 "score": _round(env_score),

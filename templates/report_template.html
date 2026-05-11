@@ -7679,11 +7679,11 @@
               const curr = this.watchCurrentSnap || {}
               const prev = this.watchPrevSnap || {}
               const cfgs = [
+                { key: "max_lb", label: "高度", unit: "板", accent: "height", inverse: false, hi: 4, mid: 3, max: 8 },
                 { key: "zt", label: "涨停", unit: "", accent: "rise", inverse: false, hi: 60, mid: 35, max: 100 },
                 { key: "dt", label: "跌停", unit: "", accent: "fall", inverse: true, hi: 10, mid: 22, max: 60 },
-                { key: "fb", label: "封板率", unit: "%", accent: "rate", inverse: false, hi: 80, mid: 65, max: 100 },
                 { key: "jj", label: "晋级率", unit: "%", accent: "rate", inverse: false, hi: 30, mid: 18, max: 60 },
-                { key: "max_lb", label: "高度", unit: "板", accent: "height", inverse: false, hi: 4, mid: 3, max: 8 },
+                { key: "fb", label: "封板率", unit: "%", accent: "rate", inverse: false, hi: 80, mid: 65, max: 100 },
                 { key: "lianban", label: "连板", unit: "", accent: "rise", inverse: false, hi: 15, mid: 8, max: 30 },
               ]
               return cfgs.map((cfg) => {

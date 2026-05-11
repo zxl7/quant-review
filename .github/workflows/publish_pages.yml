@@ -265,18 +265,12 @@ jobs:
         run: |
           set -euo pipefail
           # push/workflow_dispatch：统一走在线全量 ./qr.sh fetch（不再用 render 只吃仓库缓存）
-          # 日期仍优先 cache_online/manifest.json，与本地提交对齐；缺省则用 tradeday 最近交易日。
-          if [ -f "cache_online/manifest.json" ]; then
-            date10="$(python3 -c "import json, pathlib; print(str(json.loads(pathlib.Path('cache_online/manifest.json').read_text(encoding='utf-8')).get('date') or '').strip())")"
-            if [ -n "${date10}" ]; then
-              echo "使用 cache_online/manifest.json 指定日期：${date10}"
-            fi
-          fi
-
+          # 手动/本地定时触发必须抓“最近交易日”，不能依赖 cache_online/manifest.json 的旧日期。
+          latest_trade="${{ steps.tradeday.outputs.latest_trade_date }}"
+          date10="${latest_trade}"
           if [ -z "${date10:-}" ]; then
-            latest_trade="${{ steps.tradeday.outputs.latest_trade_date }}"
-            date10="${latest_trade}"
-            echo "未找到 manifest 日期，回退到最近交易日：${date10}"
+            echo "Unable to resolve latest trade date"
+            exit 2
           fi
           mode="fetch"
           echo "push/workflow_dispatch → mode=fetch（在线拉最新） date10=${date10}"
@@ -317,6 +311,39 @@ jobs:
             # 日终定时 / push / workflow_dispatch：在线全量 fetch
             ./qr.sh fetch "${run_date}"
           fi
+          expected_d8="$(echo "${run_date}" | tr -d '-')"
+          expected_cache="cache/market_data-${expected_d8}.json"
+          if [ ! -f "${expected_cache}" ]; then
+            echo "Expected fresh cache not found: ${expected_cache}"
+            ls -la cache || true
+            exit 3
+          fi
+          RUN_DATE="${run_date}" EXPECTED_CACHE="${expected_cache}" python3 - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          run_date = os.environ["RUN_DATE"]
+          p = Path(os.environ["EXPECTED_CACHE"])
+          data = json.loads(p.read_text(encoding="utf-8"))
+          if data.get("date") != run_date:
+              raise SystemExit(f"cache date mismatch: expected {run_date}, got {data.get('date')}")
+          pan = data.get("panorama") or {}
+          za = data.get("ztAnalysis") or {}
+          meta = za.get("meta") or {}
+          diag = meta.get("relayDiagnostics") or {}
+          relay = za.get("relay") or []
+          watch = za.get("watch") or []
+          print("fresh_cache=", p)
+          print("fresh_date=", data.get("date"))
+          print("fresh_panorama=", {"limitUp": pan.get("limitUp"), "limitDown": pan.get("limitDown"), "ratio": pan.get("ratio")})
+          print("fresh_ztAnalysis=", {"relay": len(relay), "watch": len(watch), "mode": meta.get("relaySelectionMode")})
+          print("fresh_relay_names=", [x.get("name") for x in relay[:8] if isinstance(x, dict)])
+          print("fresh_watch_names=", [x.get("name") for x in watch[:8] if isinstance(x, dict)])
+          print("fresh_relay_diagnostics=", diag)
+          if not relay and watch:
+              raise SystemExit("ztAnalysis relay empty while watch exists; check fresh_relay_diagnostics")
+          PY
 
       - name: Prepare Pages site (html/ as site root)
         if: ${{ (github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true') && (github.event_name != 'schedule' || steps.tradeday.outputs.is_trade_today == 'true') }}
@@ -342,6 +369,14 @@ jobs:
             echo "No report html found in ./html/"
             ls -la ./html || true
             exit 2
+          fi
+          run_date="${{ steps.pushmode.outputs.date10 }}"
+          if [ "${{ github.event_name }}" = "schedule" ]; then
+            run_date="${{ steps.tradeday.outputs.today_bj }}"
+          fi
+          if ! grep -q "\"date\": \"${run_date}\"" "${report_html}"; then
+            echo "Report HTML date mismatch: expected ${run_date} in ${report_html}"
+            exit 3
           fi
           # 发布目录：只保留“最新一份报告 + index.html”
           rm -rf ./site
@@ -402,4 +437,22 @@ jobs:
           git -C site_prev config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git -C site_prev add -A
           git -C site_prev commit -m "deploy: update report" || true
-          git -C site_prev push origin HEAD:gh-pages
+          push_rc=1
+          for attempt in 1 2 3; do
+            if git -C site_prev push origin HEAD:gh-pages; then
+              echo "Push to gh-pages succeeded on attempt ${attempt}"
+              push_rc=0
+              break
+            fi
+            push_rc=$?
+            echo "Push to gh-pages failed on attempt ${attempt} (rc=${push_rc})"
+            if [ "${attempt}" -lt 3 ]; then
+              sleep $((attempt * 10))
+              git -C site_prev fetch origin gh-pages || true
+              git -C site_prev rebase origin/gh-pages || {
+                git -C site_prev rebase --abort || true
+                echo "Rebase against origin/gh-pages failed; retrying push without rebase"
+              }
+            fi
+          done
+          exit "${push_rc}"

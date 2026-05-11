@@ -319,12 +319,12 @@ def build_sentiment_explain_dims(market_data: Dict[str, Any]) -> list[Dict[str, 
     jj_hist = last_n(mi.get("hist_jj_rate"))
 
     specs = [
-        ("zt", "涨停家数", zt, zt_prev, zt_hist, False, 50.0, 90.0, "", 120.0),
-        ("lianban", "连板家数", lb, lb_prev, lb_hist, False, 10.0, 20.0, "", 40.0),
         ("max_lb", "空间高度", max_lb, max_lb_prev, max_lb_hist, False, 3.0, 5.0, "板", 10.0),
+        ("zt", "涨停家数", zt, zt_prev, zt_hist, False, 50.0, 90.0, "", 120.0),
         ("dt", "跌停家数", dt, dt_prev, dt_hist, True, 3.0, 10.0, "", 30.0),
-        ("fb_rate", "封板率", fb, fb_prev, fb_hist, False, 55.0, 75.0, "%", 100.0),
         ("jj_rate", "晋级率", jj, jj_prev, jj_hist, False, 18.0, 30.0, "%", 100.0),
+        ("fb_rate", "封板率", fb, fb_prev, fb_hist, False, 55.0, 75.0, "%", 100.0),
+        ("lianban", "连板家数", lb, lb_prev, lb_hist, False, 10.0, 20.0, "", 40.0),
     ]
 
     rows: list[Dict[str, Any]] = []
