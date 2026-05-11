@@ -6628,8 +6628,8 @@
               <!-- 市场状态 -->
               <div class="wb-card wb-span-4 wb-shift-card" :class="'tone-' + watchCurrentShift.tone">
                 <div class="hd">
-                  <div class="t">情绪变化</div>
-                  <div class="s">六维推测出的盘中情绪状态</div>
+                  <div class="t">盘中情绪分</div>
+                  <div class="s">和主情绪页同口径，按盘中快照动态计算</div>
                 </div>
                 <div class="wb-shift">
                   <div class="wb-shift-top">
@@ -6772,7 +6772,7 @@
                     <div class="wb-trend-legend">
                       <span>
                         <i class="score"></i>
-                        情绪变化分
+                        盘中情绪分
                       </span>
                       <span>
                         <i class="heat"></i>
@@ -6808,7 +6808,7 @@
         <div class="plan-top-grid">
           <div class="v2-strategy" v-if="planGuide">
             <div class="row">
-              <div class="tone">明日行动指南 · {{ planGuide.phase || '-' }}（{{ planGuide.score ?? '-' }}）</div>
+              <div class="tone">明日行动指南 · {{ planGuide.phase || '-' }} · 情绪分 {{ planGuide.score ?? '-' }}</div>
               <div class="cap">仓位：{{ planGuide.position || '-' }}</div>
             </div>
             <div class="advice" v-if="planGuide.advice">{{ planGuide.advice }}</div>
@@ -7754,8 +7754,8 @@
               const low = rows.reduce((best, cur) => (this.toNum(cur?.shift_score, 1e9) < this.toNum(best?.shift_score, 1e9) ? cur : best), rows[0])
               const dir = scoreDiff >= 5 ? "整体走强" : scoreDiff >= 1 ? "边际修复" : scoreDiff <= -5 ? "明显走弱" : scoreDiff <= -1 ? "略有回落" : "整体平稳"
               const hr = `热度${heatDiff > 0 ? "抬升" : heatDiff < 0 ? "回落" : "基本持平"}，风险${riskDiff > 0 ? "上行" : riskDiff < 0 ? "回落" : "持平"}`
-              const peakText = peak && peak.time ? `盘中最强时点在 ${peak.time}（${peak.shift_label || "稳定"}，分值 ${peak.shift_score ?? "-"}）` : ""
-              const lowText = low && low.time && low.time !== peak?.time ? `，最弱时点在 ${low.time}（${low.shift_label || "稳定"}，分值 ${low.shift_score ?? "-"}）` : ""
+              const peakText = peak && peak.time ? `盘中最强时点在 ${peak.time}（${peak.shift_label || "稳定"}，情绪分 ${peak.shift_score ?? "-"}）` : ""
+              const lowText = low && low.time && low.time !== peak?.time ? `，最弱时点在 ${low.time}（${low.shift_label || "稳定"}，情绪分 ${low.shift_score ?? "-"}）` : ""
               return `从 ${first.time || "开盘"} 到 ${last.time || "当前"}，情绪 ${dir}；${hr}。${peakText}${lowText}。收在 ${last.shift_label || last.headline || "稳定"} 状态。`
             },
             watchScoreLine() {

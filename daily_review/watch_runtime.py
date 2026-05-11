@@ -15,6 +15,7 @@ from daily_review.realtime_watch import build_live_snapshot
 from daily_review.data.biying import resolve_trade_date
 from daily_review.http import HttpClient
 from daily_review.config import load_config_from_env
+from daily_review.metrics.scoring import blend_sentiment_score
 
 
 def _workspace_root() -> Path:
@@ -164,21 +165,9 @@ def _prev_row_for_ts(rows: list[dict[str, Any]], curr_ts_bj: str, date10: str) -
 
 
 def _calc_shift_score(rec: dict[str, Any]) -> int:
-    fb = _to_num(rec.get("fb"), 0)
-    jj = _to_num(rec.get("jj"), 0)
-    zb = _to_num(rec.get("zb"), 0)
-    dt = _to_num(rec.get("dt"), 0)
-    max_lb = _to_num(rec.get("max_lb"), 0)
-    lianban = _to_num(rec.get("lianban"), 0)
-    score = (
-        fb * 0.28
-        + jj * 0.24
-        + max(0.0, 100.0 - zb) * 0.18
-        + max(0.0, 100.0 - dt * 7.0) * 0.12
-        + min(max_lb * 14.0, 100.0) * 0.10
-        + min(lianban * 5.0, 100.0) * 0.08
-    )
-    return int(round(max(0.0, min(100.0, score))))
+    heat = _to_num(rec.get("heat"), 0)
+    risk = _to_num(rec.get("risk"), 0)
+    return int(blend_sentiment_score(heat=heat, risk=risk))
 
 
 def _shift_label(score: int) -> str:

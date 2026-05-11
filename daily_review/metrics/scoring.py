@@ -21,6 +21,10 @@ class HeatRiskScore:
     sentiment: int
 
 
+def blend_sentiment_score(*, heat: float, risk: float) -> int:
+    return round(clamp(heat * 0.65 + (100 - risk) * 0.35, 0, 100))
+
+
 def calc_heat_risk(
     *,
     fb_rate: float,
@@ -61,6 +65,5 @@ def calc_heat_risk(
         )
     )
 
-    sentiment = round(clamp(heat * 0.65 + (100 - risk) * 0.35, 0, 100))
+    sentiment = blend_sentiment_score(heat=heat, risk=risk)
     return HeatRiskScore(heat=heat, risk=risk, sentiment=sentiment)
-

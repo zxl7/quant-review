@@ -18,6 +18,7 @@ import time
 from pathlib import Path
 
 from daily_review.modules_v2 import ALL_MODULES
+from daily_review.metrics.scoring import blend_sentiment_score
 from daily_review.pipeline.context import Context
 from daily_review.pipeline.runner import Runner
 from daily_review.render.render_html import render_html_template, build_plate_rank_top10
@@ -56,6 +57,8 @@ def _build_plan_guide(market_data: dict) -> dict | None:
     优先级：v3 -> v2 -> 顶层兜底。
     """
     md = market_data if isinstance(market_data, dict) else {}
+    mood = md.get("mood") if isinstance(md.get("mood"), dict) else {}
+    canonical_score = mood.get("score", "-")
 
     v3 = md.get("v3") if isinstance(md.get("v3"), dict) else {}
     if v3:
@@ -67,7 +70,7 @@ def _build_plan_guide(market_data: dict) -> dict | None:
         pos = v3.get("positionV3") if isinstance(v3.get("positionV3"), dict) else {}
         return {
             "phase": sent.get("phase") or "-",
-            "score": sent.get("score", "-"),
+            "score": canonical_score,
             "position": pos.get("capital_pct_adjusted", "-"),
             "advice": right.get("advice") or "",
             "rightsideText": "允许" if right.get("allowed") is True else ("禁止" if right.get("allowed") is False else "-"),
@@ -97,7 +100,7 @@ def _build_plan_guide(market_data: dict) -> dict | None:
             warnings.extend(strategy.get("iron_rules") or [])
         return {
             "phase": sent.get("phase") or strategy.get("tone") or "-",
-            "score": sent.get("score", "-"),
+            "score": canonical_score,
             "position": ((strategy.get("position") or {}) if isinstance(strategy.get("position"), dict) else {}).get("recommended_max", "-"),
             "advice": strategy.get("overall_advice") or "",
             "rightsideText": "允许" if right.get("can_enter") is True else ("禁止" if right.get("can_enter") is False else "-"),
@@ -115,7 +118,7 @@ def _build_plan_guide(market_data: dict) -> dict | None:
     mood_stage = md.get("moodStage") if isinstance(md.get("moodStage"), dict) else {}
     return {
         "phase": top_sent.get("phase") or mood_stage.get("title") or "-",
-        "score": top_sent.get("score", "-"),
+        "score": canonical_score,
         "position": "-",
         "advice": "",
         "rightsideText": "-",
@@ -1175,12 +1178,45 @@ def _intraday_snapshots_path(root: Path, date: str) -> Path:
     return cache_dir / f"intraday_snapshots-{d8}.json"
 
 
+def _to_num(v, default: float = 0.0) -> float:
+    try:
+        if v is None or v == "":
+            return default
+        if isinstance(v, str):
+            return float(v.replace("%", "").strip())
+        return float(v)
+    except Exception:
+        return default
+
+
+def _intraday_shift_label(score: float) -> str:
+    if score >= 72:
+        return "走强"
+    if score >= 60:
+        return "修复"
+    if score >= 48:
+        return "分歧"
+    if score >= 36:
+        return "走弱"
+    return "退潮"
+
+
+def _normalize_intraday_snapshot(row: dict) -> dict:
+    rec = dict(row or {})
+    heat = _to_num(rec.get("heat"), None)
+    risk = _to_num(rec.get("risk"), None)
+    if heat is not None and risk is not None:
+        score = int(blend_sentiment_score(heat=heat, risk=risk))
+        rec["shift_score"] = score
+        label = str(rec.get("shift_label") or "").strip()
+        if not label or label.replace(".", "", 1).isdigit():
+            rec["shift_label"] = _intraday_shift_label(score)
+    return rec
+
+
 def _load_intraday_snapshots(*, root: Path, date: str, now_date10: str | None = None) -> list[dict]:
-    """加载盘中切片：优先当前日期，回退数据日期。"""
-    dates_to_try = []
-    if now_date10 and now_date10 != date:
-        dates_to_try.append(now_date10)
-    dates_to_try.append(date)
+    """加载盘中切片：严格按报告日期读取，避免历史页混入其他交易日快照。"""
+    dates_to_try = [date]
     for d in dates_to_try:
         for p in (_intraday_slices_path(root, d), _intraday_snapshots_path(root, d)):
             if not p.exists():
@@ -1188,9 +1224,9 @@ def _load_intraday_snapshots(*, root: Path, date: str, now_date10: str | None = 
             try:
                 data = json.loads(p.read_text(encoding="utf-8"))
                 if isinstance(data, list):
-                    return [x for x in data if isinstance(x, dict)]
+                    return [_normalize_intraday_snapshot(x) for x in data if isinstance(x, dict)]
                 if isinstance(data, dict) and isinstance(data.get("snapshots"), list):
-                    return [x for x in (data.get("snapshots") or []) if isinstance(x, dict)]
+                    return [_normalize_intraday_snapshot(x) for x in (data.get("snapshots") or []) if isinstance(x, dict)]
             except Exception:
                 continue
     return []
@@ -1248,6 +1284,9 @@ def _append_intraday_snapshot(*, root: Path, date: str, market_data: dict) -> No
         "pos": ms.get("pos") or [],
         "riskSignals": ms.get("risk") or [],
     }
+    shift_score = int(_to_num(mood.get("score"), 0))
+    rec["shift_score"] = shift_score
+    rec["shift_label"] = _intraday_shift_label(shift_score)
 
     snaps = _load_intraday_snapshots(root=root, date=date)
     # 去重：同一 ts_bj 只保留最新一条（与 watch_runtime 节点键一致）
@@ -1260,6 +1299,7 @@ def _append_intraday_snapshot(*, root: Path, date: str, market_data: dict) -> No
 
 
 def _inject_intraday_snapshots(*, root: Path, date: str, market_data: dict, now_date10: str | None = None) -> None:
+    market_data.pop("intradaySnapshots", None)
     snaps = _load_intraday_snapshots(root=root, date=date, now_date10=now_date10)
     if not snaps:
         return
