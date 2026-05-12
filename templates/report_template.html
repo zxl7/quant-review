@@ -6516,7 +6516,7 @@
         <div class="action-advisor" v-if="marketData.actionAdvisor && marketData.actionAdvisor.action_line">
           <div class="aa-line1">
             <div class="txt">{{ marketData.actionAdvisor.summary || marketData.actionAdvisor.action_line }}</div>
-            <div class="aa-pill">{{ marketData.actionAdvisor.posture }} · {{ marketData.actionAdvisor.position }}</div>
+            <div class="aa-pill">{{ marketData.actionAdvisor.posture }}</div>
           </div>
           <div class="aa-evidences" v-if="marketData.actionAdvisor.evidences && marketData.actionAdvisor.evidences.length">
             <div class="aa-evidence" v-for="(x, i) in marketData.actionAdvisor.evidences" :key="'aae-'+i">
@@ -7281,7 +7281,7 @@
                   <div class="tone">{{ planGuide.phase || '-' }}</div>
                   <span class="plan-score-badge">情绪 <strong>{{ planGuide.score ?? '-' }}</strong></span>
                 </div>
-                <div class="cap">仓位：{{ formatPosition(planGuide.position) }}</div>
+                <div class="cap">仓位上限：{{ formatPosition(planGuide.position) }}</div>
               </div>
               <div class="advice" :class="planGuide.rightsideText === '禁止' ? 'danger' : (planGuide.rightsideText === '允许' ? '' : 'warn')" v-if="planGuide.advice">{{ planGuide.advice }}</div>
               <div class="kpis">
@@ -7296,7 +7296,7 @@
             </div>
             <div class="pos-card" v-if="marketData.mood">
               <div class="pos-left">
-                <span class="pos-k">仓位建议</span>
+                <span class="pos-k">最终仓位上限</span>
                 <span class="pos-v" :class="pos.cls">{{ pos.range }}</span>
                 <div class="pos-sub">{{ pos.note }}</div>
               </div>
@@ -7311,7 +7311,7 @@
             <div class="plan-focus-card" v-if="planFocusChips.length || planFocusNote || planFocusEvidences.length">
               <div class="plan-focus-head">
                 <div class="plan-focus-title">盘面聚焦</div>
-                <div class="plan-focus-posture" v-if="marketData.actionAdvisor">{{ marketData.actionAdvisor.posture }} · {{ marketData.actionAdvisor.position }}</div>
+                <div class="plan-focus-posture" v-if="marketData.actionAdvisor">{{ marketData.actionAdvisor.posture }}</div>
               </div>
               <div class="plan-focus-chips" v-if="planFocusChips.length">
                 <span class="plan-focus-chip" v-for="(chip, idx) in planFocusChips" :key="'pfc-'+idx">
@@ -8092,11 +8092,20 @@
               return "linear-gradient(135deg,#64748b,#334155)"
             },
             /**
-             * 仓位建议（轻量启发式）：用于“明日行动指南”新增模块
+             * 仓位展示：优先使用“明日行动指南”的最终仓位，避免与情绪姿态口径冲突
              * - 以热度 vs 风险为主
              * - 情绪阶段 fire 强制偏防守
              */
             positionAdvice() {
+              const finalPosition = this.formatPosition(this.marketData?.planGuide?.position)
+              if (finalPosition && finalPosition !== "-") {
+                const rightside = String(this.marketData?.planGuide?.rightsideText || "")
+                const stance = rightside === "禁止" ? "防守" : rightside === "允许" ? "进攻" : "均衡"
+                const note = "统一采用明日行动指南最终仓位；情绪模块只保留姿态，不单独给仓位。"
+                const cls = stance === "进攻" ? "pos-attack" : stance === "防守" ? "pos-def" : "pos-balance"
+                const pillCls = stance === "进攻" ? "attack" : stance === "防守" ? "def" : "balance"
+                return { stance, range: finalPosition, note, cls, pillCls }
+              }
               const heat = Number(this.marketData?.mood?.heat ?? 0)
               const risk = Number(this.marketData?.mood?.risk ?? 0)
               const stage = String(this.marketData?.moodStage?.type || "")
