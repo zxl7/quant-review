@@ -4,14 +4,14 @@
   "meta": {
     "asOf": {
       "indices": "收盘",
-      "pools": "15:13:01",
-      "themes": "15:13:01",
+      "pools": "15:15:47",
+      "themes": "15:15:47",
       "quotes": "15:00:03",
       "plate_rotate": "2026-05-12",
-      "concept_fund_flow": "15:13:01"
+      "concept_fund_flow": "15:15:47"
     },
     "version": "1.0",
-    "generatedAt": "2026-05-12 15:13:01"
+    "generatedAt": "2026-05-12 15:15:47"
   },
   "indices": [
     {
@@ -284,7 +284,7 @@
         "riskClass": "orange-text"
       },
       {
-        "name": "新材料",
+        "name": "半导体",
         "zt": 10,
         "zb": 4,
         "dt": 0,
@@ -294,7 +294,7 @@
         "riskClass": "orange-text"
       },
       {
-        "name": "半导体",
+        "name": "新材料",
         "zt": 10,
         "zb": 4,
         "dt": 0,
@@ -334,7 +334,7 @@
         "riskClass": "orange-text"
       },
       {
-        "name": "家用电器",
+        "name": "绿色电力",
         "zt": 6,
         "zb": 0,
         "dt": 0,
@@ -344,7 +344,7 @@
         "riskClass": "green-text"
       },
       {
-        "name": "绿色电力",
+        "name": "家用电器",
         "zt": 6,
         "zb": 0,
         "dt": 0,
@@ -356,8 +356,8 @@
     ],
     "overlap": {
       "themes": [
-        "新能源车",
-        "机器人概念"
+        "机器人概念",
+        "新能源车"
       ],
       "score": "40%",
       "note": "涨停主线与炸板主杀题材的重叠度（越高越提示主线在分歧/退潮）"
@@ -2833,7 +2833,7 @@
     }
   ],
   "moodSignals": {
-    "updatedAt": "2026-05-12 15:13:01",
+    "updatedAt": "2026-05-12 15:15:47",
     "headline": "分歧/扩散偏大，优先防守",
     "pos": [
       {
@@ -2998,7 +2998,7 @@
   "ztAnalysis": {
     "meta": {
       "tierThemeCount": 10,
-      "tierThemeTop": "国资改革14只 / 专精特新17只 / 新材料10只",
+      "tierThemeTop": "国资改革14只 / 专精特新17只 / 半导体10只",
       "source": "python",
       "model": "zt_analysis_factor_v5",
       "relaySelectionMode": "strict",
@@ -4883,7 +4883,7 @@
           "market": 85,
           "themeEnv": 86,
           "marketGate": 2,
-          "sector": 53,
+          "sector": 52,
           "leader": 64,
           "relay": 83,
           "capacity": 38,
@@ -4891,7 +4891,7 @@
           "opportunity": 71,
           "edge": 3
         },
-        "factorHint": "环境88(进攻窗口) / 板块53 / 龙头64 / 接力83 / 容量38 / 风险40 / 条件触发",
+        "factorHint": "环境88(进攻窗口) / 板块52 / 龙头64 / 接力83 / 容量38 / 风险40 / 条件触发",
         "scoreBand": "条件触发",
         "scoreBandTone": "watch",
         "scoreAction": "需要超预期",
@@ -4900,8 +4900,8 @@
           "label": "进攻窗口",
           "action": "可做主线核心"
         },
-        "sectorTrendScore": 60,
-        "sectorRankScore": 70,
+        "sectorTrendScore": 59,
+        "sectorRankScore": 65,
         "plateRank": 0,
         "plateName": "",
         "factorLabels": {
@@ -5938,8 +5938,8 @@
           "label": "进攻窗口",
           "action": "可做主线核心"
         },
-        "sectorTrendScore": 60,
-        "sectorRankScore": 79,
+        "sectorTrendScore": 61,
+        "sectorRankScore": 83,
         "plateRank": 0,
         "plateName": "",
         "factorLabels": {
@@ -6144,8 +6144,8 @@
           "label": "进攻窗口",
           "action": "可做主线核心"
         },
-        "sectorTrendScore": 60,
-        "sectorRankScore": 79,
+        "sectorTrendScore": 61,
+        "sectorRankScore": 83,
         "plateRank": 0,
         "plateName": "",
         "factorLabels": {
@@ -6528,7 +6528,7 @@
   },
   "intradaySnapshots": {
     "date": "2026-05-12",
-    "count": 26,
+    "count": 27,
     "snapshots": [
       {
         "time": "10:08:52",
@@ -7855,28 +7855,79 @@
         "shift_score": 58,
         "shift_label": "分歧",
         "note": "情绪整体平稳，维持当前节奏。"
+      },
+      {
+        "time": "15:14:34",
+        "ts_bj": "2026-05-12 15:14:34",
+        "date": "2026-05-12",
+        "source": "intraday_live",
+        "provider": "fetch",
+        "zt": 58,
+        "dt": 7,
+        "zab": 23,
+        "zb": 28.4,
+        "fb": 71.6,
+        "jj": 29.3,
+        "lianban": 17,
+        "max_lb": 5,
+        "amount": "32426.56亿",
+        "bf": 0,
+        "heat": 57,
+        "risk": 36,
+        "headline": "分歧",
+        "concepts": [
+          {
+            "name": "芯片",
+            "lead": "ST京蓝",
+            "chg_pct": null
+          },
+          {
+            "name": "通信",
+            "lead": "泰晶科技",
+            "chg_pct": null
+          },
+          {
+            "name": "ST板块",
+            "lead": "*ST宇顺",
+            "chg_pct": null
+          },
+          {
+            "name": "算力",
+            "lead": "福达合金",
+            "chg_pct": null
+          },
+          {
+            "name": "商业航天",
+            "lead": "大族激光",
+            "chg_pct": null
+          }
+        ],
+        "alerts": [],
+        "shift_score": 59,
+        "shift_label": "分歧",
+        "note": "情绪整体平稳，维持当前节奏。"
       }
     ],
     "simulated": false,
     "interval_min": null,
     "latest": {
-      "time": "14:57:28",
-      "ts_bj": "2026-05-12 14:57:28",
+      "time": "15:14:34",
+      "ts_bj": "2026-05-12 15:14:34",
       "date": "2026-05-12",
       "source": "intraday_live",
       "provider": "fetch",
-      "zt": 56,
-      "dt": 8,
-      "zab": 24,
-      "zb": 30.0,
-      "fb": 70.0,
-      "jj": 30.4,
+      "zt": 58,
+      "dt": 7,
+      "zab": 23,
+      "zb": 28.4,
+      "fb": 71.6,
+      "jj": 29.3,
       "lianban": 17,
       "max_lb": 5,
-      "amount": "31895.82亿",
+      "amount": "32426.56亿",
       "bf": 0,
-      "heat": 56,
-      "risk": 39,
+      "heat": 57,
+      "risk": 36,
       "headline": "分歧",
       "concepts": [
         {
@@ -7906,7 +7957,7 @@
         }
       ],
       "alerts": [],
-      "shift_score": 58,
+      "shift_score": 59,
       "shift_label": "分歧",
       "note": "情绪整体平稳，维持当前节奏。"
     }
@@ -8517,7 +8568,7 @@
     "globalScore": 57,
     "rows": [
       {
-        "name": "绿色电力",
+        "name": "家用电器",
         "score": 66,
         "level": "warm",
         "icon": "🔥🔥☆",
@@ -8938,11 +8989,11 @@
       }
     },
     "fundDim": {
-      "netBigOrderFlow": -17.46,
+      "netBigOrderFlow": -14.41,
       "judgment": "money_out",
       "meta": {
         "precision": "strict_sample_top10_pools_cje",
-        "sampleSize": 3
+        "sampleSize": 5
       }
     },
     "supportQuality": {
@@ -10277,7 +10328,7 @@
     "triggered": true,
     "maxHeight": 5,
     "triggerHeight": 4,
-    "score": 78,
+    "score": 82,
     "level": "danger",
     "topTheme": "其他",
     "signals": [
@@ -10300,6 +10351,10 @@
       {
         "k": "跌停压强",
         "v": "7 只"
+      },
+      {
+        "k": "高位大单净流",
+        "v": "-2.34 亿"
       }
     ],
     "alerts": [
@@ -10315,9 +10370,15 @@
       }
     ],
     "fund": {
-      "highNetBigOrderFlowYi": null,
+      "highNetBigOrderFlowYi": -2.34,
       "meta": {
-        "precision": "missing"
+        "precision": "strict_sample_top3_high_cje",
+        "sampleSize": 2,
+        "codes": [
+          "601991",
+          "002491",
+          "002552"
+        ]
       }
     },
     "meta": {
@@ -10376,8 +10437,8 @@
       },
       "overlap": {
         "themes": [
-          "新能源车",
-          "机器人概念"
+          "机器人概念",
+          "新能源车"
         ],
         "score": "40%",
         "note": "涨停主线与炸板主杀题材的重叠度（越高越提示主线在分歧/退潮）"
