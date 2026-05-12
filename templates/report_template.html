@@ -598,7 +598,7 @@
         white-space: nowrap;
       }
       /* 指数涨跌：A股规则（红涨绿跌） */
-      .up {
+      /* .up {
         color: var(--danger) !important;
       }
       .down {
@@ -606,7 +606,7 @@
       }
       .flat {
         color: var(--warning) !important;
-      }
+      } */
 
       /* 图一：Hero 红底下指数红字不清晰 → 数字提亮，涨跌用顶部细线表达 */
       .hero .index-strip {
@@ -2876,7 +2876,7 @@
       .plan-top-grid {
         margin-top: 10px;
         display: grid;
-        grid-template-columns: 1.4fr 1fr;
+        grid-template-columns: minmax(0, 1.35fr) minmax(280px, 0.95fr);
         gap: 12px;
         align-items: stretch;
       }
@@ -2884,6 +2884,122 @@
         .plan-top-grid {
           grid-template-columns: 1fr;
         }
+      }
+      .plan-main-stack {
+        display: grid;
+        grid-template-rows: auto auto;
+        gap: 12px;
+        align-content: start;
+      }
+      .plan-side-stack {
+        display: block;
+      }
+      .plan-focus-card {
+        border-radius: 16px;
+        border: 1px solid color-mix(in oklab, var(--border) 68%, var(--theme-glow) 32%);
+        background: linear-gradient(135deg, color-mix(in oklab, var(--theme-soft) 26%, rgba(255, 255, 255, 0.55)), rgba(255, 255, 255, 0.55));
+        padding: 12px 14px;
+      }
+      [data-theme="dark"] .plan-focus-card {
+        border-color: rgba(148, 163, 184, 0.22);
+        background: linear-gradient(135deg, color-mix(in oklab, var(--theme-soft) 14%, rgba(15, 23, 42, 0.7)), rgba(15, 23, 42, 0.28));
+      }
+      .plan-focus-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+      }
+      .plan-focus-title {
+        font-size: 13px;
+        font-weight: 950;
+        color: var(--text-primary);
+      }
+      .plan-focus-posture {
+        font-size: 11px;
+        font-weight: 900;
+        color: var(--text-muted);
+        white-space: nowrap;
+      }
+      .plan-focus-chips {
+        margin-top: 10px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+      .plan-focus-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 10px;
+        border-radius: 999px;
+        border: 1px solid rgba(148, 163, 184, 0.18);
+        background: rgba(255, 255, 255, 0.58);
+        font-size: 11px;
+        font-weight: 850;
+        line-height: 1;
+      }
+      .plan-focus-chip em {
+        font-style: normal;
+        color: var(--text-muted);
+        font-weight: 800;
+      }
+      .plan-focus-chip strong {
+        font-size: 12px;
+        font-weight: 950;
+        color: var(--text-primary);
+      }
+      .plan-focus-note {
+        margin-top: 10px;
+        font-size: 12px;
+        color: var(--text-secondary);
+        font-weight: 700;
+        line-height: 1.6;
+      }
+      .plan-focus-evidences {
+        margin-top: 10px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+      .plan-focus-evidence {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        max-width: 100%;
+        padding: 6px 10px;
+        border-radius: 10px;
+        border: 1px solid rgba(148, 163, 184, 0.16);
+        background: rgba(255, 255, 255, 0.4);
+        font-size: 11px;
+        font-weight: 780;
+        color: var(--text-secondary);
+        line-height: 1.45;
+      }
+      .plan-focus-evidence .icon {
+        flex-shrink: 0;
+      }
+      [data-theme="dark"] .plan-focus-chip,
+      [data-theme="dark"] .plan-focus-evidence {
+        background: rgba(15, 23, 42, 0.42);
+        border-color: rgba(148, 163, 184, 0.18);
+      }
+      .plan-score-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 5px 10px;
+        border-radius: 999px;
+        background: rgba(148, 163, 184, 0.12);
+        font-size: 11px;
+        font-weight: 900;
+        color: var(--text-muted);
+        white-space: nowrap;
+      }
+      .plan-score-badge strong {
+        font-size: 14px;
+        font-weight: 1000;
+        color: var(--text-primary);
       }
       .plan-banner {
         border-radius: 16px;
@@ -2927,6 +3043,13 @@
         justify-content: space-between;
         gap: 10px;
       }
+      .v2-strategy .head-main {
+        min-width: 0;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
       .v2-strategy .tone {
         font-size: 13px;
         font-weight: 950;
@@ -2944,6 +3067,16 @@
         font-weight: 720;
         color: var(--text-secondary);
         line-height: 1.55;
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 3;
+        overflow: hidden;
+      }
+      .v2-strategy .advice.warn {
+        color: #b45309;
+      }
+      .v2-strategy .advice.danger {
+        color: #b91c1c;
       }
       .v2-strategy .kpis {
         margin-top: 10px;
@@ -3988,9 +4121,7 @@
         font-size: 11px;
         color: var(--text-secondary);
         font-weight: 650;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
+        line-height: 1.5;
         max-width: 520px;
       }
       .pos-attack {
@@ -5980,9 +6111,9 @@
       <!-- Tabs：正常显示时放在 Hero 下方 -->
       <div class="tabbar">
         <button class="tab-btn active" data-page="sentiment" type="button">情绪</button>
-        <button class="tab-btn" data-page="themes" type="button">板块</button>
-        <button class="tab-btn" data-page="ladder" type="button">天梯</button>
-        <button class="tab-btn" data-page="plan" type="button">明日</button>
+        <button class="tab-btn" data-page="themes" type="button">题材</button>
+        <button class="tab-btn" data-page="ladder" type="button">连板</button>
+        <button class="tab-btn" data-page="plan" type="button">预测</button>
         <button class="tab-btn" data-page="watch" type="button">实时</button>
       </div>
 
@@ -6806,36 +6937,58 @@
       <div class="card" data-page="plan" id="sec-action">
         <div class="card-title">明日行动指南</div>
         <div class="plan-top-grid">
-          <div class="v2-strategy" v-if="planGuide">
-            <div class="row">
-              <div class="tone">明日行动指南 · {{ planGuide.phase || '-' }} · 情绪分 {{ planGuide.score ?? '-' }}</div>
-              <div class="cap">仓位：{{ planGuide.position || '-' }}</div>
+          <div class="plan-main-stack">
+            <div class="v2-strategy" v-if="planGuide">
+              <div class="row">
+                <div class="head-main">
+                  <div class="tone">{{ planGuide.phase || '-' }}</div>
+                  <span class="plan-score-badge">情绪 <strong>{{ planGuide.score ?? '-' }}</strong></span>
+                </div>
+                <div class="cap">仓位：{{ formatPosition(planGuide.position) }}</div>
+              </div>
+              <div class="advice" :class="planGuide.rightsideText === '禁止' ? 'danger' : (planGuide.rightsideText === '允许' ? '' : 'warn')" v-if="planGuide.advice">{{ planGuide.advice }}</div>
+              <div class="kpis">
+                <span v-for="(pill, idx) in planGuidePills" :key="'pg-pill-'+idx" class="pill" :class="{ primary: pill.primary }">{{ pill.text }}</span>
+              </div>
+              <details v-if="planGuideWarnings.length">
+                <summary>展开提示</summary>
+                <ul class="rules">
+                  <li v-for="(r, i) in planGuideWarnings" :key="'c-w-'+i">{{ r }}</li>
+                </ul>
+              </details>
             </div>
-            <div class="advice" v-if="planGuide.advice">{{ planGuide.advice }}</div>
-            <div class="kpis">
-              <span v-for="(pill, idx) in planGuidePills" :key="'pg-pill-'+idx" class="pill" :class="{ primary: pill.primary }">{{ pill.text }}</span>
+            <div class="pos-card" v-if="marketData.mood">
+              <div class="pos-left">
+                <span class="pos-k">仓位建议</span>
+                <span class="pos-v" :class="pos.cls">{{ pos.range }}</span>
+                <div class="pos-sub">{{ pos.note }}</div>
+              </div>
+              <div class="pos-tags">
+                <span class="pos-pill" :class="pos.pillCls">{{ pos.stance }}</span>
+                <span class="pos-pill">热{{ marketData.mood?.heat ?? '-' }}/险{{ marketData.mood?.risk ?? '-' }}</span>
+                <span class="pos-pill">{{ marketData.moodStage?.title || '-' }}</span>
+              </div>
             </div>
-            <details v-if="planGuideWarnings.length">
-              <summary>展开提示</summary>
-              <ul class="rules">
-                <li v-for="(r, i) in planGuideWarnings" :key="'c-w-'+i">{{ r }}</li>
-              </ul>
-            </details>
           </div>
-          <div class="plan-banner" v-if="marketData.actionGuideV2?.meta">
-            <strong>🧩 {{ marketData.actionGuideV2.meta.title }}</strong>
-            <div class="plan-banner-sub">{{ marketData.actionGuideV2.meta.detail }}</div>
-          </div>
-          <div class="pos-card" v-if="marketData.mood">
-            <div class="pos-left">
-              <span class="pos-k">仓位建议：</span>
-              <span class="pos-v" :class="pos.cls">{{ pos.range }}</span>
-              <div class="pos-sub">{{ pos.note }}</div>
-            </div>
-            <div class="pos-tags">
-              <span class="pos-pill" :class="pos.pillCls">{{ pos.stance }}</span>
-              <span class="pos-pill">热{{ marketData.mood?.heat ?? '-' }}/险{{ marketData.mood?.risk ?? '-' }}</span>
-              <span class="pos-pill">{{ marketData.moodStage?.title || '-' }}</span>
+          <div class="plan-side-stack">
+            <div class="plan-focus-card" v-if="planFocusChips.length || planFocusNote || planFocusEvidences.length">
+              <div class="plan-focus-head">
+                <div class="plan-focus-title">盘面聚焦</div>
+                <div class="plan-focus-posture" v-if="marketData.actionAdvisor">{{ marketData.actionAdvisor.posture }} · {{ marketData.actionAdvisor.position }}</div>
+              </div>
+              <div class="plan-focus-chips" v-if="planFocusChips.length">
+                <span class="plan-focus-chip" v-for="(chip, idx) in planFocusChips" :key="'pfc-'+idx">
+                  <em>{{ chip.k }}</em>
+                  <strong>{{ chip.v }}</strong>
+                </span>
+              </div>
+              <div class="plan-focus-note" v-if="planFocusNote">{{ planFocusNote }}</div>
+              <div class="plan-focus-evidences" v-if="planFocusEvidences.length">
+                <span class="plan-focus-evidence" v-for="(x, i) in planFocusEvidences" :key="'pfe-'+i">
+                  <span class="icon">{{ x.icon }}</span>
+                  <span>{{ x.text }}</span>
+                </span>
+              </div>
             </div>
           </div>
         </div>
@@ -7529,6 +7682,17 @@
                 return d
               }
             },
+            formatPosition(v) {
+              if (v === undefined || v === null || v === "") return "-"
+              const s = String(v).trim()
+              if (/^-?\d+(\.\d+)?$/.test(s)) {
+                const n = Number(s)
+                if (!Number.isFinite(n)) return s
+                if (n >= 0 && n <= 1) return `${Math.round(n * 100)}%`
+                return `${Math.round(n)}%`
+              }
+              return s
+            },
             moodGroup(label) {
               const carry = new Set(["连板晋级率", "2进3成功率", "3进4成功率", "连板断板率"])
               const cons = new Set(["早盘封板占比", "平均封板资金", "涨停换手(中位)", "涨停炸板次数(均)"])
@@ -7609,6 +7773,33 @@
             },
             planGuideWarnings() {
               return Array.isArray(this.planGuide?.warnings) ? this.planGuide.warnings : []
+            },
+            planFocusChips() {
+              const raw = String(this.marketData?.actionGuideV2?.meta?.title || "").replace(/^🧩\s*/, "")
+              if (!raw) return []
+              const alias = {
+                盘面基调: "基调",
+                主线: "主线",
+                模式: "模式",
+                仓位: "姿态",
+              }
+              return raw
+                .split("｜")
+                .map((seg) => {
+                  const [k, ...rest] = String(seg || "").split("：")
+                  const v = rest.join("：").trim()
+                  if (!k || !v) return null
+                  return { k: alias[k.trim()] || k.trim(), v }
+                })
+                .filter(Boolean)
+            },
+            planFocusNote() {
+              const txt = String(this.marketData?.actionGuideV2?.meta?.detail || this.marketData?.actionAdvisor?.summary || "").trim()
+              return txt
+            },
+            planFocusEvidences() {
+              const rows = Array.isArray(this.marketData?.actionAdvisor?.evidences) ? this.marketData.actionAdvisor.evidences : []
+              return rows.slice(0, 3)
             },
             watchFacts() {
               const live = this.marketData?.live || {}

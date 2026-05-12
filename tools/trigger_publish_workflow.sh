@@ -1,11 +1,15 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-ROOT="/Users/zxl/Desktop/private/quant-review"
+export PATH="/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:${PATH:-}"
+
+HOME_DIR="${HOME:-/Users/zxl}"
+APP_DIR="${HOME_DIR}/Library/Application Support/quant-review-workflow-trigger"
 WORKFLOW="publish_pages.yml"
 REF="main"
-STATE_DIR="${ROOT}/.local"
-LOG_DIR="${ROOT}/logs"
+REPO="zxl7/quant-review"
+STATE_DIR="${APP_DIR}/state"
+LOG_DIR="${APP_DIR}/logs"
 STATE_FILE="${STATE_DIR}/last_workflow_trigger"
 
 mkdir -p "${STATE_DIR}" "${LOG_DIR}"
@@ -44,8 +48,6 @@ if [ -f "${STATE_FILE}" ] && [ "$(cat "${STATE_FILE}")" = "${slot}" ]; then
   exit 0
 fi
 
-cd "${ROOT}"
-
 if ! command -v gh >/dev/null 2>&1; then
   log "error: gh command not found"
   exit 127
@@ -56,7 +58,7 @@ if ! gh auth status >/dev/null 2>&1; then
   exit 2
 fi
 
-log "trigger: workflow=${WORKFLOW} ref=${REF} mode=${mode}"
-gh workflow run "${WORKFLOW}" --ref "${REF}"
+log "trigger: repo=${REPO} workflow=${WORKFLOW} ref=${REF} mode=${mode}"
+gh workflow run "${WORKFLOW}" --repo "${REPO}" --ref "${REF}"
 printf '%s' "${slot}" > "${STATE_FILE}"
 log "ok: workflow dispatch requested"

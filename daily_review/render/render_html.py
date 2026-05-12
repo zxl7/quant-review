@@ -448,8 +448,8 @@ def build_action_guide_v2(market_data: Dict[str, Any]) -> Dict[str, Any]:
     def pick_theme() -> Dict[str, Any]:
         """
         主线识别（复盘版）：
-        - 优先基于 strengthRows 的「净强-风险」来选主线（更稳，减少「涨停数虚胖」）
-        - examples 优先从当日涨停池里抽样，确保举例与主线一致（避免不精准）
+        - 展示口径：优先使用「板块题材排行」第一名，保持与板块模块一致
+        - 计算口径：仍保留 strengthRows 的强弱主题，避免影响后续动作判断
         """
         tp = market_data.get("themePanels") or {}
         rows = (tp.get("strengthRows") or [])[:10]
@@ -464,12 +464,29 @@ def build_action_guide_v2(market_data: Dict[str, Any]) -> Dict[str, Any]:
                 best_score = score
                 best = r
 
-        # 兜底：无 strengthRows 时回退到涨停Top
+        logic_name = str((best or {}).get("name") or "")
+
+        plate_rows = list(market_data.get("plateRankTop10") or market_data.get("plateRotateTop") or [])
+        top_plate = next((x for x in plate_rows if isinstance(x, dict) and str(x.get("name") or "").strip()), None)
+        if top_plate:
+            leaders = top_plate.get("leaders") if isinstance(top_plate.get("leaders"), list) else []
+            lead_names = [str(x.get("name") or "").strip() for x in leaders if isinstance(x, dict) and str(x.get("name") or "").strip()]
+            examples = "·".join(lead_names[:3]) if lead_names else str(top_plate.get("lead") or "")
+            return {
+                "name": str(top_plate.get("name") or "主线"),
+                "count": int(to_num(top_plate.get("count"), len(lead_names))),
+                "examples": examples,
+                "_logic_name": logic_name or str(top_plate.get("name") or ""),
+            }
+
+        # 兜底：无板块排行时回退到旧逻辑
         if not best:
             t = ((tp.get("ztTop") or [])[:1] or [None])[0]
             if not t:
-                return {"name": "主线", "count": 0, "examples": ""}
-            return t
+                return {"name": "主线", "count": 0, "examples": "", "_logic_name": ""}
+            item = dict(t)
+            item["_logic_name"] = str(item.get("name") or "")
+            return item
 
         name = str(best.get("name") or "主线")
         count = int(to_num(best.get("zt"), 0))
@@ -493,7 +510,7 @@ def build_action_guide_v2(market_data: Dict[str, Any]) -> Dict[str, Any]:
             picks.append((score, mc))
         picks.sort(reverse=True)
         examples = "·".join([mc for _, mc in picks[:3]]) if picks else str(((tp.get("ztTop") or [{}])[0] or {}).get("examples") or "")
-        return {"name": name, "count": count, "examples": examples}
+        return {"name": name, "count": count, "examples": examples, "_logic_name": name}
 
     def pick_leader(*, prefer_theme: str) -> Dict[str, Any]:
         """
@@ -547,8 +564,9 @@ def build_action_guide_v2(market_data: Dict[str, Any]) -> Dict[str, Any]:
     stance_from_stage = str(mood_stage.get("stance") or "")
     mode_from_stage = str(mood_stage.get("mode") or "")
     theme = pick_theme()
-    leader = pick_leader(prefer_theme=str(theme.get("name") or ""))
-    theme_row = pick_theme_strength(str(theme.get("name") or ""))
+    theme_logic_name = str(theme.get("_logic_name") or theme.get("name") or "")
+    leader = pick_leader(prefer_theme=theme_logic_name)
+    theme_row = pick_theme_strength(theme_logic_name)
     theme_net = to_num(theme_row.get("net"), 0)
     theme_risk = to_num(theme_row.get("risk"), 0)
     overlap = ((market_data.get("themePanels") or {}).get("overlap") or {})
@@ -687,19 +705,29 @@ def build_action_guide_v2(market_data: Dict[str, Any]) -> Dict[str, Any]:
     if not take:
         take.append("震荡中性")
 
-    # 语义化摘要（不再堆“封/晋/早/炸/开/均开/扩散/量能/Δxx”这些数字流）
-    summary_line = bar(
-        f"承接{carry_dir}",
-        f"分歧{diverge_dir}",
-        f"亏钱{loss_dir}",
-        f"量能{vol_dir}",
-    )
-    # 动作建议：更像复盘而不是数据播报
-    action_hint = (
-        "动作：优先主线核心/回封确认，避免追高一致；"
-        "若扩散继续走高则降级为低位试错/休息。"
-    )
-    meta_detail = bar(summary_line, "解读：" + "、".join(take) + "。", action_hint)
+    # 语义化摘要：只保留结论，不重复播报同义状态
+    focus_bits: list[str] = []
+    if fb >= 70 and jj >= 30:
+        focus_bits.append("承接回暖")
+    elif fb < 60 or jj < 25:
+        focus_bits.append("承接偏弱")
+
+    if zb >= 35 or zbc_ge3_ratio >= 18:
+        focus_bits.append("分歧放大")
+    elif diverge_dir == "收敛":
+        focus_bits.append("分歧收敛")
+
+    if loss >= 12 or risk >= 60:
+        focus_bits.append("风险偏高")
+    elif loss_dir == "收敛":
+        focus_bits.append("亏钱效应收敛")
+
+    if vol_dir == "放量" and not any(x in focus_bits for x in ("承接回暖", "承接偏弱")):
+        focus_bits.append("量能放大")
+    elif not focus_bits:
+        focus_bits.append("震荡中性")
+
+    meta_detail = f"{'，'.join(focus_bits[:3])}。优先主线核心回封确认，分歧继续放大就降级休息。"
 
     def desc_short(s: str, *, limit: int = 60) -> str:
         """

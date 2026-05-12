@@ -5,16 +5,11 @@
 <dict>
   <key>Label</key>
   <string>com.zxl.quant-review.workflow-trigger</string>
-
   <key>ProgramArguments</key>
   <array>
     <string>/bin/bash</string>
-    <string>/Users/zxl/Desktop/private/quant-review/tools/trigger_publish_workflow.sh</string>
+    <string>/Users/zxl/Library/Application Support/quant-review-workflow-trigger/trigger_publish_workflow.sh</string>
   </array>
-
-  <key>WorkingDirectory</key>
-  <string>/Users/zxl/Desktop/private/quant-review</string>
-
   <key>StartCalendarInterval</key>
   <array>
     <dict><key>Weekday</key><integer>1</integer><key>Hour</key><integer>9</integer><key>Minute</key><integer>35</integer></dict>
@@ -143,11 +138,9 @@
     <dict><key>Weekday</key><integer>4</integer><key>Hour</key><integer>15</integer><key>Minute</key><integer>12</integer></dict>
     <dict><key>Weekday</key><integer>5</integer><key>Hour</key><integer>15</integer><key>Minute</key><integer>12</integer></dict>
   </array>
-
   <key>StandardOutPath</key>
-  <string>/Users/zxl/Desktop/private/quant-review/logs/workflow-trigger.log</string>
-
+  <string>/Users/zxl/Library/Application Support/quant-review-workflow-trigger/logs/workflow-trigger.log</string>
   <key>StandardErrorPath</key>
-  <string>/Users/zxl/Desktop/private/quant-review/logs/workflow-trigger.err.log</string>
+  <string>/Users/zxl/Library/Application Support/quant-review-workflow-trigger/logs/workflow-trigger.err.log</string>
 </dict>
 </plist>
