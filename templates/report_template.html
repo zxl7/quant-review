@@ -7235,7 +7235,7 @@
                     </div>
                     <div class="wb-flat-note" v-if="watchTrajectoryFlat">盘中核心数据未变化，仅显示当前节点。</div>
                     <div class="wb-trend-axis" v-if="!watchTrajectoryFlat">
-                      <span v-for="(t, i) in watchTimes" :key="'wta-'+i" :class="{ active: i <= watchCurrentIndex, current: i === watchCurrentIndex }">{{ t }}</span>
+                      <span v-for="p in watchTimePoints" :key="'wta-'+p.index" :class="{ active: p.index <= watchCurrentIndex, current: p.index === watchCurrentIndex }">{{ p.time }}</span>
                     </div>
                     <div class="wb-trend-legend">
                       <span>
@@ -7703,6 +7703,17 @@
               const first = vals[0]
               return vals.every((v) => Math.abs(v - first) <= eps)
             },
+            compressFlatSeries(series, eps = 0.05) {
+              const vals = (Array.isArray(series) ? series : []).map((v, index) => ({ value: Number(v), index })).filter((x) => Number.isFinite(x.value))
+              if (vals.length <= 1) return vals
+              const out = []
+              for (const item of vals) {
+                const prev = out[out.length - 1]
+                if (!prev || Math.abs(item.value - prev.value) > eps) out.push(item)
+                else out[out.length - 1] = item
+              }
+              return out
+            },
             watchSeriesValues(key) {
               return (this.watchSnapshots || []).map((x) => this.toNum(x?.[key], NaN)).filter((v) => Number.isFinite(v))
             },
@@ -7716,12 +7727,14 @@
             watchLinePoints(key) {
               const vals = this.watchSeriesValues(key)
               if (this.seriesIsFlat(vals)) return this.watchSinglePoint(vals)
-              return this.linePoints(vals, 860, 220, 16)
+              const compressed = this.compressFlatSeries(vals)
+              const pts = this.linePoints(compressed.map((x) => x.value), 860, 220, 16)
+              return pts.map((p, i) => ({ ...p, index: compressed[i]?.index ?? p.index }))
             },
             watchLinePath(key) {
               const vals = this.watchSeriesValues(key)
               if (this.seriesIsFlat(vals)) return { line: "", area: "" }
-              return this.linePath(vals, 860, 220, 16)
+              return this.linePath(this.compressFlatSeries(vals).map((x) => x.value), 860, 220, 16)
             },
             // 已移除：metaPack/metaSummary（研发信息不在产品上展示）
             /**
@@ -8251,9 +8264,10 @@
                 const deltaWord = Math.abs(delta) < 0.05 ? "持平" : delta > 0 ? "上升" : "下降"
                 const deltaVal = Math.abs(delta) < 0.05 ? "0" : `${delta > 0 ? "+" : "-"}${Number.isInteger(Math.abs(delta)) ? Math.abs(delta) : Math.abs(delta).toFixed(1)}${cfg.unit}`
                 const valueText = `${Number.isInteger(c) ? c : c.toFixed(1)}${cfg.unit}`
+                const compressedValues = this.compressFlatSeries(values).map((x) => x.value)
                 const trend = isFlat
                   ? ""
-                  : values
+                  : compressedValues
                       .map((v) => (Number.isInteger(v) ? String(v) : v.toFixed(1)) + cfg.unit)
                       .join("→")
                 return {
@@ -8274,6 +8288,21 @@
             },
             watchTrajectoryFlat() {
               return ["shift_score", "heat", "risk"].every((key) => this.seriesIsFlat(this.watchSeriesValues(key)))
+            },
+            watchCompressedSnapshots() {
+              const rows = this.watchSnapshots || []
+              if (rows.length <= 1) return rows.map((x, index) => ({ ...x, _index: index }))
+              const keys = ["shift_score", "heat", "risk"]
+              const out = []
+              const sameCore = (a, b) =>
+                keys.every((key) => Math.abs(this.toNum(a?.[key], NaN) - this.toNum(b?.[key], NaN)) <= 0.05)
+              for (let i = 0; i < rows.length; i++) {
+                const item = { ...(rows[i] || {}), _index: i }
+                const prev = out[out.length - 1]
+                if (!prev || !sameCore(item, prev)) out.push(item)
+                else out[out.length - 1] = item
+              }
+              return out
             },
             watchCurrentIndex() {
               const rows = this.watchSnapshots || []
@@ -8318,6 +8347,9 @@
             },
             watchTimes() {
               return (this.watchSnapshots || []).map((x) => x?.time || "--")
+            },
+            watchTimePoints() {
+              return this.watchCompressedSnapshots.map((x) => ({ time: x?.time || "--", index: x?._index ?? 0 }))
             },
             watchRecentRows() {
               const rows = this.watchSnapshots || []
