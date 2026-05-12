@@ -24,6 +24,8 @@ def _derive_inputs(ctx: Context) -> Dict[str, Any]:
         "sentiment": md.get("v3", {}).get("sentiment") if isinstance(md.get("v3"), dict) else {},
         "mainstream": md.get("v3", {}).get("mainstream") if isinstance(md.get("v3"), dict) else {},
         "mood_stage": md.get("moodStage") or {},
+        "theme_panels": md.get("themePanels") or {},
+        "zt_analysis": md.get("ztAnalysis") or {},
     }
 
 
@@ -44,12 +46,20 @@ def _compute(ctx: Context) -> Dict[str, Any]:
             if isinstance(sentiment_obj, dict) else 5.0
         )
 
+        theme_panels = inputs["theme_panels"] if isinstance(inputs["theme_panels"], dict) else {}
+        zt_top = theme_panels.get("ztTop") if isinstance(theme_panels.get("ztTop"), list) else []
+        top_theme = zt_top[0] if zt_top and isinstance(zt_top[0], dict) else {}
+        zt_analysis = inputs["zt_analysis"] if isinstance(inputs["zt_analysis"], dict) else {}
+        has_plan_pool = bool(zt_analysis.get("relay") or zt_analysis.get("watch"))
+        mainstream = inputs["mainstream"] if isinstance(inputs["mainstream"], dict) else {}
+
         market_context = {
             "indices": inputs["indices"],
-            "mainline": inputs["mainstream"],
+            "mainline": {**mainstream, "top_theme": top_theme},
             "sentiment_score": sentiment_score,
             "mood_stage": inputs["mood_stage"],
-            "catalyst": "",
+            "catalyst": str(top_theme.get("name") or ""),
+            "planned": has_plan_pool if zt_analysis else None,
         }
 
         result = right_side_decision(stock_info, market_context)
@@ -71,6 +81,8 @@ V3_RIGHTSIDE_MODULE = Module(
         "marketData.indices",
         "marketData.v3.sentiment",
         "marketData.v3.mainstream",
+        "marketData.themePanels",
+        "marketData.ztAnalysis",
         "marketData.moodStage",
     ],
     provides=["marketData.v3.rightside"],

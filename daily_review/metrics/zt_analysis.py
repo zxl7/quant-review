@@ -92,7 +92,7 @@ def _tag_cls_rank(cls: Any) -> int:
         return 3
     if "ladder-chip-warn" in text or "orange-text" in text:
         return 2
-    if "ladder-chip-cool" in text or "blue-text" in text:
+    if "ladder-chip-cool" in text or "muted-text" in text or "blue-text" in text:
         return 1
     return 0
 
@@ -171,21 +171,21 @@ def _tag_tone_class(tag: Dict[str, str]) -> str:
     if re.fullmatch(r"\d+进\d+", text):
         m = re.fullmatch(r"(\d+)进(\d+)", text)
         if not m:
-            return "ladder-chip-cool blue-text"
+            return "ladder-chip-cool muted-text"
         step_from = int(m.group(1))
         if step_from >= 4:
             return "ladder-chip-warn orange-text"
-        return "ladder-chip-strong red-text" if step_from >= 2 else "ladder-chip-cool blue-text"
+        return "ladder-chip-strong red-text" if step_from >= 2 else "ladder-chip-cool muted-text"
     if re.fullmatch(r"\d+(?:\.\d+)?板", text):
         board = _to_num(text, 0)
-        return "ladder-chip-warn orange-text" if board >= 5 else "ladder-chip-cool blue-text"
+        return "ladder-chip-warn orange-text" if board >= 5 else "ladder-chip-cool muted-text"
     if text in {"主线", "极强主线", "强主线", "前龙头", "核心梯队", "带动", "封单充足", "加速确认", "晋级生态强", "高度修复", "突破新高"} or text.startswith("带动"):
         return "ladder-chip-strong red-text"
-    if text in {"断板风险高", "高度压制", "晋级生态弱", "题材转弱", "高换手承接", "分歧烂板", "反复回封", "一字板", "缩量封板", "无梯队", "题材待确认"} or text.startswith("跟风"):
+    if text in {"中等主线", "断板风险高", "高度压制", "晋级生态弱", "题材转弱", "高换手承接", "分歧烂板", "反复回封", "一字板", "缩量封板", "无梯队", "题材待确认"} or text.startswith("跟风"):
         return "ladder-chip-warn orange-text"
     if re.fullmatch(r"\d+(?:\.\d+)?次开板", text):
         return "ladder-chip-warn orange-text"
-    return "ladder-chip-cool blue-text"
+    return "ladder-chip-cool muted-text"
 
 
 def _compact_tags(tags: List[Dict[str, str]]) -> List[Dict[str, str]]:
@@ -227,14 +227,14 @@ def _tag_tone(tag: Dict[str, str]) -> str:
         return "red"
     if "orange-text" in cls:
         return "orange"
-    return "blue"
+    return "muted"
 
 
 def _tag_rows(tags: List[Dict[str, str]]) -> List[Dict[str, Any]]:
     rows = [
         {"tone": "red", "tags": []},
         {"tone": "orange", "tags": []},
-        {"tone": "blue", "tags": []},
+        {"tone": "muted", "tags": []},
     ]
     row_by_tone = {str(row["tone"]): row for row in rows}
     for tag in tags:
@@ -1384,6 +1384,7 @@ def build_zt_analysis(*, market_data: Dict[str, Any]) -> Dict[str, Any]:
             and not r.get("isYizi")
             and not r.get("isShrinkSeal")
             and 2 <= _to_num(r.get("lbc"), 0) <= 5
+            and _to_num(r.get("_raw"), 0) >= 60
             and _to_num(r.get("open"), 0) < 8
             and _to_num(r.get("breakRisk"), 0) < 76
             and _to_num(r.get("stepContextScore"), 0) >= 38

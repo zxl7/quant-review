@@ -219,6 +219,28 @@ def _build_plan_guide(market_data: dict) -> dict | None:
     mood = md.get("mood") if isinstance(md.get("mood"), dict) else {}
     canonical_score = mood.get("score", "-")
 
+    def _fallback_mainline() -> str:
+        plate_rank = md.get("plateRankTop10") if isinstance(md.get("plateRankTop10"), list) else []
+        if plate_rank and isinstance(plate_rank[0], dict) and plate_rank[0].get("name"):
+            return str(plate_rank[0].get("name") or "")
+        theme_panels = md.get("themePanels") if isinstance(md.get("themePanels"), dict) else {}
+        zt_top = theme_panels.get("ztTop") if isinstance(theme_panels.get("ztTop"), list) else []
+        if zt_top and isinstance(zt_top[0], dict) and zt_top[0].get("name"):
+            return str(zt_top[0].get("name") or "")
+        return ""
+
+    def _rightside_text(right: dict) -> str:
+        if right.get("allowed") is True or right.get("can_enter") is True:
+            return "允许"
+        decision = str(right.get("decision") or "").strip()
+        if decision == "forbid" or right.get("can_enter") is False:
+            return "禁止"
+        if decision == "wait":
+            return "等确认"
+        if right.get("allowed") is False:
+            return "等确认"
+        return "-"
+
     v3 = md.get("v3") if isinstance(md.get("v3"), dict) else {}
     if v3:
         sent = v3.get("sentiment") if isinstance(v3.get("sentiment"), dict) else {}
@@ -232,8 +254,8 @@ def _build_plan_guide(market_data: dict) -> dict | None:
             "score": canonical_score,
             "position": pos.get("capital_pct_adjusted", "-"),
             "advice": right.get("advice") or "",
-            "rightsideText": "允许" if right.get("allowed") is True else ("禁止" if right.get("allowed") is False else "-"),
-            "mainline": mainline.get("top_sector") or "",
+            "rightsideText": _rightside_text(right),
+            "mainline": right.get("mainline_name") or mainline.get("top_sector") or _fallback_mainline(),
             "nature": trading_nature.get("label") or "",
             "resonance": (
                 f"{full_pos.get('passed_count')}/3"

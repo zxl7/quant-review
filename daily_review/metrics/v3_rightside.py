@@ -29,8 +29,11 @@ from typing import Dict, List, Optional
 class RightSideResult:
     score: int = 0                    # 信号得分 0-5
     allowed: bool = False              # 是否允许右侧交易
+    decision: str = "wait"             # allow / wait / forbid
+    mainline_name: str = ""
     signals: Dict[str, bool] = field(default_factory=dict)  # 各信号是否满足
     violations: List[str] = field(default_factory=list)       # 左侧禁区违规列表
+    pending: List[str] = field(default_factory=list)           # 需要等待确认的软条件
     advice: str = ""
     confidence: int = 50
 
@@ -69,11 +72,14 @@ def check_right_side_signals(
     stock_data: Optional[Dict] = None,
     sentiment_score: float = 5.0,
     catalyst_text: str = "",
+    planned: Optional[bool] = None,
 ) -> RightSideResult:
     """检查右侧交易5信号，返回完整判定结果"""
     signals_hit = {}
     score = 0
     violations = []
+    pending = []
+    mainline_name = ""
 
     # 信号1：指数站上5日线
     idx_above_ma5 = True  # 默认允许（无数据时不扣分）
@@ -91,9 +97,33 @@ def check_right_side_signals(
     # 信号2：板块有涨停梯队
     sector_has_ladder = True
     if sector_data:
-        ladder_health = float(sector_data.get("ladder_health", 0) or 0)
-        zt_count = int(sector_data.get("zt_count", 0) or 0)
+        mainstream = sector_data if isinstance(sector_data, dict) else {}
+        mainline = mainstream.get("mainline") if isinstance(mainstream.get("mainline"), dict) else {}
+        sector_ladder = mainstream.get("sector_ladder") if isinstance(mainstream.get("sector_ladder"), dict) else {}
+        top_theme = mainstream.get("top_theme") if isinstance(mainstream.get("top_theme"), dict) else {}
+
+        ladder_health = float(
+            sector_data.get("ladder_health")
+            or sector_ladder.get("health_score")
+            or ((sector_data.get("ladder") or {}) if isinstance(sector_data.get("ladder"), dict) else {}).get("health_score")
+            or 0
+        )
+        zt_count = int(
+            sector_data.get("zt_count")
+            or sector_ladder.get("total_count")
+            or top_theme.get("count")
+            or 0
+        )
+        mainline_name = str(
+            mainline.get("top_sector")
+            or top_theme.get("name")
+            or sector_data.get("top_sector")
+            or ""
+        )
+        mainline_exists = bool(mainline.get("exists")) if mainline else bool(mainline_name and zt_count >= 5)
         sector_has_ladder = (ladder_health >= 3 and zt_count >= 3) or zt_count >= 5
+        if mainline_exists and zt_count >= 3:
+            sector_has_ladder = True
     signals_hit["sector_has_ladder"] = sector_has_ladder
     if sector_has_ladder:
         score += 1
@@ -109,7 +139,7 @@ def check_right_side_signals(
         score += 1
 
     # 信号4：有催化剂
-    has_catalyst = len(str(catalyst_text).strip()) > 2
+    has_catalyst = len(str(catalyst_text).strip()) > 2 or bool(mainline_name)
     signals_hit["has_catalyst"] = has_catalyst
     if has_catalyst:
         score += 1
@@ -130,8 +160,10 @@ def check_right_side_signals(
     if sector_data and not sector_has_ladder:
         theme_clear = bool(sector_data.get("main_theme_clear", False))
         rotation_freq = int(sector_data.get("theme_rotation_freq", 0) or 0)
-        if not theme_clear or rotation_freq >= 3:
+        if rotation_freq >= 4 and not theme_clear:
             violations.append("no_clear_theme")
+        else:
+            pending.append("主线梯队还不够清晰")
 
     if stock_data and not stock_volume_up:
         amount = float(stock_data.get("amount", 0) or 0)
@@ -140,27 +172,36 @@ def check_right_side_signals(
 
     if sentiment_score <= 4.0:
         violations.append("weak_phase_boarding")
-    if not has_catalyst:
+    if planned is False:
         violations.append("impulse_trade")
+    elif not has_catalyst:
+        pending.append("缺少明确催化/主线证据")
 
-    allowed = score >= 3 and len(violations) == 0
-    conf_base = 70 + score * 6 - len(violations) * 10
+    allowed = score >= 4 and len(violations) == 0
+    decision = "allow" if allowed else ("forbid" if violations else "wait")
+    conf_base = 66 + score * 6 - len(violations) * 14 - len(pending) * 5
 
     # 生成建议
     if allowed:
-        advice = f"✅ 右侧交易许可({score}/5信号)。建议按计划执行，仓位不超过{30 if score <=3 else 50}%。"
-    elif score >= 3 and violations:
+        advice = f"✅ 右侧条件较完整（{score}/5）。按计划做主线核心确认点，优先回封/弱转强，仓位不超过{30 if score <=4 else 50}%。"
+    elif violations:
         label_map = {k: v for k, v in LEFT_SIDE_FORBIDDEN}
-        vtxt = "; ".join([label_map.get(v, v) for v in violations[:2]])
-        advice = f"⚠️ {score}/5信号达标但有{len(violations)}条左侧违规: {vtxt}。建议降低仓位或等待。"
+        vtxt = "；".join([label_map.get(v, v).split(" — ")[0] for v in violations[:2]])
+        advice = f"⛔ 硬风控触发（{vtxt}）。明日不做接力，只观察主线是否修复。"
+    elif score >= 3:
+        wait_txt = "；".join(pending[:2]) if pending else "仍需开盘承接确认"
+        advice = f"⚠️ {score}/5信号进入观察。{wait_txt}，只做计划内候选的回封/弱转强，未确认就等。"
     else:
-        advice = f"❌ 右侧交易禁止({score}/5信号不足或有严重违规)。建议观望或仅极小仓试错。"
+        advice = f"⏳ {score}/5信号不足。等待指数、主线、个股量能至少补齐两项后再考虑。"
 
     return RightSideResult(
         score=score,
         allowed=allowed,
+        decision=decision,
+        mainline_name=mainline_name,
         signals={k: v for k, v in zip([s[0] for s in RIGHT_SIDE_SIGNALS], [signals_hit.get(s[0], False) for s in RIGHT_SIDE_SIGNALS])},
         violations=violations,
+        pending=pending,
         advice=advice,
         confidence=max(25, min(100, conf_base)),
     )

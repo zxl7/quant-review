@@ -2778,6 +2778,27 @@
       .zt-tag-row:empty {
         display: none;
       }
+      #sec-zt-analysis .zt-tag-row-muted .ladder-chip,
+      #sec-zt-analysis .ladder-chip.muted-text,
+      #sec-zt-analysis .ladder-chip-cool {
+        color: var(--text-secondary) !important;
+        border-color: rgba(148, 163, 184, 0.22);
+        background: rgba(148, 163, 184, 0.08);
+      }
+      #sec-zt-analysis .zt-tag-row-orange .ladder-chip,
+      #sec-zt-analysis .ladder-chip.orange-text,
+      #sec-zt-analysis .ladder-chip-warn {
+        color: #d97706 !important;
+        border-color: rgba(245, 158, 11, 0.22);
+        background: rgba(245, 158, 11, 0.09);
+      }
+      #sec-zt-analysis .zt-tag-row-red .ladder-chip,
+      #sec-zt-analysis .ladder-chip.red-text,
+      #sec-zt-analysis .ladder-chip-strong {
+        color: #e60012 !important;
+        border-color: rgba(230, 0, 18, 0.2);
+        background: rgba(230, 0, 18, 0.06);
+      }
       .zt-score {
         display: inline-flex;
         flex-direction: column;
@@ -3991,6 +4012,18 @@
         font-size: 11px;
         font-weight: 900;
         color: #b91c1c;
+      }
+      .wb-flat-note {
+        margin-top: 10px;
+        display: inline-flex;
+        align-items: center;
+        padding: 7px 10px;
+        border-radius: 999px;
+        border: 1px solid rgba(148, 163, 184, 0.18);
+        background: rgba(148, 163, 184, 0.08);
+        color: var(--text-secondary);
+        font-size: 12px;
+        font-weight: 850;
       }
       .wb-trend-axis {
         margin-top: 6px;
@@ -5908,7 +5941,6 @@
         margin-bottom: 4px;
       }
       .footer-learning {
-        max-width: 980px;
         margin: 0 auto 14px;
         text-align: left;
         background: var(--bg-card);
@@ -5953,6 +5985,309 @@
         color: var(--theme-accent);
         font-weight: 950;
         margin-right: 6px;
+      }
+
+      /* White trading desk theme refresh: A-share convention, red up / green down */
+      :root {
+        --primary: #e60012;
+        --danger: #e60012;
+        --success: #00a63e;
+        --warning: #f59e0b;
+        --theme-accent: #e60012;
+        --theme-accent-2: #ff4d4f;
+        --theme-soft: rgba(230, 0, 18, 0.08);
+        --theme-glow: rgba(230, 0, 18, 0.16);
+        --theme-chip-bg: rgba(230, 0, 18, 0.08);
+        --theme-chip-text: #b80010;
+        --theme-positive: #e60012;
+        --theme-heat-hot: rgba(230, 0, 18, 0.12);
+        --theme-heat-warm: rgba(245, 158, 11, 0.12);
+        --theme-heat-cool: rgba(0, 166, 62, 0.08);
+        --theme-heat-cold: rgba(0, 166, 62, 0.12);
+        --bg-base: #f6f7fb;
+        --bg-card: #ffffff;
+        --bg-elevated: #f8fafc;
+        --border: rgba(15, 23, 42, 0.08);
+        --text-primary: #111827;
+        --text-secondary: #475569;
+        --text-muted: #94a3b8;
+        --radius-lg: 12px;
+        --radius-md: 10px;
+        --shadow-sm: 0 4px 14px rgba(15, 23, 42, 0.04);
+        --shadow-md: 0 10px 28px rgba(15, 23, 42, 0.06);
+        --shadow-lg: 0 18px 50px rgba(15, 23, 42, 0.08);
+      }
+      body[data-market-tone="bull"] {
+        --primary: #e60012;
+        --theme-accent: #e60012;
+        --theme-accent-2: #ff4d4f;
+        --theme-soft: rgba(230, 0, 18, 0.08);
+        --theme-glow: rgba(230, 0, 18, 0.16);
+        --theme-chip-bg: rgba(230, 0, 18, 0.08);
+        --theme-chip-text: #b80010;
+        --theme-positive: #e60012;
+      }
+      body[data-market-tone="mixed"] {
+        --primary: #f59e0b;
+        --theme-accent: #f59e0b;
+        --theme-accent-2: #e60012;
+        --theme-soft: rgba(245, 158, 11, 0.09);
+        --theme-glow: rgba(245, 158, 11, 0.16);
+        --theme-chip-bg: rgba(245, 158, 11, 0.1);
+        --theme-chip-text: #b45309;
+        --theme-positive: #e60012;
+      }
+      body[data-market-tone="bear"] {
+        --primary: #00a63e;
+        --theme-accent: #00a63e;
+        --theme-accent-2: #16a34a;
+        --theme-soft: rgba(0, 166, 62, 0.08);
+        --theme-glow: rgba(0, 166, 62, 0.14);
+        --theme-chip-bg: rgba(0, 166, 62, 0.1);
+        --theme-chip-text: #04783a;
+        --theme-positive: #00a63e;
+      }
+
+      body {
+        background: linear-gradient(180deg, #fbfcff 0%, #f4f6fb 44%, #f7f8fb 100%);
+      }
+      @media (min-width: 1100px) {
+        body {
+          background: linear-gradient(180deg, #fbfcff 0%, #f4f6fb 44%, #f7f8fb 100%);
+          padding: 16px 32px 72px;
+        }
+        .container {
+          width: min(78%, 1240px);
+          max-width: 1240px;
+        }
+      }
+
+      .up,
+      .red-text,
+      .index-val.up,
+      .index-pct.up {
+        color: #e60012 !important;
+      }
+      .down,
+      .green-text,
+      .index-val.down,
+      .index-pct.down {
+        color: #00a63e !important;
+      }
+
+      .hero {
+        color: var(--text-primary);
+        background: color-mix(in oklab, var(--theme-accent) 8%, #fff);
+        border: none;
+        border-radius: 14px;
+        box-shadow:
+          0 14px 34px rgba(15, 23, 42, 0.07),
+          inset 0 1px 0 rgba(255, 255, 255, 0.9);
+        padding: 24px 24px;
+      }
+      .hero::before,
+      .hero::after,
+      .hero-grain {
+        display: none;
+      }
+      @media (min-width: 1100px) {
+        .hero {
+          border-radius: 14px;
+          padding: 26px 28px;
+          box-shadow: 0 14px 34px rgba(15, 23, 42, 0.07);
+        }
+        .hero-date {
+          font-family: var(--font-sans);
+          font-size: 30px;
+          letter-spacing: 0;
+        }
+      }
+      .cycle-tag,
+      .theme-toggle {
+        color: var(--text-primary);
+        background: #fff;
+        border: 1px solid rgba(15, 23, 42, 0.08);
+        box-shadow: 0 4px 14px rgba(15, 23, 42, 0.04);
+      }
+      .theme-toggle {
+        display: none;
+      }
+      .cycle-tag {
+        color: var(--theme-accent);
+        border-color: color-mix(in oklab, var(--theme-accent) 22%, transparent);
+        background: var(--theme-chip-bg);
+      }
+      .hero-subtitle,
+      .hero-subtitle .meta {
+        color: var(--text-secondary);
+        opacity: 1;
+      }
+      .hero-panel {
+        color: var(--text-primary);
+        background: rgba(255, 255, 255, 0.9);
+        border: 1px solid rgba(15, 23, 42, 0.08);
+        border-radius: 12px;
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9);
+      }
+      .hero-panel-title,
+      .hero-panel-sub,
+      .hero-kpi .k,
+      .hero-kpi .s {
+        color: var(--text-muted);
+      }
+      .hero-panel-title span:first-child,
+      .hero-kpi .v {
+        color: var(--text-primary);
+      }
+      .hero-kpi-grid {
+        background: #fff;
+        border-color: rgba(15, 23, 42, 0.08);
+      }
+      .hero-kpi:nth-child(odd),
+      .hero-kpi:nth-child(-n + 2) {
+        border-color: rgba(15, 23, 42, 0.08);
+      }
+      .hero .index-strip,
+      .index-strip {
+        background: #fff;
+        border: 1px solid rgba(15, 23, 42, 0.08);
+        border-radius: 12px;
+        box-shadow: 0 6px 18px rgba(15, 23, 42, 0.04);
+      }
+      .hero .index-name,
+      .hero .index-pct,
+      .index-name,
+      .index-pct {
+        color: var(--text-secondary);
+      }
+      .hero .index-val.up,
+      .hero .index-pct.up {
+        color: #e60012 !important;
+        text-shadow: none;
+      }
+      .hero .index-val.down,
+      .hero .index-pct.down {
+        color: #00a63e !important;
+        text-shadow: none;
+      }
+      .hero .index-val.flat,
+      .hero .index-pct.flat,
+      .index-val.flat,
+      .index-pct.flat {
+        color: #d97706 !important;
+        text-shadow: none;
+      }
+
+      .tabbar {
+        background: rgba(255, 255, 255, 0.92);
+        border: 1px solid rgba(15, 23, 42, 0.08);
+        box-shadow: 0 8px 22px rgba(15, 23, 42, 0.06);
+      }
+      .tab-btn.active {
+        color: #fff;
+        background: var(--theme-accent);
+        border-color: var(--theme-accent);
+        box-shadow: 0 8px 18px rgba(230, 0, 18, 0.16);
+      }
+
+      .card,
+      .summarybar,
+      .inset,
+      .thermo-mini,
+      .action-advisor,
+      .v2-strategy,
+      .plan-focus-card,
+      .pos-card,
+      .zt-col,
+      .zt-item,
+      .wb,
+      .wb-card,
+      .footer-learning {
+        background: #fff;
+        border-color: rgba(15, 23, 42, 0.08);
+        box-shadow: 0 8px 24px rgba(15, 23, 42, 0.05);
+      }
+      .card {
+        border-radius: 12px;
+      }
+      .card-title {
+        font-family: var(--font-sans);
+        font-size: 17px;
+        letter-spacing: 0;
+      }
+      .card-badge,
+      .plan-score-badge,
+      .pos-pill,
+      .v2-strategy .pill,
+      .plan-focus-chip,
+      .plan-focus-evidence,
+      .ladder-chip {
+        background: #fff;
+        border: 1px solid rgba(15, 23, 42, 0.08);
+        color: var(--text-secondary);
+      }
+      .plan-score-badge strong,
+      .zt-score .v {
+        color: var(--theme-accent);
+      }
+      .v2-strategy .pill.primary {
+        color: #e60012;
+        border-color: rgba(230, 0, 18, 0.2);
+        background: rgba(230, 0, 18, 0.06);
+      }
+      .zt-item {
+        border-radius: 12px;
+        box-shadow: none;
+      }
+      .zt-item::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 10px;
+        bottom: 10px;
+        width: 3px;
+        border-radius: 999px;
+        background: var(--theme-accent);
+      }
+      .zt-score .v {
+        background: rgba(230, 0, 18, 0.06);
+        border-color: rgba(230, 0, 18, 0.18);
+      }
+      .ladder-chip-strong,
+      .pill-hi,
+      .pos-pill.attack {
+        color: #e60012;
+        border-color: rgba(230, 0, 18, 0.2);
+        background: rgba(230, 0, 18, 0.06);
+      }
+      .ladder-chip-cool,
+      .pill-lo,
+      .pos-pill.def {
+        color: #00a63e;
+        border-color: rgba(0, 166, 62, 0.18);
+        background: rgba(0, 166, 62, 0.06);
+      }
+      #sec-ladder .ladder-chip:not(.red-text):not(.ladder-chip-strong) {
+        color: #d97706 !important;
+        border-color: rgba(245, 158, 11, 0.2);
+        background: rgba(245, 158, 11, 0.08);
+      }
+      #sec-ladder .ladder-chip.orange-text,
+      #sec-ladder .ladder-chip-warn,
+      #sec-ladder .ladder-chip-time {
+        color: #f59e0b !important;
+        border-color: rgba(245, 158, 11, 0.24);
+        background: rgba(245, 158, 11, 0.1);
+      }
+      #sec-ladder .ladder-chip.red-text,
+      #sec-ladder .ladder-chip-strong {
+        color: #e60012 !important;
+        border-color: rgba(230, 0, 18, 0.2);
+        background: rgba(230, 0, 18, 0.06);
+      }
+      .wb-head {
+        background: #fff;
+        border-bottom-color: rgba(15, 23, 42, 0.08);
       }
 
       @media (max-width: 600px) {
@@ -6845,7 +7180,8 @@
                       <div class="dim-fill" :style="{ width: item.barPct + '%', background: heatColor(item.barPct) }"></div>
                     </div>
                     <div class="dim-mini">
-                      <span class="dim-chip">{{ item.deltaWord }} {{ item.deltaVal }}</span>
+                      <span class="dim-chip" v-if="!item.isFlat">{{ item.deltaWord }} {{ item.deltaVal }}</span>
+                      <code v-if="item.isFlat">{{ item.stableText }}</code>
                       <code v-if="item.trendHtml" v-html="'趋势：' + item.trendHtml"></code>
                     </div>
                   </div>
@@ -6864,40 +7200,41 @@
                       <line class="wb-trend-gridline" x1="16" y1="32" x2="844" y2="32"></line>
                       <line class="wb-trend-gridline" x1="16" y1="110" x2="844" y2="110"></line>
                       <line class="wb-trend-gridline" x1="16" y1="204" x2="844" y2="204"></line>
-                      <path class="wb-trend-score" :d="watchScoreLine.area"></path>
-                      <path class="wb-trend-line-score" :d="watchScoreLine.line"></path>
-                      <path class="wb-trend-line-heat" :d="watchHeatLine.line"></path>
-                      <path class="wb-trend-line-risk" :d="watchRiskLine.line"></path>
+                      <path v-if="watchScoreLine.area" class="wb-trend-score" :d="watchScoreLine.area"></path>
+                      <path v-if="watchScoreLine.line" class="wb-trend-line-score" :d="watchScoreLine.line"></path>
+                      <path v-if="watchHeatLine.line" class="wb-trend-line-heat" :d="watchHeatLine.line"></path>
+                      <path v-if="watchRiskLine.line" class="wb-trend-line-risk" :d="watchRiskLine.line"></path>
                       <circle
                         v-for="(p, i) in watchScorePoints"
                         :key="'wsp-'+i"
                         class="wb-trend-dot score"
-                        :class="{ current: i === watchCurrentIndex }"
+                        :class="{ current: p.index === watchCurrentIndex }"
                         :cx="p.x"
                         :cy="p.y"
-                        :r="i === watchCurrentIndex ? 5.5 : 3.6"></circle>
+                        :r="p.index === watchCurrentIndex ? 5.5 : 3.6"></circle>
                       <circle
                         v-for="(p, i) in watchHeatPoints"
                         :key="'whp-'+i"
                         class="wb-trend-dot heat"
-                        :class="{ current: i === watchCurrentIndex }"
+                        :class="{ current: p.index === watchCurrentIndex }"
                         :cx="p.x"
                         :cy="p.y"
-                        :r="i === watchCurrentIndex ? 5.2 : 3.2"></circle>
+                        :r="p.index === watchCurrentIndex ? 5.2 : 3.2"></circle>
                       <circle
                         v-for="(p, i) in watchRiskPoints"
                         :key="'wrp-'+i"
                         class="wb-trend-dot risk"
-                        :class="{ current: i === watchCurrentIndex }"
+                        :class="{ current: p.index === watchCurrentIndex }"
                         :cx="p.x"
                         :cy="p.y"
-                        :r="i === watchCurrentIndex ? 5.2 : 3.2"></circle>
+                        :r="p.index === watchCurrentIndex ? 5.2 : 3.2"></circle>
                     </svg>
                     <div class="wb-trend-now" v-if="watchCurrentSnap?.time">
                       <span>当前高亮</span>
                       <strong>{{ watchCurrentSnap.time }}</strong>
                     </div>
-                    <div class="wb-trend-axis">
+                    <div class="wb-flat-note" v-if="watchTrajectoryFlat">盘中核心数据未变化，仅显示当前节点。</div>
+                    <div class="wb-trend-axis" v-if="!watchTrajectoryFlat">
                       <span v-for="(t, i) in watchTimes" :key="'wta-'+i" :class="{ active: i <= watchCurrentIndex, current: i === watchCurrentIndex }">{{ t }}</span>
                     </div>
                     <div class="wb-trend-legend">
@@ -7101,7 +7438,7 @@
           </div>
         </div>
         <p>📊 生成时间：__REPORT_DATE__ 收盘</p>
-        <p>数据来源：风中一刀的主升浪丨</p>
+        <p>公众号：风中一刀的主升浪丨</p>
         <p>K线为王 · 数据先行 · 不虚构不猜测</p>
       </div>
     </div>
@@ -7306,12 +7643,12 @@
               const rows = [
                 { tone: "red", tags: [] },
                 { tone: "orange", tags: [] },
-                { tone: "blue", tags: [] },
+                { tone: "muted", tags: [] },
               ]
-              const byTone = { red: rows[0], orange: rows[1], blue: rows[2] }
+              const byTone = { red: rows[0], orange: rows[1], muted: rows[2] }
               for (const tag of row?.tags || []) {
                 const cls = String(tag?.cls || "")
-                const tone = cls.includes("red-text") ? "red" : cls.includes("orange-text") ? "orange" : "blue"
+                const tone = cls.includes("red-text") ? "red" : cls.includes("orange-text") ? "orange" : "muted"
                 byTone[tone].tags.push(tag)
               }
               return rows.filter((x) => x.tags.length)
@@ -7359,6 +7696,32 @@
                 value: v,
                 index: i,
               }))
+            },
+            seriesIsFlat(series, eps = 0.05) {
+              const vals = (Array.isArray(series) ? series : []).map((v) => Number(v)).filter((v) => Number.isFinite(v))
+              if (vals.length <= 1) return true
+              const first = vals[0]
+              return vals.every((v) => Math.abs(v - first) <= eps)
+            },
+            watchSeriesValues(key) {
+              return (this.watchSnapshots || []).map((x) => this.toNum(x?.[key], NaN)).filter((v) => Number.isFinite(v))
+            },
+            watchSinglePoint(series, w = 860, h = 220, pad = 16) {
+              const vals = (Array.isArray(series) ? series : []).map((v) => Number(v)).filter((v) => Number.isFinite(v))
+              if (!vals.length) return []
+              const value = vals[vals.length - 1]
+              const y = h - pad - (this.clamp100(value) / 100) * (h - pad * 2)
+              return [{ x: +(w / 2).toFixed(2), y: +y.toFixed(2), value, index: vals.length - 1 }]
+            },
+            watchLinePoints(key) {
+              const vals = this.watchSeriesValues(key)
+              if (this.seriesIsFlat(vals)) return this.watchSinglePoint(vals)
+              return this.linePoints(vals, 860, 220, 16)
+            },
+            watchLinePath(key) {
+              const vals = this.watchSeriesValues(key)
+              if (this.seriesIsFlat(vals)) return { line: "", area: "" }
+              return this.linePath(vals, 860, 220, 16)
             },
             // 已移除：metaPack/metaSummary（研发信息不在产品上展示）
             /**
@@ -7881,16 +8244,18 @@
                 const c = this.toNum(curr?.[cfg.key], 0)
                 const p = this.toNum(prev?.[cfg.key], c)
                 const delta = c - p
+                const values = rows.map((x) => this.toNum(x?.[cfg.key], NaN)).filter((v) => Number.isFinite(v))
+                const isFlat = this.seriesIsFlat(values)
                 const level = cfg.inverse ? (c <= cfg.hi ? "低位" : c <= cfg.mid ? "中位" : "高位") : c >= cfg.hi ? "高位" : c >= cfg.mid ? "中位" : "低位"
                 const levelCls = level === "高位" ? "high" : level === "中位" ? "mid" : "low"
                 const deltaWord = Math.abs(delta) < 0.05 ? "持平" : delta > 0 ? "上升" : "下降"
                 const deltaVal = Math.abs(delta) < 0.05 ? "0" : `${delta > 0 ? "+" : "-"}${Number.isInteger(Math.abs(delta)) ? Math.abs(delta) : Math.abs(delta).toFixed(1)}${cfg.unit}`
-                const trend = rows
-                  .map((x) => {
-                    const v = this.toNum(x?.[cfg.key], 0)
-                    return Number.isInteger(v) ? String(v) : v.toFixed(1) + cfg.unit
-                  })
-                  .join("→")
+                const valueText = `${Number.isInteger(c) ? c : c.toFixed(1)}${cfg.unit}`
+                const trend = isFlat
+                  ? ""
+                  : values
+                      .map((v) => (Number.isInteger(v) ? String(v) : v.toFixed(1)) + cfg.unit)
+                      .join("→")
                 return {
                   key: cfg.key,
                   label: cfg.label,
@@ -7898,46 +8263,39 @@
                   levelCls,
                   deltaWord,
                   deltaVal,
-                  valueText: `${Number.isInteger(c) ? c : c.toFixed(1)}${cfg.unit}`,
+                  valueText,
                   barPct: this.clamp100((c / Math.max(cfg.max, 1)) * 100),
-                  trend: trend || "—",
-                  trendHtml: this.trendColorHtml(trend, "→", cfg.inverse),
+                  isFlat,
+                  stableText: `数据未变化：${valueText}`,
+                  trend: trend || valueText || "—",
+                  trendHtml: isFlat ? "" : this.trendColorHtml(trend, "→", cfg.inverse),
                 }
               })
+            },
+            watchTrajectoryFlat() {
+              return ["shift_score", "heat", "risk"].every((key) => this.seriesIsFlat(this.watchSeriesValues(key)))
             },
             watchCurrentIndex() {
               const rows = this.watchSnapshots || []
               return rows.length ? rows.length - 1 : -1
             },
             watchScorePoints() {
-              return this.linePoints(
-                (this.watchSnapshots || []).map((x) => this.toNum(x?.shift_score, 0)),
-                860,
-                220,
-                16,
-              )
+              return this.watchLinePoints("shift_score")
             },
             watchHeatPoints() {
-              return this.linePoints(
-                (this.watchSnapshots || []).map((x) => this.toNum(x?.heat, 0)),
-                860,
-                220,
-                16,
-              )
+              return this.watchLinePoints("heat")
             },
             watchRiskPoints() {
-              return this.linePoints(
-                (this.watchSnapshots || []).map((x) => this.toNum(x?.risk, 0)),
-                860,
-                220,
-                16,
-              )
+              return this.watchLinePoints("risk")
             },
             watchEvolutionSummary() {
               const rows = this.watchSnapshots || []
               if (!rows.length) return "暂无盘中切片，无法生成演化总结。"
               const first = rows[0] || {}
               const last = rows[rows.length - 1] || {}
+              if (this.watchTrajectoryFlat) {
+                return `盘中核心数据未变化：情绪分 ${last.shift_score ?? "-"}，热度 ${last.heat ?? "-"}，风险 ${last.risk ?? "-"}。继续等待下一次有效变化。`
+              }
               const scoreDiff = this.toNum(last?.shift_score, 0) - this.toNum(first?.shift_score, 0)
               const heatDiff = this.toNum(last?.heat, 0) - this.toNum(first?.heat, 0)
               const riskDiff = this.toNum(last?.risk, 0) - this.toNum(first?.risk, 0)
@@ -7950,28 +8308,13 @@
               return `从 ${first.time || "开盘"} 到 ${last.time || "当前"}，情绪 ${dir}；${hr}。${peakText}${lowText}。收在 ${last.shift_label || last.headline || "稳定"} 状态。`
             },
             watchScoreLine() {
-              return this.linePath(
-                (this.watchSnapshots || []).map((x) => this.toNum(x?.shift_score, 0)),
-                860,
-                220,
-                16,
-              )
+              return this.watchLinePath("shift_score")
             },
             watchHeatLine() {
-              return this.linePath(
-                (this.watchSnapshots || []).map((x) => this.toNum(x?.heat, 0)),
-                860,
-                220,
-                16,
-              )
+              return this.watchLinePath("heat")
             },
             watchRiskLine() {
-              return this.linePath(
-                (this.watchSnapshots || []).map((x) => this.toNum(x?.risk, 0)),
-                860,
-                220,
-                16,
-              )
+              return this.watchLinePath("risk")
             },
             watchTimes() {
               return (this.watchSnapshots || []).map((x) => x?.time || "--")
@@ -9021,8 +9364,8 @@
                       .map((x) => {
                         const openTag = Number(x.zbc || 0) >= 1 ? `${Number(x.zbc)}次开板` : ""
                         const chips = [
-                          `<span class="ladder-chip ladder-chip-mini blue-text">首板</span>`,
-                          openTag ? `<span class="ladder-chip ladder-chip-mini ${Number(x.zbc) >= 2 ? "orange-text" : "blue-text"}">${openTag}</span>` : "",
+                          `<span class="ladder-chip ladder-chip-mini orange-text">首板</span>`,
+                          openTag ? `<span class="ladder-chip ladder-chip-mini orange-text">${openTag}</span>` : "",
                           Number(x.zj || 0) > 0 ? `<span class="ladder-chip ladder-chip-mini ${Number(x.zj) / 1e8 >= 5 ? "red-text" : "orange-text"}">${fmtYi(x.zj)}封</span>` : "",
                         ]
                           .filter(Boolean)
@@ -9176,14 +9519,14 @@
                   const isHighOpen = zbc >= 2
                   const sealYi = row.zj ? Number(row.zj) / 1e8 : 0
                   const sealText = sealYi ? `${sealYi.toFixed(sealYi >= 10 ? 0 : 1)}亿封` : ""
-                  const sealClass = sealYi >= 5 ? "ladder-chip-strong red-text" : sealYi >= 2 ? "ladder-chip-warn orange-text" : "ladder-chip-cool blue-text"
+                  const sealClass = sealYi >= 5 ? "ladder-chip-strong red-text" : sealYi >= 2 ? "ladder-chip-warn orange-text" : "ladder-chip-cool orange-text"
 
                   const openTag = hasReSeal ? (isHighOpen ? `${zbc}次开板` : "回封") : ""
 
                   // 个股角标：涨幅 & 首封时间
                   const zf = Number(row.zf ?? 0)
                   const zfText = Number.isFinite(zf) ? `${zf >= 0 ? "+" : ""}${zf.toFixed(1)}%` : ""
-                  const zfCls = zf >= 15 ? "purple-text" : zf >= 0 ? "red-text" : "green-text"
+                  const zfCls = zf >= 15 ? "red-text" : zf >= 0 ? "red-text" : "orange-text"
                   const hhmm = fmtHhmm(row.fbt)
                   const tCls = timeClass(hhmm)
 
@@ -9196,7 +9539,7 @@
 
                   const chipsMeta = [
                     ...(Array.isArray(row.qualityTags) ? row.qualityTags : []).map((t) => `<span class="ladder-chip ${t.cls || ""}">${t.text || ""}</span>`),
-                    openTag ? `<span class="ladder-chip ${isHighOpen ? "ladder-chip-warn orange-text" : "ladder-chip-cool blue-text"}">${openTag}</span>` : "",
+                    openTag ? `<span class="ladder-chip ${isHighOpen ? "ladder-chip-warn orange-text" : "ladder-chip-cool orange-text"}">${openTag}</span>` : "",
                     sealText ? `<span class="ladder-chip ${sealClass}">${sealText}</span>` : "",
                   ]
                     .filter(Boolean)
