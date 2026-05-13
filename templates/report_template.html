@@ -5275,15 +5275,18 @@
         padding: 12px 12px;
         margin: 0 0 14px;
       }
-      /* SummaryBar 情绪主题色（跟随 moodStage.type） */
+      /* SummaryBar 情绪主题色：展示盘面强弱；阶段风险仍由 moodStage 文案表达 */
       .summarybar.mood-good {
-        border-color: rgba(239, 68, 68, 0.22);
+        background: color-mix(in oklab, #fff 84%, rgba(230, 0, 18, 0.16));
+        border-color: rgba(230, 0, 18, 0.22);
       }
       .summarybar.mood-warn {
+        background: color-mix(in oklab, #fff 84%, rgba(245, 158, 11, 0.16));
         border-color: rgba(245, 158, 11, 0.22);
       }
       .summarybar.mood-fire {
-        border-color: rgba(14, 165, 233, 0.22);
+        background: color-mix(in oklab, #fff 84%, rgba(0, 166, 62, 0.16));
+        border-color: rgba(0, 166, 62, 0.22);
       }
       .summarybar-grid {
         display: grid;
@@ -6362,8 +6365,8 @@
         </div>
         <div class="hero-grid">
           <div class="hero-top">
-            <div class="cycle-tag mood-badge" :class="'mood-' + (marketData.moodStage?.type || 'warn')">
-              <span class="badge-icon">{{ marketData.moodStage?.type === 'good' ? '🔥' : (marketData.moodStage?.type === 'warn' ? '⚠' : '🧊') }}</span>
+            <div class="cycle-tag mood-badge" :class="'mood-' + marketToneClass">
+              <span class="badge-icon">{{ marketToneClass === 'good' ? '🔥' : (marketToneClass === 'warn' ? '⚠' : '🧊') }}</span>
               <span>短线复盘 · 情绪监控</span>
             </div>
             <div class="hero-date">__REPORT_DATE_CN__收盘简报</div>
@@ -6453,7 +6456,7 @@
       </div>
 
       <!-- 首屏：情绪总控（仅短线情绪页显示） -->
-      <div class="page-block summarybar" :class="'mood-' + ((marketData.moodStage && marketData.moodStage.type) ? marketData.moodStage.type : 'warn')" data-page="sentiment">
+      <div class="page-block summarybar" :class="'mood-' + marketToneClass" data-page="sentiment">
         <!-- 已删除：summarybar-grid（与顶部 Hero 的 KPI 信息重复） -->
 
         <!-- 情绪温度（替代“情绪周期趋势”）：更直观、更可解释 -->
@@ -7579,14 +7582,55 @@
       };
 
       /**
+       * 页面展示色：把短线强弱单独映射成 bull / mixed / bear
+       * - bull：热度占优，且封板/高度/跌停压力整体健康
+       * - bear：风险占优，或亏钱/跌停/断板压力明显
+       * - mixed：其余中间态
+       */
+      const resolveMarketTone = (md) => {
+        const mood = md?.mood || {}
+        const pan = md?.panorama || {}
+        const stage = md?.moodStage || {}
+        const heat = Number(mood?.heat ?? 0)
+        const risk = Number(mood?.risk ?? 0)
+        const score = Number(mood?.score ?? 0)
+        const zt = Number(pan?.limitUp ?? 0)
+        const dt = Number(pan?.limitDown ?? 0)
+        const fb = Number(md?.features?.mood_inputs?.fb_rate ?? 0)
+        const jj = Number(md?.features?.mood_inputs?.jj_rate ?? 0)
+        const stageType = String(stage?.type || "")
+
+        if (
+          risk >= 55 ||
+          dt >= 8 ||
+          score <= 45 ||
+          (heat <= 40 && zt < 50) ||
+          (fb < 55 && dt >= 5) ||
+          stageType === "fire"
+        ) {
+          return "bear"
+        }
+        if (
+          score >= 68 &&
+          heat >= 60 &&
+          risk <= 35 &&
+          fb >= 70 &&
+          dt <= 3 &&
+          (zt >= 70 || jj >= 30 || stageType === "good")
+        ) {
+          return "bull"
+        }
+        return "mixed"
+      }
+
+      /**
        * 同步市场主题色（bull/mixed/bear）
        * - bull：偏强/修复（暖色）
        * - bear：退潮/偏弱（冷色）
        * - mixed：分歧/震荡（中性）
        */
       const syncMarketTone = () => {
-        const t = marketData?.moodStage?.type || "warn"
-        const tone = t === "good" ? "bull" : t === "fire" ? "bear" : "mixed"
+        const tone = resolveMarketTone(marketData)
         document.body.setAttribute("data-market-tone", tone)
       }
       syncMarketTone()
@@ -8134,6 +8178,10 @@
             },
           },
           computed: {
+            marketToneClass() {
+              const tone = resolveMarketTone(this.marketData)
+              return tone === "bull" ? "good" : tone === "bear" ? "fire" : "warn"
+            },
             delta() {
               return this.marketData?.delta || {}
             },
