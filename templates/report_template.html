@@ -9532,23 +9532,31 @@
 
           const total = data?.length || 0
           const promote = data.filter((r) => r.status === "晋级").length
+          const cleanName = (name) => String(name || "").replace(/^[^\u4e00-\u9fa5A-Za-z0-9]+/, "").trim()
           const qCount = (label) => data.filter((r) => String(r.qualityLabel || "") === label).length
           const accelCnt = qCount("加速确认")
           const warmCnt = qCount("温和放量")
           const rottenCnt = qCount("分歧烂板")
           const resealCnt = qCount("反复回封")
           const highTurnCnt = qCount("高换手承接")
-          let qualityTitle = "质量均衡"
-          let qualitySub = "确认型与分歧型并存，次日重点看前排承接。"
-          if (accelCnt + warmCnt >= Math.max(3, Math.ceil(total * 0.55))) {
+          const topRows = [...data].sort((a, b) => Number(b.badge || 0) - Number(a.badge || 0) || Number(b.zj || 0) - Number(a.zj || 0))
+          const topRow = topRows[0] || {}
+          const secondBadge = Number(topRows[1]?.badge || 0)
+          const topBadge = Number(topRow.badge || maxBadge || 0)
+          const topName = cleanName(topRow.name)
+          const hasSpaceLeader = topName && topBadge >= 5 && topBadge > secondBadge
+          const tierSpan = groups.filter(([, rows]) => Array.isArray(rows) && rows.length).length
+          let qualityTitle = hasSpaceLeader ? `${topName}打开${topBadge}板高度` : "梯队承接"
+          let qualitySub = hasSpaceLeader ? `市场空间核心，先看它对高标与同题材的带动。` : `连板覆盖 ${tierSpan} 个梯队，先看前排能否继续晋级。`
+          if (!hasSpaceLeader && accelCnt + warmCnt >= Math.max(3, Math.ceil(total * 0.55))) {
             qualityTitle = "确认型占优"
-            qualitySub = `加速确认 ${accelCnt} 只，温和放量 ${warmCnt} 只，整体封板质量偏稳。`
-          } else if (rottenCnt + resealCnt >= Math.max(2, Math.ceil(total * 0.35))) {
+            qualitySub = `加速/温和放量 ${accelCnt + warmCnt} 只，前排承接偏稳。`
+          } else if (!hasSpaceLeader && rottenCnt + resealCnt >= Math.max(2, Math.ceil(total * 0.35))) {
             qualityTitle = "分歧板偏多"
-            qualitySub = `分歧烂板 ${rottenCnt} 只，反复回封 ${resealCnt} 只，次日分化压力更大。`
-          } else if (highTurnCnt >= Math.max(2, Math.ceil(total * 0.25))) {
-            qualityTitle = "承接换手主导"
-            qualitySub = `高换手承接 ${highTurnCnt} 只，说明资金更偏向换手确认，而非纯一致加速。`
+            qualitySub = `烂板/反复回封 ${rottenCnt + resealCnt} 只，次日更看去弱留强。`
+          } else if (!hasSpaceLeader && highTurnCnt >= Math.max(2, Math.ceil(total * 0.25))) {
+            qualityTitle = "换手承接"
+            qualitySub = `高换手承接 ${highTurnCnt} 只，资金偏向换手确认。`
           }
 
           summaryEl.innerHTML = `
@@ -9558,7 +9566,7 @@
               <div class="ladder-summary-sub">聚焦连板质量，不再单列“新晋”状态</div>
             </div>
             <div class="ladder-summary-item">
-              <div class="ladder-summary-k"><span class="ladder-summary-icon">🧪</span>封板质量</div>
+              <div class="ladder-summary-k"><span class="ladder-summary-icon">🧪</span>核心价值</div>
               <div class="ladder-summary-v">${qualityTitle}</div>
               <div class="ladder-summary-sub">${qualitySub}</div>
             </div>

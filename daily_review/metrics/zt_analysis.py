@@ -139,12 +139,16 @@ def _tag_order_key(tag: Dict[str, str], idx: int) -> Tuple[int, int, int]:
         return (0, _next_step_rank(text), idx)
     if text in {"主线", "极强主线", "强主线", "中等主线"}:
         return (2, {"主线": 0, "极强主线": 1, "强主线": 2, "中等主线": 3}.get(text, 9), idx)
-    if text in {"前龙头", "核心梯队", "有梯队"}:
-        return (3, {"前龙头": 0, "核心梯队": 1, "有梯队": 2}.get(text, 9), idx)
-    if text.startswith("带动"):
+    if text in {"市场总龙头", "前龙头", "核心梯队", "有梯队"}:
+        return (3, {"市场总龙头": 0, "前龙头": 1, "核心梯队": 2, "有梯队": 3}.get(text, 9), idx)
+    if text.startswith("突破") and text.endswith("板压制"):
+        return (3, 2, idx)
+    if text.startswith("带动") and len(text) <= 8:
         return (3, 3, idx)
-    if text.startswith("跟风"):
+    if text.startswith("带动"):
         return (3, 4, idx)
+    if text.startswith("跟风"):
+        return (3, 5, idx)
     if text in {"断板风险高", "高度压制", "晋级生态弱", "题材转弱", "分歧烂板", "反复回封", "一字板", "缩量封板", "无梯队", "题材待确认"}:
         return (4, 0, idx)
     if re.fullmatch(r"\d+(?:\.\d+)?次开板", text):
@@ -418,6 +422,8 @@ def build_zt_analysis(*, market_data: Dict[str, Any]) -> Dict[str, Any]:
     height_sub = _num_list(height_trend.get("sub"))
     if height_main:
         hist_max_lb = height_main
+    prior_height_window = hist_max_lb[:-1] if len(hist_max_lb) >= 2 else []
+    recent_height_cap = max(prior_height_window[-5:] or [prev_max_b or 0.0])
     height_avg = _avg(hist_max_lb[-5:], leader_max_b or 0.0)
     height_delta = _recent_delta(hist_max_lb, 3) if hist_max_lb else trend_max_lb
     sub_height_delta = _recent_delta(height_sub, 3) if height_sub else 0.0
@@ -1002,6 +1008,33 @@ def build_zt_analysis(*, market_data: Dict[str, Any]) -> Dict[str, Any]:
         sector_rank_context_score = theme_rank_score(pred_theme) if pred_theme else 42.0
         plate_ctx = plate_rotation_context(pred_theme, code, name)
         plate_score = _to_num(plate_ctx.get("score"), 50.0)
+        plate_rank = _to_num(plate_ctx.get("rank"), 99.0)
+        plate_name = str(plate_ctx.get("name") or "")
+        plate_lead = str(plate_ctx.get("lead") or "")
+        is_plate_leader = bool(plate_lead and plate_lead == name)
+        plate_is_strong = bool(1 <= plate_rank <= 5 and plate_score >= 62)
+        is_market_top = bool(leader_max_b and lbc == leader_max_b)
+        height_breakout_leader = bool(
+            is_market_top
+            and is_new_high
+            and lbc >= 6
+            and lbc > max(recent_height_cap, prev_max_b)
+            and not height_pressure
+            and not is_yizi
+            and not is_shrink_seal
+            and open_cnt <= 2
+            and (has_follow or is_theme_leader or is_plate_leader)
+            and (theme_net >= 8 or plate_is_strong)
+        )
+        height_breakout_bonus = 0.0
+        if height_breakout_leader:
+            height_breakout_bonus = (
+                7.0
+                + min(6.0, max(0.0, lbc - max(recent_height_cap, 0.0)) * 3.0)
+                + (3.0 if is_plate_leader else 0.0)
+                + (2.5 if has_follow else 0.0)
+                + (2.0 if theme_net >= 12 or plate_score >= 70 else 0.0)
+            )
         sector_trend_score = _clamp(
             theme_persist_score * 0.34
             + sector_rank_context_score * 0.24
@@ -1102,6 +1135,7 @@ def build_zt_analysis(*, market_data: Dict[str, Any]) -> Dict[str, Any]:
             + risk_control_score * 0.08
             + opportunity_score * 0.02
             + identity_edge
+            + height_breakout_bonus
             + _to_num(market_gate.get("adjust"), 0.0)
         )
         score_band = _factor_band(_round(raw_score))
@@ -1117,6 +1151,7 @@ def build_zt_analysis(*, market_data: Dict[str, Any]) -> Dict[str, Any]:
             "risk": _round(risk_control_score),
             "opportunity": _round(opportunity_score),
             "edge": _round(identity_edge),
+            "heightBreakout": _round(height_breakout_bonus),
         }
         factor_hint = (
             f"环境{factor_breakdown['environment']}({market_gate.get('label')}) / "
@@ -1134,6 +1169,11 @@ def build_zt_analysis(*, market_data: Dict[str, Any]) -> Dict[str, Any]:
             tags.append(_tag("前龙头", "ladder-chip-strong red-text"))
         elif leader_bonus > 0:
             tags.append(_tag("核心梯队", "ladder-chip-warn orange-text"))
+        if height_breakout_leader:
+            tags.append(_tag("市场总龙头", "ladder-chip-strong red-text"))
+            tags.append(_tag(f"突破{int(recent_height_cap)}板压制", "ladder-chip-strong red-text"))
+            if plate_name:
+                tags.append(_tag(f"带动{plate_name}", "ladder-chip-strong red-text"))
         tags.append(_tag("有梯队" if has_tier else "无梯队" if has_trade_theme else "属性标签" if is_broad_only else "题材待确认", "ladder-chip-warn orange-text" if has_tier else "ladder-chip-cool blue-text"))
         if has_trade_theme:
             tags.append(_tag(f"带动{'、'.join(followers) or '—'}" if is_theme_leader and has_follow else f"跟风{follow_leader}" if has_follow else "无跟风", "ladder-chip-cool blue-text"))
@@ -1194,69 +1234,99 @@ def build_zt_analysis(*, market_data: Dict[str, Any]) -> Dict[str, Any]:
         else:
             tags.append(_tag(f"{hy}×{hy_cnt.get(hy, 1)}", "ladder-chip-warn orange-text" if hy_score >= 60 else ""))
 
-        reason_bits: List[str] = []
-        if quality_label:
-            reason_bits.append(f"封板质量：{quality_label}")
-        if fund_yi >= fund_lo + (fund_hi - fund_lo) * 0.6:
-            reason_bits.append("封单偏强")
-        if open_cnt <= 1:
-            reason_bits.append("开板少/封板稳")
-        if time_score >= 70:
-            reason_bits.append("早封")
-        if top_themes:
-            reason_bits.append(f"{'板块归属' if has_trade_theme else '属性标签'}：" + "、".join(str(x.get("name") or "") for x in top_themes))
-        elif hy_score >= 60:
-            reason_bits.append("行业内涨停集中")
-        if is_main:
-            reason_bits.append("主线加成")
-        if leader_bonus >= 10:
-            reason_bits.append("龙头梯队")
+        core_bits: List[str] = []
+        support_bits: List[str] = []
+        risk_bits: List[str] = []
+
+        def _push_reason(bucket: List[str], text: str) -> None:
+            text = str(text or "").strip()
+            if text and text not in core_bits and text not in support_bits and text not in risk_bits:
+                bucket.append(text)
+
+        theme_label = str(pred_theme or plate_name or hy or "").strip()
+        follower_text = "、".join(followers[:2])
+        if height_breakout_leader:
+            _push_reason(core_bits, f"市场总龙头：突破近5日{int(recent_height_cap)}板压制")
+            if plate_name:
+                _push_reason(core_bits, f"带动{plate_name}板块")
+        elif is_plate_leader and plate_name and plate_is_strong:
+            _push_reason(core_bits, f"{plate_name}板块龙头")
+        elif is_theme_leader and has_follow and theme_label:
+            _push_reason(core_bits, f"{theme_label}龙头带动")
+        elif leader_bonus >= 10:
+            _push_reason(core_bits, "前排龙头梯队")
+        elif leader_bonus > 0:
+            _push_reason(core_bits, "核心梯队")
+
         if has_tier and has_follow:
-            reason_bits.append("梯队带动" if is_theme_leader else "梯队+跟风")
-        if promo_ecology >= 62:
-            reason_bits.append(f"晋级生态强({int(jj_rate)}%/{int(broken_lb_rate)}%)")
-        elif promo_ecology <= 42:
-            reason_bits.append(f"晋级生态弱({int(jj_rate)}%/{int(broken_lb_rate)}%)")
-        if height_repair:
-            reason_bits.append("高度修复")
-        elif height_pressure:
-            reason_bits.append("高度压制")
-        if theme_is_continuing:
-            reason_bits.append("题材持续")
-        elif theme_is_fading:
-            reason_bits.append("题材转弱")
-        if individual_break_risk >= 68:
-            reason_bits.append("断板风险高")
-        if lbc >= 2:
-            reason_bits.append("梯队内有辨识度")
-        if zsz_yi and zsz_yi <= 150:
-            reason_bits.append("小市值")
-        if cje_yi and cje_yi > 10:
-            reason_bits.append("成交额>10亿")
-        if is_moderate_volume:
-            reason_bits.append("温和放量")
-        if is_new_high:
-            reason_bits.append(f"突破新高({int(max_lbc)}板)")
-        if is_yizi:
-            reason_bits.append("一字板(参与难度大)")
-        elif is_shrink_seal:
-            reason_bits.append("缩量封板(参与难度大)")
-        if has_tier and has_follow and (has_spread or theme_net >= 10):
-            reason_bits.append("题材联动")
+            _push_reason(core_bits, f"梯队带动{follower_text}" if is_theme_leader and follower_text else "梯队带动" if is_theme_leader else "梯队跟随")
+        elif has_tier:
+            _push_reason(core_bits, "梯队完整")
+        elif top_themes:
+            _push_reason(core_bits, f"{'板块归属' if has_trade_theme else '属性标签'}：" + "、".join(str(x.get("name") or "") for x in top_themes[:2]))
+        elif hy_score >= 60:
+            _push_reason(core_bits, "行业内涨停集中")
+
         if has_trade_theme and theme_net >= 12:
-            reason_bits.append("极强主线(板块净强≥12)")
+            _push_reason(core_bits, "极强主线")
         elif has_trade_theme and theme_net >= 8:
-            reason_bits.append("强主线(板块净强≥8)")
+            _push_reason(core_bits, "强主线")
+        elif is_main:
+            _push_reason(core_bits, "主线加成")
+        if is_new_high and not height_breakout_leader:
+            _push_reason(core_bits, f"突破新高({int(max_lbc)}板)")
+        if theme_is_continuing:
+            _push_reason(core_bits, "题材持续")
+        if has_tier and has_follow and (has_spread or theme_net >= 10):
+            _push_reason(core_bits, "题材联动")
+        if height_repair:
+            _push_reason(core_bits, "高度修复")
+
+        if quality_label in {"封单充足", "加速确认"}:
+            _push_reason(support_bits, quality_label)
+        elif quality_label == "温和放量" or is_moderate_volume:
+            _push_reason(support_bits, "温和放量")
+        elif quality_label == "高换手承接":
+            _push_reason(support_bits, "换手承接")
+        elif quality_label in {"分歧烂板", "反复回封"}:
+            _push_reason(support_bits, quality_label)
+        if fund_yi >= fund_lo + (fund_hi - fund_lo) * 0.6:
+            _push_reason(support_bits, "封单偏强")
+        if open_cnt <= 1 and not is_yizi:
+            _push_reason(support_bits, "封板稳")
+        if time_score >= 70:
+            _push_reason(support_bits, "早封")
+        if cje_yi and cje_yi > 10:
+            _push_reason(support_bits, "容量够")
+        if zsz_yi and zsz_yi <= 150 and not core_bits:
+            _push_reason(support_bits, "小市值")
         if warm_vol_theme_combo >= 16:
-            reason_bits.append("量价共振(温和放量+强板块)")
+            _push_reason(support_bits, "量价共振")
         elif warm_vol_theme_combo >= 8:
-            reason_bits.append("放量+板块共振")
+            _push_reason(support_bits, "放量+板块")
+        if promo_ecology >= 62:
+            _push_reason(support_bits, f"晋级生态强({int(jj_rate)}%/{int(broken_lb_rate)}%)")
+
+        if height_pressure:
+            _push_reason(risk_bits, "高度压制")
+        if theme_is_fading:
+            _push_reason(risk_bits, "题材转弱")
+        if individual_break_risk >= 68:
+            _push_reason(risk_bits, "断板风险高")
+        if promo_ecology <= 42:
+            _push_reason(risk_bits, f"晋级生态弱({int(jj_rate)}%/{int(broken_lb_rate)}%)")
+        if is_yizi:
+            _push_reason(risk_bits, "一字板(参与难度大)")
+        elif is_shrink_seal:
+            _push_reason(risk_bits, "缩量封板(参与难度大)")
         if open_cnt >= 8:
-            reason_bits.append("强分歧(多开板)")
+            _push_reason(risk_bits, "强分歧(多开板)")
         elif open_cnt >= 3:
-            reason_bits.append("分歧偏大")
+            _push_reason(risk_bits, "分歧偏大")
         if stage_type == "good" and lbc >= 5:
-            reason_bits.append("高位谨慎")
+            _push_reason(risk_bits, "高位谨慎")
+
+        reason_bits = [*core_bits[:4], *support_bits[:3], *risk_bits[:2]]
 
         gap_range = {"lo": 3, "hi": 6} if raw_score >= 82 else {"lo": 1, "hi": 4} if raw_score >= 70 else {"lo": 0, "hi": 2} if raw_score >= 58 else {"lo": -1, "hi": 1} if raw_score >= 45 else {"lo": -3, "hi": 0}
         if step_context_score >= 72 and not height_pressure:
@@ -1331,6 +1401,7 @@ def build_zt_analysis(*, market_data: Dict[str, Any]) -> Dict[str, Any]:
                 "_leaderBonus": leader_bonus,
                 "_isThemeLeader": is_theme_leader,
                 "_isNewHigh": is_new_high,
+                "_heightBreakoutLeader": height_breakout_leader,
                 "_themeNet": theme_net,
                 "_isMain": is_main,
                 "_raw": _round(raw_score),
@@ -1368,14 +1439,27 @@ def build_zt_analysis(*, market_data: Dict[str, Any]) -> Dict[str, Any]:
     for idx, r in enumerate(ranked):
         r["factorRank"] = idx + 1
 
-    def relay_sort(r: Dict[str, Any]) -> Tuple[float, float, float, float, float, float]:
+    def relay_sort(r: Dict[str, Any]) -> Tuple[float, float, float, float, float, float, float]:
         return (
+            1.0 if r.get("_heightBreakoutLeader") else 0.0,
             _to_num(r.get("_raw"), 0),
             _to_num(r.get("leaderFactorScore"), 0),
             _to_num(r.get("relayFactorScore"), 0),
             _to_num(r.get("environmentScore"), 0),
             _to_num(r.get("capacityFactorScore"), 0),
             -_to_num(r.get("breakRisk"), 0),
+        )
+
+    def relay_height_breakout_ok(r: Dict[str, Any]) -> bool:
+        return bool(
+            r.get("_heightBreakoutLeader")
+            and _to_num(r.get("lbc"), 0) >= 6
+            and _to_num(r.get("_raw"), 0) >= 72
+            and _to_num(r.get("leaderFactorScore"), 0) >= 76
+            and _to_num(r.get("relayFactorScore"), 0) >= 70
+            and _to_num(r.get("breakRisk"), 0) < 68
+            and _to_num(r.get("stepContextScore"), 0) >= 70
+            and _to_num(r.get("open"), 0) <= 2
         )
 
     def relay_core_ok(r: Dict[str, Any]) -> bool:
@@ -1430,6 +1514,7 @@ def build_zt_analysis(*, market_data: Dict[str, Any]) -> Dict[str, Any]:
     relay_diagnostics = {
         "scored": len(scored),
         "themeRows": sum(1 for r in scored if r.get("hasTradeTheme")),
+        "heightBreakoutEligible": sum(1 for r in scored if relay_height_breakout_ok(r)),
         "coreEligible": sum(1 for r in scored if relay_core_ok(r)),
         "oneToTwoEligible": sum(1 for r in scored if relay_one_to_two_ok(r)),
         "relaxedEligible": sum(1 for r in scored if relay_relaxed_ok(r)),
@@ -1441,6 +1526,11 @@ def build_zt_analysis(*, market_data: Dict[str, Any]) -> Dict[str, Any]:
         "shrinkBlocked": sum(1 for r in scored if r.get("isShrinkSeal")),
     }
 
+    relay_breakout = sorted(
+        [r for r in scored if relay_height_breakout_ok(r)],
+        key=relay_sort,
+        reverse=True,
+    )
     relay_core = sorted(
         [r for r in scored if relay_core_ok(r)],
         key=relay_sort,
@@ -1451,7 +1541,15 @@ def build_zt_analysis(*, market_data: Dict[str, Any]) -> Dict[str, Any]:
         key=relay_sort,
         reverse=True,
     )[:3]
-    relay = sorted([*relay_core, *relay_one_to_two], key=relay_sort, reverse=True)[:8]
+    relay_pool: List[Dict[str, Any]] = []
+    relay_seen: set[str] = set()
+    for item in [*relay_breakout, *relay_core, *relay_one_to_two]:
+        nm = str(item.get("name") or "")
+        if nm in relay_seen:
+            continue
+        relay_seen.add(nm)
+        relay_pool.append(item)
+    relay = sorted(relay_pool, key=relay_sort, reverse=True)[:8]
     relay_selection_mode = "strict" if relay else "relaxed"
     if not relay:
         relay = sorted(
@@ -1468,7 +1566,9 @@ def build_zt_analysis(*, market_data: Dict[str, Any]) -> Dict[str, Any]:
         r["relayRank"] = idx + 1
         r["relaySelectionMode"] = relay_selection_mode
         r["scoreLabel"] = "推荐因子"
-        if relay_selection_mode == "broad":
+        if r.get("_heightBreakoutLeader"):
+            r["scoreSubLabel"] = f"市场总龙头 · {r.get('scoreBand')}"
+        elif relay_selection_mode == "broad":
             r["scoreSubLabel"] = "兜底候选 · 仅超预期"
         else:
             gate_label = str(((r.get("marketGate") or {}).get("label") or "")).strip()
