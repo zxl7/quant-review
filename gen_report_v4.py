@@ -3282,7 +3282,7 @@ html = f'''<!doctype html>
           <button class="theme-toggle" id="themeToggleBtn" onclick="toggleTheme()">🌙 深色</button>
         </div>
         <div class="hero-top">
-          <div class="cycle-tag"><span class="cycle-dot"></span>短线复盘 · 情绪监控</div>
+          <div class="cycle-tag"><span class="cycle-dot"></span>风中一刀的屠龙术丨</div>
           <div class="hero-date">{DATE.replace('-', '年', 1).replace('-', '月', 1)}收盘简报</div>
           <div class="hero-subtitle">数据来源：实时API | 自动生成报告</div>
           {'<div class="hero-note">⚠️ ' + DATE_NOTE + '</div>' if DATE_NOTE else ''}

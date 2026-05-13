@@ -6367,7 +6367,7 @@
           <div class="hero-top">
             <div class="cycle-tag mood-badge" :class="'mood-' + marketToneClass">
               <span class="badge-icon">{{ marketToneClass === 'good' ? '🔥' : (marketToneClass === 'warn' ? '⚠' : '🧊') }}</span>
-              <span>短线复盘 · 情绪监控</span>
+              <span>风中一刀的屠龙术丨</span>
             </div>
             <div class="hero-date">__REPORT_DATE_CN__收盘简报</div>
             <div class="hero-subtitle">
@@ -7360,7 +7360,7 @@
         </div>
         <div class="zt-panel">
           <div class="zt-col">
-            <div class="section-header">接力候选（更偏“明日可接”）</div>
+            <div class="section-header">接力候选</div>
             <div class="zt-list">
               <div class="zt-item" v-for="(row, i) in ztRelaySorted" :key="'relay-'+i">
                 <div class="zt-top">
@@ -8145,7 +8145,7 @@
               if (finalPosition && finalPosition !== "-") {
                 const rightside = String(this.marketData?.planGuide?.rightsideText || "")
                 const stance = rightside === "禁止" ? "防守" : rightside === "允许" ? "进攻" : "均衡"
-                const note = "统一采用明日行动指南最终仓位；情绪模块只保留姿态，不单独给仓位。"
+                const note = ""
                 const cls = stance === "进攻" ? "pos-attack" : stance === "防守" ? "pos-def" : "pos-balance"
                 const pillCls = stance === "进攻" ? "attack" : stance === "防守" ? "def" : "balance"
                 return { stance, range: finalPosition, note, cls, pillCls }
