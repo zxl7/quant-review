@@ -233,7 +233,11 @@ jobs:
                 latest_trade = dates[-1]
               else:
                 latest_trade = remote_dates[-1]
-            is_trade_today = "true" if (today in remote_dates or rt_date == today or today in local_dates) else "false"
+            if today in remote_dates or rt_date == today or today in local_dates:
+              latest_trade = today
+              is_trade_today = "true"
+            else:
+              is_trade_today = "false"
             source = "local_cache+remote_verify" if local_dates else "remote_fallback"
 
           with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as f:
@@ -261,7 +265,13 @@ jobs:
           # push/workflow_dispatch：统一走在线全量 ./qr.sh fetch（不再用 render 只吃仓库缓存）
           # 手动/本地定时触发必须抓“最近交易日”，不能依赖 cache_online/manifest.json 的旧日期。
           latest_trade="${{ steps.tradeday.outputs.latest_trade_date }}"
-          date10="${latest_trade}"
+          today_bj="${{ steps.tradeday.outputs.today_bj }}"
+          realtime_market_date="${{ steps.tradeday.outputs.realtime_market_date }}"
+          if [ "${realtime_market_date}" = "${today_bj}" ]; then
+            date10="${today_bj}"
+          else
+            date10="${latest_trade}"
+          fi
           if [ -z "${date10:-}" ]; then
             echo "Unable to resolve latest trade date"
             exit 2
