@@ -1644,14 +1644,15 @@ def build_zt_analysis(*, market_data: Dict[str, Any]) -> Dict[str, Any]:
             or not r.get("hasTradeTheme")
         )
     ]
-    def watch_sort_key(r: Dict[str, Any]) -> Tuple[float, float, float, float, float, float]:
+    def watch_sort_key(r: Dict[str, Any]) -> Tuple[float, float, float, float, float, float, float]:
         return (
+            _to_num(r.get("_raw"), 0),
+            _to_num(r.get("leaderFactorScore"), 0),
+            _to_num(r.get("relayFactorScore"), 0),
+            _to_num(r.get("capacityFactorScore"), 0),
+            _to_num(r.get("qualityScore"), 0),
             -float(watch_bucket(r)),
             watch_rank(r),
-            _to_num(r.get("lbc"), 0),
-            _to_num(r.get("cjeYi"), 0),
-            _to_num(r.get("_raw"), 0),
-            _to_num(r.get("qualityScore"), 0),
         )
 
     watch_pool = sorted(watch_pool, key=watch_sort_key, reverse=True)
