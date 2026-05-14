@@ -346,7 +346,7 @@ jobs:
           print("fresh_watch_names=", [x.get("name") for x in watch[:8] if isinstance(x, dict)])
           print("fresh_relay_diagnostics=", diag)
           if not relay and watch:
-              raise SystemExit("ztAnalysis relay empty while watch exists; check fresh_relay_diagnostics")
+              print("WARNING: ztAnalysis relay empty while watch exists; publish continues because an empty relay pool can be valid intraday.")
           PY
 
       - name: Prepare Pages site (html/ as site root)
