@@ -210,6 +210,43 @@ def _apply_intraday_volume_from_realtime_indices(market_data: dict) -> None:
     }
 
 
+def _load_latest_valid_zt_analysis(*, root: Path, current_date: str) -> dict | None:
+    cache_dir = root / "cache"
+    current_d8 = str(current_date or "").replace("-", "")
+    candidates = []
+    for fp in cache_dir.glob("market_data-*.json"):
+        stem = fp.stem
+        if not stem.startswith("market_data-"):
+            continue
+        d8 = stem.replace("market_data-", "")
+        if not (len(d8) == 8 and d8.isdigit()):
+            continue
+        if current_d8 and d8 >= current_d8:
+            continue
+        candidates.append((d8, fp))
+
+    for _, fp in sorted(candidates, reverse=True):
+        try:
+            data = json.loads(fp.read_text(encoding="utf-8"))
+        except Exception:
+            continue
+        za = data.get("ztAnalysis") if isinstance(data, dict) else None
+        if not isinstance(za, dict):
+            continue
+        relay = za.get("relay") if isinstance(za.get("relay"), list) else []
+        watch = za.get("watch") if isinstance(za.get("watch"), list) else []
+        if relay or watch:
+            out = dict(za)
+            meta = out.get("meta") if isinstance(out.get("meta"), dict) else {}
+            out["meta"] = {
+                **meta,
+                "preservedFromDate": data.get("date") or fp.stem.replace("market_data-", ""),
+                "preserveReason": "盘中仅更新实时情绪，明日接力/观察沿用上一份收盘推演",
+            }
+            return out
+    return None
+
+
 def _build_plan_guide(market_data: dict) -> dict | None:
     """
     为前端生成轻量版“明日行动指南”字段，避免模板直接依赖 v2/v3 大对象。
@@ -1297,12 +1334,24 @@ def run_rebuild(
     except Exception:
         pass
 
-    # ztAnalysis：接力/观察排序已引入 actionAdvisor 的环境姿态，需在 actionAdvisor 之后重算一次
+    # ztAnalysis：明日接力/观察是收盘后推演；盘中只刷新实时情绪时，沿用上一份有效收盘推演。
+    preserve_zt = str(os.environ.get("PRESERVE_ZT_ANALYSIS") or "").strip().lower() in {"1", "true", "yes", "on"}
     try:
-        from daily_review.metrics.zt_analysis import build_zt_analysis
+        if preserve_zt:
+            preserved = _load_latest_valid_zt_analysis(root=root, current_date=date)
+            if preserved:
+                market_data["ztAnalysis"] = preserved
+                _log(f"ztAnalysis 已保留上一份收盘推演 ({preserved.get('meta', {}).get('preservedFromDate')})")
+            else:
+                from daily_review.metrics.zt_analysis import build_zt_analysis
 
-        market_data["ztAnalysis"] = build_zt_analysis(market_data=market_data)
-        _log("ztAnalysis 已按最新环境姿态重算")
+                market_data["ztAnalysis"] = build_zt_analysis(market_data=market_data)
+                _log("未找到可沿用 ztAnalysis，已按当前数据重算")
+        else:
+            from daily_review.metrics.zt_analysis import build_zt_analysis
+
+            market_data["ztAnalysis"] = build_zt_analysis(market_data=market_data)
+            _log("ztAnalysis 已按最新环境姿态重算")
     except Exception:
         pass
 

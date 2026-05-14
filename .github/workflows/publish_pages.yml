@@ -262,7 +262,8 @@ jobs:
           BIYING_BASE_URL: ${{ secrets.BIYING_BASE_URL }}
         run: |
           set -euo pipefail
-          # push/workflow_dispatch：统一走在线全量 ./qr.sh fetch（不再用 render 只吃仓库缓存）
+          # push/workflow_dispatch：统一走在线取数；本地定时触发在盘中标记为 intraday，
+          # 只刷新实时情绪/快照，明日接力/观察保留上一份收盘推演。
           # 手动/本地定时触发必须抓“最近交易日”，不能依赖 cache_online/manifest.json 的旧日期。
           latest_trade="${{ steps.tradeday.outputs.latest_trade_date }}"
           today_bj="${{ steps.tradeday.outputs.today_bj }}"
@@ -276,8 +277,14 @@ jobs:
             echo "Unable to resolve latest trade date"
             exit 2
           fi
+          now_min=$((10#$(date +%H)*60 + 10#$(date +%M)))
           mode="fetch"
-          echo "push/workflow_dispatch → mode=fetch（在线拉最新） date10=${date10}"
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            if [ $(( now_min >= 9*60+30 && now_min <= 11*60+30 )) -eq 1 ] || [ $(( now_min >= 13*60 && now_min < 15*60 )) -eq 1 ]; then
+              mode="intraday"
+            fi
+          fi
+          echo "push/workflow_dispatch → mode=${mode}（在线拉最新） date10=${date10}"
           echo "mode=${mode}" >> "$GITHUB_OUTPUT"
           echo "date10=${date10}" >> "$GITHUB_OUTPUT"
           echo "push_mode=${mode} (date10=${date10})"
@@ -309,8 +316,8 @@ jobs:
             run_date="${{ steps.tradeday.outputs.today_bj }}"
           fi
           if [ "${mode}" = "intraday" ]; then
-            # 盘中：在线全量 fetch（内部已包含切片追加+发布）
-            ./qr.sh fetch "${run_date}"
+            # 盘中：在线取数刷新情绪/快照；明日接力/观察保留上一份收盘推演。
+            PRESERVE_ZT_ANALYSIS=1 ./qr.sh fetch "${run_date}"
           else
             # 日终定时 / push / workflow_dispatch：在线全量 fetch
             ./qr.sh fetch "${run_date}"
