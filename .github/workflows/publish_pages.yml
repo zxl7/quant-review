@@ -279,10 +279,8 @@ jobs:
           fi
           now_min=$((10#$(date +%H)*60 + 10#$(date +%M)))
           mode="fetch"
-          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
-            if [ $(( now_min >= 9*60+30 && now_min <= 11*60+30 )) -eq 1 ] || [ $(( now_min >= 13*60 && now_min < 15*60 )) -eq 1 ]; then
-              mode="intraday"
-            fi
+          if [ $(( now_min >= 9*60+30 && now_min <= 11*60+30 )) -eq 1 ] || [ $(( now_min >= 13*60 && now_min < 15*60 )) -eq 1 ]; then
+            mode="intraday"
           fi
           echo "push/workflow_dispatch → mode=${mode}（在线拉最新） date10=${date10}"
           echo "mode=${mode}" >> "$GITHUB_OUTPUT"
