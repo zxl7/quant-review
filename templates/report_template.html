@@ -968,14 +968,15 @@
         margin-top: 12px;
         height: 10px;
         border-radius: 999px;
-        background: rgba(148, 163, 184, 0.16);
+        background: rgba(226, 232, 240, 0.92);
         overflow: hidden;
       }
-      /* 情绪色带：黄→红（强度越高越偏红） */
+      /* 情绪色带：条形更亮，避免发灰 */
       .insight-meter-fill {
         height: 100%;
         border-radius: inherit;
         background: linear-gradient(90deg, #f59e0b 0%, #ef4444 100%);
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.28);
       }
 
       /* 情绪温度：使用容器查询做自适应（解决“66%版心但视口很宽”时仍不换行的问题） */
@@ -1048,6 +1049,30 @@
         content: "🔗";
         font-size: 11px;
       }
+      .evidence-group {
+        margin-top: 10px;
+      }
+      .evidence-group:first-of-type {
+        margin-top: 0;
+      }
+      .evidence-group-title {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 8px;
+        font-size: 12px;
+        font-weight: 950;
+        color: var(--text-secondary);
+      }
+      .evidence-group-title::before {
+        content: "";
+        width: 3px;
+        height: 14px;
+        border-radius: 999px;
+        background: var(--theme-accent);
+        opacity: 0.7;
+        flex: 0 0 auto;
+      }
       .evi-card {
         border-radius: 10px;
         border: 1px solid color-mix(in oklab, var(--border) 74%, var(--theme-glow) 26%);
@@ -1058,6 +1083,7 @@
         justify-content: space-between;
         gap: 10px;
         overflow: hidden;
+        position: relative;
       }
       [data-theme="dark"] .evi-card {
         background: linear-gradient(135deg, rgba(15, 23, 42, 0.56), color-mix(in oklab, var(--theme-soft) 10%, rgba(15, 23, 42, 0.38)));
@@ -1065,8 +1091,8 @@
       }
       .evi-k {
         font-size: 12px;
-        font-weight: 950;
-        color: var(--text-primary);
+        font-weight: 1000;
+        color: var(--text-secondary);
       }
       .evi-note {
         margin-top: 4px;
@@ -1081,6 +1107,11 @@
         color: var(--text-primary);
         font-variant-numeric: tabular-nums;
         white-space: nowrap;
+        line-height: 1.2;
+        text-align: right;
+      }
+      .evi-card.compact .evi-v {
+        font-size: 14px;
       }
 
       /* 超小屏进一步防溢出（iPhone mini / 分屏） */
@@ -1799,7 +1830,7 @@
         height: 8px;
         border-radius: 999px;
         background: var(--mc-accent, rgba(148, 163, 184, 0.55));
-        box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.55);
+        box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.7);
       }
       [data-theme="dark"] .mc-title .dot {
         box-shadow: 0 0 0 3px rgba(15, 23, 42, 0.55);
@@ -1855,7 +1886,7 @@
       .mc-v {
         font-size: 16px;
         font-weight: 1100;
-        color: var(--text-primary);
+        color: var(--text-secondary);
         font-variant-numeric: tabular-nums;
         white-space: nowrap;
         flex: 0 0 auto;
@@ -2177,7 +2208,6 @@
         background: linear-gradient(135deg, color-mix(in oklab, var(--theme-soft) 18%, rgba(255, 255, 255, 0.04)), rgba(255, 255, 255, 0.02));
         padding: 12px 12px;
         overflow: hidden;
-        position: relative;
       }
       [data-theme="dark"] .ladder-step {
         background: linear-gradient(135deg, color-mix(in oklab, var(--theme-soft) 12%, rgba(15, 23, 42, 0.7)), rgba(15, 23, 42, 0.22));
@@ -2439,9 +2469,9 @@
       }
       .theme-rank-item {
         display: flex;
-        align-items: stretch;
-        gap: 12px;
-        padding: 12px 12px;
+        align-items: center;
+        gap: 10px;
+        padding: 8px 10px;
         border: 1px solid var(--border);
         border-radius: 14px;
         background: color-mix(in oklab, var(--bg-card), var(--bg-elevated) 22%);
@@ -2464,36 +2494,12 @@
           var(--shadow-md);
         background: color-mix(in oklab, var(--bg-card), var(--theme-accent) 7%);
       }
-      .theme-rank-left {
-        width: 42px;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        border-radius: 12px;
-        color: #fff;
-        font-weight: 950;
-        line-height: 1;
-        flex-shrink: 0;
-      }
-      .theme-rank-left .rk {
-        font-size: 14px;
-        opacity: 0.92;
-      }
-      .theme-rank-left .dot {
-        width: 8px;
-        height: 8px;
-        border-radius: 99px;
-        background: rgba(255, 255, 255, 0.9);
-        margin-top: 8px;
-        opacity: 0.85;
-      }
       .theme-rank-mid {
         flex: 1;
         min-width: 0;
         display: flex;
-        flex-direction: column;
-        justify-content: center;
+        align-items: baseline;
+        gap: 12px;
       }
       .theme-rank-name {
         font-weight: 900;
@@ -2501,46 +2507,45 @@
         color: var(--text-primary);
         letter-spacing: 0.2px;
         white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
+        flex: 0 1 auto;
+        min-width: 0;
       }
       .theme-rank-sub {
-        margin-top: 4px;
         font-size: 11px;
         color: var(--text-muted);
         font-weight: 750;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
+        flex: 1 1 auto;
+        min-width: 0;
+      }
+      .theme-rank-sub .sep {
+        opacity: 0.4;
+        margin: 0 5px;
       }
       .theme-rank-right {
-        width: 104px;
+        width: 128px;
         display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: flex-end;
+        align-items: center;
+        gap: 8px;
+        justify-content: flex-end;
         text-align: right;
         flex-shrink: 0;
       }
       .theme-rank-chg {
-        font-size: 18px;
+        font-size: 16px;
         font-weight: 950;
         letter-spacing: 0.2px;
         font-variant-numeric: tabular-nums;
       }
-      .theme-rank-net {
-        margin-top: 4px;
-        font-size: 11px;
-        color: var(--text-secondary);
-        font-weight: 850;
-      }
       .theme-rank-microbar {
-        margin-top: 8px;
-        width: 100%;
-        height: 6px;
+        width: 56px;
+        height: 5px;
         border-radius: 99px;
         background: color-mix(in oklab, var(--bg-elevated), #000 6%);
         overflow: hidden;
+        flex: 0 0 auto;
       }
       .theme-rank-microbar > i {
         display: block;
@@ -2548,6 +2553,25 @@
         border-radius: 99px;
         background: linear-gradient(90deg, var(--theme-accent), var(--theme-accent-2));
         width: 0%;
+      }
+      @media (max-width: 900px) {
+        .theme-rank-item {
+          gap: 8px;
+        }
+        .theme-rank-mid {
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 2px;
+        }
+        .theme-rank-right {
+          width: 92px;
+          flex-direction: column;
+          gap: 3px;
+          justify-content: center;
+        }
+        .theme-rank-microbar {
+          width: 100%;
+        }
       }
       .theme-tools {
         margin-top: 10px;
@@ -4363,8 +4387,8 @@
       }
       .engine-kpi .k {
         font-size: 11px;
-        font-weight: 900;
-        color: var(--text-muted);
+        font-weight: 950;
+        color: var(--text-secondary);
       }
       .engine-kpi .v {
         font-size: 18px;
@@ -4641,19 +4665,6 @@
       [data-theme="dark"] .tri-card {
         background: rgba(15, 23, 42, 0.45);
         border-color: rgba(148, 163, 184, 0.22);
-      }
-      .tri-card::before {
-        /* 已禁用：卡片左侧彩色竖条 */
-        content: none;
-      }
-      .tri-card.earn::before {
-        background: rgba(239, 68, 68, 0.65);
-      }
-      .tri-card.risk::before {
-        background: rgba(16, 185, 129, 0.62);
-      }
-      .tri-card.cash::before {
-        background: rgba(96, 165, 250, 0.7);
       }
       .tri-head {
         display: flex;
@@ -5141,12 +5152,6 @@
         border-radius: 16px;
         padding: 14px 16px;
         box-shadow: none;
-        position: relative;
-        overflow: hidden;
-      }
-      .tier-card::before {
-        /* 已禁用：卡片左侧彩色竖条 */
-        content: none;
       }
       .tier-label {
         font-size: 11px;
@@ -5180,15 +5185,6 @@
         padding: 16px 18px;
         background: color-mix(in oklab, var(--bg-elevated) 86%, var(--theme-soft) 14%);
         border-color: color-mix(in oklab, var(--border) 75%, var(--theme-glow) 25%);
-      }
-      .tier-grid.layer-grid .tier-card:first-child::before {
-        background: rgba(37, 99, 235, 0.55);
-      }
-      .tier-grid.layer-grid .tier-card:nth-child(2)::before {
-        background: rgba(245, 158, 11, 0.55);
-      }
-      .tier-grid.layer-grid .tier-card:nth-child(3)::before {
-        background: rgba(16, 185, 129, 0.55);
       }
       @media (max-width: 720px) {
         .tier-grid.layer-grid {
@@ -5541,6 +5537,15 @@
         font-weight: 850;
         color: var(--text-muted);
       }
+      .thermo-mini-label {
+        font-weight: 950;
+      }
+      .thermo-mini-row:nth-child(1) .thermo-mini-label {
+        color: #e60012;
+      }
+      .thermo-mini-row:nth-child(2) .thermo-mini-label {
+        color: #00a63e;
+      }
       .thermo-mini-row .val {
         text-align: right;
         color: var(--text-secondary);
@@ -5684,37 +5689,37 @@
         white-space: nowrap;
       }
       .lvl-badge.low {
-        border-color: rgba(34, 197, 94, 0.35);
-        background: rgba(34, 197, 94, 0.1);
-        color: #16a34a;
+        border-color: rgba(0, 166, 62, 0.34);
+        background: rgba(0, 166, 62, 0.1);
+        color: #00a63e;
       }
       .lvl-badge.mid {
-        border-color: rgba(245, 158, 11, 0.35);
+        border-color: rgba(245, 158, 11, 0.36);
         background: rgba(245, 158, 11, 0.12);
-        color: #d97706;
+        color: #f59e0b;
       }
       .lvl-badge.high {
-        border-color: rgba(239, 68, 68, 0.3);
-        background: rgba(239, 68, 68, 0.1);
-        color: #ef4444;
+        border-color: rgba(230, 0, 18, 0.32);
+        background: rgba(230, 0, 18, 0.1);
+        color: #e60012;
       }
       .lvl-chg {
         margin-left: 6px;
         font-weight: 950;
       }
       .lvl-chg.up {
-        color: #ef4444;
+        color: #e60012;
       }
       .lvl-chg.down {
-        color: #10b981;
+        color: #00a63e;
       }
       .lvl-chg.flat {
         color: var(--text-muted);
         opacity: 0.9;
       }
       .trend-v { font-weight: 950; }
-      .trend-v.up { color: #ef4444; }
-      .trend-v.down { color: #10b981; }
+      .trend-v.up { color: #e60012; }
+      .trend-v.down { color: #00a63e; }
       .trend-v.flat { color: var(--text-muted); }
       .trend-sep { color: var(--text-muted); opacity: 0.5; margin: 0 1px; }
       code { white-space: normal; word-break: break-all; }
@@ -5815,7 +5820,7 @@
         padding: 2px 8px;
         border-radius: 999px;
         border: 1px solid rgba(148, 163, 184, 0.22);
-        background: rgba(148, 163, 184, 0.1);
+        background: rgba(241, 245, 249, 0.92);
         color: var(--text-secondary);
         white-space: nowrap;
         flex-shrink: 0;
@@ -5837,7 +5842,7 @@
       .dim-bar {
         height: 8px;
         border-radius: 999px;
-        background: rgba(148, 163, 184, 0.16);
+        background: rgba(226, 232, 240, 0.92);
         overflow: hidden;
       }
       .dim-fill {
@@ -6588,16 +6593,16 @@
             <div class="thermo-mini-meta">热 / 险 · {{ marketData.mood?.score ?? '-' }}/100</div>
           </div>
 
-          <div class="thermo-mini-rows">
-            <div class="thermo-mini-row">
-              <span>情绪热度</span>
+            <div class="thermo-mini-rows">
+              <div class="thermo-mini-row">
+              <span class="thermo-mini-label">情绪热度</span>
               <div class="insight-meter" style="margin-top: 0">
                 <div class="insight-meter-fill" :style="{ width: String((marketData.mood?.heat ?? 0)) + '%', background: heatColor(marketData.mood?.heat ?? 0) }"></div>
               </div>
               <span class="val">{{ marketData.mood?.heat ?? '-' }}</span>
             </div>
             <div class="thermo-mini-row">
-              <span>风险压力</span>
+              <span class="thermo-mini-label">风险压力</span>
               <div class="insight-meter" style="margin-top: 0">
                 <div class="insight-meter-fill" :style="{ width: String((marketData.mood?.risk ?? 0)) + '%', background: riskColor(marketData.mood?.risk ?? 0) }"></div>
               </div>
@@ -6715,7 +6720,7 @@
                     <div class="mc-k">{{ card.label }}</div>
                     <div class="mc-note">{{ card.note }}</div>
                   </div>
-                  <div class="mc-v" :class="card.valueClass">{{ card.value }}</div>
+                  <div class="mc-v" :class="moodCardValueClass('carry', card)">{{ card.value }}</div>
                 </div>
               </div>
             </div>
@@ -6734,7 +6739,7 @@
                     <div class="mc-k">{{ card.label }}</div>
                     <div class="mc-note">{{ card.note }}</div>
                   </div>
-                  <div class="mc-v" :class="card.valueClass">{{ card.value }}</div>
+                  <div class="mc-v" :class="moodCardValueClass('cons', card)">{{ card.value }}</div>
                 </div>
               </div>
             </div>
@@ -6753,7 +6758,7 @@
                     <div class="mc-k">{{ card.label }}</div>
                     <div class="mc-note">{{ card.note }}</div>
                   </div>
-                  <div class="mc-v" :class="card.valueClass">{{ card.value }}</div>
+                  <div class="mc-v" :class="moodCardValueClass('risk', card)">{{ card.value }}</div>
                 </div>
               </div>
             </div>
@@ -6783,9 +6788,10 @@
         <div class="evidence-chain" style="margin-top: 12px" v-if="marketData.structureV2?.evidence">
           <div class="evidence-chain-header">证据链</div>
 
-          <div class="section-header" style="margin-top: 10px">梯队与断层</div>
-          <div class="evi-grid">
-            <div class="evi-card">
+          <div class="evidence-group">
+            <div class="evidence-group-title">梯队与断层</div>
+            <div class="evi-grid">
+            <div class="evi-card compact">
               <div>
                 <div class="evi-k">空间高度</div>
                 <div class="evi-note">高度看空间，断层看接力是否顺畅</div>
@@ -6799,10 +6805,12 @@
               </div>
               <div class="evi-v">{{ (marketData.structureV2.evidence.ladder?.gaps || []).length ? (marketData.structureV2.evidence.ladder.gaps.join('、') + '（板）') : '无' }}</div>
             </div>
+            </div>
           </div>
 
-          <div class="section-header" style="margin-top: 10px">高位风险预警</div>
-          <div class="evi-grid" v-if="marketData.highPositionRisk">
+          <div class="evidence-group" v-if="marketData.highPositionRisk">
+            <div class="evidence-group-title">高位风险预警</div>
+            <div class="evi-grid">
             <div class="evi-card">
               <div>
                 <div class="evi-k">是否触发</div>
@@ -6817,11 +6825,13 @@
               </div>
               <div class="evi-v">{{ marketData.highPositionRisk.score ?? 0 }}/100</div>
             </div>
+            </div>
           </div>
 
-          <div class="section-header" style="margin-top: 10px">断板负反馈</div>
-          <div class="evi-grid" v-if="marketData.features?.mood_inputs">
-            <div class="evi-card">
+          <div class="evidence-group" v-if="marketData.features?.mood_inputs">
+            <div class="evidence-group-title">断板负反馈</div>
+            <div class="evi-grid">
+            <div class="evi-card compact">
               <div>
                 <div class="evi-k">断板率 / 高位断板</div>
                 <div class="evi-note">只统计昨日连板股今日断板后的负反馈强度</div>
@@ -6831,7 +6841,7 @@
                 }}只高位断板
               </div>
             </div>
-            <div class="evi-card">
+            <div class="evi-card compact">
               <div>
                 <div class="evi-k">代表股杀伤</div>
                 <div class="evi-note">看高点到低点/收盘的回撤，判断负反馈力度</div>
@@ -6841,11 +6851,13 @@
                 marketData.features.mood_inputs?.duanban_max_drop_hl ?? '-' }}%
               </div>
             </div>
+            </div>
           </div>
 
-          <div class="section-header" style="margin-top: 10px">主线分歧重叠</div>
-          <div class="evi-grid">
-            <div class="evi-card">
+          <div class="evidence-group">
+            <div class="evidence-group-title">主线分歧重叠</div>
+            <div class="evi-grid">
+            <div class="evi-card compact">
               <div>
                 <div class="evi-k">主线（涨停）与主杀（炸板）重叠度</div>
                 <div class="evi-note">越高越提示：主线在分歧/退潮</div>
@@ -6858,6 +6870,7 @@
                 <div class="evi-note">仅作提示，不等同结论</div>
               </div>
               <div class="evi-v">{{ (marketData.structureV2.evidence.overlap?.themes || []).join(' / ') || '-' }}</div>
+            </div>
             </div>
           </div>
         </div>
@@ -6885,36 +6898,35 @@
               :key="'cff-top10-'+c.name+'-'+i"
               :class="{ 'is-active': selectedPlateTheme && (selectedPlateTheme.code || selectedPlateTheme.name) === (c.code || c.name) }"
               @click="selectPlateTheme(c)">
-              <div class="theme-rank-left" :style="{ background: rankBg(i+1) }">
-                <div class="rk">{{ i+1 }}</div>
-                <div class="dot"></div>
-              </div>
               <div class="theme-rank-mid">
                 <div class="theme-rank-name">{{ c.name }}</div>
-                <div class="theme-rank-sub" v-if="c.lead || c.companies !== undefined || c.sourceNote">
+                <div class="theme-rank-sub" v-if="c.lead || c.companies !== undefined || c.volume !== undefined || c.net !== undefined || c.sourceNote">
                   <template v-if="c.lead">领涨 {{ c.lead }}</template>
                   <template v-if="c.lead_chg_pct !== undefined && c.lead_chg_pct !== null">
-                    （
+                    <span class="sep">|</span>
                     <span :class="signedClass(c.lead_chg_pct)">{{ formatSigned(c.lead_chg_pct) }}%</span>
-                    ）
                   </template>
                   <template v-if="c.companies !== undefined && c.companies !== null">
-                    <span style="opacity: 0.7">｜</span>
+                    <span class="sep">|</span>
                     成分 {{ c.companies }}
                   </template>
                   <template v-if="c.volume !== undefined && c.volume !== null && c.volume !== ''">
-                    <span style="opacity: 0.7">｜</span>
+                    <span class="sep">|</span>
                     量能 {{ c.volume }}亿
                   </template>
-                  <template v-if="c.sourceNote">{{ c.sourceNote }}</template>
+                  <template v-if="c.net !== undefined && c.net !== null && !(marketData.plateRotateTop || []).length">
+                    <span class="sep">|</span>
+                    净额
+                    <span :class="signedClass(c.net)">{{ formatSigned(c.net) }}</span>
+                  </template>
+                  <template v-if="c.sourceNote">
+                    <span v-if="c.lead || c.companies !== undefined || c.volume !== undefined || c.net !== undefined" class="sep">|</span>
+                    {{ c.sourceNote }}
+                  </template>
                 </div>
               </div>
               <div class="theme-rank-right">
                 <div class="theme-rank-chg" :class="c.displayClass || signedClass(c.chg_pct)">{{ c.displayValue }}</div>
-                <div class="theme-rank-net" v-if="c.net !== undefined && c.net !== null && !(marketData.plateRotateTop || []).length">
-                  净额
-                  <span :class="signedClass(c.net)">{{ formatSigned(c.net) }}</span>
-                </div>
                 <div class="theme-rank-microbar" aria-hidden="true">
                   <i :style="{ width: clamp100(toNum(c.barPct, 0)) + '%' }"></i>
                 </div>
@@ -7302,7 +7314,7 @@
                       <span class="dim-v">{{ item.valueText }}</span>
                     </div>
                     <div class="dim-bar">
-                      <div class="dim-fill" :style="{ width: item.barPct + '%', background: heatColor(item.barPct) }"></div>
+                      <div class="dim-fill" :style="{ width: item.barPct + '%', background: item.kind === 'risk' ? riskColor(item.barPct) : heatColor(item.barPct) }"></div>
                     </div>
                     <div class="dim-mini">
                       <span class="dim-chip" v-if="!item.isFlat">{{ item.deltaWord }} {{ item.deltaVal }}</span>
@@ -8184,18 +8196,21 @@
               return `rgb(${r},${g},${b})`
             },
             /**
-             * 情绪：黄 -> 红
+             * 情绪热度：直接贴近 hero 主题暖色
              */
             heatColor(v) {
-              const p = this.clamp100(v) / 100
-              return this.lerpColor("#f59e0b", "#ef4444", p)
+              const p = this.clamp100(v)
+              if (p <= 45) return this.lerpColor("#f59e0b", "#ff4d4f", p / 45)
+              return this.lerpColor("#ff4d4f", "#e60012", (p - 45) / 55)
             },
             /**
-             * 风险：绿 -> 黄（风险越高越偏黄；不再使用红色）
+             * 风险压力：直接贴近 hero 主题冷色
              */
             riskColor(v) {
-              const p = this.clamp100(v) / 100
-              return this.lerpColor("#22c55e", "#f59e0b", p)
+              const p = this.clamp100(v)
+              if (p <= 45) return this.lerpColor("#16a34a", "#00a63e", p / 45)
+              if (p <= 75) return this.lerpColor("#00a63e", "#65a30d", (p - 45) / 30)
+              return this.lerpColor("#65a30d", "#f59e0b", (p - 75) / 25)
             },
             /**
              * 环形进度条样式（含颜色）
@@ -8246,6 +8261,28 @@
             moodCardsBy(group) {
               const cards = this.marketData?.moodCards || []
               return cards.filter((c) => this.moodGroup(c.label) === group)
+            },
+            moodCardValueClass(group, card) {
+              const v = this.toNum(String(card?.value || "").replace("分", "").replace("%", "").replace("亿", ""), NaN)
+              if (group === "carry") {
+                if (!Number.isFinite(v)) return card?.valueClass || ""
+                if (v >= 60) return "red-text"
+                if (v >= 30) return "orange-text"
+                return "green-text"
+              }
+              if (group === "cons") {
+                if (!Number.isFinite(v)) return card?.valueClass || ""
+                if (v >= 50) return "orange-text"
+                if (v >= 20) return "green-text"
+                return "red-text"
+              }
+              if (group === "risk") {
+                if (!Number.isFinite(v)) return card?.valueClass || ""
+                if (v >= 60) return "red-text"
+                if (v >= 25) return "orange-text"
+                return "green-text"
+              }
+              return card?.valueClass || ""
             },
             rankBg(rank) {
               /**
@@ -8457,6 +8494,7 @@
                   deltaWord,
                   deltaVal,
                   valueText,
+                  kind: cfg.inverse ? "risk" : "heat",
                   barPct: this.clamp100((c / Math.max(cfg.max, 1)) * 100),
                   isFlat,
                   stableText: `数据未变化：${valueText}`,

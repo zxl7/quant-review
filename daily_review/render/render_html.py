@@ -205,7 +205,7 @@ def build_mood_tri_cards(market_data: Dict[str, Any]) -> list[Dict[str, Any]]:
             "cls": "risk",
             "title": "险：亏钱扩散",
             "value": str(int(round(risk))),
-            "valueClass": "red-text" if risk >= 70 else ("orange-text" if risk >= 50 else "blue-text"),
+            "valueClass": "red-text" if risk >= 70 else ("orange-text" if risk >= 50 else "green-text"),
             "sub": f"跌停 {pan.get('limitDown', '-')} · 大面 {fear.get('bigFace', '-')} · 风险越高越谨慎",
             "badges": "".join([x for x in [_delta_badge_html(delta.get('dt')), _delta_badge_html(delta.get('bf_count'))] if x]),
             "spark": risk_series,
