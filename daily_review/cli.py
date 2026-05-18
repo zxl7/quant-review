@@ -1592,6 +1592,14 @@ def _append_intraday_snapshot(*, root: Path, date: str, market_data: dict) -> No
     hm2 = market_data.get("hm2Compare") or {}
     panorama = market_data.get("panorama") or {}
     volume = market_data.get("volume") if isinstance(market_data.get("volume"), dict) else {}
+    lianban_count = int(_to_num(mi.get("lianban_count"), 0))
+    if not lianban_count:
+        lianban_count = (
+            int(_to_num(mi.get("lb_2"), 0))
+            + int(_to_num(mi.get("lb_3"), 0))
+            + int(_to_num(mi.get("lb_4p"), 0))
+            + int(_to_num(mi.get("lb_5p"), 0))
+        )
 
     rec = {
         "time": t_label,
@@ -1603,6 +1611,9 @@ def _append_intraday_snapshot(*, root: Path, date: str, market_data: dict) -> No
         "risk": mood.get("risk"),
         "fb": mi.get("fb_rate"),
         "jj": mi.get("jj_rate"),
+        "zt": int(_to_num(mi.get("zt_count"), _to_num(panorama.get("limitUp"), 0))),
+        "lianban": lianban_count,
+        "zab": int(_to_num(mi.get("zb_count"), 0)),
         "zb": mi.get("zb_rate"),
         "dt": panorama.get("limitDown"),
         "bf": mi.get("bf_count"),
