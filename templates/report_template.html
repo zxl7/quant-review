@@ -7370,8 +7370,7 @@
                       <span>当前高亮</span>
                       <strong>{{ watchCurrentSnap.time }}</strong>
                     </div>
-                    <div class="wb-flat-note" v-if="watchTrajectoryFlat">盘中核心数据未变化，仅显示当前节点。</div>
-                    <div class="wb-trend-axis" v-if="!watchTrajectoryFlat">
+                    <div class="wb-trend-axis">
                       <span v-for="p in watchTimePoints" :key="'wta-'+p.index" :class="{ active: p.index <= watchCurrentIndex, current: p.index === watchCurrentIndex }">{{ p.time }}</span>
                     </div>
                     <div class="wb-trend-legend">
