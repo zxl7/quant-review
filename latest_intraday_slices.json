@@ -2,7 +2,7 @@
   "schema": "intraday_snapshot_v1",
   "render_mode": "snapshot_stream",
   "date": "2026-05-18",
-  "count": 8,
+  "count": 9,
   "interval_min": null,
   "simulated": false,
   "snapshots": [
@@ -602,25 +602,103 @@
       ],
       "shift_score": 63,
       "shift_label": "修复"
+    },
+    {
+      "time": "11:22:35",
+      "ts_bj": "2026-05-18 11:22:35",
+      "date": "2026-05-18",
+      "source": "intraday_live",
+      "headline": "分歧/扩散偏大，优先防守",
+      "heat": 68,
+      "risk": 49,
+      "fb": 75.0,
+      "jj": 50.0,
+      "zb": 25.0,
+      "dt": 14,
+      "bf": 20,
+      "max_lb": 6,
+      "amount": "33444.76亿",
+      "loss": 34,
+      "hm2": 60.4,
+      "pos": [
+        {
+          "key": "support",
+          "title": "承接是否回暖",
+          "value": "晋级 50.0%",
+          "delta": "",
+          "status": "off",
+          "why": "对比近20日中位数 50.0%",
+          "action": "承接强→可做回封/换手接力；承接弱→降低出手频次"
+        },
+        {
+          "key": "consistency",
+          "title": "一致性（封板/早封）",
+          "value": "封 75.0% · 早 75.8%",
+          "delta": "",
+          "status": "off",
+          "why": "对比近20日中位数 封75.0%/早75.8%",
+          "action": "一致性强→优先做主线辨识度；一致性弱→只做确认点/低位试错"
+        },
+        {
+          "key": "loss_converge",
+          "title": "亏钱是否收敛",
+          "value": "扩散 34",
+          "delta": "",
+          "status": "off",
+          "why": "对比近20日中位数 34",
+          "action": "扩散收敛→可提高仓位上限；扩散走高→只做低位/快进快出"
+        }
+      ],
+      "riskSignals": [
+        {
+          "key": "diverge",
+          "title": "分歧是否升级",
+          "value": "炸 25.0% · ≥3开 22.7% · 均开 1.95",
+          "delta": "",
+          "status": "on",
+          "why": "对比近20日中位数 炸25.0%",
+          "action": "分歧大→只做回封确认；不追一致；优先低位"
+        },
+        {
+          "key": "loss_spike",
+          "title": "亏钱扩散是否突刺",
+          "value": "扩散 34",
+          "delta": "",
+          "status": "off",
+          "why": "对比近20日中位数 34",
+          "action": "突刺出现→减仓/撤退；只保留最强辨识度"
+        },
+        {
+          "key": "crowd",
+          "title": "题材集中/拥挤",
+          "value": "TOP3占比 0.0% · 重叠 0.0%",
+          "delta": "",
+          "status": "off",
+          "why": "集中度过高时更容易走向一致末端 → 分歧加速",
+          "action": "拥挤高→只做主线核心/回封；避免高位跟风扩散"
+        }
+      ],
+      "shift_score": 62,
+      "shift_label": "修复"
     }
   ],
   "latest": {
-    "time": "11:18:06",
-    "ts_bj": "2026-05-18 11:18:06",
+    "time": "11:22:35",
+    "ts_bj": "2026-05-18 11:22:35",
     "date": "2026-05-18",
     "source": "intraday_live",
     "headline": "分歧/扩散偏大，优先防守",
     "heat": 68,
-    "risk": 47,
-    "fb": 73.0,
+    "risk": 49,
+    "fb": 75.0,
     "jj": 50.0,
-    "zb": 27.0,
-    "dt": 13,
-    "bf": 19,
+    "zb": 25.0,
+    "dt": 14,
+    "bf": 20,
     "max_lb": 6,
     "amount": "33444.76亿",
-    "loss": 32,
-    "hm2": 61.3,
+    "loss": 34,
+    "hm2": 60.4,
     "pos": [
       {
         "key": "support",
@@ -634,19 +712,19 @@
       {
         "key": "consistency",
         "title": "一致性（封板/早封）",
-        "value": "封 73.0% · 早 76.9%",
+        "value": "封 75.0% · 早 75.8%",
         "delta": "",
         "status": "off",
-        "why": "对比近20日中位数 封73.0%/早76.9%",
+        "why": "对比近20日中位数 封75.0%/早75.8%",
         "action": "一致性强→优先做主线辨识度；一致性弱→只做确认点/低位试错"
       },
       {
         "key": "loss_converge",
         "title": "亏钱是否收敛",
-        "value": "扩散 32",
+        "value": "扩散 34",
         "delta": "",
         "status": "off",
-        "why": "对比近20日中位数 32",
+        "why": "对比近20日中位数 34",
         "action": "扩散收敛→可提高仓位上限；扩散走高→只做低位/快进快出"
       }
     ],
@@ -654,19 +732,19 @@
       {
         "key": "diverge",
         "title": "分歧是否升级",
-        "value": "炸 27.0% · ≥3开 24.6% · 均开 2.03",
+        "value": "炸 25.0% · ≥3开 22.7% · 均开 1.95",
         "delta": "",
         "status": "on",
-        "why": "对比近20日中位数 炸27.0%",
+        "why": "对比近20日中位数 炸25.0%",
         "action": "分歧大→只做回封确认；不追一致；优先低位"
       },
       {
         "key": "loss_spike",
         "title": "亏钱扩散是否突刺",
-        "value": "扩散 32",
+        "value": "扩散 34",
         "delta": "",
         "status": "off",
-        "why": "对比近20日中位数 32",
+        "why": "对比近20日中位数 34",
         "action": "突刺出现→减仓/撤退；只保留最强辨识度"
       },
       {
@@ -679,9 +757,9 @@
         "action": "拥挤高→只做主线核心/回封；避免高位跟风扩散"
       }
     ],
-    "shift_score": 63,
+    "shift_score": 62,
     "shift_label": "修复"
   },
-  "updated_at": "2026-05-18 11:18:06",
-  "snapshot_sig": "2026-05-18|2026-05-18 11:18:06|8"
+  "updated_at": "2026-05-18 11:22:35",
+  "snapshot_sig": "2026-05-18|2026-05-18 11:22:35|9"
 }
