@@ -294,7 +294,7 @@ jobs:
 
       - name: Generate latest report (online fetch -> offline pipeline rebuild)
         if: ${{ (github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true') && (github.event_name != 'schedule' || steps.tradeday.outputs.is_trade_today == 'true') }}
-        timeout-minutes: 9
+        timeout-minutes: 12
         env:
           BIYING_TOKEN: ${{ secrets.BIYING_TOKEN }}
           BIYING_BASE_URL: ${{ secrets.BIYING_BASE_URL }}
@@ -314,14 +314,17 @@ jobs:
             run_date="${{ steps.tradeday.outputs.today_bj }}"
           fi
           if [ "${mode}" = "intraday" ]; then
-            # 盘中：在线取数刷新情绪/快照；明日接力/观察保留上一份收盘推演。
-            PRESERVE_ZT_ANALYSIS=1 ./qr.sh fetch "${run_date}"
+            # 盘中：只跑轻量 intraday，刷新实时情绪/快照；明日接力/观察保留上一份收盘推演。
+            PRESERVE_ZT_ANALYSIS=1 PYTHONPATH=. python3 -u -m daily_review.cli --mode intraday --date "${run_date}"
           else
             # 日终定时 / push / workflow_dispatch：在线全量 fetch
             ./qr.sh fetch "${run_date}"
           fi
           expected_d8="$(echo "${run_date}" | tr -d '-')"
           expected_cache="cache/market_data-${expected_d8}.json"
+          if [ "${mode}" = "intraday" ]; then
+            expected_cache="cache/market_data-${expected_d8}-intraday.json"
+          fi
           if [ ! -f "${expected_cache}" ]; then
             echo "Expected fresh cache not found: ${expected_cache}"
             ls -la cache || true
