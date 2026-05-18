@@ -15,6 +15,7 @@ import json
 import math
 import os
 import time
+import urllib.error
 from pathlib import Path
 
 from daily_review.modules_v2 import ALL_MODULES
@@ -408,6 +409,41 @@ def _log(msg: str) -> None:
     print(f"  [{ts}] {msg}", flush=True)
 
 
+def _fetch_pool_with_cache_fallback(
+    client,
+    *,
+    pool_name: str,
+    date: str,
+    pools: dict,
+    fallback_dates: list[str] | None = None,
+) -> list[dict]:
+    """
+    线上接口偶发 5xx/超时，不能让整条 workflow 因单个池子失败直接中断。
+    """
+    try:
+        rows = fetch_pool(client, pool_name=pool_name, date=date)
+        if isinstance(rows, list):
+            return rows
+    except Exception as e:
+        if isinstance(e, urllib.error.HTTPError):
+            _log(f"⚠️ {pool_name}@{date} 在线抓取失败: HTTP {e.code}，尝试使用缓存兜底")
+        else:
+            _log(f"⚠️ {pool_name}@{date} 在线抓取失败: {e}，尝试使用缓存兜底")
+
+    pool_cache = pools.get(pool_name) if isinstance(pools.get(pool_name), dict) else {}
+    same_day = pool_cache.get(date) if isinstance(pool_cache, dict) else None
+    if isinstance(same_day, list) and same_day:
+        _log(f"↪ 使用缓存兜底: {pool_name}@{date} ({len(same_day)} 条)")
+        return same_day
+
+    for d in reversed(fallback_dates or []):
+        rows = pool_cache.get(d) if isinstance(pool_cache, dict) else None
+        if isinstance(rows, list) and rows:
+            _log(f"↪ 使用最近缓存兜底: {pool_name}@{d} -> {date} ({len(rows)} 条)")
+            return rows
+    return []
+
+
 def run_full(date: str | None) -> int:
     """
     全量更新（收口阶段）：
@@ -457,13 +493,27 @@ def run_fetch_and_rebuild(date: str | None) -> int:
             continue
         for pn in ("ztgc", "dtgc", "zbgc"):
             if d not in (pools.get(pn) or {}):
-                rows = fetch_pool(client, pool_name=pn, date=d)
+                prev_days = [x for x in trade_days if x < d]
+                rows = _fetch_pool_with_cache_fallback(
+                    client,
+                    pool_name=pn,
+                    date=d,
+                    pools=pools,
+                    fallback_dates=prev_days,
+                )
                 pools[pn][d] = rows
 
     # 当日强制刷新（zt/dt/zb/qsgc）
     for pn in ("ztgc", "dtgc", "zbgc", "qsgc"):
         pools.setdefault(pn, {})
-        pools[pn][actual_date] = fetch_pool(client, pool_name=pn, date=actual_date)
+        prev_days = [x for x in trade_days if x < actual_date]
+        pools[pn][actual_date] = _fetch_pool_with_cache_fallback(
+            client,
+            pool_name=pn,
+            date=actual_date,
+            pools=pools,
+            fallback_dates=prev_days,
+        )
 
     # 裁剪
     keep = set(trade_days)
@@ -952,7 +1002,14 @@ def run_intraday_snapshot(date: str | None) -> int:
     # 只取当日数据（不预取历史，加快速度）
     for pn in ("ztgc", "dtgc", "zbgc", "qsgc"):
         pools.setdefault(pn, {})
-        pools[pn][actual_date] = fetch_pool(client, pool_name=pn, date=actual_date)
+        prev_days = [x for x in trade_days if x < actual_date]
+        pools[pn][actual_date] = _fetch_pool_with_cache_fallback(
+            client,
+            pool_name=pn,
+            date=actual_date,
+            pools=pools,
+            fallback_dates=prev_days,
+        )
     # 裁剪：只保留近 3 个交易日（watch 模式 trade_days 最多 3 天）
     watch_keep = set(trade_days)
     for pn in ("ztgc", "dtgc", "zbgc", "qsgc"):

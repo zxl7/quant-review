@@ -12,6 +12,8 @@ HTTP 层：封装 biyingapi 请求（GET + 超时 + JSON）
 from __future__ import annotations
 
 import json
+import socket
+import time
 import urllib.error
 import urllib.request
 from dataclasses import dataclass
@@ -23,6 +25,29 @@ class HttpClient:
     base_url: str
     token: str
     timeout: int = 30
+    retries: int = 2
+
+    def _open_json(self, req: urllib.request.Request) -> Any:
+        last_err: Exception | None = None
+        for attempt in range(self.retries + 1):
+            try:
+                with urllib.request.urlopen(req, timeout=self.timeout) as r:
+                    return json.loads(r.read())
+            except urllib.error.HTTPError as e:
+                if e.code in (500, 502, 503, 504) and attempt < self.retries:
+                    last_err = e
+                    time.sleep(1.0 * (attempt + 1))
+                    continue
+                raise
+            except (urllib.error.URLError, TimeoutError, socket.timeout) as e:
+                if attempt < self.retries:
+                    last_err = e
+                    time.sleep(1.0 * (attempt + 1))
+                    continue
+                raise
+        if last_err:
+            raise last_err
+        raise RuntimeError("unexpected http client state")
 
     def api(self, path: str, *, exit_on_404: bool = True, quiet_404: bool = False) -> Optional[Any]:
         """
@@ -34,8 +59,7 @@ class HttpClient:
         url = f"{self.base_url}/{path}/{self.token}"
         req = urllib.request.Request(url)
         try:
-            with urllib.request.urlopen(req, timeout=self.timeout) as r:
-                return json.loads(r.read())
+            return self._open_json(req)
         except urllib.error.HTTPError as e:
             if e.code == 404:
                 if exit_on_404:
@@ -47,5 +71,4 @@ class HttpClient:
 
     def get_json(self, url: str) -> Any:
         req = urllib.request.Request(url)
-        with urllib.request.urlopen(req, timeout=self.timeout) as r:
-            return json.loads(r.read())
+        return self._open_json(req)
