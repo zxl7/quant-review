@@ -254,17 +254,14 @@ jobs:
           print(f"DEBUG: today={today}, remote_dates_count={len(remote_dates)}, rt_date={rt_date}")
           PY
 
-      - name: Decide push mode/date (non-schedule)
+      - name: Decide run mode/date
         id: pushmode
-        if: ${{ github.event_name != 'schedule' }}
         env:
           BIYING_TOKEN: ${{ secrets.BIYING_TOKEN }}
           BIYING_BASE_URL: ${{ secrets.BIYING_BASE_URL }}
         run: |
           set -euo pipefail
-          # push/workflow_dispatch：统一走在线取数；本地定时触发在盘中标记为 intraday，
-          # 只刷新实时情绪/快照，明日接力/观察保留上一份收盘推演。
-          # 手动/本地定时触发必须抓“最近交易日”，不能依赖 cache_online/manifest.json 的旧日期。
+          # 所有触发方式统一使用同一套“当前时间 + 最近交易日”判定，避免手动/自动口径不同。
           latest_trade="${{ steps.tradeday.outputs.latest_trade_date }}"
           today_bj="${{ steps.tradeday.outputs.today_bj }}"
           realtime_market_date="${{ steps.tradeday.outputs.realtime_market_date }}"
@@ -282,10 +279,13 @@ jobs:
           if [ $(( now_min >= 9*60+30 && now_min <= 11*60+30 )) -eq 1 ] || [ $(( now_min >= 13*60 && now_min < 15*60 )) -eq 1 ]; then
             mode="intraday"
           fi
-          echo "push/workflow_dispatch → mode=${mode}（在线拉最新） date10=${date10}"
+          if [ $(( now_min >= 15*60 && now_min < 15*60+20 )) -eq 1 ]; then
+            mode="eod"
+          fi
+          echo "all events → mode=${mode} date10=${date10}"
           echo "mode=${mode}" >> "$GITHUB_OUTPUT"
           echo "date10=${date10}" >> "$GITHUB_OUTPUT"
-          echo "push_mode=${mode} (date10=${date10})"
+          echo "run_mode=${mode} (date10=${date10})"
 
       - name: Make scripts executable
         if: ${{ github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true' }}
@@ -304,15 +304,9 @@ jobs:
             echo "Missing secrets.BIYING_TOKEN"
             exit 2
           fi
-          mode="${{ steps.timecheck.outputs.mode }}"
-          if [ "${{ github.event_name }}" != "schedule" ]; then
-            mode="${{ steps.pushmode.outputs.mode }}"
-          fi
+          mode="${{ steps.pushmode.outputs.mode }}"
           echo "Run mode=${mode}"
           run_date="${{ steps.pushmode.outputs.date10 }}"
-          if [ "${{ github.event_name }}" = "schedule" ]; then
-            run_date="${{ steps.tradeday.outputs.today_bj }}"
-          fi
           if [ "${mode}" = "intraday" ]; then
             # 盘中：只跑轻量 intraday，刷新实时情绪/快照；明日接力/观察保留上一份收盘推演。
             PRESERVE_ZT_ANALYSIS=1 PYTHONPATH=. python3 -u -m daily_review.cli --mode intraday --date "${run_date}"
@@ -361,10 +355,7 @@ jobs:
         if: ${{ (github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true') && (github.event_name != 'schedule' || steps.tradeday.outputs.is_trade_today == 'true') }}
         run: |
           set -euo pipefail
-          mode="${{ steps.timecheck.outputs.mode }}"
-          if [ "${{ github.event_name }}" != "schedule" ]; then
-            mode="${{ steps.pushmode.outputs.mode }}"
-          fi
+          mode="${{ steps.pushmode.outputs.mode }}"
           if [ "${mode}" = "intraday" ]; then
             # intraday 输出文件名历史上存在两种：
             # - 复盘日记-YYYYMMDD-intra.html
@@ -383,9 +374,6 @@ jobs:
             exit 2
           fi
           run_date="${{ steps.pushmode.outputs.date10 }}"
-          if [ "${{ github.event_name }}" = "schedule" ]; then
-            run_date="${{ steps.tradeday.outputs.today_bj }}"
-          fi
           if ! grep -q "\"date\": \"${run_date}\"" "${report_html}"; then
             echo "Report HTML date mismatch: expected ${run_date} in ${report_html}"
             exit 3
