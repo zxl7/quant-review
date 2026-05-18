@@ -8106,7 +8106,17 @@
              */
             applyLiveSnapshotPayload(live, slices) {
               if (!live) return false
-              const nextSlices = slices && Array.isArray(slices.snapshots) ? slices : this.marketData?.intradaySnapshots || {}
+              const currSlices = this.marketData?.intradaySnapshots || {}
+              const nextSlices = slices && Array.isArray(slices.snapshots) ? slices : currSlices
+              const currCount = Array.isArray(currSlices?.snapshots) ? currSlices.snapshots.length : 0
+              const nextCount = Array.isArray(nextSlices?.snapshots) ? nextSlices.snapshots.length : 0
+              const currLatestTs = String(currSlices?.latest?.ts_bj || "")
+              const nextLatestTs = String(nextSlices?.latest?.ts_bj || live?.ts_bj || "")
+              const staleSlices = nextCount < currCount || (currLatestTs && nextLatestTs && nextLatestTs < currLatestTs)
+              if (staleSlices) {
+                this.marketData.live = live
+                return false
+              }
               const nextSig = this.buildSnapshotSig(live, nextSlices)
               if (nextSig && nextSig === this._lastSnapshotSig) return false
               this.marketData.live = live

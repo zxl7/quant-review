@@ -1147,6 +1147,37 @@ def run_intraday_snapshot(date: str | None) -> int:
     _log("pipeline 二次重建（含快照注入）...")
     run_rebuild(actual_date, suffix="intraday", source_market_path=market_path, allow_network=True)
 
+    # 同步发布 latest_intraday*.json，避免前端轮询时用旧的轻量文件把当前页内嵌轨迹覆盖掉
+    try:
+        from daily_review.watch_runtime import publish_runtime_files
+
+        rebuilt_intraday = json.loads(market_path.read_text(encoding="utf-8")) if market_path.exists() else market_data
+        published_snaps = _load_intraday_snapshots(root=root, date=actual_date)
+        latest_snapshot = published_snaps[-1] if published_snaps else {
+            "date": actual_date,
+            "time": now_str,
+            "ts_bj": f"{actual_date} {now_str}",
+            "heat": ((rebuilt_intraday.get("mood") or {}).get("heat")),
+            "risk": ((rebuilt_intraday.get("mood") or {}).get("risk")),
+            "shift_score": ((rebuilt_intraday.get("mood") or {}).get("score")),
+        }
+        slices_payload = {
+            "schema": "intraday_snapshot_v1",
+            "render_mode": "snapshot_stream",
+            "date": actual_date,
+            "count": len(published_snaps),
+            "interval_min": None,
+            "simulated": False,
+            "snapshots": published_snaps,
+            "latest": latest_snapshot,
+            "updated_at": str(latest_snapshot.get("ts_bj") or ""),
+            "snapshot_sig": f"{actual_date}|{latest_snapshot.get('ts_bj') or ''}|{len(published_snaps)}",
+        }
+        publish_runtime_files(root=root, latest_snapshot=latest_snapshot, slices_payload=slices_payload)
+        _log("盘中 latest_intraday*.json 已同步发布")
+    except Exception:
+        pass
+
     # 在输出 HTML 中注入盘中快照标记
     out_dir = root / "html"
     out_path = out_dir / f"复盘日记-{date_compact}-intra.html"
