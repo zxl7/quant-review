@@ -261,7 +261,9 @@ jobs:
           BIYING_BASE_URL: ${{ secrets.BIYING_BASE_URL }}
         run: |
           set -euo pipefail
-          # 所有触发方式统一使用同一套“当前时间 + 最近交易日”判定，避免手动/自动口径不同。
+          # 所有触发方式统一使用同一套“当前时间 + 最近交易日”判定。
+          # 仅 schedule 保留盘中轻量 intraday；push / workflow_dispatch 一律走全量 fetch，
+          # 避免发布代码或本地手动触发时拿数不全。
           latest_trade="${{ steps.tradeday.outputs.latest_trade_date }}"
           today_bj="${{ steps.tradeday.outputs.today_bj }}"
           realtime_market_date="${{ steps.tradeday.outputs.realtime_market_date }}"
@@ -276,13 +278,13 @@ jobs:
           fi
           now_min=$((10#$(date +%H)*60 + 10#$(date +%M)))
           mode="fetch"
-          if [ $(( now_min >= 9*60+30 && now_min <= 11*60+30 )) -eq 1 ] || [ $(( now_min >= 13*60 && now_min < 15*60 )) -eq 1 ]; then
+          if [ "${{ github.event_name }}" = "schedule" ] && { [ $(( now_min >= 9*60+30 && now_min <= 11*60+30 )) -eq 1 ] || [ $(( now_min >= 13*60 && now_min < 15*60 )) -eq 1 ]; }; then
             mode="intraday"
           fi
           if [ $(( now_min >= 15*60 && now_min < 15*60+20 )) -eq 1 ]; then
             mode="eod"
           fi
-          echo "all events → mode=${mode} date10=${date10}"
+          echo "event=${{ github.event_name }} → mode=${mode} date10=${date10}"
           echo "mode=${mode}" >> "$GITHUB_OUTPUT"
           echo "date10=${date10}" >> "$GITHUB_OUTPUT"
           echo "run_mode=${mode} (date10=${date10})"

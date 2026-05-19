@@ -515,6 +515,34 @@ def run_fetch_and_rebuild(date: str | None) -> int:
             fallback_dates=prev_days,
         )
 
+    # 开盘首条自动快照偶发会遇到三池接口短暂空窗，这时全市场数据会异常接近 0。
+    # 仅在“涨停/跌停/炸板/强势池同时为空”时做一次短暂重试，避免第一条线上快照失真。
+    zt_rows = pools["ztgc"].get(actual_date) or []
+    dt_rows = pools["dtgc"].get(actual_date) or []
+    zb_rows = pools["zbgc"].get(actual_date) or []
+    qs_rows = pools["qsgc"].get(actual_date) or []
+    should_retry_open = (
+        is_trading_hour
+        and now.hour == 9
+        and now.minute <= 40
+        and not zt_rows
+        and not dt_rows
+        and not zb_rows
+        and not qs_rows
+    )
+    if should_retry_open:
+        _log("开盘首条快照疑似空窗，10秒后重试一次三池数据")
+        time.sleep(10)
+        for pn in ("ztgc", "dtgc", "zbgc", "qsgc"):
+            prev_days = [x for x in trade_days if x < actual_date]
+            pools[pn][actual_date] = _fetch_pool_with_cache_fallback(
+                client,
+                pool_name=pn,
+                date=actual_date,
+                pools=pools,
+                fallback_dates=prev_days,
+            )
+
     # 裁剪
     keep = set(trade_days)
     for pn in ("ztgc", "dtgc", "zbgc", "qsgc"):
@@ -892,6 +920,7 @@ def run_fetch_and_rebuild(date: str | None) -> int:
         # 从 rebuild 后的缓存重新读取完整 market_data
         rebuilt_data = json.loads(market_path.read_text(encoding="utf-8")) if market_path.exists() else market_data
         rebuilt_mi = (rebuilt_data.get("features") or {}).get("mood_inputs") or mood_inputs
+        rebuilt_pan = rebuilt_data.get("panorama") if isinstance(rebuilt_data.get("panorama"), dict) else {}
         # 跨日清理：确保只保留当日数据（用当前北京时间日期，而非数据日期）
         now_bj_date = _dt.datetime.now(
             _dt.timezone(_dt.timedelta(hours=8))
@@ -924,8 +953,8 @@ def run_fetch_and_rebuild(date: str | None) -> int:
             "ts_bj": now_bj,
             "date": now_bj_date,
             "market": {
-                "zt": int(rebuilt_mi.get("zt_count", 0) or 0),
-                "dt": int(rebuilt_mi.get("dt_count", 0) or 0),
+                "zt": int(rebuilt_mi.get("zt_count", rebuilt_pan.get("limitUp", 0)) or 0),
+                "dt": int(rebuilt_mi.get("dt_count", rebuilt_pan.get("limitDown", 0)) or 0),
                 "zab": int(rebuilt_mi.get("zb_count", 0) or 0),
                 "zab_rate": float(rebuilt_mi.get("zb_rate", 0) or 0.0),
                 "lianban": lb_cnt,
@@ -1010,6 +1039,34 @@ def run_intraday_snapshot(date: str | None) -> int:
             pools=pools,
             fallback_dates=prev_days,
         )
+
+    # 开盘首条盘中快照偶发会遇到三池接口短暂空窗。
+    # intraday 模式同样补一次短暂重试，避免自动盘中首轮与手动触发口径不一致。
+    zt_rows = pools["ztgc"].get(actual_date) or []
+    dt_rows = pools["dtgc"].get(actual_date) or []
+    zb_rows = pools["zbgc"].get(actual_date) or []
+    qs_rows = pools["qsgc"].get(actual_date) or []
+    should_retry_open = (
+        is_trading_hour
+        and now.hour == 9
+        and now.minute <= 40
+        and not zt_rows
+        and not dt_rows
+        and not zb_rows
+        and not qs_rows
+    )
+    if should_retry_open:
+        _log("盘中首条快照疑似空窗，10秒后重试一次三池数据")
+        time.sleep(10)
+        for pn in ("ztgc", "dtgc", "zbgc", "qsgc"):
+            prev_days = [x for x in trade_days if x < actual_date]
+            pools[pn][actual_date] = _fetch_pool_with_cache_fallback(
+                client,
+                pool_name=pn,
+                date=actual_date,
+                pools=pools,
+                fallback_dates=prev_days,
+            )
     # 裁剪：只保留近 3 个交易日（watch 模式 trade_days 最多 3 天）
     watch_keep = set(trade_days)
     for pn in ("ztgc", "dtgc", "zbgc", "qsgc"):
