@@ -3304,7 +3304,401 @@
       [data-theme="dark"] .wb-chip.on {
         color: rgba(134, 239, 172, 0.95);
       }
-
+      .abnormal-panel {
+        border-radius: 20px;
+        border: 1px solid rgba(148, 163, 184, 0.18);
+        background: linear-gradient(180deg, rgba(255, 255, 255, 0.8), rgba(248, 250, 252, 0.92));
+        box-shadow: 0 20px 56px rgba(2, 6, 23, 0.08);
+        overflow: hidden;
+      }
+      [data-theme="dark"] .abnormal-panel {
+        background: rgba(15, 23, 42, 0.42);
+        border-color: rgba(148, 163, 184, 0.2);
+      }
+      .abnormal-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 10px 12px;
+        border-bottom: 1px solid rgba(148, 163, 184, 0.16);
+        background: rgba(255, 255, 255, 0.38);
+      }
+      .abnormal-head .title {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 14px;
+        font-weight: 1000;
+        color: var(--text-primary);
+      }
+      .abnormal-head .meta {
+        font-size: 10px;
+        font-weight: 850;
+        color: var(--text-muted);
+      }
+      [data-theme="dark"] .abnormal-head {
+        background: rgba(2, 6, 23, 0.18);
+      }
+      .abnormal-head .action {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .abnormal-head-main {
+        min-width: 0;
+      }
+      .abnormal-btn {
+        border-radius: 999px;
+        border: 1px solid rgba(148, 163, 184, 0.18);
+        background: rgba(255, 255, 255, 0.78);
+        padding: 5px 9px;
+        font-size: 10px;
+        font-weight: 950;
+        color: var(--text-primary);
+        cursor: pointer;
+      }
+      .abnormal-btn:hover {
+        border-color: rgba(239, 68, 68, 0.18);
+        color: #dc2626;
+      }
+      [data-theme="dark"] .abnormal-btn {
+        background: rgba(15, 23, 42, 0.6);
+      }
+      .abnormal-settings {
+        padding: 8px 10px;
+        border-bottom: 1px solid rgba(148, 163, 184, 0.12);
+        display: grid;
+        gap: 8px;
+      }
+      .abnormal-section-title {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        font-size: 11px;
+        font-weight: 950;
+        color: var(--text-primary);
+      }
+      .abnormal-switch-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+      }
+      .abnormal-switch {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 4px 8px;
+        border-radius: 999px;
+        border: 1px solid rgba(148, 163, 184, 0.16);
+        background: rgba(248, 250, 252, 0.92);
+        font-size: 10px;
+        font-weight: 850;
+        color: var(--text-secondary);
+      }
+      .abnormal-switch input {
+        accent-color: #ef4444;
+      }
+      .abnormal-filter {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        padding: 7px 9px;
+        border-radius: 12px;
+        background: rgba(248, 250, 252, 0.92);
+        border: 1px solid rgba(148, 163, 184, 0.12);
+      }
+      [data-theme="dark"] .abnormal-switch,
+      [data-theme="dark"] .abnormal-filter {
+        background: rgba(15, 23, 42, 0.55);
+      }
+      .abnormal-filter .label {
+        font-size: 11px;
+        font-weight: 900;
+        color: var(--text-primary);
+      }
+      .abnormal-filter .tip {
+        font-size: 10px;
+        font-weight: 800;
+        color: var(--text-muted);
+      }
+      .abnormal-list-wrap {
+        padding: 8px 10px 10px;
+      }
+      .abnormal-list {
+        display: grid;
+        gap: 8px;
+      }
+      .abnormal-columns {
+        display: grid;
+        grid-template-columns: minmax(0, 0.78fr) minmax(0, 1.22fr);
+        gap: 10px;
+        align-items: start;
+      }
+      .abnormal-column {
+        display: grid;
+        gap: 8px;
+        min-width: 0;
+        align-content: start;
+      }
+      .abnormal-column.plate-column {
+        gap: 6px;
+      }
+      .abnormal-column.plate-column .abnormal-list {
+        gap: 6px;
+      }
+      .abnormal-column.plate-column .abnormal-item {
+        padding: 7px 8px 6px;
+      }
+      .abnormal-column.plate-column .abnormal-sub {
+        margin-top: 3px;
+        line-height: 1.32;
+      }
+      .abnormal-column.plate-column .abnormal-sublines {
+        grid-template-columns: 1fr;
+        gap: 4px;
+        margin-top: 5px;
+      }
+      .abnormal-column.plate-column .abnormal-subline {
+        padding: 5px 7px;
+      }
+      .abnormal-column.plate-column .abnormal-copy {
+        padding: 2px 6px;
+      }
+      .abnormal-col-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+        padding: 6px 2px 2px;
+      }
+      .abnormal-col-title {
+        font-size: 11px;
+        font-weight: 950;
+        color: var(--text-primary);
+      }
+      .abnormal-col-meta {
+        font-size: 10px;
+        font-weight: 850;
+        color: var(--text-muted);
+      }
+      .abnormal-item {
+        padding: 8px 9px 7px;
+        border-radius: 14px;
+        background: rgba(248, 250, 252, 0.94);
+        border: 1px solid rgba(148, 163, 184, 0.12);
+        cursor: pointer;
+        position: relative;
+      }
+      [data-theme="dark"] .abnormal-item {
+        background: rgba(15, 23, 42, 0.5);
+      }
+      .abnormal-item:hover {
+        border-color: rgba(239, 68, 68, 0.16);
+        box-shadow: 0 10px 24px rgba(15, 23, 42, 0.06);
+        transform: translateY(-1px);
+      }
+      .abnormal-item.urgent {
+        border-color: rgba(239, 68, 68, 0.28);
+        box-shadow: inset 0 0 0 1px rgba(239, 68, 68, 0.08);
+      }
+      .abnormal-item.urgent::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        width: 3px;
+        border-radius: 14px 0 0 14px;
+        background: linear-gradient(180deg, #ef4444, #f97316);
+      }
+      .abnormal-item.plate-urgent::before {
+        background: linear-gradient(180deg, #ef4444, #ec4899);
+      }
+      .abnormal-item.down-urgent::before {
+        background: linear-gradient(180deg, #16a34a, #22c55e);
+      }
+      .abnormal-top {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 10px;
+      }
+      .abnormal-name {
+        font-size: 12px;
+        font-weight: 950;
+        color: var(--text-primary);
+      }
+      .abnormal-time {
+        font-size: 10px;
+        font-weight: 850;
+        color: var(--text-muted);
+        white-space: nowrap;
+        font-variant-numeric: tabular-nums;
+      }
+      .abnormal-priority {
+        margin-top: 6px;
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        padding: 3px 7px;
+        border-radius: 999px;
+        font-size: 9px;
+        font-weight: 950;
+        line-height: 1;
+      }
+      .abnormal-priority.high {
+        background: rgba(239, 68, 68, 0.12);
+        color: #dc2626;
+      }
+      .abnormal-priority.mid {
+        background: rgba(245, 158, 11, 0.12);
+        color: #d97706;
+      }
+      .abnormal-priority.low {
+        background: rgba(148, 163, 184, 0.12);
+        color: var(--text-muted);
+      }
+      .abnormal-sub {
+        margin-top: 4px;
+        font-size: 11px;
+        line-height: 1.4;
+        color: var(--text-secondary);
+        font-weight: 750;
+      }
+      .abnormal-tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 5px;
+        margin-top: 6px;
+      }
+      .abnormal-tag {
+        font-size: 9px;
+        font-weight: 850;
+        padding: 4px 8px;
+        border-radius: 999px;
+        background: rgba(148, 163, 184, 0.1);
+        color: var(--text-muted);
+      }
+      .abnormal-tag.red {
+        background: rgba(239, 68, 68, 0.1);
+        color: #dc2626;
+      }
+      .abnormal-tag.orange {
+        background: rgba(245, 158, 11, 0.1);
+        color: #d97706;
+      }
+      .abnormal-tag.green {
+        background: rgba(16, 185, 129, 0.1);
+        color: #059669;
+      }
+      .abnormal-tag.high {
+        background: rgba(239, 68, 68, 0.14);
+        color: #b91c1c;
+      }
+      .abnormal-tag.mid {
+        background: rgba(245, 158, 11, 0.14);
+        color: #b45309;
+      }
+      .abnormal-sublines {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 6px;
+        margin-top: 6px;
+      }
+      .abnormal-subline {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+        padding: 6px 8px;
+        border-radius: 10px;
+        background: rgba(255, 255, 255, 0.72);
+        border: 1px solid rgba(148, 163, 184, 0.12);
+      }
+      [data-theme="dark"] .abnormal-subline {
+        background: rgba(2, 6, 23, 0.26);
+      }
+      .abnormal-subleft {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        min-width: 0;
+        flex-wrap: wrap;
+      }
+      .abnormal-subname {
+        font-size: 11px;
+        font-weight: 900;
+        color: var(--text-primary);
+      }
+      .abnormal-subcode {
+        font-size: 10px;
+        font-weight: 800;
+        color: var(--text-muted);
+      }
+      .abnormal-submeta {
+        font-size: 10px;
+        font-weight: 850;
+        white-space: nowrap;
+      }
+      .abnormal-submeta.strong {
+        font-size: 11px;
+        font-weight: 950;
+      }
+      .abnormal-copy {
+        border: none;
+        background: rgba(148, 163, 184, 0.12);
+        color: var(--text-secondary);
+        border-radius: 999px;
+        padding: 3px 7px;
+        font-size: 9px;
+        font-weight: 850;
+        cursor: pointer;
+      }
+      .abnormal-copy:hover {
+        background: rgba(239, 68, 68, 0.1);
+        color: #dc2626;
+      }
+      .abnormal-link {
+        color: var(--theme-accent);
+      }
+      .abnormal-more {
+        display: flex;
+        justify-content: center;
+        margin-top: 8px;
+      }
+      .abnormal-scroll {
+        max-height: 78vh;
+        overflow: auto;
+        padding-right: 2px;
+      }
+      @media (max-width: 900px) {
+        .abnormal-columns {
+          grid-template-columns: 1fr;
+        }
+        .abnormal-sublines {
+          grid-template-columns: 1fr;
+        }
+      }
+      .abnormal-loading,
+      .abnormal-empty,
+      .abnormal-error {
+        padding: 14px 14px;
+        border-radius: 14px;
+        font-size: 12px;
+        font-weight: 850;
+      }
+      .abnormal-loading,
+      .abnormal-empty {
+        background: rgba(248, 250, 252, 0.9);
+        color: var(--text-muted);
+      }
+      .abnormal-error {
+        background: rgba(239, 68, 68, 0.08);
+        color: #991b1b;
+      }
       .wb-body {
         padding: 8px 12px 10px;
       }
@@ -5279,6 +5673,9 @@
       body[data-page="watch"] .card[data-page="watch"] {
         display: block;
       }
+      body[data-page="abnormal"] .card[data-page="abnormal"] {
+        display: block;
+      }
       body[data-page="flash"] .card[data-page="flash"] {
         display: block;
       }
@@ -5295,6 +5692,41 @@
       }
       body[data-page="plan"] .page-block[data-page="plan"] {
         display: block;
+      }
+      .view-switch {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 6px;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.8);
+        border: 1px solid rgba(148, 163, 184, 0.16);
+        box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+      }
+      [data-theme="dark"] .view-switch {
+        background: rgba(15, 23, 42, 0.72);
+        border-color: rgba(148, 163, 184, 0.18);
+      }
+      .view-switch-btn {
+        border: none;
+        outline: none;
+        padding: 9px 14px;
+        border-radius: 999px;
+        background: transparent;
+        color: var(--text-secondary);
+        font-size: 12px;
+        font-weight: 900;
+        cursor: pointer;
+        transition:
+          background 0.18s ease,
+          color 0.18s ease,
+          transform 0.18s ease;
+      }
+      .view-switch-btn.active {
+        background: var(--bg-card);
+        color: var(--text-primary);
+        box-shadow: 0 8px 18px rgba(15, 23, 42, 0.08);
+        transform: translateY(-0.5px);
       }
 
       .flash-toolbar {
@@ -6627,6 +7059,10 @@
       <div class="hero">
         <div class="hero-grain" aria-hidden="true"></div>
         <div class="hero-controls">
+          <div class="view-switch" role="tablist" aria-label="视图模式">
+            <button class="view-switch-btn" :class="{ active: modeView === 'review' }" type="button" @click="setModeView('review')">复盘</button>
+            <button class="view-switch-btn" :class="{ active: modeView === 'intraday' }" type="button" @click="setModeView('intraday')">盘中</button>
+          </div>
           <button class="theme-toggle" id="themeToggleBtn" onclick="toggleTheme()">🌙 深色</button>
         </div>
         <div class="hero-grid">
@@ -6714,12 +7150,13 @@
 
       <!-- Tabs：正常显示时放在 Hero 下方 -->
       <div class="tabbar">
-        <button class="tab-btn active" data-page="sentiment" type="button">情绪</button>
-        <button class="tab-btn" data-page="themes" type="button">题材</button>
-        <button class="tab-btn" data-page="ladder" type="button">连板</button>
-        <button class="tab-btn" data-page="plan" type="button">预测</button>
-        <button class="tab-btn" data-page="watch" type="button">实时</button>
-        <button class="tab-btn" data-page="flash" type="button">快讯</button>
+        <button v-if="showTab('sentiment')" class="tab-btn active" data-page="sentiment" type="button">情绪</button>
+        <button v-if="showTab('themes')" class="tab-btn" data-page="themes" type="button">题材</button>
+        <button v-if="showTab('ladder')" class="tab-btn" data-page="ladder" type="button">连板</button>
+        <button v-if="showTab('plan')" class="tab-btn" data-page="plan" type="button">预测</button>
+        <button v-if="showTab('watch')" class="tab-btn" data-page="watch" type="button">实时</button>
+        <button v-if="showTab('abnormal')" class="tab-btn" data-page="abnormal" type="button">异动</button>
+        <button v-if="showTab('flash')" class="tab-btn" data-page="flash" type="button">快讯</button>
       </div>
 
       <!-- 首屏：情绪总控（仅短线情绪页显示） -->
@@ -7588,6 +8025,135 @@
         </div>
       </div>
 
+      <div class="card" data-page="abnormal" id="sec-abnormal">
+        <div class="abnormal-panel">
+          <div class="abnormal-head">
+            <div class="abnormal-head-main">
+              <div class="title">超短异动提醒</div>
+              <div class="meta">3秒刷新 · 个股实时 · 板块续拉</div>
+            </div>
+            <div class="action">
+              <span class="wb-chip" :class="{ on: abnormalFilterST }">过滤ST</span>
+              <button class="abnormal-btn" type="button" @click="refreshAbnormalEvents(true)">刷新</button>
+            </div>
+          </div>
+          <div class="abnormal-settings">
+            <div class="abnormal-section-title">
+              <span>板块</span>
+              <span class="meta">{{ abnormalSelectedPlateTypes.length }} 项</span>
+            </div>
+            <div class="abnormal-switch-row">
+              <label class="abnormal-switch" v-for="item in abnormalPlateTypeOptions" :key="'apt-'+item.type">
+                <input type="checkbox" :checked="abnormalSelectedTypes.includes(item.type)" @change="toggleAbnormalType(item.type)">
+                <span>{{ item.label }}</span>
+              </label>
+            </div>
+            <div class="abnormal-section-title">
+              <span>个股</span>
+              <span class="meta">{{ abnormalSelectedStockTypes.length }} 项</span>
+            </div>
+            <div class="abnormal-switch-row">
+              <label class="abnormal-switch" v-for="item in abnormalStockTypeOptions" :key="'ast-'+item.type">
+                <input type="checkbox" :checked="abnormalSelectedTypes.includes(item.type)" @change="toggleAbnormalType(item.type)">
+                <span>{{ item.label }}</span>
+              </label>
+            </div>
+            <div class="abnormal-filter">
+              <div>
+                <div class="label">筛选</div>
+                <div class="tip">保留全量类型，后续再收口</div>
+              </div>
+              <button class="abnormal-btn" type="button" @click="toggleAbnormalSTFilter()">{{ abnormalFilterST ? '已过滤ST' : '显示ST' }}</button>
+            </div>
+          </div>
+          <div class="abnormal-list-wrap abnormal-scroll" @scroll="abnormalHandleScroll">
+            <div v-if="abnormalLoading && !abnormalEvents.length" class="abnormal-loading">正在拉取异动数据...</div>
+            <div v-else-if="abnormalError" class="abnormal-error">{{ abnormalError }}</div>
+            <div v-else-if="!abnormalDisplayEvents.length" class="abnormal-empty">当前没有符合筛选条件的异动</div>
+            <div v-else class="abnormal-columns">
+              <div class="abnormal-column plate-column">
+                <div class="abnormal-col-head">
+                  <div class="abnormal-col-title">板块异动</div>
+                  <div class="abnormal-col-meta">{{ abnormalPlateEvents.length }} 条</div>
+                </div>
+                <div class="abnormal-list">
+                  <article class="abnormal-item" :class="abnormalCardClass(item)" v-for="item in abnormalPlateEvents" :key="item.id" @click="onAbnormalItemClick(item)">
+                    <div class="abnormal-top">
+                      <div>
+                        <div class="abnormal-name">{{ item.title }}</div>
+                        <div class="abnormal-priority" :class="abnormalPriorityTone(item)" v-if="item.priorityLabel">{{ item.priorityLabel }}</div>
+                      </div>
+                      <div class="abnormal-time">{{ item.time }}</div>
+                    </div>
+                    <div class="abnormal-sub">{{ item.subtitle }}</div>
+                    <div class="abnormal-tags">
+                      <span class="abnormal-tag" :class="item.tone" v-if="item.eventTypeLabel">{{ item.eventTypeLabel }}</span>
+                      <span class="abnormal-tag" :class="abnormalPriorityTone(item)" v-if="item.scoreText">{{ item.scoreText }}</span>
+                      <span class="abnormal-tag" :class="item.valueTone" v-if="item.valueText">{{ item.valueText }}</span>
+                      <span class="abnormal-tag" v-for="(tag, idx) in item.tags" :key="'abt-p-'+item.id+'-'+idx">{{ tag }}</span>
+                    </div>
+                    <div class="abnormal-sublines" v-if="item.relatedRows && item.relatedRows.length">
+                      <div class="abnormal-subline" v-for="(row, idx) in item.relatedRows" :key="'asr-p-'+item.id+'-'+idx">
+                        <div class="abnormal-subleft">
+                          <span class="abnormal-subname" :class="{ 'abnormal-link': row.code }" @click.stop="row.code && abnormalOpenSymbol(row.code)">{{ row.name }}</span>
+                          <span class="abnormal-subcode" :class="{ 'abnormal-link': row.code }" v-if="row.code" @click.stop="abnormalOpenSymbol(row.code)">({{ row.code }})</span>
+                          <button class="abnormal-copy" v-if="row.code" type="button" @click.stop="abnormalCopyCode(row.code)">复制</button>
+                        </div>
+                        <div class="abnormal-subleft">
+                          <span class="abnormal-submeta strong" :class="abnormalValueClass(row.mtmText)" v-if="row.mtmText">{{ row.mtmText }}</span>
+                          <span class="abnormal-submeta strong" :class="abnormalValueClass(row.pcpText)" v-if="row.pcpText">{{ row.pcpText }}</span>
+                        </div>
+                      </div>
+                    </div>
+                  </article>
+                </div>
+              </div>
+
+              <div class="abnormal-column">
+                <div class="abnormal-col-head">
+                  <div class="abnormal-col-title">个股异动</div>
+                  <div class="abnormal-col-meta">{{ abnormalStockEvents.length }} 条</div>
+                </div>
+                <div class="abnormal-list">
+                  <article class="abnormal-item" :class="abnormalCardClass(item)" v-for="item in abnormalStockEvents" :key="item.id" @click="onAbnormalItemClick(item)">
+                    <div class="abnormal-top">
+                      <div>
+                        <div class="abnormal-name">{{ item.title }}</div>
+                        <div class="abnormal-priority" :class="abnormalPriorityTone(item)" v-if="item.priorityLabel">{{ item.priorityLabel }}</div>
+                      </div>
+                      <div class="abnormal-time">{{ item.time }}</div>
+                    </div>
+                    <div class="abnormal-sub">{{ item.subtitle }}</div>
+                    <div class="abnormal-tags">
+                      <span class="abnormal-tag" :class="item.tone" v-if="item.eventTypeLabel">{{ item.eventTypeLabel }}</span>
+                      <span class="abnormal-tag" :class="abnormalPriorityTone(item)" v-if="item.scoreText">{{ item.scoreText }}</span>
+                      <span class="abnormal-tag" :class="item.valueTone" v-if="item.valueText">{{ item.valueText }}</span>
+                      <span class="abnormal-tag" v-for="(tag, idx) in item.tags" :key="'abt-s-'+item.id+'-'+idx">{{ tag }}</span>
+                    </div>
+                    <div class="abnormal-sublines" v-if="item.relatedRows && item.relatedRows.length">
+                      <div class="abnormal-subline" v-for="(row, idx) in item.relatedRows" :key="'asr-s-'+item.id+'-'+idx">
+                        <div class="abnormal-subleft">
+                          <span class="abnormal-subname" :class="{ 'abnormal-link': row.code }" @click.stop="row.code && abnormalOpenSymbol(row.code)">{{ row.name }}</span>
+                          <span class="abnormal-subcode" :class="{ 'abnormal-link': row.code }" v-if="row.code" @click.stop="abnormalOpenSymbol(row.code)">({{ row.code }})</span>
+                          <button class="abnormal-copy" v-if="row.code" type="button" @click.stop="abnormalCopyCode(row.code)">复制</button>
+                        </div>
+                        <div class="abnormal-subleft">
+                          <span class="abnormal-submeta strong" :class="abnormalValueClass(row.mtmText)" v-if="row.mtmText">{{ row.mtmText }}</span>
+                          <span class="abnormal-submeta strong" :class="abnormalValueClass(row.pcpText)" v-if="row.pcpText">{{ row.pcpText }}</span>
+                        </div>
+                      </div>
+                    </div>
+                  </article>
+                </div>
+              </div>
+            </div>
+            <div class="abnormal-more" v-if="abnormalHasMore && abnormalSelectedTypes.length && abnormalSelectedTypes.every((type) => Number(type) >= 11000)">
+              <button class="abnormal-btn" type="button" @click="refreshAbnormalEvents(false)">加载更多</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <!-- 明日行动指南 -->
       <div class="card" data-page="plan" id="sec-action">
         <div class="card-title">明日行动指南</div>
@@ -7960,6 +8526,7 @@
 
         const app = createApp({
           data() {
+            const defaultModeView = marketData?.meta?.mode === "intraday" ? "intraday" : "review"
             return {
               marketData,
               liveLoading: false,
@@ -7970,6 +8537,15 @@
               flashLoading: false,
               flashError: "",
               flashLastUpdated: "",
+              modeView: defaultModeView,
+              abnormalEvents: [],
+              abnormalLoading: false,
+              abnormalError: "",
+              abnormalFilterST: true,
+              abnormalSelectedTypes: [10009],
+              abnormalHasMore: true,
+              abnormalLastTimestamp: null,
+              abnormalLastRequestTime: 0,
             }
           },
           methods: {
@@ -8009,6 +8585,121 @@
             },
             setFlashFilter(mode) {
               this.flashFilter = mode === "warn" ? "warn" : "all"
+            },
+            toggleAbnormalType(type) {
+              const t = Number(type)
+              const idx = this.abnormalSelectedTypes.indexOf(t)
+              if (idx >= 0) this.abnormalSelectedTypes.splice(idx, 1)
+              else this.abnormalSelectedTypes.push(t)
+              this.abnormalLastTimestamp = null
+              this.abnormalHasMore = true
+              this.refreshAbnormalEvents(true)
+            },
+            toggleAbnormalSTFilter() {
+              this.abnormalFilterST = !this.abnormalFilterST
+              this.abnormalLastTimestamp = null
+              this.abnormalHasMore = true
+              this.refreshAbnormalEvents(true)
+            },
+            abnormalValueClass(value) {
+              const n = Number(String(value || "").replace("%", ""))
+              if (!Number.isFinite(n)) return ""
+              return n >= 0 ? "red-text" : "green-text"
+            },
+            abnormalPriorityTone(item) {
+              const level = String(item?.priorityLevel || "low")
+              return level === "high" ? "high" : level === "mid" ? "mid" : "low"
+            },
+            abnormalCardClass(item) {
+              return {
+                urgent: Number(item?.watchScore || 0) >= 90,
+                "plate-urgent": Number(item?.watchScore || 0) >= 90 && item?.tone === "red",
+                "down-urgent": Number(item?.watchScore || 0) >= 90 && item?.valueTone === "green",
+              }
+            },
+            abnormalSortScore(item) {
+              return Number(item?.watchScore || 0)
+            },
+            abnormalTypeWeight(eventType) {
+              const map = {
+                10010: 100,
+                10009: 96,
+                10001: 94,
+                10014: 92,
+                10005: 88,
+                10003: 84,
+                10006: 82,
+                10002: 80,
+                11000: 78,
+                11001: 76,
+                10007: 74,
+                10004: 72,
+                10008: 68,
+                10012: 64,
+              }
+              return map[Number(eventType)] || 60
+            },
+            abnormalBuildScore(eventType, valuePct, timestamp) {
+              const base = this.abnormalTypeWeight(eventType)
+              const moveBonus = Math.min(12, Math.abs(Number(valuePct || 0)) * 1.6)
+              const now = Date.now()
+              const eventMs = Number(timestamp || 0) * 1000
+              const ageSec = eventMs > 0 ? Math.max(0, (now - eventMs) / 1000) : 99999
+              const freshnessBonus = ageSec <= 60 ? 8 : ageSec <= 180 ? 5 : ageSec <= 600 ? 2 : 0
+              return Math.round(base + moveBonus + freshnessBonus)
+            },
+            abnormalPriorityMeta(score) {
+              if (score >= 90) return { level: "high", label: "优先盯盘" }
+              if (score >= 78) return { level: "mid", label: "重点观察" }
+              return { level: "low", label: "常规跟踪" }
+            },
+            abnormalCopyCode(code) {
+              const text = String(code || "").trim()
+              if (!text) return
+              try {
+                if (navigator.clipboard && window.isSecureContext) {
+                  navigator.clipboard.writeText(text).catch(() => {})
+                  return
+                }
+              } catch (e) {}
+              try {
+                const input = document.createElement("textarea")
+                input.value = text
+                input.style.position = "fixed"
+                input.style.opacity = "0"
+                document.body.appendChild(input)
+                input.focus()
+                input.select()
+                document.execCommand("copy")
+                document.body.removeChild(input)
+              } catch (e) {}
+            },
+            abnormalOpenSymbol(symbol) {
+              const code = String(symbol || "").trim().replace(/\..*$/, "")
+              if (!code) return
+              window.open(this.xqUrl(code), "_blank", "noopener")
+            },
+            onAbnormalItemClick(item) {
+              if (item?.primarySymbol) this.abnormalOpenSymbol(item.primarySymbol)
+            },
+            abnormalHandleScroll(event) {
+              const el = event?.target
+              if (!el) return
+              const onlyPlate = this.abnormalSelectedTypes.length > 0 && this.abnormalSelectedTypes.every((type) => Number(type) >= 11000)
+              if (!onlyPlate) return
+              if (el.scrollHeight - el.scrollTop - el.clientHeight < 120) {
+                this.refreshAbnormalEvents(false)
+              }
+            },
+            setModeView(mode) {
+              this.modeView = mode === "intraday" ? "intraday" : "review"
+              const visible = this.visiblePages
+              if (!visible.includes(currentPage)) {
+                switchPage(visible[0] || "watch")
+              }
+            },
+            showTab(page) {
+              return this.visiblePages.includes(page)
             },
             formatFlashTime(value) {
               let date = null
@@ -8050,6 +8741,162 @@
                   }
                 })
                 .filter((x) => x.title)
+            },
+            formatAbnormalTime(timestamp) {
+              if (timestamp === undefined || timestamp === null || timestamp === "") return "--"
+              const n = Number(timestamp)
+              const d = Number.isFinite(n) ? new Date(n * 1000) : new Date(timestamp)
+              if (!(d instanceof Date) || Number.isNaN(d.getTime())) return "--"
+              const hh = String(d.getHours()).padStart(2, "0")
+              const mm = String(d.getMinutes()).padStart(2, "0")
+              const ss = String(d.getSeconds()).padStart(2, "0")
+              return `${hh}:${mm}:${ss}`
+            },
+            parseAbnormalItem(event) {
+              if (!event || typeof event !== "object") return null
+              const eventType = Number(event.event_type || 0)
+              const isPlate = eventType >= 11000
+              const map = {
+                10001: { label: "封涨停板", tone: "red" },
+                10002: { label: "封跌停板", tone: "green" },
+                10003: { label: "打开涨停", tone: "orange" },
+                10004: { label: "打开跌停", tone: "orange" },
+                10005: { label: "逼近涨停", tone: "red" },
+                10006: { label: "逼近跌停", tone: "green" },
+                10007: { label: "将开涨停", tone: "orange" },
+                10008: { label: "将开跌停", tone: "orange" },
+                10009: { label: "大幅拉升", tone: "red" },
+                10010: { label: "快速跳水", tone: "green" },
+                10012: { label: "新股开板", tone: "orange" },
+                10014: { label: "开板回封", tone: "red" },
+                11000: { label: "板块拉升", tone: "red" },
+                11001: { label: "板块跳水", tone: "green" },
+              }
+              const meta = map[eventType] || { label: `异动 ${eventType}`, tone: "orange" }
+              if (isPlate) {
+                const plate = event.plate_abnormal_event_data || {}
+                const valuePct = Number(plate.pcp || 0) * 100
+                const watchScore = this.abnormalBuildScore(eventType, valuePct, event.event_timestamp)
+                const priorityMeta = this.abnormalPriorityMeta(watchScore)
+                const rel = Array.isArray(plate.related_stocks) ? plate.related_stocks.slice(0, 4) : []
+                const tags = rel.map((x) => String(x.name || "").trim()).filter(Boolean)
+                const relatedRows = rel.map((x) => ({
+                  name: String(x?.name || "").trim(),
+                  code: String(x?.symbol || "").trim().replace(/\..*$/, ""),
+                  mtmText: x?.mtm !== undefined && x?.mtm !== null ? `${Number(x.mtm * 100).toFixed(2)}%` : "",
+                  pcpText: x?.pcp !== undefined && x?.pcp !== null ? `${Number(x.pcp * 100).toFixed(2)}%` : "",
+                }))
+                const valueText = plate.pcp !== undefined && plate.pcp !== null ? `${(Number(plate.pcp) * 100).toFixed(2)}%` : ""
+                return {
+                  id: `${event.event_type}-${event.event_timestamp}-${plate.plate_name || ""}`,
+                  isPlate: true,
+                  title: plate.plate_name || meta.label,
+                  time: this.formatAbnormalTime(event.event_timestamp),
+                  subtitle: `相关个股：${tags.join(" / ") || "无"}`,
+                  eventTypeLabel: meta.label,
+                  valueText,
+                  tone: meta.tone,
+                  valueTone: Number(plate.pcp || 0) >= 0 ? "red" : "green",
+                  watchScore,
+                  scoreText: `${watchScore}分`,
+                  priorityLevel: priorityMeta.level,
+                  priorityLabel: priorityMeta.label,
+                  tags,
+                  relatedRows,
+                  primarySymbol: relatedRows[0]?.code || "",
+                  eventType,
+                  eventTimestamp: Number(event.event_timestamp || 0),
+                }
+              }
+              const stock = event.stock_abnormal_event_data || {}
+              const valuePct = Number(stock.pcp || 0) * 100
+              const watchScore = this.abnormalBuildScore(eventType, valuePct, event.event_timestamp)
+              const priorityMeta = this.abnormalPriorityMeta(watchScore)
+              const relPlates = Array.isArray(stock.related_plates) ? stock.related_plates.slice(0, 4) : []
+              const tags = relPlates.map((x) => String(x.plate_name || "").trim()).filter(Boolean)
+              const relatedRows = relPlates.map((x) => ({
+                name: String(x?.plate_name || "").trim(),
+                code: "",
+                pcpText: x?.plate_pcp !== undefined && x?.plate_pcp !== null ? `${Number(x.plate_pcp * 100).toFixed(2)}%` : "",
+                mtmText: "",
+              }))
+              const primarySymbol = String(event.target || "").trim().replace(/\..*$/, "")
+              const valueText = stock.pcp !== undefined && stock.pcp !== null ? `${(Number(stock.pcp) * 100).toFixed(2)}%` : ""
+              return {
+                id: `${event.event_type}-${event.event_timestamp}-${stock.name || ""}`,
+                isPlate: false,
+                title: stock.name || meta.label,
+                time: this.formatAbnormalTime(event.event_timestamp),
+                subtitle: tags.length ? `关联板块：${tags.join(" / ")}` : "关联板块：无",
+                eventTypeLabel: meta.label,
+                valueText,
+                tone: meta.tone,
+                valueTone: Number(stock.pcp || 0) >= 0 ? "red" : "green",
+                watchScore,
+                scoreText: `${watchScore}分`,
+                priorityLevel: priorityMeta.level,
+                priorityLabel: priorityMeta.label,
+                tags,
+                relatedRows,
+                primarySymbol,
+                primaryCode: primarySymbol,
+                eventType,
+                eventTimestamp: Number(event.event_timestamp || 0),
+              }
+            },
+            async refreshAbnormalEvents(force = false) {
+              try {
+                if (!force && currentPage !== "abnormal") return
+                const now = Date.now()
+                if (!force && now - Number(this.abnormalLastRequestTime || 0) < 1000) return
+                if (this._abnormalReqInFlight) return
+                this._abnormalReqInFlight = true
+                this.abnormalLastRequestTime = now
+                this.abnormalLoading = true
+                this.abnormalError = ""
+                let url = "https://flash-api.xuangubao.cn/api/event/history?count=50"
+                if (this.abnormalSelectedTypes.length) url += `&types=${this.abnormalSelectedTypes.join(",")}`
+                const isStockEvent = this.abnormalSelectedTypes.some((type) => Number(type) < 11000)
+                if (!force && !isStockEvent && this.abnormalLastTimestamp) {
+                  url += `&timestamp=${Number(this.abnormalLastTimestamp) - 3}`
+                }
+                const res = await fetch(`${url}&_ts=${Date.now()}`, { cache: "no-store" })
+                if (!res.ok) throw new Error(`HTTP ${res.status}`)
+                const json = await res.json()
+                const rows = Array.isArray(json?.data) ? json.data : []
+                const items = rows.map((x) => this.parseAbnormalItem(x)).filter(Boolean)
+                const filtered = this.abnormalFilterST
+                  ? items.filter((it) => !(String(it.title || "").includes("ST") || String(it.title || "").includes("*ST")))
+                  : items
+                if (force || !this.abnormalLastTimestamp || isStockEvent) this.abnormalEvents = filtered
+                else this.abnormalEvents = this.abnormalEvents.concat(filtered)
+                if (!isStockEvent && rows.length) {
+                  this.abnormalLastTimestamp = rows[rows.length - 1]?.event_timestamp || this.abnormalLastTimestamp
+                } else if (isStockEvent) {
+                  this.abnormalLastTimestamp = null
+                }
+                this.abnormalHasMore = isStockEvent ? true : rows.length >= 30
+              } catch (e) {
+                this.abnormalError = `异动获取失败：${String(e && e.message ? e.message : e)}`
+              } finally {
+                this.abnormalLoading = false
+                this._abnormalReqInFlight = false
+              }
+            },
+            startAbnormalPolling(forceRestart = false) {
+              if (this._abnormalTimer && !forceRestart) return
+              if (this._abnormalTimer && forceRestart) {
+                clearInterval(this._abnormalTimer)
+                this._abnormalTimer = null
+              }
+              this.refreshAbnormalEvents(true)
+              this._abnormalTimer = setInterval(() => this.refreshAbnormalEvents(false), 3000)
+            },
+            stopAbnormalPolling() {
+              if (this._abnormalTimer) {
+                clearInterval(this._abnormalTimer)
+                this._abnormalTimer = null
+              }
             },
             async refreshFlash(force = false) {
               try {
@@ -8103,6 +8950,18 @@
                 byTone[tone].tags.push(tag)
               }
               return rows.filter((x) => x.tags.length)
+            },
+            modeTagTexts(row, limit = 4) {
+              const rows = this.ztTagRows(row)
+              const out = []
+              for (const line of rows) {
+                for (const tag of line.tags || []) {
+                  const text = String(tag?.text || "").trim()
+                  if (text) out.push(text)
+                  if (out.length >= limit) return out
+                }
+              }
+              return out
             },
             selectPlateTheme(row) {
               const key = String(row?.code || row?.name || "")
@@ -8955,6 +9814,50 @@
             moodTriCards() {
               return this.marketData?.moodTriCards || []
             },
+            abnormalPlateTypeOptions() {
+              return [
+                { type: 11000, label: "板块拉升" },
+                { type: 11001, label: "板块跳水" },
+              ]
+            },
+            abnormalStockTypeOptions() {
+              return [
+                { type: 10001, label: "封涨停板" },
+                { type: 10005, label: "逼近涨停" },
+                { type: 10003, label: "打开涨停" },
+                { type: 10007, label: "将开涨停" },
+                { type: 10002, label: "封跌停板" },
+                { type: 10006, label: "逼近跌停" },
+                { type: 10004, label: "打开跌停" },
+                { type: 10008, label: "将开跌停" },
+                { type: 10014, label: "开板回封" },
+                { type: 10009, label: "大幅拉升" },
+                { type: 10010, label: "快速跳水" },
+                { type: 10012, label: "新股开板" },
+              ]
+            },
+            abnormalSelectedPlateTypes() {
+              return this.abnormalSelectedTypes.filter((x) => x >= 11000)
+            },
+            abnormalSelectedStockTypes() {
+              return this.abnormalSelectedTypes.filter((x) => x < 11000)
+            },
+            abnormalDisplayEvents() {
+              return (this.abnormalEvents || []).slice().sort((a, b) => {
+                const diff = Number(b?.watchScore || 0) - Number(a?.watchScore || 0)
+                if (diff) return diff
+                return Number(b?.eventTimestamp || 0) - Number(a?.eventTimestamp || 0)
+              })
+            },
+            abnormalPlateEvents() {
+              return (this.abnormalDisplayEvents || []).filter((item) => item && item.isPlate)
+            },
+            abnormalStockEvents() {
+              return (this.abnormalDisplayEvents || []).filter((item) => item && !item.isPlate)
+            },
+            visiblePages() {
+              return this.modeView === "intraday" ? ["watch", "abnormal", "flash"] : ["sentiment", "themes", "ladder", "plan"]
+            },
           },
         }).mount("#app")
         // 暴露给外层 Tabs 切换逻辑
@@ -8977,7 +9880,7 @@
       let volumeChart, heightChart, themeTrendChart, moodKlineChart, moodRadarChart, threeQuadrantsChart, mood5LineChart
       const hasEcharts = () => typeof window !== "undefined" && typeof window.echarts !== "undefined"
       // 支持“定时渲染的盯盘页”：在 marketData.meta.default_page 提供时优先生效
-      const allowedPages = new Set(["sentiment", "watch", "themes", "ladder", "plan", "flash"])
+      const allowedPages = new Set(["sentiment", "watch", "abnormal", "themes", "ladder", "plan", "flash"])
       let ensurePlanDerived = () => {}
       let savedPage = ""
       try {
@@ -9070,7 +9973,7 @@
           }
           renderHeightTrend(marketData.heightTrend)
           renderLadder(marketData.ladder)
-        } else if (page === "plan") {
+        } else if (page === "plan" || page === "watch" || page === "abnormal" || page === "flash") {
           // 明日计划页不渲染图表，释放所有图表实例避免隐藏容器尺寸问题
           if (themeTrendChart) {
             themeTrendChart.dispose()
@@ -9116,6 +10019,8 @@
         try {
           if (currentPage === "watch") window.__APP_VM__?.startLivePolling?.()
           else window.__APP_VM__?.stopLivePolling?.()
+          if (currentPage === "abnormal" && window.__APP_VM__?.modeView === "intraday") window.__APP_VM__?.startAbnormalPolling?.()
+          else window.__APP_VM__?.stopAbnormalPolling?.()
           if (currentPage === "flash") window.__APP_VM__?.startFlashPolling?.()
           else window.__APP_VM__?.stopFlashPolling?.()
         } catch (e) {}
@@ -10171,8 +11076,12 @@
         let lastDetailsMode = window.innerWidth >= 1100 ? "pc" : "mobile"
         let resizeRaf = 0
         setActiveTab(currentPage)
-        document.querySelectorAll(".tab-btn").forEach((btn) => {
-          btn.addEventListener("click", () => switchPage(btn.getAttribute("data-page")))
+        document.querySelector(".tabbar")?.addEventListener("click", (event) => {
+          const btn = event.target && event.target.closest ? event.target.closest(".tab-btn") : null
+          if (!btn) return
+          const page = btn.getAttribute("data-page")
+          if (!page) return
+          switchPage(page)
         })
 
         // 首屏只渲染当前页图表
