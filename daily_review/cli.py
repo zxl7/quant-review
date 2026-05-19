@@ -472,6 +472,12 @@ def run_fetch_and_rebuild(date: str | None) -> int:
     actual_date, date_note = resolve_trade_date(client, req_date)
     _log(f"交易日确认: {actual_date} ({date_note})")
 
+    import datetime as _dt
+    now = _dt.datetime.now()
+    is_trading_hour = (9 <= now.hour < 16) and not (
+        now.hour == 11 and now.minute >= 30 or now.hour == 12
+    )
+
     # 交易日序列（用于缓存裁剪/昨日）
     trade_days = get_trading_days_from_index_k(client, date=actual_date, n=7) or [actual_date]
     if actual_date not in trade_days:
