@@ -5279,6 +5279,9 @@
       body[data-page="watch"] .card[data-page="watch"] {
         display: block;
       }
+      body[data-page="flash"] .card[data-page="flash"] {
+        display: block;
+      }
 
       /* Page blocks（非 card 的页面块，如 summary/toc） */
       .page-block[data-page] {
@@ -5292,6 +5295,142 @@
       }
       body[data-page="plan"] .page-block[data-page="plan"] {
         display: block;
+      }
+
+      .flash-toolbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        margin-bottom: 12px;
+        flex-wrap: wrap;
+      }
+      .flash-toolbar-left {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+      .flash-toolbar-right {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        color: var(--text-muted);
+        font-size: 12px;
+        font-weight: 800;
+      }
+      .flash-btn {
+        appearance: none;
+        border: 1px solid var(--border);
+        background: var(--bg-card);
+        color: var(--text-secondary);
+        border-radius: 999px;
+        padding: 8px 14px;
+        font-size: 12px;
+        font-weight: 900;
+        cursor: pointer;
+        transition:
+          background 0.18s ease,
+          border-color 0.18s ease,
+          color 0.18s ease,
+          transform 0.18s ease;
+      }
+      .flash-btn:hover {
+        color: var(--text-primary);
+        border-color: color-mix(in oklab, var(--border) 68%, var(--theme-glow) 32%);
+        background: color-mix(in oklab, var(--bg-card) 84%, var(--theme-soft) 16%);
+      }
+      .flash-btn.active {
+        color: #fff;
+        border-color: transparent;
+        background: var(--theme-strong);
+        box-shadow: 0 10px 22px rgba(230, 0, 18, 0.14);
+      }
+      .flash-btn.link {
+        text-decoration: none;
+      }
+      .flash-list {
+        display: grid;
+        gap: 10px;
+      }
+      .flash-item {
+        border: 1px solid color-mix(in oklab, var(--border) 78%, var(--theme-glow) 22%);
+        border-radius: 16px;
+        background: color-mix(in oklab, var(--bg-card) 92%, var(--theme-soft) 8%);
+        padding: 14px 16px;
+        box-shadow: var(--shadow-xs);
+      }
+      .flash-item.warn {
+        border-color: rgba(230, 0, 18, 0.26);
+        background: color-mix(in oklab, #fff 88%, rgba(230, 0, 18, 0.12));
+      }
+      .flash-head {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 6px;
+        flex-wrap: wrap;
+      }
+      .flash-time {
+        color: #0f9fb4;
+        font-size: 12px;
+        font-weight: 900;
+        font-variant-numeric: tabular-nums;
+      }
+      .flash-title {
+        color: var(--text-primary);
+        font-size: 14px;
+        font-weight: 900;
+        line-height: 1.45;
+      }
+      .flash-summary {
+        color: var(--text-secondary);
+        font-size: 13px;
+        line-height: 1.65;
+      }
+      .flash-stocks {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 10px;
+      }
+      .flash-stock {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        padding: 5px 10px;
+        border-radius: 999px;
+        border: 1px solid rgba(15, 159, 180, 0.18);
+        background: rgba(15, 159, 180, 0.06);
+        color: var(--text-primary);
+        font-size: 12px;
+        font-weight: 800;
+        text-decoration: none;
+      }
+      .flash-stock:hover {
+        border-color: rgba(230, 0, 18, 0.2);
+        background: rgba(230, 0, 18, 0.06);
+      }
+      .flash-empty,
+      .flash-error {
+        border: 1px dashed var(--border);
+        border-radius: 16px;
+        padding: 18px 16px;
+        color: var(--text-muted);
+        font-size: 13px;
+        font-weight: 800;
+        text-align: center;
+      }
+      .flash-error {
+        color: var(--danger);
+        border-style: solid;
+        border-color: rgba(230, 0, 18, 0.18);
+        background: rgba(230, 0, 18, 0.05);
+      }
+      .flash-loading {
+        color: var(--text-muted);
+        font-size: 12px;
+        font-weight: 800;
       }
 
       /* Summary Bar（首屏情绪总控） */
@@ -6580,6 +6719,7 @@
         <button class="tab-btn" data-page="ladder" type="button">连板</button>
         <button class="tab-btn" data-page="plan" type="button">预测</button>
         <button class="tab-btn" data-page="watch" type="button">实时</button>
+        <button class="tab-btn" data-page="flash" type="button">快讯</button>
       </div>
 
       <!-- 首屏：情绪总控（仅短线情绪页显示） -->
@@ -7406,6 +7546,48 @@
         </div>
       </div>
 
+      <div class="card" data-page="flash" id="sec-flash">
+        <div class="card-header">
+          <div class="card-title">股通快讯</div>
+          <div class="card-badge">15s</div>
+        </div>
+        <div class="flash-toolbar">
+          <div class="flash-toolbar-left">
+            <button class="flash-btn" :class="{ active: flashFilter === 'all' }" type="button" @click="setFlashFilter('all')">全部</button>
+            <button class="flash-btn" :class="{ active: flashFilter === 'warn' }" type="button" @click="setFlashFilter('warn')">警示</button>
+            <button class="flash-btn" type="button" @click="refreshFlash(true)">刷新</button>
+          </div>
+          <div class="flash-toolbar-right">
+            <span v-if="flashLastUpdated">更新 {{ flashLastUpdated }}</span>
+            <span v-else>等待首次拉取</span>
+            <span>共 {{ filteredFlashItems.length }} 条</span>
+          </div>
+        </div>
+        <div v-if="flashLoading && !filteredFlashItems.length" class="flash-loading">正在拉取快讯...</div>
+        <div v-else-if="flashError" class="flash-error">{{ flashError }}</div>
+        <div v-else-if="!filteredFlashItems.length" class="flash-empty">暂无符合条件的快讯</div>
+        <div v-else class="flash-list">
+          <article class="flash-item" :class="{ warn: item.isWarn }" v-for="item in filteredFlashItems" :key="item.id">
+            <div class="flash-head">
+              <span class="flash-time">{{ item.timeText }}</span>
+              <div class="flash-title">{{ item.title }}</div>
+            </div>
+            <div class="flash-summary" v-if="item.summary">{{ item.summary }}</div>
+            <div class="flash-stocks" v-if="item.stocks && item.stocks.length">
+              <a
+                class="flash-stock"
+                v-for="stock in item.stocks"
+                :key="item.id + '-' + stock.symbol"
+                :href="flashStockUrl(stock.symbol)"
+                target="_blank"
+                rel="noopener noreferrer">
+                {{ stock.name }}
+              </a>
+            </div>
+          </article>
+        </div>
+      </div>
+
       <!-- 明日行动指南 -->
       <div class="card" data-page="plan" id="sec-action">
         <div class="card-title">明日行动指南</div>
@@ -7783,6 +7965,11 @@
               liveLoading: false,
               liveError: "",
               selectedPlateThemeKey: "",
+              flashItems: [],
+              flashFilter: "all",
+              flashLoading: false,
+              flashError: "",
+              flashLastUpdated: "",
             }
           },
           methods: {
@@ -7812,6 +7999,93 @@
               if (!c) return "https://xueqiu.com/S"
               const prefix = c.startsWith("6") || c.startsWith("688") || c.startsWith("900") ? "SH" : "SZ"
               return `https://xueqiu.com/S/${prefix}${c}`
+            },
+            flashStockUrl(symbol) {
+              const raw = String(symbol || "").trim().toUpperCase()
+              const m = raw.match(/(\d{6})/)
+              const c = m ? m[1] : ""
+              if (!c) return this.xqUrl("")
+              return this.xqUrl(c)
+            },
+            setFlashFilter(mode) {
+              this.flashFilter = mode === "warn" ? "warn" : "all"
+            },
+            formatFlashTime(value) {
+              let date = null
+              if (typeof value === "number" && Number.isFinite(value)) {
+                date = new Date(value * 1000)
+              } else if (typeof value === "string" && value.trim()) {
+                date = new Date(value)
+              }
+              if (!(date instanceof Date) || Number.isNaN(date.getTime())) return "--"
+              const y = date.getFullYear()
+              const m = String(date.getMonth() + 1).padStart(2, "0")
+              const d = String(date.getDate()).padStart(2, "0")
+              const hh = String(date.getHours()).padStart(2, "0")
+              const mm = String(date.getMinutes()).padStart(2, "0")
+              const ss = String(date.getSeconds()).padStart(2, "0")
+              return `${y}-${m}-${d} ${hh}:${mm}:${ss}`
+            },
+            normalizeFlashItems(messages) {
+              const rows = Array.isArray(messages) ? messages : []
+              return rows
+                .filter((x) => x && typeof x === "object")
+                .map((x, index) => {
+                  const subjIds = Array.isArray(x.subj_ids) ? x.subj_ids.map((v) => Number(v)) : []
+                  return {
+                    id: String(x.id || x.msg_id || x.created_at || index),
+                    title: String(x.title || "").trim(),
+                    summary: String(x.summary || "").trim(),
+                    timeText: this.formatFlashTime(x.created_at),
+                    isWarn: subjIds.includes(10),
+                    stocks: Array.isArray(x.stocks)
+                      ? x.stocks
+                          .filter((s) => s && typeof s === "object")
+                          .map((s) => ({
+                            name: String(s.name || "").trim(),
+                            symbol: String(s.symbol || s.code || "").trim(),
+                          }))
+                          .filter((s) => s.name)
+                      : [],
+                  }
+                })
+                .filter((x) => x.title)
+            },
+            async refreshFlash(force = false) {
+              try {
+                if (!force && currentPage !== "flash") return
+                if (this._flashReqInFlight) return
+                this._flashReqInFlight = true
+                this.flashLoading = true
+                this.flashError = ""
+                const url = "https://baoer-api.xuangubao.cn/api/v6/message/newsflash?subj_ids=9,10,723,35,469,821&platform=pcweb"
+                const res = await fetch(`${url}&_ts=${Date.now()}`, { cache: "no-store" })
+                if (!res.ok) throw new Error(`HTTP ${res.status}`)
+                const json = await res.json()
+                const items = this.normalizeFlashItems(json?.data?.messages)
+                this.flashItems = items
+                this.flashLastUpdated = this.formatFlashTime(new Date().toISOString())
+              } catch (e) {
+                this.flashError = `快讯获取失败：${String(e && e.message ? e.message : e)}`
+              } finally {
+                this.flashLoading = false
+                this._flashReqInFlight = false
+              }
+            },
+            startFlashPolling(forceRestart = false) {
+              if (this._flashTimer && !forceRestart) return
+              if (this._flashTimer && forceRestart) {
+                clearInterval(this._flashTimer)
+                this._flashTimer = null
+              }
+              this.refreshFlash(false)
+              this._flashTimer = setInterval(() => this.refreshFlash(false), 15000)
+            },
+            stopFlashPolling() {
+              if (this._flashTimer) {
+                clearInterval(this._flashTimer)
+                this._flashTimer = null
+              }
             },
             ztTagRows(row) {
               if (Array.isArray(row?.tagRows) && row.tagRows.length) {
@@ -8674,6 +8948,10 @@
               const max = Math.max(...arr, 0)
               return max > 0 ? `${Math.round(max)}亿` : "-"
             },
+            filteredFlashItems() {
+              const rows = Array.isArray(this.flashItems) ? this.flashItems : []
+              return this.flashFilter === "warn" ? rows.filter((x) => x.isWarn) : rows
+            },
             moodTriCards() {
               return this.marketData?.moodTriCards || []
             },
@@ -8699,7 +8977,7 @@
       let volumeChart, heightChart, themeTrendChart, moodKlineChart, moodRadarChart, threeQuadrantsChart, mood5LineChart
       const hasEcharts = () => typeof window !== "undefined" && typeof window.echarts !== "undefined"
       // 支持“定时渲染的盯盘页”：在 marketData.meta.default_page 提供时优先生效
-      const allowedPages = new Set(["sentiment", "watch", "themes", "ladder", "plan"])
+      const allowedPages = new Set(["sentiment", "watch", "themes", "ladder", "plan", "flash"])
       let ensurePlanDerived = () => {}
       let savedPage = ""
       try {
@@ -8838,6 +9116,8 @@
         try {
           if (currentPage === "watch") window.__APP_VM__?.startLivePolling?.()
           else window.__APP_VM__?.stopLivePolling?.()
+          if (currentPage === "flash") window.__APP_VM__?.startFlashPolling?.()
+          else window.__APP_VM__?.stopFlashPolling?.()
         } catch (e) {}
         // 等待 DOM 完成显示隐藏后再渲染
         setTimeout(() => {
@@ -9901,6 +10181,11 @@
         if (currentPage === "watch") {
           try {
             window.__APP_VM__?.startLivePolling?.()
+          } catch (e) {}
+        }
+        if (currentPage === "flash") {
+          try {
+            window.__APP_VM__?.startFlashPolling?.()
           } catch (e) {}
         }
         updateThemeToggleLabel()
