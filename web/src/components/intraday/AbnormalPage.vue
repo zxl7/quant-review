@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue';
 import { useMarketData } from '../../composables/useMarketData';
+import ShortReminderFooter from '../common/ShortReminderFooter.vue';
 
 const { marketData } = useMarketData();
 
@@ -88,132 +89,136 @@ const abnormalHandleScroll = () => {};
 </script>
 
 <template>
-  <div class="card" data-page="abnormal" id="sec-abnormal">
-    <div class="abnormal-panel">
-      <div class="abnormal-head">
-        <div class="abnormal-head-main">
-          <div class="title">超短异动提醒</div>
-          <div class="meta">3秒刷新 · 个股实时 · 板块续拉</div>
-        </div>
-        <div class="action">
-          <span class="wb-chip" :class="{ on: abnormalFilterST }">过滤ST</span>
-          <button class="abnormal-btn" type="button" @click="refreshAbnormalEvents(true)">刷新</button>
-        </div>
-      </div>
-      <div class="abnormal-settings">
-        <div class="abnormal-section-title">
-          <span>板块</span>
-          <span class="meta">{{ abnormalSelectedPlateTypes.length }} 项</span>
-        </div>
-        <div class="abnormal-switch-row">
-          <label class="abnormal-switch" v-for="item in abnormalPlateTypeOptions" :key="'apt-'+item.type">
-            <input type="checkbox" :checked="abnormalSelectedTypes.includes(item.type)" @change="toggleAbnormalType(item.type)">
-            <span>{{ item.label }}</span>
-          </label>
-        </div>
-        <div class="abnormal-section-title">
-          <span>个股</span>
-          <span class="meta">{{ abnormalSelectedStockTypes.length }} 项</span>
-        </div>
-        <div class="abnormal-switch-row">
-          <label class="abnormal-switch" v-for="item in abnormalStockTypeOptions" :key="'ast-'+item.type">
-            <input type="checkbox" :checked="abnormalSelectedTypes.includes(item.type)" @change="toggleAbnormalType(item.type)">
-            <span>{{ item.label }}</span>
-          </label>
-        </div>
-        <div class="abnormal-filter">
-          <div>
-            <div class="label">筛选</div>
-            <div class="tip">保留全量类型，后续再收口</div>
+  <div class="abnormal-page">
+    <div class="card" data-page="abnormal" id="sec-abnormal">
+      <div class="abnormal-panel">
+        <div class="abnormal-head">
+          <div class="abnormal-head-main">
+            <div class="title">超短异动提醒</div>
+            <div class="meta">3秒刷新 · 个股实时 · 板块续拉</div>
           </div>
-          <button class="abnormal-btn" type="button" @click="toggleAbnormalSTFilter()">{{ abnormalFilterST ? '已过滤ST' : '显示ST' }}</button>
-        </div>
-      </div>
-      <div class="abnormal-list-wrap abnormal-scroll" @scroll="abnormalHandleScroll">
-        <div v-if="abnormalLoading && !abnormalEvents.length" class="abnormal-loading">正在拉取异动数据...</div>
-        <div v-else-if="abnormalError" class="abnormal-error">{{ abnormalError }}</div>
-        <div v-else-if="!abnormalDisplayEvents.length" class="abnormal-empty">当前没有符合筛选条件的异动</div>
-        <div v-else class="abnormal-columns">
-          <div class="abnormal-column plate-column">
-            <div class="abnormal-col-head">
-              <div class="abnormal-col-title">板块异动</div>
-              <div class="abnormal-col-meta">{{ abnormalPlateEvents.length }} 条</div>
-            </div>
-            <div class="abnormal-list">
-              <article class="abnormal-item" :class="abnormalCardClass(item)" v-for="item in abnormalPlateEvents" :key="item.id" @click="onAbnormalItemClick(item)">
-                <div class="abnormal-top">
-                  <div>
-                    <div class="abnormal-name">{{ item.title }}</div>
-                    <div class="abnormal-priority" :class="abnormalPriorityTone(item)" v-if="item.priorityLabel">{{ item.priorityLabel }}</div>
-                  </div>
-                  <div class="abnormal-time">{{ item.time }}</div>
-                </div>
-                <div class="abnormal-sub">{{ item.subtitle }}</div>
-                <div class="abnormal-tags">
-                  <span class="abnormal-tag" :class="item.tone" v-if="item.eventTypeLabel">{{ item.eventTypeLabel }}</span>
-                  <span class="abnormal-tag" :class="abnormalPriorityTone(item)" v-if="item.scoreText">{{ item.scoreText }}</span>
-                  <span class="abnormal-tag" :class="item.valueTone" v-if="item.valueText">{{ item.valueText }}</span>
-                  <span class="abnormal-tag" v-for="(tag, idx) in item.tags" :key="'abt-p-'+item.id+'-'+idx">{{ tag }}</span>
-                </div>
-                <div class="abnormal-sublines" v-if="item.relatedRows && item.relatedRows.length">
-                  <div class="abnormal-subline" v-for="(row, idx) in item.relatedRows" :key="'asr-p-'+item.id+'-'+idx">
-                    <div class="abnormal-subleft">
-                      <span class="abnormal-subname" :class="{ 'abnormal-link': row.code }" @click.stop="row.code && abnormalOpenSymbol(row.code)">{{ row.name }}</span>
-                      <span class="abnormal-subcode" :class="{ 'abnormal-link': row.code }" v-if="row.code" @click.stop="abnormalOpenSymbol(row.code)">({{ row.code }})</span>
-                      <button class="abnormal-copy" v-if="row.code" type="button" @click.stop="abnormalCopyCode(row.code)">复制</button>
-                    </div>
-                    <div class="abnormal-subleft">
-                      <span class="abnormal-submeta strong" :class="abnormalValueClass(row.mtmText)" v-if="row.mtmText">{{ row.mtmText }}</span>
-                      <span class="abnormal-submeta strong" :class="abnormalValueClass(row.pcpText)" v-if="row.pcpText">{{ row.pcpText }}</span>
-                    </div>
-                  </div>
-                </div>
-              </article>
-            </div>
+          <div class="action">
+            <span class="wb-chip" :class="{ on: abnormalFilterST }">过滤ST</span>
+            <button class="abnormal-btn" type="button" @click="refreshAbnormalEvents(true)">刷新</button>
           </div>
+        </div>
+        <div class="abnormal-settings">
+          <div class="abnormal-section-title">
+            <span>板块</span>
+            <span class="meta">{{ abnormalSelectedPlateTypes.length }} 项</span>
+          </div>
+          <div class="abnormal-switch-row">
+            <label class="abnormal-switch" v-for="item in abnormalPlateTypeOptions" :key="'apt-'+item.type">
+              <input type="checkbox" :checked="abnormalSelectedTypes.includes(item.type)" @change="toggleAbnormalType(item.type)">
+              <span>{{ item.label }}</span>
+            </label>
+          </div>
+          <div class="abnormal-section-title">
+            <span>个股</span>
+            <span class="meta">{{ abnormalSelectedStockTypes.length }} 项</span>
+          </div>
+          <div class="abnormal-switch-row">
+            <label class="abnormal-switch" v-for="item in abnormalStockTypeOptions" :key="'ast-'+item.type">
+              <input type="checkbox" :checked="abnormalSelectedTypes.includes(item.type)" @change="toggleAbnormalType(item.type)">
+              <span>{{ item.label }}</span>
+            </label>
+          </div>
+          <div class="abnormal-filter">
+            <div>
+              <div class="label">筛选</div>
+              <div class="tip">保留全量类型，后续再收口</div>
+            </div>
+            <button class="abnormal-btn" type="button" @click="toggleAbnormalSTFilter()">{{ abnormalFilterST ? '已过滤ST' : '显示ST' }}</button>
+          </div>
+        </div>
+        <div class="abnormal-list-wrap abnormal-scroll" @scroll="abnormalHandleScroll">
+          <div v-if="abnormalLoading && !abnormalEvents.length" class="abnormal-loading">正在拉取异动数据...</div>
+          <div v-else-if="abnormalError" class="abnormal-error">{{ abnormalError }}</div>
+          <div v-else-if="!abnormalDisplayEvents.length" class="abnormal-empty">当前没有符合筛选条件的异动</div>
+          <div v-else class="abnormal-columns">
+            <div class="abnormal-column plate-column">
+              <div class="abnormal-col-head">
+                <div class="abnormal-col-title">板块异动</div>
+                <div class="abnormal-col-meta">{{ abnormalPlateEvents.length }} 条</div>
+              </div>
+              <div class="abnormal-list">
+                <article class="abnormal-item" :class="abnormalCardClass(item)" v-for="item in abnormalPlateEvents" :key="item.id" @click="onAbnormalItemClick(item)">
+                  <div class="abnormal-top">
+                    <div>
+                      <div class="abnormal-name">{{ item.title }}</div>
+                      <div class="abnormal-priority" :class="abnormalPriorityTone(item)" v-if="item.priorityLabel">{{ item.priorityLabel }}</div>
+                    </div>
+                    <div class="abnormal-time">{{ item.time }}</div>
+                  </div>
+                  <div class="abnormal-sub">{{ item.subtitle }}</div>
+                  <div class="abnormal-tags">
+                    <span class="abnormal-tag" :class="item.tone" v-if="item.eventTypeLabel">{{ item.eventTypeLabel }}</span>
+                    <span class="abnormal-tag" :class="abnormalPriorityTone(item)" v-if="item.scoreText">{{ item.scoreText }}</span>
+                    <span class="abnormal-tag" :class="item.valueTone" v-if="item.valueText">{{ item.valueText }}</span>
+                    <span class="abnormal-tag" v-for="(tag, idx) in item.tags" :key="'abt-p-'+item.id+'-'+idx">{{ tag }}</span>
+                  </div>
+                  <div class="abnormal-sublines" v-if="item.relatedRows && item.relatedRows.length">
+                    <div class="abnormal-subline" v-for="(row, idx) in item.relatedRows" :key="'asr-p-'+item.id+'-'+idx">
+                      <div class="abnormal-subleft">
+                        <span class="abnormal-subname" :class="{ 'abnormal-link': row.code }" @click.stop="row.code && abnormalOpenSymbol(row.code)">{{ row.name }}</span>
+                        <span class="abnormal-subcode" :class="{ 'abnormal-link': row.code }" v-if="row.code" @click.stop="abnormalOpenSymbol(row.code)">({{ row.code }})</span>
+                        <button class="abnormal-copy" v-if="row.code" type="button" @click.stop="abnormalCopyCode(row.code)">复制</button>
+                      </div>
+                      <div class="abnormal-subleft">
+                        <span class="abnormal-submeta strong" :class="abnormalValueClass(row.mtmText)" v-if="row.mtmText">{{ row.mtmText }}</span>
+                        <span class="abnormal-submeta strong" :class="abnormalValueClass(row.pcpText)" v-if="row.pcpText">{{ row.pcpText }}</span>
+                      </div>
+                    </div>
+                  </div>
+                </article>
+              </div>
+            </div>
 
-          <div class="abnormal-column">
-            <div class="abnormal-col-head">
-              <div class="abnormal-col-title">个股异动</div>
-              <div class="abnormal-col-meta">{{ abnormalStockEvents.length }} 条</div>
-            </div>
-            <div class="abnormal-list">
-              <article class="abnormal-item" :class="abnormalCardClass(item)" v-for="item in abnormalStockEvents" :key="item.id" @click="onAbnormalItemClick(item)">
-                <div class="abnormal-top">
-                  <div>
-                    <div class="abnormal-name">{{ item.title }}</div>
-                    <div class="abnormal-priority" :class="abnormalPriorityTone(item)" v-if="item.priorityLabel">{{ item.priorityLabel }}</div>
-                  </div>
-                  <div class="abnormal-time">{{ item.time }}</div>
-                </div>
-                <div class="abnormal-sub">{{ item.subtitle }}</div>
-                <div class="abnormal-tags">
-                  <span class="abnormal-tag" :class="item.tone" v-if="item.eventTypeLabel">{{ item.eventTypeLabel }}</span>
-                  <span class="abnormal-tag" :class="abnormalPriorityTone(item)" v-if="item.scoreText">{{ item.scoreText }}</span>
-                  <span class="abnormal-tag" :class="item.valueTone" v-if="item.valueText">{{ item.valueText }}</span>
-                  <span class="abnormal-tag" v-for="(tag, idx) in item.tags" :key="'abt-s-'+item.id+'-'+idx">{{ tag }}</span>
-                </div>
-                <div class="abnormal-sublines" v-if="item.relatedRows && item.relatedRows.length">
-                  <div class="abnormal-subline" v-for="(row, idx) in item.relatedRows" :key="'asr-s-'+item.id+'-'+idx">
-                    <div class="abnormal-subleft">
-                      <span class="abnormal-subname" :class="{ 'abnormal-link': row.code }" @click.stop="row.code && abnormalOpenSymbol(row.code)">{{ row.name }}</span>
-                      <span class="abnormal-subcode" :class="{ 'abnormal-link': row.code }" v-if="row.code" @click.stop="abnormalOpenSymbol(row.code)">({{ row.code }})</span>
-                      <button class="abnormal-copy" v-if="row.code" type="button" @click.stop="abnormalCopyCode(row.code)">复制</button>
+            <div class="abnormal-column">
+              <div class="abnormal-col-head">
+                <div class="abnormal-col-title">个股异动</div>
+                <div class="abnormal-col-meta">{{ abnormalStockEvents.length }} 条</div>
+              </div>
+              <div class="abnormal-list">
+                <article class="abnormal-item" :class="abnormalCardClass(item)" v-for="item in abnormalStockEvents" :key="item.id" @click="onAbnormalItemClick(item)">
+                  <div class="abnormal-top">
+                    <div>
+                      <div class="abnormal-name">{{ item.title }}</div>
+                      <div class="abnormal-priority" :class="abnormalPriorityTone(item)" v-if="item.priorityLabel">{{ item.priorityLabel }}</div>
                     </div>
-                    <div class="abnormal-subleft">
-                      <span class="abnormal-submeta strong" :class="abnormalValueClass(row.mtmText)" v-if="row.mtmText">{{ row.mtmText }}</span>
-                      <span class="abnormal-submeta strong" :class="abnormalValueClass(row.pcpText)" v-if="row.pcpText">{{ row.pcpText }}</span>
+                    <div class="abnormal-time">{{ item.time }}</div>
+                  </div>
+                  <div class="abnormal-sub">{{ item.subtitle }}</div>
+                  <div class="abnormal-tags">
+                    <span class="abnormal-tag" :class="item.tone" v-if="item.eventTypeLabel">{{ item.eventTypeLabel }}</span>
+                    <span class="abnormal-tag" :class="abnormalPriorityTone(item)" v-if="item.scoreText">{{ item.scoreText }}</span>
+                    <span class="abnormal-tag" :class="item.valueTone" v-if="item.valueText">{{ item.valueText }}</span>
+                    <span class="abnormal-tag" v-for="(tag, idx) in item.tags" :key="'abt-s-'+item.id+'-'+idx">{{ tag }}</span>
+                  </div>
+                  <div class="abnormal-sublines" v-if="item.relatedRows && item.relatedRows.length">
+                    <div class="abnormal-subline" v-for="(row, idx) in item.relatedRows" :key="'asr-s-'+item.id+'-'+idx">
+                      <div class="abnormal-subleft">
+                        <span class="abnormal-subname" :class="{ 'abnormal-link': row.code }" @click.stop="row.code && abnormalOpenSymbol(row.code)">{{ row.name }}</span>
+                        <span class="abnormal-subcode" :class="{ 'abnormal-link': row.code }" v-if="row.code" @click.stop="abnormalOpenSymbol(row.code)">({{ row.code }})</span>
+                        <button class="abnormal-copy" v-if="row.code" type="button" @click.stop="abnormalCopyCode(row.code)">复制</button>
+                      </div>
+                      <div class="abnormal-subleft">
+                        <span class="abnormal-submeta strong" :class="abnormalValueClass(row.mtmText)" v-if="row.mtmText">{{ row.mtmText }}</span>
+                        <span class="abnormal-submeta strong" :class="abnormalValueClass(row.pcpText)" v-if="row.pcpText">{{ row.pcpText }}</span>
+                      </div>
                     </div>
                   </div>
-                </div>
-              </article>
+                </article>
+              </div>
             </div>
           </div>
-        </div>
-        <div class="abnormal-more" v-if="abnormalHasMore && abnormalSelectedTypes.length && abnormalSelectedTypes.every((type) => Number(type) >= 11000)">
-          <button class="abnormal-btn" type="button" @click="refreshAbnormalEvents(false)">加载更多</button>
+          <div class="abnormal-more" v-if="abnormalHasMore && abnormalSelectedTypes.length && abnormalSelectedTypes.every((type) => Number(type) >= 11000)">
+            <button class="abnormal-btn" type="button" @click="refreshAbnormalEvents(false)">加载更多</button>
+          </div>
         </div>
       </div>
     </div>
+
+    <ShortReminderFooter />
   </div>
 </template>

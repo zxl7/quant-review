@@ -1,7 +1,9 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue';
+import * as echarts from 'echarts';
 import { useMarketData } from '../../composables/useMarketData';
 import { useECharts } from '../../composables/useECharts';
+import ShortReminderFooter from '../common/ShortReminderFooter.vue';
 
 const { marketData, marketToneClass } = useMarketData();
 
@@ -72,15 +74,75 @@ const volumeOptions = computed<any>(() => {
   const maxV = Math.max(...vals.filter((v: number) => isFinite(v)));
   const yMax = isFinite(maxV) ? Math.ceil(maxV / 5000) * 5000 + 2000 : 40000;
   const trendColor = marketToneClass.value === 'good' ? '#ef4444' : marketToneClass.value === 'fire' ? '#0ea5e9' : '#f59e0b';
+  const isUp = (i: number) => i === 0 || vals[i] >= vals[i - 1];
   return {
     backgroundColor: 'transparent',
     tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
     grid: { top: '12%', left: '3%', right: '3%', bottom: '12%', containLabel: true },
-    xAxis: { type: 'category', data: data.dates, axisLabel: { color: '#64748b', fontWeight: 700, fontSize: 10 } },
-    yAxis: { type: 'value', max: yMax, axisLabel: { color: '#64748b', fontWeight: 700, fontSize: 10 } },
+    xAxis: {
+      type: 'category',
+      data: data.dates,
+      axisLine: { lineStyle: { color: 'var(--text-muted)' } },
+      axisLabel: { color: 'var(--text-muted)', fontWeight: 800, fontSize: 10 },
+    },
+    yAxis: {
+      type: 'value',
+      max: yMax,
+      splitLine: { lineStyle: { type: 'dashed', color: 'var(--border)' } },
+      axisLabel: {
+        color: 'var(--text-muted)',
+        fontWeight: 700,
+        fontSize: 10,
+        formatter: (v: number) => (Number(v) >= 10000 ? Math.round(v) : Number(v).toFixed(0)),
+      },
+    },
     series: [
-      { name: '两市成交额', type: 'bar', data: vals, barWidth: '42%' },
-      { name: '成交趋势', type: 'line', data: vals, smooth: true, showSymbol: false, lineStyle: { width: 3, color: trendColor } },
+      {
+        name: '两市成交额',
+        type: 'bar',
+        label: {
+          show: true,
+          position: 'top',
+          distance: 6,
+          fontSize: 10,
+          fontWeight: 900,
+          color: 'var(--text-muted)',
+          formatter: (p: any) => {
+            const v = Number(p.value?.value ?? p.value ?? 0);
+            if (!Number.isFinite(v) || v <= 0) return '';
+            if (v >= 10000) return `${(v / 10000).toFixed(2)}万亿`;
+            return `${v.toFixed(0)}亿`;
+          },
+        },
+        data: vals.map((v: number, i: number) => ({
+          value: v,
+          itemStyle: {
+            color: isUp(i) ? 'rgba(239,68,68,0.75)' : 'rgba(16,185,129,0.75)',
+            borderRadius: [5, 5, 0, 0],
+          },
+        })),
+        barWidth: '42%',
+      },
+      {
+        name: '成交趋势',
+        type: 'line',
+        data: vals,
+        smooth: true,
+        showSymbol: false,
+        lineStyle: { width: 3, color: trendColor },
+        markLine: {
+          symbol: 'none',
+          label: { color: 'var(--text-muted)', fontWeight: 800, fontSize: 10 },
+          lineStyle: { color: 'rgba(148,163,184,0.55)', type: 'dashed' },
+          data: [{ type: 'average', name: '均值' }],
+        },
+        areaStyle: {
+          color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+            { offset: 0, color: echarts.color.modifyAlpha(trendColor, 0.22) },
+            { offset: 1, color: echarts.color.modifyAlpha(trendColor, 0.02) },
+          ]),
+        },
+      },
     ],
   };
 });
@@ -343,5 +405,7 @@ useECharts(volumeChartRef, volumeOptions);
         </div>
       </div>
     </div>
+
+    <ShortReminderFooter />
   </div>
 </template>

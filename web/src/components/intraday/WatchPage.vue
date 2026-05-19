@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 import { useMarketData } from '../../composables/useMarketData';
+import ShortReminderFooter from '../common/ShortReminderFooter.vue';
 
 const { marketData } = useMarketData();
 
@@ -290,7 +291,7 @@ const liveError = computed(() => '');
 </script>
 
 <template>
-  <div class="card" data-page="watch" id="sec-watch">
+    <div class="card" data-page="watch" id="sec-watch">
     <div class="wb">
       <div class="wb-head">
         <div class="wb-title">
@@ -475,5 +476,7 @@ const liveError = computed(() => '');
         </div>
       </div>
     </div>
+
+    <ShortReminderFooter />
   </div>
 </template>
