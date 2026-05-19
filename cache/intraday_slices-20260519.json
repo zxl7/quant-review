@@ -1,6 +1,10 @@
 {
+  "schema": "intraday_snapshot_v1",
+  "render_mode": "snapshot_stream",
   "date": "2026-05-19",
-  "count": 7,
+  "count": 8,
+  "interval_min": 10,
+  "simulated": false,
   "snapshots": [
     {
       "time": "09:30:38",
@@ -568,89 +572,110 @@
       ],
       "shift_score": 30,
       "shift_label": "退潮"
+    },
+    {
+      "time": "10:36:28",
+      "ts_bj": "2026-05-19 10:36:28",
+      "date": "2026-05-19",
+      "source": "intraday_live",
+      "provider": "fetch",
+      "zt": 41,
+      "dt": 5,
+      "zab": 9,
+      "zb": 18.0,
+      "fb": 82.0,
+      "jj": 36.6,
+      "lianban": 15,
+      "max_lb": 7,
+      "amount": "13511.47亿",
+      "bf": 0,
+      "heat": 65,
+      "risk": 21,
+      "headline": "修复",
+      "concepts": [
+        {
+          "name": "芯片",
+          "lead": "合肥城建",
+          "chg_pct": null
+        },
+        {
+          "name": "算力",
+          "lead": "金富科技",
+          "chg_pct": null
+        },
+        {
+          "name": "机器人概念",
+          "lead": "*ST宝馨",
+          "chg_pct": null
+        },
+        {
+          "name": "次新股",
+          "lead": "理奇智能",
+          "chg_pct": null
+        },
+        {
+          "name": "ST板块",
+          "lead": "*ST高科",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [],
+      "shift_score": 70,
+      "shift_label": "修复",
+      "note": "承接增强、分歧收敛，情绪明显回暖。"
     }
   ],
-  "simulated": false,
-  "interval_min": null,
   "latest": {
-    "time": "10:15:40",
-    "ts_bj": "2026-05-19 10:15:40",
+    "time": "10:36:28",
+    "ts_bj": "2026-05-19 10:36:28",
     "date": "2026-05-19",
     "source": "intraday_live",
-    "headline": "震荡中性，等待确认点",
-    "heat": 0,
-    "risk": 15,
-    "fb": 0.0,
-    "jj": 0.0,
-    "zt": 0,
-    "lianban": 0,
-    "zab": 0,
-    "zb": 0.0,
-    "dt": null,
+    "provider": "fetch",
+    "zt": 41,
+    "dt": 5,
+    "zab": 9,
+    "zb": 18.0,
+    "fb": 82.0,
+    "jj": 36.6,
+    "lianban": 15,
+    "max_lb": 7,
+    "amount": "13511.47亿",
     "bf": 0,
-    "max_lb": 0,
-    "amount": "33444.76亿",
-    "loss": 0,
-    "hm2": 38.2,
-    "pos": [
+    "heat": 65,
+    "risk": 21,
+    "headline": "修复",
+    "concepts": [
       {
-        "key": "support",
-        "title": "承接是否回暖",
-        "value": "晋级 0.0%",
-        "delta": "",
-        "status": "off",
-        "why": "对比近20日中位数 0.0%",
-        "action": "承接强→可做回封/换手接力；承接弱→降低出手频次"
+        "name": "芯片",
+        "lead": "合肥城建",
+        "chg_pct": null
       },
       {
-        "key": "consistency",
-        "title": "一致性（封板/早封）",
-        "value": "封 0.0% · 早 0.0%",
-        "delta": "",
-        "status": "off",
-        "why": "对比近20日中位数 封0.0%/早0.0%",
-        "action": "一致性强→优先做主线辨识度；一致性弱→只做确认点/低位试错"
+        "name": "算力",
+        "lead": "金富科技",
+        "chg_pct": null
       },
       {
-        "key": "loss_converge",
-        "title": "亏钱是否收敛",
-        "value": "扩散 0",
-        "delta": "",
-        "status": "off",
-        "why": "对比近20日中位数 0",
-        "action": "扩散收敛→可提高仓位上限；扩散走高→只做低位/快进快出"
+        "name": "机器人概念",
+        "lead": "*ST宝馨",
+        "chg_pct": null
+      },
+      {
+        "name": "次新股",
+        "lead": "理奇智能",
+        "chg_pct": null
+      },
+      {
+        "name": "ST板块",
+        "lead": "*ST高科",
+        "chg_pct": null
       }
     ],
-    "riskSignals": [
-      {
-        "key": "diverge",
-        "title": "分歧是否升级",
-        "value": "炸 0.0% · ≥3开 0.0% · 均开 0.00",
-        "delta": "",
-        "status": "off",
-        "why": "对比近20日中位数 炸0.0%",
-        "action": "分歧大→只做回封确认；不追一致；优先低位"
-      },
-      {
-        "key": "loss_spike",
-        "title": "亏钱扩散是否突刺",
-        "value": "扩散 0",
-        "delta": "",
-        "status": "off",
-        "why": "对比近20日中位数 0",
-        "action": "突刺出现→减仓/撤退；只保留最强辨识度"
-      },
-      {
-        "key": "crowd",
-        "title": "题材集中/拥挤",
-        "value": "TOP3占比 0.0% · 重叠 0.0%",
-        "delta": "",
-        "status": "off",
-        "why": "集中度过高时更容易走向一致末端 → 分歧加速",
-        "action": "拥挤高→只做主线核心/回封；避免高位跟风扩散"
-      }
-    ],
-    "shift_score": 30,
-    "shift_label": "退潮"
-  }
+    "alerts": [],
+    "shift_score": 70,
+    "shift_label": "修复",
+    "note": "承接增强、分歧收敛，情绪明显回暖。"
+  },
+  "updated_at": "2026-05-19 10:36:28",
+  "snapshot_sig": "2026-05-19|2026-05-19 10:36:28|8"
 }
