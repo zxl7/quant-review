@@ -8520,13 +8520,24 @@
        * Vue 应用：只负责把 marketData 渲染到 DOM（列表 / 表格 / 行动指南）
        * 说明：图表仍由原有 ECharts 函数渲染，避免一次性改动过大。
        */
+      const isTradingSessionNow = () => {
+        const now = new Date()
+        const day = now.getDay()
+        if (day === 0 || day === 6) return false
+        const minutes = now.getHours() * 60 + now.getMinutes()
+        const inMorning = minutes >= 9 * 60 + 30 && minutes < 11 * 60 + 30
+        const inAfternoon = minutes >= 13 * 60 && minutes < 15 * 60
+        return inMorning || inAfternoon
+      }
+      const defaultModeByTime = isTradingSessionNow() ? "intraday" : "review"
+
       const mountVueApp = () => {
         if (!window.Vue) return
         const { createApp } = window.Vue
 
         const app = createApp({
           data() {
-            const defaultModeView = marketData?.meta?.mode === "intraday" ? "intraday" : "review"
+            const defaultModeView = marketData?.meta?.mode === "intraday" ? "intraday" : defaultModeByTime
             return {
               marketData,
               liveLoading: false,
@@ -9881,12 +9892,17 @@
       const hasEcharts = () => typeof window !== "undefined" && typeof window.echarts !== "undefined"
       // 支持“定时渲染的盯盘页”：在 marketData.meta.default_page 提供时优先生效
       const allowedPages = new Set(["sentiment", "watch", "abnormal", "themes", "ladder", "plan", "flash"])
+      const intradayPages = new Set(["watch", "abnormal", "flash"])
       let ensurePlanDerived = () => {}
       let savedPage = ""
       try {
         savedPage = window.localStorage.getItem("review.currentPage") || ""
       } catch (e) {}
-      let currentPage = (marketData && marketData.meta && marketData.meta.default_page) || savedPage || document.body.getAttribute("data-page") || "sentiment"
+      const explicitDefaultPage = (marketData && marketData.meta && marketData.meta.default_page) || ""
+      const bodyDefaultPage = document.body.getAttribute("data-page") || ""
+      const tradingDefaultPage = defaultModeByTime === "intraday" ? "watch" : "sentiment"
+      let currentPage = explicitDefaultPage || savedPage || bodyDefaultPage || tradingDefaultPage
+      if (!explicitDefaultPage && defaultModeByTime === "intraday" && !intradayPages.has(currentPage)) currentPage = "watch"
       if (!allowedPages.has(currentPage)) currentPage = "sentiment"
       document.body.setAttribute("data-page", currentPage)
 
