@@ -126,12 +126,12 @@ const selectedPlateVolumeSeries = computed(() => Array.isArray(selectedPlateDeta
 const selectedPlateStrengthLine = computed(() => linePath(selectedPlateStrengthSeries.value || []));
 const selectedPlateVolumeLine = computed(() => linePath(selectedPlateVolumeSeries.value || []));
 const selectedPlateStrengthPeak = computed(() => {
-  const arr = (selectedPlateStrengthSeries.value || []).map((v) => toNum(v, 0));
+  const arr = (selectedPlateStrengthSeries.value || []).map((v: any) => toNum(v, 0));
   const max = Math.max(...arr, 0);
   return max > 0 ? Math.round(max) : '-';
 });
 const selectedPlateVolumePeak = computed(() => {
-  const arr = (selectedPlateVolumeSeries.value || []).map((v) => toNum(v, 0));
+  const arr = (selectedPlateVolumeSeries.value || []).map((v: any) => toNum(v, 0));
   const max = Math.max(...arr, 0);
   return max > 0 ? `${Math.round(max)}亿` : '-';
 });

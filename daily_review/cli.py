@@ -404,6 +404,49 @@ def _prune_frontend_unused_fields(market_data: dict) -> None:
         market_data["meta"] = meta
 
 
+def _inject_ai_analysis(root: Path, date: str, market_data: dict) -> None:
+    """AI 分析注入：读取 cache/ai_analysis-YYYYMMDD.json，覆盖 Python 固定模板文本。
+
+    如果 AI 分析缓存不存在，静默跳过，保持 Python 生成的文本不变。
+    架构：数据加工 Layer 2（AI 分析）→ Layer 3（Vue3 渲染）
+    """
+    date8 = str(date).replace("-", "")
+    ai_path = root / "cache" / f"ai_analysis-{date8}.json"
+    if not ai_path.exists():
+        return
+    try:
+        ai = json.loads(ai_path.read_text(encoding="utf-8"))
+    except Exception:
+        return
+
+    # summary3.lines
+    if isinstance(ai.get("summary3_lines"), list) and ai["summary3_lines"]:
+        market_data["summary3"] = {"lines": ai["summary3_lines"], "source": "ai"}
+
+    # learningNotes
+    tips = ai.get("learning_tips") if isinstance(ai.get("learning_tips"), list) else []
+    quote = ai.get("learning_quote") if isinstance(ai.get("learning_quote"), str) else ""
+    if tips or quote:
+        ln = market_data.get("learningNotes") or {}
+        if isinstance(ln, dict):
+            if tips:
+                ln["tips"] = tips
+            if quote:
+                ln["quotes"] = [quote]
+            ln["source"] = "ai"
+            market_data["learningNotes"] = ln
+
+    # actionAdvisor.summary
+    if isinstance(ai.get("action_summary"), str) and ai["action_summary"]:
+        aa = market_data.get("actionAdvisor") or {}
+        if isinstance(aa, dict):
+            aa["summary"] = ai["action_summary"]
+            aa["source"] = "ai"
+            market_data["actionAdvisor"] = aa
+
+    _log("AI 分析已注入 (summary3/learningNotes/actionAdvisor)")
+
+
 def _log(msg: str) -> None:
     ts = time.strftime("%H:%M:%S")
     print(f"  [{ts}] {msg}", flush=True)

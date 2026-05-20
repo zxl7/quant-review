@@ -151,7 +151,7 @@ const indexChgIcon = (chg?: string) => {
   const v = Number(String(chg || '').replace('%', ''));
   if (v > 0) return '▲';
   if (v < 0) return '▼';
-  return '—';
+  return '';
 };
 
 const indexCardToneClass = (chg?: string) => {

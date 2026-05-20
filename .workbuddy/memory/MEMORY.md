@@ -9,10 +9,21 @@ A股短线量化复盘系统，基于必盈 API，生成 Vue3 单页 HTML 报告
 ## 技术栈
 
 - Python 3.14（pipeline + CLI + 渲染）
-- Vue3 + ECharts（前端 SPA，单文件 `templates/report_template.html`）
+- Vue3 + ECharts + Vite（前端 SPA，`web/` 目录，`vite-plugin-singlefile` 单文件产出）
 - 必盈 API 优先（`daily_review/data/biying.py`）
 - macOS + Zsh，服务器 `/app/` 部署
 - GitHub Actions 自动构建发布
+
+## 核心架构：三层分离
+
+```
+Layer 1（数据源）: biying API → pools_cache / theme_cache / index_kline_cache
+Layer 2（数据加工）: Python pipeline 模块
+Layer 3（渲染）: Vue3 web 项目（web/src/）→ Vite build → 单文件 HTML
+
+AI 分析模块（daily_review/ai/）：代码保留但未接入 pipeline（GitHub Actions 无 AI runtime）。
+以后如需接入，cli.py 中调用 _inject_ai_analysis() 即可恢复。
+```
 
 ## 核心数据流
 
@@ -22,9 +33,10 @@ A股短线量化复盘系统，基于必盈 API，生成 Vue3 单页 HTML 报告
          → fetch_stock_themes → theme_cache
 
 cli.py → run_fetch_and_rebuild / run_rebuild
-       → Context.from_market_data(market_data)
        → pipeline 模块链（按声明顺序）
-       → market_data JSON → 前端渲染
+       → _inject_ai_analysis() → 覆盖 Python 文本
+       → render_html_template() → 旧版 HTML（过渡）
+       → 未来：Vite build → inject JSON → 单文件 HTML
 ```
 
 ## 关键算法

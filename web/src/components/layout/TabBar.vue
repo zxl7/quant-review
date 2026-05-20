@@ -1,6 +1,6 @@
 <script setup lang="ts">
 defineProps<{
-  tabs: Array<{ id: string; name: string }>
+  tabs: readonly { id: string; name: string }[]
   currentTab: string
 }>()
 

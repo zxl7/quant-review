@@ -190,7 +190,7 @@ const watchTempCards = computed(() => {
     const c = toNum((curr as any)?.[cfg.key], 0);
     const p = toNum((prev as any)?.[cfg.key], c);
     const delta = c - p;
-    const values = rows.map((x: any) => toNum(x?.[cfg.key], Number.NaN)).filter((v) => Number.isFinite(v));
+    const values = rows.map((x: any) => toNum(x?.[cfg.key], Number.NaN)).filter((v: number) => Number.isFinite(v));
     const isFlat = seriesIsFlat(values);
     const level = cfg.inverse ? (c <= cfg.hi ? '低位' : c <= cfg.mid ? '中位' : '高位') : c >= cfg.hi ? '高位' : c >= cfg.mid ? '中位' : '低位';
     const levelCls = level === '高位' ? 'high' : level === '中位' ? 'mid' : 'low';
@@ -216,7 +216,7 @@ const watchTempCards = computed(() => {
   });
 });
 
-const watchSeriesValues = (key: string) => watchSnapshots.value.map((x: any) => toNum(x?.[key], Number.NaN)).filter((v) => Number.isFinite(v));
+const watchSeriesValues = (key: string) => watchSnapshots.value.map((x: any) => toNum(x?.[key], Number.NaN)).filter((v: number) => Number.isFinite(v));
 const watchSinglePoint = (series: unknown[], w = 860, h = 220, pad = 16) => {
   const vals = (Array.isArray(series) ? series : []).map((v) => Number(v)).filter((v) => Number.isFinite(v));
   if (!vals.length) return [];

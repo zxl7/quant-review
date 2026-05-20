@@ -1,6 +1,6 @@
 import { computed, ref } from 'vue';
 import reportTemplateHtml from '../../../templates/report_template.html?raw';
-import latestReviewHtml from '../../../html/复盘日记-20260519-tab-v1.html?raw';
+import latestReviewHtml from '../../../html/复盘日记-20260520-tab-v1.html?raw';
 
 type MarketData = Record<string, any>;
 
