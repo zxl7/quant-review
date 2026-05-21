@@ -1,28 +1,10 @@
 import { computed, ref } from 'vue';
-import reportTemplateHtml from '../../../templates/report_template.html?raw';
-import latestReviewHtml from '../../../html/复盘日记-20260520-tab-v1.html?raw';
 
 type MarketData = Record<string, any>;
 
-function injectTemplateStyle(html: string) {
-  if (typeof document === 'undefined') return;
-  if (document.getElementById('report-template-style')) return;
-  const match = html.match(/<style>([\s\S]*?)<\/style>/);
-  if (!match?.[1]) return;
-  const style = document.createElement('style');
-  style.id = 'report-template-style';
-  style.textContent = match[1];
-  document.head.appendChild(style);
-}
-
-function tryParseInjectedData(html: string): MarketData | null {
-  const match = html.match(/const __INJECTED_MARKET_DATA__ = (\{[\s\S]*?\});?\s*(?:\/\/|const __injectedMarketData__)/);
-  if (!match?.[1]) return null;
-  try {
-    return Function(`return (${match[1]})`)();
-  } catch {
-    return null;
-  }
+function _setDocTitle(data: MarketData) {
+  const d = data?.date || '';
+  document.title = d ? `${d} A股简报` : 'A股简报';
 }
 
 const marketDataState = ref<MarketData>({});
@@ -31,18 +13,29 @@ const marketDataReady = ref(false);
 export async function initMarketData() {
   if (marketDataReady.value) return;
 
-  injectTemplateStyle(reportTemplateHtml);
-
+  // 生产环境：window.__MARKET_DATA__ 由 inject_data.py 设置
   const cached = (window as any).__MARKET_DATA__;
-  if (cached && typeof cached === 'object') {
+  if (cached && typeof cached === 'object' && Object.keys(cached).length > 1) {
     marketDataState.value = cached;
     marketDataReady.value = true;
+    _setDocTitle(cached);
     return;
   }
 
-  const parsed = tryParseInjectedData(latestReviewHtml) || tryParseInjectedData(reportTemplateHtml) || {};
-  marketDataState.value = parsed;
-  (window as any).__MARKET_DATA__ = parsed;
+  // 开发环境：fetch 本地 JSON
+  try {
+    const resp = await fetch('/market_data.json');
+    if (resp.ok) {
+      const data = await resp.json();
+      marketDataState.value = data;
+      marketDataReady.value = true;
+      _setDocTitle(data);
+      return;
+    }
+  } catch {
+    // 降级
+  }
+
   marketDataReady.value = true;
 }
 

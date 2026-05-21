@@ -22,7 +22,7 @@ from daily_review.modules_v2 import ALL_MODULES
 from daily_review.metrics.scoring import blend_sentiment_score
 from daily_review.pipeline.context import Context
 from daily_review.pipeline.runner import Runner
-from daily_review.render.render_html import render_html_template, build_plate_rank_top10
+from daily_review.render.render_html import build_plate_rank_top10
 from daily_review.cache_io import read_json, write_json
 from daily_review.config import load_config_from_env
 from daily_review.config import DEFAULT_CONFIG
@@ -1576,26 +1576,11 @@ def run_rebuild(
     except Exception:
         pass
 
-    # 渲染 tab-v1（render 阶段还会补充部分展示专用派生字段）
-    template_path = root / "templates" / "report_template.html"
-    out_dir = root / "html"
-    out_dir.mkdir(parents=True, exist_ok=True)
-    suffix_part = f"-{suffix}" if suffix else ""
-    # 文件名使用北京时间更新时间，报告正文仍保留 report_date 作为内容日期
-    update_date8 = _now_bj_date8()
-    out_path = out_dir / f"复盘日记-{update_date8}{suffix_part}-tab-v1.html"
-
-    render_html_template(
-        template_path=template_path,
-        output_path=out_path,
-        market_data=market_data,
-        report_date=date,
-        date_note=market_data.get("dateNote", ""),
-    )
-    _log(f"HTML 已渲染: {out_path.name}")
-    # 回写最终 market_data：确保 render 阶段补齐的展示字段也能稳定落盘
+    # 回写 market_data 缓存（Layer 2 → Layer 3 的数据接口）
+    # HTML 渲染由 qr.sh 调用 npm run build + inject_data.py 完成
     market_path.write_text(json.dumps(market_data, ensure_ascii=False, indent=2), encoding="utf-8")
-    print(f"✅ rebuild 输出: {out_path}")
+    _log(f"market_data 已回写: {market_path.name}")
+    print(f"✅ rebuild 输出: {market_path}")
     return 0
 
 
@@ -2861,21 +2846,7 @@ def run_partial(date: str, modules: list[str]) -> int:
     except Exception:
         pass
 
-    template_path = root / "templates" / "report_template.html"
-    out_dir = root / "html"
-    out_dir.mkdir(parents=True, exist_ok=True)
-    suffix = "-".join(modules)
-    update_date8 = _now_bj_date8()
-    out_path = out_dir / f"复盘日记-{update_date8}-partial-{suffix}.html"
-
-    render_html_template(
-        template_path=template_path,
-        output_path=out_path,
-        market_data=market_data,
-        report_date=date,
-        date_note=market_data.get("dateNote", ""),
-    )
-    # 与 rebuild 保持一致：render 阶段补齐后的展示字段需要稳定写回 cache
+    # 回写 market_data 缓存
     market_path.write_text(json.dumps(market_data, ensure_ascii=False, indent=2), encoding="utf-8")
 
     print(f"✅ partial 输出: {out_path}")
