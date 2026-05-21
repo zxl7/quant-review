@@ -60,11 +60,11 @@ def build_learning_notes(*, market_data: Dict[str, Any], cache_dir: Path) -> Dic
         t = title.strip().replace(" ", "")
         mode = current_mode
         bucket = current_bucket
-        primary_only = any(k in t for k in ("标准调用池", "日报优先", "标准分层"))
+        primary_only = any(k in t for k in ("标准调用池", "日报优先", "标准分层", "龙头战法"))
 
         if any(k in t for k in ("短线提醒", "提醒")):
             mode = "tip"
-        elif any(k in t for k in ("语录", "心法", "口诀", "摘录", "OCR")):
+        elif any(k in t for k in ("语录", "心法", "口诀", "摘录", "OCR", "龙头战法")):
             mode = "quote"
 
         # 显式 cycle code 优先

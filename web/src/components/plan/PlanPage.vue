@@ -128,7 +128,7 @@ const ztTagRows = (row: any) => Array.isArray(row?.tagRows) ? row.tagRows : [];
           </div>
           <div class="pos-card" v-if="marketData.mood">
             <div class="pos-left">
-              <span class="pos-k">最终仓位上限</span>
+              <span class="pos-k">最终仓位上限：</span>
               <span class="pos-v" :class="positionAdvice.cls">{{ positionAdvice.range }}</span>
               <div class="pos-sub">{{ positionAdvice.note }}</div>
             </div>
@@ -198,7 +198,7 @@ const ztTagRows = (row: any) => Array.isArray(row?.tagRows) ? row.tagRows : [];
                   </div>
                   <div class="zt-sub" v-html="row.reason"></div>
                 </div>
-                <div class="zt-score" :title="row.factorHint || ''">
+                <div class="zt-score" :class="row.superLeaderTone || ''" :title="row.factorHint || ''">
                   <div class="v">{{ row.factorScore ?? row.score }}</div>
                   <div class="k">{{ row.scoreLabel || '接力优先' }}</div>
                   <div class="g" v-if="row.scoreSubLabel">{{ row.scoreSubLabel }}</div>
@@ -224,7 +224,7 @@ const ztTagRows = (row: any) => Array.isArray(row?.tagRows) ? row.tagRows : [];
                   </div>
                   <div class="zt-sub" v-html="row.reason"></div>
                 </div>
-                <div class="zt-score" :title="row.factorHint || ''">
+                <div class="zt-score" :class="row.superLeaderTone || ''" :title="row.factorHint || ''">
                   <div class="v">{{ row.factorScore ?? row.score }}</div>
                   <div class="k">{{ row.scoreLabel || row.watchGroup || '观察参考' }}</div>
                   <div class="g" v-if="row.scoreSubLabel || row.watchGroup">{{ row.scoreSubLabel || row.watchGroup }}</div>

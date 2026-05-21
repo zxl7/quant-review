@@ -2874,6 +2874,16 @@
         background: color-mix(in oklab, var(--zt-accent) 10%, rgba(255, 255, 255, 0.62));
         border: 1px solid color-mix(in oklab, var(--border) 72%, var(--zt-accent) 28%);
       }
+      .zt-score.ultra-red .v {
+        color: #ffffff;
+        background: linear-gradient(135deg, #ff2a2a 0%, #e60012 55%, #b00000 100%);
+        border-color: rgba(230, 0, 18, 0.55);
+        box-shadow: 0 10px 24px rgba(230, 0, 18, 0.24);
+      }
+      .zt-score.ultra-red .k,
+      .zt-score.ultra-red .g {
+        color: #b42318;
+      }
       .zt-score .k {
         font-size: 11px;
         color: var(--text-muted);
@@ -8254,7 +8264,7 @@
                     </div>
                     <div class="zt-sub" v-html="row.reason"></div>
                   </div>
-                  <div class="zt-score" :title="row.factorHint || ''">
+                  <div class="zt-score" :class="row.superLeaderTone || ''" :title="row.factorHint || ''">
                     <div class="v">{{ row.factorScore ?? row.score }}</div>
                     <div class="k">{{ row.scoreLabel || '接力优先' }}</div>
                     <div class="g" v-if="row.scoreSubLabel">{{ row.scoreSubLabel }}</div>
@@ -8280,7 +8290,7 @@
                     </div>
                     <div class="zt-sub" v-html="row.reason"></div>
                   </div>
-                  <div class="zt-score" :title="row.factorHint || ''">
+                  <div class="zt-score" :class="row.superLeaderTone || ''" :title="row.factorHint || ''">
                     <div class="v">{{ row.factorScore ?? row.score }}</div>
                     <div class="k">{{ row.scoreLabel || row.watchGroup || '观察参考' }}</div>
                     <div class="g" v-if="row.scoreSubLabel || row.watchGroup">{{ row.scoreSubLabel || row.watchGroup }}</div>

@@ -811,6 +811,7 @@ def build_zt_analysis(*, market_data: Dict[str, Any]) -> Dict[str, Any]:
     market_gate = _market_gate(env_score, promo_ecology=promo_ecology, break_risk_base=break_risk_base, height_pressure=height_pressure)
     env_boost = _clamp(env_liquidity_score * 0.22 + market_sentiment_score * 0.34 + theme_env_score * 0.18 + env_score * 0.26)
     max_lbc = max((_to_num(s.get("lbc"), 1.0) for s in zt if isinstance(s, dict)), default=1.0)
+    leader_count = sum(1 for s in zt if isinstance(s, dict) and _to_num(s.get("lbc"), 0.0) == leader_max_b) if leader_max_b else 0
 
     ladder = market_data.get("ladder") if isinstance(market_data.get("ladder"), list) else []
     ladder_map: Dict[str, Dict[str, Any]] = {}
@@ -1014,6 +1015,7 @@ def build_zt_analysis(*, market_data: Dict[str, Any]) -> Dict[str, Any]:
         is_plate_leader = bool(plate_lead and plate_lead == name)
         plate_is_strong = bool(1 <= plate_rank <= 5 and plate_score >= 62)
         is_market_top = bool(leader_max_b and lbc == leader_max_b)
+        unique_market_leader = bool(is_market_top and leader_count == 1)
         height_breakout_leader = bool(
             is_market_top
             and is_new_high
@@ -1026,8 +1028,68 @@ def build_zt_analysis(*, market_data: Dict[str, Any]) -> Dict[str, Any]:
             and (has_follow or is_theme_leader or is_plate_leader)
             and (theme_net >= 8 or plate_is_strong)
         )
+        space_anchor_leader = bool(
+            unique_market_leader
+            and is_new_high
+            and lbc >= 5
+            and lbc > max(recent_height_cap, prev_max_b)
+            and not height_pressure
+            and not is_yizi
+            and not is_shrink_seal
+            and open_cnt <= 2
+            and quality_score >= 78
+            and env_score >= 66
+            and market_sentiment_score >= 60
+            and promo_ecology >= 54
+            and individual_break_risk < 68
+        )
+        market_total_leader = bool(height_breakout_leader or space_anchor_leader)
+        trend_protect_ok = bool(
+            not height_pressure
+            and not is_yizi
+            and not is_shrink_seal
+            and open_cnt <= 2
+            and quality_score >= 72
+        )
+        market_support_ok = bool(env_score >= 62 and market_sentiment_score >= 58 and promo_ecology >= 50)
+        theme_support_ok = bool(has_trade_theme and (theme_net >= 8 or plate_is_strong) and (has_follow or has_tier or is_plate_leader))
+        leader_uniqueness_ok = bool(unique_market_leader or (is_theme_leader and leader_bonus >= 10))
+        leader_philosophy_score = _clamp(
+            (94.0 if unique_market_leader else 82.0 if is_market_top else 74.0 if is_theme_leader else 62.0 if leader_bonus >= 10 else 48.0)
+            + (8.0 if trend_protect_ok else -10.0)
+            + (7.0 if market_support_ok else -8.0)
+            + (8.0 if theme_support_ok else -10.0)
+            + (6.0 if leader_uniqueness_ok else -6.0)
+            + (8.0 if has_follow else 0.0)
+            + (7.0 if is_plate_leader and plate_is_strong else 0.0)
+            + (6.0 if is_new_high else 0.0)
+            + (8.0 if height_breakout_leader else 0.0)
+            + (10.0 if space_anchor_leader else 0.0)
+            - max(0.0, individual_break_risk - 58.0) * 0.22
+            - (8.0 if follow_leader else 0.0)
+        )
+        super_leader_candidate = bool(
+            (
+                (
+                    market_total_leader
+                    and trend_protect_ok
+                    and market_support_ok
+                    and leader_philosophy_score >= 84
+                    and individual_break_risk < 68
+                )
+                or (
+                    (height_breakout_leader or (unique_market_leader and lbc >= max(5.0, recent_height_cap)))
+                    and is_theme_leader
+                    and trend_protect_ok
+                    and market_support_ok
+                    and theme_support_ok
+                    and leader_philosophy_score >= 88
+                    and individual_break_risk < 62
+                )
+            )
+        )
         height_breakout_bonus = 0.0
-        if height_breakout_leader:
+        if market_total_leader:
             height_breakout_bonus = (
                 7.0
                 + min(6.0, max(0.0, lbc - max(recent_height_cap, 0.0)) * 3.0)
@@ -1090,6 +1152,7 @@ def build_zt_analysis(*, market_data: Dict[str, Any]) -> Dict[str, Any]:
             + (86.0 if is_main else 62.0 if has_trade_theme else 38.0) * 0.08
             + (82.0 if is_new_high else 46.0) * 0.08
             + (76.0 if has_follow else 44.0) * 0.06
+            + leader_philosophy_score * 0.12
             - follower_penalty * 1.05
             - high_penalty * 0.95
             - yizi_penalty * 0.28
@@ -1121,6 +1184,8 @@ def build_zt_analysis(*, market_data: Dict[str, Any]) -> Dict[str, Any]:
             (3.5 if is_theme_leader else 0.0)
             + (1.5 if leader_bonus > 0 else 0.0)
             + (1.2 if is_new_high else 0.0)
+            + max(0.0, leader_philosophy_score - 75.0) * 0.08
+            + (5.0 if super_leader_candidate else 0.0)
             + max(0.0, capacity_score - 72.0) * 0.05
             + max(0.0, leader_factor_score - 66.0) * 0.04
             - (1.8 if follow_leader else 0.0)
@@ -1169,11 +1234,15 @@ def build_zt_analysis(*, market_data: Dict[str, Any]) -> Dict[str, Any]:
             tags.append(_tag("前龙头", "ladder-chip-strong red-text"))
         elif leader_bonus > 0:
             tags.append(_tag("核心梯队", "ladder-chip-warn orange-text"))
-        if height_breakout_leader:
+        if market_total_leader:
             tags.append(_tag("市场总龙头", "ladder-chip-strong red-text"))
             tags.append(_tag(f"突破{int(recent_height_cap)}板压制", "ladder-chip-strong red-text"))
             if plate_name:
                 tags.append(_tag(f"带动{plate_name}", "ladder-chip-strong red-text"))
+        if super_leader_candidate:
+            tags.append(_tag("超红龙头", "ladder-chip-strong red-text"))
+        elif unique_market_leader and lbc >= 5:
+            tags.append(_tag("唯一高度龙", "ladder-chip-strong red-text"))
         tags.append(_tag("有梯队" if has_tier else "无梯队" if has_trade_theme else "属性标签" if is_broad_only else "题材待确认", "ladder-chip-warn orange-text" if has_tier else "ladder-chip-cool blue-text"))
         if has_trade_theme:
             tags.append(_tag(f"带动{'、'.join(followers) or '—'}" if is_theme_leader and has_follow else f"跟风{follow_leader}" if has_follow else "无跟风", "ladder-chip-cool blue-text"))
@@ -1245,10 +1314,16 @@ def build_zt_analysis(*, market_data: Dict[str, Any]) -> Dict[str, Any]:
 
         theme_label = str(pred_theme or plate_name or hy or "").strip()
         follower_text = "、".join(followers[:2])
-        if height_breakout_leader:
+        if market_total_leader:
             _push_reason(core_bits, f"市场总龙头：突破近5日{int(recent_height_cap)}板压制")
             if plate_name:
                 _push_reason(core_bits, f"带动{plate_name}板块")
+            elif space_anchor_leader:
+                _push_reason(core_bits, "市场空间总龙头")
+        elif super_leader_candidate:
+            _push_reason(core_bits, "龙头战法高确定性")
+        elif unique_market_leader and lbc >= 5:
+            _push_reason(core_bits, "市场唯一高度核心")
         elif is_plate_leader and plate_name and plate_is_strong:
             _push_reason(core_bits, f"{plate_name}板块龙头")
         elif is_theme_leader and has_follow and theme_label:
@@ -1273,7 +1348,7 @@ def build_zt_analysis(*, market_data: Dict[str, Any]) -> Dict[str, Any]:
             _push_reason(core_bits, "强主线")
         elif is_main:
             _push_reason(core_bits, "主线加成")
-        if is_new_high and not height_breakout_leader:
+        if is_new_high and not market_total_leader:
             _push_reason(core_bits, f"突破新高({int(max_lbc)}板)")
         if theme_is_continuing:
             _push_reason(core_bits, "题材持续")
@@ -1396,12 +1471,15 @@ def build_zt_analysis(*, market_data: Dict[str, Any]) -> Dict[str, Any]:
                 "riskControlScore": _round(risk_control_score),
                 "breakRisk": _round(individual_break_risk),
                 "themePersistScore": _round(theme_persist_score),
+                "leaderPhilosophyScore": _round(leader_philosophy_score),
                 "isYizi": is_yizi,
                 "isShrinkSeal": is_shrink_seal,
                 "_leaderBonus": leader_bonus,
                 "_isThemeLeader": is_theme_leader,
                 "_isNewHigh": is_new_high,
                 "_heightBreakoutLeader": height_breakout_leader,
+                "_uniqueMarketLeader": unique_market_leader,
+                "_superLeaderCandidate": super_leader_candidate,
                 "_themeNet": theme_net,
                 "_isMain": is_main,
                 "_raw": _round(raw_score),
@@ -1411,6 +1489,7 @@ def build_zt_analysis(*, market_data: Dict[str, Any]) -> Dict[str, Any]:
                 "factorHint": factor_hint,
                 "scoreBand": score_band["label"],
                 "scoreBandTone": score_band["tone"],
+                "superLeaderTone": "ultra-red" if super_leader_candidate else "leader-red" if market_total_leader or unique_market_leader else "",
                 "scoreAction": score_band["action"],
                 "marketGate": {
                     "score": market_gate.get("score"),
@@ -1441,6 +1520,7 @@ def build_zt_analysis(*, market_data: Dict[str, Any]) -> Dict[str, Any]:
 
     def relay_sort(r: Dict[str, Any]) -> Tuple[float, float, float, float, float, float, float]:
         return (
+            1.0 if r.get("_superLeaderCandidate") else 0.0,
             1.0 if r.get("_heightBreakoutLeader") else 0.0,
             _to_num(r.get("_raw"), 0),
             _to_num(r.get("leaderFactorScore"), 0),
@@ -1452,7 +1532,7 @@ def build_zt_analysis(*, market_data: Dict[str, Any]) -> Dict[str, Any]:
 
     def relay_height_breakout_ok(r: Dict[str, Any]) -> bool:
         return bool(
-            r.get("_heightBreakoutLeader")
+            (r.get("_heightBreakoutLeader") or r.get("_superLeaderCandidate"))
             and _to_num(r.get("lbc"), 0) >= 6
             and _to_num(r.get("_raw"), 0) >= 72
             and _to_num(r.get("leaderFactorScore"), 0) >= 76
@@ -1566,7 +1646,9 @@ def build_zt_analysis(*, market_data: Dict[str, Any]) -> Dict[str, Any]:
         r["relayRank"] = idx + 1
         r["relaySelectionMode"] = relay_selection_mode
         r["scoreLabel"] = "推荐因子"
-        if r.get("_heightBreakoutLeader"):
+        if r.get("_superLeaderCandidate"):
+            r["scoreSubLabel"] = f"超红龙头 · {r.get('scoreBand')}"
+        elif r.get("_heightBreakoutLeader"):
             r["scoreSubLabel"] = f"市场总龙头 · {r.get('scoreBand')}"
         elif relay_selection_mode == "broad":
             r["scoreSubLabel"] = "兜底候选 · 仅超预期"
@@ -1691,7 +1773,7 @@ def build_zt_analysis(*, market_data: Dict[str, Any]) -> Dict[str, Any]:
         out: List[Dict[str, Any]] = []
         for x in rows:
             y = dict(x)
-            for k in ("_raw", "hasTradeTheme", "isBroadOnly", "isYizi", "isShrinkSeal", "_leaderBonus", "_isThemeLeader", "_isNewHigh", "_themeNet", "_isMain"):
+            for k in ("_raw", "hasTradeTheme", "isBroadOnly", "isYizi", "isShrinkSeal", "_leaderBonus", "_isThemeLeader", "_isNewHigh", "_heightBreakoutLeader", "_uniqueMarketLeader", "_superLeaderCandidate", "_themeNet", "_isMain"):
                 y.pop(k, None)
             out.append(y)
         return out

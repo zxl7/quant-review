@@ -2852,6 +2852,16 @@ a.stock-link:hover {
   background: color-mix(in oklab, var(--zt-accent) 10%, rgba(255, 255, 255, 0.62));
   border: 1px solid color-mix(in oklab, var(--border) 72%, var(--zt-accent) 28%);
 }
+.zt-score.ultra-red .v {
+  color: #ffffff;
+  background: linear-gradient(135deg, #ff2a2a 0%, #e60012 55%, #b00000 100%);
+  border-color: rgba(230, 0, 18, 0.55);
+  box-shadow: 0 10px 24px rgba(230, 0, 18, 0.24);
+}
+.zt-score.ultra-red .k,
+.zt-score.ultra-red .g {
+  color: #b42318;
+}
 .zt-score .k {
   font-size: 11px;
   color: var(--text-muted);
@@ -6965,24 +6975,6 @@ body {
   color: #e60012;
   border-color: rgba(230, 0, 18, 0.2);
   background: rgba(230, 0, 18, 0.06);
-}
-.zt-item {
-  border-radius: 12px;
-  box-shadow: none;
-}
-.zt-item::before {
-  content: "";
-  position: absolute;
-  left: 0;
-  top: 10px;
-  bottom: 10px;
-  width: 3px;
-  border-radius: 999px;
-  background: var(--theme-accent);
-}
-.zt-score .v {
-  background: rgba(230, 0, 18, 0.06);
-  border-color: rgba(230, 0, 18, 0.18);
 }
 .ladder-chip-strong,
 .pill-hi,
