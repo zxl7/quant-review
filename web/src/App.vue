@@ -12,6 +12,14 @@ import FlashPage from './components/intraday/FlashPage.vue';
 import { useMarketData } from './composables/useMarketData';
 
 const { marketData, marketToneClass } = useMarketData();
+const isTradingSessionNow = () => {
+  const now = new Date();
+  const day = now.getDay();
+  if (day === 0 || day === 6) return false;
+  const minutes = now.getHours() * 60 + now.getMinutes();
+  return minutes >= 9 * 60 + 15 && minutes < 15 * 60;
+};
+
 const marketThemeTone = computed(() => {
   const mood = marketData.value?.mood || {};
   const pan = marketData.value?.panorama || {};
@@ -24,7 +32,7 @@ const marketThemeTone = computed(() => {
   return 'mixed';
 });
 
-const defaultMode = marketData.value?.meta?.mode === 'intraday' ? 'intraday' : 'review';
+const defaultMode = isTradingSessionNow() || marketData.value?.meta?.mode === 'intraday' ? 'intraday' : 'review';
 const modeView = ref<'review' | 'intraday'>(defaultMode);
 const reviewTabs = [
   { id: 'sentiment', name: '情绪' },

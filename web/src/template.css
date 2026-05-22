@@ -3513,29 +3513,25 @@
         background: rgba(15, 23, 42, 0.5);
       }
       .abnormal-item:hover {
-        border-color: rgba(239, 68, 68, 0.16);
+        border-color: rgba(230, 0, 18, 0.16);
         box-shadow: 0 10px 24px rgba(15, 23, 42, 0.06);
         transform: translateY(-1px);
       }
+      .abnormal-item.red {
+        border-color: rgba(230, 0, 18, 0.18);
+        background: rgba(230, 0, 18, 0.04);
+      }
+      .abnormal-item.green {
+        border-color: rgba(0, 166, 62, 0.18);
+        background: rgba(0, 166, 62, 0.04);
+      }
+      .abnormal-item.orange {
+        border-color: rgba(245, 158, 11, 0.18);
+        background: rgba(245, 158, 11, 0.04);
+      }
       .abnormal-item.urgent {
-        border-color: rgba(239, 68, 68, 0.28);
-        box-shadow: inset 0 0 0 1px rgba(239, 68, 68, 0.08);
-      }
-      .abnormal-item.urgent::before {
-        content: "";
-        position: absolute;
-        left: 0;
-        top: 0;
-        bottom: 0;
-        width: 3px;
-        border-radius: 14px 0 0 14px;
-        background: linear-gradient(180deg, #ef4444, #f97316);
-      }
-      .abnormal-item.plate-urgent::before {
-        background: linear-gradient(180deg, #ef4444, #ec4899);
-      }
-      .abnormal-item.down-urgent::before {
-        background: linear-gradient(180deg, #16a34a, #22c55e);
+        border-color: rgba(230, 0, 18, 0.28);
+        box-shadow: inset 0 0 0 1px rgba(230, 0, 18, 0.08);
       }
       .abnormal-top {
         display: flex;
@@ -3544,9 +3540,24 @@
         gap: 10px;
       }
       .abnormal-name {
+        display: inline-flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 6px;
         font-size: 12px;
         font-weight: 950;
         color: var(--text-primary);
+      }
+      .abnormal-name-move {
+        font-size: 11px;
+        font-weight: 950;
+        line-height: 1;
+        font-variant-numeric: tabular-nums;
+      }
+      .abnormal-name-move.abnormal-moment {
+        font-size: 10px;
+        font-weight: 850;
+        opacity: 0.78;
       }
       .abnormal-time {
         font-size: 10px;
@@ -3556,34 +3567,40 @@
         font-variant-numeric: tabular-nums;
       }
       .abnormal-priority {
-        margin-top: 6px;
         display: inline-flex;
         align-items: center;
         gap: 4px;
-        padding: 3px 7px;
+        padding: 2px 7px;
         border-radius: 999px;
         font-size: 9px;
         font-weight: 950;
         line-height: 1;
       }
       .abnormal-priority.high {
-        background: rgba(239, 68, 68, 0.12);
-        color: #dc2626;
+        background: rgba(230, 0, 18, 0.12);
+        color: var(--danger);
       }
       .abnormal-priority.mid {
         background: rgba(245, 158, 11, 0.12);
-        color: #d97706;
+        color: var(--warning);
       }
       .abnormal-priority.low {
         background: rgba(148, 163, 184, 0.12);
         color: var(--text-muted);
       }
+      .abnormal-head-tags {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 5px;
+      }
       .abnormal-sub {
         margin-top: 4px;
-        font-size: 11px;
+        font-size: 10px;
         line-height: 1.4;
         color: var(--text-secondary);
-        font-weight: 750;
+        font-weight: 680;
+        opacity: 0.88;
       }
       .abnormal-tags {
         display: flex;
@@ -3593,31 +3610,71 @@
       }
       .abnormal-tag {
         font-size: 9px;
-        font-weight: 850;
+        font-weight: 780;
         padding: 4px 8px;
         border-radius: 999px;
-        background: rgba(148, 163, 184, 0.1);
-        color: var(--text-muted);
+        background: rgba(148, 163, 184, 0.08);
+        color: rgba(100, 116, 139, 0.82);
       }
       .abnormal-tag.red {
-        background: rgba(239, 68, 68, 0.1);
-        color: #dc2626;
+        background: rgba(230, 0, 18, 0.1);
+        color: var(--danger);
       }
       .abnormal-tag.orange {
         background: rgba(245, 158, 11, 0.1);
-        color: #d97706;
+        color: var(--warning);
       }
       .abnormal-tag.green {
-        background: rgba(16, 185, 129, 0.1);
-        color: #059669;
+        background: rgba(0, 166, 62, 0.1);
+        color: var(--success);
       }
       .abnormal-tag.high {
-        background: rgba(239, 68, 68, 0.14);
-        color: #b91c1c;
+        background: rgba(230, 0, 18, 0.14);
+        color: var(--danger);
+        font-weight: 920;
+      }
+      .abnormal-tag.subtle {
+        padding: 2px 7px;
+        font-size: 9px;
+        font-weight: 900;
+        line-height: 1;
       }
       .abnormal-tag.mid {
         background: rgba(245, 158, 11, 0.14);
-        color: #b45309;
+        color: var(--warning);
+      }
+      .abnormal-score-tag {
+        font-weight: 950;
+        letter-spacing: 0;
+      }
+      .abnormal-expand-btn {
+        border: none;
+        cursor: pointer;
+        line-height: 1;
+        transition: background-color 0.18s ease, color 0.18s ease;
+      }
+      .abnormal-expand-btn:hover {
+        background: rgba(245, 158, 11, 0.2);
+      }
+      .abnormal-merged-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 5px;
+        margin-top: 6px;
+      }
+      .abnormal-merged-chip {
+        font-size: 9px;
+        font-weight: 800;
+        line-height: 1;
+        padding: 4px 7px;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.8);
+        border: 1px solid rgba(148, 163, 184, 0.18);
+        color: var(--text-secondary);
+      }
+      [data-theme="dark"] .abnormal-merged-chip {
+        background: rgba(15, 23, 42, 0.6);
+        border-color: rgba(148, 163, 184, 0.22);
       }
       .abnormal-sublines {
         display: grid;
@@ -3675,11 +3732,25 @@
         cursor: pointer;
       }
       .abnormal-copy:hover {
-        background: rgba(239, 68, 68, 0.1);
-        color: #dc2626;
+        background: rgba(230, 0, 18, 0.1);
+        color: var(--danger);
       }
       .abnormal-link {
-        color: var(--theme-accent);
+        color: inherit;
+        cursor: pointer;
+      }
+      .abnormal-subname.abnormal-link:hover,
+      .abnormal-subcode.abnormal-link:hover {
+        text-decoration: underline;
+        text-decoration-color: rgba(148, 163, 184, 0.65);
+      }
+      .abnormal-subname.red-text,
+      .abnormal-subcode.red-text,
+      .abnormal-subname.green-text,
+      .abnormal-subcode.green-text,
+      .abnormal-subname.orange-text,
+      .abnormal-subcode.orange-text {
+        color: inherit;
       }
       .abnormal-more {
         display: flex;
@@ -5809,6 +5880,18 @@
         padding: 14px 16px;
         box-shadow: var(--shadow-xs);
       }
+      .flash-item.up {
+        border-color: rgba(230, 0, 18, 0.18);
+        background: rgba(230, 0, 18, 0.035);
+      }
+      .flash-item.down {
+        border-color: rgba(0, 166, 62, 0.18);
+        background: rgba(0, 166, 62, 0.035);
+      }
+      .flash-item.neutral {
+        border-color: rgba(245, 158, 11, 0.16);
+        background: rgba(245, 158, 11, 0.03);
+      }
       .flash-item.warn {
         border-color: rgba(230, 0, 18, 0.26);
         background: color-mix(in oklab, #fff 88%, rgba(230, 0, 18, 0.12));
@@ -5821,7 +5904,7 @@
         flex-wrap: wrap;
       }
       .flash-time {
-        color: #0f9fb4;
+        color: var(--text-muted);
         font-size: 12px;
         font-weight: 900;
         font-variant-numeric: tabular-nums;
@@ -5831,6 +5914,15 @@
         font-size: 14px;
         font-weight: 900;
         line-height: 1.45;
+      }
+      .flash-item.up .flash-title {
+        color: var(--danger);
+      }
+      .flash-item.down .flash-title {
+        color: var(--success);
+      }
+      .flash-item.neutral .flash-title {
+        color: var(--warning);
       }
       .flash-summary {
         color: var(--text-secondary);
@@ -5849,8 +5941,8 @@
         gap: 4px;
         padding: 5px 10px;
         border-radius: 999px;
-        border: 1px solid rgba(15, 159, 180, 0.18);
-        background: rgba(15, 159, 180, 0.06);
+        border: 1px solid rgba(148, 163, 184, 0.18);
+        background: rgba(148, 163, 184, 0.08);
         color: var(--text-primary);
         font-size: 12px;
         font-weight: 800;
@@ -5859,6 +5951,7 @@
       .flash-stock:hover {
         border-color: rgba(230, 0, 18, 0.2);
         background: rgba(230, 0, 18, 0.06);
+        color: var(--danger);
       }
       .flash-empty,
       .flash-error {
