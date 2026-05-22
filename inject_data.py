@@ -25,6 +25,7 @@ def inject(date8: str) -> Path:
     md = json.loads(data_path.read_text(encoding="utf-8"))
     # 清理前端不需要的大字段
     md.pop("raw", None)
+    payload = json.dumps(md, ensure_ascii=False)
 
     # 读取 Vite 构建产物
     built = ROOT / "web" / "dist" / "index.html"
@@ -34,7 +35,7 @@ def inject(date8: str) -> Path:
     html = built.read_text(encoding="utf-8")
 
     # 注入 window.__MARKET_DATA__ 到 </head> 前
-    data_script = f"<script>window.__MARKET_DATA__={json.dumps(md, ensure_ascii=False)};</script>"
+    data_script = f"<script>window.__MARKET_DATA__={payload};</script>"
     if "</head>" in html:
         html = html.replace("</head>", f"{data_script}\n  </head>")
     else:
@@ -56,6 +57,11 @@ def inject(date8: str) -> Path:
     # 同时写 index.html 用于本地预览
     index_path = out_dir / "index.html"
     index_path.write_text(html, encoding="utf-8")
+
+    # 同步 dist 旁路数据文件，支持直接打开 web/dist/index.html
+    dist_dir = ROOT / "web" / "dist"
+    (dist_dir / "market_data.json").write_text(payload, encoding="utf-8")
+    (dist_dir / "market_data.js").write_text(f"window.__MARKET_DATA__={payload};", encoding="utf-8")
 
     return out_path
 

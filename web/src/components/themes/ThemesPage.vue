@@ -292,7 +292,15 @@ const selectPlateTheme = (row: any) => {
         <tbody>
           <tr v-for="row in marketData.top10" :key="row.rank">
             <td><span :style="'color: var(--danger); font-weight: ' + row.weight">{{ row.rank }}</span></td>
-            <td class="stock-name-cell">{{ row.mc }}</td>
+            <td class="stock-name-cell">
+              <a
+                class="top10-stock-link"
+                :href="xqUrl(row.code || row.dm)"
+                target="_blank"
+                rel="noopener noreferrer">
+                {{ row.mc }}
+              </a>
+            </td>
             <td :class="row.pct_class">{{ row.zf_str }}</td>
             <td :style="'font-weight: ' + row.weight">{{ row.cje_yi }}</td>
             <td>{{ row.sector }}</td>

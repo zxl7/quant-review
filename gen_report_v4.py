@@ -2462,6 +2462,7 @@ def build_top10_rows(rows):
         result.append({
             'rank': i + 1,
             'mc': t['mc'],
+            'code': normalize_stock_code(t.get('dm', t.get('code', ''))),
             'zf_str': f"{t['zf']:+.2f}%",
             'pct_class': pct_class(t['zf']),
             'cje_yi': f"{t['cje']/1e8:.0f}亿",
