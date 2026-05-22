@@ -52,12 +52,12 @@ const setModeView = (mode: 'review' | 'intraday') => {
   if (next && !visibleTabs.value.some((tab) => tab.id === currentTab.value)) currentTab.value = next;
 };
 
-const heroCycleText = computed(() => '风中一刀的屠龙术丨');
+const heroCycleText = computed(() => '大A屠龙术丨');
 const heroDateText = computed(() => {
   const raw = String(marketData.value.date || marketData.value.meta?.generatedAt?.slice(0, 10) || '').trim();
-  if (!raw) return '收盘简报';
+  if (!raw) return '简报';
   const [year = '', month = '', day = ''] = raw.split('-');
-  return `${year}年${month}月${day}日收盘简报`;
+  return `${year}年${month}月${day}日简报`;
 });
 const heroUpdatedAt = computed(() => marketData.value.meta?.rendered_at_bj || marketData.value.meta?.generatedAt || '-');
 const badgeIcon = computed(() => (marketToneClass.value === 'good' ? '🔥' : marketToneClass.value === 'warn' ? '⚠' : '🧊'));

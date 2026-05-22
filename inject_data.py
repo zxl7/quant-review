@@ -61,16 +61,20 @@ def inject(date8: str) -> Path:
 
 
 def refresh_dev_data(date8: str) -> None:
-    """刷新 web/public/market_data.json（供 Vite dev fetch 使用）"""
+    """刷新 web/public 数据文件（供 Vite dev 和 dist 直开使用）"""
     data_path = ROOT / "cache" / f"market_data-{date8}.json"
     if not data_path.exists():
         return
     md = json.loads(data_path.read_text(encoding="utf-8"))
     md.pop("raw", None)
+    payload = json.dumps(md, ensure_ascii=False)
     dev_file = ROOT / "web" / "public" / "market_data.json"
+    dev_script = ROOT / "web" / "public" / "market_data.js"
     dev_file.parent.mkdir(parents=True, exist_ok=True)
-    dev_file.write_text(json.dumps(md, ensure_ascii=False), encoding="utf-8")
+    dev_file.write_text(payload, encoding="utf-8")
+    dev_script.write_text(f"window.__MARKET_DATA__={payload};", encoding="utf-8")
     print(f"  dev 数据已刷新: {dev_file}")
+    print(f"  dev 脚本已刷新: {dev_script}")
 
 
 if __name__ == "__main__":

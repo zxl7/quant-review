@@ -1,5 +1,7 @@
 <script setup lang="ts">
-defineProps<{
+import { computed } from 'vue'
+
+const props = defineProps<{
   marketData: any
   modeView: 'review' | 'intraday'
   marketToneClass: string
@@ -15,6 +17,43 @@ defineProps<{
   indexCardToneClass: (chg?: string) => string
   indexChgIcon: (chg?: string) => string
 }>()
+
+const toNum = (v: unknown, d = 0) => {
+  const n = Number(v)
+  return Number.isFinite(n) ? n : d
+}
+
+const ringSegments = computed(() => {
+  const radius = 22
+  const circumference = 2 * Math.PI * radius
+  const heat = Math.max(0, toNum(props.marketData?.mood?.heat, 0))
+  const risk = Math.max(0, toNum(props.marketData?.mood?.risk, 0))
+  const total = heat + risk
+  if (!total) {
+    return {
+      heatStyle: {
+        strokeDasharray: `0 ${circumference.toFixed(2)}`,
+        strokeDashoffset: '0',
+      },
+      riskStyle: {
+        strokeDasharray: `0 ${circumference.toFixed(2)}`,
+        strokeDashoffset: '0',
+      },
+    }
+  }
+  const heatLen = circumference * (heat / total)
+  const riskLen = circumference * (risk / total)
+  return {
+    heatStyle: {
+      strokeDasharray: `${heatLen.toFixed(2)} ${circumference.toFixed(2)}`,
+      strokeDashoffset: '0',
+    },
+    riskStyle: {
+      strokeDasharray: `${riskLen.toFixed(2)} ${circumference.toFixed(2)}`,
+      strokeDashoffset: `${(-heatLen).toFixed(2)}`,
+    },
+  }
+})
 
 const emit = defineEmits<{
   (e: 'set-mode', mode: 'review' | 'intraday'): void
@@ -51,20 +90,14 @@ const emit = defineEmits<{
         </div>
         <div class="hero-panel-sub">一眼看清：阶段 · 热/险 · 量能 · 高度</div>
         <div class="hero-kpi-grid">
-          <div class="hero-kpi">
+          <div class="hero-kpi hero-kpi-stage">
             <div class="k">情绪阶段</div>
             <div class="v">{{ marketData.moodStage?.title || '-' }}</div>
             <div class="s">总分 {{ marketData.mood?.score ?? '-' }} · {{ marketData.moodStage?.type || '-' }}</div>
           </div>
-          <div class="hero-kpi">
+          <div class="hero-kpi hero-kpi-thermo">
             <div class="k">热 / 险</div>
             <div class="ring-pack">
-              <svg class="ring" viewBox="0 0 60 60" aria-hidden="true">
-                <circle class="track" cx="30" cy="30" r="22"></circle>
-                <circle class="arc heat" cx="30" cy="30" r="22" :style="ringStyle(marketData.mood?.heat, 22, 'heat')"></circle>
-                <circle class="track" cx="30" cy="30" r="16" style="stroke-width: 5"></circle>
-                <circle class="arc risk" cx="30" cy="30" r="16" style="stroke-width: 5" :style="ringStyle(marketData.mood?.risk, 16, 'risk')"></circle>
-              </svg>
               <div class="ring-center">
                 <div class="big">
                   <span :class="heatClass(marketData.mood?.heat)">{{ marketData.mood?.heat ?? '-' }}</span>
@@ -73,28 +106,26 @@ const emit = defineEmits<{
                 </div>
                 <div class="small">综合 {{ marketData.mood?.score ?? '-' }} 分</div>
               </div>
+              <svg class="ring ring-dual" viewBox="0 0 60 60" aria-hidden="true">
+                <circle class="track outer" cx="30" cy="30" r="22"></circle>
+                <circle class="arc heat outer" cx="30" cy="30" r="22" :style="ringStyle(marketData.mood?.heat, 22, 'heat')"></circle>
+                <circle class="track inner" cx="30" cy="30" r="16"></circle>
+                <circle class="arc risk inner" cx="30" cy="30" r="16" :style="ringStyle(marketData.mood?.risk, 16, 'risk')"></circle>
+              </svg>
             </div>
           </div>
-          <div class="hero-kpi">
+          <div class="hero-kpi hero-kpi-balanced">
             <div class="k">量能（较昨）</div>
             <div class="v">{{ marketData.volume?.change ?? '-' }}</div>
             <div class="s">两市 {{ marketData.volume?.total ?? '-' }}</div>
-            <svg class="spark mini" viewBox="0 0 100 28" preserveAspectRatio="none" aria-hidden="true" v-if="(marketData.volume?.values || []).length >= 2">
-              <path class="grid" d="M0 27H100" />
-              <polyline class="line" :stroke="'rgba(255,255,255,0.78)'" :points="sparklinePoints(marketData.volume?.values || [])" />
-            </svg>
           </div>
-          <div class="hero-kpi">
+          <div class="hero-kpi hero-kpi-balanced">
             <div class="k">高度 / 质量</div>
             <div class="v">{{ marketData.ladder?.[0]?.badge ?? '-' }} 板</div>
             <div class="s">
               封板 {{ marketData.panorama?.ratio ?? '-' }} · 晋级
               {{ (marketData.features?.mood_inputs?.jj_rate === undefined || marketData.features?.mood_inputs?.jj_rate === null) ? '-' : Number(marketData.features.mood_inputs.jj_rate).toFixed(1) + '%' }}
             </div>
-            <svg class="spark mini" viewBox="0 0 100 28" preserveAspectRatio="none" aria-hidden="true" v-if="(marketData.heightTrend?.main || []).length >= 2">
-              <path class="grid" d="M0 27H100" />
-              <polyline class="line" :stroke="'rgba(255,255,255,0.78)'" :points="sparklinePoints(marketData.heightTrend?.main || [])" />
-            </svg>
           </div>
         </div>
       </div>

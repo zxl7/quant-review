@@ -22,18 +22,26 @@ export async function initMarketData() {
     return;
   }
 
-  // 开发环境：fetch 本地 JSON
-  try {
-    const resp = await fetch('/market_data.json');
-    if (resp.ok) {
-      const data = await resp.json();
-      marketDataState.value = data;
-      marketDataReady.value = true;
-      _setDocTitle(data);
-      return;
+  // 开发 / 本地打包预览：尝试读取同目录数据文件
+  const fallbackUrls = [
+    './market_data.json',
+    'market_data.json',
+    '/market_data.json',
+  ];
+
+  for (const url of fallbackUrls) {
+    try {
+      const resp = await fetch(url);
+      if (resp.ok) {
+        const data = await resp.json();
+        marketDataState.value = data;
+        marketDataReady.value = true;
+        _setDocTitle(data);
+        return;
+      }
+    } catch {
+      // 继续尝试下一个路径
     }
-  } catch {
-    // 降级
   }
 
   marketDataReady.value = true;

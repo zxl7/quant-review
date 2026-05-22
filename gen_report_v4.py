@@ -2711,7 +2711,7 @@ html = f'''<!doctype html>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>A股收盘简报 | {DATE}</title>
+    <title>A股简报 | {DATE}</title>
     <script src="{ECHARTS_SRC}"></script>
     <script src="{VUE_SRC}"></script>
     <style>
@@ -3282,8 +3282,8 @@ html = f'''<!doctype html>
           <button class="theme-toggle" id="themeToggleBtn" onclick="toggleTheme()">🌙 深色</button>
         </div>
         <div class="hero-top">
-          <div class="cycle-tag"><span class="cycle-dot"></span>风中一刀的屠龙术丨</div>
-          <div class="hero-date">{DATE.replace('-', '年', 1).replace('-', '月', 1)}收盘简报</div>
+          <div class="cycle-tag"><span class="cycle-dot"></span>大A屠龙术丨</div>
+          <div class="hero-date">{DATE.replace('-', '年', 1).replace('-', '月', 1)}简报</div>
           <div class="hero-subtitle">数据来源：实时API | 自动生成报告</div>
           {'<div class="hero-note">⚠️ ' + DATE_NOTE + '</div>' if DATE_NOTE else ''}
         </div>
