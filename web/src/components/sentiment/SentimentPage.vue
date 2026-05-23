@@ -244,11 +244,6 @@ useECharts(volumeChartRef, volumeOptions);
           <div class="s">近 7 日 · 量能回流强弱</div>
         </div>
         <div ref="volumeChartRef" class="chart-container" style="margin-bottom: 0"></div>
-        <div class="vol-strip">
-          <div class="vol-pill">两市成交 <strong>{{ marketData.volume?.total ?? '-' }}</strong></div>
-          <div class="vol-pill">增量 <strong>{{ marketData.volume?.increase ?? '-' }}</strong></div>
-          <div class="vol-pill">较昨 <span :class="signedClass(marketData.volume?.change)"><strong>{{ marketData.volume?.change ?? '-' }}</strong></span></div>
-        </div>
 
         <div class="mc-panels">
           <div class="mc-panel" style="--mc-accent: rgba(239, 68, 68, 0.9)">

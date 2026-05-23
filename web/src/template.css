@@ -2,6 +2,16 @@
       [v-cloak] {
         display: block;
       }
+      html,
+      body,
+      a,
+      button,
+      input,
+      select,
+      textarea,
+      [role="button"] {
+        -webkit-tap-highlight-color: transparent;
+      }
       :root {
         --primary: #2563eb;
         --success: #10b981;
@@ -1127,6 +1137,101 @@
         font-size: 14px;
       }
 
+      /* 结构拆解：轻毛玻璃，仅作用于这一张卡 */
+      #sec-thermo.card {
+        position: relative;
+        overflow: hidden;
+        border: 1px solid rgba(255, 255, 255, 0.68);
+        box-shadow:
+          0 28px 70px rgba(15, 23, 42, 0.12),
+          0 1px 0 rgba(255, 255, 255, 0.9) inset,
+          0 0 0 1px rgba(255, 255, 255, 0.3) inset;
+        backdrop-filter: blur(26px) saturate(1.5);
+        -webkit-backdrop-filter: blur(26px) saturate(1.5);
+      }
+      #sec-thermo.card::before,
+      #sec-thermo.card::after {
+        content: "";
+        position: absolute;
+        pointer-events: none;
+        border-radius: inherit;
+        z-index: 0;
+      }
+      #sec-thermo.card::before {
+        inset: 0;
+        background:
+          linear-gradient(135deg, rgba(255, 255, 255, 0.52), transparent 36%),
+          linear-gradient(315deg, rgba(255, 255, 255, 0.2), transparent 42%);
+        opacity: 1;
+      }
+      
+      [data-theme="dark"] #sec-thermo.card {
+        background:
+          linear-gradient(135deg, rgba(15, 23, 42, 0.74), rgba(15, 23, 42, 0.52)),
+          radial-gradient(circle at 14% 8%, rgba(255, 255, 255, 0.16), transparent 24%),
+          radial-gradient(circle at 86% 10%, rgba(245, 158, 11, 0.14), transparent 20%),
+          radial-gradient(circle at 50% 98%, rgba(230, 0, 18, 0.08), transparent 34%);
+        border-color: rgba(255, 255, 255, 0.16);
+        box-shadow:
+          0 28px 70px rgba(0, 0, 0, 0.28),
+          inset 0 1px 0 rgba(255, 255, 255, 0.08);
+      }
+      #sec-thermo > div {
+        position: relative;
+        z-index: 1;
+      }
+      #sec-thermo .card-header {
+        margin-bottom: 16px;
+      }
+      #sec-thermo .section-header {
+        margin-top: 16px;
+      }
+      #sec-thermo .engine-kpi,
+      #sec-thermo .evi-card {
+        border: 1px solid rgba(255, 255, 255, 0.38);
+        background:
+          linear-gradient(135deg, rgba(255, 255, 255, 0.58), rgba(255, 255, 255, 0.3));
+        backdrop-filter: blur(18px) saturate(1.22);
+        -webkit-backdrop-filter: blur(18px) saturate(1.22);
+        box-shadow:
+          0 12px 28px rgba(15, 23, 42, 0.05),
+          inset 0 1px 0 rgba(255, 255, 255, 0.72);
+      }
+      [data-theme="dark"] #sec-thermo .engine-kpi,
+      [data-theme="dark"] #sec-thermo .evi-card {
+        border-color: rgba(255, 255, 255, 0.16);
+        background: linear-gradient(135deg, rgba(15, 23, 42, 0.66), rgba(15, 23, 42, 0.4));
+        box-shadow:
+          0 10px 24px rgba(0, 0, 0, 0.2),
+          inset 0 1px 0 rgba(255, 255, 255, 0.06);
+      }
+      
+      #sec-thermo .engine-kpi .v,
+      #sec-thermo .evi-v {
+        text-shadow: 0 1px 0 rgba(255, 255, 255, 0.26);
+      }
+      #sec-thermo .engine-kpis .engine-kpi {
+        border-radius: 14px;
+      }
+      #sec-thermo .evidence-chain-header {
+        color: var(--text-secondary);
+        border-bottom-color: rgba(255, 255, 255, 0.45);
+      }
+      #sec-thermo .evidence-group-title {
+        color: var(--text-primary);
+      }
+      #sec-thermo .engine-kpi::before,
+      #sec-thermo .evi-card::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(135deg, rgba(255, 255, 255, 0.26), transparent 44%);
+        pointer-events: none;
+      }
+      #sec-thermo .evi-card::before {
+        opacity: 0.8;
+      }
+
       /* 超小屏进一步防溢出（iPhone mini / 分屏） */
       @media (max-width: 390px) {
         .hero-grid {
@@ -1857,22 +1962,26 @@
       }
       .mc-items {
         display: grid;
-        gap: 10px;
+        gap: 0;
       }
       .mc-item {
-        border-radius: 14px;
-        border: 1px solid color-mix(in oklab, var(--border) 80%, transparent);
-        background: linear-gradient(135deg, rgba(255, 255, 255, 0.7), color-mix(in oklab, var(--theme-soft) 10%, rgba(255, 255, 255, 0.48)));
-        padding: 10px 10px;
+        padding: 12px 2px;
         display: flex;
         align-items: flex-start;
         justify-content: space-between;
         gap: 10px;
         min-width: 0;
+        border-bottom: 1px dashed color-mix(in oklab, var(--border) 72%, var(--mc-accent, var(--theme-glow)) 28%);
+      }
+      .mc-item:first-child {
+        padding-top: 2px;
+      }
+      .mc-item:last-child {
+        padding-bottom: 2px;
+        border-bottom: none;
       }
       [data-theme="dark"] .mc-item {
-        background: linear-gradient(135deg, rgba(15, 23, 42, 0.56), color-mix(in oklab, var(--theme-soft) 10%, rgba(15, 23, 42, 0.38)));
-        border-color: rgba(148, 163, 184, 0.18);
+        border-bottom-color: color-mix(in oklab, rgba(148, 163, 184, 0.22) 72%, var(--mc-accent, var(--theme-glow)) 28%);
       }
       .mc-left {
         min-width: 0;
@@ -2023,7 +2132,7 @@
       }
       .ladder-row {
         display: grid;
-        grid-template-columns: 128px 1fr;
+        grid-template-columns: 68px 1fr;
         gap: 12px;
         align-items: start;
         background: var(--bg-elevated);
@@ -2034,7 +2143,7 @@
       }
       @media (max-width: 600px) {
         .ladder-row {
-          grid-template-columns: 108px 1fr;
+          grid-template-columns: 68px 1fr;
           gap: 10px;
           padding: 10px 10px;
         }
@@ -2106,7 +2215,7 @@
         background: var(--bg-card);
         border: 1px solid var(--border);
         border-radius: 12px;
-        padding: 7px 9px;
+        padding: 8px;
         box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.3);
       }
       .ladder-stock-top {
@@ -2267,8 +2376,8 @@
       }
       .ladder-stock-list {
         display: grid;
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-        gap: 10px;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 8px;
       }
       @media (max-width: 700px) {
         .ladder-stock-list {
@@ -2280,7 +2389,7 @@
         background: linear-gradient(135deg, rgba(255, 255, 255, 0.62), color-mix(in oklab, var(--theme-soft) 10%, rgba(255, 255, 255, 0.45)));
         border: 1px solid color-mix(in oklab, var(--border) 78%, var(--theme-glow) 22%);
         border-radius: 14px;
-        padding: 10px 10px;
+        padding: 8px;
         box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35);
       }
       [data-theme="dark"] .ladder-stock-card {
@@ -2785,14 +2894,16 @@
         }
       }
       .zt-col {
-        border-radius: 18px;
-        border: 1px solid color-mix(in oklab, var(--border) 70%, var(--theme-glow) 30%);
-        background: linear-gradient(135deg, color-mix(in oklab, var(--theme-soft) 14%, rgba(255, 255, 255, 0.04)), rgba(255, 255, 255, 0.02));
-        padding: 10px 10px;
+        background: transparent !important;
+        border: none !important;
+        box-shadow: none !important;
+        border-radius: 0;
+        padding: 0;
       }
       [data-theme="dark"] .zt-col {
-        background: rgba(15, 23, 42, 0.22);
-        border-color: rgba(148, 163, 184, 0.22);
+        background: transparent !important;
+        border: none !important;
+        box-shadow: none !important;
       }
       .zt-col .section-header {
         margin-top: 0;
@@ -3819,10 +3930,11 @@
         padding: 6px 10px 8px;
       }
       .wb-card {
+        margin-bottom: 8px;
         border-radius: 12px;
         border: 1px solid rgba(148, 163, 184, 0.18);
         background: rgba(255, 255, 255, 0.44);
-        padding: 7px 9px;
+        padding: 6px 10px;
         min-width: 0;
       }
       [data-theme="dark"] .wb-card {
@@ -3846,6 +3958,24 @@
         font-size: 10px;
         font-weight: 850;
         color: var(--text-muted);
+      }
+      .wb-flat-section {
+        grid-column: span 12;
+        background: transparent;
+        border: none;
+        box-shadow: none;
+        padding: 0;
+        margin-bottom: 4px;
+      }
+      .wb-flat-section .evidence-group-title {
+        margin-bottom: 8px;
+      }
+      .wb-flat-subtitle {
+        margin: -2px 0 10px;
+        font-size: 10.5px;
+        font-weight: 850;
+        color: var(--text-muted);
+        line-height: 1.45;
       }
       .wb-span-12 {
         grid-column: span 12;
@@ -4150,21 +4280,17 @@
       .wb-shift-card {
         position: relative;
       }
-      .wb-shift-card .hd {
-        position: relative;
-        z-index: 1;
-      }
-      .wb-shift-card.tone-bull .hd .t,
+      .wb-shift-card.tone-bull .evidence-group-title,
       .wb-shift-card.tone-bull .wb-shift-score,
       .wb-shift-card.tone-bull .wb-shift-label {
         color: #dc2626;
       }
-      .wb-shift-card.tone-mixed .hd .t,
+      .wb-shift-card.tone-mixed .evidence-group-title,
       .wb-shift-card.tone-mixed .wb-shift-score,
       .wb-shift-card.tone-mixed .wb-shift-label {
         color: #d97706;
       }
-      .wb-shift-card.tone-bear .hd .t,
+      .wb-shift-card.tone-bear .evidence-group-title,
       .wb-shift-card.tone-bear .wb-shift-score,
       .wb-shift-card.tone-bear .wb-shift-label {
         color: #059669;
@@ -5565,56 +5691,6 @@
         color: var(--text-secondary);
       }
 
-      /* Volume strip：用可扫读的 3 个 pill 替代固定写死的“资金抱团度” */
-      .vol-strip {
-        margin: 10px 0 4px;
-        display: flex;
-        flex-wrap: wrap;
-        gap: 8px;
-      }
-      .vol-pill {
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-        padding: 6px 10px;
-        border-radius: 999px;
-        border: 1px solid rgba(148, 163, 184, 0.22);
-        background: rgba(255, 255, 255, 0.04);
-        font-size: 12px;
-        font-weight: 850;
-        color: var(--text-primary);
-        white-space: nowrap;
-      }
-      .vol-pill strong {
-        font-size: 1em;
-        line-height: 1;
-        flex-shrink: 0;
-      }
-      [data-theme="dark"] .vol-pill {
-        background: rgba(15, 23, 42, 0.35);
-        border-color: rgba(148, 163, 184, 0.18);
-      }
-      @media (max-width: 640px) {
-        .vol-strip {
-          gap: 6px;
-        }
-        .vol-pill {
-          width: 100%;
-          justify-content: space-between;
-          gap: 10px;
-          padding: 6px 9px;
-          font-size: 11px;
-          white-space: normal;
-        }
-        .vol-pill strong {
-          font-size: 12px;
-        }
-        .vol-pill .red-text,
-        .vol-pill .green-text,
-        .vol-pill .orange-text {
-          flex-shrink: 0;
-        }
-      }
       .ov7-head {
         margin-top: 8px;
         display: grid;
@@ -6831,6 +6907,7 @@
 
       /* Footer */
       .footer {
+        margin-top: 8px;
         text-align: center;
         color: var(--text-muted);
         font-size: 12px;

@@ -311,11 +311,9 @@ const liveError = computed(() => '');
 
       <div class="wb-body">
         <div class="wb-grid">
-          <div class="wb-card wb-span-4 wb-shift-card" :class="'tone-' + watchCurrentShift.tone">
-            <div class="hd">
-              <div class="t">盘中情绪分</div>
-              <div class="s">和主情绪页同口径，按盘中快照动态计算</div>
-            </div>
+          <div class="wb-span-4 wb-flat-section wb-shift-card" :class="'tone-' + watchCurrentShift.tone">
+            <div class="evidence-group-title">盘中情绪分</div>
+            <div class="wb-flat-subtitle">和主情绪页同口径，按盘中快照动态计算</div>
             <div class="wb-shift">
               <div class="wb-shift-top">
                 <div style="display:flex;align-items:baseline;gap:6px">
@@ -381,11 +379,9 @@ const liveError = computed(() => '');
             </div>
           </div>
 
-          <div class="wb-card wb-span-12">
-            <div class="hd">
-              <div class="t">六维参考温度</div>
-              <div class="s">参考情绪温度设计，按当前点位与半小时序列展示</div>
-            </div>
+          <div class="wb-span-12 wb-flat-section">
+            <div class="evidence-group-title">六维参考温度</div>
+            <div class="wb-flat-subtitle">参考情绪温度设计，按当前点位与半小时序列展示</div>
             <div class="dim-grid">
               <div class="dim-item" v-for="item in watchTempCards" :key="'wt-'+item.key">
                 <div class="dim-top">
@@ -407,11 +403,9 @@ const liveError = computed(() => '');
             </div>
           </div>
 
-          <div class="wb-card wb-span-12">
-            <div class="hd">
-              <div class="t">盘中轨迹</div>
-              <div class="s">用同一口径看“承接/分歧/扩散”是否在变好</div>
-            </div>
+          <div class="wb-span-12 wb-flat-section">
+            <div class="evidence-group-title">盘中轨迹</div>
+            <div class="wb-flat-subtitle">用同一口径看“承接/分歧/扩散”是否在变好</div>
             <div v-if="watchSnapshots.length">
               <div class="wb-trend-panel">
                 <svg class="wb-trend-svg" viewBox="0 0 860 220" preserveAspectRatio="none" aria-label="盘中轨迹折线图">
