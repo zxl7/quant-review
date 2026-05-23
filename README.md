@@ -108,7 +108,7 @@ cd web && npm run build       # 产出 dist/index.html（单文件）
 | `daily_review/data/biying.py` | 必盈 API 数据源 |
 | `daily_review/modules_v2/` | pipeline 模块（15+） |
 | `daily_review/render/render_html.py` | HTML 渲染器（Python 模板注入） |
-| `templates/report_template.html` | 旧版 Vue2 模板（过渡期） |
+| `templates/report_template.html` | 旧版模板备份（不再作为主发布链路） |
 | `web/` | **Vue3 新版前端**（Vite + ECharts + singlefile） |
 | `web/src/composables/useMarketData.ts` | 数据接口层 |
 | `.github/workflows/publish_pages.yml` | 自动部署 |

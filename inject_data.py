@@ -11,14 +11,25 @@ from __future__ import annotations
 import json
 import sys
 from pathlib import Path
+from typing import Optional
 
 ROOT = Path(__file__).resolve().parent
 
 
-def inject(date8: str) -> Path:
+def _resolve_data_path(date8: str, source: Optional[str] = None) -> Path:
+    """解析数据源路径；优先使用显式 source，其次回退到标准收盘缓存。"""
+    if source:
+        data_path = Path(source)
+        if not data_path.is_absolute():
+            data_path = ROOT / data_path
+        return data_path
+    return ROOT / "cache" / f"market_data-{date8}.json"
+
+
+def inject(date8: str, source: Optional[str] = None) -> Path:
     """注入数据并返回输出路径"""
     # 读取市场数据
-    data_path = ROOT / "cache" / f"market_data-{date8}.json"
+    data_path = _resolve_data_path(date8, source)
     if not data_path.exists():
         raise FileNotFoundError(f"数据缓存不存在: {data_path}")
 
@@ -41,13 +52,6 @@ def inject(date8: str) -> Path:
     else:
         html = data_script + "\n" + html
 
-    # 替换标题为日期格式
-    report_date = md.get("date", date8)
-    html = html.replace("<title>A股简报</title>", f"<title>{report_date} A股简报</title>")
-    # 清理旧模板残留的 title 标签
-    html = html.replace("<title>A股收盘简报 | __REPORT_DATE__</title>", "")
-    html = html.replace("<title><!-- legacy template --></title>", "")
-
     # 写入输出
     out_dir = ROOT / "html"
     out_dir.mkdir(parents=True, exist_ok=True)
@@ -66,9 +70,9 @@ def inject(date8: str) -> Path:
     return out_path
 
 
-def refresh_dev_data(date8: str) -> None:
+def refresh_dev_data(date8: str, source: Optional[str] = None) -> None:
     """刷新 web/public 数据文件（供 Vite dev 和 dist 直开使用）"""
-    data_path = ROOT / "cache" / f"market_data-{date8}.json"
+    data_path = _resolve_data_path(date8, source)
     if not data_path.exists():
         return
     md = json.loads(data_path.read_text(encoding="utf-8"))
@@ -84,19 +88,27 @@ def refresh_dev_data(date8: str) -> None:
 
 
 if __name__ == "__main__":
-    import sys
+    import argparse
 
-    # --dev-only：仅刷新 web/public/__data.js，不构建
-    if len(sys.argv) > 1 and sys.argv[1] == "--dev-only":
-        files = sorted((ROOT / "cache").glob("market_data-2026*.json"))
-        if not files:
-            print("错误: cache/ 中没有 market_data-*.json", file=sys.stderr)
-            sys.exit(1)
-        date8 = files[-1].name.replace("market_data-", "").replace(".json", "")
-        refresh_dev_data(date8)
+    ap = argparse.ArgumentParser(description="将 market_data 注入到 V3 构建产物中")
+    ap.add_argument("date8", nargs="?", help="交易日，格式 YYYYMMDD；不传则自动取最新缓存")
+    ap.add_argument("--dev-only", action="store_true", help="仅刷新 web/public 下的数据文件")
+    ap.add_argument("--source", help="显式指定数据源 JSON 路径，可用于 intraday 缓存")
+    args = ap.parse_args()
+
+    if args.dev_only:
+        if args.date8:
+            date8 = args.date8
+        else:
+            files = sorted((ROOT / "cache").glob("market_data-2026*.json"))
+            if not files:
+                print("错误: cache/ 中没有 market_data-*.json", file=sys.stderr)
+                sys.exit(1)
+            date8 = files[-1].name.replace("market_data-", "").replace(".json", "")
+        refresh_dev_data(date8, args.source)
         sys.exit(0)
 
-    date8 = sys.argv[1] if len(sys.argv) > 1 else None
+    date8 = args.date8
     if not date8:
         # 自动取最新缓存
         files = sorted((ROOT / "cache").glob("market_data-2026*.json"))
@@ -105,10 +117,11 @@ if __name__ == "__main__":
             sys.exit(1)
         date8 = files[-1].name.replace("market_data-", "").replace(".json", "")
 
-    out = inject(date8)
+    out = inject(date8, args.source)
     print(f"✅ 数据已注入: {out}")
-    print(f"   数据来源: cache/market_data-{date8}.json")
-    print(f"   模板来源: web/dist/index.html")
+    source_path = _resolve_data_path(date8, args.source)
+    print(f"   数据来源: {source_path.relative_to(ROOT) if source_path.is_relative_to(ROOT) else source_path}")
+    print(f"   渲染来源: web/dist/index.html")
 
     # 同时刷新 dev 数据
-    refresh_dev_data(date8)
+    refresh_dev_data(date8, args.source)

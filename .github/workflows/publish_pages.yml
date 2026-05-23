@@ -374,7 +374,11 @@ jobs:
         run: |
           run_date="${RUN_DATE}"
           d8="$(echo "${run_date}" | tr -d '-')"
-          python3 inject_data.py "${d8}"
+          source_path="cache/market_data-${d8}.json"
+          if [ "${{ steps.pushmode.outputs.mode }}" = "intraday" ]; then
+            source_path="cache/market_data-${d8}-intraday.json"
+          fi
+          python3 inject_data.py "${d8}" --source "${source_path}"
 
       - name: Prepare Pages site (html/ as site root)
         if: ${{ (github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true') && (github.event_name != 'schedule' || steps.tradeday.outputs.is_trade_today == 'true') }}

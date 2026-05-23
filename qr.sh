@@ -9,9 +9,8 @@
 # - 尽量函数式：小函数 + 明确入参/出参，副作用集中在命令末端
 #
 # 用法：
-#   ./qr.sh fetch [YYYY-MM-DD]   # 在线取数 + 写入 cache + 离线渲染 html/复盘日记-YYYYMMDD-tab-v1.html
-#   ./qr.sh gen  [YYYY-MM-DD]    # 仅在线取数生成缓存/带时分秒 HTML（不做离线渲染 tab-v1）
-#   ./qr.sh render [YYYY-MM-DD]  # 只用 cache 离线渲染（不请求接口）
+#   ./qr.sh fetch [YYYY-MM-DD]   # 在线取数 + pipeline 重建 + V3 构建/注入 html/复盘日记-YYYYMMDD-tab-v1.html
+#   ./qr.sh render [YYYY-MM-DD]  # 只用 cache 离线重建 + V3 构建/注入（不请求接口）
 #   ./qr.sh sync-cache [YYYY-MM-DD] # 同步 cache_online/（远端自动构建依赖目录）
 #   ./qr.sh deploy              # （可选）把最新 tab-v1 报告发布到 gh-pages/index.html
 #
@@ -75,7 +74,7 @@ date10_to_date8() {
 }
 
 cleanup_timestamp_html() {
-  # 只保留 tab-v1，删除 gen_report_v4 生成的带时分秒版本（复盘日记-YYYYMMDD-HHMMSS.html）
+  # 只保留 tab-v1，删除旧版脚本生成的带时分秒版本（复盘日记-YYYYMMDD-HHMMSS.html）
   local yyyymmdd="$1"
   shopt -s nullglob
   local files=( "html/复盘日记-${yyyymmdd}-"[0-9][0-9][0-9][0-9][0-9][0-9].html )
@@ -157,7 +156,7 @@ prune_html_keep_latest_report() {
 }
 
 render_offline() {
-  # Vue3 构建 + 数据注入 → 单文件 HTML
+  # V3 构建 + 数据注入 → 单文件 HTML
   local date10="$1"
   local yyyymmdd market_json
   yyyymmdd="$(date10_to_date8 "${date10}")"
@@ -168,11 +167,11 @@ render_offline() {
   # 离线重建 pipeline（不请求接口）
   PYTHONPATH=. python3 -u -m daily_review.cli --date "${date10}" --rebuild
 
-  # Vue3 构建 + 数据注入
+  # V3 构建 + 数据注入
   (cd web && npm run build) || die "Vue3 构建失败"
   python3 inject_data.py "${yyyymmdd}" || die "数据注入失败"
 
-  echo "✅ Vue3 构建完成: html/复盘日记-${yyyymmdd}-tab-v1.html"
+  echo "✅ V3 构建完成: html/复盘日记-${yyyymmdd}-tab-v1.html"
   prune_html_keep_latest_report
 }
 
@@ -182,7 +181,6 @@ cmd_fetch() {
 
   info "在线取数生成缓存（会请求接口，有成本） -> 离线 pipeline 重建 -> 输出 tab-v1"
   if [[ -n "${DATE_ARG}" ]]; then
-    # 新 FULL：走 daily_review.cli --fetch（data/cache 层），最终产物仍由 pipeline 生成
     PYTHONPATH=. python3 -u -m daily_review.cli --fetch --date "${DATE_ARG}"
     cleanup_timestamp_html "$(date10_to_date8 "${DATE_ARG}")"
     prune_cache_keep_latest_n 7
@@ -196,7 +194,7 @@ cmd_fetch() {
 
   # 用缓存里最新的 market_data-*.json 再离线渲染一份 v1（不再取数）
   local d8 d10
-  d8="$(pick_latest_cache_date8)" || die "未找到 cache/market_data-*.json（gen_report_v4.py 未生成缓存？）"
+  d8="$(pick_latest_cache_date8)" || die "未找到 cache/market_data-*.json（尚未生成缓存？）"
   d10="$(date8_to_date10 "${d8}")"
   render_offline "${d10}"
   cleanup_timestamp_html "${d8}"
@@ -207,23 +205,18 @@ cmd_fetch() {
 }
 
 cmd_gen() {
-  # 仅运行 gen_report_v4.py：
-  # - 会请求接口
-  # - 会生成 cache/market_data-YYYYMMDD.json
-  # - 以及 html/复盘日记-YYYYMMDD-HHMMSS.html（留档）
-  # 用途：你在本地调试“取数/落缓存”时，想跳过离线重建（pipeline）与渲染流程。
+  # 仅在线取数：走 daily_review.cli --fetch，避免再调用 gen_report_v4.py
   load_dotenv_if_needed
   ensure_token
 
   info "仅在线取数并生成缓存（不做离线 pipeline 重建/渲染）"
   if [[ -n "${DATE_ARG}" ]]; then
-    # 兼容：暂时仍保留 gen_report_v4，但推荐用 daily_review.cli --fetch
-    python3 -u gen_report_v4.py "${DATE_ARG}"
+    PYTHONPATH=. python3 -u -m daily_review.cli --fetch --date "${DATE_ARG}"
     sync_online_cache_dir "${DATE_ARG}"
   else
-    python3 -u gen_report_v4.py
+    PYTHONPATH=. python3 -u -m daily_review.cli --fetch
     local d8 d10
-    d8="$(pick_latest_cache_date8)" || die "未找到 cache/market_data-*.json（gen_report_v4.py 未生成缓存？）"
+    d8="$(pick_latest_cache_date8)" || die "未找到 cache/market_data-*.json（尚未生成缓存？）"
     d10="$(date8_to_date10 "${d8}")"
     sync_online_cache_dir "${d10}"
   fi
@@ -263,7 +256,7 @@ cmd_build_web() {
   if [[ ! -f "cache/market_data-${d8}.json" ]]; then
     die "数据缓存不存在: cache/market_data-${d8}.json，请先执行：./qr.sh fetch ${d10}"
   fi
-  info "Vue3 构建 + 数据注入 -> html/复盘日记-${d8}-tab-v1.html"
+  info "V3 构建 + 数据注入 -> html/复盘日记-${d8}-tab-v1.html"
   (cd web && npm run build) || die "Vue3 构建失败"
   python3 inject_data.py "${d8}" || die "数据注入失败"
   info "构建完成: html/复盘日记-${d8}-tab-v1.html"
