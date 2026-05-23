@@ -157,22 +157,22 @@ prune_html_keep_latest_report() {
 }
 
 render_offline() {
-  # 离线渲染：用 cache/market_data-YYYYMMDD.json + templates/report_template.html 生成 tab-v1 HTML
+  # Vue3 构建 + 数据注入 → 单文件 HTML
   local date10="$1"
-  local yyyymmdd market_json template out_html
+  local yyyymmdd market_json
   yyyymmdd="$(date10_to_date8 "${date10}")"
   market_json="cache/market_data-${yyyymmdd}.json"
-  template="templates/report_template.html"
-  out_html="html/复盘日记-$(date +%Y%m%d)-tab-v1.html"
 
   [[ -f "${market_json}" ]] || die "未找到 ${market_json}，请先执行：./qr.sh fetch ${date10}"
 
-  # 收口阶段：离线渲染前先跑一遍 v2 pipeline 重建 market_data（不请求接口）
-  # 这样你改算法/模块后，render 会直接反映最新结果。
+  # 离线重建 pipeline（不请求接口）
   PYTHONPATH=. python3 -u -m daily_review.cli --date "${date10}" --rebuild
 
-  echo "✅ 离线渲染完成: ${out_html}"
-  # 本地策略：报告只保留最新一份
+  # Vue3 构建 + 数据注入
+  (cd web && npm run build) || die "Vue3 构建失败"
+  python3 inject_data.py "${yyyymmdd}" || die "数据注入失败"
+
+  echo "✅ Vue3 构建完成: html/复盘日记-${yyyymmdd}-tab-v1.html"
   prune_html_keep_latest_report
 }
 
@@ -203,6 +203,7 @@ cmd_fetch() {
   prune_cache_keep_latest_n 7
   prune_extra_cache_artifacts
   sync_online_cache_dir "${d10}"
+  python3 inject_data.py "${d8}" --dev-only 2>/dev/null || true
 }
 
 cmd_gen() {
@@ -245,6 +246,27 @@ cmd_render() {
   prune_cache_keep_latest_n 7
   prune_extra_cache_artifacts
   sync_online_cache_dir "${d10}"
+  python3 inject_data.py "${d8}" --dev-only 2>/dev/null || true
+}
+
+cmd_build_web() {
+  load_dotenv_if_needed
+  local d8 d10
+  if [[ -n "${DATE_ARG}" ]]; then
+    d8="$(date10_to_date8 "${DATE_ARG}")"
+    d10="${DATE_ARG}"
+  else
+    d8="$(pick_latest_cache_date8)" || die "未找到 cache/market_data-*.json，请先执行：./qr.sh fetch"
+    d10="$(date8_to_date10 "${d8}")"
+  fi
+  # 确保数据存在
+  if [[ ! -f "cache/market_data-${d8}.json" ]]; then
+    die "数据缓存不存在: cache/market_data-${d8}.json，请先执行：./qr.sh fetch ${d10}"
+  fi
+  info "Vue3 构建 + 数据注入 -> html/复盘日记-${d8}-tab-v1.html"
+  (cd web && npm run build) || die "Vue3 构建失败"
+  python3 inject_data.py "${d8}" || die "数据注入失败"
+  info "构建完成: html/复盘日记-${d8}-tab-v1.html"
 }
 
 cmd_sync_cache() {
@@ -325,9 +347,9 @@ cmd_deploy() {
 usage() {
   cat <<'EOF'
 用法：
-  ./qr.sh fetch [YYYY-MM-DD]   在线取数 + 生成缓存 + 离线渲染 tab-v1 HTML
-  ./qr.sh gen  [YYYY-MM-DD]    仅在线取数生成缓存/留档 HTML（不做离线渲染）
-  ./qr.sh render [YYYY-MM-DD]  仅用 cache 离线渲染（不请求接口）
+  ./qr.sh fetch [YYYY-MM-DD]   在线取数 + pipeline 重建 + Vue3 构建 → tab-v1 HTML
+  ./qr.sh render [YYYY-MM-DD]  仅用 cache 离线重建 + Vue3 构建（不请求接口）
+  ./qr.sh build-web [YYYY-MM-DD]  仅 Vue3 构建 + 注入（不跑 pipeline，改 UI 用）
   ./qr.sh watch-slice [YYYY-MM-DD]  仅生成实时盯盘切片 JSON（供页面动态读取）
   ./qr.sh deploy               （可选）发布最新 tab-v1 到 gh-pages/index.html
 EOF
@@ -339,6 +361,7 @@ main() {
     fetch)  cmd_fetch ;;
     gen)    cmd_gen ;;
     render) cmd_render ;;
+    build-web) cmd_build_web ;;
     sync-cache) cmd_sync_cache ;;
     watch-slice) cmd_watch_slice ;;
     deploy) cmd_deploy ;;

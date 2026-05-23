@@ -1,212 +1,114 @@
-# quant-review（复盘日记生成器）
+# quant-review
 
-一个脚本覆盖日常使用：在线取数生成、离线重建、（可选）本地发布到 `gh-pages`。
-输出 HTML 在 `html/` 目录（运行产物默认不提交 Git，见 `.gitignore`）。
-
-## 环境要求
-
-- Python 3.10+（建议）
-
-## 重要：配置 BIYING_TOKEN（敏感信息不要提交）
-
-推荐使用 `.env`（脚本会自动加载）：
-
-```bash
-cp .env.example .env
-# 编辑 .env，填入 BIYING_TOKEN
-```
-
-也支持环境变量：
-
-```bash
-export BIYING_TOKEN="你的token"
-export BIYING_BASE_URL="https://api.biyingapi.com"   # 可选
-```
-
-说明：
-- `.env` 已在 `.gitignore` 中忽略，不要把真实 token 提交到 Git
-- Python 侧同样支持自动加载 `.env`（见 `daily_review/env.py`）
+A 股短线量化复盘系统，服务龙头战法交易体系。基于必盈 API 取数 → Python pipeline 加工 → Vue3 单文件渲染，生成盘后复盘报告。
 
 ---
 
-## 本地使用（推荐统一入口：qr.sh）
+## 一、技术架构：三层分离
 
-给脚本执行权限：
-```bash
-chmod +x ./qr.sh
+```
+┌──────────────────────────────────────────────────────────┐
+│  Layer 1  数据源                                         │
+│  biying API → pools_cache / theme_cache / index 日K      │
+│  （daily_review/data/biying.py）                         │
+├──────────────────────────────────────────────────────────┤
+│  Layer 2  数据加工                                       │
+│  Python pipeline 模块链（15+ 模块）                       │
+│  ├─ 情绪：六维评分 / 周期四阶段 / 渡劫 / 崩溃链           │
+│  ├─ 题材：板块热力图 / 轮动 / 三象限                      │
+│  ├─ 连板：天梯 / 高度趋势 / 龙头神形 / 主流三级           │
+│  ├─ 预测：仓位五档 / 反弹三阶段 / 交易性质 / 行动指南      │
+│  └─ 盯盘：盘中切片 / 快照 / 异动                          │
+│  （daily_review/modules_v2/）                            │
+├──────────────────────────────────────────────────────────┤
+│  Layer 3  渲染                                           │
+│  Vue3 + ECharts + Vite → vite-plugin-singlefile → 单 HTML │
+│  （web/src/  — 7 Tab：情绪 / 题材 / 连板 / 预测 / 实时     │
+│                    / 异动 / 快讯）                         │
+└──────────────────────────────────────────────────────────┘
 ```
 
-### 1) 在线取数 + 生成最新报告（有成本）
+**数据与渲染完全分离**：Layer 1/2 产出 `cache/market_data-YYYYMMDD.json`（纯 JSON），Layer 3 消费这个 JSON 渲染。Python pipeline 不知道页面的 DOM 结构，Vue3 组件不知道数据怎么来的。中间通过 `marketData` 这一个接口协议解耦。
+
+---
+
+## 二、本地使用
+
+### 前置
+
 ```bash
-./qr.sh fetch                # 自动回退到最近交易日
-./qr.sh fetch 2026-04-17     # 指定日期（YYYY-MM-DD）
+# Python 依赖
+pip install -r requirements.txt
+
+# 必盈 Token（二选一）
+cp .env.example .env   # 编辑填入 BIYING_TOKEN
+# 或 export BIYING_TOKEN="xxx"
+```
+
+### 命令
+
+```bash
+chmod +x ./qr.sh
+
+# 在线取数 + 生成报告（调 API，有成本）
+./qr.sh fetch                # 自动取最近交易日
+./qr.sh fetch 2026-05-20     # 指定日期
+
+# 离线重建（不调 API，纯本地算）
+./qr.sh render               # 用缓存里最新的 market_data
+./qr.sh render 20260520      # 指定日期（8 位紧凑格式）
+
+# Vue3 前端开发
+cd web && npm run dev         # 启动 Vite → http://localhost:5173
+cd web && npm run build       # 产出 dist/index.html（单文件）
 ```
 
 输出：
-- `cache/market_data-YYYYMMDD.json`
-- `html/复盘日记-YYYYMMDD-tab-v1.html`
-
-### 2) 只离线重建（无成本，不请求接口）
-```bash
-./qr.sh render               # 使用 cache 里最新的 market_data-*.json
-./qr.sh render 2026-04-17
-```
-
-说明：
-- `render` 实际会调用 `python -m daily_review.cli --rebuild`
-- 默认只使用本地 `cache/market_data-YYYYMMDD.json` 和已有缓存，不在线补抓
-- 适合你本地做算法调参、页面调试、历史回放
-
-### 2.1) 本地重建时需要在线补抓（可选）
-```bash
-PYTHONPATH=. python3 -m daily_review.cli --rebuild --date 2026-04-17 --allow-network
-```
-
-说明：
-- 只建议在本地明确需要补齐个别缺失缓存时使用
-- 常规本地调试更推荐默认离线 rebuild，这样结果更可复现
-
-### 3) 仅在线取数/计算（便于你本地调试取数逻辑）
-```bash
-./qr.sh gen                  # 只跑 gen_report_v4.py（会取数，会写 cache，会生成留档 HTML）
-./qr.sh gen 2026-04-17
-```
-
-### 兼容旧脚本名（可选）
-如果你习惯旧命令，也保留了壳脚本（内部转调 `qr.sh`）：
-- `./fetch_report.sh` ≈ `./qr.sh fetch`
-- `./review.sh` ≈ `./qr.sh render`
-- `./run_report.sh` ≈ `./qr.sh gen`
+- `cache/market_data-YYYYMMDD.json` — 结构化数据
+- `html/复盘日记-YYYYMMDD-tab-v1.html` — 渲染后的报告
 
 ---
 
-## 自动发布到 GitHub Pages（推荐：GitHub Actions）
+## 三、线上部署（GitHub Actions）
 
-仓库内已提供工作流：`.github/workflows/publish_pages.yml`，会：
-- 云端执行 `./qr.sh fetch` 在线抓取最新数据，再自动走离线 pipeline rebuild
-- 将最新产物写入 `gh-pages` 分支（`index.html` + 同步保留当日报告文件）
-- GitHub Pages 使用 **Deploy from branch: gh-pages（/root）** 发布
+工作流 `.github/workflows/publish_pages.yml` 自动执行：
 
-### 一次性配置
-1) GitHub → 仓库 → Settings → Pages  
-   Source 选择：**Deploy from a branch**  
-   Branch 选择：`gh-pages` / `/(root)`
+1. `./qr.sh fetch` — 从必盈 API 取数
+2. pipeline 重建 market_data JSON
+3. 注入到 HTML 模板并渲染
+4. push 到 `gh-pages` 分支 → GitHub Pages 自动发布
 
-2) GitHub → 仓库 → Settings → Secrets and variables → Actions → New repository secret
-   - Name: `BIYING_TOKEN`（必填）
-   - Name: `BIYING_BASE_URL`（可选）
+**一次性配置**：
+- Settings → Secrets → 添加 `BIYING_TOKEN`、`BIYING_BASE_URL`
+- Settings → Pages → Source: Deploy from branch, `gh-pages` / `/(root)`
 
-### 触发方式
-- **提交代码触发**：push 到 `main` 会自动发布
-- **定时触发**：工作日定时（时间用脚本按北京时间 15:01 放行；cron 本身为 UTC）
-
-### GitHub Actions 和本地运行的分工
-- **GitHub Actions / 定时任务**：主流程，走 `./qr.sh fetch`，允许在线抓取和在线补齐
-- **本地 `render` / `--rebuild`**：调试流程，默认离线，不依赖你每次都重新抓数据
-- **本地 `fetch`**：需要手动验证抓取链路、更新缓存、或排查线上数据问题时再用
+**触发**：push 到 `main` 分支自动发布；工作日定时 cron 盘中/收盘自动跑。
 
 ---
 
-## 常见问题
+## 四、注意事项
 
-### 1) 为什么日期会自动变化？
-当输入日期是周末/非交易日，取数脚本会自动回退到最近交易日，并在日志里提示。
-
-### 2) 离线重建提示找不到 `market_data-YYYYMMDD.json`
-说明本地还没有这一天的缓存。先跑一次：
-```bash
-./qr.sh fetch 2026-04-17
-```
+1. **必盈 API 优先**：所有数据取数走 `data/biying.py`，不要新增 akshare 调用。
+2. **Token 安全**：`.env` 已在 `.gitignore`，不要提交。GitHub Secrets 同理。
+3. **交易日回退**：非交易日执行 `fetch` 时自动回退到最近交易日。
+4. **render 日期格式**：`./qr.sh render` 接受 8 位紧凑格式（`20260520`），`fetch` 接受 `YYYY-MM-DD`。
+5. **离线 render 需要缓存**：如果本地没有对应日期的 `cache/market_data-*.json`，先跑一次 `./qr.sh fetch`。
+6. **modules_v2 按 Tab 组织**：`sentiment/` `themes/` `ladder/` `plan/` `watch/` 五个子包，`__init__.py` 集中导出 `ALL_MODULES`。
+7. **AI 分析模块**：代码在 `daily_review/ai/`，已实现但未接入 pipeline（GitHub Actions 无 AI runtime）。以后需要时在 `cli.py` 恢复 `_inject_ai_analysis()` 调用即可。
+8. **Vue3 前端**：`web/src/` 当前通过 `import ...?raw` 读旧版 HTML 的 CSS 和测试数据。正式切 Vue3 部署时需清理 `useMarketData.ts` 中的硬编码文件 import，改为纯 `window.__MARKET_DATA__` 注入。
 
 ---
 
 ## 关键文件
 
-- `qr.sh`：统一入口脚本
-- `daily_review/cli.py`：主入口（在线 fetch + 离线 rebuild）
-- `gen_report_v4.py`：兼容壳，直接执行时会转调 `daily_review.cli --fetch`
-- `daily_review/render/render_html.py`：离线渲染器（模板注入）
-- `templates/report_template.html`：主模板
-
----
-
-## 模块组织（modules_v2）
-
-`daily_review/modules_v2/` 按 **5 个 HTML Tab** 重新组织，提升可维护性：
-
-```
-modules_v2/
-├── __init__.py          # 集中导入所有子模块，导出 ALL_MODULES
-├── _utils.py            # 公共工具函数（保留在根目录）
-│
-├── sentiment/          # 短线情绪 Tab
-│   ├── __init__.py
-│   ├── mood.py            # 市场情绪
-│   ├── sentiment_v2.py    # v2 情绪计分卡
-│   ├── v3_sentiment.py    # v3 六维情绪评分
-│   ├── v3_collapse.py    # 崩溃链检测
-│   ├── v3_dujie.py       # 渡劫识别
-│   ├── v3_reflexivity.py # Y=F(X)反身性模型
-│   └── ... (共 14 个文件)
-│
-├── themes/             # 板块题材 Tab
-│   ├── __init__.py
-│   ├── theme_panels.py   # 板块面板
-│   ├── theme_trend.py    # 题材趋势
-│   ├── rotation.py       # 板块轮动
-│   └── ... (共 6 个文件)
-│
-├── ladder/            # 连板天梯 Tab
-│   ├── __init__.py
-│   ├── ladder.py         # 连板天梯主模块
-│   ├── height_trend.py   # 高度趋势
-│   ├── v3_leader.py     # 龙头神形辨析
-│   ├── v3_mainstream.py # 主流三级划分
-│   └── ... (共 7 个文件)
-│
-├── plan/              # 明日计划 Tab
-│   ├── __init__.py
-│   ├── action_guide.py   # 行动指南
-│   ├── v3_position.py   # 养家仓位五档
-│   ├── v3_rebound.py    # 反弹三阶段策略
-│   ├── v3_trading.py   # 交易性质分类
-│   └── ... (共 16 个文件)
-│
-└── watch/             # 实时盯盘 Tab（待扩展）
-    ├── __init__.py
-    └── (待扩展)
-```
-
-### 设计原则
-
-1. **按 Tab 分类**：每个子目录对应一个 HTML Tab，便于快速定位
-2. **向后兼容**：`modules_v2/__init__.py` 集中导入所有子模块，外部调用方式不变
-3. **子包导出**：每个子目录的 `__init__.py` 重新导出模块，支持直接导入（如 `from .sentiment import MoodModule`）
-4. **v3 模块标注**：v3 模块放在对应 Tab 子目录，文件名加 `v3_` 前缀
-
-### 模块执行顺序
-
-`ALL_MODULES` 列表的顺序决定执行顺序，按依赖关系排列：
-- 先执行数据采集模块（全景图、市场概览）
-- 再执行分析模块（情绪、板块、连板）
-- 最后执行决策模块（明日计划）
-
-### 扩展新模块
-
-1. 在对应 Tab 子目录创建新文件（如 `sentiment/my_new_module.py`）
-2. 实现 `Module` 协议（见 `daily_review/pipeline/module.py`）
-3. 在子目录的 `__init__.py` 中导出
-4. 在 `modules_v2/__init__.py` 中添加到 `ALL_MODULES`
-
----
-
-## 语录合集（可选）
-
-为了让复盘更“有手感”，仓库里维护了一份可持续扩充的语录合集：
-
-- `心法.md`：短线/龙头/情绪周期相关的核心口诀与摘录
-
-你可以把它当作：
-- 复盘后的“自检清单”
-- 行为约束（避免临时起意）
-- 训练用语料（长期维护、不断迭代）
+| 文件 | 作用 |
+|------|------|
+| `qr.sh` | 统一 CLI 入口 |
+| `daily_review/cli.py` | fetch / rebuild / intraday 调度 |
+| `daily_review/data/biying.py` | 必盈 API 数据源 |
+| `daily_review/modules_v2/` | pipeline 模块（15+） |
+| `daily_review/render/render_html.py` | HTML 渲染器（Python 模板注入） |
+| `templates/report_template.html` | 旧版 Vue2 模板（过渡期） |
+| `web/` | **Vue3 新版前端**（Vite + ECharts + singlefile） |
+| `web/src/composables/useMarketData.ts` | 数据接口层 |
+| `.github/workflows/publish_pages.yml` | 自动部署 |

@@ -16,13 +16,15 @@ import math
 import os
 import time
 import urllib.error
+import urllib.request
 from pathlib import Path
+from typing import Any
 
 from daily_review.modules_v2 import ALL_MODULES
 from daily_review.metrics.scoring import blend_sentiment_score
 from daily_review.pipeline.context import Context
 from daily_review.pipeline.runner import Runner
-from daily_review.render.render_html import render_html_template, build_plate_rank_top10
+from daily_review.render.render_html import build_plate_rank_top10
 from daily_review.cache_io import read_json, write_json
 from daily_review.config import load_config_from_env
 from daily_review.config import DEFAULT_CONFIG
@@ -50,6 +52,66 @@ def _now_bj_date8() -> str:
     import datetime as _dt
 
     return _dt.datetime.now(_dt.timezone(_dt.timedelta(hours=8))).strftime("%Y%m%d")
+
+
+_ABNORMAL_EVENT_TYPES_ALL = [10001, 10002, 10003, 10004, 10005, 10006, 10007, 10008, 10009, 10010, 10012, 10014, 11000, 11001]
+_ABNORMAL_EVENT_TYPES_DEFAULT = [11000, 11001, 10005, 10009, 10010]
+
+
+def _abnormal_event_sample_path(root: Path, date: str) -> Path:
+    cache_dir = root / "cache"
+    d8 = str(date or "").replace("-", "")
+    return cache_dir / f"abnormal_event_history-{d8}.json"
+
+
+def _fetch_abnormal_event_history_sample(*, count: int = 100, types: list[int] | None = None, timeout: int = 20) -> dict[str, Any]:
+    query = [f"count={int(count)}"]
+    if types:
+        query.append("types=" + ",".join(str(int(x)) for x in types))
+    query.append(f"_ts={int(time.time() * 1000)}")
+    url = "https://flash-api.xuangubao.cn/api/event/history?" + "&".join(query)
+    with urllib.request.urlopen(url, timeout=timeout) as resp:
+        body = resp.read().decode("utf-8", errors="ignore")
+    data = json.loads(body) if body else {}
+    rows = data.get("data") if isinstance(data, dict) and isinstance(data.get("data"), list) else []
+    return {
+        "url": url,
+        "count": len(rows),
+        "data": data,
+    }
+
+
+def _save_abnormal_event_history_sample(*, root: Path, date: str, mode: str, note: str = "") -> Path | None:
+    path = _abnormal_event_sample_path(root, date)
+    prev = read_json(path, default={})
+    existing_runs = prev.get("runs") if isinstance(prev, dict) and isinstance(prev.get("runs"), list) else []
+
+    import datetime as _dt
+
+    now_bj = _dt.datetime.now(_dt.timezone(_dt.timedelta(hours=8))).strftime("%Y-%m-%d %H:%M:%S")
+    combined = _fetch_abnormal_event_history_sample(count=120, types=_ABNORMAL_EVENT_TYPES_ALL)
+    focused = _fetch_abnormal_event_history_sample(count=120, types=_ABNORMAL_EVENT_TYPES_DEFAULT)
+
+    run = {
+        "saved_at_bj": now_bj,
+        "mode": mode,
+        "note": note,
+        "recognized_types": _ABNORMAL_EVENT_TYPES_ALL,
+        "default_focus_types": _ABNORMAL_EVENT_TYPES_DEFAULT,
+        "combined": combined,
+        "focused": focused,
+    }
+    runs = (existing_runs + [run])[-40:]
+    payload = {
+        "schema": "abnormal_event_history_v1",
+        "date": date,
+        "updated_at_bj": now_bj,
+        "run_count": len(runs),
+        "latest": run,
+        "runs": runs,
+    }
+    write_json(path, payload)
+    return path
 
 
 def _display_float(v, default: float = 0.0) -> float:
@@ -404,6 +466,49 @@ def _prune_frontend_unused_fields(market_data: dict) -> None:
         market_data["meta"] = meta
 
 
+def _inject_ai_analysis(root: Path, date: str, market_data: dict) -> None:
+    """AI 分析注入：读取 cache/ai_analysis-YYYYMMDD.json，覆盖 Python 固定模板文本。
+
+    如果 AI 分析缓存不存在，静默跳过，保持 Python 生成的文本不变。
+    架构：数据加工 Layer 2（AI 分析）→ Layer 3（Vue3 渲染）
+    """
+    date8 = str(date).replace("-", "")
+    ai_path = root / "cache" / f"ai_analysis-{date8}.json"
+    if not ai_path.exists():
+        return
+    try:
+        ai = json.loads(ai_path.read_text(encoding="utf-8"))
+    except Exception:
+        return
+
+    # summary3.lines
+    if isinstance(ai.get("summary3_lines"), list) and ai["summary3_lines"]:
+        market_data["summary3"] = {"lines": ai["summary3_lines"], "source": "ai"}
+
+    # learningNotes
+    tips = ai.get("learning_tips") if isinstance(ai.get("learning_tips"), list) else []
+    quote = ai.get("learning_quote") if isinstance(ai.get("learning_quote"), str) else ""
+    if tips or quote:
+        ln = market_data.get("learningNotes") or {}
+        if isinstance(ln, dict):
+            if tips:
+                ln["tips"] = tips
+            if quote:
+                ln["quotes"] = [quote]
+            ln["source"] = "ai"
+            market_data["learningNotes"] = ln
+
+    # actionAdvisor.summary
+    if isinstance(ai.get("action_summary"), str) and ai["action_summary"]:
+        aa = market_data.get("actionAdvisor") or {}
+        if isinstance(aa, dict):
+            aa["summary"] = ai["action_summary"]
+            aa["source"] = "ai"
+            market_data["actionAdvisor"] = aa
+
+    _log("AI 分析已注入 (summary3/learningNotes/actionAdvisor)")
+
+
 def _log(msg: str) -> None:
     ts = time.strftime("%H:%M:%S")
     print(f"  [{ts}] {msg}", flush=True)
@@ -644,6 +749,18 @@ def run_fetch_and_rebuild(date: str | None) -> int:
 
     write_json(theme_trend_path, {"version": 1, "as_of": actual_date, "by_day": by_day})
     _log("主线趋势已计算 (近5日)")
+
+    try:
+        sample_path = _save_abnormal_event_history_sample(
+            root=root,
+            date=actual_date,
+            mode="fetch",
+            note="收盘/全量流程自动留样，供周末异动模块复盘与算法优化使用",
+        )
+        if sample_path:
+            _log(f"异动原始样本已落盘: {sample_path.name}")
+    except Exception as e:
+        _log(f"异动原始样本保存失败（不影响主流程）: {e}")
 
     # index_kline_cache.json：缓存指数日K
     # - 用 history 拉更长序列（便于 MA5/MA20 等技术指标在 v3 右侧交易中使用）
@@ -1127,6 +1244,18 @@ def run_intraday_snapshot(date: str | None) -> int:
         codes_map[code6] = uniq
     write_json(themes_path, {"version": 1, "codes": codes_map})
 
+    try:
+        sample_path = _save_abnormal_event_history_sample(
+            root=root,
+            date=actual_date,
+            mode="intraday",
+            note="盘中流程自动留样，供周末异动模块复盘与算法优化使用",
+        )
+        if sample_path:
+            _log(f"异动原始样本已落盘: {sample_path.name}")
+    except Exception as e:
+        _log(f"异动原始样本保存失败（不影响主流程）: {e}")
+
     # 构造 market_data 骨架（标记为 intraday 模式）
     gen_time = now.strftime("%Y-%m-%d %H:%M:%S")
 
@@ -1533,26 +1662,11 @@ def run_rebuild(
     except Exception:
         pass
 
-    # 渲染 tab-v1（render 阶段还会补充部分展示专用派生字段）
-    template_path = root / "templates" / "report_template.html"
-    out_dir = root / "html"
-    out_dir.mkdir(parents=True, exist_ok=True)
-    suffix_part = f"-{suffix}" if suffix else ""
-    # 文件名使用北京时间更新时间，报告正文仍保留 report_date 作为内容日期
-    update_date8 = _now_bj_date8()
-    out_path = out_dir / f"复盘日记-{update_date8}{suffix_part}-tab-v1.html"
-
-    render_html_template(
-        template_path=template_path,
-        output_path=out_path,
-        market_data=market_data,
-        report_date=date,
-        date_note=market_data.get("dateNote", ""),
-    )
-    _log(f"HTML 已渲染: {out_path.name}")
-    # 回写最终 market_data：确保 render 阶段补齐的展示字段也能稳定落盘
+    # 回写 market_data 缓存（Layer 2 → Layer 3 的数据接口）
+    # HTML 渲染由 qr.sh 调用 npm run build + inject_data.py 完成
     market_path.write_text(json.dumps(market_data, ensure_ascii=False, indent=2), encoding="utf-8")
-    print(f"✅ rebuild 输出: {out_path}")
+    _log(f"market_data 已回写: {market_path.name}")
+    print(f"✅ rebuild 输出: {market_path}")
     return 0
 
 
@@ -2818,21 +2932,7 @@ def run_partial(date: str, modules: list[str]) -> int:
     except Exception:
         pass
 
-    template_path = root / "templates" / "report_template.html"
-    out_dir = root / "html"
-    out_dir.mkdir(parents=True, exist_ok=True)
-    suffix = "-".join(modules)
-    update_date8 = _now_bj_date8()
-    out_path = out_dir / f"复盘日记-{update_date8}-partial-{suffix}.html"
-
-    render_html_template(
-        template_path=template_path,
-        output_path=out_path,
-        market_data=market_data,
-        report_date=date,
-        date_note=market_data.get("dateNote", ""),
-    )
-    # 与 rebuild 保持一致：render 阶段补齐后的展示字段需要稳定写回 cache
+    # 回写 market_data 缓存
     market_path.write_text(json.dumps(market_data, ensure_ascii=False, indent=2), encoding="utf-8")
 
     print(f"✅ partial 输出: {out_path}")

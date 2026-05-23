@@ -50,32 +50,46 @@ def _weight_of_rank(rank: int) -> int:
 
 
 def _compute(ctx: Context) -> Dict[str, Any]:
-    # 若已有（例如从历史缓存带入）则复用；否则从 raw 离线重算
+    # 若已有（例如从历史缓存带入）则优先复用；缺 code 时只补 code；
+    # 仅在完全没有 top10 时，才从 raw 离线重算，避免历史缓存被误清空。
     top10 = _as_list(ctx.market_data.get("top10"))
-    if not top10:
-        pools = (ctx.raw.get("pools") or {}) if isinstance(ctx.raw, dict) else {}
-        zt = _as_list(pools.get("ztgc"))
-        qs = _as_list(pools.get("qsgc"))
-        code2themes = ((ctx.raw.get("themes") or {}).get("code2themes") or {}) if isinstance(ctx.raw, dict) else {}
-        code2themes = code2themes if isinstance(code2themes, dict) else {}
+    pools = (ctx.raw.get("pools") or {}) if isinstance(ctx.raw, dict) else {}
+    zt = _as_list(pools.get("ztgc"))
+    qs = _as_list(pools.get("qsgc"))
+    code2themes = ((ctx.raw.get("themes") or {}).get("code2themes") or {}) if isinstance(ctx.raw, dict) else {}
+    code2themes = code2themes if isinstance(code2themes, dict) else {}
 
-        merged: Dict[str, Dict[str, Any]] = {}
-        for s in (zt + qs):
-            if not isinstance(s, dict):
-                continue
-            code = str(s.get("dm") or s.get("code") or "").strip()
-            if not code:
-                continue
-            cje = float(s.get("cje", 0) or 0)
-            if cje <= 0:
-                continue
-            # 去重：同 code 取成交额更大的一条（通常涨停池更完整）
-            prev = merged.get(code)
-            if (prev is None) or (float(prev.get("cje", 0) or 0) < cje):
-                merged[code] = s
+    by_name: Dict[str, str] = {}
+    merged: Dict[str, Dict[str, Any]] = {}
+    for s in (zt + qs):
+        if not isinstance(s, dict):
+            continue
+        code = str(s.get("dm") or s.get("code") or "").strip()
+        mc = str(s.get("mc") or s.get("name") or "").strip()
+        if mc and code:
+            by_name[mc] = _norm_code6(code)
+        if not code:
+            continue
+        cje = float(s.get("cje", 0) or 0)
+        if cje <= 0:
+            continue
+        prev = merged.get(code)
+        if (prev is None) or (float(prev.get("cje", 0) or 0) < cje):
+            merged[code] = s
 
+    if top10:
+        enriched: List[Dict[str, Any]] = []
+        for row in top10:
+            if not isinstance(row, dict):
+                continue
+            code6 = _norm_code6(row.get("code") or row.get("dm") or by_name.get(str(row.get("mc") or "").strip(), ""))
+            new_row = dict(row)
+            if code6:
+                new_row["code"] = code6
+            enriched.append(new_row)
+        top10 = enriched
+    else:
         rows = sorted(merged.values(), key=lambda x: float(x.get("cje", 0) or 0), reverse=True)[:10]
-
         built = []
         for i, s in enumerate(rows, start=1):
             mc = str(s.get("mc") or s.get("name") or "").strip()
@@ -89,6 +103,7 @@ def _compute(ctx: Context) -> Dict[str, Any]:
                 {
                     "rank": i,
                     "mc": mc or code6,
+                    "code": code6,
                     "zf_str": f"{zf:+.2f}%",
                     "pct_class": _pct_class(zf),
                     "cje_yi": f"{cje/1e8:.0f}亿",

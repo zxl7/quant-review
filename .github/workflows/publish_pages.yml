@@ -141,6 +141,16 @@ jobs:
         if: ${{ github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true' }}
         run: pip install -r requirements.txt
 
+      - name: Setup Node.js
+        if: ${{ github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true' }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Install web dependencies
+        if: ${{ github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true' }}
+        run: cd web && npm ci
+
       - name: Check A-share trade day
         id: tradeday
         if: ${{ github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true' }}
@@ -352,6 +362,19 @@ jobs:
           if not relay and watch:
               print("WARNING: ztAnalysis relay empty while watch exists; publish continues because an empty relay pool can be valid intraday.")
           PY
+
+      - name: Build Vue3 web (Vite -> single HTML)
+        if: ${{ (github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true') && (github.event_name != 'schedule' || steps.tradeday.outputs.is_trade_today == 'true') }}
+        run: cd web && npm run build
+
+      - name: Inject market data into Vue3 HTML
+        if: ${{ (github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true') && (github.event_name != 'schedule' || steps.tradeday.outputs.is_trade_today == 'true') }}
+        env:
+          RUN_DATE: ${{ steps.pushmode.outputs.date10 }}
+        run: |
+          run_date="${RUN_DATE}"
+          d8="$(echo "${run_date}" | tr -d '-')"
+          python3 inject_data.py "${d8}"
 
       - name: Prepare Pages site (html/ as site root)
         if: ${{ (github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true') && (github.event_name != 'schedule' || steps.tradeday.outputs.is_trade_today == 'true') }}
