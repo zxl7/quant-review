@@ -12,7 +12,9 @@ type FlashItem = {
   title: string;
   summary: string;
   timeText: string;
+  timeValue: number;
   isWarn: boolean;
+  tone: 'up' | 'down' | 'neutral';
   stocks: FlashStock[];
 };
 
@@ -25,6 +27,13 @@ const flashError = ref('');
 let flashTimer: number | null = null;
 let flashReqInFlight = false;
 
+const flashCounts = computed(() => ({
+  all: flashItems.value.length,
+  warn: flashItems.value.filter((x) => x.isWarn).length,
+  up: flashItems.value.filter((x) => x.tone === 'up').length,
+  down: flashItems.value.filter((x) => x.tone === 'down').length,
+}));
+
 const filteredFlashItems = computed(() =>
   flashFilter.value === 'warn' ? flashItems.value.filter((x) => x.isWarn) : flashItems.value,
 );
@@ -34,7 +43,11 @@ const setFlashFilter = (mode: 'all' | 'warn') => {
 };
 
 const flashToneClass = (item: FlashItem) => {
-  const text = `${item.title || ''} ${item.summary || ''}`;
+  return item.tone;
+};
+
+const inferFlashTone = (title: string, summary: string): 'up' | 'down' | 'neutral' => {
+  const text = `${title || ''} ${summary || ''}`;
   if (/跳水|跌停|走弱|风险|回落|分歧/.test(text)) return 'down';
   if (/涨停|拉升|走强|回封|新高|修复|反弹/.test(text)) return 'up';
   return 'neutral';
@@ -57,31 +70,67 @@ const formatFlashTime = (value: unknown) => {
   return `${y}-${m}-${d} ${hh}:${mm}:${ss}`;
 };
 
+const parseFlashTime = (value: unknown) => {
+  let date: Date | null = null;
+  if (typeof value === 'number' && Number.isFinite(value)) date = new Date(value * 1000);
+  else if (typeof value === 'string' && value.trim()) date = new Date(value);
+  if (!(date instanceof Date) || Number.isNaN(date.getTime())) return 0;
+  return date.getTime();
+};
+
+const normalizeFlashStocks = (stocks: unknown): FlashStock[] => {
+  if (!Array.isArray(stocks)) return [];
+  const seen = new Set<string>();
+  const out: FlashStock[] = [];
+  for (const raw of stocks) {
+    if (!raw || typeof raw !== 'object') continue;
+    const row = raw as Record<string, any>;
+    const name = String(row.name || '').trim();
+    const symbol = String(row.symbol || row.code || '').trim();
+    const key = `${name}-${symbol}`;
+    if (!name || key === '-' || seen.has(key)) continue;
+    seen.add(key);
+    out.push({ name, symbol });
+    if (out.length >= 6) break;
+  }
+  return out;
+};
+
 const normalizeFlashItems = (messages: unknown) => {
   const rows = Array.isArray(messages) ? messages : [];
-  return rows
+  const mapped = rows
     .filter((x): x is Record<string, any> => Boolean(x) && typeof x === 'object')
     .map((x, index) => {
       const subjIds = Array.isArray(x.subj_ids) ? x.subj_ids.map((v: unknown) => Number(v)) : [];
+      const title = String(x.title || '').trim();
+      const summary = String(x.summary || '').trim();
+      const timeValue = parseFlashTime(x.created_at);
       return {
         id: String(x.id || x.msg_id || x.created_at || index),
-        title: String(x.title || '').trim(),
-        summary: String(x.summary || '').trim(),
+        title,
+        summary,
         timeText: formatFlashTime(x.created_at),
+        timeValue,
         isWarn: subjIds.includes(10),
-        stocks: Array.isArray(x.stocks)
-          ? x.stocks
-              .filter((s: unknown): s is Record<string, any> => Boolean(s) && typeof s === 'object')
-              .map((s) => ({
-                name: String(s.name || '').trim(),
-                symbol: String(s.symbol || s.code || '').trim(),
-              }))
-              .filter((s) => s.name)
-          : [],
+        tone: inferFlashTone(title, summary),
+        stocks: normalizeFlashStocks(x.stocks),
       };
     })
     .filter((x) => x.title);
+
+  const deduped = new Map<string, FlashItem>();
+  mapped.forEach((item) => {
+    const key = `${item.title}__${item.summary}`;
+    const prev = deduped.get(key);
+    if (!prev || item.timeValue > prev.timeValue) deduped.set(key, item);
+  });
+
+  return Array.from(deduped.values()).sort((a, b) => b.timeValue - a.timeValue);
 };
+
+const sortedFlashItems = computed(() =>
+  [...filteredFlashItems.value].sort((a, b) => b.timeValue - a.timeValue),
+);
 
 const refreshFlash = async (force = false) => {
   try {
@@ -154,24 +203,31 @@ onBeforeUnmount(() => {
       </div>
       <div class="flash-toolbar">
         <div class="flash-toolbar-left">
-          <button class="flash-btn" :class="{ active: flashFilter === 'all' }" type="button" @click="setFlashFilter('all')">全部</button>
-          <button class="flash-btn" :class="{ active: flashFilter === 'warn' }" type="button" @click="setFlashFilter('warn')">警示</button>
+          <button class="flash-btn" :class="{ active: flashFilter === 'all' }" type="button" @click="setFlashFilter('all')">全部 {{ flashCounts.all }}</button>
+          <button class="flash-btn" :class="{ active: flashFilter === 'warn' }" type="button" @click="setFlashFilter('warn')">警示 {{ flashCounts.warn }}</button>
           <button class="flash-btn" type="button" @click="refreshFlash(true)">刷新</button>
         </div>
         <div class="flash-toolbar-right">
+          <span class="flash-stat up">利多 {{ flashCounts.up }}</span>
+          <span class="flash-stat down">利空 {{ flashCounts.down }}</span>
           <span v-if="flashLastUpdated">更新 {{ flashLastUpdated }}</span>
           <span v-else>等待首次拉取</span>
           <span>共 {{ filteredFlashItems.length }} 条</span>
         </div>
       </div>
-      <div v-if="flashLoading && !filteredFlashItems.length" class="flash-loading">正在拉取快讯...</div>
+      <div v-if="flashLoading && !sortedFlashItems.length" class="flash-loading">正在拉取快讯...</div>
       <div v-else-if="flashError" class="flash-error">{{ flashError }}</div>
-      <div v-else-if="!filteredFlashItems.length" class="flash-empty">暂无符合条件的快讯</div>
+      <div v-else-if="!sortedFlashItems.length" class="flash-empty">暂无符合条件的快讯</div>
       <div v-else class="flash-list">
-        <article class="flash-item" :class="[flashToneClass(item), { warn: item.isWarn }]" v-for="item in filteredFlashItems" :key="item.id">
+        <article class="flash-item" :class="[flashToneClass(item), { warn: item.isWarn }]" v-for="item in sortedFlashItems" :key="item.id">
           <div class="flash-head">
             <span class="flash-time">{{ item.timeText }}</span>
-            <div class="flash-title">{{ item.title }}</div>
+            <div class="flash-title">
+              {{ item.title }}
+              <span v-if="item.isWarn" class="flash-flag warn">警示</span>
+              <span v-else-if="item.tone === 'up'" class="flash-flag up">利多</span>
+              <span v-else-if="item.tone === 'down'" class="flash-flag down">利空</span>
+            </div>
           </div>
           <div class="flash-summary" v-if="item.summary">{{ item.summary }}</div>
           <div class="flash-stocks" v-if="item.stocks && item.stocks.length">

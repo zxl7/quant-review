@@ -45,15 +45,17 @@ type AbnormalItem = {
 
 const { marketData } = useMarketData();
 
-const abnormalFilterST = ref(true);
-const abnormalSelectedTypes = ref<number[]>([11000, 11001, 10005, 10009, 10010]);
+const abnormalSelectedTypes = ref<number[]>([11000, 10005, 10003, 10009]);
 const abnormalLoading = ref(false);
 const abnormalError = ref('');
-const abnormalHasMore = ref(false);
-const abnormalEvents = ref<AbnormalItem[]>([]);
-const abnormalLastTimestamp = ref<number | null>(null);
+const abnormalPlateEventsRaw = ref<AbnormalItem[]>([]);
+const abnormalStockEventsRaw = ref<AbnormalItem[]>([]);
 const abnormalLastRequestTime = ref(0);
 const abnormalExpandedKeys = ref<string[]>([]);
+const abnormalPlateHasMore = ref(false);
+const abnormalStockHasMore = ref(false);
+const abnormalPlateLastTimestamp = ref<number | null>(null);
+const abnormalStockLastTimestamp = ref<number | null>(null);
 
 let abnormalTimer: number | null = null;
 let abnormalReqInFlight = false;
@@ -75,8 +77,23 @@ const abnormalStockTypeOptions = computed(() => [
   { type: 10014, label: '开板回封' },
   { type: 10009, label: '大幅拉升' },
   { type: 10010, label: '快速跳水' },
-  { type: 10012, label: '新股开板' },
 ]);
+
+const ABNORMAL_ATTACK_TYPES = [11000, 10005, 10003, 10009];
+const ABNORMAL_DEFENSE_TYPES = [11001, 10002, 10006, 10004, 10008, 10010];
+
+const abnormalPresetMode = computed<'attack' | 'defense' | 'custom'>(() => {
+  const selected = new Set(abnormalSelectedTypes.value);
+  const isAttack =
+    selected.size === ABNORMAL_ATTACK_TYPES.length &&
+    ABNORMAL_ATTACK_TYPES.every((x) => selected.has(x));
+  if (isAttack) return 'attack';
+  const isDefense =
+    selected.size === ABNORMAL_DEFENSE_TYPES.length &&
+    ABNORMAL_DEFENSE_TYPES.every((x) => selected.has(x));
+  if (isDefense) return 'defense';
+  return 'custom';
+});
 
 const abnormalSelectedPlateTypes = computed(() => abnormalSelectedTypes.value.filter((x) => x >= 11000));
 const abnormalSelectedStockTypes = computed(() => abnormalSelectedTypes.value.filter((x) => x < 11000));
@@ -130,13 +147,35 @@ const abnormalEventMetaMap: Record<number, { label: string; tone: string }> = {
   10008: { label: '将开跌停', tone: 'orange' },
   10009: { label: '大幅拉升', tone: 'red' },
   10010: { label: '快速跳水', tone: 'green' },
-  10012: { label: '新股开板', tone: 'orange' },
   10014: { label: '开板回封', tone: 'red' },
   11000: { label: '板块拉升', tone: 'red' },
   11001: { label: '板块跳水', tone: 'green' },
 };
 
 const abnormalEventMeta = (eventType: number) => abnormalEventMetaMap[eventType] || { label: `异动 ${eventType}`, tone: 'orange' };
+const ABNORMAL_FETCH_COUNT = 120;
+
+const fetchAbnormalRows = async (types: number[], count = ABNORMAL_FETCH_COUNT, timestamp?: number) => {
+  let url = `https://flash-api.xuangubao.cn/api/event/history?count=${count}`;
+  if (types.length) url += `&types=${types.join(',')}`;
+  if (timestamp) url += `&timestamp=${timestamp}`;
+  const res = await fetch(`${url}&_ts=${Date.now()}`, { cache: 'no-store' });
+  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  const json = await res.json();
+  return Array.isArray(json?.data) ? json.data : [];
+};
+
+const mergeAbnormalRows = (rows: any[]) => {
+  const seen = new Set<string>();
+  const out: any[] = [];
+  for (const row of rows) {
+    const key = `${row?.event_type || ''}-${row?.event_timestamp || ''}-${row?.target || ''}-${row?.stock_abnormal_event_data?.name || ''}-${row?.plate_abnormal_event_data?.plate_name || ''}`;
+    if (seen.has(key)) continue;
+    seen.add(key);
+    out.push(row);
+  }
+  return out;
+};
 
 const decorateCoreBadges = (item: AbnormalItem) => {
   const code = String(item?.primarySymbol || item?.primaryCode || '').trim();
@@ -187,9 +226,7 @@ const aggregateAbnormalItems = (items: AbnormalItem[]) => {
     const themeKey = !item.isPlate ? String(item.themeKey || item.tags[0] || '').trim() : '';
     const key = item.isPlate
       ? `plate:${item.title}:${item.eventType}`
-      : themeKey
-        ? `theme:${themeKey}:${item.eventType}`
-        : `stock:${item.primarySymbol || item.title}:${item.eventType}`;
+      : `stock:${item.primarySymbol || item.title}:${item.eventType}`;
     const prev = merged.get(key);
     if (!prev) {
       merged.set(key, {
@@ -220,18 +257,20 @@ const aggregateAbnormalItems = (items: AbnormalItem[]) => {
 
 const abnormalDisplayEvents = computed(() =>
   aggregateAbnormalItems(
-    abnormalEvents.value
+    [...abnormalPlateEventsRaw.value, ...abnormalStockEventsRaw.value]
       .map((item) => ({
         ...item,
         coreBadges: decorateCoreBadges(item),
       }))
       .slice()
       .sort((a, b) => {
+        const timeDiff = Number(b?.eventTimestamp || 0) - Number(a?.eventTimestamp || 0);
+        if (timeDiff) return timeDiff;
         const rankDiff = abnormalSortRank(a) - abnormalSortRank(b);
         if (rankDiff) return rankDiff;
         const weightDiff = abnormalSortWeight(b) - abnormalSortWeight(a);
         if (weightDiff) return weightDiff;
-        return Number(b?.eventTimestamp || 0) - Number(a?.eventTimestamp || 0);
+        return String(a?.title || '').localeCompare(String(b?.title || ''));
       }),
   ).map((item) => ({
     ...item,
@@ -248,9 +287,9 @@ const toggleAbnormalType = (type: number) => {
   startAbnormalPolling(true);
 };
 
-const toggleAbnormalSTFilter = () => {
-  abnormalFilterST.value = !abnormalFilterST.value;
-  void refreshAbnormalEvents(true);
+const applyAbnormalPreset = (mode: 'attack' | 'defense') => {
+  abnormalSelectedTypes.value = mode === 'defense' ? [...ABNORMAL_DEFENSE_TYPES] : [...ABNORMAL_ATTACK_TYPES];
+  startAbnormalPolling(true);
 };
 
 const abnormalValueClass = (value?: string | null) => {
@@ -264,6 +303,19 @@ const abnormalValueClass = (value?: string | null) => {
 const abnormalToPct = (value?: string | null) => {
   const n = Number(String(value || '').replace('%', '').trim());
   return Number.isFinite(n) ? n : 0;
+};
+
+const abnormalFormatSignedPct = (value?: string | null) => {
+  const n = abnormalToPct(value);
+  if (!Number.isFinite(n) || String(value || '').trim() === '') return '';
+  if (n > 0) return `+${n.toFixed(2)}%`;
+  if (n < 0) return `${n.toFixed(2)}%`;
+  return '0.00%';
+};
+
+const abnormalFormatSpeedPct = (value?: string | null) => {
+  const text = abnormalFormatSignedPct(value);
+  return text ? `速 ${text}` : '';
 };
 
 const abnormalRowToneClass = (row: AbnormalRow) => {
@@ -292,14 +344,6 @@ const abnormalOpenSymbol = (symbol?: string | null) => {
   if (!raw || typeof window === 'undefined') return;
   const market = raw.startsWith('6') ? 'SH' : 'SZ';
   window.open(`https://xueqiu.com/S/${market}${raw}`, '_blank', 'noopener');
-};
-
-const abnormalCopyCode = async (code?: string | null) => {
-  const text = String(code || '').trim();
-  if (!text || typeof navigator === 'undefined' || !navigator.clipboard) return;
-  try {
-    await navigator.clipboard.writeText(text);
-  } catch {}
 };
 
 const formatAbnormalTime = (timestamp: unknown) => {
@@ -474,11 +518,16 @@ const parseAbnormalItem = (event: any): AbnormalItem | null => {
   };
 };
 
+const isStAbnormalItem = (item: AbnormalItem) => {
+  const title = String(item?.title || '').toUpperCase();
+  return title.includes('ST');
+};
+
 const onAbnormalItemClick = (item: AbnormalItem) => {
   if (item?.primarySymbol) abnormalOpenSymbol(item.primarySymbol);
 };
 
-const refreshAbnormalEvents = async (force = false) => {
+const refreshAbnormalEvents = async (force = false, target: 'all' | 'plate' | 'stock' = 'all') => {
   try {
     const now = Date.now();
     if (!force && now - Number(abnormalLastRequestTime.value || 0) < 1000) return;
@@ -487,28 +536,53 @@ const refreshAbnormalEvents = async (force = false) => {
     abnormalLastRequestTime.value = now;
     abnormalLoading.value = true;
     abnormalError.value = '';
-    let url = 'https://flash-api.xuangubao.cn/api/event/history?count=50';
-    if (abnormalSelectedTypes.value.length) url += `&types=${abnormalSelectedTypes.value.join(',')}`;
-    const isStockEvent = abnormalSelectedTypes.value.some((type) => Number(type) < 11000);
-    if (!force && !isStockEvent && abnormalLastTimestamp.value) {
-      url += `&timestamp=${Number(abnormalLastTimestamp.value) - 3}`;
+    const selectedTypes = abnormalSelectedTypes.value.slice();
+    const plateTypes = selectedTypes.filter((type) => Number(type) >= 11000);
+    const stockTypes = selectedTypes.filter((type) => Number(type) < 11000);
+
+    if ((target === 'all' || target === 'plate') && plateTypes.length) {
+      const plateRows = await fetchAbnormalRows(
+        plateTypes,
+        ABNORMAL_FETCH_COUNT,
+        !force && target !== 'all' && abnormalPlateLastTimestamp.value ? Number(abnormalPlateLastTimestamp.value) - 3 : undefined,
+      );
+      const plateItems = plateRows.map((x: any) => parseAbnormalItem(x)).filter(Boolean).filter((item: AbnormalItem) => item.isPlate && !isStAbnormalItem(item)) as AbnormalItem[];
+      if (force) {
+        abnormalPlateLastTimestamp.value = plateRows.length ? Number(plateRows[plateRows.length - 1]?.event_timestamp || 0) : null;
+        abnormalPlateHasMore.value = plateRows.length >= 30;
+        abnormalPlateEventsRaw.value = plateItems;
+      } else if (target === 'plate') {
+        abnormalPlateLastTimestamp.value = plateRows.length ? Number(plateRows[plateRows.length - 1]?.event_timestamp || abnormalPlateLastTimestamp.value || 0) : abnormalPlateLastTimestamp.value;
+        abnormalPlateHasMore.value = plateRows.length >= 30;
+        abnormalPlateEventsRaw.value = mergeAbnormalRows([...abnormalPlateEventsRaw.value, ...plateItems] as any) as AbnormalItem[];
+      }
+    } else if (force) {
+      abnormalPlateLastTimestamp.value = null;
+      abnormalPlateHasMore.value = false;
+      abnormalPlateEventsRaw.value = [];
     }
-    const res = await fetch(`${url}&_ts=${Date.now()}`, { cache: 'no-store' });
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const json = await res.json();
-    const rows = Array.isArray(json?.data) ? json.data : [];
-    const items = rows.map((x: any) => parseAbnormalItem(x)).filter(Boolean) as AbnormalItem[];
-    const filtered = abnormalFilterST.value
-      ? items.filter((it) => !(String(it.title || '').includes('ST') || String(it.title || '').includes('*ST')))
-      : items;
-    if (force || !abnormalLastTimestamp.value || isStockEvent) abnormalEvents.value = filtered;
-    else abnormalEvents.value = abnormalEvents.value.concat(filtered);
-    if (!isStockEvent && rows.length) {
-      abnormalLastTimestamp.value = rows[rows.length - 1]?.event_timestamp || abnormalLastTimestamp.value;
-    } else if (isStockEvent) {
-      abnormalLastTimestamp.value = null;
+
+    if ((target === 'all' || target === 'stock') && stockTypes.length) {
+      const stockRows = await fetchAbnormalRows(
+        stockTypes,
+        ABNORMAL_FETCH_COUNT,
+        !force && target !== 'all' && abnormalStockLastTimestamp.value ? Number(abnormalStockLastTimestamp.value) - 3 : undefined,
+      );
+      const stockItems = stockRows.map((x: any) => parseAbnormalItem(x)).filter(Boolean).filter((item: AbnormalItem) => !item.isPlate && !isStAbnormalItem(item)) as AbnormalItem[];
+      if (force) {
+        abnormalStockLastTimestamp.value = stockRows.length ? Number(stockRows[stockRows.length - 1]?.event_timestamp || 0) : null;
+        abnormalStockHasMore.value = stockRows.length >= 30;
+        abnormalStockEventsRaw.value = stockItems;
+      } else if (target === 'stock') {
+        abnormalStockLastTimestamp.value = stockRows.length ? Number(stockRows[stockRows.length - 1]?.event_timestamp || abnormalStockLastTimestamp.value || 0) : abnormalStockLastTimestamp.value;
+        abnormalStockHasMore.value = stockRows.length >= 30;
+        abnormalStockEventsRaw.value = mergeAbnormalRows([...abnormalStockEventsRaw.value, ...stockItems] as any) as AbnormalItem[];
+      }
+    } else if (force) {
+      abnormalStockLastTimestamp.value = null;
+      abnormalStockHasMore.value = false;
+      abnormalStockEventsRaw.value = [];
     }
-    abnormalHasMore.value = isStockEvent ? true : rows.length >= 30;
   } catch (e: any) {
     abnormalError.value = `异动获取失败：${String(e?.message || e)}`;
   } finally {
@@ -536,13 +610,12 @@ const stopAbnormalPolling = () => {
   }
 };
 
-const abnormalHandleScroll = (event: Event) => {
-  const onlyPlate = abnormalSelectedTypes.value.length > 0 && abnormalSelectedTypes.value.every((type) => Number(type) >= 11000);
-  if (!onlyPlate) return;
+const abnormalHandleScroll = (event: Event, target: 'plate' | 'stock') => {
   const el = event.target as HTMLElement | null;
   if (!el) return;
   if (el.scrollHeight - el.scrollTop - el.clientHeight < 120) {
-    void refreshAbnormalEvents(false);
+    if (target === 'plate' && abnormalPlateHasMore.value) void refreshAbnormalEvents(false, 'plate');
+    if (target === 'stock' && abnormalStockHasMore.value) void refreshAbnormalEvents(false, 'stock');
   }
 };
 
@@ -565,41 +638,53 @@ onBeforeUnmount(() => {
             <div class="meta">3秒刷新 · 个股实时 · 板块续拉</div>
           </div>
           <div class="action">
-            <span class="wb-chip" :class="{ on: abnormalFilterST }">过滤ST</span>
             <button class="abnormal-btn" type="button" @click="refreshAbnormalEvents(true)">刷新</button>
           </div>
         </div>
         <div class="abnormal-settings">
-          <div class="abnormal-section-title">
-            <span>板块</span>
-            <span class="meta">{{ abnormalSelectedPlateTypes.length }} 项</span>
-          </div>
-          <div class="abnormal-switch-row">
-            <label class="abnormal-switch" v-for="item in abnormalPlateTypeOptions" :key="'apt-'+item.type">
-              <input type="checkbox" :checked="abnormalSelectedTypes.includes(item.type)" @change="toggleAbnormalType(item.type)">
-              <span>{{ item.label }}</span>
-            </label>
-          </div>
-          <div class="abnormal-section-title">
-            <span>个股</span>
-            <span class="meta">{{ abnormalSelectedStockTypes.length }} 项</span>
-          </div>
-          <div class="abnormal-switch-row">
-            <label class="abnormal-switch" v-for="item in abnormalStockTypeOptions" :key="'ast-'+item.type">
-              <input type="checkbox" :checked="abnormalSelectedTypes.includes(item.type)" @change="toggleAbnormalType(item.type)">
-              <span>{{ item.label }}</span>
-            </label>
+          <div class="abnormal-settings-columns">
+            <div class="abnormal-settings-column">
+              <div class="abnormal-inline-row">
+                <div class="abnormal-section-title">
+                  <span>板块</span>
+                  <span class="meta">{{ abnormalSelectedPlateTypes.length }} 项</span>
+                </div>
+                <div class="abnormal-switch-row">
+                  <label class="abnormal-switch" v-for="item in abnormalPlateTypeOptions" :key="'apt-'+item.type">
+                    <input type="checkbox" :checked="abnormalSelectedTypes.includes(item.type)" @change="toggleAbnormalType(item.type)">
+                    <span>{{ item.label }}</span>
+                  </label>
+                </div>
+              </div>
+            </div>
+            <div class="abnormal-settings-column">
+              <div class="abnormal-inline-row">
+                <div class="abnormal-section-title">
+                  <span>个股</span>
+                  <span class="meta">{{ abnormalSelectedStockTypes.length }} 项</span>
+                </div>
+                <div class="abnormal-switch-row">
+                  <label class="abnormal-switch" v-for="item in abnormalStockTypeOptions" :key="'ast-'+item.type">
+                    <input type="checkbox" :checked="abnormalSelectedTypes.includes(item.type)" @change="toggleAbnormalType(item.type)">
+                    <span>{{ item.label }}</span>
+                  </label>
+                </div>
+              </div>
+            </div>
           </div>
           <div class="abnormal-filter">
             <div>
-              <div class="label">筛选</div>
-              <div class="tip">保留全量类型，后续再收口</div>
+              <div class="label">预设</div>
+              <div class="tip">{{ abnormalPresetMode === 'attack' ? '默认进攻' : abnormalPresetMode === 'defense' ? '防守' : '自定义' }}</div>
             </div>
-            <button class="abnormal-btn" type="button" @click="toggleAbnormalSTFilter()">{{ abnormalFilterST ? '已过滤ST' : '显示ST' }}</button>
+            <div class="abnormal-filter-actions">
+              <button class="abnormal-btn" :class="{ active: abnormalPresetMode === 'attack' }" type="button" @click="applyAbnormalPreset('attack')">默认进攻</button>
+              <button class="abnormal-btn" :class="{ active: abnormalPresetMode === 'defense' }" type="button" @click="applyAbnormalPreset('defense')">防守</button>
+            </div>
           </div>
         </div>
-        <div class="abnormal-list-wrap abnormal-scroll" @scroll="abnormalHandleScroll">
-          <div v-if="abnormalLoading && !abnormalEvents.length" class="abnormal-loading">正在拉取异动数据...</div>
+        <div class="abnormal-list-wrap">
+          <div v-if="abnormalLoading && !abnormalPlateEventsRaw.length && !abnormalStockEventsRaw.length" class="abnormal-loading">正在拉取异动数据...</div>
           <div v-else-if="abnormalError" class="abnormal-error">{{ abnormalError }}</div>
           <div v-else-if="!abnormalDisplayEvents.length" class="abnormal-empty">当前没有符合筛选条件的异动</div>
           <div v-else class="abnormal-columns">
@@ -608,14 +693,15 @@ onBeforeUnmount(() => {
                 <div class="abnormal-col-title">板块异动</div>
                 <div class="abnormal-col-meta">{{ abnormalPlateEvents.length }} 条</div>
               </div>
-              <div class="abnormal-list">
+              <div class="abnormal-column-scroll abnormal-scroll" @scroll="(event) => abnormalHandleScroll(event, 'plate')">
+                <div class="abnormal-list">
                 <article class="abnormal-item" :class="abnormalCardClass(item)" v-for="item in abnormalPlateEvents" :key="item.id" @click="onAbnormalItemClick(item)">
                   <div class="abnormal-top">
                     <div>
                       <div class="abnormal-name">
                         <span>{{ item.title }}</span>
-                        <span class="abnormal-name-move" :class="abnormalValueClass(item.valueText)" v-if="item.valueText">{{ item.valueText }}</span>
-                        <span class="abnormal-name-move abnormal-moment" :class="abnormalValueClass(item.momentText)" v-if="item.momentText">{{ item.momentText }}</span>
+                        <span class="abnormal-name-move" :class="abnormalValueClass(item.valueText)" v-if="item.valueText">{{ abnormalFormatSignedPct(item.valueText) }}</span>
+                        <span class="abnormal-name-move abnormal-moment" :class="abnormalValueClass(item.momentText)" v-if="item.momentText">{{ abnormalFormatSpeedPct(item.momentText) }}</span>
                         <div class="abnormal-head-tags">
                           <div class="abnormal-priority" :class="abnormalPriorityTone(item)" v-if="item.priorityLabel">{{ item.priorityLabel }}</div>
                           <span class="abnormal-tag subtle" :class="item.tone" v-if="item.eventTypeLabel">{{ item.eventTypeLabel }}</span>
@@ -641,15 +727,18 @@ onBeforeUnmount(() => {
                       <div class="abnormal-subleft">
                         <span class="abnormal-subname" :class="[abnormalRowToneClass(row), { 'abnormal-link': row.code }]" @click.stop="row.code && abnormalOpenSymbol(row.code)">{{ row.name }}</span>
                         <span class="abnormal-subcode" :class="[abnormalRowToneClass(row), { 'abnormal-link': row.code }]" v-if="row.code" @click.stop="abnormalOpenSymbol(row.code)">({{ row.code }})</span>
-                        <button class="abnormal-copy" v-if="row.code" type="button" @click.stop="abnormalCopyCode(row.code)">复制</button>
                       </div>
                       <div class="abnormal-subleft">
-                        <span class="abnormal-submeta strong" :class="abnormalValueClass(row.mtmText)" v-if="row.mtmText">{{ row.mtmText }}</span>
-                        <span class="abnormal-submeta strong" :class="abnormalValueClass(row.pcpText)" v-if="row.pcpText">{{ row.pcpText }}</span>
+                        <span class="abnormal-submeta strong" :class="abnormalValueClass(row.pcpText)" v-if="row.pcpText">{{ abnormalFormatSignedPct(row.pcpText) }}</span>
+                        <span class="abnormal-submeta strong" :class="abnormalValueClass(row.mtmText)" v-if="row.mtmText">{{ abnormalFormatSpeedPct(row.mtmText) }}</span>
                       </div>
                     </div>
                   </div>
                 </article>
+                </div>
+                <div class="abnormal-more" v-if="abnormalPlateHasMore">
+                  <button class="abnormal-btn" type="button" @click="refreshAbnormalEvents(false, 'plate')">加载更多</button>
+                </div>
               </div>
             </div>
 
@@ -658,14 +747,15 @@ onBeforeUnmount(() => {
                 <div class="abnormal-col-title">个股异动</div>
                 <div class="abnormal-col-meta">{{ abnormalStockEvents.length }} 条</div>
               </div>
-              <div class="abnormal-list">
+              <div class="abnormal-column-scroll abnormal-scroll" @scroll="(event) => abnormalHandleScroll(event, 'stock')">
+                <div class="abnormal-list">
                 <article class="abnormal-item" :class="abnormalCardClass(item)" v-for="item in abnormalStockEvents" :key="item.id" @click="onAbnormalItemClick(item)">
                   <div class="abnormal-top">
                     <div>
                       <div class="abnormal-name">
                         <span>{{ item.title }}</span>
-                        <span class="abnormal-name-move" :class="abnormalValueClass(item.valueText)" v-if="item.valueText">{{ item.valueText }}</span>
-                        <span class="abnormal-name-move abnormal-moment" :class="abnormalValueClass(item.momentText)" v-if="item.momentText">{{ item.momentText }}</span>
+                        <span class="abnormal-name-move" :class="abnormalValueClass(item.valueText)" v-if="item.valueText">{{ abnormalFormatSignedPct(item.valueText) }}</span>
+                        <span class="abnormal-name-move abnormal-moment" :class="abnormalValueClass(item.momentText)" v-if="item.momentText">{{ abnormalFormatSpeedPct(item.momentText) }}</span>
                         <div class="abnormal-head-tags">
                           <div class="abnormal-priority" :class="abnormalPriorityTone(item)" v-if="item.priorityLabel">{{ item.priorityLabel }}</div>
                           <span class="abnormal-tag subtle" :class="item.tone" v-if="item.eventTypeLabel">{{ item.eventTypeLabel }}</span>
@@ -691,20 +781,20 @@ onBeforeUnmount(() => {
                       <div class="abnormal-subleft">
                         <span class="abnormal-subname" :class="[abnormalRowToneClass(row), { 'abnormal-link': row.code }]" @click.stop="row.code && abnormalOpenSymbol(row.code)">{{ row.name }}</span>
                         <span class="abnormal-subcode" :class="[abnormalRowToneClass(row), { 'abnormal-link': row.code }]" v-if="row.code" @click.stop="abnormalOpenSymbol(row.code)">({{ row.code }})</span>
-                        <button class="abnormal-copy" v-if="row.code" type="button" @click.stop="abnormalCopyCode(row.code)">复制</button>
                       </div>
                       <div class="abnormal-subleft">
-                        <span class="abnormal-submeta strong" :class="abnormalValueClass(row.mtmText)" v-if="row.mtmText">{{ row.mtmText }}</span>
-                        <span class="abnormal-submeta strong" :class="abnormalValueClass(row.pcpText)" v-if="row.pcpText">{{ row.pcpText }}</span>
+                        <span class="abnormal-submeta strong" :class="abnormalValueClass(row.pcpText)" v-if="row.pcpText">{{ abnormalFormatSignedPct(row.pcpText) }}</span>
+                        <span class="abnormal-submeta strong" :class="abnormalValueClass(row.mtmText)" v-if="row.mtmText">{{ abnormalFormatSpeedPct(row.mtmText) }}</span>
                       </div>
                     </div>
                   </div>
                 </article>
+                </div>
+                <div class="abnormal-more" v-if="abnormalStockHasMore">
+                  <button class="abnormal-btn" type="button" @click="refreshAbnormalEvents(false, 'stock')">加载更多</button>
+                </div>
               </div>
             </div>
-          </div>
-          <div class="abnormal-more" v-if="abnormalHasMore && abnormalSelectedTypes.length && abnormalSelectedTypes.every((type) => Number(type) >= 11000)">
-            <button class="abnormal-btn" type="button" @click="refreshAbnormalEvents(false)">加载更多</button>
           </div>
         </div>
       </div>

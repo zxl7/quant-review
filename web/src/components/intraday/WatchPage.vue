@@ -451,9 +451,7 @@ const liveError = computed(() => '');
                   <span>当前高亮</span>
                   <strong>{{ watchCurrentSnap.time }}</strong>
                 </div>
-                <div class="wb-trend-axis">
-                  <span v-for="p in watchTimePoints" :key="'wta-'+p.index" :class="{ active: p.index <= watchCurrentIndex, current: p.index === watchCurrentIndex }">{{ p.time }}</span>
-                </div>
+                
                 <div class="wb-trend-legend">
                   <span><i class="score"></i>盘中情绪分</span>
                   <span><i class="heat"></i>热度</span>
@@ -464,6 +462,9 @@ const liveError = computed(() => '');
                   <div class="v">{{ watchEvolutionSummary }}</div>
                 </div>
               </div>
+              <div class="wb-trend-axis">
+                  <span v-for="p in watchTimePoints" :key="'wta-'+p.index" :class="{ active: p.index <= watchCurrentIndex, current: p.index === watchCurrentIndex }">{{ p.time }}</span>
+                </div>
               <div class="wb-list" style="margin-top: 12px">
                 <div class="wb-row" v-for="(x, i) in watchRecentRows" :key="'wbt-'+i">
                   <span class="name">{{ x.time }} {{ x.shift_label || x.headline || '—' }}</span>
