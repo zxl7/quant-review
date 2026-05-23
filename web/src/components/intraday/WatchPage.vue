@@ -133,21 +133,6 @@ const watchPrevSnap = computed(() => {
   const rows = watchSnapshots.value;
   return rows.length > 1 ? rows[rows.length - 2] : null;
 });
-const watchModeText = computed(() => '快照流实时渲染');
-const watchIntervalText = computed(() => {
-  const n = Number(marketData.value?.intradaySnapshots?.interval_min);
-  const m = Number.isFinite(n) ? Math.max(2, Math.min(30, Math.round(n))) : 10;
-  return `${m}分钟/次`;
-});
-const watchSourceText = computed(() => marketData.value?.live?.source || 'AkShare');
-const watchDotClass = computed(() => {
-  const live = marketData.value?.live;
-  const alerts = live && Array.isArray(live.alerts) ? live.alerts : [];
-  if (!live) return 'warn';
-  if (alerts.some((a: any) => a && (a.level === 'error' || a.level === 'danger'))) return 'danger';
-  if (alerts.some((a: any) => a && a.level === 'warn')) return 'warn';
-  return 'on';
-});
 
 const watchCurrentShift = computed(() => {
   const curr = watchCurrentSnap.value || {};
@@ -293,22 +278,6 @@ const liveError = computed(() => '');
 <template>
     <div class="card" data-page="watch" id="sec-watch">
     <div class="wb">
-      <div class="wb-head">
-        <div class="wb-title">
-          <span :class="['wb-dot', watchDotClass]"></span>
-          盯盘工作台
-        </div>
-        <div class="wb-meta">
-          数据源 {{ watchSourceText }}
-          <span v-if="watchCurrentSnap?.time">｜时点 {{ watchCurrentSnap.time }}</span>
-          <span v-else-if="marketData.live?.ts_bj">｜更新 {{ marketData.live.ts_bj }}</span>
-          <span v-else>｜暂无序列</span>
-        </div>
-        <div class="wb-actions">
-          <span class="wb-chip on">{{ watchModeText }}</span>
-        </div>
-      </div>
-
       <div class="wb-body">
         <div class="wb-grid">
           <div class="wb-span-4 wb-flat-section wb-shift-card" :class="'tone-' + watchCurrentShift.tone">
