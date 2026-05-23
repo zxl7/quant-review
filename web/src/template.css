@@ -6589,26 +6589,29 @@
       .hero-kpi-thermo .ring-pack {
         min-height: 66px;
       }
-      .hero-kpi-thermo .ring-center {
+      .hero-kpi-thermo {
         display: flex;
         flex-direction: column;
-        justify-content: space-around;
+        justify-content: space-evenly;
         align-items: flex-start;
         flex: 1 1 auto;
         min-width: 0;
         height: 100%;
       }
-      .hero-kpi-thermo .ring {
-        margin-left: auto;
+      .ring-pack > .ring {
+        flex: 0 0 auto;
       }
-      .hero-kpi-thermo .ring-center .big {
-        font-size: 17px;
+      .hero-kpi-thermo .big {
+        font-size: 16px;
+        margin: 2px 0;
         font-weight: 1000;
         line-height: 1;
       }
-      .hero-kpi-thermo .ring-center .small {
+      .hero-kpi-thermo .small {
         font-size: 10px;
         line-height: 1.2;
+        color: var(--text-muted);
+        font-weight: 800;
       }
       .ring {
         width: 56px;
