@@ -1917,7 +1917,7 @@
         border-radius: 18px;
         border: 1px solid color-mix(in oklab, var(--border) 72%, var(--theme-glow) 28%);
         background: linear-gradient(135deg, color-mix(in oklab, var(--theme-soft) 12%, rgba(255, 255, 255, 0.06)), rgba(255, 255, 255, 0.02));
-        padding: 10px 10px;
+        padding: 8px;
         overflow: hidden;
       }
       [data-theme="dark"] .mc-panel {
@@ -2132,7 +2132,7 @@
       }
       .ladder-row {
         display: grid;
-        grid-template-columns: 68px 1fr;
+        grid-template-columns: 58px 1fr;
         gap: 12px;
         align-items: start;
         background: var(--bg-elevated);
@@ -2143,9 +2143,9 @@
       }
       @media (max-width: 600px) {
         .ladder-row {
-          grid-template-columns: 68px 1fr;
+          grid-template-columns: 58px 1fr;
           gap: 10px;
-          padding: 10px 10px;
+          padding: 8px;
         }
       }
       .ladder-left {
@@ -2418,7 +2418,7 @@
         border-radius: 18px;
         border: 1px solid color-mix(in oklab, var(--border) 70%, var(--theme-glow) 30%);
         background: linear-gradient(135deg, color-mix(in oklab, var(--theme-soft) 14%, rgba(255, 255, 255, 0.04)), rgba(255, 255, 255, 0.02));
-        padding: 10px 10px;
+        padding: 8px;
         overflow: hidden;
       }
       [data-theme="dark"] .height-trend-wrap {
@@ -2787,7 +2787,7 @@
       .theme-detail-panel {
         border: 1px solid var(--border);
         border-radius: 14px;
-        padding: 10px 10px;
+        padding: 8px;
         background: color-mix(in oklab, var(--bg-card), var(--bg-elevated) 18%);
       }
       .theme-detail-panel .hd {
@@ -3593,7 +3593,7 @@
         background: rgba(230, 0, 18, 0.08);
       }
       .abnormal-list-wrap {
-        padding: 8px 10px 10px;
+        padding: 8px 8px;
       }
       .abnormal-list {
         display: grid;
@@ -4217,7 +4217,7 @@
         border-radius: 14px;
         border: 1px solid rgba(148, 163, 184, 0.18);
         background: rgba(255, 255, 255, 0.52);
-        padding: 10px 10px;
+        padding: 8px;
       }
       [data-theme="dark"] .wb-light {
         background: rgba(2, 6, 23, 0.22);
@@ -5141,7 +5141,7 @@
       .prism-card {
         border: 1px solid rgba(148, 163, 184, 0.16);
         border-radius: 14px;
-        padding: 10px 10px;
+        padding: 8px;
         background: rgba(255, 255, 255, 0.45);
       }
       [data-theme="dark"] .prism-card {
@@ -5391,7 +5391,7 @@
           border-radius: 16px;
         }
         .index-item {
-          padding: 10px 10px;
+          padding: 8px;
           text-align: center;
         }
         .index-row {
@@ -5423,7 +5423,7 @@
 
         /* Summary：改成 2 列，避免文字挤压 */
         .summarybar {
-          padding: 10px 10px;
+          padding: 8px;
         }
         .summarybar-grid {
           grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
@@ -5692,7 +5692,7 @@
       .ov7-head {
         margin-top: 8px;
         display: grid;
-        grid-template-columns: repeat(2, minmax(0, 1fr));
+        grid-template-columns: repeat(4, minmax(0, 1fr));
         gap: 8px;
       }
       @media (max-width: 720px) {
@@ -5729,6 +5729,8 @@
         color: var(--text-muted);
         font-size: 12px;
         font-weight: 850;
+        display: flex;
+        justify-content: space-between;
       }
       .ov7-highlights li {
         margin: 4px 0;
@@ -6312,7 +6314,7 @@
       .trend-item {
         border: 1px solid var(--border);
         border-radius: 12px;
-        padding: 10px 10px;
+        padding: 8px;
         background: rgba(255, 255, 255, 0.02);
       }
       [data-theme="dark"] .trend-item {
@@ -6499,7 +6501,7 @@
       .thermo-explain-item {
         border: 1px solid var(--border);
         border-radius: 14px;
-        padding: 10px 10px;
+        padding: 8px;
         background: rgba(255, 255, 255, 0.02);
       }
       [data-theme="dark"] .thermo-explain-item {
@@ -6674,7 +6676,7 @@
       .dim-item {
         border: 1px solid var(--border);
         border-radius: 12px;
-        padding: 10px 10px;
+        padding: 8px;
         background: rgba(255, 255, 255, 0.02);
       }
       [data-theme="dark"] .dim-item {
