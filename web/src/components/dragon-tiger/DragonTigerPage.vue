@@ -1,225 +1,111 @@
 <script setup lang="ts">
-import { computed, onMounted } from 'vue';
+import { onMounted, computed } from 'vue';
+import { useDragonTiger, fmtAmount, type DragonTigerRecord } from './useDragonTiger';
 import ShortReminderFooter from '../common/ShortReminderFooter.vue';
-import { useDragonTiger } from './useDragonTiger';
 
-const {
-  loading,
-  error,
-  lastUpdated,
-  dateOptions,
-  selectedDate,
-  rowCount,
-  stockCount,
-  focusNames,
-  groupSummaries,
-  selectedGroup,
-  selectedGroupSummary,
-  selectedRows,
-  selectedStocks,
-  selectedSeats,
-  keyword,
-  formatMoney,
-  formatUnsignedMoney,
-  formatSignedPct,
-  marketLabel,
-  xueqiuUrl,
-  isThreeDay,
-  setSelectedGroup,
-  fetchRows,
-  refresh,
-} = useDragonTiger();
+const { dates, records, loading, error, selectedDate, init } = useDragonTiger();
 
-const displayedGroups = computed(() => {
-  const list = [...groupSummaries.value];
-  return list.sort((a, b) => Math.abs(b.net) - Math.abs(a.net)).slice(0, 18);
-});
+onMounted(() => init());
 
-const stockRowsByGroup = (group: string) => selectedRows.value.filter((row) => row.yzmc === group);
+function xqUrl(code: string) {
+  if (!code) return '#';
+  const mkt = code.startsWith('6') ? 'SH' : 'SZ';
+  return `https://xueqiu.com/S/${mkt}${code}`;
+}
 
-const stockSummariesByGroup = (group: string) => {
-  const map = new Map<string, any>();
-  stockRowsByGroup(group).forEach((row) => {
-    const prev = map.get(row.gpdm) || {
-      code: row.gpdm,
-      name: row.gpmc,
-      net: 0,
-      buy: 0,
-      sell: 0,
-      price: row.price,
-      changePct: row.changePct,
-    };
-    prev.buy += row.mrje;
-    prev.sell += row.mcje;
-    prev.net += row.net;
-    if (prev.price === undefined && row.price !== undefined) prev.price = row.price;
-    if (prev.changePct === undefined && row.changePct !== undefined) prev.changePct = row.changePct;
-    map.set(row.gpdm, prev);
-  });
-  return Array.from(map.values()).sort((a, b) => Math.abs(b.net) - Math.abs(a.net)).slice(0, 5);
-};
+// 按股票分组，每只股票的买入前5和卖出前5分别排序
+const stockGroups = computed(() => {
+  const map = new Map<string, {
+    code: string; name: string;
+    totalBuy: number; totalSell: number;
+    topBuy: DragonTigerRecord[];  // 买入前5
+    topSell: DragonTigerRecord[]; // 卖出前5
+  }>();
+  for (const r of records.value) {
+    const key = r.gpdm;
+    if (!map.has(key)) {
+      map.set(key, { code: r.gpdm, name: r.gpmc, totalBuy: 0, totalSell: 0, topBuy: [], topSell: [] });
+    }
+    const g = map.get(key)!;
+    if (r.mrje != null) g.totalBuy += r.mrje;
+    if (r.mcje != null) g.totalSell += r.mcje;
+    g.topBuy.push(r);
+    g.topSell.push(r);
+  }
 
-const seatRowsByStock = (group: string, code: string) =>
-  selectedRows.value.filter((row) => row.yzmc === group && row.gpdm === code);
+  const groups = Array.from(map.values());
+  for (const g of groups) {
+    // 买入前5：按 mrje 降序（只取有买入的）
+    g.topBuy = g.topBuy
+      .filter((r) => r.mrje != null)
+      .sort((a, b) => (b.mrje || 0) - (a.mrje || 0))
+      .slice(0, 5);
+    // 卖出前5：按 mcje 降序（只取有卖出的）
+    g.topSell = g.topSell
+      .filter((r) => r.mcje != null)
+      .sort((a, b) => (b.mcje || 0) - (a.mcje || 0))
+      .slice(0, 5);
+  }
 
-onMounted(() => {
-  void refresh(true);
+  return groups.sort((a, b) => (b.totalBuy + b.totalSell) - (a.totalBuy + a.totalSell));
 });
 </script>
 
 <template>
-  <div class="dragon-page">
-    <div class="card dragon-card" data-page="dragonTiger" id="sec-dragon-tiger">
-      <div class="card-header">
-        <div>
-          <div class="card-title">游资龙虎榜</div>
-          <div class="dragon-subtitle">实时接口直连数据已改成本地注入 · 关系导图视图</div>
-        </div>
-        <div class="card-badge">LIVE</div>
+  <div class="card" data-page="dragonTiger" id="sec-dragon-tiger">
+    <div class="dt-top-bar">
+      <span class="dt-top-title">龙虎榜单</span>
+      <select v-model="selectedDate" class="dt-date-select" @change="init">
+        <option v-for="d in dates" :key="d" :value="d">{{ d }}</option>
+      </select>
+    </div>
+
+    <div v-if="loading" class="dt-sk-list">
+      <div v-for="i in 8" :key="'sk-'+i" class="dt-sk-row">
+        <div class="dt-sk-line w15"></div><div class="dt-sk-line w10"></div>
+        <div class="dt-sk-line w20"></div><div class="dt-sk-line w25"></div>
       </div>
+    </div>
 
-      <div class="dragon-toolbar">
-        <div class="dragon-toolbar-left">
-          <label class="dragon-date-picker">
-            <span>日期</span>
-            <select v-model="selectedDate" @change="fetchRows(selectedDate)">
-              <option v-for="item in dateOptions" :key="item" :value="item">{{ item }}</option>
-            </select>
-          </label>
-          <button class="dragon-btn" type="button" @click="refresh(true)">刷新本地数据</button>
-          <input v-model="keyword" class="dragon-search" type="text" placeholder="筛选股票 / 营业部" />
+    <div v-else-if="error" class="dt-error">{{ error }}</div>
+
+    <div v-else>
+      <div v-for="sg in stockGroups" :key="sg.code" class="dt-stock-block">
+        <!-- 股票头部 -->
+        <div class="dt-stock-head">
+          <span class="dt-stock-code">{{ sg.code }}</span>
+          <a :href="xqUrl(sg.code)" target="_blank" rel="noopener" class="dt-link dt-stock-name">{{ sg.name }}</a>
+          <span class="dt-stock-summary">
+            <span class="dt-ss-buy">买 {{ fmtAmount(sg.totalBuy) }}</span>
+            <span class="dt-ss-sell">卖 {{ fmtAmount(sg.totalSell) }}</span>
+            <span :class="sg.totalBuy >= sg.totalSell ? 'dt-net-buy' : 'dt-net-sell'">
+              {{ sg.totalBuy >= sg.totalSell ? '净买' : '净卖' }} {{ fmtAmount(Math.abs(sg.totalBuy - sg.totalSell)) }}
+            </span>
+          </span>
         </div>
-        <div class="dragon-toolbar-right">
-          <span>游资 <b>{{ groupSummaries.length }}</b></span>
-          <span>席位 <b>{{ rowCount }}</b></span>
-          <span>个股 <b>{{ stockCount }}</b></span>
-          <span v-if="lastUpdated">更新 <b>{{ lastUpdated }}</b></span>
-        </div>
-      </div>
 
-      <div v-if="focusNames.length" class="dragon-focus-row">
-        <button
-          v-for="name in focusNames"
-          :key="name"
-          class="dragon-focus-chip"
-          :class="{ active: selectedGroup === name }"
-          type="button"
-          @click="setSelectedGroup(name)">
-          {{ name }}
-        </button>
-      </div>
-
-      <div v-if="error" class="dragon-error">{{ error }}</div>
-
-      <div class="dragon-summary-card">
-        <div>
-          <div class="dragon-main-title">{{ selectedGroupSummary?.name || '龙虎榜总览' }}</div>
-          <div class="dragon-main-subtitle">
-            <span v-if="selectedGroupSummary?.tags?.length">{{ selectedGroupSummary.tags.join(' · ') }}</span>
-            <span v-else>只保留关系层级，不做花哨图表</span>
-          </div>
-        </div>
-        <div class="dragon-summary-grid">
-          <div class="dragon-kpi">
-            <div class="dragon-kpi-label">总买入</div>
-            <div class="dragon-kpi-value up">{{ formatMoney(selectedGroupSummary?.buy || 0) }}</div>
-          </div>
-          <div class="dragon-kpi">
-            <div class="dragon-kpi-label">总卖出</div>
-            <div class="dragon-kpi-value down">{{ formatMoney(-(selectedGroupSummary?.sell || 0)) }}</div>
-          </div>
-          <div class="dragon-kpi">
-            <div class="dragon-kpi-label">净额</div>
-            <div class="dragon-kpi-value" :class="(selectedGroupSummary?.net || 0) >= 0 ? 'up' : 'down'">
-              {{ formatMoney(selectedGroupSummary?.net || 0) }}
+        <!-- 买卖双栏 -->
+        <div class="dt-columns">
+          <!-- 买入前5 -->
+          <div class="dt-col">
+            <div class="dt-col-title dt-buy-title">买入前{{ sg.topBuy.length }}席</div>
+            <div v-if="!sg.topBuy.length" class="dt-empty-col">--</div>
+            <div v-for="(r, i) in sg.topBuy" :key="'b-'+i" class="dt-col-row">
+              <span class="dt-rank-sm">{{ i + 1 }}</span>
+              <span class="dt-col-trader">{{ r.yzmc }}</span>
+              <span class="dt-col-amt dt-up">{{ fmtAmount(r.mrje) }}</span>
+              <span class="dt-col-yyb">{{ r.yyb }}</span>
             </div>
           </div>
-          <div class="dragon-kpi">
-            <div class="dragon-kpi-label">个股 / 席位</div>
-            <div class="dragon-kpi-value neutral">{{ selectedGroupSummary?.stockCount || 0 }} / {{ selectedGroupSummary?.seatCount || 0 }}</div>
-          </div>
-        </div>
-      </div>
-
-      <div class="dragon-mindmap-container">
-        <div class="dragon-mindmap">
-          <!-- Root -->
-          <div class="dragon-root-wrapper">
-            <div class="dragon-root-node">
-              <div class="dragon-root-label">龙虎榜</div>
-              <div class="dragon-root-meta">{{ selectedDate || '--' }}</div>
-            </div>
-          </div>
-
-          <!-- Branches -->
-          <div class="dragon-branches">
-            <div
-              v-for="group in displayedGroups"
-              :key="group.name"
-              class="dragon-branch">
-              
-              <!-- Group Node -->
-              <div class="dragon-group-node-wrapper">
-                <div class="dragon-group-node">
-                  <span class="dragon-group-name">{{ group.name }}</span>
-                  <span class="dragon-group-net" :class="group.net >= 0 ? 'up' : 'down'">{{ formatMoney(group.net) }}</span>
-                </div>
-              </div>
-
-              <!-- Stocks Column -->
-              <div class="dragon-stocks-wrapper">
-                <div v-for="stock in stockSummariesByGroup(group.name)" :key="stock.code" class="dragon-stock-branch">
-                  <!-- Stock Node -->
-                  <div class="dragon-stock-node-wrapper">
-                    <div class="dragon-stock-node" :class="(stock.changePct || 0) >= 0 ? 'up' : 'down'">
-                      <div class="dragon-stock-main">
-                        <span v-if="isThreeDay(group.name, stock.code)" class="dragon-day-tag">3日</span>
-                        <span class="dragon-stock-name">{{ stock.name }}</span>
-                      </div>
-                      <span class="dragon-stock-value">{{ formatMoney(stock.net) }}</span>
-                    </div>
-                  </div>
-
-                  <!-- Seats Column -->
-                  <div class="dragon-seats-wrapper">
-                    <div v-for="row in seatRowsByStock(group.name, stock.code).slice(0, 3)" :key="`${row.yzmc}-${row.yyb}-${row.gpdm}-${row.sblx}`" class="dragon-seat-node">
-                      <span class="dragon-seat-name">{{ row.yyb }}</span>
-                      <span class="dragon-seat-net" :class="row.net >= 0 ? 'up' : 'down'">{{ formatMoney(row.net) }}</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="dragon-detail-strip">
-        <div class="dragon-detail-block">
-          <div class="dragon-detail-block-title">当前筛选个股</div>
-          <div class="dragon-detail-chip-list">
-            <a
-              v-for="item in selectedStocks.slice(0, 8)"
-              :key="item.code"
-              class="dragon-detail-chip"
-              :href="xueqiuUrl(item.code)"
-              target="_blank"
-              rel="noopener noreferrer">
-              <span class="name">{{ item.name }}</span>
-              <span class="value" :class="item.net >= 0 ? 'up' : 'down'">{{ formatMoney(item.net) }}</span>
-            </a>
-          </div>
-        </div>
-
-        <div class="dragon-detail-block">
-          <div class="dragon-detail-block-title">当前筛选营业部</div>
-          <div class="dragon-seat-list">
-            <div v-for="item in selectedSeats.slice(0, 8)" :key="item.seat + item.type" class="dragon-seat-item">
-              <div class="dragon-seat-name">{{ item.seat }}</div>
-              <div class="dragon-seat-meta">
-                <span>{{ item.type || '--' }}</span>
-                <span :class="item.net >= 0 ? 'up' : 'down'">{{ formatMoney(item.net) }}</span>
-              </div>
+          <!-- 卖出前5 -->
+          <div class="dt-col">
+            <div class="dt-col-title dt-sell-title">卖出前{{ sg.topSell.length }}席</div>
+            <div v-if="!sg.topSell.length" class="dt-empty-col">--</div>
+            <div v-for="(r, i) in sg.topSell" :key="'s-'+i" class="dt-col-row">
+              <span class="dt-rank-sm">{{ i + 1 }}</span>
+              <span class="dt-col-trader">{{ r.yzmc }}</span>
+              <span class="dt-col-amt dt-down">{{ fmtAmount(r.mcje) }}</span>
+              <span class="dt-col-yyb">{{ r.yyb }}</span>
             </div>
           </div>
         </div>
@@ -229,3 +115,95 @@ onMounted(() => {
     <ShortReminderFooter />
   </div>
 </template>
+
+<style scoped>
+.dt-top-bar {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 14px; padding-bottom: 8px;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.14);
+}
+.dt-top-title { font-size: 16px; font-weight: 1050; color: var(--text-primary); }
+.dt-date-select {
+  padding: 4px 10px; border-radius: 6px;
+  border: 1px solid color-mix(in oklab, rgba(148, 163, 184, 0.18) 65%, var(--theme-glow) 35%);
+  background: color-mix(in oklab, var(--theme-soft) 8%, rgba(255, 255, 255, 0.5));
+  color: var(--text-primary); font-size: 12px; font-weight: 800;
+  outline: none; cursor: pointer;
+}
+[data-theme="dark"] .dt-date-select { background: rgba(15, 23, 42, 0.5); color: var(--text-primary); }
+
+.dt-sk-list { display: flex; flex-direction: column; gap: 6px; padding: 10px 0; }
+.dt-sk-row { display: flex; gap: 8px; }
+.dt-sk-line {
+  height: 12px; border-radius: 3px;
+  background: linear-gradient(90deg, rgba(148,163,184,0.12) 0%, rgba(148,163,184,0.30) 50%, rgba(148,163,184,0.12) 100%);
+  background-size: 200% 100%; animation: dt-shimmer 1.4s infinite;
+}
+.dt-sk-line.w10 { width: 10%; } .dt-sk-line.w15 { width: 15%; }
+.dt-sk-line.w20 { width: 20%; } .dt-sk-line.w25 { width: 25%; }
+@keyframes dt-shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
+
+/* Stock block */
+.dt-stock-block {
+  border: 1px solid color-mix(in oklab, rgba(148, 163, 184, 0.14) 65%, var(--theme-glow) 35%);
+  border-radius: 12px;
+  background: linear-gradient(135deg, color-mix(in oklab, var(--theme-soft) 8%, rgba(255,255,255,0.5)), rgba(255,255,255,0.5));
+  padding: 12px 14px; margin-bottom: 10px;
+}
+[data-theme="dark"] .dt-stock-block {
+  background: rgba(15, 23, 42, 0.4);
+  border-color: rgba(148, 163, 184, 0.18);
+}
+
+/* Stock header */
+.dt-stock-head {
+  display: flex; align-items: center; gap: 10px;
+  margin-bottom: 10px; padding-bottom: 8px;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.12);
+  flex-wrap: wrap;
+}
+.dt-stock-code { font-size: 13px; font-weight: 900; color: var(--text-muted); font-variant-numeric: tabular-nums; }
+.dt-stock-name { font-size: 15px; font-weight: 1050; }
+.dt-stock-summary { margin-left: auto; display: flex; gap: 12px; font-size: 12px; font-weight: 900; }
+.dt-ss-buy { color: #dc2626; }
+.dt-ss-sell { color: #059669; }
+.dt-net-buy { color: #dc2626; }
+.dt-net-sell { color: #059669; }
+
+/* Dual columns */
+.dt-columns { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.dt-col { min-width: 0; }
+
+.dt-col-title {
+  font-size: 11px; font-weight: 950; padding-bottom: 6px; margin-bottom: 6px;
+  border-bottom: 2px solid transparent;
+}
+.dt-buy-title { color: #dc2626; border-color: rgba(220, 38, 38, 0.25); }
+.dt-sell-title { color: #059669; border-color: rgba(5, 150, 105, 0.25); }
+
+.dt-col-row {
+  display: flex; align-items: center; gap: 6px; padding: 3px 0;
+  font-size: 11px;
+}
+.dt-rank-sm {
+  width: 16px; text-align: center; flex-shrink: 0;
+  font-weight: 1000; color: var(--text-muted); font-size: 10px;
+}
+.dt-col-trader { font-weight: 850; color: var(--text-primary); min-width: 60px; }
+.dt-col-amt {
+  font-weight: 900; font-variant-numeric: tabular-nums;
+  white-space: nowrap; margin-left: auto;
+}
+.dt-col-yyb {
+  font-size: 10px; color: var(--text-muted); overflow: hidden;
+  text-overflow: ellipsis; white-space: nowrap; max-width: 160px;
+}
+
+.dt-up { color: #dc2626; }
+.dt-down { color: #059669; }
+.dt-empty-col { font-size: 11px; color: var(--text-muted); padding: 4px 0; }
+
+.dt-link { color: var(--theme-accent); text-decoration: none; }
+.dt-link:hover { text-decoration: underline; }
+.dt-error { font-size: 12px; font-weight: 850; color: #ef4444; padding: 30px; text-align: center; }
+</style>

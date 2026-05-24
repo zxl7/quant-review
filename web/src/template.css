@@ -7830,20 +7830,23 @@
       /* === Dragon Mindmap === */
       .dragon-mindmap-container {
         margin-top: 16px;
-        background: #000;
+        background: var(--bg-card);
+        border: 1px solid rgba(148, 163, 184, 0.16);
         border-radius: 16px;
-        padding: 40px 20px;
-        overflow-x: auto;
-        min-height: 600px;
+        padding: 60px 40px;
+        overflow: auto;
         display: flex;
-        justify-content: center;
+        justify-content: flex-start;
+        align-items: flex-start;
+        min-height: 600px;
       }
       .dragon-mindmap {
         display: flex;
         align-items: center;
-        gap: 60px;
+        gap: 80px;
         position: relative;
         width: fit-content;
+        margin: auto;
       }
       
       /* Root Node */
@@ -7853,25 +7856,23 @@
       }
       .dragon-root-node {
         background: #f59e0b;
-        color: #000;
-        padding: 12px 24px;
-        border-radius: 8px;
+        color: #fff;
+        padding: 16px 32px;
+        border-radius: 12px;
         text-align: center;
         font-weight: 1000;
-        box-shadow: 0 0 15px rgba(245, 158, 11, 0.4);
+        box-shadow: 0 4px 15px rgba(245, 158, 11, 0.3);
       }
-      .dragon-root-label { font-size: 16px; }
-      .dragon-root-meta { font-size: 11px; opacity: 0.8; margin-top: 2px; }
+      .dragon-root-label { font-size: 18px; }
+      .dragon-root-meta { font-size: 12px; opacity: 0.9; margin-top: 4px; }
 
       /* Branches */
       .dragon-branches {
         display: flex;
         flex-direction: column;
-        gap: 30px;
+        gap: 40px;
         position: relative;
       }
-
-      /* Connection Lines - Level 1 (Root to Group) */
       .dragon-branches::before {
         content: "";
         position: absolute;
@@ -7879,12 +7880,14 @@
         top: 20px;
         bottom: 20px;
         width: 2px;
-        background: rgba(255, 255, 255, 0.2);
+        background: var(--border);
+        opacity: 0.6;
       }
+
       .dragon-branch {
         display: flex;
         align-items: center;
-        gap: 50px;
+        gap: 60px;
         position: relative;
       }
       .dragon-branch::before {
@@ -7894,26 +7897,28 @@
         top: 50%;
         width: 40px;
         height: 2px;
-        background: rgba(255, 255, 255, 0.2);
+        background: var(--border);
+        opacity: 0.6;
       }
 
       /* Group Node */
       .dragon-group-node-wrapper {
-        flex: 0 0 120px;
+        flex: 0 0 130px;
       }
       .dragon-group-node {
-        background: #0ea5e9;
+        background: var(--theme-accent);
         color: #fff;
-        padding: 8px 16px;
+        padding: 10px 18px;
         border-radius: 20px;
         text-align: center;
-        font-size: 13px;
-        font-weight: 900;
+        font-size: 14px;
+        font-weight: 950;
         display: flex;
         flex-direction: column;
         gap: 2px;
+        box-shadow: 0 4px 12px color-mix(in oklab, var(--theme-accent) 25%, transparent);
       }
-      .dragon-group-net { font-size: 11px; font-weight: 800; }
+      .dragon-group-net { font-size: 12px; font-weight: 900; }
       .dragon-group-net.up { color: #fecaca; }
       .dragon-group-net.down { color: #bbf7d0; }
 
@@ -7921,17 +7926,18 @@
       .dragon-stocks-wrapper {
         display: flex;
         flex-direction: column;
-        gap: 15px;
+        gap: 20px;
         position: relative;
       }
       .dragon-stocks-wrapper::before {
         content: "";
         position: absolute;
         left: -30px;
-        top: 10px;
-        bottom: 10px;
+        top: 15px;
+        bottom: 15px;
         width: 1px;
-        background: rgba(255, 255, 255, 0.15);
+        background: var(--border);
+        opacity: 0.5;
       }
       .dragon-stock-branch {
         display: flex;
@@ -7946,24 +7952,29 @@
         top: 50%;
         width: 30px;
         height: 1px;
-        background: rgba(255, 255, 255, 0.15);
+        background: var(--border);
+        opacity: 0.5;
       }
 
       /* Stock Node */
       .dragon-stock-node-wrapper {
-        flex: 0 0 110px;
+        flex: 0 0 120px;
       }
       .dragon-stock-node {
-        padding: 6px 10px;
-        border-radius: 6px;
-        font-size: 12px;
-        font-weight: 900;
+        padding: 8px 14px;
+        border-radius: 8px;
+        font-size: 13px;
+        font-weight: 1000;
         text-align: center;
         display: flex;
         flex-direction: column;
         gap: 2px;
-        border: 1px solid transparent;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
       }
+      .dragon-stock-node.up { background: #ef4444; color: #fff; }
+      .dragon-stock-node.down { background: #22c55e; color: #fff; }
+      .dragon-stock-name { font-size: 13px; font-weight: 1000; color: #fff; text-decoration: none; }
+      .dragon-stock-name:hover { text-decoration: underline; }
       .dragon-stock-main {
         display: flex;
         align-items: center;
@@ -7979,68 +7990,60 @@
         font-weight: 1000;
         line-height: 1;
       }
-      .dragon-stock-node.up {
-        background: #ef4444;
-        color: #fff;
-        box-shadow: 0 0 10px rgba(239, 68, 68, 0.3);
-      }
-      .dragon-stock-node.down {
-        background: #22c55e;
-        color: #fff;
-        box-shadow: 0 0 10px rgba(34, 197, 94, 0.3);
-      }
-      .dragon-stock-value { font-size: 10px; opacity: 0.9; }
+      .dragon-stock-value { font-size: 11px; opacity: 0.9; }
 
       /* Seats Column */
       .dragon-seats-wrapper {
         display: flex;
         flex-direction: column;
-        gap: 6px;
+        gap: 8px;
         position: relative;
-        padding: 10px 0;
       }
       .dragon-seats-wrapper::before {
         content: "";
         position: absolute;
-        left: -20px;
-        top: 8px;
-        bottom: 8px;
+        left: -25px;
+        top: 10px;
+        bottom: 10px;
         width: 1px;
-        background: rgba(255, 255, 255, 0.1);
+        background: var(--border);
+        opacity: 0.4;
       }
       .dragon-seat-node {
-        background: #1e293b;
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        color: #cbd5e1;
-        padding: 4px 10px;
-        border-radius: 4px;
-        font-size: 11px;
+        background: var(--bg-elevated);
+        border: 1px solid var(--border);
+        color: var(--text-primary);
+        padding: 6px 14px;
+        border-radius: 6px;
+        font-size: 12px;
         display: flex;
         align-items: center;
         justify-content: space-between;
-        gap: 12px;
-        min-width: 180px;
+        gap: 15px;
+        min-width: 220px;
         position: relative;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
       }
       .dragon-seat-node::before {
         content: "";
         position: absolute;
-        left: -20px;
+        left: -25px;
         top: 50%;
-        width: 20px;
+        width: 25px;
         height: 1px;
-        background: rgba(255, 255, 255, 0.1);
+        background: var(--border);
+        opacity: 0.4;
       }
       .dragon-seat-name {
-        max-width: 140px;
+        max-width: 160px;
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
-        font-weight: 800;
+        font-weight: 900;
       }
-      .dragon-seat-net { font-weight: 900; font-size: 10px; }
-      .dragon-seat-net.up { color: #f87171; }
-      .dragon-seat-net.down { color: #4ade80; }
+      .dragon-seat-net { font-weight: 1000; font-size: 11px; }
+      .dragon-seat-net.up { color: var(--danger); }
+      .dragon-seat-net.down { color: var(--success); }
       .dragon-table .up,
       .dragon-group-net.up,
       .dragon-stock-pct.up,
