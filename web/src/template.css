@@ -720,7 +720,6 @@
         display: flex;
         align-items: center;
         justify-content: space-between;
-        margin-bottom: 14px;
       }
       .card-title {
         display: flex;
@@ -6099,6 +6098,9 @@
       body[data-page="dragonTiger"] .card[data-page="dragonTiger"] {
         display: block;
       }
+      body[data-page="hotAnswer"] .card[data-page="hotAnswer"] {
+        display: block;
+      }
 
       /* Page blocks（非 card 的页面块，如 summary/toc） */
       .page-block[data-page] {
@@ -7784,5 +7786,335 @@
         }
         .dragon-raw-frame {
           min-height: 560px;
+        }
+      }
+
+      .hot-page {
+        display: grid;
+        gap: 12px;
+      }
+      .hot-card {
+        padding: 14px;
+      }
+      .hot-subtitle {
+        margin-top: 3px;
+        font-size: 11px;
+        font-weight: 850;
+        color: var(--text-muted);
+      }
+      .hot-toolbar {
+        margin-top: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+      .hot-toolbar-left,
+      .hot-toolbar-right {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        flex-wrap: wrap;
+      }
+      .hot-toolbar-right {
+        color: var(--text-muted);
+        font-size: 11px;
+        font-weight: 850;
+      }
+      .hot-stat-num {
+        color: var(--text-primary);
+        font-weight: 1000;
+        margin-left: 2px;
+      }
+      .hot-stat-num.highlight {
+        color: var(--danger);
+      }
+      .hot-date {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        min-height: 30px;
+        padding: 0 9px;
+        border-radius: 999px;
+        border: 1px solid rgba(148, 163, 184, 0.18);
+        background: rgba(255, 255, 255, 0.72);
+        font-size: 11px;
+        font-weight: 900;
+        color: var(--text-secondary);
+      }
+      .hot-date input {
+        border: 0;
+        outline: none;
+        background: transparent;
+        color: var(--text-primary);
+        font-size: 11px;
+        font-weight: 900;
+      }
+      .hot-btn {
+        appearance: none;
+        border: 1px solid rgba(148, 163, 184, 0.18);
+        background: rgba(255, 255, 255, 0.72);
+        color: var(--text-secondary);
+        border-radius: 999px;
+        min-height: 30px;
+        padding: 0 11px;
+        font-size: 11px;
+        font-weight: 900;
+        cursor: pointer;
+      }
+      .hot-btn.active {
+        color: #e60012;
+        border-color: rgba(230, 0, 18, 0.22);
+        background: rgba(230, 0, 18, 0.08);
+      }
+      .hot-error {
+        margin-top: 10px;
+        border-radius: 10px;
+        padding: 8px 10px;
+        background: rgba(239, 68, 68, 0.08);
+        color: #991b1b;
+        font-size: 11px;
+        font-weight: 850;
+      }
+      .hot-layout {
+        margin-top: 10px;
+        display: grid;
+        grid-template-columns: minmax(210px, 0.34fr) minmax(0, 1fr);
+        gap: 10px;
+      }
+      .hot-plates,
+      .hot-detail {
+        min-height: 620px;
+        max-height: min(72vh, 760px);
+        overflow: auto;
+        border: 1px solid rgba(148, 163, 184, 0.16);
+        border-radius: 12px;
+        background: rgba(248, 250, 252, 0.72);
+        padding: 8px;
+      }
+      .hot-plate {
+        appearance: none;
+        width: 100%;
+        text-align: left;
+        border: 1px solid transparent;
+        background: transparent;
+        border-radius: 10px;
+        padding: 8px;
+        cursor: pointer;
+        display: grid;
+        gap: 3px;
+      }
+      .hot-plate.active {
+        border-color: rgba(230, 0, 18, 0.18);
+        background: rgba(230, 0, 18, 0.06);
+      }
+      .hot-plate-name {
+        color: var(--text-primary);
+        font-size: 12px;
+        font-weight: 1000;
+      }
+      .hot-plate-desc {
+        color: var(--text-muted);
+        font-size: 10px;
+        font-weight: 800;
+        line-height: 1.35;
+      }
+      .hot-detail-head {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 10px;
+        padding: 2px 2px 8px;
+        border-bottom: 1px dashed rgba(148, 163, 184, 0.26);
+      }
+      .hot-detail-title {
+        color: var(--text-primary);
+        font-size: 14px;
+        font-weight: 1000;
+      }
+      .hot-detail-desc {
+        margin-top: 3px;
+        color: var(--text-muted);
+        font-size: 11px;
+        font-weight: 850;
+      }
+      .hot-mode {
+        flex: 0 0 auto;
+        border-radius: 999px;
+        padding: 4px 9px;
+        color: #e60012;
+        border: 1px solid rgba(230, 0, 18, 0.18);
+        background: rgba(230, 0, 18, 0.06);
+        font-size: 11px;
+        font-weight: 950;
+      }
+      .hot-stock-list {
+        display: grid;
+        gap: 8px;
+        margin-top: 8px;
+      }
+      .hot-stock-list.loading {
+        opacity: 0.58;
+      }
+      .hot-stock {
+        border: 1px solid rgba(148, 163, 184, 0.14);
+        border-radius: 12px;
+        background: rgba(255, 255, 255, 0.82);
+        padding: 8px 9px;
+      }
+      .hot-stock-main {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 10px;
+      }
+      .hot-stock-title {
+        min-width: 0;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        flex-wrap: wrap;
+        font-size: 12px;
+        font-weight: 1000;
+      }
+      .hot-stock-title a {
+        color: var(--text-primary);
+      }
+      .hot-stock-name {
+        font-size: 13px;
+        font-weight: 1000;
+      }
+      .hot-detail-toggle {
+        appearance: none;
+        border: 1px solid rgba(148, 163, 184, 0.2);
+        background: rgba(255, 255, 255, 0.72);
+        color: var(--text-secondary);
+        border-radius: 999px;
+        padding: 2px 7px;
+        font-size: 10px;
+        font-weight: 900;
+        cursor: pointer;
+      }
+      .hot-detail-toggle {
+        text-decoration: none;
+        flex: 0 0 auto;
+      }
+      .hot-pct,
+      .hot-price,
+      .hot-limit,
+      .hot-label {
+        border-radius: 999px;
+        padding: 2px 7px;
+        font-size: 10px;
+        font-weight: 950;
+        border: 1px solid rgba(148, 163, 184, 0.18);
+        background: rgba(255, 255, 255, 0.72);
+      }
+      .hot-pct.up {
+        color: #e60012;
+        border-color: rgba(230, 0, 18, 0.18);
+        background: rgba(230, 0, 18, 0.06);
+      }
+      .hot-pct.down {
+        color: #00a63e;
+        border-color: rgba(0, 166, 62, 0.18);
+        background: rgba(0, 166, 62, 0.06);
+      }
+      .hot-limit {
+        color: #ea580c;
+      }
+      .hot-price {
+        color: var(--text-muted);
+        font-variant-numeric: tabular-nums;
+      }
+      .hot-label {
+        color: var(--text-secondary);
+      }
+      .hot-reason {
+        margin-top: 6px;
+        padding-top: 6px;
+        border-top: 1px dashed rgba(148, 163, 184, 0.22);
+        color: var(--text-secondary);
+        font-size: 11px;
+        line-height: 1.55;
+        font-weight: 750;
+      }
+      .hot-reason-list {
+        margin: 4px 0 0 16px;
+        padding: 0;
+      }
+      .hot-reason-list li {
+        margin-bottom: 4px;
+      }
+      .hot-reason-list li::marker {
+        color: var(--text-muted);
+        font-weight: 900;
+      }
+      .hot-desc-list {
+        margin: 4px 0 0 0;
+        padding: 0;
+        list-style: none;
+      }
+      .hot-desc-list li {
+        margin-bottom: 2px;
+        position: relative;
+        padding-left: 12px;
+      }
+      .hot-desc-list li::before {
+        content: "•";
+        position: absolute;
+        left: 0;
+        color: #e60012;
+        font-weight: bold;
+      }
+      .hot-empty {
+        padding: 14px 10px;
+        color: var(--text-muted);
+        font-size: 11px;
+        font-weight: 850;
+      }
+      .hot-loading-row,
+      .hot-loading-mask {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 12px 10px;
+        color: var(--text-muted);
+        font-size: 11px;
+        font-weight: 900;
+      }
+      .hot-loading-mask {
+        position: sticky;
+        top: 0;
+        z-index: 2;
+        margin: 8px 0;
+        border-radius: 10px;
+        background: rgba(255, 255, 255, 0.88);
+        border: 1px solid rgba(148, 163, 184, 0.16);
+        box-shadow: 0 8px 18px rgba(15, 23, 42, 0.06);
+      }
+      .hot-spinner {
+        width: 12px;
+        height: 12px;
+        border-radius: 999px;
+        border: 2px solid rgba(148, 163, 184, 0.28);
+        border-top-color: #e60012;
+        animation: hot-spin 820ms linear infinite;
+      }
+      @keyframes hot-spin {
+        to { transform: rotate(360deg); }
+      }
+      @media (max-width: 860px) {
+        .hot-layout {
+          grid-template-columns: 1fr;
+        }
+        .hot-plates,
+        .hot-detail {
+          min-height: 260px;
+          max-height: 520px;
+        }
+        .hot-stock-main {
+          flex-direction: column;
         }
       }

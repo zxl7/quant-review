@@ -10,6 +10,7 @@ import WatchPage from './components/intraday/WatchPage.vue';
 import AbnormalPage from './components/intraday/AbnormalPage.vue';
 import FlashPage from './components/intraday/FlashPage.vue';
 import DragonTigerPage from './components/dragon-tiger/DragonTigerPage.vue';
+import HotAnswerPage from './components/hot-answer/HotAnswerPage.vue';
 import { useMarketData } from './composables/useMarketData';
 
 const { marketData, marketToneClass } = useMarketData();
@@ -41,6 +42,7 @@ const reviewTabs = [
   { id: 'ladder', name: '连板' },
   { id: 'plan', name: '预测' },
   { id: 'dragonTiger', name: '龙虎榜' },
+  { id: 'hotAnswer', name: '热点解答' },
 ] as const;
 const intradayTabs = [
   { id: 'watch', name: '实时' },
@@ -206,6 +208,7 @@ watchEffect(() => {
         <LadderPage v-else-if="currentTab === 'ladder'" />
         <PlanPage v-else-if="currentTab === 'plan'" />
         <DragonTigerPage v-else-if="currentTab === 'dragonTiger'" />
+        <HotAnswerPage v-else-if="currentTab === 'hotAnswer'" />
         <WatchPage v-else-if="currentTab === 'watch'" />
         <AbnormalPage v-else-if="currentTab === 'abnormal'" />
         <FlashPage v-else-if="currentTab === 'flash'" />
