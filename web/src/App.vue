@@ -38,7 +38,7 @@ const marketThemeTone = computed(() => {
 const defaultMode = isTradingSessionNow() || marketData.value?.meta?.mode === "intraday" ? "intraday" : "review"
 const modeView = ref<"review" | "intraday">(defaultMode)
 const reviewTabs = [
-  { id: "sentiment", name: "情绪" },
+  { id: "sentiment", name: "情绪分析" },
   { id: "themes", name: "今日题材" },
   { id: "tomorrow", name: "最新题材" },
   { id: "hotAnswer", name: "热点板块" },
@@ -47,11 +47,11 @@ const reviewTabs = [
   { id: "dragonTiger", name: "龙虎榜" },
 ] as const
 const intradayTabs = [
-  { id: "watch", name: "实时" },
+  { id: "watch", name: "实时盯盘" },
   { id: "tomorrow", name: "最新题材" },
   { id: "hotAnswer", name: "热点板块" },
-  { id: "abnormal", name: "异动" },
-  { id: "flash", name: "快讯" },
+  { id: "abnormal", name: "异动监控" },
+  { id: "flash", name: "实时快讯" },
 ] as const
 type TabId = (typeof reviewTabs)[number]["id"] | (typeof intradayTabs)[number]["id"]
 const defaultPage = String(marketData.value?.meta?.default_page || "").trim()
