@@ -11,6 +11,7 @@ import AbnormalPage from './components/intraday/AbnormalPage.vue';
 import FlashPage from './components/intraday/FlashPage.vue';
 import DragonTigerPage from './components/dragon-tiger/DragonTigerPage.vue';
 import HotAnswerPage from './components/hot-answer/HotAnswerPage.vue';
+import TomorrowPicksPage from './components/tomorrow/TomorrowPicksPage.vue';
 import { useMarketData } from './composables/useMarketData';
 
 const { marketData, marketToneClass } = useMarketData();
@@ -38,11 +39,12 @@ const defaultMode = isTradingSessionNow() || marketData.value?.meta?.mode === 'i
 const modeView = ref<'review' | 'intraday'>(defaultMode);
 const reviewTabs = [
   { id: 'sentiment', name: '情绪' },
-  { id: 'themes', name: '题材' },
-  { id: 'ladder', name: '连板' },
-  { id: 'plan', name: '预测' },
+  { id: 'themes', name: '今日题材' },
+  { id: 'ladder', name: '连板天梯' },
+  { id: 'plan', name: '个股预测' },
   { id: 'dragonTiger', name: '龙虎榜' },
-  { id: 'hotAnswer', name: '热点解答' },
+  { id: 'tomorrow', name: '最新题材' },
+  { id: 'hotAnswer', name: '热点板块' },
 ] as const;
 const intradayTabs = [
   { id: 'watch', name: '实时' },
@@ -209,6 +211,7 @@ watchEffect(() => {
         <PlanPage v-else-if="currentTab === 'plan'" />
         <DragonTigerPage v-else-if="currentTab === 'dragonTiger'" />
         <HotAnswerPage v-else-if="currentTab === 'hotAnswer'" />
+        <TomorrowPicksPage v-else-if="currentTab === 'tomorrow'" />
         <WatchPage v-else-if="currentTab === 'watch'" />
         <AbnormalPage v-else-if="currentTab === 'abnormal'" />
         <FlashPage v-else-if="currentTab === 'flash'" />

@@ -62,6 +62,16 @@ def inject(date8: str, source: Optional[str] = None) -> Path:
     index_path = out_dir / "index.html"
     index_path.write_text(html, encoding="utf-8")
 
+    # 注入明日策略池数据（如果已预取）
+    tp_path = ROOT / "web" / "dist" / "tomorrow_picks.json"
+    if tp_path.exists():
+        tp_data = tp_path.read_text(encoding="utf-8")
+        tp_script = f"<script>window.__TOMORROW_PICKS__={tp_data};</script>"
+        if "</head>" in html:
+            html = html.replace("</head>", f"{tp_script}\n  </head>")
+        else:
+            html = html + "\n" + tp_script
+
     # 同步 dist 旁路数据文件，支持直接打开 web/dist/index.html
     dist_dir = ROOT / "web" / "dist"
     (dist_dir / "market_data.json").write_text(payload, encoding="utf-8")
