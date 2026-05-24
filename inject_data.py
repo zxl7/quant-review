@@ -50,6 +50,15 @@ def inject(date8: str, source: Optional[str] = None) -> Path:
     if dragon_path.exists():
         dragon_data = json.loads(dragon_path.read_text(encoding="utf-8"))
         dragon_payload = json.dumps(dragon_data, ensure_ascii=False)
+    # 明日策略池
+    tp_path = ROOT / "web" / "public" / "tomorrow_picks.json"
+    tp_payload = "{}"
+    if tp_path.exists():
+        tp_payload = tp_path.read_text(encoding="utf-8")
+    else:
+        tp_fallback = ROOT / "web" / "dist" / "tomorrow_picks.json"
+        if tp_fallback.exists():
+            tp_payload = tp_fallback.read_text(encoding="utf-8")
 
     # 读取 Vite 构建产物
     built = ROOT / "web" / "dist" / "index.html"
@@ -59,7 +68,7 @@ def inject(date8: str, source: Optional[str] = None) -> Path:
     html = built.read_text(encoding="utf-8")
 
     # 注入 window.__MARKET_DATA__ 到 </head> 前
-    data_script = f"<script>window.__MARKET_DATA__={payload};window.__DRAGON_TIGER_DATA__={dragon_payload};</script>"
+    data_script = f"<script>window.__MARKET_DATA__={payload};window.__DRAGON_TIGER_DATA__={dragon_payload};window.__TOMORROW_PICKS__={tp_payload};</script>"
     if "</head>" in html:
         html = html.replace("</head>", f"{data_script}\n  </head>")
     else:
@@ -81,6 +90,8 @@ def inject(date8: str, source: Optional[str] = None) -> Path:
     (dist_dir / "market_data.js").write_text(f"window.__MARKET_DATA__={payload};", encoding="utf-8")
     (dist_dir / "dragon_tiger_data.json").write_text(dragon_payload, encoding="utf-8")
     (dist_dir / "dragon_tiger_data.js").write_text(f"window.__DRAGON_TIGER_DATA__={dragon_payload};", encoding="utf-8")
+    if tp_payload != "{}":
+        (dist_dir / "tomorrow_picks.json").write_text(tp_payload, encoding="utf-8")
 
     return out_path
 
