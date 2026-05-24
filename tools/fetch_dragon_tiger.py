@@ -2,6 +2,7 @@
 """预取通达信龙虎榜数据，写入 JSON 供前端注入。"""
 
 import json
+import os
 import sys
 import time
 import urllib.request
@@ -64,11 +65,16 @@ def fetch_dragon_tiger(date: str = "") -> dict:
 
 def main():
     data = fetch_dragon_tiger()
+    out = sys.argv[1] if len(sys.argv) > 1 else "dragon_tiger_data.json"
+
     if not data["records"]:
-        print("❌ 无龙虎榜数据", file=sys.stderr)
+        # 网络失败 → 保留已有缓存不覆盖
+        if os.path.exists(out):
+            print(f"⚠ 拉取失败，保留已有 {out}", file=sys.stderr)
+            return 0
+        print("❌ 无龙虎榜数据且无缓存", file=sys.stderr)
         return 1
 
-    out = sys.argv[1] if len(sys.argv) > 1 else "dragon_tiger_data.json"
     with open(out, "w", encoding="utf-8") as f:
         json.dump(data, f, ensure_ascii=False, indent=2)
 

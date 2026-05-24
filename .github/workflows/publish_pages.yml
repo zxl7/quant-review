@@ -364,7 +364,7 @@ jobs:
           PY
 
       - name: Pre-fetch external data (龙虎榜 + 明日策略池)
-        if: ${{ (github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true') && (github.event_name != 'schedule' || steps.tradeday.outputs.is_trade_today == 'true') }}
+        if: ${{ steps.pushmode.outputs.mode != 'intraday' }}
         run: |
           python3 tools/fetch_dragon_tiger.py web/public/dragon_tiger_data.json || echo "⚠ dragon tiger fetch failed, using cache"
           python3 tools/fetch_tomorrow_picks.py web/public/tomorrow_picks.json || echo "⚠ tomorrow picks fetch failed, using cache"

@@ -35,6 +35,8 @@ elif [ "${now_min}" -ge $((13 * 60)) ] && [ "${now_min}" -lt $((15 * 60)) ]; the
   mode="intraday"
 elif [ "${now_min}" -ge $((15 * 60 + 12)) ] && [ "${now_min}" -le $((15 * 60 + 31)) ]; then
   mode="eod"
+elif [ "${now_min}" -ge $((16 * 60 + 55)) ] && [ "${now_min}" -le $((17 * 60 + 5)) ]; then
+  mode="fetch"
 fi
 
 if [ "${mode}" = "skip" ]; then
