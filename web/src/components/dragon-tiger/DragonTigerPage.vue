@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { onMounted, computed } from 'vue';
-import { useDragonTiger, fmtAmount, type DragonTigerRecord } from './useDragonTiger';
+import { useDragonTiger, type DragonTigerRow } from './useDragonTiger';
 import ShortReminderFooter from '../common/ShortReminderFooter.vue';
 
-const { dates, records, loading, error, selectedDate, init } = useDragonTiger();
+const { dateOptions: dates, rows: records, loading, error, selectedDate, refresh: init, formatMoney: fmtAmount } = useDragonTiger();
 
 onMounted(() => init());
 
@@ -18,8 +18,8 @@ const stockGroups = computed(() => {
   const map = new Map<string, {
     code: string; name: string;
     totalBuy: number; totalSell: number;
-    topBuy: DragonTigerRecord[];  // 买入前5
-    topSell: DragonTigerRecord[]; // 卖出前5
+    topBuy: DragonTigerRow[];  // 买入前5
+    topSell: DragonTigerRow[]; // 卖出前5
   }>();
   for (const r of records.value) {
     const key = r.gpdm;
@@ -55,7 +55,7 @@ const stockGroups = computed(() => {
   <div class="card" data-page="dragonTiger" id="sec-dragon-tiger">
     <div class="dt-top-bar">
       <span class="dt-top-title">龙虎榜单</span>
-      <select v-model="selectedDate" class="dt-date-select" @change="init">
+      <select v-model="selectedDate" class="dt-date-select" @change="() => init()">
         <option v-for="d in dates" :key="d" :value="d">{{ d }}</option>
       </select>
     </div>
