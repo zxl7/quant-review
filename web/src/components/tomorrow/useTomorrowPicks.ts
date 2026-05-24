@@ -27,10 +27,18 @@ export interface TomorrowTheme {
 }
 
 function makeHeaders(): Record<string, string> {
+  const versions = ['16_0', '16_1', '16_5', '17_0', '17_2'];
+  const v = versions[Math.floor(Math.random() * versions.length)];
   return {
     'Content-Type': 'application/json',
-    'User-Agent': 'Mozilla/5.0 (iPhone; CPU iPhone OS 16_0 like Mac OS X)',
-    Referer: 'https://wap.eastmoney.com/',
+    'User-Agent': `Mozilla/5.0 (iPhone; CPU iPhone OS ${v} like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.0 Mobile/15E148 Safari/604.1`,
+    'Accept': 'application/json, text/plain, */*',
+    'Accept-Language': 'zh-CN,zh;q=0.9,en;q=0.8',
+    'Origin': 'https://wap.eastmoney.com',
+    'Referer': 'https://wap.eastmoney.com/quote/stock/tomorrow-picks.html',
+    'Sec-Fetch-Dest': 'empty',
+    'Sec-Fetch-Mode': 'cors',
+    'Sec-Fetch-Site': 'same-site',
   };
 }
 
@@ -51,26 +59,10 @@ export function useTomorrowPicks() {
   const stocks = ref<TomorrowStock[]>([]);
   const stocksLoading = ref(false);
 
-  async function fetchThemes() {
-    if (themes.value.length) return;
+  async function fetchThemes(force = false) {
+    if (themes.value.length && !force) return;
     loading.value = true;
     error.value = '';
-
-    // 1) 优先从注入数据读取（CI 预取，无 CORS 问题）
-    const injected = (window as any).__TOMORROW_PICKS__;
-    if (injected && Array.isArray(injected.themes) && injected.themes.length) {
-      themes.value = injected.themes;
-      loading.value = false;
-      if (injected.themes[0]) {
-        selectedThemeCode.value = injected.themes[0].themeCode;
-        if (injected.themes[0].stocks?.length) {
-          stocks.value = injected.themes[0].stocks;
-        } else {
-          fetchStockList(injected.themes[0].themeCode);
-        }
-      }
-      return;
-    }
 
     try {
       const { timestamp, randomCode } = makeAuth();
@@ -119,27 +111,18 @@ export function useTomorrowPicks() {
         });
       }
       themes.value = items;
-      if (items.length && !selectedThemeCode.value) {
-        selectedThemeCode.value = items[0].themeCode;
-        fetchStockList(items[0].themeCode);
+      if (items.length) {
+        // 如果是强制刷新，且当前选中的 code 在新列表中不存在，才切换到第一个
+        if (!selectedThemeCode.value || !items.some(x => x.themeCode === selectedThemeCode.value)) {
+          selectedThemeCode.value = items[0].themeCode;
+          fetchStockList(items[0].themeCode);
+        } else if (force) {
+          // 强制刷新时，也刷新当前选中的成分股
+          fetchStockList(selectedThemeCode.value);
+        }
       }
     } catch (e: any) {
-      // API 失败 → 兜底本地 JSON 文件
-      try {
-        const resp = await fetch('./tomorrow_picks.json');
-        if (resp.ok) {
-          const data = await resp.json();
-          const list = Array.isArray(data?.themes) ? data.themes : [];
-          if (list.length) {
-            themes.value = list;
-            selectedThemeCode.value = list[0].themeCode;
-            if (list[0].stocks?.length) stocks.value = list[0].stocks;
-            loading.value = false;
-            return;
-          }
-        }
-      } catch {}
-      error.value = e.message || '网络错误';
+      error.value = e.message || '实时请求失败';
     } finally {
       loading.value = false;
     }

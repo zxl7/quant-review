@@ -108,8 +108,25 @@ const collectObjects = (value: unknown, guard: (row: Record<string, any>) => boo
   return out;
 };
 
+const makeXgbHeaders = () => {
+  const versions = ['13.4.1', '13.5.0', '14.0.1'];
+  const v = versions[Math.floor(Math.random() * versions.length)];
+  return {
+    'Accept': 'application/json, text/plain, */*',
+    'Accept-Language': 'zh-CN,zh;q=0.9,en;q=0.8',
+    'User-Agent': `Mozilla/5.0 (iPhone; CPU iPhone OS 16_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 xuanguBao/${v}`,
+    'Origin': 'https://xuangubao.cn',
+    'Referer': 'https://xuangubao.cn/',
+    'X-Requested-With': 'XMLHttpRequest',
+  };
+};
+
 const fetchText = async (url: string) => {
-  const res = await fetch(`${url}${url.includes('?') ? '&' : '?'}_ts=${Date.now()}`, { cache: 'no-store' });
+  const randomOffset = Math.floor(Math.random() * 1000);
+  const res = await fetch(`${url}${url.includes('?') ? '&' : '?'}_ts=${Date.now() + randomOffset}`, {
+    cache: 'no-store',
+    headers: makeXgbHeaders(),
+  });
   if (!res.ok) throw new Error(`HTTP ${res.status}`);
   return res.text();
 };

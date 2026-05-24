@@ -66,10 +66,15 @@ const xqUrl = (code: string) => {
       <div class="tp-left">
         <!-- 日期选择器 -->
         <div class="tp-date-picker" v-show="!loading && dates.length">
-          <span class="tp-date-label">日期</span>
-          <select v-model="selectedDate" class="tp-date-select">
-            <option v-for="d in dates" :key="d" :value="d">{{ d }}</option>
-          </select>
+          <div class="tp-date-left">
+            <span class="tp-date-label">日期</span>
+            <select v-model="selectedDate" class="tp-date-select">
+              <option v-for="d in dates" :key="d" :value="d">{{ d }}</option>
+            </select>
+          </div>
+          <button class="tp-refresh-btn" @click="fetchThemes(true)" :disabled="loading">
+            {{ loading ? '刷新中...' : '刷新' }}
+          </button>
         </div>
 
         <!-- Loading 骨架 -->
@@ -226,10 +231,11 @@ const xqUrl = (code: string) => {
 
 /* 日期选择器 */
 .tp-date-picker {
-  display: flex; align-items: center; gap: 8px;
+  display: flex; align-items: center; justify-content: space-between; gap: 8px;
   margin-bottom: 10px; padding-bottom: 8px;
   border-bottom: 1px solid rgba(148, 163, 184, 0.14);
 }
+.tp-date-left { display: flex; align-items: center; gap: 8px; flex: 1; }
 .tp-date-label { font-size: 12px; font-weight: 900; color: var(--text-secondary); }
 .tp-date-select {
   flex: 1;
@@ -239,6 +245,18 @@ const xqUrl = (code: string) => {
   color: var(--text-primary); font-size: 12px; font-weight: 800;
   outline: none; cursor: pointer; font-variant-numeric: tabular-nums;
 }
+.tp-refresh-btn {
+  appearance: none; border: 1px solid rgba(148, 163, 184, 0.22);
+  background: rgba(255, 255, 255, 0.72); color: var(--text-secondary);
+  border-radius: 999px; padding: 4px 12px;
+  font-size: 11px; font-weight: 900; cursor: pointer;
+  transition: all 0.2s;
+}
+.tp-refresh-btn:hover:not(:disabled) {
+  border-color: var(--theme-accent); color: var(--theme-accent);
+  background: var(--theme-soft);
+}
+.tp-refresh-btn:disabled { opacity: 0.6; cursor: not-allowed; }
 [data-theme="dark"] .tp-date-select {
   background: rgba(15, 23, 42, 0.5);
   border-color: rgba(148, 163, 184, 0.22);
