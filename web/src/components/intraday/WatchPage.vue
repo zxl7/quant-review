@@ -1,9 +1,11 @@
 <script setup lang="ts">
-import { computed } from 'vue';
+import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import { useMarketData } from '../../composables/useMarketData';
+import { useIntradayAlertPool } from '../../composables/useIntradayAlertPool';
 import ShortReminderFooter from '../common/ShortReminderFooter.vue';
 
 const { marketData } = useMarketData();
+const intradayAlertPool = useIntradayAlertPool();
 
 const toNum = (v: unknown, d = 0) => {
   try {
@@ -273,9 +275,238 @@ const watchEvolutionSummary = computed(() => {
 });
 
 const liveError = computed(() => '');
+const intradayAlertRailRef = ref<HTMLElement | null>(null);
+const intradayAlertX = ref(0);
+const intradayAlertY = ref(112);
+const intradayAlertReady = ref(false);
+const intradayAlertDragging = ref(false);
+let intradayAlertPointerId: number | null = null;
+let intradayAlertDragOffsetX = 0;
+let intradayAlertDragOffsetY = 0;
+let intradayAlertStartClientX = 0;
+let intradayAlertStartClientY = 0;
+let intradayAlertMoved = false;
+let intradayAlertSuppressClick = false;
+let intradayAlertFrame = 0;
+let intradayAlertNextX = 0;
+let intradayAlertNextY = 112;
+let intradayAlertCaptureEl: HTMLElement | null = null;
+
+const getIntradayAlertSize = () => {
+  const rect = intradayAlertRailRef.value?.getBoundingClientRect();
+  return {
+    width: Math.max(72, Math.round(rect?.width || (intradayAlertPool.open.value ? 340 : 72))),
+    height: Math.max(72, Math.round(rect?.height || (intradayAlertPool.open.value ? 240 : 96))),
+  };
+};
+
+const clampIntradayAlertPosition = (x: number, y: number) => {
+  if (typeof window === 'undefined') return { x, y };
+  const { width, height } = getIntradayAlertSize();
+  const margin = 12;
+  const minY = 88;
+  const maxX = Math.max(margin, window.innerWidth - width - margin);
+  const maxY = Math.max(minY, window.innerHeight - height - margin);
+  return {
+    x: Math.min(Math.max(margin, x), maxX),
+    y: Math.min(Math.max(minY, y), maxY),
+  };
+};
+
+const syncIntradayAlertPosition = (preferRight = false) => {
+  if (typeof window === 'undefined') return;
+  if (!intradayAlertReady.value || preferRight) {
+    const { width } = getIntradayAlertSize();
+    const rightGap = intradayAlertPool.open.value ? 48 : 12;
+    intradayAlertX.value = Math.max(12, window.innerWidth - width - rightGap);
+    intradayAlertY.value = 112;
+    intradayAlertReady.value = true;
+    return;
+  }
+  const next = clampIntradayAlertPosition(intradayAlertX.value, intradayAlertY.value);
+  intradayAlertX.value = next.x;
+  intradayAlertY.value = next.y;
+};
+
+const intradayAlertRailStyle = computed(() => ({
+  transform: `translate3d(${intradayAlertX.value}px, ${intradayAlertY.value}px, 0)`,
+}));
+
+const setIntradayAlertPosition = (x: number, y: number) => {
+  const next = clampIntradayAlertPosition(x, y);
+  intradayAlertNextX = next.x;
+  intradayAlertNextY = next.y;
+  if (intradayAlertFrame) return;
+  intradayAlertFrame = window.requestAnimationFrame(() => {
+    intradayAlertX.value = intradayAlertNextX;
+    intradayAlertY.value = intradayAlertNextY;
+    intradayAlertFrame = 0;
+  });
+};
+
+const handleIntradayAlertPointerMove = (event: PointerEvent) => {
+  if (intradayAlertPointerId === null || event.pointerId !== intradayAlertPointerId) return;
+  if (event.buttons === 0) {
+    stopIntradayAlertDrag();
+    return;
+  }
+  event.preventDefault();
+  const dx = event.clientX - intradayAlertStartClientX;
+  const dy = event.clientY - intradayAlertStartClientY;
+  if (Math.abs(dx) + Math.abs(dy) > 4) intradayAlertMoved = true;
+  setIntradayAlertPosition(event.clientX - intradayAlertDragOffsetX, event.clientY - intradayAlertDragOffsetY);
+};
+
+const stopIntradayAlertDrag = () => {
+  const moved = intradayAlertMoved;
+  const pointerId = intradayAlertPointerId;
+  if (intradayAlertFrame) {
+    window.cancelAnimationFrame(intradayAlertFrame);
+    intradayAlertFrame = 0;
+    intradayAlertX.value = intradayAlertNextX;
+    intradayAlertY.value = intradayAlertNextY;
+  }
+  if (pointerId !== null && intradayAlertCaptureEl?.hasPointerCapture?.(pointerId)) {
+    intradayAlertCaptureEl.releasePointerCapture(pointerId);
+  }
+  intradayAlertPointerId = null;
+  intradayAlertCaptureEl = null;
+  intradayAlertDragging.value = false;
+  window.removeEventListener('pointermove', handleIntradayAlertPointerMove);
+  window.removeEventListener('pointerup', stopIntradayAlertDrag);
+  window.removeEventListener('pointercancel', stopIntradayAlertDrag);
+  if (moved) {
+    intradayAlertSuppressClick = true;
+    window.setTimeout(() => {
+      intradayAlertSuppressClick = false;
+    }, 0);
+  }
+};
+
+const startIntradayAlertDrag = (event: PointerEvent, allowButton = false) => {
+  if (event.button !== 0) return;
+  const target = event.target as HTMLElement | null;
+  if (!allowButton && target?.closest('button')) return;
+  const rect = intradayAlertRailRef.value?.getBoundingClientRect();
+  if (!rect) return;
+  event.preventDefault();
+  intradayAlertPointerId = event.pointerId;
+  intradayAlertCaptureEl = event.currentTarget as HTMLElement | null;
+  intradayAlertCaptureEl?.setPointerCapture?.(event.pointerId);
+  intradayAlertDragging.value = true;
+  intradayAlertMoved = false;
+  intradayAlertStartClientX = event.clientX;
+  intradayAlertStartClientY = event.clientY;
+  intradayAlertDragOffsetX = event.clientX - rect.left;
+  intradayAlertDragOffsetY = event.clientY - rect.top;
+  intradayAlertNextX = intradayAlertX.value;
+  intradayAlertNextY = intradayAlertY.value;
+  window.addEventListener('pointermove', handleIntradayAlertPointerMove);
+  window.addEventListener('pointerup', stopIntradayAlertDrag);
+  window.addEventListener('pointercancel', stopIntradayAlertDrag);
+};
+
+const openIntradayAlertPanel = async () => {
+  if (intradayAlertSuppressClick) return;
+  if (!intradayAlertPool.open.value) intradayAlertPool.toggleOpen();
+  await nextTick();
+  syncIntradayAlertPosition(true);
+};
+
+const collapseIntradayAlertPanel = async () => {
+  if (intradayAlertPool.open.value) intradayAlertPool.toggleOpen();
+  await nextTick();
+  syncIntradayAlertPosition(true);
+};
+
+const enableIntradayAlert = () => {
+  if (!intradayAlertPool.enabled.value) intradayAlertPool.setEnabled(true);
+};
+
+const muteIntradayAlert = () => {
+  if (intradayAlertPool.enabled.value) intradayAlertPool.setEnabled(false);
+};
+
+const handleIntradayAlertResize = () => {
+  syncIntradayAlertPosition(false);
+};
+
+onMounted(() => {
+  intradayAlertPool.start();
+  nextTick(() => syncIntradayAlertPosition(true));
+  window.addEventListener('resize', handleIntradayAlertResize);
+});
+
+watch(
+  () => intradayAlertPool.open.value,
+  async () => {
+    await nextTick();
+    syncIntradayAlertPosition(true);
+  },
+);
+
+onBeforeUnmount(() => {
+  intradayAlertPool.stop();
+  stopIntradayAlertDrag();
+  if (intradayAlertFrame) window.cancelAnimationFrame(intradayAlertFrame);
+  window.removeEventListener('resize', handleIntradayAlertResize);
+});
 </script>
 
 <template>
+  <aside
+    ref="intradayAlertRailRef"
+    class="intraday-alert-rail"
+    :class="{ open: intradayAlertPool.open.value, idle: !intradayAlertPool.railItems.value.length, dragging: intradayAlertDragging }"
+    :style="intradayAlertRailStyle">
+    <button
+      v-if="!intradayAlertPool.open.value"
+      class="intraday-alert-toggle"
+      type="button"
+      @pointerdown="(event) => startIntradayAlertDrag(event, true)"
+      @click="openIntradayAlertPanel()">
+      <span class="k">盘中异动</span>
+      <span class="n" v-if="intradayAlertPool.unreadCount.value">{{ intradayAlertPool.unreadCount.value }}</span>
+      <span class="s">{{ intradayAlertPool.statusText.value }}</span>
+    </button>
+    <div class="intraday-alert-panel" v-if="intradayAlertPool.open.value">
+      <div class="intraday-alert-head" @pointerdown="startIntradayAlertDrag">
+        <div>
+          <div class="title">盘中异动提醒</div>
+          <div class="meta">{{ intradayAlertPool.statusText.value }}</div>
+        </div>
+        <button class="intraday-alert-mini" type="button" @pointerdown.stop @click.stop="collapseIntradayAlertPanel()">收起</button>
+      </div>
+      <div class="intraday-alert-actions">
+        <button class="intraday-alert-mini" type="button" @click="intradayAlertPool.refresh(true)">刷新</button>
+        <button class="intraday-alert-mini" type="button" @click="intradayAlertPool.markAllRead()">已读</button>
+        <button class="intraday-alert-mini toggle on" :class="{ active: intradayAlertPool.enabled.value }" type="button" @click="enableIntradayAlert()">开启</button>
+        <button class="intraday-alert-mini toggle off" :class="{ active: !intradayAlertPool.enabled.value }" type="button" @click="muteIntradayAlert()">静默</button>
+      </div>
+      <div class="intraday-alert-list" v-if="intradayAlertPool.railItems.value.length">
+        <button
+          v-for="item in intradayAlertPool.railItems.value"
+          :key="item.id"
+          class="intraday-alert-item"
+          :class="[item.tone, item.priorityLevel, { unread: item.unread }]"
+          type="button"
+          @click="intradayAlertPool.onItemClick(item)">
+          <div class="intraday-alert-top">
+            <span class="time">{{ item.time }}</span>
+            <span class="badge">{{ item.eventTypeLabel }}</span>
+          </div>
+          <div class="intraday-alert-name">
+            {{ item.title }}
+            <span class="move" v-if="item.valueText">{{ item.valueText }}</span>
+            <span class="move subtle" v-if="item.momentText">{{ item.momentText }}</span>
+          </div>
+          <div class="intraday-alert-sub">{{ item.subtitle }}</div>
+        </button>
+      </div>
+      <div class="intraday-alert-empty" v-else>{{ intradayAlertPool.error.value || '当前没有提醒级异动' }}</div>
+    </div>
+  </aside>
+
     <div class="card" data-page="watch" id="sec-watch">
     <div class="wb">
       <div class="wb-body">
