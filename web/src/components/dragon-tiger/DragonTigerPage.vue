@@ -1,5 +1,70 @@
 <script setup lang="ts">
+import { computed, onMounted } from 'vue';
 import ShortReminderFooter from '../common/ShortReminderFooter.vue';
+import { useDragonTiger } from './useDragonTiger';
+
+const {
+  loading,
+  error,
+  lastUpdated,
+  dateOptions,
+  selectedDate,
+  rowCount,
+  stockCount,
+  focusNames,
+  groupSummaries,
+  selectedGroup,
+  selectedGroupSummary,
+  selectedRows,
+  selectedStocks,
+  selectedSeats,
+  keyword,
+  formatMoney,
+  formatUnsignedMoney,
+  formatSignedPct,
+  marketLabel,
+  xueqiuUrl,
+  isThreeDay,
+  setSelectedGroup,
+  fetchRows,
+  refresh,
+} = useDragonTiger();
+
+const displayedGroups = computed(() => {
+  const list = [...groupSummaries.value];
+  return list.sort((a, b) => Math.abs(b.net) - Math.abs(a.net)).slice(0, 18);
+});
+
+const stockRowsByGroup = (group: string) => selectedRows.value.filter((row) => row.yzmc === group);
+
+const stockSummariesByGroup = (group: string) => {
+  const map = new Map<string, any>();
+  stockRowsByGroup(group).forEach((row) => {
+    const prev = map.get(row.gpdm) || {
+      code: row.gpdm,
+      name: row.gpmc,
+      net: 0,
+      buy: 0,
+      sell: 0,
+      price: row.price,
+      changePct: row.changePct,
+    };
+    prev.buy += row.mrje;
+    prev.sell += row.mcje;
+    prev.net += row.net;
+    if (prev.price === undefined && row.price !== undefined) prev.price = row.price;
+    if (prev.changePct === undefined && row.changePct !== undefined) prev.changePct = row.changePct;
+    map.set(row.gpdm, prev);
+  });
+  return Array.from(map.values()).sort((a, b) => Math.abs(b.net) - Math.abs(a.net)).slice(0, 5);
+};
+
+const seatRowsByStock = (group: string, code: string) =>
+  selectedRows.value.filter((row) => row.yzmc === group && row.gpdm === code);
+
+onMounted(() => {
+  void refresh(true);
+});
 </script>
 
 <template>
@@ -8,43 +73,157 @@ import ShortReminderFooter from '../common/ShortReminderFooter.vue';
       <div class="card-header">
         <div>
           <div class="card-title">游资龙虎榜</div>
-          <div class="dragon-subtitle">按原 HTML 语法嵌入通达信龙虎榜</div>
+          <div class="dragon-subtitle">实时接口直连数据已改成本地注入 · 关系导图视图</div>
         </div>
-        <div class="card-badge">TDX</div>
+        <div class="card-badge">LIVE</div>
       </div>
 
-      <div id="autore" class="dragon-raw-toolbar">
-        <a href="https://page1.tdx.com.cn:7615/site/kggx/tk_yzlhb_yz.html?color=##tdxbk##" target="fx"><span style="color:#FF0000">龙虎榜单</span></a>
-        <a href="https://page.tdx.com.cn:7615/site/kggx/tk_yzlhb_yz_yz.html?flag=yzxq&code=%E6%9C%BA%E6%9E%84%E4%B8%93%E7%94%A8&color=&bkcolor=undefined" target="fx"><span style="color:#F5F5F5">机构专用</span></a>
-        <a href="https://page.tdx.com.cn:7615/site/kggx/tk_yzlhb_yz_yz.html?flag=yzxq&code=%E9%99%88%E5%B0%8F%E7%BE%A4&color=&bkcolor=undefined" target="fx"><span style="color:#FFA500">陈小群</span></a>
-        <a href="https://page.tdx.com.cn:7615/site/kggx/tk_yzlhb_yz_yz.html?flag=yzxq&code=%E6%B6%88%E9%97%B2%E6%B4%BE&color=&bkcolor=undefined" target="fx"><span style="color:#FF00FF">佛山系</span></a>
-        <a href="https://page.tdx.com.cn:7615/site/kggx/tk_yzlhb_yz_yz.html?flag=yzxq&code=%E9%87%8F%E5%8C%96%E6%89%93%E6%9D%BF&color=&bkcolor=undefined" target="fx"><span style="color:#FF0000">消闲派</span></a>
-        <a href="https://page.tdx.com.cn:7615/site/kggx/tk_yzlhb_yz_yz.html?flag=yzxq&code=%E8%B5%B5%E8%80%81%E5%93%A5&color=&bkcolor=undefined" target="fx"><span style="color:#FFD700">赵老哥</span></a>
-        <a href="https://page.tdx.com.cn:7615/site/kggx/tk_yzlhb_yz_yz.html?flag=yzxq&code=%E7%82%92%E8%82%A1%E5%85%BB%E5%AE%B6&color=&bkcolor=undefined" target="fx"><span style="color:#F5F5F5">炒股养家</span></a>
-        <a href="https://page.tdx.com.cn:7615/site/kggx/tk_yzlhb_yz_yz.html?flag=yzxq&code=%E7%AB%A0%E7%9B%9F%E4%B8%BB&color=&bkcolor=undefined" target="fx"><span style="color:#FF00FF">章盟主</span></a>
-        <a href="https://page1.tdx.com.cn:7615/site/tdxf10/gg_jyds_yybmx.html?style=undefined&mmbz=m&ispc=0&yybname=%E5%9B%BD%E6%B3%B0%E6%B5%B7%E9%80%9A%E8%AF%81%E5%88%B8%E8%82%A1%E4%BB%BD%E6%9C%89%E9%99%90%E5%85%AC%E5%8F%B8%E4%B8%8A%E6%B5%B7%E9%9D%99%E5%AE%89%E5%8C%BA%E6%96%B0%E9%97%B8%E8%B7%AF%E8%AF%81%E5%88%B8%E8%90%A5%E4%B8%9A%E9%83%A8" target="fx"><span style="color:#FFD700">新闸路</span></a>
-        <a href="https://page1.tdx.com.cn:7615/site/tdxf10/gg_jyds_yybmx.html?style=undefined&mmbz=m&ispc=0&yybname=%E4%B8%9C%E5%90%B4%E8%AF%81%E5%88%B8%E8%82%A1%E4%BB%BD%E6%9C%89%E9%99%90%E5%85%AC%E5%8F%B8%E8%8B%8F%E5%B7%9E%E7%9B%B8%E5%9F%8E%E5%A4%A7%E9%81%93%E8%AF%81%E5%88%B8%E8%90%A5%E4%B8%9A%E9%83%A8" target="fx"><span style="color:#FF0088">余哥</span></a>
-        <a href="https://page1.tdx.com.cn:7615/site/tdxf10/gg_jyds_yybmx.html?style=undefined&mmbz=m&ispc=0&yybname=%E5%9B%BD%E6%B3%B0%E6%B5%B7%E9%80%9A%E8%AF%81%E5%88%B8%E8%82%A1%E4%BB%BD%E6%9C%89%E9%99%90%E5%85%AC%E5%8F%B8%E4%B8%8A%E6%B5%B7%E6%9D%BE%E6%B1%9F%E5%8C%BA%E4%B8%AD%E5%B1%B1%E4%B8%9C%E8%B7%AF%E8%AF%81%E5%88%B8%E8%90%A5%E4%B8%9A%E9%83%A8" target="fx"><span style="color:#F5F5F5">中山东</span></a>
-        <a href="https://page1.tdx.com.cn:7615/site/tdxf10/gg_jyds_yybmx.html?style=undefined&mmbz=m&ispc=0&yybname=%E5%8D%8E%E6%B3%B0%E8%AF%81%E5%88%B8%E8%82%A1%E4%BB%BD%E6%9C%89%E9%99%90%E5%85%AC%E5%8F%B8%E8%8B%8F%E5%B7%9E%E5%90%B4%E4%B8%AD%E5%A4%A7%E9%81%93%E8%AF%81%E5%88%B8%E8%90%A5%E4%B8%9A%E9%83%A8" target="fx"><span style="color:#FFD700">宁波桑田路</span></a>
-        <a href="https://page.tdx.com.cn:7615/site/kggx/tk_yzlhb_yz_yz.html?flag=yzxq&code=%E6%AC%A2%E4%B9%90%E6%B5%B7%E5%B2%B8&color=&bkcolor=undefined" target="fx"><span style="color:#FF0000">上塘路</span></a>
-        <a href="https://page.tdx.com.cn:7615/site/kggx/tk_yzlhb_yz_yz.html?flag=yzxq&code=%E5%91%BC%E5%AE%B6%E6%A5%BC&color=&bkcolor=undefined" target="fx"><span style="color:#f99fFF">六一路</span></a>
-        <a href="https://page.tdx.com.cn:7615/site/kggx/tk_yzlhb_yz_yz.html?flag=yzxq&code=%E4%B8%8A%E5%A1%98%E8%B7%AF&color=&bkcolor=undefined" target="fx"><span style="color:#FFA500">呼家楼</span></a>
-        <a href="https://page.tdx.com.cn:7615/site/kggx/tk_yzlhb_yz_yz.html?flag=yzxq&code=%E5%AE%81%E6%B3%A2%E6%A1%91%E7%94%B0%E8%B7%AF&color=&bkcolor=undefined" target="fx"><span style="color:#F5F5F5">欢乐海岸</span></a>
-        <a href="https://page.tdx.com.cn:7615/site/kggx/tk_yzlhb_yz_yz.html?flag=yzxq&code=%E6%B2%AA%E8%82%A1%E9%80%9A%E4%B8%93%E7%94%A8&color=&bkcolor=undefined" target="fx"><span style="color:#FFD700">沪股通专用</span></a>
-        <a href="https://page.tdx.com.cn:7615/site/kggx/tk_yzlhb_yz_yz.html?flag=yzxq&code=%E6%B7%B1%E8%82%A1%E9%80%9A%E4%B8%93%E7%94%A8&color=&bkcolor=undefined" target="fx"><span style="color:#FF0088">深股通专用</span></a>
-        <a href="https://page.tdx.com.cn:7615/site/kggx/tk_yzlhb_yz_yz.html?flag=yzxq&code=%E4%BD%9B%E5%B1%B1%E7%B3%BB&color=&bkcolor=undefined" target="fx"><span style="color:#F5F5F5">量化打板</span></a>
-        <a href="https://page.tdx.com.cn:7615/site/kggx/tk_yzlhb_yz_yz.html?flag=yzxq&code=%E9%87%8F%E5%8C%96%E5%9F%BA%E9%87%91&color=&bkcolor=undefined" target="fx"><span style="color:#FFA500">量化基金</span></a>
+      <div class="dragon-toolbar">
+        <div class="dragon-toolbar-left">
+          <label class="dragon-date-picker">
+            <span>日期</span>
+            <select v-model="selectedDate" @change="fetchRows(selectedDate)">
+              <option v-for="item in dateOptions" :key="item" :value="item">{{ item }}</option>
+            </select>
+          </label>
+          <button class="dragon-btn" type="button" @click="refresh(true)">刷新本地数据</button>
+          <input v-model="keyword" class="dragon-search" type="text" placeholder="筛选股票 / 营业部" />
+        </div>
+        <div class="dragon-toolbar-right">
+          <span>游资 <b>{{ groupSummaries.length }}</b></span>
+          <span>席位 <b>{{ rowCount }}</b></span>
+          <span>个股 <b>{{ stockCount }}</b></span>
+          <span v-if="lastUpdated">更新 <b>{{ lastUpdated }}</b></span>
+        </div>
       </div>
 
-      <iframe
-        id="sl"
-        class="dragon-raw-frame"
-        name="fx"
-        src="https://page1.tdx.com.cn:7615/site/kggx/tk_yzlhb_yz.html"
-        marginwidth="1"
-        marginheight="0"
-        border="0"
-        frameborder="0"></iframe>
+      <div v-if="focusNames.length" class="dragon-focus-row">
+        <button
+          v-for="name in focusNames"
+          :key="name"
+          class="dragon-focus-chip"
+          :class="{ active: selectedGroup === name }"
+          type="button"
+          @click="setSelectedGroup(name)">
+          {{ name }}
+        </button>
+      </div>
+
+      <div v-if="error" class="dragon-error">{{ error }}</div>
+
+      <div class="dragon-summary-card">
+        <div>
+          <div class="dragon-main-title">{{ selectedGroupSummary?.name || '龙虎榜总览' }}</div>
+          <div class="dragon-main-subtitle">
+            <span v-if="selectedGroupSummary?.tags?.length">{{ selectedGroupSummary.tags.join(' · ') }}</span>
+            <span v-else>只保留关系层级，不做花哨图表</span>
+          </div>
+        </div>
+        <div class="dragon-summary-grid">
+          <div class="dragon-kpi">
+            <div class="dragon-kpi-label">总买入</div>
+            <div class="dragon-kpi-value up">{{ formatMoney(selectedGroupSummary?.buy || 0) }}</div>
+          </div>
+          <div class="dragon-kpi">
+            <div class="dragon-kpi-label">总卖出</div>
+            <div class="dragon-kpi-value down">{{ formatMoney(-(selectedGroupSummary?.sell || 0)) }}</div>
+          </div>
+          <div class="dragon-kpi">
+            <div class="dragon-kpi-label">净额</div>
+            <div class="dragon-kpi-value" :class="(selectedGroupSummary?.net || 0) >= 0 ? 'up' : 'down'">
+              {{ formatMoney(selectedGroupSummary?.net || 0) }}
+            </div>
+          </div>
+          <div class="dragon-kpi">
+            <div class="dragon-kpi-label">个股 / 席位</div>
+            <div class="dragon-kpi-value neutral">{{ selectedGroupSummary?.stockCount || 0 }} / {{ selectedGroupSummary?.seatCount || 0 }}</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="dragon-mindmap-container">
+        <div class="dragon-mindmap">
+          <!-- Root -->
+          <div class="dragon-root-wrapper">
+            <div class="dragon-root-node">
+              <div class="dragon-root-label">龙虎榜</div>
+              <div class="dragon-root-meta">{{ selectedDate || '--' }}</div>
+            </div>
+          </div>
+
+          <!-- Branches -->
+          <div class="dragon-branches">
+            <div
+              v-for="group in displayedGroups"
+              :key="group.name"
+              class="dragon-branch">
+              
+              <!-- Group Node -->
+              <div class="dragon-group-node-wrapper">
+                <div class="dragon-group-node">
+                  <span class="dragon-group-name">{{ group.name }}</span>
+                  <span class="dragon-group-net" :class="group.net >= 0 ? 'up' : 'down'">{{ formatMoney(group.net) }}</span>
+                </div>
+              </div>
+
+              <!-- Stocks Column -->
+              <div class="dragon-stocks-wrapper">
+                <div v-for="stock in stockSummariesByGroup(group.name)" :key="stock.code" class="dragon-stock-branch">
+                  <!-- Stock Node -->
+                  <div class="dragon-stock-node-wrapper">
+                    <div class="dragon-stock-node" :class="(stock.changePct || 0) >= 0 ? 'up' : 'down'">
+                      <div class="dragon-stock-main">
+                        <span v-if="isThreeDay(group.name, stock.code)" class="dragon-day-tag">3日</span>
+                        <span class="dragon-stock-name">{{ stock.name }}</span>
+                      </div>
+                      <span class="dragon-stock-value">{{ formatMoney(stock.net) }}</span>
+                    </div>
+                  </div>
+
+                  <!-- Seats Column -->
+                  <div class="dragon-seats-wrapper">
+                    <div v-for="row in seatRowsByStock(group.name, stock.code).slice(0, 3)" :key="`${row.yzmc}-${row.yyb}-${row.gpdm}-${row.sblx}`" class="dragon-seat-node">
+                      <span class="dragon-seat-name">{{ row.yyb }}</span>
+                      <span class="dragon-seat-net" :class="row.net >= 0 ? 'up' : 'down'">{{ formatMoney(row.net) }}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="dragon-detail-strip">
+        <div class="dragon-detail-block">
+          <div class="dragon-detail-block-title">当前筛选个股</div>
+          <div class="dragon-detail-chip-list">
+            <a
+              v-for="item in selectedStocks.slice(0, 8)"
+              :key="item.code"
+              class="dragon-detail-chip"
+              :href="xueqiuUrl(item.code)"
+              target="_blank"
+              rel="noopener noreferrer">
+              <span class="name">{{ item.name }}</span>
+              <span class="value" :class="item.net >= 0 ? 'up' : 'down'">{{ formatMoney(item.net) }}</span>
+            </a>
+          </div>
+        </div>
+
+        <div class="dragon-detail-block">
+          <div class="dragon-detail-block-title">当前筛选营业部</div>
+          <div class="dragon-seat-list">
+            <div v-for="item in selectedSeats.slice(0, 8)" :key="item.seat + item.type" class="dragon-seat-item">
+              <div class="dragon-seat-name">{{ item.seat }}</div>
+              <div class="dragon-seat-meta">
+                <span>{{ item.type || '--' }}</span>
+                <span :class="item.net >= 0 ? 'up' : 'down'">{{ formatMoney(item.net) }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
 
     <ShortReminderFooter />

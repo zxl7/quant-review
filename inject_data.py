@@ -26,6 +26,10 @@ def _resolve_data_path(date8: str, source: Optional[str] = None) -> Path:
     return ROOT / "cache" / f"market_data-{date8}.json"
 
 
+def _resolve_dragon_tiger_path(date8: str) -> Path:
+    return ROOT / "cache" / f"dragon_tiger-{date8}.json"
+
+
 def inject(date8: str, source: Optional[str] = None) -> Path:
     """注入数据并返回输出路径"""
     # 读取市场数据
@@ -37,6 +41,11 @@ def inject(date8: str, source: Optional[str] = None) -> Path:
     # 清理前端不需要的大字段
     md.pop("raw", None)
     payload = json.dumps(md, ensure_ascii=False)
+    dragon_payload = "{}"
+    dragon_path = _resolve_dragon_tiger_path(date8)
+    if dragon_path.exists():
+        dragon_data = json.loads(dragon_path.read_text(encoding="utf-8"))
+        dragon_payload = json.dumps(dragon_data, ensure_ascii=False)
 
     # 读取 Vite 构建产物
     built = ROOT / "web" / "dist" / "index.html"
@@ -46,7 +55,7 @@ def inject(date8: str, source: Optional[str] = None) -> Path:
     html = built.read_text(encoding="utf-8")
 
     # 注入 window.__MARKET_DATA__ 到 </head> 前
-    data_script = f"<script>window.__MARKET_DATA__={payload};</script>"
+    data_script = f"<script>window.__MARKET_DATA__={payload};window.__DRAGON_TIGER_DATA__={dragon_payload};</script>"
     if "</head>" in html:
         html = html.replace("</head>", f"{data_script}\n  </head>")
     else:
@@ -66,6 +75,8 @@ def inject(date8: str, source: Optional[str] = None) -> Path:
     dist_dir = ROOT / "web" / "dist"
     (dist_dir / "market_data.json").write_text(payload, encoding="utf-8")
     (dist_dir / "market_data.js").write_text(f"window.__MARKET_DATA__={payload};", encoding="utf-8")
+    (dist_dir / "dragon_tiger_data.json").write_text(dragon_payload, encoding="utf-8")
+    (dist_dir / "dragon_tiger_data.js").write_text(f"window.__DRAGON_TIGER_DATA__={dragon_payload};", encoding="utf-8")
 
     return out_path
 
@@ -78,13 +89,24 @@ def refresh_dev_data(date8: str, source: Optional[str] = None) -> None:
     md = json.loads(data_path.read_text(encoding="utf-8"))
     md.pop("raw", None)
     payload = json.dumps(md, ensure_ascii=False)
+    dragon_payload = "{}"
+    dragon_path = _resolve_dragon_tiger_path(date8)
+    if dragon_path.exists():
+        dragon_data = json.loads(dragon_path.read_text(encoding="utf-8"))
+        dragon_payload = json.dumps(dragon_data, ensure_ascii=False)
     dev_file = ROOT / "web" / "public" / "market_data.json"
     dev_script = ROOT / "web" / "public" / "market_data.js"
+    dev_dragon_file = ROOT / "web" / "public" / "dragon_tiger_data.json"
+    dev_dragon_script = ROOT / "web" / "public" / "dragon_tiger_data.js"
     dev_file.parent.mkdir(parents=True, exist_ok=True)
     dev_file.write_text(payload, encoding="utf-8")
     dev_script.write_text(f"window.__MARKET_DATA__={payload};", encoding="utf-8")
+    dev_dragon_file.write_text(dragon_payload, encoding="utf-8")
+    dev_dragon_script.write_text(f"window.__DRAGON_TIGER_DATA__={dragon_payload};", encoding="utf-8")
     print(f"  dev 数据已刷新: {dev_file}")
     print(f"  dev 脚本已刷新: {dev_script}")
+    print(f"  龙虎榜 dev 数据已刷新: {dev_dragon_file}")
+    print(f"  龙虎榜 dev 脚本已刷新: {dev_dragon_script}")
 
 
 if __name__ == "__main__":

@@ -27,6 +27,10 @@ info() {
   echo "==> $*" >&2
 }
 
+warn() {
+  echo "⚠️  $*" >&2
+}
+
 script_dir() {
   # 纯函数：输出脚本所在目录（绝对路径）
   cd "$(dirname "${BASH_SOURCE[0]}")" && pwd
@@ -71,6 +75,16 @@ date8_to_date10() {
 date10_to_date8() {
   # 纯函数：YYYY-MM-DD -> YYYYMMDD
   echo "$1" | tr -d '-'
+}
+
+refresh_dragon_tiger_cache() {
+  local date10="$1"
+  local d8
+  d8="$(date10_to_date8 "${date10}")"
+  if [[ -f "tools/fetch_dragon_tiger.py" ]]; then
+    info "抓取龙虎榜本地缓存: ${date10}"
+    python3 tools/fetch_dragon_tiger.py "${d8}" >/dev/null 2>&1 || warn "龙虎榜抓取失败，继续使用已有本地缓存"
+  fi
 }
 
 cleanup_timestamp_html() {
@@ -182,6 +196,7 @@ cmd_fetch() {
   info "在线取数生成缓存（会请求接口，有成本） -> 离线 pipeline 重建 -> 输出 tab-v1"
   if [[ -n "${DATE_ARG}" ]]; then
     PYTHONPATH=. python3 -u -m daily_review.cli --fetch --date "${DATE_ARG}"
+    refresh_dragon_tiger_cache "${DATE_ARG}"
     cleanup_timestamp_html "$(date10_to_date8 "${DATE_ARG}")"
     prune_cache_keep_latest_n 7
     prune_extra_cache_artifacts
@@ -196,6 +211,7 @@ cmd_fetch() {
   local d8 d10
   d8="$(pick_latest_cache_date8)" || die "未找到 cache/market_data-*.json（尚未生成缓存？）"
   d10="$(date8_to_date10 "${d8}")"
+  refresh_dragon_tiger_cache "${d10}"
   render_offline "${d10}"
   cleanup_timestamp_html "${d8}"
   prune_cache_keep_latest_n 7
@@ -212,12 +228,14 @@ cmd_gen() {
   info "仅在线取数并生成缓存（不做离线 pipeline 重建/渲染）"
   if [[ -n "${DATE_ARG}" ]]; then
     PYTHONPATH=. python3 -u -m daily_review.cli --fetch --date "${DATE_ARG}"
+    refresh_dragon_tiger_cache "${DATE_ARG}"
     sync_online_cache_dir "${DATE_ARG}"
   else
     PYTHONPATH=. python3 -u -m daily_review.cli --fetch
     local d8 d10
     d8="$(pick_latest_cache_date8)" || die "未找到 cache/market_data-*.json（尚未生成缓存？）"
     d10="$(date8_to_date10 "${d8}")"
+    refresh_dragon_tiger_cache "${d10}"
     sync_online_cache_dir "${d10}"
   fi
 }

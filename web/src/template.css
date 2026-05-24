@@ -7827,193 +7827,240 @@
       .dragon-error {
         color: var(--danger);
       }
-      .dragon-layout {
-        margin-top: 12px;
-        display: grid;
-        grid-template-columns: 300px minmax(0, 1fr);
-        gap: 12px;
+      /* === Dragon Mindmap === */
+      .dragon-mindmap-container {
+        margin-top: 16px;
+        background: #000;
+        border-radius: 16px;
+        padding: 40px 20px;
+        overflow-x: auto;
+        min-height: 600px;
+        display: flex;
+        justify-content: center;
       }
-      .dragon-sidebar,
-      .dragon-main {
-        min-width: 0;
+      .dragon-mindmap {
+        display: flex;
+        align-items: center;
+        gap: 60px;
+        position: relative;
+        width: fit-content;
       }
-      .dragon-sidebar {
-        display: grid;
-        gap: 8px;
-        max-height: calc(100vh - 240px);
-        overflow: auto;
-        padding-right: 2px;
+      
+      /* Root Node */
+      .dragon-root-wrapper {
+        position: relative;
+        z-index: 2;
       }
-      .dragon-group-item {
-        border: 1px solid var(--border);
-        background: var(--bg-elevated);
-        border-radius: 12px;
-        padding: 10px 11px;
-        text-align: left;
-        cursor: pointer;
+      .dragon-root-node {
+        background: #f59e0b;
+        color: #000;
+        padding: 12px 24px;
+        border-radius: 8px;
+        text-align: center;
+        font-weight: 1000;
+        box-shadow: 0 0 15px rgba(245, 158, 11, 0.4);
       }
-      .dragon-group-item.active {
-        border-color: color-mix(in oklab, var(--theme-accent) 45%, white 0%);
-        background: color-mix(in oklab, var(--theme-soft) 88%, white 12%);
+      .dragon-root-label { font-size: 16px; }
+      .dragon-root-meta { font-size: 11px; opacity: 0.8; margin-top: 2px; }
+
+      /* Branches */
+      .dragon-branches {
+        display: flex;
+        flex-direction: column;
+        gap: 30px;
+        position: relative;
       }
-      .dragon-group-top,
-      .dragon-stock-head,
-      .dragon-stock-flow,
-      .dragon-main-title {
+
+      /* Connection Lines - Level 1 (Root to Group) */
+      .dragon-branches::before {
+        content: "";
+        position: absolute;
+        left: -40px;
+        top: 20px;
+        bottom: 20px;
+        width: 2px;
+        background: rgba(255, 255, 255, 0.2);
+      }
+      .dragon-branch {
+        display: flex;
+        align-items: center;
+        gap: 50px;
+        position: relative;
+      }
+      .dragon-branch::before {
+        content: "";
+        position: absolute;
+        left: -40px;
+        top: 50%;
+        width: 40px;
+        height: 2px;
+        background: rgba(255, 255, 255, 0.2);
+      }
+
+      /* Group Node */
+      .dragon-group-node-wrapper {
+        flex: 0 0 120px;
+      }
+      .dragon-group-node {
+        background: #0ea5e9;
+        color: #fff;
+        padding: 8px 16px;
+        border-radius: 20px;
+        text-align: center;
+        font-size: 13px;
+        font-weight: 900;
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+      }
+      .dragon-group-net { font-size: 11px; font-weight: 800; }
+      .dragon-group-net.up { color: #fecaca; }
+      .dragon-group-net.down { color: #bbf7d0; }
+
+      /* Stocks Column */
+      .dragon-stocks-wrapper {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+        position: relative;
+      }
+      .dragon-stocks-wrapper::before {
+        content: "";
+        position: absolute;
+        left: -30px;
+        top: 10px;
+        bottom: 10px;
+        width: 1px;
+        background: rgba(255, 255, 255, 0.15);
+      }
+      .dragon-stock-branch {
+        display: flex;
+        align-items: center;
+        gap: 40px;
+        position: relative;
+      }
+      .dragon-stock-branch::before {
+        content: "";
+        position: absolute;
+        left: -30px;
+        top: 50%;
+        width: 30px;
+        height: 1px;
+        background: rgba(255, 255, 255, 0.15);
+      }
+
+      /* Stock Node */
+      .dragon-stock-node-wrapper {
+        flex: 0 0 110px;
+      }
+      .dragon-stock-node {
+        padding: 6px 10px;
+        border-radius: 6px;
+        font-size: 12px;
+        font-weight: 900;
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+        border: 1px solid transparent;
+      }
+      .dragon-stock-main {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 4px;
+      }
+      .dragon-day-tag {
+        background: #f59e0b;
+        color: #fff;
+        font-size: 9px;
+        padding: 1px 3px;
+        border-radius: 2px;
+        font-weight: 1000;
+        line-height: 1;
+      }
+      .dragon-stock-node.up {
+        background: #ef4444;
+        color: #fff;
+        box-shadow: 0 0 10px rgba(239, 68, 68, 0.3);
+      }
+      .dragon-stock-node.down {
+        background: #22c55e;
+        color: #fff;
+        box-shadow: 0 0 10px rgba(34, 197, 94, 0.3);
+      }
+      .dragon-stock-value { font-size: 10px; opacity: 0.9; }
+
+      /* Seats Column */
+      .dragon-seats-wrapper {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        position: relative;
+        padding: 10px 0;
+      }
+      .dragon-seats-wrapper::before {
+        content: "";
+        position: absolute;
+        left: -20px;
+        top: 8px;
+        bottom: 8px;
+        width: 1px;
+        background: rgba(255, 255, 255, 0.1);
+      }
+      .dragon-seat-node {
+        background: #1e293b;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        color: #cbd5e1;
+        padding: 4px 10px;
+        border-radius: 4px;
+        font-size: 11px;
         display: flex;
         align-items: center;
         justify-content: space-between;
-        gap: 8px;
-      }
-      .dragon-group-name,
-      .dragon-main-title {
-        font-size: 13px;
-        font-weight: 950;
-        color: var(--text-primary);
-      }
-      .dragon-group-net,
-      .dragon-stock-pct,
-      .dragon-kpi-value {
-        font-weight: 950;
-      }
-      .dragon-group-meta,
-      .dragon-group-tags,
-      .dragon-stock-meta {
-        margin-top: 5px;
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        flex-wrap: wrap;
-        font-size: 11px;
-        color: var(--text-muted);
-      }
-      .dragon-group-stocks,
-      .dragon-main-subtitle {
-        margin-top: 5px;
-        font-size: 11px;
-        color: var(--text-secondary);
-      }
-      .dragon-mini-tag,
-      .dragon-code-tag {
-        display: inline-flex;
-        align-items: center;
-        min-height: 20px;
-        padding: 0 6px;
-        border-radius: 999px;
-        background: color-mix(in oklab, var(--theme-soft) 70%, white 30%);
-        color: var(--theme-chip-text);
-        font-size: 10px;
-        font-weight: 850;
-      }
-      .dragon-summary-card {
-        display: grid;
         gap: 12px;
-        border: 1px solid var(--border);
-        background: var(--bg-elevated);
-        border-radius: 14px;
-        padding: 12px;
+        min-width: 180px;
+        position: relative;
       }
-      .dragon-summary-grid {
-        display: grid;
-        grid-template-columns: repeat(4, minmax(0, 1fr));
-        gap: 8px;
+      .dragon-seat-node::before {
+        content: "";
+        position: absolute;
+        left: -20px;
+        top: 50%;
+        width: 20px;
+        height: 1px;
+        background: rgba(255, 255, 255, 0.1);
       }
-      .dragon-kpi {
-        border-radius: 12px;
-        border: 1px solid color-mix(in oklab, var(--border) 82%, var(--theme-glow) 18%);
-        background: rgba(255, 255, 255, 0.54);
-        padding: 10px;
+      .dragon-seat-name {
+        max-width: 140px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        font-weight: 800;
       }
-      .dragon-kpi-label {
-        font-size: 11px;
-        color: var(--text-muted);
-      }
-      .dragon-kpi-value {
-        margin-top: 4px;
-        font-size: 15px;
-        color: var(--text-primary);
-      }
-      .dragon-kpi-value.neutral {
-        color: var(--text-primary);
-      }
-      .dragon-stock-strip {
-        margin-top: 12px;
-        display: grid;
-        grid-template-columns: repeat(4, minmax(0, 1fr));
-        gap: 8px;
-      }
-      .dragon-stock-card {
-        display: grid;
-        gap: 4px;
-        text-decoration: none;
-        border-radius: 12px;
-        border: 1px solid var(--border);
-        background: var(--bg-elevated);
-        padding: 10px;
-      }
-      .dragon-stock-name {
-        font-size: 12px;
-        font-weight: 900;
-        color: var(--text-primary);
-      }
-      .dragon-stock-flow {
-        font-size: 11px;
-      }
-      .dragon-table-wrap {
-        margin-top: 12px;
-        border: 1px solid var(--border);
-        border-radius: 14px;
-        overflow: auto;
-        background: var(--bg-card);
-      }
-      .dragon-table {
-        width: 100%;
-        border-collapse: collapse;
-        min-width: 860px;
-      }
-      .dragon-table th,
-      .dragon-table td {
-        padding: 10px 12px;
-        border-bottom: 1px dashed color-mix(in oklab, var(--border) 82%, transparent 18%);
-        font-size: 12px;
-        text-align: left;
-        vertical-align: middle;
-      }
-      .dragon-table th {
-        position: sticky;
-        top: 0;
-        z-index: 1;
-        background: var(--bg-elevated);
-        color: var(--text-secondary);
-        font-weight: 900;
-      }
-      .dragon-stock-link {
-        display: inline-grid;
-        gap: 2px;
-        color: var(--text-primary);
-        text-decoration: none;
-      }
-      .dragon-stock-link small {
-        color: var(--text-muted);
-        font-size: 11px;
-      }
-      .dragon-table tbody tr:hover {
-        background: color-mix(in oklab, var(--theme-soft) 40%, white 60%);
-      }
+      .dragon-seat-net { font-weight: 900; font-size: 10px; }
+      .dragon-seat-net.up { color: #f87171; }
+      .dragon-seat-net.down { color: #4ade80; }
       .dragon-table .up,
       .dragon-group-net.up,
       .dragon-stock-pct.up,
-      .dragon-kpi-value.up {
+      .dragon-kpi-value.up,
+      .dragon-detail-kpi .up,
+      .dragon-detail-chip .up,
+      .dragon-mini-side .up {
         color: var(--danger);
       }
       .dragon-table .down,
       .dragon-group-net.down,
       .dragon-stock-pct.down,
-      .dragon-kpi-value.down {
+      .dragon-kpi-value.down,
+      .dragon-detail-kpi .down,
+      .dragon-detail-chip .down,
+      .dragon-mini-side .down {
         color: var(--success);
       }
       @media (max-width: 1100px) {
-        .dragon-layout {
+        .dragon-graph-layout {
           grid-template-columns: 1fr;
         }
         .dragon-sidebar {
@@ -8036,8 +8083,12 @@
           width: 100%;
         }
         .dragon-stock-strip,
-        .dragon-summary-grid {
+        .dragon-summary-grid,
+        .dragon-detail-kpis {
           grid-template-columns: 1fr;
+        }
+        .dragon-graph-canvas {
+          height: 520px;
         }
       }
 
