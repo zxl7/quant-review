@@ -109,21 +109,14 @@ const collectObjects = (value: unknown, guard: (row: Record<string, any>) => boo
 };
 
 const makeXgbHeaders = () => {
-  const versions = ['13.4.1', '13.5.0', '14.0.1'];
-  const v = versions[Math.floor(Math.random() * versions.length)];
   return {
     'Accept': 'application/json, text/plain, */*',
-    'Accept-Language': 'zh-CN,zh;q=0.9,en;q=0.8',
-    'User-Agent': `Mozilla/5.0 (iPhone; CPU iPhone OS 16_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 xuanguBao/${v}`,
-    'Origin': 'https://xuangubao.cn',
-    'Referer': 'https://xuangubao.cn/',
-    'X-Requested-With': 'XMLHttpRequest',
+    'User-Agent': 'Mozilla/5.0 (iPhone; CPU iPhone OS 16_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148',
   };
 };
 
 const fetchText = async (url: string) => {
-  const randomOffset = Math.floor(Math.random() * 1000);
-  const res = await fetch(`${url}${url.includes('?') ? '&' : '?'}_ts=${Date.now() + randomOffset}`, {
+  const res = await fetch(`${url}${url.includes('?') ? '&' : '?'}_ts=${Date.now()}`, {
     cache: 'no-store',
     headers: makeXgbHeaders(),
   });
@@ -467,59 +460,74 @@ onMounted(() => {
 
       <div class="hot-layout">
         <aside class="hot-plates">
-          <div v-if="hotLoading && !hotPlates.length" class="hot-loading-row">
-            <span class="hot-spinner"></span>
-            正在拉取热点板块...
+          <!-- Plate Loading Skeleton -->
+          <div v-if="hotLoading && !hotPlates.length" class="hot-skeleton-list">
+            <div v-for="i in 6" :key="'hsk-p-'+i" class="hot-skeleton-plate">
+              <div class="hot-sk-title"></div>
+              <div class="hot-sk-line"></div>
+            </div>
           </div>
-          <button
-            v-for="plate in hotPlates"
-            :key="plate.id"
-            class="hot-plate"
-            :class="{ active: plate.id === hotSelectedPlateId }"
-            type="button"
-            @click="selectHotPlate(plate)">
-            <span class="hot-plate-name">{{ plate.name }}</span>
-            <span v-if="plate.description" class="hot-plate-desc">{{ plate.description }}</span>
-          </button>
+
+          <template v-else>
+            <button
+              v-for="plate in hotPlates"
+              :key="plate.id"
+              class="hot-plate"
+              :class="{ active: plate.id === hotSelectedPlateId }"
+              type="button"
+              @click="selectHotPlate(plate)">
+              <span class="hot-plate-name">{{ plate.name }}</span>
+              <span v-if="plate.description" class="hot-plate-desc">{{ plate.description }}</span>
+            </button>
+          </template>
         </aside>
 
-          <section class="hot-detail">
-          <div class="hot-detail-head">
-            <div>
-              <div class="hot-detail-title">{{ selectedPlate?.name || hotSelectedPlateName || '请选择板块' }}</div>
-              <div class="hot-detail-desc">
-                <template v-if="splitLines(selectedPlate?.description).length > 1">
-                  <ul class="hot-desc-list">
-                    <li v-for="(line, i) in splitLines(selectedPlate?.description)" :key="i">{{ line }}</li>
-                  </ul>
-                </template>
-                <template v-else>
-                  {{ selectedPlate?.description || '左侧选择热点板块后查看领涨股与全部成分' }}
-                </template>
+        <section class="hot-detail">
+          <div v-if="selectedPlate || hotSelectedPlateName" class="hot-detail-content">
+            <div class="hot-detail-head">
+              <div>
+                <div class="hot-detail-title">{{ selectedPlate?.name || hotSelectedPlateName }}</div>
+                <div class="hot-detail-desc">
+                  <template v-if="splitLines(selectedPlate?.description).length > 1">
+                    <ul class="hot-desc-list">
+                      <li v-for="(line, i) in splitLines(selectedPlate?.description)" :key="i">{{ line }}</li>
+                    </ul>
+                  </template>
+                  <template v-else>
+                    {{ selectedPlate?.description }}
+                  </template>
+                </div>
+              </div>
+              <div class="hot-mode">{{ hotMode === 'leader' ? '领涨' : '全部' }}</div>
+            </div>
+
+            <!-- Stock Loading Skeleton -->
+            <div v-if="hotStockLoading" class="hot-skeleton-list small">
+              <div v-for="i in 4" :key="'hsk-s-'+i" class="hot-skeleton-stock">
+                <div class="hot-sk-row">
+                  <div class="hot-sk-name"></div>
+                  <div class="hot-sk-pct"></div>
+                </div>
+                <div class="hot-sk-line"></div>
               </div>
             </div>
-            <div class="hot-mode">{{ hotMode === 'leader' ? '领涨' : '全部' }}</div>
-          </div>
 
-          <div v-if="hotStockLoading" class="hot-loading-mask">
-            <span class="hot-spinner"></span>
-            正在更新个股明细
-          </div>
-          <div v-if="!hotStockLoading && !sortedStocks.length" class="hot-empty">暂无个股明细</div>
-          <div v-else class="hot-stock-list" :class="{ loading: hotStockLoading }">
-            <article v-for="stock in sortedStocks" :key="stock.code" class="hot-stock">
-              <div class="hot-stock-main">
-                <div class="hot-stock-title">
-                  <a class="hot-stock-name" :href="xueqiuUrl(stock.code)" target="_blank" rel="noopener noreferrer">{{ stock.name }}</a>
-                  <span v-if="stock.price" class="hot-price">{{ stock.price.toFixed(2) }}</span>
-                  <span :class="['hot-pct', stock.changePct >= 0 ? 'up' : 'down']">{{ formatPct(stock.changePct) }}</span>
-                  <span v-if="stock.limitUpDays" class="hot-limit">{{ stock.limitUpDays === 1 ? '首板' : stock.limitUpDays + '连板' }}</span>
-                  <span v-if="stock.label" class="hot-label">{{ stock.label }}</span>
+            <div v-else-if="!sortedStocks.length" class="hot-empty">暂无个股明细</div>
+            
+            <div v-else class="hot-stock-list">
+              <article v-for="stock in sortedStocks" :key="stock.code" class="hot-stock">
+                <div class="hot-stock-main">
+                  <div class="hot-stock-title">
+                    <a class="hot-stock-name" :href="xueqiuUrl(stock.code)" target="_blank" rel="noopener noreferrer">{{ stock.name }}</a>
+                    <span v-if="stock.price" class="hot-price">{{ stock.price.toFixed(2) }}</span>
+                    <span :class="['hot-pct', stock.changePct >= 0 ? 'up' : 'down']">{{ formatPct(stock.changePct) }}</span>
+                    <span v-if="stock.limitUpDays" class="hot-limit">{{ stock.limitUpDays === 1 ? '首板' : stock.limitUpDays + '连板' }}</span>
+                    <span v-if="stock.label" class="hot-label">{{ stock.label }}</span>
+                  </div>
+                  <button v-if="hotMode === 'all' && (stock.reason || stock.relatedDesc)" class="hot-detail-toggle" type="button" @click="toggleHotDetail(stock.code)">
+                    {{ hotExpandedCodes.includes(stock.code) ? '收起' : '详情' }}
+                  </button>
                 </div>
-                <button v-if="hotMode === 'all' && (stock.reason || stock.relatedDesc)" class="hot-detail-toggle" type="button" @click="toggleHotDetail(stock.code)">
-                  {{ hotExpandedCodes.includes(stock.code) ? '收起' : '详情' }}
-                </button>
-              </div>
                 <div v-if="(stock.reason || stock.relatedDesc) && (hotMode === 'leader' || hotExpandedCodes.includes(stock.code))" class="hot-reason">
                   <ol v-if="splitLines(stock.reason || stock.relatedDesc).length > 1" class="hot-reason-list">
                     <li v-for="(line, index) in splitLines(stock.reason || stock.relatedDesc)" :key="index">
@@ -530,7 +538,12 @@ onMounted(() => {
                     {{ splitLines(stock.reason || stock.relatedDesc)[0] || (stock.reason || stock.relatedDesc) }}
                   </template>
                 </div>
-            </article>
+              </article>
+            </div>
+          </div>
+          <div v-else class="hot-empty-state">
+            <div class="hot-empty-icon">👈</div>
+            <div class="hot-empty-text">请在左侧选择感兴趣的热点板块</div>
           </div>
         </section>
       </div>

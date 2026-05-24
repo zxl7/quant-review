@@ -27,18 +27,9 @@ export interface TomorrowTheme {
 }
 
 function makeHeaders(): Record<string, string> {
-  const versions = ['16_0', '16_1', '16_5', '17_0', '17_2'];
-  const v = versions[Math.floor(Math.random() * versions.length)];
   return {
     'Content-Type': 'application/json',
-    'User-Agent': `Mozilla/5.0 (iPhone; CPU iPhone OS ${v} like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.0 Mobile/15E148 Safari/604.1`,
-    'Accept': 'application/json, text/plain, */*',
-    'Accept-Language': 'zh-CN,zh;q=0.9,en;q=0.8',
-    'Origin': 'https://wap.eastmoney.com',
-    'Referer': 'https://wap.eastmoney.com/quote/stock/tomorrow-picks.html',
-    'Sec-Fetch-Dest': 'empty',
-    'Sec-Fetch-Mode': 'cors',
-    'Sec-Fetch-Site': 'same-site',
+    'User-Agent': 'Mozilla/5.0 (iPhone; CPU iPhone OS 16_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.0 Mobile/15E148 Safari/604.1',
   };
 }
 
