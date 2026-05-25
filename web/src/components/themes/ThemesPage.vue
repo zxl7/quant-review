@@ -1,14 +1,12 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue';
 import { useMarketData } from '../../composables/useMarketData';
-import { useThemeHotStore } from '../../composables/useThemeHotStore';
 import ShortReminderFooter from '../common/ShortReminderFooter.vue';
 
 const { marketData } = useMarketData();
-const { narrativeHitForTheme, xgbUpdatedAt, tmrUpdatedAt } = useThemeHotStore();
 
 const selectedPlateThemeKey = ref('');
-
+     
 const toNum = (v: unknown, d = 0) => {
   if (v === undefined || v === null || v === '') return d;
   if (typeof v === 'string') return Number(v.replace('%', '').replace('亿', '').trim()) || d;
@@ -102,50 +100,6 @@ const conceptTop10ByChg = computed(() => {
   }));
 });
 
-const conceptTop10WithGrade = computed(() => {
-  // 读取一次 store 的更新时间戳让 computed 在内存仓刷新时重算
-  void xgbUpdatedAt.value;
-  void tmrUpdatedAt.value;
-  const rows = conceptTop10ByChg.value || [];
-  if (!rows.length) return [];
-  const maxStrength = Math.max(...rows.map((r) => toNum(r.strength, 0)), 0);
-  const maxVolume = Math.max(...rows.map((r) => toNum(r.volume, 0)), 0);
-  const maxNet = Math.max(...rows.map((r) => toNum(r.net, 0)), 0);
-  return rows.map((r) => {
-    const strength = toNum(r.strength, 0);
-    const volume = toNum(r.volume, 0);
-    const chg = toNum(r.chg_pct, 0);
-    const net = toNum(r.net, 0);
-    const leadersCount = Array.isArray(r.leaders) ? r.leaders.length : 0;
-    const priceScore = maxStrength > 0
-      ? Math.min(strength / maxStrength, 1) * 50
-      : Math.min(Math.max(chg / 10, 0), 1) * 50;
-    const flowScore = maxVolume > 0
-      ? Math.min(volume / maxVolume, 1) * 20
-      : (maxNet > 0 ? Math.min(Math.max(net / maxNet, 0), 1) * 20 : 0);
-    const leadCh = toNum(r.lead_chg_pct, 0);
-    const leaderScore = leadersCount >= 3 ? 15
-      : leadersCount > 0 ? 8
-      : leadCh >= 5 ? 10 : leadCh >= 2 ? 5 : 0;
-    const narrative = narrativeHitForTheme(r.name);
-    let narrativeScore = 0;
-    if (narrative.sources.includes('选股宝热点')) narrativeScore += 10;
-    else if (narrative.sources.includes('选股宝热点(模糊)')) narrativeScore += 5;
-    if (narrative.sources.includes('东财明日热门')) narrativeScore += 5;
-    else if (narrative.sources.includes('东财明日')) narrativeScore += 3;
-    narrativeScore = Math.min(narrativeScore, 15);
-    const grade = Math.max(0, Math.min(100, Math.round(priceScore + flowScore + leaderScore + narrativeScore)));
-    return {
-      ...r,
-      grade,
-      gradeLabel: grade >= 75 ? '强' : grade >= 50 ? '中' : '弱',
-      gradeCls: grade >= 75 ? 'high' : grade >= 50 ? 'mid' : 'low',
-      narrativeHit: narrative.hit,
-      narrativeSources: narrative.sources,
-    };
-  });
-});
-
 const selectedPlateTheme = computed(() => {
   const rows = conceptTop10ByChg.value || [];
   if (!rows.length) return null;
@@ -203,7 +157,7 @@ const selectPlateTheme = (row: any) => {
         <div class="theme-rank-list">
           <div
             class="theme-rank-item"
-            v-for="(c, i) in conceptTop10WithGrade"
+            v-for="(c, i) in conceptTop10ByChg"
             :key="'cff-top10-'+c.name+'-'+i"
             :class="{ 'is-active': selectedPlateTheme && (selectedPlateTheme.code || selectedPlateTheme.name) === (c.code || c.name) }"
             @click="selectPlateTheme(c)">
@@ -238,10 +192,6 @@ const selectPlateTheme = (row: any) => {
               <div class="theme-rank-chg" :class="c.displayClass || signedClass(c.chg_pct)">{{ c.displayValue }}</div>
               <div class="theme-rank-microbar" aria-hidden="true">
                 <i :style="{ width: clamp100(toNum(c.barPct, 0)) + '%' }"></i>
-              </div>
-              <div class="theme-rank-grade" v-if="c.grade !== undefined">
-                <span class="lvl-badge" :class="c.gradeCls" :title="'强度/量能/龙头/narrative 综合分'">成色 {{ c.grade }} · {{ c.gradeLabel }}</span>
-                <span v-if="c.narrativeHit" class="lvl-badge high" style="margin-left: 4px" :title="c.narrativeSources.join(' / ')">🔥热</span>
               </div>
             </div>
           </div>
@@ -280,7 +230,7 @@ const selectPlateTheme = (row: any) => {
                   :href="xqUrl(x.code)"
                   target="_blank"
                   rel="noopener noreferrer">
-                  <span class="rk">{{ x.rank || ('龙' + (idx + 1)) }}</span>
+                  <span class="rk">{{ x.rank || `龙${idx + 1}` }}</span>
                   <span class="nm">{{ x.name || '-' }}</span>
                 </a>
                 <div class="theme-leader-chip" v-if="!selectedPlateLeaders.length">

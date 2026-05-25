@@ -1,9 +1,11 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 import { useMarketData } from '../../composables/useMarketData';
+import { useThemeHotStore } from '../../composables/useThemeHotStore';
 import ShortReminderFooter from '../common/ShortReminderFooter.vue';
 
 const { marketData } = useMarketData();
+const { xgbUpdatedAt, tmrUpdatedAt, xgbPlates, tmrThemes } = useThemeHotStore();
 
 const xqUrl = (code?: string | null) => {
   const raw = String(code || '').trim();
@@ -99,6 +101,208 @@ const ztRelaySorted = computed(() => (marketData.value?.ztAnalysis?.relay || [])
 const ztWatchSorted = computed(() => (marketData.value?.ztAnalysis?.watch || []).slice());
 
 const ztTagRows = (row: any) => Array.isArray(row?.tagRows) ? row.tagRows : [];
+
+type ZtStockPick = {
+  code: string;
+  name: string;
+  lbc: number;
+  cjeYi: number;
+  zjYi: number;
+  zbc: number;
+};
+
+type SectorBucket = {
+  theme: string;
+  source: 'realtime' | 'fallback';
+  sources: string[];
+  description: string;
+  count: number;
+  maxLbc: number;
+  highTier: ZtStockPick[];
+  midTier: ZtStockPick[];
+  baseTier: ZtStockPick[];
+  plateStrength?: number;
+  plateLead?: string;
+  matchedLocalThemes: string[];
+};
+
+const plateStrengthByName = computed(() => {
+  const map = new Map<string, { strength: number; lead: string }>();
+  (marketData.value?.plateRankTop10 || []).forEach((p: any) => {
+    const name = String(p?.name || '').trim();
+    if (!name) return;
+    map.set(name, { strength: Number(p?.strength || 0), lead: String(p?.lead || '').trim() });
+  });
+  return map;
+});
+
+const normalizeThemeName = (raw: unknown) => String(raw || '').trim().replace(/\s+/g, '');
+
+const themeToZtStocks = computed(() => {
+  const out = new Map<string, ZtStockPick[]>();
+  const ztgc = Array.isArray(marketData.value?.ztgc) ? marketData.value.ztgc : [];
+  const themesMap = (marketData.value?.zt_code_themes || {}) as Record<string, string[]>;
+  ztgc.forEach((s: any) => {
+    const code = String(s?.dm || s?.code || '').trim();
+    if (!code) return;
+    const themes = (themesMap[code] && themesMap[code].length ? themesMap[code] : (s?.hy ? [String(s.hy)] : [])).filter(Boolean);
+    if (!themes.length) return;
+    const pick: ZtStockPick = {
+      code,
+      name: String(s?.mc || s?.name || code),
+      lbc: Number(s?.lbc || 0),
+      cjeYi: Number(s?.cje || 0) / 1e8,
+      zjYi: Number(s?.zj || 0) / 1e8,
+      zbc: Number(s?.zbc || 0),
+    };
+    themes.forEach((t) => {
+      const k = String(t).trim();
+      if (!k) return;
+      if (!out.has(k)) out.set(k, []);
+      const list = out.get(k)!;
+      if (!list.some((x) => x.code === pick.code)) list.push(pick);
+    });
+  });
+  return out;
+});
+
+const findMatchingLocalThemes = (hotName: string): string[] => {
+  const key = normalizeThemeName(hotName);
+  if (!key) return [];
+  const matches: string[] = [];
+  themeToZtStocks.value.forEach((_v, k) => {
+    const kk = normalizeThemeName(k);
+    if (!kk) return;
+    if (kk === key) { matches.unshift(k); return; }
+    if (kk.includes(key) || (key.length >= 3 && key.includes(kk))) matches.push(k);
+  });
+  return matches;
+};
+
+const aggregateStocksForTheme = (hotName: string): { stocks: ZtStockPick[]; matched: string[] } => {
+  const matched = findMatchingLocalThemes(hotName);
+  const dedup = new Map<string, ZtStockPick>();
+  matched.forEach((t) => {
+    (themeToZtStocks.value.get(t) || []).forEach((s) => {
+      if (!dedup.has(s.code)) dedup.set(s.code, s);
+    });
+  });
+  const stocks = Array.from(dedup.values());
+  stocks.sort((a, b) => (b.lbc - a.lbc) || (b.zjYi - a.zjYi) || (b.cjeYi - a.cjeYi));
+  return { stocks, matched };
+};
+
+const makeBucket = (
+  theme: string,
+  source: 'realtime' | 'fallback',
+  sources: string[],
+  description: string,
+  stocks: ZtStockPick[],
+  matched: string[],
+): SectorBucket => {
+  const maxLbc = stocks[0]?.lbc || 0;
+  const plateInfo = plateStrengthByName.value.get(theme) || (matched.length ? plateStrengthByName.value.get(matched[0]) : undefined);
+  return {
+    theme,
+    source,
+    sources,
+    description,
+    count: stocks.length,
+    maxLbc,
+    highTier: stocks.filter((s) => s.lbc >= 3).slice(0, 4),
+    midTier: stocks.filter((s) => s.lbc === 2).slice(0, 4),
+    baseTier: stocks.filter((s) => s.lbc <= 1).slice(0, 6),
+    plateStrength: plateInfo?.strength,
+    plateLead: plateInfo?.lead,
+    matchedLocalThemes: matched,
+  };
+};
+
+const sectorTierPicks = computed<SectorBucket[]>(() => {
+  void xgbUpdatedAt.value;
+  void tmrUpdatedAt.value;
+
+  const ztgcLen = Array.isArray(marketData.value?.ztgc) ? marketData.value.ztgc.length : 0;
+  if (!ztgcLen) return [];
+
+  const xgb = xgbPlates.value;
+  const tmr = tmrThemes.value;
+
+  // 实时优先:用选股宝热点板块 / 东财明日题材驱动
+  const realtimeBuckets = new Map<string, SectorBucket>();
+  xgb.forEach((p) => {
+    const name = String(p.name || '').trim();
+    if (!name || realtimeBuckets.has(name)) return;
+    const { stocks, matched } = aggregateStocksForTheme(name);
+    realtimeBuckets.set(name, makeBucket(name, 'realtime', ['选股宝热点'], p.description || '', stocks, matched));
+  });
+  tmr.forEach((t) => {
+    const name = String(t.themeName || '').trim();
+    if (!name) return;
+    if (realtimeBuckets.has(name)) {
+      const exist = realtimeBuckets.get(name)!;
+      if (!exist.sources.includes(t.isHot ? '东财明日热门' : '东财明日')) {
+        exist.sources.push(t.isHot ? '东财明日热门' : '东财明日');
+      }
+      if (!exist.description && t.summary) exist.description = t.summary;
+      return;
+    }
+    // 只让明日热门进入(非热门跳过避免噪音)
+    if (!t.isHot) return;
+    const { stocks, matched } = aggregateStocksForTheme(name);
+    realtimeBuckets.set(name, makeBucket(name, 'realtime', ['东财明日热门'], t.summary || '', stocks, matched));
+  });
+
+  let buckets = Array.from(realtimeBuckets.values());
+
+  // 实时数据完全为空 → 本地兜底:按 ztgc theme 命中数最高的前 N 个 theme
+  if (!xgb.length && !tmr.length) {
+    const themeCount = new Map<string, number>();
+    const themesMap = (marketData.value?.zt_code_themes || {}) as Record<string, string[]>;
+    Object.values(themesMap).forEach((arr: any) => {
+      (Array.isArray(arr) ? arr : []).forEach((t: any) => {
+        const k = String(t || '').trim();
+        if (!k) return;
+        themeCount.set(k, (themeCount.get(k) || 0) + 1);
+      });
+    });
+    const sortedThemes = Array.from(themeCount.entries()).sort((a, b) => b[1] - a[1]).map(([t]) => t).slice(0, 8);
+    sortedThemes.forEach((t) => {
+      const { stocks, matched } = aggregateStocksForTheme(t);
+      buckets.push(makeBucket(t, 'fallback', ['本地涨停归集'], '', stocks, matched));
+    });
+  } else {
+    // 实时有数据,但有些 hot plate 在涨停池里完全没匹配到 → 仍然展示(空梯队),提示"narrative热但价格未跟"
+    // (已经包含在 realtimeBuckets,无需额外动作)
+  }
+
+  // 排序:有涨停股的在前 → maxLbc → count
+  buckets.sort((a, b) => {
+    const aHas = a.count > 0 ? 1 : 0;
+    const bHas = b.count > 0 ? 1 : 0;
+    if (aHas !== bHas) return bHas - aHas;
+    if (b.maxLbc !== a.maxLbc) return b.maxLbc - a.maxLbc;
+    return b.count - a.count;
+  });
+
+  return buckets.slice(0, 6);
+});
+
+const sectorPicksMeta = computed(() => {
+  void xgbUpdatedAt.value;
+  void tmrUpdatedAt.value;
+  const buckets = sectorTierPicks.value;
+  const realtimeCnt = buckets.filter((b) => b.source === 'realtime').length;
+  const fallbackUsed = buckets.some((b) => b.source === 'fallback');
+  return {
+    bucketTotal: buckets.length,
+    realtimeCnt,
+    fallbackUsed,
+    xgbCnt: xgbPlates.value.length,
+    tmrCnt: tmrThemes.value.length,
+    tmrHotCnt: tmrThemes.value.filter((t) => t.isHot).length,
+  };
+});
 </script>
 
 <template>
@@ -163,6 +367,93 @@ const ztTagRows = (row: any) => Array.isArray(row?.tagRows) ? row.tagRows : [];
       </div>
       <div class="summary3" v-if="marketData.summary3?.lines && marketData.summary3.lines.length">
         <div class="summary3-line" v-for="(l, i) in marketData.summary3.lines" :key="'plan-s3-'+i"><strong>{{ i+1 }}.</strong> {{ l }}</div>
+      </div>
+    </div>
+
+    <div class="card" data-page="plan" id="sec-sector-tier-picks" v-if="sectorTierPicks.length">
+      <div class="card-header">
+        <div>
+          <div class="card-title">板块·梯队推票</div>
+          <div class="stp-subtitle">
+            <span class="stp-dot-realtime"></span>
+            实时驱动 <strong>{{ sectorPicksMeta.realtimeCnt }}</strong>
+            <span class="stp-sep">·</span>
+            选股宝 {{ sectorPicksMeta.xgbCnt }}
+            <span class="stp-sep">·</span>
+            东财明日热门 {{ sectorPicksMeta.tmrHotCnt }}/{{ sectorPicksMeta.tmrCnt }}
+            <template v-if="sectorPicksMeta.fallbackUsed">
+              <span class="stp-sep">·</span>
+              <span class="orange-text" style="font-weight: 900" title="实时接口无数据,退回本地涨停归集">⚠ 本地兜底</span>
+            </template>
+          </div>
+        </div>
+        <div class="card-badge">narrative × 涨停 × 梯队</div>
+      </div>
+      <div class="sector-tier-grid">
+        <div
+          v-for="(bucket, i) in sectorTierPicks"
+          :key="'stp-'+bucket.theme+'-'+i"
+          class="sector-tier-card"
+          :class="[bucket.source === 'realtime' ? 'is-realtime' : 'is-fallback', !bucket.count ? 'is-empty' : '']">
+          <div class="stp-rail" :class="bucket.sources[0] && bucket.sources[0].includes('选股宝') ? 'rail-xgb' : (bucket.sources[0] && bucket.sources[0].includes('东财') ? 'rail-tmr' : 'rail-local')"></div>
+          <div class="stp-head">
+            <div class="stp-name">
+              <span class="stp-rank">{{ i + 1 }}</span>
+              <span class="stp-name-text">{{ bucket.theme }}</span>
+            </div>
+            <span class="stp-source-pill" :class="bucket.sources[0] && bucket.sources[0].includes('选股宝') ? 'src-xgb' : (bucket.sources[0] && bucket.sources[0].includes('东财') ? 'src-tmr' : 'src-local')" :title="bucket.sources.join(' · ')">
+              <template v-if="bucket.sources[0] && bucket.sources[0].includes('选股宝')">🔥 选股宝</template>
+              <template v-else-if="bucket.sources[0] && bucket.sources[0].includes('东财')">⏭ 东财明日</template>
+              <template v-else>本地</template>
+            </span>
+          </div>
+          <div class="stp-meta">
+            <span class="stp-kv"><strong :class="bucket.count >= 3 ? 'red-text' : 'orange-text'">{{ bucket.count }}</strong>只涨停</span>
+            <span class="stp-sep" v-if="bucket.maxLbc >= 2">·</span>
+            <span class="stp-kv" v-if="bucket.maxLbc >= 2">最高 <strong class="red-text">{{ bucket.maxLbc }}</strong>板</span>
+            <span class="stp-sep" v-if="bucket.plateStrength">·</span>
+            <span class="stp-kv" v-if="bucket.plateStrength">强度 <strong>{{ Math.round(bucket.plateStrength) }}</strong></span>
+            <span class="stp-sep" v-if="bucket.plateLead">·</span>
+            <span class="stp-kv" v-if="bucket.plateLead">领涨 <strong>{{ bucket.plateLead }}</strong></span>
+          </div>
+          <div class="stp-desc" v-if="bucket.description" :title="bucket.description">{{ bucket.description }}</div>
+          <div class="stp-empty" v-if="!bucket.count">
+            narrative 热但涨停池暂未跟上 · 留意首板异动
+          </div>
+          <div class="stp-tiers" v-else>
+            <div class="stp-tier-block" v-if="bucket.highTier.length">
+              <div class="stp-tier-label tier-high">高位 ≥3连</div>
+              <div class="stp-high-rows">
+                <a v-for="s in bucket.highTier" :key="'h-'+bucket.theme+'-'+s.code"
+                  class="stp-high-row" :href="xqUrl(s.code)" target="_blank" rel="noopener noreferrer">
+                  <span class="stp-star">★</span>
+                  <span class="stp-high-name">{{ s.name }}</span>
+                  <span class="stp-high-tag">{{ s.lbc }}板</span>
+                  <span class="stp-high-fund" v-if="s.zjYi >= 1">封 {{ s.zjYi.toFixed(1) }}亿</span>
+                  <span class="stp-high-fund" v-else-if="s.cjeYi >= 1">{{ s.cjeYi.toFixed(1) }}亿</span>
+                </a>
+              </div>
+            </div>
+            <div class="stp-tier-block" v-if="bucket.midTier.length">
+              <div class="stp-tier-label tier-mid">中位 2连</div>
+              <div class="stp-name-row">
+                <a v-for="(s, mi) in bucket.midTier" :key="'m-'+bucket.theme+'-'+s.code"
+                  class="stp-name-link mid" :href="xqUrl(s.code)" target="_blank" rel="noopener noreferrer">
+                  {{ s.name }}<span v-if="mi < bucket.midTier.length - 1" class="stp-name-sep">·</span>
+                </a>
+              </div>
+            </div>
+            <div class="stp-tier-block" v-if="bucket.baseTier.length">
+              <div class="stp-tier-label tier-base">首板 <span class="stp-tier-count">({{ bucket.count - bucket.highTier.length - bucket.midTier.length }})</span></div>
+              <div class="stp-name-row">
+                <a v-for="(s, bi) in bucket.baseTier" :key="'b-'+bucket.theme+'-'+s.code"
+                  class="stp-name-link base" :href="xqUrl(s.code)" target="_blank" rel="noopener noreferrer">
+                  {{ s.name }}<span v-if="bi < bucket.baseTier.length - 1" class="stp-name-sep">·</span>
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
 
