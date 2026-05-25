@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref, watchEffect } from "vue"
+import { computed, onMounted, ref, watchEffect } from "vue"
 import HeroSection from "./components/layout/HeroSection.vue"
 import TabBar from "./components/layout/TabBar.vue"
 import SentimentPage from "./components/sentiment/SentimentPage.vue"
@@ -13,8 +13,15 @@ import DragonTigerPage from "./components/dragon-tiger/DragonTigerPage.vue"
 import HotAnswerPage from "./components/hot-answer/HotAnswerPage.vue"
 import TomorrowPicksPage from "./components/tomorrow/TomorrowPicksPage.vue"
 import { useMarketData } from "./composables/useMarketData"
+import { useThemeHotStore } from "./composables/useThemeHotStore"
 
 const { marketData, marketToneClass } = useMarketData()
+const { ensureXgbPlatesLoaded, ensureTomorrowLoaded } = useThemeHotStore()
+
+onMounted(() => {
+  void ensureXgbPlatesLoaded()
+  void ensureTomorrowLoaded()
+})
 const isTradingSessionNow = () => {
   const now = new Date()
   const day = now.getDay()

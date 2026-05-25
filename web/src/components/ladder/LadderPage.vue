@@ -47,6 +47,18 @@ const timeClass = (hhmm?: string | null) => {
 
 const ladderRows = computed(() => Array.isArray(marketData.value?.ladder) ? [...marketData.value.ladder] : []);
 
+const mainTheme = computed(() => String(marketData.value?.themePanels?.ztTop?.[0]?.name || ''));
+
+const themesFor = (code: unknown): string[] => {
+  const key = String(code || '').trim();
+  if (!key) return [];
+  const map = marketData.value?.zt_code_themes || {};
+  const arr = Array.isArray(map[key]) ? map[key] : [];
+  return arr.slice(0, 4).map((x: unknown) => String(x || '').trim()).filter(Boolean);
+};
+
+const isMainThemeChip = (theme: string) => Boolean(mainTheme.value) && theme === mainTheme.value;
+
 const groupedLadder = computed(() => {
   const groups = new Map<number, any[]>();
   ladderRows.value.forEach((row) => {
@@ -375,6 +387,16 @@ useECharts(heightChartRef, heightOptions);
                 <span class="ladder-chip ladder-chip-cool orange-text" v-else-if="Number(row.zbc || 0) >= 1">回封</span>
                 <span class="ladder-chip" :class="Number(row.zj || 0) / 1e8 >= 5 ? 'ladder-chip-strong red-text' : 'ladder-chip-cool orange-text'" v-if="Number(row.zj || 0) > 0">
                   {{ fmtYi(Number(row.zj || 0) / 1e8) }}封
+                </span>
+              </div>
+              <div class="ladder-meta-row" v-if="themesFor(row.code).length" style="margin-top: 4px">
+                <span
+                  class="ladder-chip ladder-chip-mini"
+                  v-for="(theme, i) in themesFor(row.code)"
+                  :key="`${row.code || row.name}-th-${i}`"
+                  :class="isMainThemeChip(theme) ? 'ladder-chip-strong red-text' : 'ladder-chip-cool'"
+                  :title="isMainThemeChip(theme) ? '今日主线题材' : ''">
+                  <span v-if="isMainThemeChip(theme)" style="margin-right: 2px">★</span>{{ theme }}
                 </span>
               </div>
               <div class="ladder-chip-note" v-if="row.note">{{ row.note }}</div>

@@ -3,9 +3,11 @@ import { computed, ref } from 'vue';
 import * as echarts from 'echarts';
 import { useMarketData } from '../../composables/useMarketData';
 import { useECharts } from '../../composables/useECharts';
+import { useThemeHotStore } from '../../composables/useThemeHotStore';
 import ShortReminderFooter from '../common/ShortReminderFooter.vue';
 
 const { marketData, marketToneClass } = useMarketData();
+const { narrativeHitForTheme, xgbPlates, tmrThemes, xgbUpdatedAt, tmrUpdatedAt, xgbHotPlateNames } = useThemeHotStore();
 
 const heatColor = (v: number) => {
   const n = Number(v || 0);
@@ -45,6 +47,116 @@ const moodGroup = (label: string) => {
 };
 
 const moodCardsBy = (group: string) => (marketData.value.moodCards || []).filter((card: any) => moodGroup(card.label) === group);
+
+const topZtTheme = computed<any>(() => (marketData.value?.themePanels?.ztTop || [])[0] || null);
+
+const ztTotalCount = computed(() => {
+  const fromMood = Number(marketData.value?.features?.mood_inputs?.zt_count);
+  if (Number.isFinite(fromMood) && fromMood > 0) return fromMood;
+  return (marketData.value?.themePanels?.ztTop || []).reduce((s: number, x: any) => s + Number(x?.count || 0), 0);
+});
+
+const topZtConcRatio = computed(() => {
+  const c = Number(topZtTheme.value?.count || 0);
+  const total = ztTotalCount.value;
+  if (!c || !total) return 0;
+  return Math.round((c / total) * 1000) / 10;
+});
+
+const concRatioCls = computed(() => {
+  const r = topZtConcRatio.value;
+  if (r >= 35) return 'red-text';
+  if (r >= 20) return 'orange-text';
+  return 'green-text';
+});
+
+const concRatioLabel = computed(() => {
+  const r = topZtConcRatio.value;
+  if (r >= 35) return '高度抱团';
+  if (r >= 20) return '主线明确';
+  if (r > 0) return '资金分散';
+  return '-';
+});
+
+const topPlate = computed<any>(() => (marketData.value?.plateRankTop10 || [])[0] || null);
+
+const rotationInfo = computed<any>(() => marketData.value?.rotation || null);
+
+const resonanceVerdict = computed(() => {
+  void xgbUpdatedAt.value;
+  void tmrUpdatedAt.value;
+  const conc = topZtConcRatio.value;
+  const style = String(rotationInfo.value?.style || '');
+  const highRatio = Number(rotationInfo.value?.highLevelRatio || 0);
+  const overlapScoreRaw = String(marketData.value?.structureV2?.evidence?.overlap?.score || '').replace('%', '');
+  const overlap = Number(overlapScoreRaw);
+  const narrative = narrativeHitForTheme(topZtTheme.value?.name);
+  if (!conc) return { text: '-', cls: '' };
+  if (Number.isFinite(overlap) && overlap >= 50) return { text: '主线与炸板高度重叠,主线在分歧/退潮,情绪面承压', cls: 'orange-text' };
+  if (conc >= 35 && narrative.hit) return { text: `主线抱团 + ${narrative.sources.join('/')}narrative 双重确认,情绪偏强`, cls: 'red-text' };
+  if (conc >= 35 && /高位|加速|主升/.test(style)) return { text: '主线抱团 + 高位接力,情绪偏热,警惕兑现', cls: 'orange-text' };
+  if (conc >= 35) return { text: '主线抱团明显,接力链条值得追踪', cls: 'red-text' };
+  if (conc >= 20 && narrative.hit) return { text: `主线初现 + ${narrative.sources.join('/')}narrative 加持,题材有发酵潜力`, cls: 'red-text' };
+  if (conc >= 20 && /低位|试错/.test(style)) return { text: '主线初现 + 低位试错,题材有发酵潜力', cls: 'red-text' };
+  if (conc < 20 && highRatio >= 30) return { text: '题材分散 + 高位拥挤,易出现高位接力风险', cls: 'orange-text' };
+  if (conc < 20 && !narrative.hit) return { text: '资金分散且 narrative 未共振,主线尚未形成', cls: 'green-text' };
+  if (conc < 20) return { text: '资金分散,主线尚未形成', cls: 'green-text' };
+  return { text: '主线一般,关注后续切换', cls: 'orange-text' };
+});
+
+const narrativeOverview = computed(() => {
+  void xgbUpdatedAt.value;
+  void tmrUpdatedAt.value;
+  const xgbCnt = xgbPlates.value.length;
+  const tmrHot = tmrThemes.value.filter((t) => t.isHot).length;
+  const tmrAll = tmrThemes.value.length;
+  if (!xgbCnt && !tmrAll) return null;
+  const topZtName = String(topZtTheme.value?.name || '');
+  const hit = topZtName ? narrativeHitForTheme(topZtName) : { hit: false, sources: [] };
+  return {
+    xgbCnt,
+    tmrHot,
+    tmrAll,
+    topZtName,
+    hit: hit.hit,
+    sources: hit.sources,
+  };
+});
+
+const narrativeCoverage = computed(() => {
+  void xgbUpdatedAt.value;
+  void tmrUpdatedAt.value;
+  const themesMap = (marketData.value?.zt_code_themes || {}) as Record<string, string[]>;
+  const codes = Object.keys(themesMap);
+  if (!codes.length) return null;
+  const hotSet = xgbHotPlateNames.value;
+  if (!hotSet.size) return null;
+  let hit = 0;
+  const hitCodes: string[] = [];
+  codes.forEach((code) => {
+    const themes = Array.isArray(themesMap[code]) ? themesMap[code] : [];
+    if (themes.some((t) => hotSet.has(String(t || '').trim().replace(/\s+/g, '')))) {
+      hit += 1;
+      if (hitCodes.length < 6) hitCodes.push(code);
+    }
+  });
+  const ratio = codes.length ? Math.round((hit / codes.length) * 100) : 0;
+  let verdict = '';
+  let cls = '';
+  if (ratio >= 40) { verdict = 'narrative 驱动 — 涨停股大面积命中 narrative 主线'; cls = 'red-text'; }
+  else if (ratio >= 20) { verdict = '部分共振 — 主线在但未全面发酵'; cls = 'orange-text'; }
+  else { verdict = 'narrative 脱节 — 涨停与今日叙事相关度低'; cls = 'green-text'; }
+  return { total: codes.length, hit, ratio, hitCodes, verdict, cls };
+});
+
+const narrativeHitNames = computed(() => {
+  if (!narrativeCoverage.value) return '';
+  const codes = narrativeCoverage.value.hitCodes;
+  const zt = Array.isArray(marketData.value?.ztgc) ? marketData.value.ztgc : [];
+  const codeToName = new Map<string, string>();
+  zt.forEach((s: any) => { const k = String(s?.dm || s?.code || '').trim(); if (k) codeToName.set(k, String(s?.mc || s?.name || k)); });
+  return codes.map((c) => codeToName.get(c) || c).join(' / ');
+});
 
 const moodCardValueClass = (group: string, card: any) => {
   const v = toNum(String(card?.value || '').replace('分', '').replace('%', '').replace('亿', ''), Number.NaN);
@@ -395,6 +507,75 @@ useECharts(volumeChartRef, volumeOptions);
                 <div class="evi-note">仅作提示，不等同结论</div>
               </div>
               <div class="evi-v">{{ (marketData.structureV2.evidence.overlap?.themes || []).join(' / ') || '-' }}</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="evidence-group" v-if="topZtTheme || topPlate || rotationInfo">
+          <div class="evidence-group-title">板块·题材共振</div>
+          <div class="evi-grid">
+            <div class="evi-card compact" v-if="topZtTheme">
+              <div>
+                <div class="evi-k">主线题材</div>
+                <div class="evi-note">涨停题材抱团强度 · 集中度越高越认主线</div>
+              </div>
+              <div class="evi-v">
+                {{ topZtTheme.name }}
+                <small style="font-weight: 700; color: var(--text-muted)">· {{ topZtTheme.count }}只 / 占 {{ topZtConcRatio }}%</small>
+                <span class="lvl-badge" :class="concRatioCls === 'red-text' ? 'high' : concRatioCls === 'orange-text' ? 'mid' : 'low'" style="margin-left: 6px">{{ concRatioLabel }}</span>
+              </div>
+            </div>
+            <div class="evi-card compact" v-if="topPlate">
+              <div>
+                <div class="evi-k">强势板块</div>
+                <div class="evi-note">价格端是否同步：板块强度 TOP1 + 领涨龙头</div>
+              </div>
+              <div class="evi-v">
+                {{ topPlate.name }}
+                <small style="font-weight: 700; color: var(--text-muted)">· 强度 {{ Math.round(Number(topPlate.strength || 0)) }} · 领涨 {{ topPlate.lead || '-' }}</small>
+              </div>
+            </div>
+            <div class="evi-card compact" v-if="rotationInfo">
+              <div>
+                <div class="evi-k">风格定调</div>
+                <div class="evi-note">高位占比反映拥挤，辅助判断接力 vs 试错</div>
+              </div>
+              <div class="evi-v">
+                {{ rotationInfo.style || '-' }}
+                <small v-if="rotationInfo.highLevelRatio !== undefined && rotationInfo.highLevelRatio !== null" style="font-weight: 700; color: var(--text-muted)">· 高位占比 {{ Number(rotationInfo.highLevelRatio || 0).toFixed(1) }}%</small>
+              </div>
+            </div>
+            <div class="evi-card compact" v-if="narrativeOverview">
+              <div>
+                <div class="evi-k">narrative 共振</div>
+                <div class="evi-note">选股宝热点 + 东财明日题材的活数据</div>
+              </div>
+              <div class="evi-v">
+                <span v-if="narrativeOverview.hit" class="red-text">{{ narrativeOverview.topZtName }} 命中 {{ narrativeOverview.sources.join('/') }}</span>
+                <span v-else-if="narrativeOverview.topZtName" class="orange-text">{{ narrativeOverview.topZtName }} 未在 narrative 榜上</span>
+                <span v-else>-</span>
+                <small style="margin-left: 6px; font-weight: 700; color: var(--text-muted)">
+                  · 选股宝 {{ narrativeOverview.xgbCnt }} · 东财明日热门 {{ narrativeOverview.tmrHot }}/{{ narrativeOverview.tmrAll }}
+                </small>
+              </div>
+            </div>
+            <div class="evi-card compact" v-if="narrativeCoverage">
+              <div>
+                <div class="evi-k">涨停×热点 narrative 覆盖率</div>
+                <div class="evi-note">涨停股题材落在选股宝热点上的比例 · 反映"叙事 ↔ 价格"是否同向</div>
+              </div>
+              <div class="evi-v" :class="narrativeCoverage.cls">
+                {{ narrativeCoverage.hit }}/{{ narrativeCoverage.total }} · {{ narrativeCoverage.ratio }}%
+                <small style="margin-left: 6px; font-weight: 700; color: var(--text-muted)">{{ narrativeCoverage.verdict }}</small>
+                <div v-if="narrativeHitNames" style="margin-top: 4px; font-size: 11px; font-weight: 700; color: var(--text-muted)">命中：{{ narrativeHitNames }}</div>
+              </div>
+            </div>
+            <div class="evi-card compact">
+              <div>
+                <div class="evi-k">共振判定</div>
+                <div class="evi-note">主线集中度 × 风格 × 重叠度 × narrative,给情绪因子一层旁证</div>
+              </div>
+              <div class="evi-v" :class="resonanceVerdict.cls">{{ resonanceVerdict.text }}</div>
             </div>
           </div>
         </div>

@@ -253,8 +253,7 @@
 
         /* PC：保持顶部横向导航（取消左侧竖向目录栏） */
         .tabbar {
-          position: sticky;
-          top: calc(env(safe-area-inset-top, 0px) + 10px);
+          position: relative;
           left: auto;
           width: 100%;
           flex-direction: row;
@@ -2653,11 +2652,20 @@
       .theme-rank-right {
         width: 128px;
         display: flex;
-        align-items: center;
-        gap: 8px;
-        justify-content: flex-end;
+        align-items: flex-end;
+        flex-direction: column;
+        gap: 4px;
+        justify-content: center;
         text-align: right;
         flex-shrink: 0;
+      }
+      .theme-rank-grade {
+        font-size: 10px;
+        line-height: 1.2;
+      }
+      .theme-rank-grade .lvl-badge {
+        font-size: 10px;
+        padding: 2px 7px;
       }
       .theme-rank-chg {
         font-size: 16px;
@@ -5611,7 +5619,6 @@
         .tabbar {
           padding: 8px 8px;
           gap: 8px;
-          top: 8px; /* sticky 更贴近顶部 */
         }
         .tab-btn {
           padding: 9px 10px;
@@ -6018,27 +6025,47 @@
       }
 
       /* Tabs */
+      .tabbar-wrap {
+        position: relative;
+        width: 100%;
+        margin: 6px 0;
+      }
       .tabbar {
-        /* 放回 Hero 下方：处于正常文档流，滚动时再吸附 */
-        position: sticky;
-        top: calc(env(safe-area-inset-top, 0px) + 10px);
+        position: relative;
         left: auto;
         transform: none;
-        z-index: 60;
+        z-index: 200;
         isolation: isolate;
         display: flex;
         gap: 6px;
-        margin: 6px 0;
         padding: 2px;
         width: 100%;
         background: color-mix(in oklab, var(--bg-card) 72%, var(--theme-soft) 28%);
         border: 1px solid color-mix(in oklab, var(--border) 70%, var(--theme-glow) 30%);
         border-radius: 999px;
         backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
         box-shadow: var(--shadow-sm);
+        transition: background 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+      }
+      .tabbar.is-floating {
+        background: color-mix(in oklab, var(--bg-card) 94%, var(--theme-soft) 6%);
+        border-color: color-mix(in oklab, var(--theme-glow) 55%, var(--border) 45%);
+        box-shadow: 0 12px 30px -12px rgba(15, 23, 42, 0.32), 0 4px 12px -6px rgba(15, 23, 42, 0.18);
+        backdrop-filter: blur(18px) saturate(140%);
+        -webkit-backdrop-filter: blur(18px) saturate(140%);
+        animation: tabbarFloatIn 0.22s ease both;
+      }
+      @keyframes tabbarFloatIn {
+        from { transform: translateY(-6px); opacity: 0.85; }
+        to { transform: translateY(0); opacity: 1; }
       }
       [data-theme="dark"] .tabbar {
         background: rgba(30, 41, 59, 0.62);
+      }
+      [data-theme="dark"] .tabbar.is-floating {
+        background: rgba(15, 23, 42, 0.9);
+        box-shadow: 0 14px 32px -14px rgba(0, 0, 0, 0.6), 0 4px 12px -6px rgba(0, 0, 0, 0.45);
       }
       .tab-btn {
         flex: 1;

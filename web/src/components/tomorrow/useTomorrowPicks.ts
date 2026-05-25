@@ -1,4 +1,5 @@
 import { ref } from 'vue';
+import { useThemeHotStore } from '../../composables/useThemeHotStore';
 
 export interface TomorrowStock {
   code: string
@@ -43,6 +44,7 @@ const API_BASE = 'https://emcfgdata.eastmoney.com/api/themeInvest';
 const PAGE_SIZE = 15;
 
 export function useTomorrowPicks() {
+  const { setTomorrowThemes } = useThemeHotStore();
   const themes = ref<TomorrowTheme[]>([]);
   const loading = ref(false);
   const error = ref('');
@@ -102,6 +104,7 @@ export function useTomorrowPicks() {
         });
       }
       themes.value = items;
+      setTomorrowThemes(items);
       if (items.length) {
         // 如果是强制刷新，且当前选中的 code 在新列表中不存在，才切换到第一个
         if (!selectedThemeCode.value || !items.some(x => x.themeCode === selectedThemeCode.value)) {

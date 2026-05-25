@@ -1,6 +1,9 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue';
 import ShortReminderFooter from '../common/ShortReminderFooter.vue';
+import { useThemeHotStore } from '../../composables/useThemeHotStore';
+
+const { setXgbPlates, setXgbStocksForPlate } = useThemeHotStore();
 
 type HotPlate = {
   id: string;
@@ -367,6 +370,7 @@ const loadHotPlates = async (keepSelection = false) => {
       : `https://flash-api.xuangubao.cn/api/surge_stock/plates?date=${Math.round(new Date(hotDate.value).getTime() / 1000)}`;
     const json = await fetchJson(url);
     hotPlates.value = parseHotPlates(json);
+    if (isToday.value) setXgbPlates(hotPlates.value);
     if (!keepSelection || !hotPlates.value.some((x) => x.id === hotSelectedPlateId.value)) {
       const first = hotPlates.value[0];
       hotSelectedPlateId.value = first?.id || '';
@@ -400,6 +404,7 @@ const loadHotStocks = async (mode = hotMode.value) => {
       const json = await fetchJson(`https://flash-api.xuangubao.cn/api/plate/plate_set?id=${hotSelectedPlateId.value}`);
       hotStocks.value = await parsePlateStocks(json);
     }
+    if (isToday.value) setXgbStocksForPlate(hotSelectedPlateId.value, hotStocks.value);
   } catch (e: any) {
     hotError.value = `股票明细获取失败：${String(e?.message || e)}`;
   } finally {
