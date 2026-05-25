@@ -39,17 +39,17 @@ const defaultMode = isTradingSessionNow() || marketData.value?.meta?.mode === "i
 const modeView = ref<"review" | "intraday">(defaultMode)
 const reviewTabs = [
   { id: "sentiment", name: "情绪分析" },
-  { id: "themes", name: "今日题材" },
-  { id: "tomorrow", name: "最新题材" },
-  { id: "hotAnswer", name: "热点板块" },
+  { id: "themes", name: "昨日板块" },
+  { id: "hotAnswer", name: "今日热点" },
+  { id: "tomorrow", name: "今日题材" },
   { id: "plan", name: "个股预测" },
   { id: "ladder", name: "连板天梯" },
   { id: "dragonTiger", name: "龙虎榜" },
 ] as const
 const intradayTabs = [
   { id: "watch", name: "实时盯盘" },
-  { id: "tomorrow", name: "最新题材" },
-  { id: "hotAnswer", name: "热点板块" },
+  { id: "hotAnswer", name: "今日热点" },
+  { id: "tomorrow", name: "今日题材" },
   { id: "abnormal", name: "异动监控" },
   { id: "flash", name: "实时快讯" },
 ] as const

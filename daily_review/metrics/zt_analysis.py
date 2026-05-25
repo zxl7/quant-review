@@ -916,10 +916,25 @@ def build_zt_analysis(*, market_data: Dict[str, Any]) -> Dict[str, Any]:
 
         base = fund_score * 0.34 + open_score * 0.24 + time_score * 0.16 + (theme_score if has_trade_theme else hy_score) * 0.14 + board_score * 0.12
 
+        is_new_high = lbc >= max_lbc and max_lbc >= 3
+
         if lbc <= 1:
             next_step = "1进2"
             step_rate = jj_rate
-            step_context_score = _clamp(38 + jj_rate * 0.92 + trend_jj_rate * 0.36 - max(0.0, broken_lb_rate - 72.0) * 0.22)
+            first_board_height_penalty = 0.0
+            if leader_max_b <= max(3.0, recent_height_cap * 0.5):
+                first_board_height_penalty += 16.0
+            elif leader_max_b < recent_height_cap:
+                first_board_height_penalty += 9.0
+            if height_pressure:
+                first_board_height_penalty += 8.0
+            step_context_score = _clamp(
+                34
+                + jj_rate * 0.58
+                + trend_jj_rate * 0.18
+                - max(0.0, broken_lb_rate - 65.0) * 0.20
+                - first_board_height_penalty
+            )
         elif lbc == 2:
             next_step = "2进3"
             step_rate = rate_2to3
@@ -927,7 +942,17 @@ def build_zt_analysis(*, market_data: Dict[str, Any]) -> Dict[str, Any]:
         elif lbc == 3:
             next_step = "3进4"
             step_rate = rate_3to4
-            step_context_score = _clamp(34 + rate_3to4 * 0.72 + height_context_score * 0.28 + trend_jj_rate * 0.3 - max(0.0, broken_lb_rate - 65.0) * 0.44 - (10 if height_pressure else 0) + (6 if height_repair else 0))
+            step_context_score = _clamp(
+                42
+                + max(rate_3to4, jj_rate * 0.52) * 0.55
+                + height_context_score * 0.18
+                + trend_jj_rate * 0.22
+                - max(0.0, broken_lb_rate - 62.0) * 0.26
+                - (6 if height_pressure else 0)
+                + (6 if height_repair else 0)
+                + (8 if is_new_high else 0)
+                + (8 if leader_bonus >= 10 else 4 if leader_bonus > 0 else 0)
+            )
         else:
             next_step = f"{int(lbc)}进{int(lbc + 1)}" if float(lbc).is_integer() else "高位晋级"
             step_rate = min(rate_3to4 or jj_rate, jj_rate or rate_3to4) if (rate_3to4 or jj_rate) else 0.0
@@ -971,7 +996,6 @@ def build_zt_analysis(*, market_data: Dict[str, Any]) -> Dict[str, Any]:
         is_moderate_volume = bool(hs_pct >= 3 and hs_pct <= seal_vol_cap)
         mild_vol_extra = (14.0 if cje_yi > cje_threshold else 8.0) if is_moderate_volume else 0.0
 
-        is_new_high = lbc >= max_lbc and max_lbc >= 3
         new_high_bonus = 12.0 if is_new_high and max_lbc >= 6 else 8.0 if is_new_high and max_lbc >= 4 else 5.0 if is_new_high else 0.0
         has_spread = len(theme_groups["tradeable"]) >= 2
         theme_action_bonus = (6.0 if has_tier else 0.0) + (7.0 if is_theme_leader and has_follow else 4.0 if has_follow else 0.0) + (4.0 if has_spread else 0.0)
@@ -1554,6 +1578,26 @@ def build_zt_analysis(*, market_data: Dict[str, Any]) -> Dict[str, Any]:
             and _to_num(r.get("stepContextScore"), 0) >= 38
         )
 
+    def relay_high_mark_ok(r: Dict[str, Any]) -> bool:
+        lbc = _to_num(r.get("lbc"), 0)
+        return bool(
+            r.get("hasTradeTheme")
+            and not r.get("isYizi")
+            and not r.get("isShrinkSeal")
+            and 3 <= lbc <= 5
+            and _to_num(r.get("_raw"), 0) >= 74
+            and _to_num(r.get("leaderFactorScore"), 0) >= 72
+            and _to_num(r.get("leaderPhilosophyScore"), 0) >= 76
+            and _to_num(r.get("breakRisk"), 0) < 68
+            and _to_num(r.get("open"), 0) <= 2
+            and (
+                _to_num(r.get("stepContextScore"), 0) >= 32
+                or r.get("_isThemeLeader")
+                or r.get("_isNewHigh")
+                or _to_num(r.get("_leaderBonus"), 0) >= 10
+            )
+        )
+
     def relay_one_to_two_ok(r: Dict[str, Any]) -> bool:
         return bool(
             r.get("hasTradeTheme")
@@ -1596,6 +1640,7 @@ def build_zt_analysis(*, market_data: Dict[str, Any]) -> Dict[str, Any]:
         "themeRows": sum(1 for r in scored if r.get("hasTradeTheme")),
         "heightBreakoutEligible": sum(1 for r in scored if relay_height_breakout_ok(r)),
         "coreEligible": sum(1 for r in scored if relay_core_ok(r)),
+        "highMarkEligible": sum(1 for r in scored if relay_high_mark_ok(r)),
         "oneToTwoEligible": sum(1 for r in scored if relay_one_to_two_ok(r)),
         "relaxedEligible": sum(1 for r in scored if relay_relaxed_ok(r)),
         "broadEligible": sum(1 for r in scored if relay_broad_ok(r)),
@@ -1616,6 +1661,11 @@ def build_zt_analysis(*, market_data: Dict[str, Any]) -> Dict[str, Any]:
         key=relay_sort,
         reverse=True,
     )
+    relay_high_mark = sorted(
+        [r for r in scored if relay_high_mark_ok(r)],
+        key=relay_sort,
+        reverse=True,
+    )
     relay_one_to_two = sorted(
         [r for r in scored if relay_one_to_two_ok(r)],
         key=relay_sort,
@@ -1623,7 +1673,7 @@ def build_zt_analysis(*, market_data: Dict[str, Any]) -> Dict[str, Any]:
     )[:3]
     relay_pool: List[Dict[str, Any]] = []
     relay_seen: set[str] = set()
-    for item in [*relay_breakout, *relay_core, *relay_one_to_two]:
+    for item in [*relay_breakout, *relay_high_mark, *relay_core, *relay_one_to_two]:
         nm = str(item.get("name") or "")
         if nm in relay_seen:
             continue
