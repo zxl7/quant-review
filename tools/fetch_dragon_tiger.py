@@ -1,6 +1,15 @@
 #!/usr/bin/env python3
-"""预取通达信龙虎榜数据，写入 JSON 供前端注入。"""
+"""预取通达信龙虎榜数据，写入 JSON 供前端注入。
 
+用法：
+    python3 tools/fetch_dragon_tiger.py [YYYYMMDD] [--out PATH]
+
+输出 schema（与前端 DragonTigerPayload 对齐）：
+    {date, updatedAt, dateOptions, rows}
+每个 row 包含：yzmc, yyb, sblx, gpdm, gpmc, sc, mrje, mcje, rq
+"""
+
+import argparse
 import json
 import os
 import sys
@@ -63,9 +72,55 @@ def fetch_dragon_tiger(date: str = "") -> dict:
     return {"dates": dates, "records": records}
 
 
+ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+
+def _parse_date_arg(raw: str) -> str:
+    """YYYYMMDD / YYYY-MM-DD → YYYY-MM-DD；空串 → 空串"""
+    if not raw:
+        return ""
+    d8 = raw.replace("-", "")
+    if len(d8) != 8 or not d8.isdigit():
+        raise ValueError(f"日期格式错误: {raw}（期望 YYYYMMDD 或 YYYY-MM-DD）")
+    return f"{d8[:4]}-{d8[4:6]}-{d8[6:8]}"
+
+
 def main():
-    data = fetch_dragon_tiger()
-    out = sys.argv[1] if len(sys.argv) > 1 else "dragon_tiger_data.json"
+    parser = argparse.ArgumentParser(description="预取通达信龙虎榜数据")
+    parser.add_argument("date", nargs="?", default="", help="日期 YYYYMMDD（默认取 API 最新一天）")
+    parser.add_argument(
+        "--out",
+        default="",
+        help="输出文件路径；默认 cache/dragon_tiger-{date8}.json",
+    )
+    args = parser.parse_args()
+
+    try:
+        target_date = _parse_date_arg(args.date)
+    except ValueError as e:
+        print(f"❌ {e}", file=sys.stderr)
+        return 2
+
+    data = fetch_dragon_tiger(target_date)
+
+    # 决定 d8（用于默认输出路径 + payload.date）
+    if target_date:
+        d8 = target_date.replace("-", "")
+    elif data.get("dates"):
+        d8 = data["dates"][0].replace("-", "")
+        target_date = data["dates"][0]
+    else:
+        d8 = ""
+
+    if args.out:
+        out = args.out
+    else:
+        if not d8:
+            print("❌ 未能确定日期，无法生成默认输出路径", file=sys.stderr)
+            return 1
+        cache_dir = os.path.join(ROOT, "cache")
+        os.makedirs(cache_dir, exist_ok=True)
+        out = os.path.join(cache_dir, f"dragon_tiger-{d8}.json")
 
     if not data["records"]:
         # 网络失败 → 保留已有缓存不覆盖
@@ -75,10 +130,18 @@ def main():
         print("❌ 无龙虎榜数据且无缓存", file=sys.stderr)
         return 1
 
-    with open(out, "w", encoding="utf-8") as f:
-        json.dump(data, f, ensure_ascii=False, indent=2)
+    # schema 转换：→ 前端 DragonTigerPayload {date, updatedAt, dateOptions, rows}
+    payload = {
+        "date": target_date,
+        "updatedAt": time.strftime("%Y-%m-%d %H:%M:%S"),
+        "dateOptions": data["dates"],
+        "rows": data["records"],
+    }
 
-    print(f"✅ {len(data['records'])} 条龙虎榜 ({len(data['dates'])} 个日期) → {out}")
+    with open(out, "w", encoding="utf-8") as f:
+        json.dump(payload, f, ensure_ascii=False, indent=2)
+
+    print(f"✅ {len(payload['rows'])} 条龙虎榜 ({len(payload['dateOptions'])} 个日期) → {out}")
     return 0
 
 

@@ -83,7 +83,7 @@ refresh_dragon_tiger_cache() {
   d8="$(date10_to_date8 "${date10}")"
   if [[ -f "tools/fetch_dragon_tiger.py" ]]; then
     info "抓取龙虎榜本地缓存: ${date10}"
-    python3 tools/fetch_dragon_tiger.py "${d8}" >/dev/null 2>&1 || warn "龙虎榜抓取失败，继续使用已有本地缓存"
+    python3 tools/fetch_dragon_tiger.py "${d8}" || warn "龙虎榜抓取失败，继续使用已有本地缓存"
   fi
 }
 
@@ -243,6 +243,7 @@ cmd_gen() {
 cmd_render() {
   load_dotenv_if_needed
   if [[ -n "${DATE_ARG}" ]]; then
+    refresh_dragon_tiger_cache "${DATE_ARG}"
     render_offline "${DATE_ARG}"
     prune_cache_keep_latest_n 7
     prune_extra_cache_artifacts
@@ -253,6 +254,7 @@ cmd_render() {
   local d8 d10
   d8="$(pick_latest_cache_date8)" || die "未找到 cache/market_data-*.json，请先执行：./qr.sh fetch"
   d10="$(date8_to_date10 "${d8}")"
+  refresh_dragon_tiger_cache "${d10}"
   render_offline "${d10}"
   prune_cache_keep_latest_n 7
   prune_extra_cache_artifacts

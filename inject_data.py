@@ -27,11 +27,11 @@ def _resolve_data_path(date8: str, source: Optional[str] = None) -> Path:
 
 
 def _resolve_dragon_tiger_path(date8: str) -> Path:
-    # 优先用 public 目录（dev 数据），兜底 cache 目录（CI 预取）
-    pub = ROOT / "web" / "public" / "dragon_tiger_data.json"
-    if pub.exists():
-        return pub
-    return ROOT / "cache" / f"dragon_tiger-{date8}.json"
+    # 优先用 cache 目录的当日缓存（fetch 流程产出），兜底 web/public（dev 场景）
+    cached = ROOT / "cache" / f"dragon_tiger-{date8}.json"
+    if cached.exists():
+        return cached
+    return ROOT / "web" / "public" / "dragon_tiger_data.json"
 
 
 def inject(date8: str, source: Optional[str] = None) -> Path:
