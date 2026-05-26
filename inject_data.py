@@ -27,11 +27,157 @@ def _resolve_data_path(date8: str, source: Optional[str] = None) -> Path:
 
 
 def _resolve_dragon_tiger_path(date8: str) -> Path:
-    # 优先用 public 目录（dev 数据），兜底 cache 目录（CI 预取）
-    pub = ROOT / "web" / "public" / "dragon_tiger_data.json"
-    if pub.exists():
-        return pub
-    return ROOT / "cache" / f"dragon_tiger-{date8}.json"
+    # 优先用 cache 目录的当日缓存（fetch 流程产出），兜底 web/public（dev 场景）
+    cached = ROOT / "cache" / f"dragon_tiger-{date8}.json"
+    if cached.exists():
+        return cached
+    return ROOT / "web" / "public" / "dragon_tiger_data.json"
+
+
+def _resolve_watchlist_path(date8: str) -> Path:
+    """
+    watchlist_cache 由 tools/fetch_watchlist.py 产出，保存在 cache_online/。
+
+    注意：watchlist 的"数据日期"通常是接口当天（YYYY-MM-DD），可能与涨停池
+    数据日期（pools_date）不一致。这里先按 date8 找；若不存在，回退到最新一份。
+    """
+    direct = ROOT / "cache_online" / f"watchlist_cache-{date8}.json"
+    if direct.exists():
+        return direct
+    files = sorted((ROOT / "cache_online").glob("watchlist_cache-*.json"))
+    return files[-1] if files else direct
+
+
+def _build_watchlist_stock_index(watchlist: dict) -> dict:
+    """
+    反向索引：code → {primary_sector, primary_confidence, all_sectors,
+                       main_line, main_line_confidence}
+
+    前端可 O(1) 查询，避免每个 zt-item 都遍历 stock_to_sectors。
+    """
+    out: dict = {}
+    sec = watchlist.get("sector_resolution") or {}
+    sts = sec.get("stock_to_sectors") or {}
+    if not isinstance(sts, dict):
+        return out
+
+    # 先建 sector → main_line 反查（主线优先）
+    main_lines = (watchlist.get("ladder") or {}).get("main_lines") or []
+    sector_to_main: dict[str, tuple[str, float]] = {}
+    for ml in main_lines:
+        if not isinstance(ml, dict):
+            continue
+        ml_name = str(ml.get("name") or "")
+        ml_conf = float(ml.get("confidence") or 0.0)
+        if not ml_name:
+            continue
+        for s in (ml.get("constituents") or []):
+            if isinstance(s, str) and s:
+                # 高置信度主线优先（同一 sector 被多个主线覆盖时取 confidence 最高的）
+                prev = sector_to_main.get(s)
+                if prev is None or ml_conf > prev[1]:
+                    sector_to_main[s] = (ml_name, ml_conf)
+
+    for code, info in sts.items():
+        if not isinstance(info, dict):
+            continue
+        sectors = info.get("sectors") or []
+        if not isinstance(sectors, list) or not sectors:
+            continue
+        # confidence 降序
+        sorted_sectors = sorted(
+            ((str(s.get("sector") or ""), float(s.get("confidence") or 0.0))
+             for s in sectors if isinstance(s, dict) and s.get("sector")),
+            key=lambda kv: kv[1],
+            reverse=True,
+        )
+        if not sorted_sectors:
+            continue
+        primary_sector, primary_conf = sorted_sectors[0]
+        # 在该股票所有板块中找最强主线（取该股板块在 sector_to_main 中能匹配到、且主线 conf 最高的）
+        best_main: tuple[str, float] | None = None
+        for sec_name, _sc in sorted_sectors:
+            cand = sector_to_main.get(sec_name)
+            if cand and (best_main is None or cand[1] > best_main[1]):
+                best_main = cand
+        out[str(code)] = {
+            "primary_sector": primary_sector,
+            "primary_confidence": round(primary_conf, 3),
+            "all_sectors": [[s, round(c, 3)] for s, c in sorted_sectors[:5]],
+            "main_line": best_main[0] if best_main else "",
+            "main_line_confidence": round(best_main[1], 3) if best_main else 0.0,
+        }
+    return out
+
+
+def _enhance_with_watchlist(md: dict, watchlist: dict) -> None:
+    """
+    用 watchlist 多源融合结果就地增强 md：
+    1. 重写 zt_code_themes（watchlist 在前，原列表兜底）
+    2. 让 watchlist 最强主线占据 themePanels.ztTop[0]
+    3. 透传 watchlist 整包 + 反向索引
+
+    所有改动都是 idempotent + graceful：watchlist 为空时直接返回。
+    """
+    if not isinstance(watchlist, dict) or not watchlist:
+        return
+
+    sec = watchlist.get("sector_resolution") or {}
+    sts = sec.get("stock_to_sectors") or {}
+
+    # ---- 1. zt_code_themes 增强 ----
+    if isinstance(sts, dict) and sts:
+        old_map = dict(md.get("zt_code_themes") or {})
+        new_map: dict = {}
+        for code, info in sts.items():
+            sectors = info.get("sectors") if isinstance(info, dict) else None
+            if not isinstance(sectors, list):
+                continue
+            # watchlist 已按 confidence 降序
+            themes = [
+                str(s.get("sector") or "").strip()
+                for s in sectors
+                if isinstance(s, dict) and s.get("sector")
+            ]
+            themes = [t for t in themes if t]
+            origin = old_map.get(str(code)) or []
+            for t in origin:
+                t_s = str(t or "").strip()
+                if t_s and t_s not in themes:
+                    themes.append(t_s)
+            if themes:
+                new_map[str(code)] = themes
+        # 未被 watchlist 覆盖的 code 保留原数据
+        for code, themes in old_map.items():
+            if str(code) not in new_map:
+                new_map[str(code)] = themes
+        md["zt_code_themes"] = new_map
+
+    # ---- 2. themePanels.ztTop 主线高亮 ----
+    main_lines = (watchlist.get("ladder") or {}).get("main_lines") or []
+    if main_lines and isinstance(main_lines[0], dict):
+        top_name = str(main_lines[0].get("name") or "").strip()
+        if top_name and isinstance(md.get("themePanels"), dict):
+            zt_top = list(md["themePanels"].get("ztTop") or [])
+            existing_idx = next(
+                (i for i, x in enumerate(zt_top)
+                 if isinstance(x, dict) and str(x.get("name") or "") == top_name),
+                -1,
+            )
+            if existing_idx > 0:
+                zt_top.insert(0, zt_top.pop(existing_idx))
+            elif existing_idx < 0:
+                zt_top.insert(0, {"name": top_name, "source": "watchlist"})
+            md["themePanels"]["ztTop"] = zt_top
+
+    # ---- 3. 透传 + 反向索引 ----
+    md["watchlist"] = watchlist
+    md["watchlist_stock_index"] = _build_watchlist_stock_index(watchlist)
+
+    # ---- 4. picks_advisor 提级到顶层（前端直接消费） ----
+    picks = watchlist.get("picks_advisor")
+    if isinstance(picks, dict) and picks.get("main_line_picks"):
+        md["picks_advisor"] = picks
 
 
 def inject(date8: str, source: Optional[str] = None) -> Path:
@@ -44,6 +190,16 @@ def inject(date8: str, source: Optional[str] = None) -> Path:
     md = json.loads(data_path.read_text(encoding="utf-8"))
     # 清理前端不需要的大字段
     md.pop("raw", None)
+
+    # watchlist 增强：让现有前端自动消费更准的板块归属 + 主线（前端 UI 零改动）
+    wl_path = _resolve_watchlist_path(date8)
+    if wl_path.exists():
+        try:
+            watchlist = json.loads(wl_path.read_text(encoding="utf-8"))
+            _enhance_with_watchlist(md, watchlist)
+        except Exception as e:
+            print(f"⚠ watchlist 增强失败（跳过）: {e}", file=sys.stderr)
+
     payload = json.dumps(md, ensure_ascii=False)
     dragon_payload = "{}"
     dragon_path = _resolve_dragon_tiger_path(date8)
@@ -103,6 +259,14 @@ def refresh_dev_data(date8: str, source: Optional[str] = None) -> None:
         return
     md = json.loads(data_path.read_text(encoding="utf-8"))
     md.pop("raw", None)
+    # watchlist 增强：dev 路径保持与 inject() 一致
+    wl_path = _resolve_watchlist_path(date8)
+    if wl_path.exists():
+        try:
+            watchlist = json.loads(wl_path.read_text(encoding="utf-8"))
+            _enhance_with_watchlist(md, watchlist)
+        except Exception as e:
+            print(f"⚠ watchlist 增强失败（dev 跳过）: {e}", file=sys.stderr)
     payload = json.dumps(md, ensure_ascii=False)
     dragon_payload = "{}"
     dragon_path = _resolve_dragon_tiger_path(date8)

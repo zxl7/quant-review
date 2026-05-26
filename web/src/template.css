@@ -2966,6 +2966,62 @@
         display: grid;
         gap: 3px;
       }
+      .zt-mainline-row {
+        margin-top: 6px;
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 6px;
+        font-size: 11.5px;
+        line-height: 1.35;
+        color: var(--text-muted);
+      }
+      .zt-mainline-row:empty {
+        display: none;
+      }
+      .zt-ml-chip {
+        display: inline-flex;
+        align-items: baseline;
+        gap: 3px;
+        padding: 1px 7px;
+        border-radius: 9px;
+        background: rgba(59, 130, 246, 0.10);
+        border: 1px solid rgba(59, 130, 246, 0.28);
+        color: #2563eb;
+        font-weight: 700;
+        white-space: nowrap;
+      }
+      .zt-ml-chip em {
+        font-style: normal;
+        font-weight: 600;
+        font-size: 10.5px;
+        opacity: 0.75;
+        margin-left: 1px;
+      }
+      .zt-ml-line {
+        color: var(--text-muted);
+        font-weight: 650;
+        white-space: nowrap;
+      }
+      .zt-ml-line strong {
+        color: #b91c1c;
+        font-weight: 850;
+        margin: 0 2px;
+      }
+      .zt-ml-line em {
+        font-style: normal;
+        font-weight: 700;
+        font-size: 10.5px;
+        opacity: 0.7;
+      }
+      [data-theme="dark"] .zt-ml-chip {
+        background: rgba(96, 165, 250, 0.14);
+        border-color: rgba(96, 165, 250, 0.36);
+        color: #93c5fd;
+      }
+      [data-theme="dark"] .zt-ml-line strong {
+        color: #fca5a5;
+      }
       .zt-tag-row {
         min-height: 20px;
         display: flex;
@@ -7537,6 +7593,263 @@
         color: color-mix(in oklab, var(--text-muted) 50%, transparent);
         margin: 0 1px;
       }
+
+      /* ============= 算法建议（picks_advisor） ============= */
+      .advisor-subtitle {
+        margin-top: 6px;
+        font-size: 12px;
+        color: var(--text-muted);
+        font-weight: 700;
+      }
+      .advisor-subtitle .advisor-meta {
+        margin-left: 8px;
+        font-weight: 600;
+        opacity: 0.7;
+      }
+      .advisor-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+        gap: 14px;
+        margin-top: 14px;
+      }
+      .advisor-mainline {
+        background: var(--card-bg, #fff);
+        border: 1px solid var(--border-color, rgba(148, 163, 184, 0.22));
+        border-radius: 12px;
+        padding: 12px 14px;
+        position: relative;
+      }
+      [data-theme="dark"] .advisor-mainline {
+        background: rgba(30, 41, 59, 0.45);
+        border-color: rgba(96, 165, 250, 0.18);
+      }
+      .advisor-ml-header {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 10px;
+        padding-bottom: 8px;
+        border-bottom: 1px dashed color-mix(in oklab, var(--text-muted) 30%, transparent);
+      }
+      .advisor-ml-name {
+        font-size: 16px;
+        font-weight: 900;
+        color: var(--text-primary, #0f172a);
+        letter-spacing: 0.5px;
+      }
+      [data-theme="dark"] .advisor-ml-name {
+        color: #f1f5f9;
+      }
+      .advisor-ml-conf {
+        font-size: 13px;
+        font-weight: 900;
+        padding: 2px 8px;
+        border-radius: 10px;
+        white-space: nowrap;
+      }
+      .advisor-ml-conf.conf-strong {
+        background: rgba(220, 38, 38, 0.12);
+        color: #b91c1c;
+        border: 1px solid rgba(220, 38, 38, 0.3);
+      }
+      .advisor-ml-conf.conf-mid {
+        background: rgba(217, 119, 6, 0.12);
+        color: #c2410c;
+        border: 1px solid rgba(217, 119, 6, 0.3);
+      }
+      .advisor-ml-conf.conf-weak {
+        background: rgba(100, 116, 139, 0.12);
+        color: #475569;
+        border: 1px solid rgba(100, 116, 139, 0.3);
+      }
+      [data-theme="dark"] .advisor-ml-conf.conf-strong { color: #fca5a5; }
+      [data-theme="dark"] .advisor-ml-conf.conf-mid { color: #fdba74; }
+      [data-theme="dark"] .advisor-ml-conf.conf-weak { color: #cbd5e1; }
+      .advisor-ml-chain {
+        font-size: 10.5px;
+        font-weight: 700;
+        padding: 1px 6px;
+        background: rgba(59, 130, 246, 0.10);
+        color: #2563eb;
+        border-radius: 6px;
+        border: 1px solid rgba(59, 130, 246, 0.22);
+      }
+      [data-theme="dark"] .advisor-ml-chain {
+        background: rgba(96, 165, 250, 0.14);
+        color: #93c5fd;
+      }
+      .advisor-ml-count {
+        font-size: 11px;
+        color: var(--text-muted);
+        font-weight: 650;
+        margin-left: auto;
+      }
+
+      .advisor-section {
+        margin-bottom: 10px;
+      }
+      .advisor-label {
+        font-size: 12px;
+        font-weight: 850;
+        margin-bottom: 6px;
+        letter-spacing: 0.3px;
+      }
+      .advisor-label-buy { color: #dc2626; }
+      .advisor-label-watch { color: #2563eb; }
+      [data-theme="dark"] .advisor-label-buy { color: #fca5a5; }
+      [data-theme="dark"] .advisor-label-watch { color: #93c5fd; }
+
+      .advisor-row-buy {
+        padding: 6px 8px;
+        background: rgba(220, 38, 38, 0.04);
+        border-left: 3px solid rgba(220, 38, 38, 0.55);
+        border-radius: 4px;
+        margin-bottom: 6px;
+      }
+      [data-theme="dark"] .advisor-row-buy {
+        background: rgba(220, 38, 38, 0.07);
+        border-left-color: rgba(252, 165, 165, 0.55);
+      }
+      .advisor-row-top {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        margin-bottom: 4px;
+      }
+      .advisor-name {
+        font-size: 13.5px;
+        font-weight: 850;
+        color: var(--text-primary, #0f172a);
+        text-decoration: none;
+        flex-shrink: 0;
+      }
+      [data-theme="dark"] .advisor-name {
+        color: #f1f5f9;
+      }
+      .advisor-name:hover {
+        color: #2563eb;
+      }
+      .advisor-score {
+        font-size: 13px;
+        font-weight: 900;
+        padding: 1px 7px;
+        border-radius: 9px;
+        white-space: nowrap;
+        flex-shrink: 0;
+      }
+      .advisor-score.score-strong {
+        background: rgba(220, 38, 38, 0.14);
+        color: #b91c1c;
+      }
+      .advisor-score.score-mid {
+        background: rgba(217, 119, 6, 0.14);
+        color: #c2410c;
+      }
+      .advisor-score.score-weak {
+        background: rgba(100, 116, 139, 0.14);
+        color: #475569;
+      }
+      [data-theme="dark"] .advisor-score.score-strong { color: #fca5a5; }
+      [data-theme="dark"] .advisor-score.score-mid { color: #fdba74; }
+      [data-theme="dark"] .advisor-score.score-weak { color: #cbd5e1; }
+      .advisor-tier {
+        font-size: 11px;
+        font-weight: 800;
+        padding: 1px 6px;
+        background: rgba(245, 158, 11, 0.16);
+        color: #d97706;
+        border-radius: 8px;
+      }
+      [data-theme="dark"] .advisor-tier {
+        color: #fbbf24;
+      }
+      .advisor-reasons {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 4px 8px;
+        font-size: 11.5px;
+        color: var(--text-muted);
+      }
+      .advisor-reason {
+        color: #16a34a;
+        font-weight: 650;
+      }
+      [data-theme="dark"] .advisor-reason {
+        color: #86efac;
+      }
+      .advisor-cautions {
+        margin-top: 3px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 4px 8px;
+        font-size: 11px;
+      }
+      .advisor-caution {
+        color: #d97706;
+        font-weight: 650;
+      }
+      [data-theme="dark"] .advisor-caution {
+        color: #fbbf24;
+      }
+
+      .advisor-watch-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(135px, 1fr));
+        gap: 6px;
+      }
+      .advisor-watch-item {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        padding: 5px 7px;
+        background: rgba(59, 130, 246, 0.05);
+        border: 1px solid rgba(59, 130, 246, 0.18);
+        border-radius: 6px;
+        text-decoration: none;
+        font-size: 12px;
+      }
+      [data-theme="dark"] .advisor-watch-item {
+        background: rgba(96, 165, 250, 0.08);
+        border-color: rgba(96, 165, 250, 0.22);
+      }
+      .advisor-watch-item:hover {
+        background: rgba(59, 130, 246, 0.12);
+      }
+      .advisor-watch-item .advisor-name {
+        font-size: 12px;
+        font-weight: 800;
+      }
+      .advisor-watch-score {
+        font-size: 11px;
+        font-weight: 800;
+        padding: 0 5px;
+        border-radius: 6px;
+        margin-left: auto;
+      }
+      .advisor-watch-score.score-strong { color: #b91c1c; }
+      .advisor-watch-score.score-mid { color: #c2410c; }
+      .advisor-watch-score.score-weak { color: #64748b; }
+      [data-theme="dark"] .advisor-watch-score.score-strong { color: #fca5a5; }
+      [data-theme="dark"] .advisor-watch-score.score-mid { color: #fdba74; }
+      [data-theme="dark"] .advisor-watch-score.score-weak { color: #cbd5e1; }
+      .advisor-watch-lbc,
+      .advisor-watch-cje {
+        font-size: 10.5px;
+        color: var(--text-muted);
+        font-weight: 700;
+      }
+
+      .advisor-summary {
+        margin-top: 8px;
+        padding: 6px 9px;
+        background: color-mix(in oklab, var(--text-muted) 6%, transparent);
+        border-radius: 6px;
+        font-size: 11.5px;
+        line-height: 1.5;
+        color: var(--text-muted);
+        font-weight: 650;
+      }
+      /* ============= /算法建议 ============= */
 
       .sector-tier-grid {
         display: grid;

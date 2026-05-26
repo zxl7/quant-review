@@ -102,6 +102,61 @@ const ztWatchSorted = computed(() => (marketData.value?.ztAnalysis?.watch || [])
 
 const ztTagRows = (row: any) => Array.isArray(row?.tagRows) ? row.tagRows : [];
 
+// 算法建议（picks_advisor）：来自 inject_data.py 透传的 watchlist.picks_advisor
+type PickStock = {
+  code: string; name: string; action: string; score: number;
+  main_line: string; primary_sector: string; primary_confidence: number;
+  reasons: string[]; cautions: string[];
+  lbc: number; cje_yi: number; seal_fund_yi: number; turnover: number;
+  breakdown?: Record<string, number>; bonus?: number;
+};
+type MainLinePicks = {
+  main_line: string; confidence: number; is_chain: boolean; constituents: string[];
+  buy: PickStock[]; watch: PickStock[]; summary: string;
+  diagnostics?: { member_count: number; avg_score: number };
+};
+
+const picksAdvisor = computed(() => {
+  const pa = (marketData.value as any)?.picks_advisor;
+  if (!pa || typeof pa !== 'object') return null;
+  const picks = Array.isArray(pa.main_line_picks) ? pa.main_line_picks as MainLinePicks[] : [];
+  if (!picks.length) return null;
+  return {
+    main_line_picks: picks,
+    diagnostics: pa.diagnostics || {},
+    generated_at_bj: (marketData.value as any)?.watchlist?.generated_at_bj || '',
+  };
+});
+
+const confClass = (c: number) => {
+  if (c >= 0.7) return 'conf-strong';
+  if (c >= 0.5) return 'conf-mid';
+  return 'conf-weak';
+};
+
+const scoreClass = (s: number) => {
+  if (s >= 70) return 'score-strong';
+  if (s >= 50) return 'score-mid';
+  return 'score-weak';
+};
+
+// watchlist 反向索引：code → { primary_sector, primary_confidence, main_line, main_line_confidence }
+// 数据来自 inject_data.py 的 _build_watchlist_stock_index（M3/M4 多源融合结果）。
+const mainLineOf = (code: unknown) => {
+  const k = String(code || '').trim();
+  if (!k) return null;
+  const idx = (marketData.value as any)?.watchlist_stock_index;
+  if (!idx || typeof idx !== 'object') return null;
+  const info = idx[k];
+  if (!info) return null;
+  return {
+    primary_sector: String(info.primary_sector || ''),
+    primary_confidence: Number(info.primary_confidence || 0),
+    main_line: String(info.main_line || ''),
+    main_line_confidence: Number(info.main_line_confidence || 0),
+  };
+};
+
 type ZtStockPick = {
   code: string;
   name: string;
@@ -370,6 +425,65 @@ const sectorPicksMeta = computed(() => {
       </div>
     </div>
 
+    <div class="card" data-page="plan" id="sec-picks-advisor" v-if="picksAdvisor">
+      <div class="card-header">
+        <div>
+          <div class="card-title">💡 算法建议（买入 · 观察）</div>
+          <div class="advisor-subtitle">
+            主线置信度 × 六维评分（百分制） ·
+            <strong class="orange-text">{{ picksAdvisor.diagnostics?.total_buy ?? 0 }}</strong> 买入 /
+            <strong class="blue-text">{{ picksAdvisor.diagnostics?.total_watch ?? 0 }}</strong> 观察
+            <span class="advisor-meta" v-if="picksAdvisor.generated_at_bj">· 更新 {{ picksAdvisor.generated_at_bj.slice(11, 16) }}</span>
+          </div>
+        </div>
+        <div class="card-badge">主线 × 评分 × 因子</div>
+      </div>
+      <div class="advisor-grid">
+        <div class="advisor-mainline" v-for="ml in picksAdvisor.main_line_picks" :key="'adv-ml-'+ml.main_line">
+          <div class="advisor-ml-header">
+            <span class="advisor-ml-name">{{ ml.main_line }}</span>
+            <span class="advisor-ml-conf" :class="confClass(ml.confidence)">{{ ml.confidence.toFixed(2) }}</span>
+            <span class="advisor-ml-chain" v-if="ml.is_chain" :title="ml.constituents.join('·')">产业链</span>
+            <span class="advisor-ml-count">{{ ml.diagnostics?.member_count ?? 0 }}只成员</span>
+          </div>
+
+          <div class="advisor-section" v-if="ml.buy?.length">
+            <div class="advisor-label advisor-label-buy">📈 买入</div>
+            <div class="advisor-row advisor-row-buy" v-for="s in ml.buy" :key="'b-'+s.code">
+              <div class="advisor-row-top">
+                <a class="advisor-name" :href="xqUrl(s.code)" target="_blank" rel="noopener noreferrer">{{ s.name }}</a>
+                <span class="advisor-score" :class="scoreClass(s.score)">{{ s.score }}</span>
+                <span class="advisor-tier" v-if="s.lbc >= 2">{{ s.lbc }}板</span>
+                <span class="advisor-tier" v-else-if="s.cje_yi >= 100">容量</span>
+              </div>
+              <div class="advisor-reasons">
+                <span class="advisor-reason" v-for="(r, ri) in s.reasons" :key="'r-'+s.code+'-'+ri">✓ {{ r }}</span>
+              </div>
+              <div class="advisor-cautions" v-if="s.cautions?.length">
+                <span class="advisor-caution" v-for="(c, ci) in s.cautions" :key="'c-'+s.code+'-'+ci">⚠ {{ c }}</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="advisor-section" v-if="ml.watch?.length">
+            <div class="advisor-label advisor-label-watch">👁 观察</div>
+            <div class="advisor-watch-grid">
+              <a class="advisor-watch-item" v-for="s in ml.watch" :key="'w-'+s.code"
+                :href="xqUrl(s.code)" target="_blank" rel="noopener noreferrer"
+                :title="s.reasons.join(' · ')">
+                <span class="advisor-name">{{ s.name }}</span>
+                <span class="advisor-watch-score" :class="scoreClass(s.score)">{{ s.score }}</span>
+                <span class="advisor-watch-lbc" v-if="s.lbc >= 2">{{ s.lbc }}板</span>
+                <span class="advisor-watch-cje" v-else-if="s.cje_yi >= 30">{{ s.cje_yi.toFixed(0) }}亿</span>
+              </a>
+            </div>
+          </div>
+
+          <div class="advisor-summary">{{ ml.summary }}</div>
+        </div>
+      </div>
+    </div>
+
     <div class="card" data-page="plan" id="sec-sector-tier-picks" v-if="sectorTierPicks.length">
       <div class="card-header">
         <div>
@@ -495,6 +609,16 @@ const sectorPicksMeta = computed(() => {
                   <div class="g" v-if="row.scoreSubLabel">{{ row.scoreSubLabel }}</div>
                 </div>
               </div>
+              <div class="zt-mainline-row" v-if="mainLineOf(row.code)">
+                <span class="zt-ml-chip" :title="`板块归属置信度 ${mainLineOf(row.code)?.primary_confidence.toFixed(2)}`">
+                  🏷 {{ mainLineOf(row.code)?.primary_sector }}
+                  <em>{{ mainLineOf(row.code)?.primary_confidence.toFixed(2) }}</em>
+                </span>
+                <span class="zt-ml-line" v-if="mainLineOf(row.code)?.main_line">
+                  · 主线 <strong>{{ mainLineOf(row.code)?.main_line }}</strong>
+                  <em>{{ mainLineOf(row.code)?.main_line_confidence.toFixed(2) }}</em>
+                </span>
+              </div>
               <div class="zt-tags">
                 <div class="zt-tag-row" v-for="tagRow in ztTagRows(row)" :key="'relay-tag-row-'+i+'-'+tagRow.tone" :class="'zt-tag-row-' + tagRow.tone">
                   <span class="ladder-chip" v-for="(t, ti) in tagRow.tags" :key="'relay-tag-'+i+'-'+tagRow.tone+'-'+ti" :class="t.cls">{{ t.text }}</span>
@@ -520,6 +644,16 @@ const sectorPicksMeta = computed(() => {
                   <div class="k">{{ row.scoreLabel || row.watchGroup || '观察参考' }}</div>
                   <div class="g" v-if="row.scoreSubLabel || row.watchGroup">{{ row.scoreSubLabel || row.watchGroup }}</div>
                 </div>
+              </div>
+              <div class="zt-mainline-row" v-if="mainLineOf(row.code)">
+                <span class="zt-ml-chip" :title="`板块归属置信度 ${mainLineOf(row.code)?.primary_confidence.toFixed(2)}`">
+                  🏷 {{ mainLineOf(row.code)?.primary_sector }}
+                  <em>{{ mainLineOf(row.code)?.primary_confidence.toFixed(2) }}</em>
+                </span>
+                <span class="zt-ml-line" v-if="mainLineOf(row.code)?.main_line">
+                  · 主线 <strong>{{ mainLineOf(row.code)?.main_line }}</strong>
+                  <em>{{ mainLineOf(row.code)?.main_line_confidence.toFixed(2) }}</em>
+                </span>
               </div>
               <div class="zt-tags">
                 <div class="zt-tag-row" v-for="tagRow in ztTagRows(row)" :key="'watch-tag-row-'+i+'-'+tagRow.tone" :class="'zt-tag-row-' + tagRow.tone">
