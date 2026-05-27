@@ -1,8 +1,10 @@
 <script setup lang="ts">
 import { onMounted, computed } from 'vue';
 import { useDragonTiger, type DragonTigerRow } from './useDragonTiger';
+import { useMarketData } from '../../composables/useMarketData';
 import ShortReminderFooter from '../common/ShortReminderFooter.vue';
 
+const { marketData } = useMarketData();
 const { dateOptions: dates, rows: records, loading, error, selectedDate, refresh: init, formatMoney: fmtAmount } = useDragonTiger();
 
 onMounted(() => init());
@@ -12,6 +14,13 @@ function xqUrl(code: string) {
   const mkt = code.startsWith('6') ? 'SH' : 'SZ';
   return `https://xueqiu.com/S/${mkt}${code}`;
 }
+
+const getSector = (code: string) => {
+  const idx = (marketData.value as any)?.watchlist_stock_index;
+  if (!idx) return null;
+  const info = idx[code];
+  return info?.primary_sector || info?.main_line || null;
+};
 
 // 按股票分组，每只股票的买入前5和卖出前5分别排序
 const stockGroups = computed(() => {
@@ -75,6 +84,7 @@ const stockGroups = computed(() => {
         <div class="dt-stock-head">
           <span class="dt-stock-code">{{ sg.code }}</span>
           <a :href="xqUrl(sg.code)" target="_blank" rel="noopener" class="dt-link dt-stock-name">{{ sg.name }}</a>
+          <span v-if="getSector(sg.code)" class="dt-stock-sector">{{ getSector(sg.code) }}</span>
           <span class="dt-stock-summary">
             <span class="dt-ss-buy">买 {{ fmtAmount(sg.totalBuy) }}</span>
             <span class="dt-ss-sell">卖 {{ fmtAmount(sg.totalSell) }}</span>
@@ -172,6 +182,11 @@ const stockGroups = computed(() => {
 }
 .dt-stock-code { font-size: 12px; font-weight: 900; color: var(--text-muted); font-variant-numeric: tabular-nums; }
 .dt-stock-name { font-size: 14px; font-weight: 1050; }
+.dt-stock-sector {
+  font-size: 10px; font-weight: 800; color: var(--text-muted);
+  background: rgba(148, 163, 184, 0.1); padding: 1px 6px; border-radius: 4px;
+  white-space: nowrap;
+}
 .dt-stock-summary { margin-left: auto; display: flex; gap: 8px; font-size: 11px; font-weight: 900; }
 .dt-ss-buy { color: #dc2626; }
 .dt-ss-sell { color: #059669; }

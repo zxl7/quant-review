@@ -735,6 +735,43 @@
         align-items: center;
         justify-content: space-between;
       }
+      .zt-header-left {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        min-width: 0;
+      }
+      .zt-header-sector {
+        display: inline-flex;
+        align-items: center;
+        margin-left: 12px;
+        font-size: 13px;
+        font-weight: 850;
+        color: var(--primary);
+        background: var(--theme-soft);
+        padding: 2px 12px;
+        border-radius: 999px;
+        border: 1px solid var(--theme-glow);
+        vertical-align: middle;
+      }
+      .zt-header-meta,
+      .zt-header-meta-inline {
+        font-size: 11.5px;
+        color: var(--text-muted);
+        font-weight: 750;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+      }
+      .zt-header-meta-inline {
+        display: inline-flex;
+        margin-left: 4px;
+      }
+      .zt-header-meta .sep,
+      .zt-header-meta-inline .sep {
+        opacity: 0.4;
+        margin: 0 2px;
+      }
       .card-title {
         display: flex;
         align-items: center;

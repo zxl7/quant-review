@@ -842,8 +842,13 @@ def build_zt_analysis(*, market_data: Dict[str, Any]) -> Dict[str, Any]:
         cje_yi_raw = _yi(s.get("cje"))
         hs_raw = _to_num(s.get("hs"), 0.0)
         fbt_raw = str(s.get("fbt") or "")
-        is_yizi = hs_raw < 2 and cje_yi_raw < 3 and open_cnt == 0 and (fbt_raw.startswith("0925") or fbt_raw.startswith("09:25"))
-        is_shrink_seal = (not is_yizi) and hs_raw < 3 and cje_yi_raw < 5 and open_cnt == 0
+        
+        # 优化：如果成交量、换手率均为0，极有可能是实时接口尚未同步数据，而非一字板
+        # 此时不应判定为一字板/缩量板，避免接力池被误杀过滤
+        is_data_missing = (hs_raw <= 0 and cje_yi_raw <= 0)
+        
+        is_yizi = (not is_data_missing) and hs_raw < 2 and cje_yi_raw < 3 and open_cnt == 0 and (fbt_raw.startswith("0925") or fbt_raw.startswith("09:25"))
+        is_shrink_seal = (not is_data_missing) and (not is_yizi) and hs_raw < 3 and cje_yi_raw < 5 and open_cnt == 0
         yizi_penalty = 22.0 if is_yizi else 12.0 if is_shrink_seal else 0.0
 
         ladder_row = ladder_map.get(code) or ladder_map.get(name) or {}
@@ -1079,6 +1084,39 @@ def build_zt_analysis(*, market_data: Dict[str, Any]) -> Dict[str, Any]:
         theme_support_ok = bool(has_trade_theme and (theme_net >= 8 or plate_is_strong) and (has_follow or has_tier or is_plate_leader))
         leader_uniqueness_ok = bool(unique_market_leader or (is_theme_leader and leader_bonus >= 10))
         
+        sector_trend_score = _clamp(
+            theme_persist_score * 0.34
+            + sector_rank_context_score * 0.24
+            + plate_score * 0.22
+            + min(theme_net, 20.0) * 0.55
+            + (5.0 if has_tier else 0.0)
+            + (4.0 if is_theme_leader else 0.0)
+            + (2.0 if has_follow else 0.0)
+            - (8.0 if theme_is_fading else 0.0)
+            - (6.0 if is_broad_only else 0.0)
+        )
+        if has_trade_theme:
+            sector_panel_score = _clamp(
+                28.0
+                + theme_net * 1.65
+                + min(theme_zt, 24.0) * 0.55
+                + (theme_persist_score - 50.0) * 0.16
+                + (6.0 if has_tier else 0.0)
+                + (5.0 if is_main else 0.0)
+                + (3.0 if has_spread else 0.0)
+                - theme_risk * 1.80
+                - theme_zb * 0.70
+                - theme_dt * 3.00
+                - (8.0 if theme_is_fading else 0.0)
+            )
+            sector_sentiment_score = _clamp(sector_panel_score * 0.64 + sector_trend_score * 0.36)
+        elif is_broad_only:
+            sector_panel_score = _clamp(34.0 + hy_score * 0.20 - 10.0)
+            sector_sentiment_score = _clamp(sector_panel_score * 0.76 + sector_trend_score * 0.24)
+        else:
+            sector_panel_score = _clamp(30.0 + hy_score * 0.32)
+            sector_sentiment_score = _clamp(sector_panel_score * 0.84 + sector_trend_score * 0.16)
+
         # 题材评分加成逻辑
         # 结合 SectorResolver 中的评分数据 (theme_env_score, sector_sentiment_score)
         theme_quality_bonus = 0.0
@@ -1093,7 +1131,7 @@ def build_zt_analysis(*, market_data: Dict[str, Any]) -> Dict[str, Any]:
             # 4. 题材分化/退潮惩罚
             if theme_is_fading:
                 theme_quality_bonus -= 10.0
-        
+
         leader_philosophy_score = _clamp(
             (94.0 if unique_market_leader else 82.0 if is_market_top else 74.0 if is_theme_leader else 62.0 if leader_bonus >= 10 else 48.0)
             + (8.0 if trend_protect_ok else -10.0)
@@ -1138,38 +1176,6 @@ def build_zt_analysis(*, market_data: Dict[str, Any]) -> Dict[str, Any]:
                 + (2.5 if has_follow else 0.0)
                 + (2.0 if theme_net >= 12 or plate_score >= 70 else 0.0)
             )
-        sector_trend_score = _clamp(
-            theme_persist_score * 0.34
-            + sector_rank_context_score * 0.24
-            + plate_score * 0.22
-            + min(theme_net, 20.0) * 0.55
-            + (5.0 if has_tier else 0.0)
-            + (4.0 if is_theme_leader else 0.0)
-            + (2.0 if has_follow else 0.0)
-            - (8.0 if theme_is_fading else 0.0)
-            - (6.0 if is_broad_only else 0.0)
-        )
-        if has_trade_theme:
-            sector_panel_score = _clamp(
-                28.0
-                + theme_net * 1.65
-                + min(theme_zt, 24.0) * 0.55
-                + (theme_persist_score - 50.0) * 0.16
-                + (6.0 if has_tier else 0.0)
-                + (5.0 if is_main else 0.0)
-                + (3.0 if has_spread else 0.0)
-                - theme_risk * 1.80
-                - theme_zb * 0.70
-                - theme_dt * 3.00
-                - (8.0 if theme_is_fading else 0.0)
-            )
-            sector_sentiment_score = _clamp(sector_panel_score * 0.64 + sector_trend_score * 0.36)
-        elif is_broad_only:
-            sector_panel_score = _clamp(34.0 + hy_score * 0.20 - 10.0)
-            sector_sentiment_score = _clamp(sector_panel_score * 0.76 + sector_trend_score * 0.24)
-        else:
-            sector_panel_score = _clamp(30.0 + hy_score * 0.32)
-            sector_sentiment_score = _clamp(sector_panel_score * 0.84 + sector_trend_score * 0.16)
 
         leader_signal_score = 78.0 if is_theme_leader else 70.0 if leader_bonus >= 10 else 62.0 if leader_bonus > 0 else 46.0 if follow_leader else 54.0
         stock_strength_score = _clamp(
@@ -1646,11 +1652,19 @@ def build_zt_analysis(*, market_data: Dict[str, Any]) -> Dict[str, Any]:
         # 线上字段不完整时，避免接力池直接空白；但仍排除明显不可参与/高风险品种。
         return bool(
             not r.get("isYizi")
-            and not r.get("isShrinkSeal")
-            and 1 <= _to_num(r.get("lbc"), 0) <= 5
+            and 1 <= _to_num(r.get("lbc"), 0) <= 6
             and _to_num(r.get("open"), 0) < 12
-            and _to_num(r.get("breakRisk"), 0) < 94
-            and _to_num(r.get("_raw"), 0) >= 58
+            and _to_num(r.get("breakRisk"), 0) < 95
+            and _to_num(r.get("_raw"), 0) >= 55
+        )
+
+    def relay_emergency_ok(r: Dict[str, Any]) -> bool:
+        # 极致兜底：只要不是极致风险（一字板、跌停风险等），且有一定强度，就展示出来供参考
+        return bool(
+            1 <= _to_num(r.get("lbc"), 0) <= 7
+            and _to_num(r.get("open"), 0) < 15
+            and _to_num(r.get("breakRisk"), 0) < 98
+            and _to_num(r.get("_raw"), 0) >= 45
         )
 
     relay_diagnostics = {
@@ -1662,6 +1676,7 @@ def build_zt_analysis(*, market_data: Dict[str, Any]) -> Dict[str, Any]:
         "oneToTwoEligible": sum(1 for r in scored if relay_one_to_two_ok(r)),
         "relaxedEligible": sum(1 for r in scored if relay_relaxed_ok(r)),
         "broadEligible": sum(1 for r in scored if relay_broad_ok(r)),
+        "emergencyEligible": sum(1 for r in scored if relay_emergency_ok(r)),
         "riskBlocked": sum(1 for r in scored if _to_num(r.get("breakRisk"), 0) >= 76),
         "openBlocked": sum(1 for r in scored if _to_num(r.get("open"), 0) >= 8),
         "stepWeak": sum(1 for r in scored if _to_num(r.get("stepContextScore"), 0) < 38),
@@ -1709,6 +1724,9 @@ def build_zt_analysis(*, market_data: Dict[str, Any]) -> Dict[str, Any]:
         relay_selection_mode = "broad"
         relay = sorted([r for r in scored if relay_broad_ok(r)], key=relay_sort, reverse=True)[:3]
     if not relay:
+        relay_selection_mode = "emergency"
+        relay = sorted([r for r in scored if relay_emergency_ok(r)], key=relay_sort, reverse=True)[:3]
+    if not relay:
         relay_selection_mode = "none"
     for idx, r in enumerate(relay):
         r["relayRank"] = idx + 1
@@ -1718,7 +1736,7 @@ def build_zt_analysis(*, market_data: Dict[str, Any]) -> Dict[str, Any]:
             r["scoreSubLabel"] = f"超红龙头 · {r.get('scoreBand')}"
         elif r.get("_heightBreakoutLeader"):
             r["scoreSubLabel"] = f"市场总龙头 · {r.get('scoreBand')}"
-        elif relay_selection_mode == "broad":
+        elif relay_selection_mode in {"broad", "emergency"}:
             r["scoreSubLabel"] = "兜底候选 · 仅超预期"
         else:
             gate_label = str(((r.get("marketGate") or {}).get("label") or "")).strip()

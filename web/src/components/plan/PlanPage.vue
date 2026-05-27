@@ -571,19 +571,19 @@ const sectorPicksMeta = computed(() => {
 
     <div class="card" data-page="plan" id="sec-zt-analysis">
       <div class="card-header">
-        <div>
-          <div class="card-title">涨停数据分析（明日接力 / 观察）</div>
-          <div style="margin-top: 6px; font-size: 12px; color: var(--text-muted); font-weight: 750">
-            梯队板块（≥3只涨停）：
-            <span class="blue-text" style="font-weight: 900">{{ marketData.ztAnalysis?.meta?.tierThemeCount ?? '-' }}</span>
-            <span v-if="marketData.ztAnalysis?.meta?.tierThemeTop">｜TOP：{{ marketData.ztAnalysis?.meta?.tierThemeTop }}</span>
-            <span style="margin-left: 10px">
-              ｜涨停池
-              <span class="orange-text" style="font-weight: 900">{{ marketData.ztgc?.length ?? 0 }}</span>
-              只 ｜题材映射
-              <span class="orange-text" style="font-weight: 900">{{ marketData.zt_code_themes ? Object.keys(marketData.zt_code_themes).length : 0 }}</span>
-              只
+        <div class="zt-header-left">
+          <div class="card-title">
+            <span>涨停数据分析</span>
+            <span class="zt-header-sector" v-if="marketData.ztAnalysis?.meta?.tierThemeCount">
+              梯队：{{ marketData.ztAnalysis?.meta?.tierThemeCount }}板块
+              <template v-if="marketData.ztAnalysis?.meta?.tierThemeTop">（{{ marketData.ztAnalysis?.meta?.tierThemeTop }}）</template>
             </span>
+            <div class="zt-header-meta-inline">
+              <span class="sep">｜</span>
+              涨停池 <span class="orange-text">{{ marketData.ztgc?.length ?? 0 }}</span>
+              <span class="sep">·</span>
+              题材映射 <span class="orange-text">{{ marketData.zt_code_themes ? Object.keys(marketData.zt_code_themes).length : 0 }}</span>
+            </div>
           </div>
         </div>
         <div class="card-badge">封单 · 板块归属 · 量能 · 炸板 · 梯队</div>
