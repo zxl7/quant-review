@@ -1,7 +1,7 @@
 import { computed, ref } from 'vue';
 
 type AlertLevel = 'high' | 'mid' | 'low';
-type AlertTone = 'red' | 'green';
+type AlertTone = 'red' | 'green' | 'blue';
 
 export type IntradayAlertItem = {
   id: string;
@@ -46,7 +46,7 @@ const getPersistentHistory = (): IntradayAlertItem[] => {
     return data
       .filter((item: any) => new Date(item.eventTimestamp * 1000).toDateString() === today)
       .map((item: any) => {
-        const meta = eventMeta(item.eventType, item.pcp, item.mtm);
+        const meta = eventMeta(item.eventType, item.pcp);
         return {
           ...item,
           tone: meta.tone,
@@ -68,8 +68,8 @@ const savePersistentHistory = (items: IntradayAlertItem[]) => {
 };
 
 const eventMetaMap: Record<number, { label: string; tone: AlertTone }> = {
-  10003: { label: '打开涨停', tone: 'green' },
-  10004: { label: '打开跌停', tone: 'red' },
+  10003: { label: '炸板回落', tone: 'blue' },
+  10004: { label: '开板回升', tone: 'blue' },
   10005: { label: '逼近涨停', tone: 'red' },
   10006: { label: '逼近跌停', tone: 'green' },
   10007: { label: '封板跌停', tone: 'green' },
@@ -81,33 +81,26 @@ const eventMetaMap: Record<number, { label: string; tone: AlertTone }> = {
   99999: { label: '共振爆发', tone: 'red' },
 };
 
-const eventMeta = (eventType: number, pcp?: number, mtm?: number) => {
-  const meta = { ...(eventMetaMap[eventType] || { label: `异动 ${eventType}`, tone: 'red' as AlertTone }) };
-  if (pcp !== undefined) {
-    const isPositive = pcp >= 0;
-    const isNegative = pcp < 0;
-    const actionUp = (mtm || 0) > 0;
-    if (isNegative) {
-      meta.tone = 'green';
-    } else if (isPositive) {
-      if (eventType === 10003) {
-        meta.tone = 'green';
-      } else {
-        meta.tone = 'red';
-      }
-    }
-    if (isNegative) {
-      if (meta.label.includes('涨停') && eventType !== 10003) meta.label = '封板跌停';
-      else if (meta.label.includes('逼近') && meta.label.includes('涨停')) meta.label = '逼近跌停';
-      else if (meta.label.includes('拉升')) meta.label = actionUp ? '低位回升' : '板块跳水';
-      else if (meta.label === '共振爆发') meta.label = '共振跳水';
-    } else if (isPositive) {
-      if (meta.label.includes('跌停') && eventType !== 10004) meta.label = '封板涨停';
-      else if (meta.label.includes('逼近') && meta.label.includes('跌停')) meta.label = '逼近涨停';
-      else if (meta.label.includes('跳水')) meta.label = actionUp ? '快速回升' : '高位回落';
-    }
+const eventMeta = (eventType: number, pcp?: number): { label: string; tone: AlertTone } => {
+  const fallback: { label: string; tone: AlertTone } = { label: `异动 ${eventType}`, tone: 'red' };
+  const base = eventMetaMap[eventType] || fallback;
+  if (pcp === undefined) return { ...base };
+
+  const isUp = pcp >= 0;
+  const tone: AlertTone = eventType === 10003 || eventType === 10004 ? 'blue' : isUp ? 'red' : 'green';
+
+  if (pcp >= 0.095 && eventType !== 10003 && eventType !== 10004) {
+    return { label: '封板涨停', tone };
   }
-  return meta;
+  if (pcp <= -0.095 && eventType !== 10003 && eventType !== 10004) {
+    return { label: '封板跌停', tone };
+  }
+  if (isUp) {
+    const label = eventType === 10003 ? '炸板回落' : eventType === 10004 ? '开板回升' : eventType >= 11000 ? base.label : '小幅拉升';
+    return { label, tone };
+  }
+  const label = eventType === 10003 ? '炸板回落' : eventType === 10004 ? '开板回升' : eventType >= 11000 ? base.label : '小幅回落';
+  return { label, tone };
 };
 
 const formatTime = (timestamp: unknown) => {
@@ -161,7 +154,7 @@ const parseAlertItem = (event: any): IntradayAlertItem | null => {
 
   if (isPlate) {
     const plate = event.plate_abnormal_event_data || {};
-    const meta = eventMeta(eventType, plate.pcp, plate.mtm);
+    const meta = eventMeta(eventType, plate.pcp);
     const title = String(plate.plate_name || meta.label).trim();
     if (!title || isSt(title)) return null;
     const priority = priorityForType(eventType);
@@ -192,7 +185,7 @@ const parseAlertItem = (event: any): IntradayAlertItem | null => {
   }
 
   const stock = event.stock_abnormal_event_data || {};
-  const meta = eventMeta(eventType, stock.pcp, stock.mtm);
+  const meta = eventMeta(eventType, stock.pcp);
   const title = String(stock.name || meta.label).trim();
   if (!title || isSt(title)) return null;
   const priority = priorityForType(eventType);
@@ -239,6 +232,7 @@ export function useIntradayAlertPool() {
   const enabled = ref(true);
   const unreadCount = ref(0);
   const lastUpdatedAt = ref(0);
+  const resonanceToasts = ref<IntradayAlertItem[]>([]);
 
   let timer: number | null = null;
   let inFlight = false;
@@ -406,7 +400,9 @@ export function useIntradayAlertPool() {
 
       const resonances = detectResonance(freshItems);
       for (const res of resonances) {
-        addItem(res);
+        if (addItem(res)) {
+          resonanceToasts.value = [res, ...resonanceToasts.value].slice(0, 5);
+        }
       }
 
       lastUpdatedAt.value = now;
@@ -433,6 +429,10 @@ export function useIntradayAlertPool() {
     }
   };
 
+  const dismissResonanceToast = (id: string) => {
+    resonanceToasts.value = resonanceToasts.value.filter(t => t.id !== id);
+  };
+
   return {
     items,
     loading,
@@ -442,6 +442,7 @@ export function useIntradayAlertPool() {
     enabled,
     unreadCount,
     lastUpdatedAt,
+    resonanceToasts,
     railItems,
     allHistory,
     statusText,
@@ -454,5 +455,6 @@ export function useIntradayAlertPool() {
     refresh,
     start,
     stop,
+    dismissResonanceToast,
   };
 }
