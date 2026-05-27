@@ -69,7 +69,7 @@ const stockGroups = computed(() => {
 
     <div v-else-if="error" class="dt-error">{{ error }}</div>
 
-    <div v-else>
+    <div v-else class="dt-grid-container">
       <div v-for="sg in stockGroups" :key="sg.code" class="dt-stock-block">
         <!-- 股票头部 -->
         <div class="dt-stock-head">
@@ -125,12 +125,12 @@ const stockGroups = computed(() => {
 .dt-top-title { font-size: 16px; font-weight: 1050; color: var(--text-primary); }
 .dt-date-select {
   padding: 4px 10px; border-radius: 6px;
-  border: 1px solid color-mix(in oklab, rgba(148, 163, 184, 0.18) 65%, var(--theme-glow) 35%);
-  background: color-mix(in oklab, var(--theme-soft) 8%, rgba(255, 255, 255, 0.5));
+  border: 1px solid var(--border);
+  background: var(--bg-elevated);
   color: var(--text-primary); font-size: 12px; font-weight: 800;
   outline: none; cursor: pointer;
 }
-[data-theme="dark"] .dt-date-select { background: rgba(15, 23, 42, 0.5); color: var(--text-primary); }
+[data-theme="dark"] .dt-date-select { background: rgba(30, 41, 59, 0.5); color: var(--text-primary); }
 
 .dt-sk-list { display: flex; flex-direction: column; gap: 6px; padding: 10px 0; }
 .dt-sk-row { display: flex; gap: 8px; }
@@ -143,67 +143,88 @@ const stockGroups = computed(() => {
 .dt-sk-line.w20 { width: 20%; } .dt-sk-line.w25 { width: 25%; }
 @keyframes dt-shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
 
+/* Stock grid */
+.dt-grid-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(420px, 1fr));
+  gap: 12px;
+  align-items: start;
+}
+
 /* Stock block */
 .dt-stock-block {
-  border: 1px solid color-mix(in oklab, rgba(148, 163, 184, 0.14) 65%, var(--theme-glow) 35%);
+  border: 1px solid var(--border);
   border-radius: 12px;
-  background: linear-gradient(135deg, color-mix(in oklab, var(--theme-soft) 8%, rgba(255,255,255,0.5)), rgba(255,255,255,0.5));
-  padding: 12px 14px; margin-bottom: 10px;
+  background: var(--bg-card);
+  padding: 10px 12px;
 }
 [data-theme="dark"] .dt-stock-block {
-  background: rgba(15, 23, 42, 0.4);
-  border-color: rgba(148, 163, 184, 0.18);
+  background: rgba(30, 41, 59, 0.4);
+  border-color: rgba(148, 163, 184, 0.12);
 }
 
 /* Stock header */
 .dt-stock-head {
-  display: flex; align-items: center; gap: 10px;
-  margin-bottom: 10px; padding-bottom: 8px;
-  border-bottom: 1px solid rgba(148, 163, 184, 0.12);
+  display: flex; align-items: center; gap: 8px;
+  margin-bottom: 8px; padding-bottom: 6px;
+  border-bottom: 1px solid var(--border);
   flex-wrap: wrap;
 }
-.dt-stock-code { font-size: 13px; font-weight: 900; color: var(--text-muted); font-variant-numeric: tabular-nums; }
-.dt-stock-name { font-size: 15px; font-weight: 1050; }
-.dt-stock-summary { margin-left: auto; display: flex; gap: 12px; font-size: 12px; font-weight: 900; }
+.dt-stock-code { font-size: 12px; font-weight: 900; color: var(--text-muted); font-variant-numeric: tabular-nums; }
+.dt-stock-name { font-size: 14px; font-weight: 1050; }
+.dt-stock-summary { margin-left: auto; display: flex; gap: 8px; font-size: 11px; font-weight: 900; }
 .dt-ss-buy { color: #dc2626; }
 .dt-ss-sell { color: #059669; }
 .dt-net-buy { color: #dc2626; }
 .dt-net-sell { color: #059669; }
 
 /* Dual columns */
-.dt-columns { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.dt-columns { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 .dt-col { min-width: 0; }
 
 .dt-col-title {
-  font-size: 11px; font-weight: 950; padding-bottom: 6px; margin-bottom: 6px;
+  font-size: 10px; font-weight: 950; padding-bottom: 4px; margin-bottom: 4px;
   border-bottom: 2px solid transparent;
 }
 .dt-buy-title { color: #dc2626; border-color: rgba(220, 38, 38, 0.25); }
 .dt-sell-title { color: #059669; border-color: rgba(5, 150, 105, 0.25); }
 
 .dt-col-row {
-  display: flex; align-items: center; gap: 6px; padding: 3px 0;
-  font-size: 11px;
+  display: flex; align-items: center; gap: 4px; padding: 2px 0;
+  font-size: 10px;
 }
 .dt-rank-sm {
-  width: 16px; text-align: center; flex-shrink: 0;
-  font-weight: 1000; color: var(--text-muted); font-size: 10px;
+  width: 14px; text-align: center; flex-shrink: 0;
+  font-weight: 1000; color: var(--text-muted); font-size: 9px;
 }
-.dt-col-trader { font-weight: 850; color: var(--text-primary); min-width: 60px; }
+.dt-col-trader {
+  font-weight: 850; color: var(--text-primary);
+  width: 54px; flex-shrink: 0;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
 .dt-col-amt {
   font-weight: 900; font-variant-numeric: tabular-nums;
   white-space: nowrap; margin-left: auto;
+  min-width: 42px; text-align: right;
 }
 .dt-col-yyb {
-  font-size: 10px; color: var(--text-muted); overflow: hidden;
-  text-overflow: ellipsis; white-space: nowrap; max-width: 160px;
+  font-size: 9px; color: var(--text-muted); overflow: hidden;
+  text-overflow: ellipsis; white-space: nowrap; flex: 1;
+  min-width: 0; margin-left: 6px;
 }
 
 .dt-up { color: #dc2626; }
 .dt-down { color: #059669; }
-.dt-empty-col { font-size: 11px; color: var(--text-muted); padding: 4px 0; }
+.dt-empty-col { font-size: 10px; color: var(--text-muted); padding: 4px 0; }
 
-.dt-link { color: var(--theme-accent); text-decoration: none; }
+.dt-link { color: #2563eb; text-decoration: none; }
+[data-theme="dark"] .dt-link { color: #60a5fa; }
 .dt-link:hover { text-decoration: underline; }
 .dt-error { font-size: 12px; font-weight: 850; color: #ef4444; padding: 30px; text-align: center; }
+
+@media (max-width: 640px) {
+  .dt-grid-container {
+    grid-template-columns: 1fr;
+  }
+}
 </style>

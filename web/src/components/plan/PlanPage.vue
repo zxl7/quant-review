@@ -421,28 +421,25 @@ const sectorPicksMeta = computed(() => {
         </div>
       </div>
       <div class="summary3" v-if="marketData.summary3?.lines && marketData.summary3.lines.length">
-        <div class="summary3-line" v-for="(l, i) in marketData.summary3.lines" :key="'plan-s3-'+i"><strong>{{ i+1 }}.</strong> {{ l }}</div>
+        <div class="summary3-line" v-for="(l, i) in marketData.summary3.lines" :key="'plan-s3-'+i"><strong>{{ Number(i)+1 }}.</strong> {{ l }}</div>
       </div>
     </div>
 
     <div class="card" data-page="plan" id="sec-picks-advisor" v-if="picksAdvisor">
       <div class="card-header">
         <div>
-          <div class="card-title">💡 算法建议（买入 · 观察）</div>
+          <div class="card-title">算法建议（买入 · 观察）</div>
           <div class="advisor-subtitle">
-            主线置信度 × 六维评分（百分制） ·
             <strong class="orange-text">{{ picksAdvisor.diagnostics?.total_buy ?? 0 }}</strong> 买入 /
             <strong class="blue-text">{{ picksAdvisor.diagnostics?.total_watch ?? 0 }}</strong> 观察
             <span class="advisor-meta" v-if="picksAdvisor.generated_at_bj">· 更新 {{ picksAdvisor.generated_at_bj.slice(11, 16) }}</span>
           </div>
         </div>
-        <div class="card-badge">主线 × 评分 × 因子</div>
       </div>
       <div class="advisor-grid">
         <div class="advisor-mainline" v-for="ml in picksAdvisor.main_line_picks" :key="'adv-ml-'+ml.main_line">
           <div class="advisor-ml-header">
             <span class="advisor-ml-name">{{ ml.main_line }}</span>
-            <span class="advisor-ml-conf" :class="confClass(ml.confidence)">{{ ml.confidence.toFixed(2) }}</span>
             <span class="advisor-ml-chain" v-if="ml.is_chain" :title="ml.constituents.join('·')">产业链</span>
             <span class="advisor-ml-count">{{ ml.diagnostics?.member_count ?? 0 }}只成员</span>
           </div>
@@ -454,6 +451,7 @@ const sectorPicksMeta = computed(() => {
                 <a class="advisor-name" :href="xqUrl(s.code)" target="_blank" rel="noopener noreferrer">{{ s.name }}</a>
                 <span class="advisor-score" :class="scoreClass(s.score)">{{ s.score }}</span>
                 <span class="advisor-tier" v-if="s.lbc >= 2">{{ s.lbc }}板</span>
+                <span class="advisor-tier" v-else-if="s.lbc === 1">首板</span>
                 <span class="advisor-tier" v-else-if="s.cje_yi >= 100">容量</span>
               </div>
               <div class="advisor-reasons">
@@ -474,6 +472,7 @@ const sectorPicksMeta = computed(() => {
                 <span class="advisor-name">{{ s.name }}</span>
                 <span class="advisor-watch-score" :class="scoreClass(s.score)">{{ s.score }}</span>
                 <span class="advisor-watch-lbc" v-if="s.lbc >= 2">{{ s.lbc }}板</span>
+                <span class="advisor-watch-lbc" v-else-if="s.lbc === 1">首板</span>
                 <span class="advisor-watch-cje" v-else-if="s.cje_yi >= 30">{{ s.cje_yi.toFixed(0) }}亿</span>
               </a>
             </div>
@@ -509,7 +508,6 @@ const sectorPicksMeta = computed(() => {
           :key="'stp-'+bucket.theme+'-'+i"
           class="sector-tier-card"
           :class="[bucket.source === 'realtime' ? 'is-realtime' : 'is-fallback', !bucket.count ? 'is-empty' : '']">
-          <div class="stp-rail" :class="bucket.sources[0] && bucket.sources[0].includes('选股宝') ? 'rail-xgb' : (bucket.sources[0] && bucket.sources[0].includes('东财') ? 'rail-tmr' : 'rail-local')"></div>
           <div class="stp-head">
             <div class="stp-name">
               <span class="stp-rank">{{ i + 1 }}</span>
@@ -610,13 +608,11 @@ const sectorPicksMeta = computed(() => {
                 </div>
               </div>
               <div class="zt-mainline-row" v-if="mainLineOf(row.code)">
-                <span class="zt-ml-chip" :title="`板块归属置信度 ${mainLineOf(row.code)?.primary_confidence.toFixed(2)}`">
+                <span class="zt-ml-chip">
                   🏷 {{ mainLineOf(row.code)?.primary_sector }}
-                  <em>{{ mainLineOf(row.code)?.primary_confidence.toFixed(2) }}</em>
                 </span>
                 <span class="zt-ml-line" v-if="mainLineOf(row.code)?.main_line">
                   · 主线 <strong>{{ mainLineOf(row.code)?.main_line }}</strong>
-                  <em>{{ mainLineOf(row.code)?.main_line_confidence.toFixed(2) }}</em>
                 </span>
               </div>
               <div class="zt-tags">
@@ -646,13 +642,11 @@ const sectorPicksMeta = computed(() => {
                 </div>
               </div>
               <div class="zt-mainline-row" v-if="mainLineOf(row.code)">
-                <span class="zt-ml-chip" :title="`板块归属置信度 ${mainLineOf(row.code)?.primary_confidence.toFixed(2)}`">
+                <span class="zt-ml-chip">
                   🏷 {{ mainLineOf(row.code)?.primary_sector }}
-                  <em>{{ mainLineOf(row.code)?.primary_confidence.toFixed(2) }}</em>
                 </span>
                 <span class="zt-ml-line" v-if="mainLineOf(row.code)?.main_line">
                   · 主线 <strong>{{ mainLineOf(row.code)?.main_line }}</strong>
-                  <em>{{ mainLineOf(row.code)?.main_line_confidence.toFixed(2) }}</em>
                 </span>
               </div>
               <div class="zt-tags">
