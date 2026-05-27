@@ -149,7 +149,7 @@ const selectPlateTheme = (row: any) => {
       <div class="tier-card" v-if="conceptTop10ByChg.length">
         <div class="tier-title">板块题材排行 TOP10（{{ (marketData.plateRotateTop || []).length ? '按强度' : '按涨幅' }}）</div>
         <div class="tier-desc" style="margin-top: 4px">
-          {{ (marketData.plateRotateTop || []).length ? '口径：短线侠板块轮动；数字为当日板块强度。' : '口径：概念/题材级资金流向（AkShare/东财）；排序：按涨跌幅从高到低（净流仅作参考）。' }}
+          {{ (marketData.plateRotateTop || []).length ? '口径：短线侠板块轮动；数字为当日板块强度。' : '口径：概念/题材级资金流向（AkShare）；排序：按涨跌幅从高到低（净流仅作参考）。' }}
         </div>
         <div class="theme-tools">
           <a class="theme-open-btn" :href="'https://www.duanxianxia.com/web/platerotat'" target="_blank" rel="noopener noreferrer">打开短线侠板块轮动</a>

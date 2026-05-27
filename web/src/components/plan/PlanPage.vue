@@ -296,8 +296,8 @@ const sectorTierPicks = computed<SectorBucket[]>(() => {
     if (!name) return;
     if (realtimeBuckets.has(name)) {
       const exist = realtimeBuckets.get(name)!;
-      if (!exist.sources.includes(t.isHot ? '东财明日热门' : '东财明日')) {
-        exist.sources.push(t.isHot ? '东财明日热门' : '东财明日');
+      if (!exist.sources.includes(t.isHot ? '明日热门' : '明日')) {
+        exist.sources.push(t.isHot ? '明日热门' : '明日');
       }
       if (!exist.description && t.summary) exist.description = t.summary;
       return;
@@ -305,7 +305,7 @@ const sectorTierPicks = computed<SectorBucket[]>(() => {
     // 只让明日热门进入(非热门跳过避免噪音)
     if (!t.isHot) return;
     const { stocks, matched } = aggregateStocksForTheme(name);
-    realtimeBuckets.set(name, makeBucket(name, 'realtime', ['东财明日热门'], t.summary || '', stocks, matched));
+    realtimeBuckets.set(name, makeBucket(name, 'realtime', ['明日热门'], t.summary || '', stocks, matched));
   });
 
   let buckets = Array.from(realtimeBuckets.values());
@@ -491,9 +491,9 @@ const sectorPicksMeta = computed(() => {
             <span class="stp-dot-realtime"></span>
             实时驱动 <strong>{{ sectorPicksMeta.realtimeCnt }}</strong>
             <span class="stp-sep">·</span>
-            选股宝 {{ sectorPicksMeta.xgbCnt }}
+             {{ sectorPicksMeta.xgbCnt }}
             <span class="stp-sep">·</span>
-            东财明日热门 {{ sectorPicksMeta.tmrHotCnt }}/{{ sectorPicksMeta.tmrCnt }}
+             {{ sectorPicksMeta.tmrHotCnt }}/{{ sectorPicksMeta.tmrCnt }}
             <template v-if="sectorPicksMeta.fallbackUsed">
               <span class="stp-sep">·</span>
               <span class="orange-text" style="font-weight: 900" title="实时接口无数据,退回本地涨停归集">⚠ 本地兜底</span>

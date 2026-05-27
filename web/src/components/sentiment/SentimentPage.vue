@@ -548,14 +548,14 @@ useECharts(volumeChartRef, volumeOptions);
             <div class="evi-card compact" v-if="narrativeOverview">
               <div>
                 <div class="evi-k">narrative 共振</div>
-                <div class="evi-note">选股宝热点 + 东财明日题材的活数据</div>
+                <div class="evi-note">热点 + 明日题材的活数据</div>
               </div>
               <div class="evi-v">
                 <span v-if="narrativeOverview.hit" class="red-text">{{ narrativeOverview.topZtName }} 命中 {{ narrativeOverview.sources.join('/') }}</span>
                 <span v-else-if="narrativeOverview.topZtName" class="orange-text">{{ narrativeOverview.topZtName }} 未在 narrative 榜上</span>
                 <span v-else>-</span>
                 <small style="margin-left: 6px; font-weight: 700; color: var(--text-muted)">
-                  · 选股宝 {{ narrativeOverview.xgbCnt }} · 东财明日热门 {{ narrativeOverview.tmrHot }}/{{ narrativeOverview.tmrAll }}
+                  · {{ narrativeOverview.xgbCnt }} · {{ narrativeOverview.tmrHot }}/{{ narrativeOverview.tmrAll }}
                 </small>
               </div>
             </div>
