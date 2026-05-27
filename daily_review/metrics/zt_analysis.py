@@ -184,7 +184,7 @@ def _tag_tone_class(tag: Dict[str, str]) -> str:
     if re.fullmatch(r"\d+(?:\.\d+)?板", text):
         board = _to_num(text, 0)
         return "ladder-chip-warn orange-text" if board >= 5 else "ladder-chip-cool muted-text"
-    if text in {"主线", "极强主线", "强主线", "前龙头", "核心梯队", "带动", "封单充足", "加速确认", "晋级生态强", "高度修复", "突破新高", "双源确认", "题材共振", "异动确认"} or text.startswith("带动"):
+    if text in {"主线", "极强主线", "强主线", "前龙头", "核心梯队", "带动", "封单充足", "加速确认", "晋级生态强", "高度修复", "突破新高", "共振确认", "题材共振", "确认"} or text.startswith("带动"):
         return "ladder-chip-strong red-text"
     if text in {"中等主线", "断板风险高", "高度压制", "晋级生态弱", "题材转弱", "高换手承接", "分歧烂板", "反复回封", "一字板", "缩量封板", "无梯队", "题材待确认", "容量核"} or text.startswith("跟风"):
         return "ladder-chip-warn orange-text"
@@ -1717,15 +1717,15 @@ def build_zt_analysis(*, market_data: Dict[str, Any]) -> Dict[str, Any]:
             )
 
         head = " · ".join(reason_bits) if reason_bits else "综合条件一般"
-        # 三源融合标签
+        # 三源融合标签（用户端不暴露数据源名）
         if em_theme_hot:
             tags.append({"text": "题材共振", "tone": "hot"})
         if xgb_events:
-            tags.append({"text": "异动确认", "tone": "leader"})
+            tags.append({"text": "确认", "tone": "leader"})
         if is_capacity_core:
             tags.append({"text": "容量核", "tone": "capacity"})
         if em_themes and xgb_events:
-            tags.append({"text": "双源确认", "tone": "super-leader"})
+            tags.append({"text": "共振确认", "tone": "super-leader"})
         normalized_tags = _normalize_tags(tags)
         scored.append(
             {
@@ -1793,11 +1793,6 @@ def build_zt_analysis(*, market_data: Dict[str, Any]) -> Dict[str, Any]:
                 },
                 "tags": normalized_tags,
                 "tagRows": _tag_rows(normalized_tags),
-                "emThemes": em_themes[:5],
-                "emThemeHot": em_theme_hot,
-                "xgbEvents": xgb_events[:5],
-                "crossSourceBoost": _round(cross_source_boost * 0.6),
-                "capacityCore": is_capacity_core,
                 "capacityLabel": ("容量核" if is_capacity_core else "弹性票" if cje_yi >= 3.0 else "小盘"),
                 "reason": f'<span class="reason-bits">{head}</span><div class="exp-wrap">{observe_point}</div>',
             }
@@ -2143,11 +2138,6 @@ def build_zt_analysis(*, market_data: Dict[str, Any]) -> Dict[str, Any]:
             "heightContext": "repair" if height_repair else "pressure" if height_pressure else "neutral",
             "breakRiskBase": _round(break_risk_base),
             "tierEngagement": {"score": _round(tier_engagement_score), "label": "梯队完整" if tier_engagement >= 2.5 else "梯队良好" if tier_engagement >= 1.0 else "梯队松散" if tier_engagement >= 0.0 else "梯队断层"},
-            "enrichmentSources": {
-                "eastmoney": {"themes": len(em_theme_list), "stock_index": len(em_code_index)},
-                "xuangubao": {"events": len(xgb_code_index)},
-                "crossSource": "v1",
-            },
         },
         "relay": strip(relay[:8]),
         "watch": strip(watch[:8]),
