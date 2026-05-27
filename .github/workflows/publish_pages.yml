@@ -363,11 +363,12 @@ jobs:
               print("WARNING: ztAnalysis relay empty while watch exists; publish continues because an empty relay pool can be valid intraday.")
           PY
 
-      - name: Pre-fetch external data (龙虎榜 + 明日策略池)
+      - name: Pre-fetch external data (龙虎榜 + 明日策略池 + 东方财富今日题材)
         if: ${{ steps.pushmode.outputs.mode != 'intraday' }}
         run: |
           python3 tools/fetch_dragon_tiger.py web/public/dragon_tiger_data.json || echo "⚠ dragon tiger fetch failed, using cache"
           python3 tools/fetch_tomorrow_picks.py web/public/tomorrow_picks.json || echo "⚠ tomorrow picks fetch failed, using cache"
+          python3 tools/fetch_eastmoney_tomorrow.py web/public/eastmoney_tomorrow.json || echo "⚠ eastmoney tomorrow fetch failed, using cache"
 
       - name: Build Vue3 web (Vite -> single HTML)
         if: ${{ (github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true') && (github.event_name != 'schedule' || steps.tradeday.outputs.is_trade_today == 'true') }}
@@ -424,6 +425,7 @@ jobs:
           cp -f ./web/public/dragon_tiger_data.js ./site/ 2>/dev/null || true
           cp -f ./web/public/tomorrow_picks.json ./site/ 2>/dev/null || true
           cp -f ./web/public/tomorrow_picks.js ./site/ 2>/dev/null || true
+          cp -f ./web/public/eastmoney_tomorrow.json ./site/ 2>/dev/null || true
           touch ./site/.nojekyll
           echo "site=index.html from: ${report_html}"
 
@@ -441,9 +443,10 @@ jobs:
           for f in ./site/*.html; do
             if [ -f "$f" ]; then cp -f "$f" site_prev/; fi
           done
-          # 龙虎榜数据 + 明日策略池（前端运行时通过 fetch 回退加载）
+          # 龙虎榜数据 + 明日策略池 + 东方财富今日题材（前端运行时通过 fetch 回退加载）
           cp -f ./site/dragon_tiger_data.json site_prev/ 2>/dev/null || true
           cp -f ./site/tomorrow_picks.json site_prev/ 2>/dev/null || true
+          cp -f ./site/eastmoney_tomorrow.json site_prev/ 2>/dev/null || true
           cp -f ./web/public/dragon_tiger_data.js site_prev/ 2>/dev/null || true
           cp -f ./web/public/tomorrow_picks.js site_prev/ 2>/dev/null || true
 

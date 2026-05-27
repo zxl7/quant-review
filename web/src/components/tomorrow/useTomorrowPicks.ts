@@ -43,6 +43,53 @@ function makeAuth() {
 const API_BASE = 'https://emcfgdata.eastmoney.com/api/themeInvest';
 const PAGE_SIZE = 15;
 
+/** 读取注入的东方财富明日主题数据 */
+function getInjectedData(): { themes: TomorrowTheme[]; stocksByTheme: Record<string, TomorrowStock[]> } | null {
+  try {
+    const w = window as any;
+    const injected = w.__EASTMONEY_TOMORROW_DATA__;
+    if (!injected || !injected.themes || !injected.themes.length) return null;
+    // 校验基础字段完整性
+    const themes: TomorrowTheme[] = injected.themes.map((t: any) => ({
+      id: t.id || '',
+      rank: t.rank || 0,
+      title: t.title || '',
+      summary: t.summary || '',
+      tradeDate: t.tradeDate || '',
+      themeCode: t.themeCode || '',
+      themeName: t.themeName || '',
+      ztCount: t.ztCount || 0,
+      gain: t.gain || 0,
+      cumulateGain: t.cumulateGain || 0,
+      isHot: !!t.isHot,
+      previewStocks: (t.previewStocks || []).map((s: any) => ({
+        code: s.code || '',
+        name: s.name || '',
+        gain: s.gain || 0,
+      })),
+    }));
+    const stocksByTheme: Record<string, TomorrowStock[]> = {};
+    if (injected.stocksByTheme) {
+      for (const [themeCode, items] of Object.entries(injected.stocksByTheme)) {
+        const list = (items as any[]).map((s: any) => ({
+          code: s.code || '',
+          name: s.name || '',
+          gain: s.gain || 0,
+          price: s.price || 0,
+          marketCap: s.marketCap || 0,
+          industry: s.industry || '',
+          label: s.label || '',
+          reason: s.reason || '',
+        }));
+        stocksByTheme[themeCode] = list;
+      }
+    }
+    return { themes, stocksByTheme };
+  } catch {
+    return null;
+  }
+}
+
 export function useTomorrowPicks() {
   const { setTomorrowThemes } = useThemeHotStore();
   const themes = ref<TomorrowTheme[]>([]);
@@ -51,12 +98,40 @@ export function useTomorrowPicks() {
   const selectedThemeCode = ref('');
   const stocks = ref<TomorrowStock[]>([]);
   const stocksLoading = ref(false);
+  const isUsingInjected = ref(false); // 标记当前用的是预注入还是实时数据
+  const injectedThemesDate = ref('');
 
   async function fetchThemes(force = false) {
     if (themes.value.length && !force) return;
     loading.value = true;
     error.value = '';
+    isUsingInjected.value = false;
 
+    // Tier 1: 预注入数据（17:00全量fetch下载好，最可靠）
+    const injected = getInjectedData();
+    if (injected && injected.themes.length) {
+      themes.value = injected.themes;
+      isUsingInjected.value = true;
+      injectedThemesDate.value = injected.themes[0].tradeDate || '';
+      setTomorrowThemes(injected.themes);
+      if (injected.themes.length) {
+        if (!selectedThemeCode.value || !injected.themes.some(x => x.themeCode === selectedThemeCode.value)) {
+          selectedThemeCode.value = injected.themes[0].themeCode;
+          // 预注入数据可能已有该主题的成份股
+          const preloaded = injected.stocksByTheme[injected.themes[0].themeCode];
+          if (preloaded && preloaded.length) {
+            stocks.value = preloaded;
+            stocksLoading.value = false;
+          } else {
+            fetchStockList(injected.themes[0].themeCode);
+          }
+        }
+      }
+      loading.value = false;
+      return;
+    }
+
+    // Tier 2: 运行时 API 调用（兜底）
     try {
       const { timestamp, randomCode } = makeAuth();
       const resp = await fetch(`${API_BASE}/getFryTomorrowList`, {
@@ -106,12 +181,10 @@ export function useTomorrowPicks() {
       themes.value = items;
       setTomorrowThemes(items);
       if (items.length) {
-        // 如果是强制刷新，且当前选中的 code 在新列表中不存在，才切换到第一个
         if (!selectedThemeCode.value || !items.some(x => x.themeCode === selectedThemeCode.value)) {
           selectedThemeCode.value = items[0].themeCode;
           fetchStockList(items[0].themeCode);
         } else if (force) {
-          // 强制刷新时，也刷新当前选中的成分股
           fetchStockList(selectedThemeCode.value);
         }
       }
@@ -124,6 +197,19 @@ export function useTomorrowPicks() {
 
   async function fetchStockList(themeCode: string) {
     stocksLoading.value = true;
+    selectedThemeCode.value = themeCode;
+
+    // Tier 1: 先查预注入数据
+    if (isUsingInjected.value) {
+      const injected = getInjectedData();
+      if (injected && injected.stocksByTheme[themeCode]) {
+        stocks.value = injected.stocksByTheme[themeCode];
+        stocksLoading.value = false;
+        return;
+      }
+    }
+
+    // Tier 2: 运行时 API 调用
     try {
       const { timestamp, randomCode } = makeAuth();
       const resp = await fetch(`${API_BASE}/getStockList`, {
@@ -168,8 +254,18 @@ export function useTomorrowPicks() {
 
   function selectTheme(themeCode: string) {
     selectedThemeCode.value = themeCode;
+
+    // 预注入数据中查找
+    if (isUsingInjected.value) {
+      const injected = getInjectedData();
+      if (injected && injected.stocksByTheme[themeCode]) {
+        stocks.value = injected.stocksByTheme[themeCode];
+        return;
+      }
+    }
+    // 未命中缓存，走 API
     fetchStockList(themeCode);
   }
 
-  return { themes, loading, error, selectedThemeCode, stocks, stocksLoading, fetchThemes, selectTheme };
+  return { themes, loading, error, selectedThemeCode, stocks, stocksLoading, isUsingInjected, injectedThemesDate, fetchThemes, selectTheme };
 }

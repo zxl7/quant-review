@@ -34,6 +34,14 @@ def _resolve_dragon_tiger_path(date8: str) -> Path:
     return ROOT / "web" / "public" / "dragon_tiger_data.json"
 
 
+def _resolve_eastmoney_tomorrow_path() -> Path:
+    path = ROOT / "web" / "public" / "eastmoney_tomorrow.json"
+    fallback = ROOT / "web" / "dist" / "eastmoney_tomorrow.json"
+    if path.exists():
+        return path
+    return fallback
+
+
 def _resolve_watchlist_path(date8: str) -> Path:
     """
     watchlist_cache 由 tools/fetch_watchlist.py 产出，保存在 cache_online/。
@@ -216,6 +224,12 @@ def inject(date8: str, source: Optional[str] = None) -> Path:
         if tp_fallback.exists():
             tp_payload = tp_fallback.read_text(encoding="utf-8")
 
+    # 东方财富明日主题数据
+    em_path = _resolve_eastmoney_tomorrow_path()
+    em_payload = "{}"
+    if em_path.exists():
+        em_payload = em_path.read_text(encoding="utf-8")
+
     # 读取 Vite 构建产物
     built = ROOT / "web" / "dist" / "index.html"
     if not built.exists():
@@ -224,7 +238,7 @@ def inject(date8: str, source: Optional[str] = None) -> Path:
     html = built.read_text(encoding="utf-8")
 
     # 注入 window.__MARKET_DATA__ 到 </head> 前
-    data_script = f"<script>window.__MARKET_DATA__={payload};window.__DRAGON_TIGER_DATA__={dragon_payload};window.__TOMORROW_PICKS__={tp_payload};</script>"
+    data_script = f"<script>window.__MARKET_DATA__={payload};window.__DRAGON_TIGER_DATA__={dragon_payload};window.__TOMORROW_PICKS__={tp_payload};window.__EASTMONEY_TOMORROW_DATA__={em_payload};</script>"
     if "</head>" in html:
         html = html.replace("</head>", f"{data_script}\n  </head>")
     else:
@@ -248,6 +262,8 @@ def inject(date8: str, source: Optional[str] = None) -> Path:
     (dist_dir / "dragon_tiger_data.js").write_text(f"window.__DRAGON_TIGER_DATA__={dragon_payload};", encoding="utf-8")
     if tp_payload != "{}":
         (dist_dir / "tomorrow_picks.json").write_text(tp_payload, encoding="utf-8")
+    if em_payload != "{}":
+        (dist_dir / "eastmoney_tomorrow.json").write_text(em_payload, encoding="utf-8")
 
     return out_path
 
