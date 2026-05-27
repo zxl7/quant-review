@@ -254,6 +254,41 @@ const watchRecentRows = computed(() => {
   return rows.slice(-n).reverse();
 });
 const watchTrajectoryFlat = computed(() => ['shift_score', 'heat', 'risk'].every((key) => seriesIsFlat(watchSeriesValues(key))));
+
+const watchResonanceMarkers = computed(() => {
+  const alerts = (intradayAlertPool as any).items?.value || [];
+  const resEvents = alerts.filter((a: any) => a.eventType === 99999);
+  if (!resEvents.length) return [];
+  
+  const snaps = watchSnapshots.value;
+  if (!snaps.length) return [];
+
+  return resEvents.map((event: any) => {
+    // 找到最接近的时间点
+    const [h, m] = event.time.split(':').map(Number);
+    const eventMin = h * 60 + m;
+    
+    let bestIdx = -1;
+    let minDiff = 99999;
+    
+    snaps.forEach((s: any, idx: number) => {
+      const [sh, sm] = (s.time || '00:00').split(':').map(Number);
+      const sMin = sh * 60 + sm;
+      const diff = Math.abs(sMin - eventMin);
+      if (diff < minDiff && diff < 10) { // 10分钟误差内
+        minDiff = diff;
+        bestIdx = idx;
+      }
+    });
+
+    if (bestIdx === -1) return null;
+    
+    const pts = watchScorePoints.value;
+    const pt = pts.find(p => p.index === bestIdx);
+    return pt ? { ...pt, label: event.title.replace('🔥 板块共振：', '') } : null;
+  }).filter(Boolean);
+});
+
 const watchEvolutionSummary = computed(() => {
   const rows = watchSnapshots.value || [];
   if (!rows.length) return '暂无盘中切片，无法生成演化总结。';
@@ -423,6 +458,31 @@ const enableIntradayAlert = () => {
   if (!intradayAlertPool.enabled.value) intradayAlertPool.setEnabled(true);
 };
 
+const historySearch = ref('');
+const historyFilter = ref('all');
+
+const filteredHistory = computed(() => {
+  let list = (intradayAlertPool as any).allHistory?.value || [];
+  
+  if (historyFilter.value === 'resonance') {
+    list = list.filter((x: any) => x.eventType === 99999);
+  } else if (historyFilter.value === 'limitup') {
+    // 晋级：仅限红色（tone === 'red'）且是涨停类事件
+    list = list.filter((x: any) => x.tone === 'red' && (x.eventType === 10008 || x.eventType === 10005));
+  } else if (historyFilter.value === 'limitdown') {
+    // 跌停：仅限绿色（tone === 'green'）且是跌停类事件
+    list = list.filter((x: any) => x.tone === 'green' && (x.eventType === 10007 || x.eventType === 10006 || x.eventType === 10004));
+  } else if (historyFilter.value === 'plate') {
+    list = list.filter((x: any) => x.isPlate && x.eventType !== 99999);
+  }
+
+  if (historySearch.value) {
+    const s = historySearch.value.toLowerCase();
+    list = list.filter((x: any) => x.title.toLowerCase().includes(s) || x.subtitle.toLowerCase().includes(s));
+  }
+  return list;
+});
+
 const muteIntradayAlert = () => {
   if (intradayAlertPool.enabled.value) intradayAlertPool.setEnabled(false);
 };
@@ -493,12 +553,12 @@ onBeforeUnmount(() => {
           @click="intradayAlertPool.onItemClick(item)">
           <div class="intraday-alert-top">
             <span class="time">{{ item.time }}</span>
-            <span class="badge">{{ item.eventTypeLabel }}</span>
+            <span class="badge" :class="item.tone">{{ item.eventTypeLabel }}</span>
           </div>
-          <div class="intraday-alert-name">
+          <div class="intraday-alert-name" :class="item.tone">
             {{ item.title }}
             <span class="move" v-if="item.valueText">{{ item.valueText }}</span>
-            <span class="move subtle" v-if="item.momentText">{{ item.momentText }}</span>
+            <span class="move-moment" v-if="item.momentText">{{ item.momentText }}</span>
           </div>
           <div class="intraday-alert-sub">{{ item.subtitle }}</div>
         </button>
@@ -512,7 +572,11 @@ onBeforeUnmount(() => {
       <div class="wb-body">
         <div class="wb-grid">
           <div class="wb-span-4 wb-flat-section wb-shift-card" :class="'tone-' + watchCurrentShift.tone">
-            <div class="evidence-group-title">盘中情绪分</div>
+            <div class="evidence-group-title" :class="{ red: watchCurrentShift.tone === 'bull', green: watchCurrentShift.tone === 'bear' }">
+              盘中情绪分
+              <span v-if="watchCurrentShift.tone === 'bull'" style="font-size: 10px; opacity: 0.8; margin-left: 4px">拉升中</span>
+              <span v-else-if="watchCurrentShift.tone === 'bear'" style="font-size: 10px; opacity: 0.8; margin-left: 4px">下跌中</span>
+            </div>
             <div class="wb-flat-subtitle">和主情绪页同口径，按盘中快照动态计算</div>
             <div class="wb-shift">
               <div class="wb-shift-top">
@@ -532,6 +596,24 @@ onBeforeUnmount(() => {
                 <span class="wb-shift-bar-pct">{{ watchCurrentShift.score }}%</span>
               </div>
               <div class="wb-shift-note">{{ watchCurrentShift.note }}</div>
+              
+              <!-- 新增：关键里程碑时间轴 -->
+              <div class="wb-milestones" v-if="(intradayAlertPool as any).items?.value?.length">
+                <div class="milestone-header">
+                  <div class="milestone-title" :class="{ red: watchCurrentShift.tone === 'bull', green: watchCurrentShift.tone === 'bear' }">今日关键异动回顾</div>
+                  <button class="milestone-history-btn" type="button" @click="intradayAlertPool.toggleHistory()">全天回顾</button>
+                </div>
+                <div class="milestone-list">
+                  <div v-for="item in (intradayAlertPool as any).items?.value?.slice(0, 15)" :key="item.id" class="milestone-item" :class="item.priorityLevel">
+                    <span class="m-time">{{ item.time }}</span>
+                    <span class="m-label" :class="item.tone">{{ item.eventTypeLabel }}</span>
+                    <span class="m-text" :class="item.tone">{{ item.title }}</span>
+                    <span class="m-val" :class="item.tone" v-if="item.valueText">{{ item.valueText }}</span>
+                    <span class="m-moment" :class="item.tone" v-if="item.momentText">{{ item.momentText }}</span>
+                  </div>
+                </div>
+              </div>
+
               <div class="wb-shift-drivers" v-if="watchTempCards.length">
                 <span class="wb-driver" v-for="item in watchTempCards" :key="'drv-'+item.key">
                   {{ item.label }} {{ item.valueText }}
@@ -580,7 +662,11 @@ onBeforeUnmount(() => {
           </div>
 
           <div class="wb-span-12 wb-flat-section">
-            <div class="evidence-group-title">六维参考温度</div>
+            <div class="evidence-group-title" :class="{ red: watchCurrentShift.tone === 'bull', green: watchCurrentShift.tone === 'bear' }">
+              六维参考温度
+              <span v-if="watchCurrentShift.tone === 'bull'" style="font-size: 10px; opacity: 0.8; margin-left: 4px">热度升温</span>
+              <span v-else-if="watchCurrentShift.tone === 'bear'" style="font-size: 10px; opacity: 0.8; margin-left: 4px">风险抬升</span>
+            </div>
             <div class="wb-flat-subtitle">参考情绪温度设计，按当前点位与半小时序列展示</div>
             <div class="dim-grid">
               <div class="dim-item" v-for="item in watchTempCards" :key="'wt-'+item.key">
@@ -604,7 +690,11 @@ onBeforeUnmount(() => {
           </div>
 
           <div class="wb-span-12 wb-flat-section">
-            <div class="evidence-group-title">盘中轨迹</div>
+            <div class="evidence-group-title" :class="{ red: watchCurrentShift.tone === 'bull', green: watchCurrentShift.tone === 'bear' }">
+              盘中轨迹
+              <span v-if="watchCurrentShift.tone === 'bull'" style="font-size: 10px; opacity: 0.8; margin-left: 4px">承接有力</span>
+              <span v-else-if="watchCurrentShift.tone === 'bear'" style="font-size: 10px; opacity: 0.8; margin-left: 4px">分歧扩散</span>
+            </div>
             <div class="wb-flat-subtitle">用同一口径看“承接/分歧/扩散”是否在变好</div>
             <div v-if="watchSnapshots.length">
               <div class="wb-trend-panel">
@@ -616,6 +706,14 @@ onBeforeUnmount(() => {
                   <path v-if="watchScoreLine.line" class="wb-trend-line-score" :d="watchScoreLine.line"></path>
                   <path v-if="watchHeatLine.line" class="wb-trend-line-heat" :d="watchHeatLine.line"></path>
                   <path v-if="watchRiskLine.line" class="wb-trend-line-risk" :d="watchRiskLine.line"></path>
+                  
+                  <!-- 板块共振标记 -->
+                  <g v-for="(m, i) in watchResonanceMarkers" :key="'wrm-'+i">
+                    <line class="wb-trend-resonance-line" :x1="m.x" y1="32" :x2="m.x" y2="204"></line>
+                    <rect class="wb-trend-resonance-bg" :x="m.x - 20" y="10" width="40" height="18" rx="4"></rect>
+                    <text class="wb-trend-resonance-text" :x="m.x" y="23" text-anchor="middle">{{ m.label }}</text>
+                  </g>
+
                   <circle
                     v-for="(p, i) in watchScorePoints"
                     :key="'wsp-'+i"
@@ -652,7 +750,7 @@ onBeforeUnmount(() => {
                   <span><i class="risk"></i>风险</span>
                 </div>
                 <div class="wb-evo-summary">
-                  <div class="k">今日盘中情绪演化总结</div>
+                  <div class="k" :class="{ red: watchCurrentShift.tone === 'bull', green: watchCurrentShift.tone === 'bear' }">今日盘中情绪演化总结</div>
                   <div class="v">{{ watchEvolutionSummary }}</div>
                 </div>
               </div>
@@ -674,4 +772,48 @@ onBeforeUnmount(() => {
 
     <ShortReminderFooter />
   </div>
+
+  <!-- 全天异动回顾大弹窗 -->
+  <Teleport to="body">
+    <div v-if="intradayAlertPool.historyOpen.value" class="alert-history-overlay" @click.self="intradayAlertPool.toggleHistory()">
+      <div class="alert-history-modal">
+        <div class="ah-head">
+          <div class="ah-title" :class="{ red: watchCurrentShift.tone === 'bull', green: watchCurrentShift.tone === 'bear' }">
+            今日异动全纪实
+            <span v-if="watchCurrentShift.tone === 'bull'" style="font-size: 11px; font-weight: 800; margin-left: 8px; color: var(--danger)">[ 市场拉升中 ]</span>
+            <span v-else-if="watchCurrentShift.tone === 'bear'" style="font-size: 11px; font-weight: 800; margin-left: 8px; color: var(--success)">[ 市场下跌中 ]</span>
+          </div>
+          <div class="ah-close" @click="intradayAlertPool.toggleHistory()">✕</div>
+        </div>
+        
+        <div class="ah-filters">
+          <div class="ah-search-box">
+            <input v-model="historySearch" placeholder="搜索个股/板块名称..." class="ah-input" />
+          </div>
+          <div class="ah-tabs">
+            <button v-for="t in [{k:'all',n:'全部'},{k:'resonance',n:'共振'},{k:'limitup',n:'晋级'},{k:'limitdown',n:'跌停'},{k:'plate',n:'板块'}]" 
+              :key="t.k" @click="historyFilter = t.k" class="ah-tab" :class="{active: historyFilter === t.k}">{{ t.n }}</button>
+          </div>
+        </div>
+
+        <div class="ah-body">
+          <div v-if="!filteredHistory.length" class="ah-empty">暂无符合条件的记录</div>
+          <div v-for="item in filteredHistory" :key="item.id" class="ah-item" :class="[item.tone, item.priorityLevel]">
+            <div class="ah-item-left">
+              <span class="ah-time">{{ item.time }}</span>
+              <span class="ah-badge" :class="item.tone">{{ item.eventTypeLabel }}</span>
+            </div>
+            <div class="ah-item-content">
+              <div class="ah-item-title" :class="item.tone">{{ item.title }} <span class="ah-val" v-if="item.valueText">{{ item.valueText }}</span><span class="ah-moment" v-if="item.momentText">{{ item.momentText }}</span></div>
+              <div class="ah-item-sub">{{ item.subtitle }}</div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="ah-footer">
+          共 {{ filteredHistory.length }} 条记录 · 仅保存今日数据
+        </div>
+      </div>
+    </div>
+  </Teleport>
 </template>

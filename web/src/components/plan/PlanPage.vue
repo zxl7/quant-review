@@ -1,8 +1,9 @@
 <script setup lang="ts">
-import { computed } from 'vue';
+import { computed, ref, onMounted } from 'vue';
 import { useMarketData } from '../../composables/useMarketData';
 import { useThemeHotStore } from '../../composables/useThemeHotStore';
 import ShortReminderFooter from '../common/ShortReminderFooter.vue';
+import { normalizeThemeName } from '../../utils/themeUtils';
 
 const { marketData } = useMarketData();
 const { xgbUpdatedAt, tmrUpdatedAt, xgbPlates, tmrThemes } = useThemeHotStore();
@@ -109,7 +110,19 @@ type PickStock = {
   reasons: string[]; cautions: string[];
   lbc: number; cje_yi: number; seal_fund_yi: number; turnover: number;
   breakdown?: Record<string, number>; bonus?: number;
+  relayPower?: number; // 新增：接力动力分
 };
+
+const calculateRelayPower = (s: PickStock) => {
+  // 简化版接力动力计算：结合高度、成交额、和换手
+  let power = 50;
+  if (s.lbc >= 2) power += 15; // 连板溢价
+  if (s.turnover >= 5 && s.turnover <= 20) power += 15; // 健康换手
+  if (s.seal_fund_yi >= 1) power += 10; // 强封单
+  if (s.cje_yi >= 5 && s.cje_yi <= 30) power += 10; // 适中容量，接力首选
+  return Math.min(power, 100);
+};
+
 type MainLinePicks = {
   main_line: string; confidence: number; is_chain: boolean; constituents: string[];
   buy: PickStock[]; watch: PickStock[]; summary: string;
@@ -121,8 +134,16 @@ const picksAdvisor = computed(() => {
   if (!pa || typeof pa !== 'object') return null;
   const picks = Array.isArray(pa.main_line_picks) ? pa.main_line_picks as MainLinePicks[] : [];
   if (!picks.length) return null;
+
+  // 为个股注入接力动力分
+  const enrichedPicks = picks.map(ml => ({
+    ...ml,
+    buy: (ml.buy || []).map(s => ({ ...s, relayPower: calculateRelayPower(s) })),
+    watch: (ml.watch || []).map(s => ({ ...s, relayPower: calculateRelayPower(s) })),
+  }));
+
   return {
-    main_line_picks: picks,
+    main_line_picks: enrichedPicks,
     diagnostics: pa.diagnostics || {},
     generated_at_bj: (marketData.value as any)?.watchlist?.generated_at_bj || '',
   };
@@ -179,19 +200,18 @@ type SectorBucket = {
   plateStrength?: number;
   plateLead?: string;
   matchedLocalThemes: string[];
+  resonanceScore: number;
 };
 
 const plateStrengthByName = computed(() => {
   const map = new Map<string, { strength: number; lead: string }>();
   (marketData.value?.plateRankTop10 || []).forEach((p: any) => {
-    const name = String(p?.name || '').trim();
+    const name = normalizeThemeName(p?.name || '');
     if (!name) return;
     map.set(name, { strength: Number(p?.strength || 0), lead: String(p?.lead || '').trim() });
   });
   return map;
 });
-
-const normalizeThemeName = (raw: unknown) => String(raw || '').trim().replace(/\s+/g, '');
 
 const themeToZtStocks = computed(() => {
   const out = new Map<string, ZtStockPick[]>();
@@ -247,6 +267,26 @@ const aggregateStocksForTheme = (hotName: string): { stocks: ZtStockPick[]; matc
   return { stocks, matched };
 };
 
+const calculateResonanceScore = (
+  sources: string[],
+  stocks: ZtStockPick[],
+  plateStrength?: number,
+) => {
+  let score = sources.length * 15; // 每个来源 15 分
+  score += Math.min(stocks.length * 5, 30); // 涨停个股加分，封顶 30
+  
+  const maxLbc = stocks[0]?.lbc || 0;
+  score += maxLbc * 8; // 连板高度加分
+  
+  if (plateStrength) {
+    score += Math.min(plateStrength / 4, 30); // 板块强度加分，封顶 30
+  }
+
+  if (sources.some(s => s.includes('热门'))) score += 10; // 热门题材额外加分
+  
+  return Math.min(Math.round(score), 100);
+};
+
 const makeBucket = (
   theme: string,
   source: 'realtime' | 'fallback',
@@ -257,6 +297,8 @@ const makeBucket = (
 ): SectorBucket => {
   const maxLbc = stocks[0]?.lbc || 0;
   const plateInfo = plateStrengthByName.value.get(theme) || (matched.length ? plateStrengthByName.value.get(matched[0]) : undefined);
+  const resonanceScore = calculateResonanceScore(sources, stocks, plateInfo?.strength);
+  
   return {
     theme,
     source,
@@ -270,7 +312,18 @@ const makeBucket = (
     plateStrength: plateInfo?.strength,
     plateLead: plateInfo?.lead,
     matchedLocalThemes: matched,
+    resonanceScore,
   };
+};
+
+const getEchelonFormation = (bucket: SectorBucket) => {
+  const counts = new Map<number, number>();
+  [...bucket.highTier, ...bucket.midTier, ...bucket.baseTier].forEach(s => {
+    counts.set(s.lbc, (counts.get(s.lbc) || 0) + 1);
+  });
+  const tiers = Array.from(counts.keys()).sort((a, b) => b - a);
+  if (!tiers.length) return '';
+  return tiers.map(lbc => `${lbc}板(${counts.get(lbc)})`).join(' → ');
 };
 
 const sectorTierPicks = computed<SectorBucket[]>(() => {
@@ -331,13 +384,13 @@ const sectorTierPicks = computed<SectorBucket[]>(() => {
     // (已经包含在 realtimeBuckets,无需额外动作)
   }
 
-  // 排序:有涨停股的在前 → maxLbc → count
+  // 排序:共振评分优先 → 有涨停股的在前 → maxLbc
   buckets.sort((a, b) => {
+    if (b.resonanceScore !== a.resonanceScore) return b.resonanceScore - a.resonanceScore;
     const aHas = a.count > 0 ? 1 : 0;
     const bHas = b.count > 0 ? 1 : 0;
     if (aHas !== bHas) return bHas - aHas;
-    if (b.maxLbc !== a.maxLbc) return b.maxLbc - a.maxLbc;
-    return b.count - a.count;
+    return b.maxLbc - a.maxLbc;
   });
 
   return buckets.slice(0, 6);
@@ -449,10 +502,14 @@ const sectorPicksMeta = computed(() => {
             <div class="advisor-row advisor-row-buy" v-for="s in ml.buy" :key="'b-'+s.code">
               <div class="advisor-row-top">
                 <a class="advisor-name" :href="xqUrl(s.code)" target="_blank" rel="noopener noreferrer">{{ s.name }}</a>
-                <span class="advisor-score" :class="scoreClass(s.score)">{{ s.score }}</span>
+                <span class="advisor-score" :class="scoreClass(s.score)" title="算法评分">评 {{ s.score }}</span>
+                <span v-if="s.relayPower" class="advisor-relay-power" :class="scoreClass(s.relayPower)" title="接力动力分">力 {{ s.relayPower }}</span>
                 <span class="advisor-tier" v-if="s.lbc >= 2">{{ s.lbc }}板</span>
                 <span class="advisor-tier" v-else-if="s.lbc === 1">首板</span>
                 <span class="advisor-tier" v-else-if="s.cje_yi >= 100">容量</span>
+              </div>
+              <div class="advisor-echelon-info" v-if="ml.main_line && s.lbc">
+                <span class="echelon-tag">梯队位置：{{ s.lbc }} / {{ ml.diagnostics?.member_count || '?' }}</span>
               </div>
               <div class="advisor-reasons">
                 <span class="advisor-reason" v-for="(r, ri) in s.reasons" :key="'r-'+s.code+'-'+ri">✓ {{ r }}</span>
@@ -512,6 +569,7 @@ const sectorPicksMeta = computed(() => {
             <div class="stp-name">
               <span class="stp-rank">{{ i + 1 }}</span>
               <span class="stp-name-text">{{ bucket.theme }}</span>
+              <span class="stp-resonance-badge" :class="scoreClass(bucket.resonanceScore)">共振 {{ bucket.resonanceScore }}</span>
             </div>
             <span class="stp-source-pill" :class="bucket.sources[0] && bucket.sources[0].includes('选股宝') ? 'src-xgb' : (bucket.sources[0] && bucket.sources[0].includes('东财') ? 'src-tmr' : 'src-local')" :title="bucket.sources.join(' · ')">
               <template v-if="bucket.sources[0] && bucket.sources[0].includes('选股宝')">🔥 选股宝</template>
@@ -527,6 +585,9 @@ const sectorPicksMeta = computed(() => {
             <span class="stp-kv" v-if="bucket.plateStrength">强度 <strong>{{ Math.round(bucket.plateStrength) }}</strong></span>
             <span class="stp-sep" v-if="bucket.plateLead">·</span>
             <span class="stp-kv" v-if="bucket.plateLead">领涨 <strong>{{ bucket.plateLead }}</strong></span>
+            <div class="stp-formation" v-if="getEchelonFormation(bucket)">
+              梯队阵型：<strong>{{ getEchelonFormation(bucket) }}</strong>
+            </div>
           </div>
           <div class="stp-desc" v-if="bucket.description" :title="bucket.description">{{ bucket.description }}</div>
           <div class="stp-empty" v-if="!bucket.count">

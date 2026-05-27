@@ -1,11 +1,51 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 import * as echarts from 'echarts';
 import { useMarketData } from '../../composables/useMarketData';
 import { useECharts } from '../../composables/useECharts';
 import ShortReminderFooter from '../common/ShortReminderFooter.vue';
+import { normalizeThemeName } from '../../utils/themeUtils';
 
 const { marketData } = useMarketData();
+
+const brokenPremium = ref<{ avg: number; median: number; list: any[] }>({ avg: 0, median: 0, list: [] });
+const brokenLoading = ref(false);
+
+const fetchBrokenPremium = async () => {
+  const items = Array.isArray(marketData.value?.brokenList) ? marketData.value.brokenList : [];
+  if (!items.length) return;
+
+  brokenLoading.value = true;
+  const codes = items.map((x: any) => x.code).filter(Boolean);
+  const symbols = codes.map((c: string) => `${c}.${c.startsWith('6') ? 'SS' : 'SZ'}`);
+  
+  try {
+    const res = await fetch(`https://flash-api.xuangubao.cn/api/stock/data?fields=symbol,change_percent&symbols=${symbols.join(',')}`);
+    const json = await res.json();
+    const quotes = json?.data || {};
+    
+    const gains = items.map((item: any) => {
+      const symbol = `${item.code}.${item.code.startsWith('6') ? 'SS' : 'SZ'}`;
+      const g = quotes[symbol]?.change_percent !== undefined ? quotes[symbol].change_percent * 100 : 0;
+      return { ...item, gain: g };
+    });
+
+    const gainValues = gains.map(x => x.gain);
+    brokenPremium.value = {
+      avg: gainValues.reduce((a, b) => a + b, 0) / gainValues.length,
+      median: median(gainValues),
+      list: gains,
+    };
+  } catch (e) {
+    console.error('Failed to fetch broken premium', e);
+  } finally {
+    brokenLoading.value = false;
+  }
+};
+
+onMounted(() => {
+  fetchBrokenPremium();
+});
 
 const xqUrl = (code?: string | null) => {
   const raw = String(code || '').trim();
@@ -67,19 +107,46 @@ const groupedLadder = computed(() => {
     if (!groups.has(badge)) groups.set(badge, []);
     groups.get(badge)?.push(row);
   });
+  
   return Array.from(groups.entries())
     .sort((a, b) => b[0] - a[0])
     .map(([badge, rows]) => {
+      // 1. 板块统计：找出该梯队的主流板块
+      const sectorCounts = new Map<string, number>();
+      rows.forEach(r => {
+        const themes = themesFor(r.code);
+        themes.forEach(t => {
+          const normalized = normalizeThemeName(t);
+          sectorCounts.set(normalized, (sectorCounts.get(normalized) || 0) + 1);
+        });
+      });
+      const topSectors = Array.from(sectorCounts.entries())
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 2)
+        .map(([name, count]) => ({ name, count }));
+
+      // 2. 接力情绪分析
+      const qCount = (label: string) => rows.filter((r) => String(r.qualityLabel || '') === label).length;
+      const accel = qCount('加速确认');
+      const relay = qCount('温和放量') + qCount('高换手承接');
+      const weak = qCount('分歧烂板') + qCount('反复回封');
+      
+      let relaySentiment = '均衡';
+      let relayCls = 'kpi-orange';
+      if (accel > rows.length * 0.5) { relaySentiment = '加速'; relayCls = 'kpi-red'; }
+      else if (relay > rows.length * 0.4) { relaySentiment = '接力'; relayCls = 'kpi-orange'; }
+      else if (weak > rows.length * 0.3) { relaySentiment = '分歧'; relayCls = 'kpi-blue'; }
+
       const zbcArr = rows.map((r) => Number(r?.zbc ?? 0));
       const resealCnt = zbcArr.filter((v) => v >= 1).length;
       const multiOpenCnt = zbcArr.filter((v) => v >= 2).length;
       const resealRate = rows.length ? Math.round((resealCnt / rows.length) * 100) : 0;
       const multiOpenRate = rows.length ? Math.round((multiOpenCnt / rows.length) * 100) : 0;
-      const resealCls = resealRate >= 55 ? 'kpi-red' : resealRate >= 35 ? 'kpi-orange' : 'kpi-blue';
-      const multiCls = multiOpenRate >= 35 ? 'kpi-red' : multiOpenRate >= 18 ? 'kpi-orange' : 'kpi-blue';
+      
       const sealYiArr = rows.map((r) => Number(r?.zj ?? 0) / 1e8).filter((v) => v > 0);
       const sealMed = median(sealYiArr);
       const sealMax = sealYiArr.length ? Math.max(...sealYiArr) : 0;
+
       return {
         badge,
         rows,
@@ -87,10 +154,14 @@ const groupedLadder = computed(() => {
         badgeClass: badge >= 6 ? 'badge-6' : badge === 5 ? 'badge-5' : `badge-${badge}`,
         resealRate,
         multiOpenRate,
-        resealCls,
-        multiCls,
+        resealCls: resealRate >= 55 ? 'kpi-red' : resealRate >= 35 ? 'kpi-orange' : 'kpi-blue',
+        multiCls: multiOpenRate >= 35 ? 'kpi-red' : multiOpenRate >= 18 ? 'kpi-orange' : 'kpi-blue',
         sealMed,
         sealMax,
+        topSectors,
+        relaySentiment,
+        relayCls,
+        resonanceScore: Math.min(topSectors.length * 20 + rows.length * 2 + badge * 5, 100), // 梯队共振分
       };
     });
 });
@@ -339,24 +410,32 @@ useECharts(heightChartRef, heightOptions);
 
       <div class="ladder-summary" id="ladderSummary" v-if="ladderRows.length">
         <div class="ladder-summary-item">
-          <div class="ladder-summary-k"><span class="ladder-summary-icon">🚀</span>连板样本</div>
-          <div class="ladder-summary-v">{{ ladderSummary.total }} 只（其中晋级 {{ ladderSummary.promote }}）</div>
-          <div class="ladder-summary-sub">聚焦连板质量，不再单列“新晋”状态</div>
+          <div class="ladder-summary-icon">🎯</div>
+          <div class="ladder-summary-v">{{ ladderSummary.total }}</div>
+          <div class="ladder-summary-k">连板家数</div>
+          <div class="ladder-summary-sub">晋级 {{ ladderSummary.promote }} / 昨日 {{ ladderSummary.yest }}</div>
         </div>
         <div class="ladder-summary-item">
-          <div class="ladder-summary-k"><span class="ladder-summary-icon">🧪</span>核心价值</div>
+          <div class="ladder-summary-icon">🔥</div>
+          <div class="ladder-summary-v">{{ ladderSummary.jj }}</div>
+          <div class="ladder-summary-k">昨日晋级率</div>
+          <div class="ladder-summary-sub">最高板 {{ ladderSummary.maxLb }}</div>
+        </div>
+        <div class="ladder-summary-item">
+          <div class="ladder-summary-icon" :class="brokenPremium.avg > 0 ? 'kpi-red' : 'kpi-blue'">💔</div>
+          <div class="ladder-summary-v" :class="brokenPremium.avg > 0 ? 'red-text' : 'blue-text'">
+            {{ brokenPremium.avg > 0 ? '+' : '' }}{{ brokenPremium.avg.toFixed(2) }}%
+          </div>
+          <div class="ladder-summary-k">断板反馈 (Premium)</div>
+          <div class="ladder-summary-sub" v-if="brokenPremium.list.length">
+            昨日断板 {{ brokenPremium.list.length }} 只，中位 {{ brokenPremium.median.toFixed(2) }}%
+          </div>
+        </div>
+        <div class="ladder-summary-item wide">
+          <div class="ladder-summary-icon">💡</div>
           <div class="ladder-summary-v">{{ ladderSummary.qualityTitle }}</div>
+          <div class="ladder-summary-k">梯队结构分析</div>
           <div class="ladder-summary-sub">{{ ladderSummary.qualitySub }}</div>
-        </div>
-        <div class="ladder-summary-item">
-          <div class="ladder-summary-k"><span class="ladder-summary-icon">🧭</span>昨日反馈</div>
-          <div class="ladder-summary-v">{{ ladderSummary.yest }} → {{ ladderSummary.promote }}（晋级率 {{ ladderSummary.jj }}）</div>
-          <div class="ladder-summary-sub">今日涨停 {{ ladderSummary.zt }} 只</div>
-        </div>
-        <div class="ladder-summary-item">
-          <div class="ladder-summary-k"><span class="ladder-summary-icon">📈</span>高度 / 风险</div>
-          <div class="ladder-summary-v"><span :class="ladderSummary.maxLb >= 6 ? 'red-text' : ladderSummary.maxLb >= 4 ? 'orange-text' : 'green-text'">{{ ladderSummary.maxLb }}</span> 板</div>
-          <div class="ladder-summary-sub">炸板率 {{ ladderSummary.zbRate }} | 空间越高越易分歧</div>
         </div>
       </div>
 
@@ -366,7 +445,29 @@ useECharts(heightChartRef, heightOptions);
             <div class="ladder-left-top">
               <span class="ladder-badge" :class="group.badgeClass">{{ group.badge }}板</span>
             </div>
-            <div class="ladder-left-meta">{{ group.count }}只</div>
+            <div class="ladder-left-meta">
+              <span class="muted">成员</span>
+              <span class="val">{{ group.count }}</span>
+            </div>
+            <div class="ladder-left-meta" v-if="group.topSectors && group.topSectors.length">
+            <span class="muted">核心板块</span>
+            <div class="sector-row">
+              <span class="val-sector" v-for="s in group.topSectors" :key="s.name">{{ s.name }}</span>
+            </div>
+          </div>
+          <div class="ladder-left-kpi">
+            <div class="kpi-item">
+              <span class="muted">接力情绪 / 共振分</span>
+              <div class="kpi-row">
+                <span :class="group.relayCls">{{ group.relaySentiment }}</span>
+                <span class="kpi-res-score">🔥 {{ group.resonanceScore }}</span>
+              </div>
+            </div>
+              <div class="kpi-item">
+                <span class="muted">回封率</span>
+                <span :class="group.resealCls">{{ group.resealRate }}%</span>
+              </div>
+            </div>
           </div>
 
           <div class="ladder-stock-list">

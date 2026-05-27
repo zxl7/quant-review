@@ -43,6 +43,45 @@ function makeAuth() {
 const API_BASE = 'https://emcfgdata.eastmoney.com/api/themeInvest';
 const PAGE_SIZE = 15;
 
+const isStockCode = (code: string) => /^(00|30|60|68)\d{4}$/.test(code);
+const toXgbSymbol = (code: string) => {
+  if (!code) return '';
+  return `${code}.${code.startsWith('6') ? 'SS' : 'SZ'}`;
+};
+
+async function hydrateStocksWithQuote(stocks: TomorrowStock[]): Promise<TomorrowStock[]> {
+  const codes = Array.from(new Set(stocks.map((x) => x.code).filter(isStockCode)));
+  if (!codes.length) return stocks;
+  const symbols = codes.map(toXgbSymbol).filter(Boolean);
+  const url = `https://flash-api.xuangubao.cn/api/stock/data?fields=symbol,stock_chi_name,change_percent,price&strict=true&symbols=${symbols.join(',')}`;
+  
+  try {
+    const res = await fetch(`${url}&_ts=${Date.now()}`, {
+      cache: 'no-store',
+      headers: {
+        'Accept': 'application/json, text/plain, */*',
+        'User-Agent': 'Mozilla/5.0 (iPhone; CPU iPhone OS 16_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148',
+      },
+    });
+    if (!res.ok) return stocks;
+    const json = await res.json();
+    const quoteData = json?.data || {};
+    
+    return stocks.map((stock) => {
+      const symbol = toXgbSymbol(stock.code);
+      const quote = quoteData[symbol] || quoteData[stock.code] || {};
+      return {
+        ...stock,
+        name: String(quote.stock_chi_name || stock.name).trim(),
+        gain: quote.change_percent === undefined || quote.change_percent === null ? stock.gain : Number(quote.change_percent) * 100,
+        price: quote.price === undefined || quote.price === null ? stock.price : Number(quote.price),
+      };
+    });
+  } catch {
+    return stocks;
+  }
+}
+
 /** 读取注入的东方财富明日主题数据 */
 function getInjectedData(): { themes: TomorrowTheme[]; stocksByTheme: Record<string, TomorrowStock[]> } | null {
   try {
@@ -203,7 +242,7 @@ export function useTomorrowPicks() {
     if (isUsingInjected.value) {
       const injected = getInjectedData();
       if (injected && injected.stocksByTheme[themeCode]) {
-        stocks.value = injected.stocksByTheme[themeCode];
+        stocks.value = await hydrateStocksWithQuote(injected.stocksByTheme[themeCode]);
         stocksLoading.value = false;
         return;
       }
@@ -230,7 +269,7 @@ export function useTomorrowPicks() {
       if (json.code !== 0) return;
 
       const list = json.data?.stockList || [];
-      stocks.value = list.map((s: any) => {
+      const rawStocks = list.map((s: any) => {
         const reasons = (s.keywordList || [])
           .filter((k: any) => k.keyword === '入选理由')
           .map((k: any) => k.introduction || '');
@@ -245,6 +284,7 @@ export function useTomorrowPicks() {
           reason: reasons.join('；') || '涨停',
         };
       });
+      stocks.value = await hydrateStocksWithQuote(rawStocks);
     } catch {
       // ignore
     } finally {
@@ -252,19 +292,19 @@ export function useTomorrowPicks() {
     }
   }
 
-  function selectTheme(themeCode: string) {
+  async function selectTheme(themeCode: string) {
     selectedThemeCode.value = themeCode;
 
     // 预注入数据中查找
     if (isUsingInjected.value) {
       const injected = getInjectedData();
       if (injected && injected.stocksByTheme[themeCode]) {
-        stocks.value = injected.stocksByTheme[themeCode];
+        stocks.value = await hydrateStocksWithQuote(injected.stocksByTheme[themeCode]);
         return;
       }
     }
     // 未命中缓存，走 API
-    fetchStockList(themeCode);
+    await fetchStockList(themeCode);
   }
 
   return { themes, loading, error, selectedThemeCode, stocks, stocksLoading, isUsingInjected, injectedThemesDate, fetchThemes, selectTheme };
