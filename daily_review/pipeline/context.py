@@ -47,6 +47,29 @@ class Context:
     features: Dict[str, Any] = field(default_factory=dict)
     market_data: Dict[str, Any] = field(default_factory=dict)
 
+    def get(self, path: str, default: Any = None) -> Any:
+        """
+        支持按域点路径获取数据。
+        例如: ctx.get("features.sector_resolution") -> ctx.features.get("sector_resolution")
+        """
+        if "." not in path:
+            return default
+        domain, rest = path.split(".", 1)
+        if domain == "features":
+            return get_path(self.features, rest, default)
+        elif domain == "marketData":
+            return get_path(self.market_data, rest, default)
+        elif domain == "raw":
+            return get_path(self.raw, rest, default)
+        elif domain == "meta":
+            return get_path(self.meta, rest, default)
+        return default
+
+    @property
+    def date(self) -> str:
+        """快捷获取日期"""
+        return str(self.meta.get("date") or "")
+
     def as_dict(self) -> Dict[str, Any]:
         return {
             "meta": self.meta,
