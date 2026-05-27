@@ -8,6 +8,7 @@
 
 from __future__ import annotations
 
+import json
 import math
 import re
 from typing import Any, Dict, Iterable, List, Tuple
@@ -447,6 +448,154 @@ def build_zt_analysis(*, market_data: Dict[str, Any]) -> Dict[str, Any]:
     }
     trend_names = list(trend_series.keys())
 
+    # ============================================================
+    # 跨源数据加载（东方财富 + 选股宝 + watchlist）
+    # ============================================================
+
+    def _normalize_code(code: Any) -> str:
+        """统一 code 格式：去后缀 → 6 位纯数字（跨源映射 key）"""
+        digits = "".join(c for c in str(code or "") if c.isdigit())
+        return digits[-6:] if len(digits) >= 6 else digits
+
+    def _load_eastmoney_data(md: Dict[str, Any]) -> tuple[Dict[str, list[str]], set[str], list[str]]:
+        """加载东方财富题材+成分股缓存。
+        Returns:
+            code_index: {纯数字code: [themeCode列表]}
+            hot_theme_set: 热门主题的 themeCode 集合
+            theme_list: 所有主题的[{themeCode, themeName, isHot}]
+        """
+        try:
+            from pathlib import Path
+            date_str = (md.get("date") or "").replace("-", "")
+            if not date_str or len(date_str) != 8:
+                return {}, set(), []
+            root = Path(__file__).resolve().parent.parent.parent
+            stocks_path = root / "cache_online" / f"eastmoney_theme_stocks-{date_str}.json"
+            themes_path = root / "cache_online" / f"eastmoney_tomorrow_themes-{date_str}.json"
+
+            code_index: dict[str, list[str]] = {}
+            hot_theme_set: set[str] = set()
+            theme_list: list[dict] = []
+
+            # 先读主题列表，建立热门主题集合
+            if themes_path.exists():
+                th_data = json.loads(themes_path.read_text(encoding="utf-8"))
+                raw_wrap = (th_data.get("raw") or {})
+                raw = (raw_wrap.get("raw") if isinstance(raw_wrap, dict) else raw_wrap) or {}
+                items = raw.get("data") if isinstance(raw, dict) else None
+                if isinstance(items, list):
+                    for it in items:
+                        if not isinstance(it, dict):
+                            continue
+                        tc = str(it.get("themeCode") or "").strip()
+                        tn = str(it.get("themeName") or "").strip()
+                        is_hot = bool(it.get("isHot") == 1 or it.get("isHot") == "1")
+                        if tc:
+                            theme_list.append({"themeCode": tc, "themeName": tn, "isHot": is_hot})
+                            if is_hot:
+                                hot_theme_set.add(tc)
+
+            # 再读成分股，建立 code → [themeCode] 索引
+            if stocks_path.exists():
+                st_data = json.loads(stocks_path.read_text(encoding="utf-8"))
+                by_theme = (st_data.get("by_theme") or {})
+                for tc, resp in by_theme.items():
+                    if not isinstance(resp, dict):
+                        continue
+                    tc_str = str(tc).strip()
+                    raw_s = (resp.get("raw") or {})
+                    stock_list = ((raw_s.get("data") or {}).get("stockList") or [])
+                    if not isinstance(stock_list, list):
+                        continue
+                    for s in stock_list:
+                        if not isinstance(s, dict):
+                            continue
+                        sc = _normalize_code(s.get("securityCode") or s.get("codeSuffix") or "")
+                        if sc and len(sc) == 6:
+                            arr = code_index.setdefault(sc, [])
+                            if tc_str not in arr:
+                                arr.append(tc_str)
+            return code_index, hot_theme_set, theme_list
+        except Exception:
+            return {}, set(), []
+
+    def _load_xuangubao_data(md: Dict[str, Any]) -> dict[str, list[str]]:
+        """加载选股宝异动事件缓存。
+        Returns: {纯数字code: [event_type_key列表]}
+        """
+        try:
+            from pathlib import Path
+            date_str = (md.get("date") or "").replace("-", "")
+            if not date_str:
+                return {}
+            root = Path(__file__).resolve().parent.parent.parent
+            ab_path = root / "cache_online" / f"xuangubao_abnormal-{date_str}.json"
+            if not ab_path.exists():
+                return {}
+            ab_data = json.loads(ab_path.read_text(encoding="utf-8"))
+            # 取最新一次有效的数据：优先 latest，兜底 runs 中最近一次有数据的
+            events = None
+            latest = ab_data.get("latest") if isinstance(ab_data, dict) else None
+            combined = (latest.get("combined") if isinstance(latest, dict) else None) or {}
+            if combined.get("count", 0) > 0:
+                events = combined.get("data")
+            if not events:
+                runs = ab_data.get("runs") if isinstance(ab_data, dict) else None
+                if isinstance(runs, list):
+                    for r in runs:
+                        if not isinstance(r, dict):
+                            continue
+                        rc = r.get("combined") if isinstance(r, dict) else None
+                        if isinstance(rc, dict) and rc.get("count", 0) > 0:
+                            events = rc.get("data")
+                            break
+            if not events:
+                return {}
+            # 兼容 list 和 dict 格式
+            event_list: list = []
+            if isinstance(events, list):
+                event_list = events
+            elif isinstance(events, dict):
+                # runs 缓存可能包裹了 data 字段
+                inner_data = events.get("data")
+                if isinstance(inner_data, list):
+                    event_list = inner_data
+                elif isinstance(inner_data, dict):
+                    event_list = list(inner_data.values())
+                else:
+                    event_list = list(events.values())
+            if not event_list:
+                return {}
+            code_index: dict[str, list[str]] = {}
+            for ev in event_list:
+                if not isinstance(ev, dict):
+                    continue
+                ev_type = ev.get("event_type")
+                ev_tag = f"type_{ev_type}" if ev_type is not None else ""
+                # 个股异动 (stock_abnormal_event_data.symbol)
+                stock_data = ev.get("stock_abnormal_event_data") if isinstance(ev, dict) else None
+                if isinstance(stock_data, dict):
+                    sym = _normalize_code(stock_data.get("symbol"))
+                    if sym and len(sym) == 6:
+                        arr = code_index.setdefault(sym, [])
+                        if ev_tag not in arr:
+                            arr.append(ev_tag)
+                # 板块异动 (plate_abnormal_event_data.related_stocks)
+                plate_data = ev.get("plate_abnormal_event_data") if isinstance(ev, dict) else None
+                if isinstance(plate_data, dict):
+                    for rs in (plate_data.get("related_stocks") or []):
+                        if not isinstance(rs, dict):
+                            continue
+                        rs_sym = _normalize_code(rs.get("symbol"))
+                        if rs_sym and len(rs_sym) == 6:
+                            arr = code_index.setdefault(rs_sym, [])
+                            tag = f"plate_{ev_tag}"
+                            if tag not in arr:
+                                arr.append(tag)
+            return code_index
+        except Exception:
+            return {}
+
     def match_strength(theme_name: Any) -> Dict[str, Any] | None:
         t = str(theme_name or "")
         if t in theme_strength:
@@ -821,6 +970,46 @@ def build_zt_analysis(*, market_data: Dict[str, Any]) -> Dict[str, Any]:
         for k in (r.get("code"), r.get("dm"), r.get("name")):
             if k:
                 ladder_map[str(k)] = r
+
+    # ============================================================
+    # 跨源数据加载 & 梯队咬合度
+    # ============================================================
+    em_code_index, hot_theme_set, em_theme_list = _load_eastmoney_data(market_data)
+    xgb_code_index = _load_xuangubao_data(market_data)
+
+    def _calc_tier_engagement(zt_list: list[dict]) -> float:
+        """算梯队咬合度：各连板层分布是否连贯，返回值越大越好"""
+        raw_lbcs = [max(1, int(_to_num(s.get("lbc"), 1.0))) for s in zt_list if isinstance(s, dict)]
+        if not raw_lbcs:
+            return -2.0
+        max_lb_val = int(max(raw_lbcs))
+        # 按层级聚合
+        lbc_counts: dict[int, int] = {}
+        for lb in raw_lbcs:
+            lbc_counts[lb] = lbc_counts.get(lb, 0) + 1
+        # 取前 N 层
+        present = sorted(lbc_counts.keys())
+        if len(present) <= 1:
+            return -3.0 if present and present[0] == 1 else -1.5
+        # 算断层
+        gold_range_start = max(2, min(present))  # 基础要求从2板开始
+        gold_range = set(range(gold_range_start, max_lb_val + 1))
+        missing = len(gold_range - set(present))
+        # 惩罚规则
+        if missing == 0 and max_lb_val >= 3:
+            return 3.0                    # 梯队完整
+        if missing <= 1 and max_lb_val <= 5:
+            return 1.5
+        if missing <= 2:
+            return 0.0
+        return -2.0                       # 梯队断层
+
+    tier_engagement = _calc_tier_engagement(zt)
+    tier_engagement_score = _clamp(50.0 + tier_engagement * 20.0)
+
+    # 环境分融合梯队咬合度（小幅度修正，避免过度影响）
+    env_score = _clamp(env_score * 0.88 + tier_engagement_score * 0.12)
+    market_gate = _market_gate(env_score, promo_ecology=promo_ecology, break_risk_base=break_risk_base, height_pressure=height_pressure)
 
     scored: List[Dict[str, Any]] = []
     for s in zt:
@@ -1213,6 +1402,36 @@ def build_zt_analysis(*, market_data: Dict[str, Any]) -> Dict[str, Any]:
         )
         liquidity_band_score = 86.0 if 10.0 <= cje_yi <= 40.0 else 72.0 if 5.0 <= cje_yi < 10.0 else 66.0 if 40.0 < cje_yi <= 90.0 else 48.0 if cje_yi > 0 else 34.0
         capacity_score = _clamp(cje_target_score * 0.44 + vol_tier_score * 0.24 + cap_score * 0.17 + liquidity_band_score * 0.15)
+
+        # === 三源融合 ===
+        # 东方财富题材确认
+        em_themes: list[str] = em_code_index.get(code, []) if em_code_index else []
+        em_theme_hot = any(tc in hot_theme_set for tc in em_themes) if hot_theme_set else False
+
+        # 选股宝异动确认
+        xgb_events: list[str] = xgb_code_index.get(code, []) if xgb_code_index else []
+
+        # 容量核判断
+        zsz_yi_val = _yi(s.get("zsz"))  # 总市值(亿)
+        lt_yi_val = _yi(s.get("lt"))    # 流通市值(亿)
+        is_capacity_core = (cje_yi >= 10.0 and zsz_yi_val >= 50.0 and hs_pct <= 15.0 and not is_yizi and not is_shrink_seal)
+
+        # 跨源交叉确认加分
+        cross_source_boost = 0.0
+        if em_themes:
+            cross_source_boost += 1.5
+        if em_theme_hot:
+            cross_source_boost += 1.0
+        if xgb_events:
+            cross_source_boost += 1.0
+        if is_capacity_core:
+            cross_source_boost += 0.8
+
+        # 双引擎确认：两个外部源同时命中
+        if em_themes and xgb_events:
+            cross_source_boost += 1.5
+
+        capacity_score = _clamp(capacity_score + cross_source_boost * 0.6)
         relay_factor_score = _clamp(
             step_context_score * 0.38
             + quality_score * 0.18
@@ -1498,6 +1717,15 @@ def build_zt_analysis(*, market_data: Dict[str, Any]) -> Dict[str, Any]:
             )
 
         head = " · ".join(reason_bits) if reason_bits else "综合条件一般"
+        # 三源融合标签
+        if em_theme_hot:
+            tags.append({"text": "题材共振", "tone": "hot"})
+        if xgb_events:
+            tags.append({"text": "异动确认", "tone": "leader"})
+        if is_capacity_core:
+            tags.append({"text": "容量核", "tone": "capacity"})
+        if em_themes and xgb_events:
+            tags.append({"text": "双源确认", "tone": "super-leader"})
         normalized_tags = _normalize_tags(tags)
         scored.append(
             {
@@ -1565,6 +1793,12 @@ def build_zt_analysis(*, market_data: Dict[str, Any]) -> Dict[str, Any]:
                 },
                 "tags": normalized_tags,
                 "tagRows": _tag_rows(normalized_tags),
+                "emThemes": em_themes[:5],
+                "emThemeHot": em_theme_hot,
+                "xgbEvents": xgb_events[:5],
+                "crossSourceBoost": _round(cross_source_boost * 0.6),
+                "capacityCore": is_capacity_core,
+                "capacityLabel": ("容量核" if is_capacity_core else "弹性票" if cje_yi >= 3.0 else "小盘"),
                 "reason": f'<span class="reason-bits">{head}</span><div class="exp-wrap">{observe_point}</div>',
             }
         )
@@ -1908,6 +2142,12 @@ def build_zt_analysis(*, market_data: Dict[str, Any]) -> Dict[str, Any]:
             "promoEcology": _round(promo_ecology),
             "heightContext": "repair" if height_repair else "pressure" if height_pressure else "neutral",
             "breakRiskBase": _round(break_risk_base),
+            "tierEngagement": {"score": _round(tier_engagement_score), "label": "梯队完整" if tier_engagement >= 2.5 else "梯队良好" if tier_engagement >= 1.0 else "梯队松散" if tier_engagement >= 0.0 else "梯队断层"},
+            "enrichmentSources": {
+                "eastmoney": {"themes": len(em_theme_list), "stock_index": len(em_code_index)},
+                "xuangubao": {"events": len(xgb_code_index)},
+                "crossSource": "v1",
+            },
         },
         "relay": strip(relay[:8]),
         "watch": strip(watch[:8]),
