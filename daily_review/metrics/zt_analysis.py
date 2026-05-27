@@ -1078,6 +1078,22 @@ def build_zt_analysis(*, market_data: Dict[str, Any]) -> Dict[str, Any]:
         market_support_ok = bool(env_score >= 62 and market_sentiment_score >= 58 and promo_ecology >= 50)
         theme_support_ok = bool(has_trade_theme and (theme_net >= 8 or plate_is_strong) and (has_follow or has_tier or is_plate_leader))
         leader_uniqueness_ok = bool(unique_market_leader or (is_theme_leader and leader_bonus >= 10))
+        
+        # 题材评分加成逻辑
+        # 结合 SectorResolver 中的评分数据 (theme_env_score, sector_sentiment_score)
+        theme_quality_bonus = 0.0
+        if has_trade_theme:
+            # 1. 题材环境加成 (0-8分)
+            theme_quality_bonus += max(0.0, theme_env_score - 50.0) * 0.15
+            # 2. 个体题材情绪加成 (0-12分)
+            theme_quality_bonus += max(0.0, sector_sentiment_score - 50.0) * 0.25
+            # 3. 题材持续性额外加成 (0-5分)
+            if theme_is_continuing:
+                theme_quality_bonus += 5.0
+            # 4. 题材分化/退潮惩罚
+            if theme_is_fading:
+                theme_quality_bonus -= 10.0
+        
         leader_philosophy_score = _clamp(
             (94.0 if unique_market_leader else 82.0 if is_market_top else 74.0 if is_theme_leader else 62.0 if leader_bonus >= 10 else 48.0)
             + (8.0 if trend_protect_ok else -10.0)
@@ -1089,6 +1105,7 @@ def build_zt_analysis(*, market_data: Dict[str, Any]) -> Dict[str, Any]:
             + (6.0 if is_new_high else 0.0)
             + (8.0 if height_breakout_leader else 0.0)
             + (10.0 if space_anchor_leader else 0.0)
+            + theme_quality_bonus  # 注入题材板块综合得分
             - max(0.0, individual_break_risk - 58.0) * 0.22
             - (8.0 if follow_leader else 0.0)
         )
@@ -1212,6 +1229,7 @@ def build_zt_analysis(*, market_data: Dict[str, Any]) -> Dict[str, Any]:
             + (5.0 if super_leader_candidate else 0.0)
             + max(0.0, capacity_score - 72.0) * 0.05
             + max(0.0, leader_factor_score - 66.0) * 0.04
+            + (theme_quality_bonus * 0.12)  # 题材质量对最终分值的直接加成
             - (1.8 if follow_leader else 0.0)
             - max(0.0, risk_pressure - 58.0) * 0.04
         )
@@ -1287,7 +1305,7 @@ def build_zt_analysis(*, market_data: Dict[str, Any]) -> Dict[str, Any]:
             tags.append(_tag("断板风险高", "ladder-chip-warn orange-text"))
         tags.extend(
             [
-                _tag(f"{int(lbc)}板", "ladder-chip-strong red-text" if lbc >= 6 else "ladder-chip-warn orange-text" if lbc >= 4 else "ladder-chip-cool blue-text"),
+                _tag("首板" if lbc == 1 else f"{int(lbc)}板", "muted-text"),
                 _tag(f"封单{fund_yi:.2f}亿" if fund_yi else "封单-亿", "ladder-chip-strong red-text" if fund_yi >= 3 else "ladder-chip-warn orange-text" if fund_yi >= 1 else "ladder-chip-cool blue-text"),
                 _tag(f"{int(open_cnt)}次开板", "ladder-chip-warn orange-text" if open_cnt >= 3 else "ladder-chip-cool blue-text") if open_cnt else _tag("未开", "ladder-chip-cool blue-text"),
             ]

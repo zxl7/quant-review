@@ -109,8 +109,18 @@ def classify_cache() -> tuple[list[CacheRule], list[CacheRule]]:
 def sync_online_cache(date10: str, *, mode: str = "minimal") -> tuple[list[Path], Path]:
     date8 = date10.replace("-", "")
     ONLINE_DIR.mkdir(parents=True, exist_ok=True)
+    # fetch_watchlist.py 直接写入 cache_online/ 的自有产物（不在 cache/ 中，清空就找不回）
+    preserve_prefixes = (
+        "watchlist_cache-",
+        "xuangubao_abnormal-",
+        "xuangubao_surge_plates-",
+        "eastmoney_tomorrow_themes-",
+        "eastmoney_theme_stocks-",
+    )
     for p in ONLINE_DIR.iterdir():
         if p.is_file():
+            if any(p.name.startswith(prefix) for prefix in preserve_prefixes):
+                continue
             p.unlink()
         elif p.is_dir():
             shutil.rmtree(p)

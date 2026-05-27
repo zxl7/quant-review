@@ -87,6 +87,27 @@ refresh_dragon_tiger_cache() {
   fi
 }
 
+refresh_watchlist_cache() {
+  # 拉异动/板块/明日主题接口 + 跑 M3/M4/M5 推票
+  # 产出 cache_online/watchlist_cache-YYYYMMDD.json，由 inject_data.py 注入前端 picks_advisor
+  # 调用约束：必须在 sync_online_cache_dir 之后（因 fetch_watchlist 从 cache_online/ 读 pools/market_data，
+  #          且 sync_online_cache_dir 会先清空 cache_online/）
+  local date10="$1"
+  local extra_arg="${2:-}"
+  if [[ ! -f "tools/fetch_watchlist.py" ]]; then
+    info "跳过 watchlist 推票生成：未找到 tools/fetch_watchlist.py"
+    return 0
+  fi
+  info "生成算法推票缓存: ${date10}${extra_arg:+ ${extra_arg}}"
+  if [[ -n "${extra_arg}" ]]; then
+    PYTHONPATH=. python3 tools/fetch_watchlist.py --date "${date10}" "${extra_arg}" \
+      || warn "fetch_watchlist 失败，将沿用已有 watchlist_cache（若存在）"
+  else
+    PYTHONPATH=. python3 tools/fetch_watchlist.py --date "${date10}" \
+      || warn "fetch_watchlist 失败，将沿用已有 watchlist_cache（若存在）"
+  fi
+}
+
 cleanup_timestamp_html() {
   # 只保留 tab-v1，删除旧版脚本生成的带时分秒版本（复盘日记-YYYYMMDD-HHMMSS.html）
   local yyyymmdd="$1"
@@ -201,6 +222,7 @@ cmd_fetch() {
     prune_cache_keep_latest_n 7
     prune_extra_cache_artifacts
     sync_online_cache_dir "${DATE_ARG}"
+    refresh_watchlist_cache "${DATE_ARG}"
     return 0
   fi
 
@@ -212,11 +234,13 @@ cmd_fetch() {
   d8="$(pick_latest_cache_date8)" || die "未找到 cache/market_data-*.json（尚未生成缓存？）"
   d10="$(date8_to_date10 "${d8}")"
   refresh_dragon_tiger_cache "${d10}"
+  # 先 sync 到 cache_online（会清空目录），再生成 watchlist 推票，最后 render_offline 注入前端
+  sync_online_cache_dir "${d10}"
+  refresh_watchlist_cache "${d10}"
   render_offline "${d10}"
   cleanup_timestamp_html "${d8}"
   prune_cache_keep_latest_n 7
   prune_extra_cache_artifacts
-  sync_online_cache_dir "${d10}"
   python3 inject_data.py "${d8}" --dev-only 2>/dev/null || true
 }
 
@@ -230,6 +254,7 @@ cmd_gen() {
     PYTHONPATH=. python3 -u -m daily_review.cli --fetch --date "${DATE_ARG}"
     refresh_dragon_tiger_cache "${DATE_ARG}"
     sync_online_cache_dir "${DATE_ARG}"
+    refresh_watchlist_cache "${DATE_ARG}"
   else
     PYTHONPATH=. python3 -u -m daily_review.cli --fetch
     local d8 d10
@@ -237,28 +262,32 @@ cmd_gen() {
     d10="$(date8_to_date10 "${d8}")"
     refresh_dragon_tiger_cache "${d10}"
     sync_online_cache_dir "${d10}"
+    refresh_watchlist_cache "${d10}"
   fi
 }
 
 cmd_render() {
   load_dotenv_if_needed
   if [[ -n "${DATE_ARG}" ]]; then
+    # 先 sync + 用本地缓存重算 watchlist + 刷新龙虎榜，再 render_offline 注入前端
+    sync_online_cache_dir "${DATE_ARG}"
+    refresh_watchlist_cache "${DATE_ARG}" "--skip-fetch"
     refresh_dragon_tiger_cache "${DATE_ARG}"
     render_offline "${DATE_ARG}"
     prune_cache_keep_latest_n 7
     prune_extra_cache_artifacts
-    sync_online_cache_dir "${DATE_ARG}"
     return 0
   fi
 
   local d8 d10
   d8="$(pick_latest_cache_date8)" || die "未找到 cache/market_data-*.json，请先执行：./qr.sh fetch"
   d10="$(date8_to_date10 "${d8}")"
+  sync_online_cache_dir "${d10}"
+  refresh_watchlist_cache "${d10}" "--skip-fetch"
   refresh_dragon_tiger_cache "${d10}"
   render_offline "${d10}"
   prune_cache_keep_latest_n 7
   prune_extra_cache_artifacts
-  sync_online_cache_dir "${d10}"
   python3 inject_data.py "${d8}" --dev-only 2>/dev/null || true
 }
 
@@ -360,8 +389,8 @@ cmd_deploy() {
 usage() {
   cat <<'EOF'
 用法：
-  ./qr.sh fetch [YYYY-MM-DD]   在线取数 + pipeline 重建 + Vue3 构建 → tab-v1 HTML
-  ./qr.sh render [YYYY-MM-DD]  仅用 cache 离线重建 + Vue3 构建（不请求接口）
+  ./qr.sh fetch [YYYY-MM-DD]   在线取数 + 算法推票 + pipeline 重建 + Vue3 构建 → tab-v1 HTML
+  ./qr.sh render [YYYY-MM-DD]  仅用 cache 离线重建 + 推票重算(--skip-fetch) + Vue3 构建（不请求接口）
   ./qr.sh build-web [YYYY-MM-DD]  仅 Vue3 构建 + 注入（不跑 pipeline，改 UI 用）
   ./qr.sh watch-slice [YYYY-MM-DD]  仅生成实时盯盘切片 JSON（供页面动态读取）
   ./qr.sh deploy               （可选）发布最新 tab-v1 到 gh-pages/index.html

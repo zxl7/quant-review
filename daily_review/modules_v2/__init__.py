@@ -25,6 +25,7 @@ from .themes.top10 import TOP10_MODULE
 
 # ════════════════ 连板天梯 (ladder/) ════════════════
 from .ladder.ladder import LADDER_MODULE
+from .ladder.ladder_features import LADDER_FEATURES_MODULE
 from .ladder.height_trend import HEIGHT_TREND_MODULE
 from .ladder.ztgc import ZTGC_MODULE
 from .ladder.v3_leader import V3_LEADER_MODULE
@@ -34,6 +35,8 @@ from .ladder.leader_dragon_v2 import LEADER_DRAGON_V2_MODULE
 
 # ════════════════ 明日计划 (plan/) ════════════════
 from .plan.action_guide import ACTION_GUIDE_MODULE
+from .plan.action_sheet import ACTION_SHEET_MODULE
+from .plan.picks_advisor import PICKS_ADVISOR_MODULE
 from .plan.strategy_v2 import STRATEGY_V2_MODULE
 from .plan.position_v2 import POSITION_V2_MODULE
 from .plan.psychology_v2 import PSYCHOLOGY_V2_MODULE
@@ -97,6 +100,7 @@ ALL_MODULES = [
     FEAR_MODULE,
     ROTATION_MODULE,
     THEME_LAYERS_MODULE,
+    LADDER_FEATURES_MODULE,
     LEADER_MODULE,
     MOOD_SIGNALS_MODULE,
     # v2 情绪计分卡应覆盖 spec v1 的兼容输出
@@ -112,6 +116,8 @@ ALL_MODULES = [
     STRATEGY_V2_MODULE,
     SENTIMENT_SPEC_MODULE,
     ZT_ANALYSIS_MODULE,
+    ACTION_SHEET_MODULE,
+    PICKS_ADVISOR_MODULE,
     ACTION_GUIDE_MODULE,
     SUMMARY3_MODULE,
     LEARNING_NOTES_MODULE,

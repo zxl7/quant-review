@@ -456,7 +456,7 @@ def _prune_frontend_unused_fields(market_data: dict) -> None:
             market_data["plateRotateDetailByCode"] = compact
     except Exception:
         pass
-    for key in ("raw", "compat", "v2", "v3", "dragon", "height_module", "sector"):
+    for key in ("raw", "compat", "v2", "v3", "dragon", "height_module", "sector", "features"):
         market_data.pop(key, None)
     meta = market_data.get("meta") if isinstance(market_data.get("meta"), dict) else {}
     if isinstance(meta, dict):

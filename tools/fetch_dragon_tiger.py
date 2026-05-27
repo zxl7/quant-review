@@ -6,7 +6,7 @@
 
 输出 schema（与前端 DragonTigerPayload 对齐）：
     {date, updatedAt, dateOptions, rows}
-每个 row 包含：yzmc, yyb, sblx, gpdm, gpmc, sc, mrje, mcje, rq
+其中每个 row 包含：yzmc, yyb, sblx, gpdm, gpmc, sc, mrje, mcje, rq
 """
 
 import argparse
