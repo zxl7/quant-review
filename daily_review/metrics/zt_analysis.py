@@ -184,9 +184,9 @@ def _tag_tone_class(tag: Dict[str, str]) -> str:
     if re.fullmatch(r"\d+(?:\.\d+)?板", text):
         board = _to_num(text, 0)
         return "ladder-chip-warn orange-text" if board >= 5 else "ladder-chip-cool muted-text"
-    if text in {"主线", "极强主线", "强主线", "前龙头", "核心梯队", "带动", "封单充足", "加速确认", "晋级生态强", "高度修复", "突破新高"} or text.startswith("带动"):
+    if text in {"主线", "极强主线", "强主线", "前龙头", "核心梯队", "带动", "封单充足", "加速确认", "晋级生态强", "高度修复", "突破新高", "双源确认", "题材共振", "异动确认"} or text.startswith("带动"):
         return "ladder-chip-strong red-text"
-    if text in {"中等主线", "断板风险高", "高度压制", "晋级生态弱", "题材转弱", "高换手承接", "分歧烂板", "反复回封", "一字板", "缩量封板", "无梯队", "题材待确认"} or text.startswith("跟风"):
+    if text in {"中等主线", "断板风险高", "高度压制", "晋级生态弱", "题材转弱", "高换手承接", "分歧烂板", "反复回封", "一字板", "缩量封板", "无梯队", "题材待确认", "容量核"} or text.startswith("跟风"):
         return "ladder-chip-warn orange-text"
     if re.fullmatch(r"\d+(?:\.\d+)?次开板", text):
         return "ladder-chip-warn orange-text"
