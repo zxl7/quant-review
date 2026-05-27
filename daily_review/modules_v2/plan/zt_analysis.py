@@ -28,6 +28,7 @@ ZT_ANALYSIS_MODULE = Module(
         "marketData.volume",
         "marketData.fear",
         "features.mood_inputs",
+        "raw.quotes",
     ],
     provides=["marketData.ztAnalysis"],
     compute=_compute,

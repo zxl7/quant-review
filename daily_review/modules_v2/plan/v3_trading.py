@@ -151,6 +151,7 @@ V3_TRADING_MODULE = Module(
         "marketData.v3.sentiment",
         "marketData.moodStage",
         "marketData.mood",
+        "raw.quotes",
     ],
     provides=["marketData.v3.tradingNature"],
     compute=_compute,

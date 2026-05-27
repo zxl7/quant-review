@@ -1084,6 +1084,15 @@ def build_zt_analysis(*, market_data: Dict[str, Any]) -> Dict[str, Any]:
         theme_support_ok = bool(has_trade_theme and (theme_net >= 8 or plate_is_strong) and (has_follow or has_tier or is_plate_leader))
         leader_uniqueness_ok = bool(unique_market_leader or (is_theme_leader and leader_bonus >= 10))
         
+        # 初始化关键评分变量，防止 UnboundLocalError
+        sector_trend_score = 50.0
+        sector_panel_score = 50.0
+        sector_sentiment_score = 50.0
+        theme_quality_bonus = 0.0
+        leader_philosophy_score = 50.0
+        super_leader_candidate = False
+        height_breakout_bonus = 0.0
+
         sector_trend_score = _clamp(
             theme_persist_score * 0.34
             + sector_rank_context_score * 0.24
@@ -1118,8 +1127,6 @@ def build_zt_analysis(*, market_data: Dict[str, Any]) -> Dict[str, Any]:
             sector_sentiment_score = _clamp(sector_panel_score * 0.84 + sector_trend_score * 0.16)
 
         # 题材评分加成逻辑
-        # 结合 SectorResolver 中的评分数据 (theme_env_score, sector_sentiment_score)
-        theme_quality_bonus = 0.0
         if has_trade_theme:
             # 1. 题材环境加成 (0-8分)
             theme_quality_bonus += max(0.0, theme_env_score - 50.0) * 0.15
