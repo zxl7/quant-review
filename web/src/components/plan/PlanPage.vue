@@ -615,11 +615,8 @@ const sectorPicksMeta = computed(() => {
                   · 主线 <strong>{{ mainLineOf(row.code)?.main_line }}</strong>
                 </span>
               </div>
-              <div class="zt-enrich-row" v-if="row.emThemes?.length || row.capacityCore || row.crossSourceBoost">
-                <span class="zt-enrich-chip" v-if="row.emThemes?.length" title="东方财富题材确认">东财: {{ row.emThemes.join(' · ') }}</span>
-                <span class="zt-enrich-chip" v-if="row.xgbEvents?.length" title="选股宝异动确认">选股宝异动</span>
-                <span class="zt-enrich-chip enrich-cap" v-if="row.capacityLabel && row.capacityLabel !== '小盘'">{{ row.capacityLabel }}</span>
-                <span class="zt-enrich-chip enrich-boost" v-if="row.crossSourceBoost">+{{ row.crossSourceBoost }}</span>
+              <div class="zt-enrich-row" v-if="row.capacityLabel && row.capacityLabel !== '小盘'">
+                <span class="zt-enrich-chip enrich-cap">{{ row.capacityLabel }}</span>
               </div>
               <div class="zt-tags">
                 <div class="zt-tag-row" v-for="tagRow in ztTagRows(row)" :key="'relay-tag-row-'+i+'-'+tagRow.tone" :class="'zt-tag-row-' + tagRow.tone">
@@ -655,11 +652,8 @@ const sectorPicksMeta = computed(() => {
                   · 主线 <strong>{{ mainLineOf(row.code)?.main_line }}</strong>
                 </span>
               </div>
-              <div class="zt-enrich-row" v-if="row.emThemes?.length || row.capacityCore || row.crossSourceBoost">
-                <span class="zt-enrich-chip" v-if="row.emThemes?.length" title="东方财富题材确认">东财: {{ row.emThemes.join(' · ') }}</span>
-                <span class="zt-enrich-chip" v-if="row.xgbEvents?.length" title="选股宝异动确认">选股宝异动</span>
-                <span class="zt-enrich-chip enrich-cap" v-if="row.capacityLabel && row.capacityLabel !== '小盘'">{{ row.capacityLabel }}</span>
-                <span class="zt-enrich-chip enrich-boost" v-if="row.crossSourceBoost">+{{ row.crossSourceBoost }}</span>
+              <div class="zt-enrich-row" v-if="row.capacityLabel && row.capacityLabel !== '小盘'">
+                <span class="zt-enrich-chip enrich-cap">{{ row.capacityLabel }}</span>
               </div>
               <div class="zt-tags">
                 <div class="zt-tag-row" v-for="tagRow in ztTagRows(row)" :key="'watch-tag-row-'+i+'-'+tagRow.tone" :class="'zt-tag-row-' + tagRow.tone">
