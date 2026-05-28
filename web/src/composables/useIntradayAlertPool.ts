@@ -302,7 +302,7 @@ export function useIntradayAlertPool() {
   };
 
   const detectResonance = (allCurrentItems: IntradayAlertItem[]) => {
-    const sectorHits = new Map<string, { count: number; symbols: Set<string>; lastTs: number }>();
+    const sectorHits = new Map<string, { count: number; stockBriefs: Map<string, { name: string; pct: string }>; lastTs: number }>();
     const now = Math.floor(Date.now() / 1000);
 
     // 共振检测基于全局已积累的全部 items（而不仅是本轮新数据），避免漏判
@@ -314,10 +314,16 @@ export function useIntradayAlertPool() {
 
       const sectors = item.isPlate ? [item.title] : item.relatedNames;
       sectors.forEach(s => {
-        if (!sectorHits.has(s)) sectorHits.set(s, { count: 0, symbols: new Set(), lastTs: 0 });
+        if (!sectorHits.has(s)) sectorHits.set(s, { count: 0, stockBriefs: new Map(), lastTs: 0 });
         const hit = sectorHits.get(s)!;
         hit.count += 1;
-        if (item.primarySymbol) hit.symbols.add(item.primarySymbol);
+        // 收集个股异动摘要（去重，同一只只保留最新）
+        if (!item.isPlate && item.primarySymbol) {
+          const existing = hit.stockBriefs.get(item.primarySymbol);
+          if (!existing || item.eventTimestamp > (existing as any)._ts) {
+            hit.stockBriefs.set(item.primarySymbol, { name: item.title, pct: item.valueText, _ts: item.eventTimestamp } as any);
+          }
+        }
         hit.lastTs = Math.max(hit.lastTs, item.eventTimestamp);
       });
     });
@@ -333,12 +339,21 @@ export function useIntradayAlertPool() {
         const pcp = plateItem?.pcp;
         const meta = eventMeta(99999, pcp);
 
+        // 拼接异动个股摘要：名称 +涨跌幅，最多5只
+        const stockParts = [...hit.stockBriefs.values()]
+          .sort((a, b) => (b as any)._ts - (a as any)._ts)
+          .slice(0, 5)
+          .map(s => `${s.name}${s.pct ? ' ' + s.pct : ''}`);
+        const subtitle = stockParts.length
+          ? stockParts.join(' / ')
+          : `${hit.count} 只异动联动`;
+
         const resItem: IntradayAlertItem = {
           id: `resonance-${hit.lastTs}-${sector}`,
           bucketKey: key,
           isPlate: true,
           title: `🔥 板块共振：${sector}`,
-          subtitle: `${hit.count} 只异动联动`,
+          subtitle,
           eventType: 99999,
           eventTypeLabel: meta.label,
           tone: meta.tone,
