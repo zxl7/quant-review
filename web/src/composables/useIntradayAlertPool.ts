@@ -244,6 +244,43 @@ export function useIntradayAlertPool() {
 
   items.value.forEach(item => poolByBucket.set(item.bucketKey, item));
 
+  // 注入历史共振数据（来自 Python 后端产出的 JSON），作为 localStorage 兜底
+  try {
+    const injResonance = (window as any).__INTRADAY_RESONANCE__;
+    if (Array.isArray(injResonance) && injResonance.length) {
+      for (const r of injResonance) {
+        const bucket = Math.floor((r.eventTimestamp || 0) / ALERT_DEDUPE_BUCKET_SEC);
+        const key = `resonance:${r.sector || ''}:${Math.floor((r.eventTimestamp || 0) / 300)}`;
+        if (poolByBucket.has(key) || rawSeenKeys.has(r.id)) continue;
+        rawSeenKeys.add(r.id);
+        const item: IntradayAlertItem = {
+          id: r.id || `resonance-injected-${r.eventTimestamp}`,
+          bucketKey: key,
+          isPlate: true,
+          title: r.title || '',
+          subtitle: r.subtitle || '',
+          eventType: 99999,
+          eventTypeLabel: r.eventTypeLabel || '共振爆发',
+          tone: (['red', 'green', 'blue'].includes(r.tone) ? r.tone : 'blue') as AlertTone,
+          priorityLevel: 'high',
+          priorityLabel: '共振',
+          valueText: r.valueText || '',
+          momentText: '',
+          time: r.time || formatTime(r.eventTimestamp),
+          eventTimestamp: r.eventTimestamp || 0,
+          primarySymbol: '',
+          relatedNames: r.sector ? [r.sector] : [],
+          unread: false,
+          pcp: 0,
+          mtm: 0,
+        };
+        poolByBucket.set(key, item);
+        items.value = [...items.value, item].slice(0, ALERT_KEEP_COUNT);
+      }
+    }
+  } catch { /* 注入数据不可用时静默跳过 */ }
+
+
   const trimSeenQueue = () => {
     while (rawSeenQueue.length > ALERT_RAW_SEEN_LIMIT) {
       const key = rawSeenQueue.shift();

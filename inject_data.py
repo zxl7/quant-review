@@ -42,6 +42,16 @@ def _resolve_eastmoney_tomorrow_path() -> Path:
     return fallback
 
 
+def _resolve_intraday_resonance_path(date8: str) -> Path:
+    """盘中共振数据，从 cache_online 读取（由 cli intraday 模式产出）"""
+    path = ROOT / "cache_online" / f"intraday_resonance-{date8}.json"
+    if path.exists():
+        return path
+    # 兜底：web/public 下的 dev 文件
+    fallback = ROOT / "web" / "public" / "intraday_resonance.json"
+    return fallback
+
+
 def _resolve_watchlist_path(date8: str) -> Path:
     """
     watchlist_cache 由 tools/fetch_watchlist.py 产出，保存在 cache_online/。
@@ -230,6 +240,12 @@ def inject(date8: str, source: Optional[str] = None) -> Path:
     if em_path.exists():
         em_payload = em_path.read_text(encoding="utf-8")
 
+    # 盘中共振事件数据
+    res_path = _resolve_intraday_resonance_path(date8)
+    resonance_payload = "[]"
+    if res_path.exists():
+        resonance_payload = res_path.read_text(encoding="utf-8")
+
     # 读取 Vite 构建产物
     built = ROOT / "web" / "dist" / "index.html"
     if not built.exists():
@@ -238,7 +254,7 @@ def inject(date8: str, source: Optional[str] = None) -> Path:
     html = built.read_text(encoding="utf-8")
 
     # 注入 window.__MARKET_DATA__ 到 </head> 前
-    data_script = f"<script>window.__MARKET_DATA__={payload};window.__DRAGON_TIGER_DATA__={dragon_payload};window.__TOMORROW_PICKS__={tp_payload};window.__EASTMONEY_TOMORROW_DATA__={em_payload};</script>"
+    data_script = f"<script>window.__MARKET_DATA__={payload};window.__DRAGON_TIGER_DATA__={dragon_payload};window.__TOMORROW_PICKS__={tp_payload};window.__EASTMONEY_TOMORROW_DATA__={em_payload};window.__INTRADAY_RESONANCE__={resonance_payload};</script>"
     if "</head>" in html:
         html = html.replace("</head>", f"{data_script}\n  </head>")
     else:
@@ -264,6 +280,8 @@ def inject(date8: str, source: Optional[str] = None) -> Path:
         (dist_dir / "tomorrow_picks.json").write_text(tp_payload, encoding="utf-8")
     if em_payload != "{}":
         (dist_dir / "eastmoney_tomorrow.json").write_text(em_payload, encoding="utf-8")
+    if resonance_payload != "[]":
+        (dist_dir / "intraday_resonance.json").write_text(resonance_payload, encoding="utf-8")
 
     return out_path
 
@@ -298,6 +316,12 @@ def refresh_dev_data(date8: str, source: Optional[str] = None) -> None:
     dev_script.write_text(f"window.__MARKET_DATA__={payload};", encoding="utf-8")
     dev_dragon_file.write_text(dragon_payload, encoding="utf-8")
     dev_dragon_script.write_text(f"window.__DRAGON_TIGER_DATA__={dragon_payload};", encoding="utf-8")
+    # 同步盘中共振数据
+    res_file = _resolve_intraday_resonance_path(date8)
+    if res_file.exists():
+        import shutil
+        shutil.copy2(res_file, ROOT / "web" / "public" / "intraday_resonance.json")
+        print(f"  盘中共振 dev 数据已同步")
     print(f"  dev 数据已刷新: {dev_file}")
     print(f"  dev 脚本已刷新: {dev_script}")
     print(f"  龙虎榜 dev 数据已刷新: {dev_dragon_file}")

@@ -327,6 +327,19 @@ jobs:
             ./qr.sh fetch "${run_date}"
           fi
           expected_d8="$(echo "${run_date}" | tr -d '-')"
+          # 盘中共振事件检测（从 xuangubao 缓存生成）
+          PYTHONPATH=. python3 -u -c "
+from pathlib import Path
+from daily_review.metrics.intraday_resonance import detect_resonance_from_cache, save_resonance_cache
+root = Path('.')
+d8 = '${expected_d8}'
+results = detect_resonance_from_cache(root, d8)
+if results:
+    p = save_resonance_cache(root, d8, results)
+    print(f'Resonance saved: {p} ({len(results)} events)')
+else:
+    print('No resonance events detected')
+"
           expected_cache="cache/market_data-${expected_d8}.json"
           if [ "${mode}" = "intraday" ]; then
             expected_cache="cache/market_data-${expected_d8}-intraday.json"
@@ -426,6 +439,7 @@ jobs:
           cp -f ./web/public/tomorrow_picks.json ./site/ 2>/dev/null || true
           cp -f ./web/public/tomorrow_picks.js ./site/ 2>/dev/null || true
           cp -f ./web/public/eastmoney_tomorrow.json ./site/ 2>/dev/null || true
+          cp -f ./cache_online/intraday_resonance-*.json ./site/ 2>/dev/null || true
           touch ./site/.nojekyll
           echo "site=index.html from: ${report_html}"
 
@@ -474,6 +488,7 @@ jobs:
 
           cp -f ./html/latest_intraday.json site_prev/ 2>/dev/null || true
           cp -f ./html/latest_intraday_slices.json site_prev/ 2>/dev/null || true
+          cp -f ./cache_online/intraday_resonance-*.json site_prev/ 2>/dev/null || true
 
           if git -C site_prev diff --quiet; then
             echo "No changes to commit."
