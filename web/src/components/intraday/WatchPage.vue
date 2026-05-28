@@ -282,12 +282,15 @@ const watchResonanceMarkers = computed(() => {
   const snaps = watchSnapshots.value
   if (!snaps.length) return []
 
+  const pts = watchScorePoints.value
+  if (!pts.length) return []
+
   return resEvents
     .map((event: any) => {
-      // 找到最接近的时间点
       const [h, m] = event.time.split(":").map(Number)
       const eventMin = h * 60 + m
 
+      // 直接在压缩点集上找时间最近的快照（而非通过原始 index 匹配）
       let bestIdx = -1
       let minDiff = 99999
 
@@ -296,7 +299,6 @@ const watchResonanceMarkers = computed(() => {
         const sMin = sh * 60 + sm
         const diff = Math.abs(sMin - eventMin)
         if (diff < minDiff && diff < 10) {
-          // 10分钟误差内
           minDiff = diff
           bestIdx = idx
         }
@@ -304,9 +306,13 @@ const watchResonanceMarkers = computed(() => {
 
       if (bestIdx === -1) return null
 
-      const pts = watchScorePoints.value
-      const pt = pts.find((p) => p.index === bestIdx)
-      return pt ? { ...pt, label: event.title.replace("🔥 板块共振：", "") } : null
+      // 找压缩点集中 index 最接近 bestIdx 的点（允许 index <= bestIdx）
+      let closestPt = pts[0]
+      for (const p of pts) {
+        if (p.index <= bestIdx) closestPt = p
+        else break
+      }
+      return { ...closestPt, label: event.title.replace("🔥 板块共振：", "") }
     })
     .filter(Boolean)
 })
@@ -362,6 +368,7 @@ const muteIntradayAlert = () => {
 
 const handleResonanceToastClick = (item: any) => {
   intradayAlertPool.dismissResonanceToast(item.id)
+  historyFilter.value = "resonance"
   intradayAlertPool.toggleHistory()
 }
 
@@ -434,7 +441,7 @@ onBeforeUnmount(() => {
                   <button class="milestone-history-btn" type="button" @click="intradayAlertPool.toggleHistory()">全天回顾</button>
                 </div>
                 <div class="milestone-list">
-                  <div v-for="item in (intradayAlertPool as any).items?.value?.slice(0, 15)" :key="item.id" class="milestone-item" :class="item.priorityLevel">
+                  <div v-for="item in [...((intradayAlertPool as any).items?.value || [])].reverse().slice(0, 15)" :key="item.id" class="milestone-item" :class="item.priorityLevel">
                     <span class="m-time">{{ item.time }}</span>
                     <span class="m-label" :class="item.tone">{{ item.eventTypeLabel }}</span>
                     <span class="m-text" :class="item.tone">{{ item.title }}</span>

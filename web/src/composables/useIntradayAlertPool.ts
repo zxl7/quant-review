@@ -78,7 +78,7 @@ const eventMetaMap: Record<number, { label: string; tone: AlertTone }> = {
   10010: { label: '快速跳水', tone: 'green' },
   11000: { label: '板块拉升', tone: 'red' },
   11001: { label: '板块跳水', tone: 'green' },
-  99999: { label: '共振爆发', tone: 'red' },
+  99999: { label: '共振爆发', tone: 'blue' },
 };
 
 const eventMeta = (eventType: number, pcp?: number): { label: string; tone: AlertTone } => {
@@ -181,8 +181,8 @@ const parseAlertItem = (event: any): IntradayAlertItem | null => {
       primarySymbol,
       relatedNames,
       unread: true,
-      pcp: plate.pcp,
-      mtm: plate.mtm,
+      pcp: plate.pcp ?? 0,
+      mtm: plate.mtm ?? 0,
     };
   }
 
@@ -212,8 +212,8 @@ const parseAlertItem = (event: any): IntradayAlertItem | null => {
     primarySymbol,
     relatedNames,
     unread: true,
-    pcp: stock.pcp,
-    mtm: stock.mtm,
+      pcp: stock.pcp ?? 0,
+      mtm: stock.mtm ?? 0,
   };
 };
 
@@ -368,7 +368,7 @@ export function useIntradayAlertPool() {
           primarySymbol: '',
           relatedNames: [sector],
           unread: true,
-          pcp,
+          pcp: pcp ?? 0,
           mtm: 0,
         };
         newResonanceItems.push(resItem);
@@ -388,7 +388,6 @@ export function useIntradayAlertPool() {
       existing.tone = item.tone;
       existing.subtitle = item.subtitle;
       existing.relatedNames = item.relatedNames;
-      existing.unread = item.unread;
       return false;
     }
     poolByBucket.set(item.bucketKey, item);
@@ -398,7 +397,7 @@ export function useIntradayAlertPool() {
     return true;
   };
 
-  const refresh = async (forceReset?: boolean) => {
+  const refresh = async () => {
     if (inFlight) return;
     inFlight = true;
     loading.value = true;
@@ -437,7 +436,7 @@ export function useIntradayAlertPool() {
 
   const start = () => {
     stop();
-    void refresh(true);
+    void refresh();
     timer = window.setInterval(() => {
       void refresh();
     }, ALERT_POLL_MS);
