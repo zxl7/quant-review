@@ -89,10 +89,12 @@ const eventMeta = (eventType: number, pcp?: number): { label: string; tone: Aler
   const isUp = pcp >= 0;
   const tone: AlertTone = eventType === 10003 || eventType === 10004 ? 'blue' : isUp ? 'red' : 'green';
 
-  if (pcp >= 0.095 && eventType !== 10003 && eventType !== 10004) {
+  // 封板阈值仅对个股有效，板块/共振没有涨跌停概念
+  const isStockType = eventType < 11000 && eventType !== 99999;
+  if (pcp >= 0.095 && isStockType && eventType !== 10003 && eventType !== 10004) {
     return { label: '封板涨停', tone };
   }
-  if (pcp <= -0.095 && eventType !== 10003 && eventType !== 10004) {
+  if (pcp <= -0.095 && isStockType && eventType !== 10003 && eventType !== 10004) {
     return { label: '封板跌停', tone };
   }
   if (isUp) {
