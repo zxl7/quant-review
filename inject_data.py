@@ -320,8 +320,10 @@ def refresh_dev_data(date8: str, source: Optional[str] = None) -> None:
     res_file = _resolve_intraday_resonance_path(date8)
     if res_file.exists():
         import shutil
-        shutil.copy2(res_file, ROOT / "web" / "public" / "intraday_resonance.json")
-        print(f"  盘中共振 dev 数据已同步")
+        target_res_file = ROOT / "web" / "public" / "intraday_resonance.json"
+        if res_file.resolve() != target_res_file.resolve():
+            shutil.copy2(res_file, target_res_file)
+            print(f"  盘中共振 dev 数据已同步")
     print(f"  dev 数据已刷新: {dev_file}")
     print(f"  dev 脚本已刷新: {dev_script}")
     print(f"  龙虎榜 dev 数据已刷新: {dev_dragon_file}")

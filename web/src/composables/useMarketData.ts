@@ -2,6 +2,9 @@ import { computed, ref } from 'vue';
 
 type MarketData = Record<string, any>;
 
+type MarketTone = 'good' | 'warn' | 'fire';
+type MarketThemeTone = 'bull' | 'mixed' | 'bear';
+
 function _setDocTitle(data: MarketData) {
   const d = data?.date || '';
   document.title = d ? `${d} A股简报` : 'A股简报';
@@ -9,6 +12,25 @@ function _setDocTitle(data: MarketData) {
 
 const marketDataState = ref<MarketData>({});
 const marketDataReady = ref(false);
+
+function toMoodScore(data: MarketData): number {
+  const score = Number(data?.mood?.score ?? 0);
+  return Number.isFinite(score) ? score : 0;
+}
+
+export function resolveMarketToneByScore(data: MarketData): MarketTone {
+  const score = toMoodScore(data);
+  if (score >= 68) return 'good';
+  if (score <= 45) return 'fire';
+  return 'warn';
+}
+
+export function resolveMarketThemeToneByScore(data: MarketData): MarketThemeTone {
+  const tone = resolveMarketToneByScore(data);
+  if (tone === 'good') return 'bull';
+  if (tone === 'fire') return 'bear';
+  return 'mixed';
+}
 
 async function tryLoadMarketDataScript(src: string) {
   return await new Promise<boolean>((resolve) => {
@@ -90,15 +112,7 @@ export async function initMarketData() {
 
 export function useMarketData() {
   const marketData = computed(() => marketDataState.value || {});
-  const marketToneClass = computed(() => {
-    const mood = marketData.value?.mood || {};
-    const heat = Number(mood?.heat ?? 0);
-    const risk = Number(mood?.risk ?? 0);
-    const score = Number(mood?.score ?? 0);
-    if (risk >= 55 || score <= 45) return 'fire';
-    if (score >= 68 && heat >= 60 && risk <= 35) return 'good';
-    return 'warn';
-  });
+  const marketToneClass = computed(() => resolveMarketToneByScore(marketData.value));
 
   return {
     marketData,

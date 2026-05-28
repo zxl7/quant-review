@@ -12,7 +12,7 @@ import FlashPage from "./components/intraday/FlashPage.vue"
 import DragonTigerPage from "./components/dragon-tiger/DragonTigerPage.vue"
 import HotAnswerPage from "./components/hot-answer/HotAnswerPage.vue"
 import TomorrowPicksPage from "./components/tomorrow/TomorrowPicksPage.vue"
-import { useMarketData } from "./composables/useMarketData"
+import { resolveMarketThemeToneByScore, useMarketData } from "./composables/useMarketData"
 import { useThemeHotStore } from "./composables/useThemeHotStore"
 
 const { marketData, marketToneClass } = useMarketData()
@@ -31,15 +31,7 @@ const isTradingSessionNow = () => {
 }
 
 const marketThemeTone = computed(() => {
-  const mood = marketData.value?.mood || {}
-  const pan = marketData.value?.panorama || {}
-  const score = Number(mood?.score ?? 0)
-  const heat = Number(mood?.heat ?? 0)
-  const risk = Number(mood?.risk ?? 0)
-  const dt = Number(pan?.limitDown ?? 0)
-  if (risk >= 55 || dt >= 8 || score <= 45) return "bear"
-  if (score >= 68 && heat >= 60 && risk <= 35) return "bull"
-  return "mixed"
+  return resolveMarketThemeToneByScore(marketData.value)
 })
 
 const defaultMode = isTradingSessionNow() || marketData.value?.meta?.mode === "intraday" ? "intraday" : "review"

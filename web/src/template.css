@@ -4213,6 +4213,7 @@
       .wb-sidebar-list {
         display: grid;
         gap: 6px;
+        height: 300px;
       }
       .wb-sidebar-item {
         appearance: none;
@@ -5194,6 +5195,11 @@
         color: #fff;
         font-weight: 900;
         white-space: nowrap;
+      }
+      .m-label.blue {
+        border-color: rgba(59, 130, 246, 0.22);
+        background: rgba(59, 130, 246, 0.08);
+        color: #1e3a8a;
       }
       .m-label.red { background: #e60012; }
       .m-label.green { background: #00a63e; }
@@ -8312,7 +8318,8 @@
       .advisor-row-top {
         display: flex;
         align-items: center;
-        gap: 6px;
+        justify-content: space-between;
+        gap: 8px;
         margin-bottom: 4px;
       }
       .advisor-name {
@@ -8320,9 +8327,16 @@
         font-weight: 850;
         color: var(--text-primary);
         text-decoration: none;
+        min-width: 0;
       }
       .advisor-name:hover {
         color: var(--primary);
+      }
+      .advisor-meta-row {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        flex: 0 0 auto;
       }
       .advisor-score, .advisor-relay-power {
         font-size: 11px;
@@ -8337,18 +8351,6 @@
       .advisor-score.score-mid, .advisor-relay-power.score-mid { color: var(--warning); border-color: rgba(245, 158, 11, 0.3); }
       .advisor-score.score-weak, .advisor-relay-power.score-weak { color: var(--text-muted); }
 
-      .advisor-echelon-info {
-        margin: 4px 0;
-      }
-      .echelon-tag {
-        font-size: 10px;
-        font-weight: 850;
-        color: var(--primary);
-        background: var(--theme-soft);
-        padding: 1px 6px;
-        border-radius: 4px;
-      }
-
       .advisor-tier, .advisor-watch-lbc {
         font-size: 11px;
         font-weight: 700;
@@ -8362,32 +8364,34 @@
       .advisor-reasons {
         display: flex;
         flex-wrap: wrap;
-        gap: 4px 8px;
+        gap: 4px 10px;
         font-size: 11.5px;
         color: var(--text-muted);
       }
       .advisor-reason {
         color: #f97316;
         font-weight: 700;
+        white-space: nowrap;
       }
       [data-theme="dark"] .advisor-reason {
         color: #fb923c;
       }
       .advisor-cautions {
-        margin-top: 3px;
+        margin-top: 2px;
         display: flex;
         flex-wrap: wrap;
         gap: 4px 8px;
-        font-size: 11px;
+        font-size: 10.5px;
       }
       .advisor-caution {
         color: var(--warning);
         font-weight: 650;
+        white-space: nowrap;
       }
 
       .advisor-watch-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(135px, 1fr));
+        grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
         gap: 6px;
       }
       .advisor-watch-item {
@@ -8400,6 +8404,7 @@
         border-radius: 6px;
         text-decoration: none;
         font-size: 12px;
+        min-width: 0;
       }
       .advisor-watch-item:hover {
         background: var(--bg-elevated);
@@ -8407,11 +8412,16 @@
       .advisor-watch-item .advisor-name {
         font-size: 12px;
         font-weight: 800;
+        min-width: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
       }
       .advisor-watch-score {
         font-size: 11px;
         font-weight: 800;
         margin-left: auto;
+        flex: 0 0 auto;
       }
       .advisor-watch-score.score-strong { color: var(--danger); }
       .advisor-watch-score.score-mid { color: var(--warning); }
@@ -8427,6 +8437,17 @@
         line-height: 1.5;
         color: var(--text-muted);
         font-weight: 650;
+      }
+      @media (max-width: 640px) {
+        .advisor-row-top {
+          align-items: flex-start;
+        }
+        .advisor-meta-row {
+          gap: 4px;
+        }
+        .advisor-watch-grid {
+          grid-template-columns: 1fr;
+        }
       }
       /* ============= /算法建议 ============= */
 
@@ -8465,17 +8486,34 @@
       .stp-head {
         display: flex;
         justify-content: space-between;
-        align-items: center;
+        align-items: flex-start;
         gap: 6px;
       }
       .stp-name {
         display: flex;
         align-items: center;
+        flex-wrap: wrap;
         gap: 6px;
         font-size: 14px;
         font-weight: 900;
         color: var(--text-primary);
         line-height: 1.2;
+      }
+      .stp-theme-score,
+      .stp-stock-score,
+      .stp-inline-score {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 18px;
+        padding: 0 5px;
+        border-radius: 4px;
+        border: 1px solid var(--border);
+        background: var(--bg-card);
+        font-size: 10px;
+        font-weight: 900;
+        line-height: 1;
+        white-space: nowrap;
       }
       .stp-resonance-badge {
         font-size: 10px;
@@ -8530,6 +8568,48 @@
       .stp-source-pill.src-local {
         background: rgba(148, 163, 184, 0.1);
         color: var(--text-muted);
+      }
+      .stp-tag-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 5px;
+        margin-top: -2px;
+      }
+      .stp-chip {
+        display: inline-flex;
+        align-items: center;
+        min-height: 18px;
+        padding: 0 6px;
+        border-radius: 999px;
+        font-size: 10px;
+        font-weight: 850;
+        border: 1px solid rgba(148, 163, 184, 0.18);
+        background: rgba(255, 255, 255, 0.72);
+        color: var(--text-secondary);
+        white-space: nowrap;
+      }
+      .stp-chip-red {
+        color: #e60012;
+        border-color: rgba(230, 0, 18, 0.18);
+        background: rgba(230, 0, 18, 0.08);
+      }
+      .stp-chip-amber {
+        color: #d97706;
+        border-color: rgba(217, 119, 6, 0.18);
+        background: rgba(245, 158, 11, 0.1);
+      }
+      .stp-chip-blue {
+        color: #2563eb;
+        border-color: rgba(37, 99, 235, 0.18);
+        background: rgba(37, 99, 235, 0.08);
+      }
+      .stp-chip-hot {
+        color: #be123c;
+        border-color: rgba(190, 18, 60, 0.18);
+        background: rgba(244, 63, 94, 0.08);
+      }
+      .stp-chip-slate {
+        color: #475569;
       }
 
       .stp-meta {
@@ -8617,6 +8697,7 @@
       .stp-high-row {
         display: flex;
         align-items: center;
+        flex-wrap: wrap;
         gap: 6px;
         padding: 4px 8px;
         background: color-mix(in oklab, var(--danger) 4%, transparent);
@@ -8660,6 +8741,10 @@
         gap: 1px;
         font-size: 11.5px;
         line-height: 1.4;
+      }
+      .stp-inline-score {
+        margin-left: 4px;
+        vertical-align: 1px;
       }
       .stp-name-link {
         text-decoration: none;

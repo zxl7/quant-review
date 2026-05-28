@@ -6,7 +6,7 @@ import ShortReminderFooter from '../common/ShortReminderFooter.vue';
 import { normalizeThemeName } from '../../utils/themeUtils';
 
 const { marketData } = useMarketData();
-const { xgbUpdatedAt, tmrUpdatedAt, xgbPlates, tmrThemes } = useThemeHotStore();
+const { xgbUpdatedAt, tmrUpdatedAt, xgbPlates, tmrThemes, xgbStocksByPlateId } = useThemeHotStore();
 
 const xqUrl = (code?: string | null) => {
   const raw = String(code || '').trim();
@@ -100,6 +100,36 @@ const positionAdvice = computed(() => {
 
 const ztRelaySorted = computed(() => (marketData.value?.ztAnalysis?.relay || []).slice());
 const ztWatchSorted = computed(() => (marketData.value?.ztAnalysis?.watch || []).slice());
+const ztAnalysisExpanded = ref(false);
+const ztDebugExpanded = ref(false);
+const ztDebugPlacement = ref<'all' | 'relay' | 'watch' | 'excluded'>('all');
+const isLocalDebug = computed(() => {
+  if (typeof window === 'undefined') return false;
+  return ['localhost', '127.0.0.1'].includes(window.location.hostname) || window.location.protocol === 'file:';
+});
+const ztDebugRows = computed(() => Array.isArray(marketData.value?.ztAnalysis?.meta?.debug?.rows) ? marketData.value.ztAnalysis.meta.debug.rows : []);
+const ztDebugFiltered = computed(() => {
+  if (ztDebugPlacement.value === 'all') return ztDebugRows.value;
+  return ztDebugRows.value.filter((row: any) => String(row?.placement || '') === ztDebugPlacement.value);
+});
+const ztDebugSummary = computed(() => {
+  const rows = ztDebugRows.value;
+  return {
+    relay: rows.filter((x: any) => x?.placement === 'relay').length,
+    watch: rows.filter((x: any) => x?.placement === 'watch').length,
+    excluded: rows.filter((x: any) => x?.placement === 'excluded').length,
+  };
+});
+const ztDebugScoreClass = (score: number) => {
+  if (score >= 80) return 'score-strong';
+  if (score >= 65) return 'score-mid';
+  return 'score-weak';
+};
+const ztDebugPlacementClass = (placement: string) => {
+  if (placement === 'relay') return 'debug-place-relay';
+  if (placement === 'watch') return 'debug-place-watch';
+  return 'debug-place-excluded';
+};
 
 const ztTagRows = (row: any) => Array.isArray(row?.tagRows) ? row.tagRows : [];
 
@@ -110,17 +140,9 @@ type PickStock = {
   reasons: string[]; cautions: string[];
   lbc: number; cje_yi: number; seal_fund_yi: number; turnover: number;
   breakdown?: Record<string, number>; bonus?: number;
-  relayPower?: number; // 新增：接力动力分
-};
-
-const calculateRelayPower = (s: PickStock) => {
-  // 简化版接力动力计算：结合高度、成交额、和换手
-  let power = 50;
-  if (s.lbc >= 2) power += 15; // 连板溢价
-  if (s.turnover >= 5 && s.turnover <= 20) power += 15; // 健康换手
-  if (s.seal_fund_yi >= 1) power += 10; // 强封单
-  if (s.cje_yi >= 5 && s.cje_yi <= 30) power += 10; // 适中容量，接力首选
-  return Math.min(power, 100);
+  relay_power_score?: number;
+  style_tag?: string;
+  style_confidence?: number;
 };
 
 type MainLinePicks = {
@@ -135,15 +157,8 @@ const picksAdvisor = computed(() => {
   const picks = Array.isArray(pa.main_line_picks) ? pa.main_line_picks as MainLinePicks[] : [];
   if (!picks.length) return null;
 
-  // 为个股注入接力动力分
-  const enrichedPicks = picks.map(ml => ({
-    ...ml,
-    buy: (ml.buy || []).map(s => ({ ...s, relayPower: calculateRelayPower(s) })),
-    watch: (ml.watch || []).map(s => ({ ...s, relayPower: calculateRelayPower(s) })),
-  }));
-
   return {
-    main_line_picks: enrichedPicks,
+    main_line_picks: picks,
     diagnostics: pa.diagnostics || {},
     generated_at_bj: (marketData.value as any)?.watchlist?.generated_at_bj || '',
   };
@@ -160,6 +175,17 @@ const scoreClass = (s: number) => {
   if (s >= 50) return 'score-mid';
   return 'score-weak';
 };
+
+const pickPrimaryTag = (s: PickStock) => {
+  if (s.lbc >= 2) return `${s.lbc}板`;
+  if (s.style_tag) return s.style_tag;
+  if (s.lbc === 1) return '首板';
+  if (s.cje_yi >= 100) return '容量';
+  return '';
+};
+
+const pickReasonBrief = (s: PickStock) => Array.isArray(s.reasons) ? s.reasons.slice(0, 2) : [];
+const pickCautionBrief = (s: PickStock) => Array.isArray(s.cautions) ? s.cautions.slice(0, 1) : [];
 
 // watchlist 反向索引：code → { primary_sector, primary_confidence, main_line, main_line_confidence }
 // 数据来自 inject_data.py 的 _build_watchlist_stock_index（M3/M4 多源融合结果）。
@@ -185,6 +211,11 @@ type ZtStockPick = {
   cjeYi: number;
   zjYi: number;
   zbc: number;
+  source?: 'xgb' | 'local';
+  changePct?: number;
+  limitUpDays?: number;
+  score?: number;
+  tags?: Array<{ text: string; cls: string }>;
 };
 
 type SectorBucket = {
@@ -201,6 +232,8 @@ type SectorBucket = {
   plateLead?: string;
   matchedLocalThemes: string[];
   resonanceScore: number;
+  themeScore: number;
+  themeTags: Array<{ text: string; cls: string }>;
 };
 
 const plateStrengthByName = computed(() => {
@@ -267,6 +300,85 @@ const aggregateStocksForTheme = (hotName: string): { stocks: ZtStockPick[]; matc
   return { stocks, matched };
 };
 
+const scoreClassByValue = (s: number) => {
+  if (s >= 70) return 'score-strong';
+  if (s >= 50) return 'score-mid';
+  return 'score-weak';
+};
+
+const buildStockTags = (stock: ZtStockPick, plateName?: string): Array<{ text: string; cls: string }> => {
+  const tags: Array<{ text: string; cls: string }> = [];
+  if (stock.source === 'xgb') tags.push({ text: '实时', cls: 'stp-chip stp-chip-hot' });
+  if ((stock.limitUpDays || 0) >= 2 || stock.lbc >= 2) tags.push({ text: `${Math.max(stock.limitUpDays || 0, stock.lbc)}板`, cls: 'stp-chip stp-chip-red' });
+  else tags.push({ text: '首板', cls: 'stp-chip stp-chip-amber' });
+  if ((stock.changePct || 0) >= 8) tags.push({ text: `涨幅+${(stock.changePct || 0).toFixed(1)}%`, cls: 'stp-chip stp-chip-red' });
+  else if ((stock.changePct || 0) >= 3) tags.push({ text: `涨幅+${(stock.changePct || 0).toFixed(1)}%`, cls: 'stp-chip stp-chip-amber' });
+  if (stock.zjYi >= 1.5) tags.push({ text: `封${stock.zjYi.toFixed(1)}亿`, cls: 'stp-chip stp-chip-blue' });
+  else if (stock.cjeYi >= 20) tags.push({ text: `${stock.cjeYi.toFixed(0)}亿`, cls: 'stp-chip stp-chip-blue' });
+  if (plateName) tags.push({ text: plateName, cls: 'stp-chip stp-chip-slate' });
+  return tags.slice(0, 4);
+};
+
+const calculateStockScore = (stock: ZtStockPick, plateStrength = 0, isRealtimePlate = false) => {
+  let score = 24;
+  score += Math.min(stock.lbc * 15, 45);
+  score += Math.min(stock.zjYi * 6, 16);
+  score += Math.min(stock.cjeYi * 0.5, 12);
+  score += Math.min((stock.changePct || 0) * 1.4, 12);
+  score += Math.min(plateStrength / 5, 10);
+  if (isRealtimePlate) score += 6;
+  if (stock.source === 'xgb') score += 8;
+  if ((stock.limitUpDays || 0) >= 2) score += 6;
+  if (stock.zbc >= 3) score -= 8;
+  else if (stock.zbc >= 1) score -= 3;
+  return Math.max(0, Math.min(100, Math.round(score)));
+};
+
+const calculateThemeScore = (bucket: {
+  sources: string[];
+  stocks: ZtStockPick[];
+  plateStrength?: number;
+  resonanceScore: number;
+}) => {
+  let score = 22;
+  score += Math.min(bucket.resonanceScore * 0.42, 42);
+  score += Math.min((bucket.plateStrength || 0) / 4, 16);
+  score += Math.min(bucket.stocks.length * 4, 16);
+  score += Math.min((bucket.stocks[0]?.lbc || 0) * 6, 18);
+  if (bucket.sources.some((x) => x.includes('选股宝'))) score += 6;
+  if (bucket.sources.some((x) => x.includes('热门'))) score += 5;
+  return Math.max(0, Math.min(100, Math.round(score)));
+};
+
+const buildThemeTags = (theme: string, stocks: ZtStockPick[], sources: string[], plateStrength?: number) => {
+  const tags: Array<{ text: string; cls: string }> = [];
+  if (sources.some((x) => x.includes('选股宝'))) tags.push({ text: '实时热点', cls: 'stp-chip stp-chip-hot' });
+  if (sources.some((x) => x.includes('热门'))) tags.push({ text: '明日热门', cls: 'stp-chip stp-chip-red' });
+  if ((stocks[0]?.lbc || 0) >= 3) tags.push({ text: `${stocks[0].lbc}板龙头`, cls: 'stp-chip stp-chip-red' });
+  else if ((stocks[0]?.lbc || 0) === 2) tags.push({ text: '2板承接', cls: 'stp-chip stp-chip-amber' });
+  if ((plateStrength || 0) >= 70) tags.push({ text: '板块强', cls: 'stp-chip stp-chip-blue' });
+  else if ((plateStrength || 0) >= 45) tags.push({ text: '板块活跃', cls: 'stp-chip stp-chip-blue' });
+  if (stocks.length >= 4) tags.push({ text: `${stocks.length}股联动`, cls: 'stp-chip stp-chip-slate' });
+  return tags.slice(0, 4);
+};
+
+const getRealtimeStocksForPlate = (plateId: string, _plateName: string): ZtStockPick[] => {
+  const pid = String(plateId || '').trim();
+  const rows = pid ? (xgbStocksByPlateId.value?.[pid] || []) : [];
+  return rows.map((s: any): ZtStockPick => ({
+    code: String(s?.code || '').trim(),
+    name: String(s?.name || '').trim(),
+    lbc: Number(s?.limitUpDays || 0),
+    cjeYi: 0,
+    zjYi: 0,
+    zbc: 0,
+    source: 'xgb' as const,
+    changePct: Number(s?.changePct || 0),
+    limitUpDays: Number(s?.limitUpDays || 0),
+    tags: [],
+  })).filter((s: ZtStockPick) => s.code);
+};
+
 const calculateResonanceScore = (
   sources: string[],
   stocks: ZtStockPick[],
@@ -288,6 +400,7 @@ const calculateResonanceScore = (
 };
 
 const makeBucket = (
+  plateId: string,
   theme: string,
   source: 'realtime' | 'fallback',
   sources: string[],
@@ -295,24 +408,55 @@ const makeBucket = (
   stocks: ZtStockPick[],
   matched: string[],
 ): SectorBucket => {
-  const maxLbc = stocks[0]?.lbc || 0;
+  const realtimeStocks = source === 'realtime' ? getRealtimeStocksForPlate(plateId, theme) : [];
+  const mergedMap = new Map<string, ZtStockPick>();
+  [...realtimeStocks, ...stocks].forEach((s) => {
+    if (!s.code) return;
+    if (!mergedMap.has(s.code)) mergedMap.set(s.code, s);
+    else {
+      const prev = mergedMap.get(s.code)!;
+      mergedMap.set(s.code, {
+        ...prev,
+        ...s,
+        source: prev.source === 'xgb' || s.source === 'xgb' ? 'xgb' : (s.source || prev.source),
+        changePct: s.changePct ?? prev.changePct,
+        limitUpDays: s.limitUpDays ?? prev.limitUpDays,
+      });
+    }
+  });
+  const mergedStocks = Array.from(mergedMap.values());
+  const maxLbc = mergedStocks[0]?.lbc || 0;
   const plateInfo = plateStrengthByName.value.get(theme) || (matched.length ? plateStrengthByName.value.get(matched[0]) : undefined);
-  const resonanceScore = calculateResonanceScore(sources, stocks, plateInfo?.strength);
+  const resonanceScore = calculateResonanceScore(sources, mergedStocks, plateInfo?.strength);
+  const scoredStocks = mergedStocks
+    .map((stock) => {
+      const score = calculateStockScore(stock, plateInfo?.strength || 0, source === 'realtime');
+      return {
+        ...stock,
+        score,
+        tags: buildStockTags(stock, theme),
+      };
+    })
+    .sort((a, b) => (Number(b.score || 0) - Number(a.score || 0)) || (b.lbc - a.lbc) || ((b.changePct || 0) - (a.changePct || 0)) || (b.zjYi - a.zjYi) || (b.cjeYi - a.cjeYi));
+  const themeScore = calculateThemeScore({ sources, stocks: scoredStocks, plateStrength: plateInfo?.strength, resonanceScore });
+  const themeTags = buildThemeTags(theme, scoredStocks, sources, plateInfo?.strength);
   
   return {
     theme,
     source,
     sources,
     description,
-    count: stocks.length,
+    count: scoredStocks.length,
     maxLbc,
-    highTier: stocks.filter((s) => s.lbc >= 3).slice(0, 4),
-    midTier: stocks.filter((s) => s.lbc === 2).slice(0, 4),
-    baseTier: stocks.filter((s) => s.lbc <= 1).slice(0, 6),
+    highTier: scoredStocks.filter((s) => s.lbc >= 3).slice(0, 3),
+    midTier: scoredStocks.filter((s) => s.lbc === 2).slice(0, 3),
+    baseTier: scoredStocks.filter((s) => s.lbc <= 1).slice(0, 3),
     plateStrength: plateInfo?.strength,
     plateLead: plateInfo?.lead,
     matchedLocalThemes: matched,
     resonanceScore,
+    themeScore,
+    themeTags,
   };
 };
 
@@ -342,7 +486,7 @@ const sectorTierPicks = computed<SectorBucket[]>(() => {
     const name = String(p.name || '').trim();
     if (!name || realtimeBuckets.has(name)) return;
     const { stocks, matched } = aggregateStocksForTheme(name);
-    realtimeBuckets.set(name, makeBucket(name, 'realtime', ['选股宝热点'], p.description || '', stocks, matched));
+    realtimeBuckets.set(name, makeBucket(p.id, name, 'realtime', ['选股宝热点'], p.description || '', stocks, matched));
   });
   tmr.forEach((t) => {
     const name = String(t.themeName || '').trim();
@@ -358,7 +502,7 @@ const sectorTierPicks = computed<SectorBucket[]>(() => {
     // 只让明日热门进入(非热门跳过避免噪音)
     if (!t.isHot) return;
     const { stocks, matched } = aggregateStocksForTheme(name);
-    realtimeBuckets.set(name, makeBucket(name, 'realtime', ['明日热门'], t.summary || '', stocks, matched));
+    realtimeBuckets.set(name, makeBucket('', name, 'realtime', ['明日热门'], t.summary || '', stocks, matched));
   });
 
   let buckets = Array.from(realtimeBuckets.values());
@@ -377,7 +521,7 @@ const sectorTierPicks = computed<SectorBucket[]>(() => {
     const sortedThemes = Array.from(themeCount.entries()).sort((a, b) => b[1] - a[1]).map(([t]) => t).slice(0, 8);
     sortedThemes.forEach((t) => {
       const { stocks, matched } = aggregateStocksForTheme(t);
-      buckets.push(makeBucket(t, 'fallback', ['本地涨停归集'], '', stocks, matched));
+      buckets.push(makeBucket('', t, 'fallback', ['本地涨停归集'], '', stocks, matched));
     });
   } else {
     // 实时有数据,但有些 hot plate 在涨停池里完全没匹配到 → 仍然展示(空梯队),提示"narrative热但价格未跟"
@@ -498,39 +642,33 @@ const sectorPicksMeta = computed(() => {
           </div>
 
           <div class="advisor-section" v-if="ml.buy?.length">
-            <div class="advisor-label advisor-label-buy">📈 买入</div>
+            <div class="advisor-label advisor-label-buy">推荐</div>
             <div class="advisor-row advisor-row-buy" v-for="s in ml.buy" :key="'b-'+s.code">
               <div class="advisor-row-top">
                 <a class="advisor-name" :href="xqUrl(s.code)" target="_blank" rel="noopener noreferrer">{{ s.name }}</a>
-                <span class="advisor-score" :class="scoreClass(s.score)" title="算法评分">评 {{ s.score }}</span>
-                <span v-if="s.relayPower" class="advisor-relay-power" :class="scoreClass(s.relayPower)" title="接力动力分">力 {{ s.relayPower }}</span>
-                <span class="advisor-tier" v-if="s.lbc >= 2">{{ s.lbc }}板</span>
-                <span class="advisor-tier" v-else-if="s.lbc === 1">首板</span>
-                <span class="advisor-tier" v-else-if="s.cje_yi >= 100">容量</span>
+                <div class="advisor-meta-row">
+                  <span class="advisor-score" :class="scoreClass(s.score)" title="算法评分">评 {{ s.score }}</span>
+                  <span v-if="pickPrimaryTag(s)" class="advisor-tier">{{ pickPrimaryTag(s) }}</span>
+                </div>
               </div>
-              <div class="advisor-echelon-info" v-if="ml.main_line && s.lbc">
-                <span class="echelon-tag">梯队位置：{{ s.lbc }} / {{ ml.diagnostics?.member_count || '?' }}</span>
+              <div class="advisor-reasons" v-if="pickReasonBrief(s).length">
+                <span class="advisor-reason" v-for="(r, ri) in pickReasonBrief(s)" :key="'r-'+s.code+'-'+ri">{{ r }}</span>
               </div>
-              <div class="advisor-reasons">
-                <span class="advisor-reason" v-for="(r, ri) in s.reasons" :key="'r-'+s.code+'-'+ri">✓ {{ r }}</span>
-              </div>
-              <div class="advisor-cautions" v-if="s.cautions?.length">
-                <span class="advisor-caution" v-for="(c, ci) in s.cautions" :key="'c-'+s.code+'-'+ci">⚠ {{ c }}</span>
+              <div class="advisor-cautions" v-if="pickCautionBrief(s).length">
+                <span class="advisor-caution" v-for="(c, ci) in pickCautionBrief(s)" :key="'c-'+s.code+'-'+ci">{{ c }}</span>
               </div>
             </div>
           </div>
 
           <div class="advisor-section" v-if="ml.watch?.length">
-            <div class="advisor-label advisor-label-watch">👁 观察</div>
+            <div class="advisor-label advisor-label-watch">观察</div>
             <div class="advisor-watch-grid">
               <a class="advisor-watch-item" v-for="s in ml.watch" :key="'w-'+s.code"
                 :href="xqUrl(s.code)" target="_blank" rel="noopener noreferrer"
                 :title="s.reasons.join(' · ')">
                 <span class="advisor-name">{{ s.name }}</span>
                 <span class="advisor-watch-score" :class="scoreClass(s.score)">{{ s.score }}</span>
-                <span class="advisor-watch-lbc" v-if="s.lbc >= 2">{{ s.lbc }}板</span>
-                <span class="advisor-watch-lbc" v-else-if="s.lbc === 1">首板</span>
-                <span class="advisor-watch-cje" v-else-if="s.cje_yi >= 30">{{ s.cje_yi.toFixed(0) }}亿</span>
+                <span class="advisor-watch-lbc" v-if="pickPrimaryTag(s)">{{ pickPrimaryTag(s) }}</span>
               </a>
             </div>
           </div>
@@ -569,6 +707,7 @@ const sectorPicksMeta = computed(() => {
             <div class="stp-name">
               <span class="stp-rank">{{ i + 1 }}</span>
               <span class="stp-name-text">{{ bucket.theme }}</span>
+              <span class="stp-theme-score" :class="scoreClass(bucket.themeScore)">主题 {{ bucket.themeScore }}</span>
               <span class="stp-resonance-badge" :class="scoreClass(bucket.resonanceScore)">共振 {{ bucket.resonanceScore }}</span>
             </div>
             <span class="stp-source-pill" :class="bucket.sources[0] && bucket.sources[0].includes('选股宝') ? 'src-xgb' : (bucket.sources[0] && bucket.sources[0].includes('东财') ? 'src-tmr' : 'src-local')" :title="bucket.sources.join(' · ')">
@@ -576,6 +715,9 @@ const sectorPicksMeta = computed(() => {
               <template v-else-if="bucket.sources[0] && bucket.sources[0].includes('东财')">⏭ 东财明日</template>
               <template v-else>本地</template>
             </span>
+          </div>
+          <div class="stp-tag-row" v-if="bucket.themeTags?.length">
+            <span v-for="(tag, ti) in bucket.themeTags" :key="'theme-tag-'+bucket.theme+'-'+ti" :class="tag.cls">{{ tag.text }}</span>
           </div>
           <div class="stp-meta">
             <span class="stp-kv"><strong :class="bucket.count >= 3 ? 'red-text' : 'orange-text'">{{ bucket.count }}</strong>只涨停</span>
@@ -601,6 +743,7 @@ const sectorPicksMeta = computed(() => {
                   class="stp-high-row" :href="xqUrl(s.code)" target="_blank" rel="noopener noreferrer">
                   <span class="stp-star">★</span>
                   <span class="stp-high-name">{{ s.name }}</span>
+                  <span class="stp-stock-score" :class="scoreClass(Number(s.score || 0))">{{ s.score }}</span>
                   <span class="stp-high-tag">{{ s.lbc }}板</span>
                   <span class="stp-high-fund" v-if="s.zjYi >= 1">封 {{ s.zjYi.toFixed(1) }}亿</span>
                   <span class="stp-high-fund" v-else-if="s.cjeYi >= 1">{{ s.cjeYi.toFixed(1) }}亿</span>
@@ -612,7 +755,7 @@ const sectorPicksMeta = computed(() => {
               <div class="stp-name-row">
                 <a v-for="(s, mi) in bucket.midTier" :key="'m-'+bucket.theme+'-'+s.code"
                   class="stp-name-link mid" :href="xqUrl(s.code)" target="_blank" rel="noopener noreferrer">
-                  {{ s.name }}<span v-if="mi < bucket.midTier.length - 1" class="stp-name-sep">·</span>
+                  {{ s.name }}<span class="stp-inline-score" :class="scoreClass(Number(s.score || 0))">{{ s.score }}</span><span v-if="mi < bucket.midTier.length - 1" class="stp-name-sep">·</span>
                 </a>
               </div>
             </div>
@@ -621,7 +764,7 @@ const sectorPicksMeta = computed(() => {
               <div class="stp-name-row">
                 <a v-for="(s, bi) in bucket.baseTier" :key="'b-'+bucket.theme+'-'+s.code"
                   class="stp-name-link base" :href="xqUrl(s.code)" target="_blank" rel="noopener noreferrer">
-                  {{ s.name }}<span v-if="bi < bucket.baseTier.length - 1" class="stp-name-sep">·</span>
+                  {{ s.name }}<span class="stp-inline-score" :class="scoreClass(Number(s.score || 0))">{{ s.score }}</span><span v-if="bi < bucket.baseTier.length - 1" class="stp-name-sep">·</span>
                 </a>
               </div>
             </div>
@@ -647,9 +790,20 @@ const sectorPicksMeta = computed(() => {
             </div>
           </div>
         </div>
-        <div class="card-badge">封单 · 板块归属 · 量能 · 炸板 · 梯队</div>
+        <div class="zt-header-actions">
+          <div class="card-badge">封单 · 板块归属 · 量能 · 炸板 · 梯队</div>
+          <button
+            class="plan-toggle-btn"
+            :class="{ expanded: ztAnalysisExpanded }"
+            type="button"
+            :aria-expanded="ztAnalysisExpanded"
+            @click="ztAnalysisExpanded = !ztAnalysisExpanded">
+            <span class="plan-toggle-btn__label">涨停数据分析</span>
+            <span class="plan-toggle-btn__state">{{ ztAnalysisExpanded ? '收起' : '展开' }}</span>
+          </button>
+        </div>
       </div>
-      <div class="zt-panel">
+      <div v-if="ztAnalysisExpanded" class="zt-panel">
         <div class="zt-col">
           <div class="section-header">接力候选</div>
           <div class="zt-list">
@@ -731,8 +885,343 @@ const sectorPicksMeta = computed(() => {
       <div class="summary-box" v-else-if="!((marketData.ztAnalysis?.relay || []).length || (marketData.ztAnalysis?.watch || []).length)">
         <div class="summary-text">涨停分析暂未生成，请检查涨停池、题材映射或前端派生逻辑。</div>
       </div>
+      <div v-else-if="!ztAnalysisExpanded" class="zt-collapsed-note">
+        默认折叠，展开后查看接力候选、观察池以及每只票的封单、炸板、梯队和题材归属。
+      </div>
+    </div>
+
+    <div class="card" data-page="plan" id="sec-zt-debug" v-if="isLocalDebug && ztDebugRows.length">
+      <div class="card-header">
+        <div>
+          <div class="card-title">预测算法调试台</div>
+          <div class="advisor-subtitle">
+            接力 <strong class="red-text">{{ ztDebugSummary.relay }}</strong>
+            <span class="stp-sep">·</span>
+            观察 <strong class="orange-text">{{ ztDebugSummary.watch }}</strong>
+            <span class="stp-sep">·</span>
+            未入池 <strong class="blue-text">{{ ztDebugSummary.excluded }}</strong>
+          </div>
+        </div>
+        <button
+          class="plan-toggle-btn plan-toggle-btn-debug"
+          :class="{ expanded: ztDebugExpanded }"
+          type="button"
+          :aria-expanded="ztDebugExpanded"
+          @click="ztDebugExpanded = !ztDebugExpanded">
+          <span class="plan-toggle-btn__label">调试明细</span>
+          <span class="plan-toggle-btn__state">{{ ztDebugExpanded ? '收起' : '展开' }}</span>
+        </button>
+      </div>
+      <div v-if="ztDebugExpanded" class="zt-debug-panel">
+        <div class="zt-debug-toolbar">
+          <button class="abnormal-switch" :class="{ active: ztDebugPlacement === 'all' }" type="button" @click="ztDebugPlacement = 'all'">全部</button>
+          <button class="abnormal-switch" :class="{ active: ztDebugPlacement === 'relay' }" type="button" @click="ztDebugPlacement = 'relay'">接力池</button>
+          <button class="abnormal-switch" :class="{ active: ztDebugPlacement === 'watch' }" type="button" @click="ztDebugPlacement = 'watch'">观察池</button>
+          <button class="abnormal-switch" :class="{ active: ztDebugPlacement === 'excluded' }" type="button" @click="ztDebugPlacement = 'excluded'">未入池</button>
+        </div>
+        <div class="zt-debug-list">
+          <div class="zt-debug-item" v-for="row in ztDebugFiltered" :key="'dbg-' + row.code + '-' + row.name">
+            <div class="zt-debug-top">
+              <div class="zt-debug-main">
+                <div class="zt-debug-title">
+                  <a v-if="row.code" class="stock-link" :href="xqUrl(row.code)" target="_blank" rel="noopener noreferrer">{{ row.name }}</a>
+                  <span v-else>{{ row.name }}</span>
+                  <span class="zt-debug-place" :class="ztDebugPlacementClass(row.placement)">{{ row.placementLabel }}</span>
+                  <span class="zt-debug-step">{{ row.nextStep || `${row.lbc}板` }}</span>
+                  <span class="zt-debug-theme" v-if="row.predTheme">{{ row.predTheme }}</span>
+                </div>
+                <div class="zt-debug-sub">{{ row.factorHint }}</div>
+              </div>
+              <div class="zt-debug-score">
+                <div class="advisor-score" :class="ztDebugScoreClass(Number(row.score || 0))">总 {{ row.score }}</div>
+                <div class="zt-debug-score-line">
+                  <span>龙 {{ row.leaderFactorScore }}</span>
+                  <span>接 {{ row.relayFactorScore }}</span>
+                  <span>容 {{ row.capacityFactorScore }}</span>
+                  <span>险 {{ row.riskControlScore }}</span>
+                </div>
+              </div>
+            </div>
+            <div class="zt-debug-meta">
+              <span>环境 {{ row.environmentScore }}</span>
+              <span>哲学 {{ row.leaderPhilosophyScore }}</span>
+              <span>承接 {{ row.stepContextScore }}</span>
+              <span>断板风险 {{ row.breakRisk }}</span>
+              <span>开板 {{ row.open }}</span>
+              <span v-if="row.marketGateLabel">环境位 {{ row.marketGateLabel }}</span>
+            </div>
+            <div class="zt-debug-bits" v-if="row.hitRules?.length">
+              <span class="zt-debug-bit hit" v-for="hit in row.hitRules" :key="'hit-' + row.code + '-' + hit">{{ hit }}</span>
+            </div>
+            <div class="zt-debug-bits" v-if="row.blockReasons?.length">
+              <span class="zt-debug-bit block" v-for="reason in row.blockReasons" :key="'block-' + row.code + '-' + reason">{{ reason }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
 
     <ShortReminderFooter />
   </div>
 </template>
+
+<style scoped>
+.zt-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.plan-toggle-btn {
+  appearance: none;
+  border: 1px solid color-mix(in oklab, var(--theme-accent) 18%, rgba(148, 163, 184, 0.28));
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.94), rgba(255, 247, 237, 0.9)),
+    var(--bg-card);
+  color: var(--text-primary);
+  min-height: 38px;
+  padding: 0 12px 0 14px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.02em;
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08);
+  transition:
+    transform 180ms ease,
+    box-shadow 180ms ease,
+    border-color 180ms ease,
+    background 180ms ease;
+}
+
+.plan-toggle-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 14px 28px rgba(15, 23, 42, 0.1);
+}
+
+.plan-toggle-btn:active {
+  transform: translateY(0);
+}
+
+.plan-toggle-btn__label {
+  color: var(--text-secondary);
+}
+
+.plan-toggle-btn__state {
+  color: #b45309;
+}
+
+.plan-toggle-btn.expanded {
+  border-color: rgba(230, 0, 18, 0.22);
+  background:
+    linear-gradient(135deg, rgba(255, 243, 243, 0.96), rgba(255, 236, 230, 0.94)),
+    var(--bg-card);
+  box-shadow: 0 12px 28px rgba(230, 0, 18, 0.12);
+}
+
+.plan-toggle-btn.expanded .plan-toggle-btn__label,
+.plan-toggle-btn.expanded .plan-toggle-btn__state {
+  color: #b42318;
+}
+
+.plan-toggle-btn-debug {
+  min-width: 126px;
+  justify-content: center;
+}
+
+.zt-collapsed-note {
+  margin-top: 12px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  border: 1px dashed rgba(245, 158, 11, 0.3);
+  background: linear-gradient(135deg, rgba(255, 249, 235, 0.92), rgba(255, 255, 255, 0.88));
+  color: var(--text-secondary);
+  font-size: 11.5px;
+  font-weight: 750;
+  line-height: 1.6;
+}
+
+[data-theme="dark"] .plan-toggle-btn {
+  background:
+    linear-gradient(135deg, rgba(30, 41, 59, 0.92), rgba(15, 23, 42, 0.88)),
+    var(--bg-card);
+  border-color: rgba(148, 163, 184, 0.24);
+  box-shadow: 0 10px 24px rgba(2, 6, 23, 0.28);
+}
+
+[data-theme="dark"] .plan-toggle-btn__label {
+  color: rgba(226, 232, 240, 0.88);
+}
+
+[data-theme="dark"] .plan-toggle-btn__state {
+  color: #fdba74;
+}
+
+[data-theme="dark"] .plan-toggle-btn.expanded {
+  border-color: rgba(248, 113, 113, 0.28);
+  background:
+    linear-gradient(135deg, rgba(69, 10, 10, 0.42), rgba(30, 41, 59, 0.92)),
+    var(--bg-card);
+  box-shadow: 0 14px 30px rgba(127, 29, 29, 0.24);
+}
+
+[data-theme="dark"] .zt-collapsed-note {
+  background: linear-gradient(135deg, rgba(120, 53, 15, 0.22), rgba(30, 41, 59, 0.92));
+  border-color: rgba(251, 191, 36, 0.26);
+}
+
+.zt-debug-panel {
+  display: grid;
+  gap: 10px;
+}
+
+.zt-debug-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.zt-debug-list {
+  display: grid;
+  gap: 10px;
+}
+
+.zt-debug-item {
+  border: 1px solid rgba(148, 163, 184, 0.16);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.72);
+  padding: 10px 12px;
+}
+
+[data-theme="dark"] .zt-debug-item {
+  background: rgba(15, 23, 42, 0.48);
+  border-color: rgba(148, 163, 184, 0.2);
+}
+
+.zt-debug-top {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.zt-debug-main {
+  min-width: 0;
+}
+
+.zt-debug-title {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+  font-size: 13px;
+  font-weight: 950;
+  color: var(--text-primary);
+}
+
+.zt-debug-sub {
+  margin-top: 4px;
+  font-size: 11px;
+  font-weight: 800;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+
+.zt-debug-place,
+.zt-debug-step,
+.zt-debug-theme,
+.zt-debug-bit {
+  display: inline-flex;
+  align-items: center;
+  min-height: 22px;
+  padding: 0 8px;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 900;
+  border: 1px solid rgba(148, 163, 184, 0.18);
+  background: rgba(255, 255, 255, 0.72);
+  color: var(--text-secondary);
+}
+
+.zt-debug-place.debug-place-relay {
+  color: #e60012;
+  border-color: rgba(230, 0, 18, 0.18);
+  background: rgba(230, 0, 18, 0.08);
+}
+
+.zt-debug-place.debug-place-watch {
+  color: #d97706;
+  border-color: rgba(217, 119, 6, 0.2);
+  background: rgba(245, 158, 11, 0.1);
+}
+
+.zt-debug-place.debug-place-excluded {
+  color: #475569;
+}
+
+.zt-debug-score {
+  flex: 0 0 auto;
+  display: grid;
+  justify-items: end;
+  gap: 6px;
+}
+
+.zt-debug-score-line,
+.zt-debug-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  font-size: 11px;
+  font-weight: 850;
+  color: var(--text-secondary);
+}
+
+.zt-debug-meta {
+  margin-top: 8px;
+}
+
+.zt-debug-bits {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.zt-debug-bit.hit {
+  color: #e60012;
+  border-color: rgba(230, 0, 18, 0.18);
+  background: rgba(230, 0, 18, 0.08);
+}
+
+.zt-debug-bit.block {
+  color: #0f766e;
+  border-color: rgba(15, 118, 110, 0.16);
+  background: rgba(20, 184, 166, 0.08);
+}
+
+@media (max-width: 760px) {
+  .zt-header-actions {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  .plan-toggle-btn,
+  .plan-toggle-btn-debug {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .zt-debug-top {
+    flex-direction: column;
+  }
+
+  .zt-debug-score {
+    justify-items: start;
+  }
+}
+</style>

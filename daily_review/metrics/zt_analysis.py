@@ -1903,6 +1903,55 @@ def build_zt_analysis(*, market_data: Dict[str, Any]) -> Dict[str, Any]:
             and _to_num(r.get("_raw"), 0) >= 45
         )
 
+    def relay_hit_labels(r: Dict[str, Any]) -> List[str]:
+        hits: List[str] = []
+        if relay_height_breakout_ok(r):
+            hits.append("高度突破")
+        if relay_high_mark_ok(r):
+            hits.append("高标龙头")
+        if relay_core_ok(r):
+            hits.append("主线接力")
+        if relay_one_to_two_ok(r):
+            hits.append("1进2")
+        if relay_relaxed_ok(r):
+            hits.append("宽松候选")
+        if relay_broad_ok(r):
+            hits.append("兜底候选")
+        if relay_emergency_ok(r):
+            hits.append("应急兜底")
+        return hits
+
+    def relay_block_labels(r: Dict[str, Any]) -> List[str]:
+        labels: List[str] = []
+        lbc = _to_num(r.get("lbc"), 0)
+        if not r.get("hasTradeTheme"):
+            labels.append("无主线题材")
+        if r.get("isBroadOnly"):
+            labels.append("题材偏泛化")
+        if r.get("isYizi"):
+            labels.append("一字难参与")
+        if r.get("isShrinkSeal"):
+            labels.append("缩量参与难")
+        if _to_num(r.get("open"), 0) >= 8:
+            labels.append("开板过多")
+        elif _to_num(r.get("open"), 0) >= 3 and lbc >= 2:
+            labels.append("分歧偏大")
+        if _to_num(r.get("breakRisk"), 0) >= 76:
+            labels.append("断板风险高")
+        if lbc == 1 and _to_num(r.get("stepContextScore"), 0) < 55:
+            labels.append("首板接力链条弱")
+        if 2 <= lbc <= 5 and _to_num(r.get("stepContextScore"), 0) < 38:
+            labels.append("晋级承接不足")
+        if 3 <= lbc <= 5 and _to_num(r.get("leaderPhilosophyScore"), 0) < 76:
+            labels.append("龙头辨识度不足")
+        if 3 <= lbc <= 5 and _to_num(r.get("leaderFactorScore"), 0) < 72:
+            labels.append("龙头因子不够")
+        if _to_num(r.get("capacityFactorScore"), 0) < 55 and lbc <= 2:
+            labels.append("容量承接偏弱")
+        if _to_num(r.get("environmentScore"), 0) < 58:
+            labels.append("环境不支持")
+        return labels
+
     relay_diagnostics = {
         "scored": len(scored),
         "themeRows": sum(1 for r in scored if r.get("hasTradeTheme")),
@@ -2091,6 +2140,44 @@ def build_zt_analysis(*, market_data: Dict[str, Any]) -> Dict[str, Any]:
         gate_label = str(((r.get("marketGate") or {}).get("label") or "")).strip()
         r["scoreSubLabel"] = " · ".join([x for x in (r["watchGroup"], r.get("scoreBand") or gate_label) if x])
 
+    watch_names = {str(x.get("name") or "") for x in watch}
+    debug_rows: List[Dict[str, Any]] = []
+    for r in ranked[:40]:
+        name = str(r.get("name") or "")
+        placement = "relay" if name in relay_names else "watch" if name in watch_names else "excluded"
+        debug_rows.append(
+            {
+                "name": name,
+                "code": str(r.get("code") or ""),
+                "placement": placement,
+                "placementLabel": "接力池" if placement == "relay" else "观察池" if placement == "watch" else "未入池",
+                "score": _to_num(r.get("_raw"), 0),
+                "scoreBand": str(r.get("scoreBand") or ""),
+                "lbc": _to_num(r.get("lbc"), 0),
+                "nextStep": str(r.get("nextStep") or ""),
+                "predTheme": str(r.get("predTheme") or ""),
+                "marketGateLabel": str(((r.get("marketGate") or {}).get("label") or "")),
+                "qualityScore": _to_num(r.get("qualityScore"), 0),
+                "environmentScore": _to_num(r.get("environmentScore"), 0),
+                "leaderFactorScore": _to_num(r.get("leaderFactorScore"), 0),
+                "relayFactorScore": _to_num(r.get("relayFactorScore"), 0),
+                "capacityFactorScore": _to_num(r.get("capacityFactorScore"), 0),
+                "riskControlScore": _to_num(r.get("riskControlScore"), 0),
+                "leaderPhilosophyScore": _to_num(r.get("leaderPhilosophyScore"), 0),
+                "stepContextScore": _to_num(r.get("stepContextScore"), 0),
+                "breakRisk": _to_num(r.get("breakRisk"), 0),
+                "open": _to_num(r.get("open"), 0),
+                "factorHint": str(r.get("factorHint") or ""),
+                "hitRules": relay_hit_labels(r),
+                "blockReasons": relay_block_labels(r),
+                "isThemeLeader": bool(r.get("_isThemeLeader")),
+                "isNewHigh": bool(r.get("_isNewHigh")),
+                "isMain": bool(r.get("_isMain")),
+                "isYizi": bool(r.get("isYizi")),
+                "isShrinkSeal": bool(r.get("isShrinkSeal")),
+            }
+        )
+
     def strip(rows: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
         out: List[Dict[str, Any]] = []
         for x in rows:
@@ -2133,6 +2220,11 @@ def build_zt_analysis(*, market_data: Dict[str, Any]) -> Dict[str, Any]:
                     "risk": 0.08,
                     "opportunity": 0.02,
                 },
+            },
+            "debug": {
+                "rows": debug_rows,
+                "relayNames": [str(x.get("name") or "") for x in relay],
+                "watchNames": [str(x.get("name") or "") for x in watch],
             },
             "promoEcology": _round(promo_ecology),
             "heightContext": "repair" if height_repair else "pressure" if height_pressure else "neutral",
