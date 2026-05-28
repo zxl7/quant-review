@@ -328,18 +328,19 @@ jobs:
           fi
           expected_d8="$(echo "${run_date}" | tr -d '-')"
           # 盘中共振事件检测（从 xuangubao 缓存生成）
-          PYTHONPATH=. python3 -u -c "
-from pathlib import Path
-from daily_review.metrics.intraday_resonance import detect_resonance_from_cache, save_resonance_cache
-root = Path('.')
-d8 = '${expected_d8}'
-results = detect_resonance_from_cache(root, d8)
-if results:
-    p = save_resonance_cache(root, d8, results)
-    print(f'Resonance saved: {p} ({len(results)} events)')
-else:
-    print('No resonance events detected')
-"
+          D8="${expected_d8}" PYTHONPATH=. python3 - <<'PY'
+          import os
+          from pathlib import Path
+          from daily_review.metrics.intraday_resonance import detect_resonance_from_cache, save_resonance_cache
+          root = Path('.')
+          d8 = os.environ['D8']
+          results = detect_resonance_from_cache(root, d8)
+          if results:
+              p = save_resonance_cache(root, d8, results)
+              print(f'Resonance saved: {p} ({len(results)} events)')
+          else:
+              print('No resonance events detected')
+          PY
           expected_cache="cache/market_data-${expected_d8}.json"
           if [ "${mode}" = "intraday" ]; then
             expected_cache="cache/market_data-${expected_d8}-intraday.json"
