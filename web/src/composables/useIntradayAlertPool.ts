@@ -305,7 +305,10 @@ export function useIntradayAlertPool() {
     const sectorHits = new Map<string, { count: number; symbols: Set<string>; lastTs: number }>();
     const now = Math.floor(Date.now() / 1000);
 
-    allCurrentItems.forEach(item => {
+    // 共振检测基于全局已积累的全部 items（而不仅是本轮新数据），避免漏判
+    const poolItems = items.value.length ? items.value : allCurrentItems;
+
+    poolItems.forEach(item => {
       if (item.eventTimestamp < now - RESONANCE_WINDOW_SEC) return;
       if (item.eventType === 99999) return;
 
@@ -325,8 +328,10 @@ export function useIntradayAlertPool() {
         const key = `resonance:${sector}:${Math.floor(hit.lastTs / 300)}`;
         if (poolByBucket.has(key)) return;
 
-        const latestItem = allCurrentItems.find(x => x.relatedNames.includes(sector) || x.title === sector);
-        const pcp = latestItem?.pcp;
+        // 优先取板块异动本身的 pcp；没有板块异动时才 fallback 到个股
+        const plateItem = poolItems.find(x => x.isPlate && x.title === sector);
+        const stockItem = poolItems.find(x => !x.isPlate && x.relatedNames.includes(sector));
+        const pcp = plateItem?.pcp !== undefined ? plateItem.pcp : stockItem?.pcp;
         const meta = eventMeta(99999, pcp);
 
         const resItem: IntradayAlertItem = {
