@@ -352,7 +352,7 @@ const filteredHistory = computed(() => {
     list = list.filter((x: any) => x.title.toLowerCase().includes(s) || x.subtitle.toLowerCase().includes(s))
   }
 
-  list = [...list].sort((a: any, b: any) => a.eventTimestamp - b.eventTimestamp)
+  list = [...list].sort((a: any, b: any) => b.eventTimestamp - a.eventTimestamp)
   return list
 })
 
