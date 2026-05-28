@@ -619,7 +619,7 @@ onBeforeUnmount(() => {
             <div class="wb-sidebar-meta">{{ intradayAlertPool.statusText.value }}</div>
           </div>
           <div class="wb-sidebar-actions">
-            <button class="wb-sidebar-btn" type="button" @click="intradayAlertPool.refresh(true)">刷新</button>
+            <button class="wb-sidebar-btn" type="button" @click="intradayAlertPool.refresh()">刷新</button>
             <button class="wb-sidebar-btn" type="button" @click="intradayAlertPool.markAllRead()">已读</button>
             <button class="wb-sidebar-btn" :class="{ on: intradayAlertPool.enabled.value }" type="button" @click="enableIntradayAlert()">开启</button>
             <button class="wb-sidebar-btn" :class="{ on: !intradayAlertPool.enabled.value }" type="button" @click="muteIntradayAlert()">静默</button>
