@@ -328,10 +328,9 @@ export function useIntradayAlertPool() {
         const key = `resonance:${sector}:${Math.floor(hit.lastTs / 300)}`;
         if (poolByBucket.has(key)) return;
 
-        // 优先取板块异动本身的 pcp；没有板块异动时才 fallback 到个股
+        // 只取板块异动本身的 pcp，没有就不显示
         const plateItem = poolItems.find(x => x.isPlate && x.title === sector);
-        const stockItem = poolItems.find(x => !x.isPlate && x.relatedNames.includes(sector));
-        const pcp = plateItem?.pcp !== undefined ? plateItem.pcp : stockItem?.pcp;
+        const pcp = plateItem?.pcp;
         const meta = eventMeta(99999, pcp);
 
         const resItem: IntradayAlertItem = {
