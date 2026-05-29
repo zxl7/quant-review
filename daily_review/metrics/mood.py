@@ -426,8 +426,12 @@ def rebuild_mood(inputs: Dict[str, Any]) -> Dict[str, Any]:
         zb_rate=float(inputs.get("zb_rate", 0) or 0),
         dt_count=int(inputs.get("dt_count", 0) or 0),
         bf_count=int(inputs.get("bf_count", 0) or 0),
+        loss=float(inputs.get("loss", 0) or 0),
         zb_high_ratio=float(inputs.get("zb_high_ratio", 0) or 0),
         broken_lb_rate=broken_lb_rate_eff,
+        avg_zt_zbc=float(inputs.get("avg_zt_zbc", 0) or 0),
+        zt_zbc_ge3_ratio=float(inputs.get("zt_zbc_ge3_ratio", inputs.get("zbc_ge3_ratio", 0)) or 0),
+        yest_zt_avg_chg=float(inputs.get("yest_zt_avg_chg", 0) or 0),
     )
 
     # 阶段判定同样用“平滑版”输入（只影响判断，不影响卡片展示）
@@ -439,6 +443,11 @@ def rebuild_mood(inputs: Dict[str, Any]) -> Dict[str, Any]:
     stage = calc_stage(heat_score=score.heat, risk_score=score.risk, inputs=stage_inputs)
     cards = build_cards(inputs)
 
+    # 阶段已经明确进入退潮/冰点时，颜色要与语义一致，避免总分仍停在黄色。
+    sentiment_score = score.sentiment
+    if str(stage.get("type") or "") == "fire":
+        sentiment_score = min(sentiment_score, 45)
+
     # 情绪阶段细分（真假判断）
     sub = calc_stage_sublabel(stage_title=stage.get("title", ""), inputs=inputs)
     stage["sublabel"] = sub["sublabel"]
@@ -446,7 +455,7 @@ def rebuild_mood(inputs: Dict[str, Any]) -> Dict[str, Any]:
     stage["sublabelDetail"] = sub["sublabelDetail"]
 
     return {
-        "mood": {"heat": score.heat, "risk": score.risk, "score": score.sentiment},
+        "mood": {"heat": score.heat, "risk": score.risk, "score": sentiment_score},
         "moodStage": stage,
         "moodCards": cards,
     }
