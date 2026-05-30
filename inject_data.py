@@ -16,6 +16,14 @@ from typing import Optional
 ROOT = Path(__file__).resolve().parent
 
 
+def _prune_plan_text_fields(md: dict) -> None:
+    """移除明日行动指南已下线的聚焦/底部文案字段。"""
+    if not isinstance(md, dict):
+        return
+    md.pop("actionGuideV2", None)
+    md.pop("summary3", None)
+
+
 def _resolve_data_path(date8: str, source: Optional[str] = None) -> Path:
     """解析数据源路径；优先使用显式 source，其次回退到标准收盘缓存。"""
     if source:
@@ -213,6 +221,7 @@ def inject(date8: str, source: Optional[str] = None) -> Path:
     md = json.loads(data_path.read_text(encoding="utf-8"))
     # 清理前端不需要的大字段
     md.pop("raw", None)
+    _prune_plan_text_fields(md)
 
     # watchlist 增强：让现有前端自动消费更准的板块归属 + 主线（前端 UI 零改动）
     wl_path = _resolve_watchlist_path(date8)
@@ -298,6 +307,7 @@ def refresh_dev_data(date8: str, source: Optional[str] = None) -> None:
         return
     md = json.loads(data_path.read_text(encoding="utf-8"))
     md.pop("raw", None)
+    _prune_plan_text_fields(md)
     # watchlist 增强：dev 路径保持与 inject() 一致
     wl_path = _resolve_watchlist_path(date8)
     if wl_path.exists():

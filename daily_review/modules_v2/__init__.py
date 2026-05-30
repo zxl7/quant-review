@@ -35,7 +35,6 @@ from .ladder.leader import LEADER_MODULE
 from .ladder.leader_dragon_v2 import LEADER_DRAGON_V2_MODULE
 
 # ════════════════ 明日计划 (plan/) ════════════════
-from .plan.action_guide import ACTION_GUIDE_MODULE
 from .plan.action_sheet import ACTION_SHEET_MODULE
 from .plan.strategy_v2 import STRATEGY_V2_MODULE
 from .plan.position_v2 import POSITION_V2_MODULE
@@ -43,7 +42,6 @@ from .plan.psychology_v2 import PSYCHOLOGY_V2_MODULE
 from .plan.v3_position import V3_POSITION_MODULE
 from .plan.v3_rebound import V3_REBOUND_MODULE
 from .plan.v3_fullpos import V3_FULLPOS_MODULE
-from .plan.summary3 import SUMMARY3_MODULE
 from .plan.learning_notes import LEARNING_NOTES_MODULE
 from .plan.zt_analysis import ZT_ANALYSIS_MODULE
 from .plan.v3_trading import V3_TRADING_MODULE
@@ -118,8 +116,6 @@ ALL_MODULES = [
     SENTIMENT_SPEC_MODULE,
     ZT_ANALYSIS_MODULE,
     ACTION_SHEET_MODULE,
-    ACTION_GUIDE_MODULE,
-    SUMMARY3_MODULE,
     LEARNING_NOTES_MODULE,
     # v3 模块追加到执行链末尾（不替换旧模块，新旧并存）
 ] + (V3_MODULES if V3_MODULES else [])

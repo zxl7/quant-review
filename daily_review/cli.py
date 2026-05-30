@@ -456,7 +456,7 @@ def _prune_frontend_unused_fields(market_data: dict) -> None:
             market_data["plateRotateDetailByCode"] = compact
     except Exception:
         pass
-    for key in ("raw", "compat", "v2", "v3", "dragon", "height_module", "sector", "features"):
+    for key in ("raw", "compat", "v2", "v3", "dragon", "height_module", "sector", "features", "actionGuideV2", "summary3"):
         market_data.pop(key, None)
     meta = market_data.get("meta") if isinstance(market_data.get("meta"), dict) else {}
     if isinstance(meta, dict):
@@ -481,10 +481,6 @@ def _inject_ai_analysis(root: Path, date: str, market_data: dict) -> None:
     except Exception:
         return
 
-    # summary3.lines
-    if isinstance(ai.get("summary3_lines"), list) and ai["summary3_lines"]:
-        market_data["summary3"] = {"lines": ai["summary3_lines"], "source": "ai"}
-
     # learningNotes
     tips = ai.get("learning_tips") if isinstance(ai.get("learning_tips"), list) else []
     quote = ai.get("learning_quote") if isinstance(ai.get("learning_quote"), str) else ""
@@ -506,7 +502,7 @@ def _inject_ai_analysis(root: Path, date: str, market_data: dict) -> None:
             aa["source"] = "ai"
             market_data["actionAdvisor"] = aa
 
-    _log("AI 分析已注入 (summary3/learningNotes/actionAdvisor)")
+    _log("AI 分析已注入 (learningNotes/actionAdvisor)")
 
 
 def _log(msg: str) -> None:
@@ -946,8 +942,6 @@ def run_fetch_and_rebuild(date: str | None) -> int:
         "mood": {},
         "moodStage": {},
         "moodCards": [],
-        "actionGuideV2": {"confirm": [], "retreat": []},
-        "summary3": {},
         "learningNotes": {},
         "leaders": [],
         "ztgc": [],
@@ -1293,8 +1287,6 @@ def run_intraday_snapshot(date: str | None) -> int:
         "mood": {},
         "moodStage": {},
         "moodCards": [],
-        "actionGuideV2": {"confirm": [], "retreat": []},
-        "summary3": {},
         "learningNotes": {},
         "leaders": [],
         "ztgc": [],
@@ -1635,14 +1627,13 @@ def run_rebuild(
     except Exception:
         pass
 
-    # summary3（二句话）：依赖“历史趋势/昨日对比”等注入字段，故在注入后再重算一次，保证口径一致
+    # 历史趋势/昨日对比说明维度：保留结构化数据，不再生成行动指南底部文案。
     try:
-        from daily_review.render.render_html import build_market_overview_7d, build_sentiment_explain_dims, build_summary3
+        from daily_review.render.render_html import build_market_overview_7d, build_sentiment_explain_dims
 
-        market_data["summary3"] = build_summary3(market_data=market_data)
         market_data["marketOverview7d"] = build_market_overview_7d(market_data=market_data)
         market_data["sentimentExplainDims"] = build_sentiment_explain_dims(market_data=market_data)
-        _log("summary3 / marketOverview7d / sentimentExplainDims 已生成")
+        _log("marketOverview7d / sentimentExplainDims 已生成")
     except Exception:
         pass
 
@@ -2918,9 +2909,8 @@ def run_partial(date: str, modules: list[str]) -> int:
         pass
 
     try:
-        from daily_review.render.render_html import build_market_overview_7d, build_sentiment_explain_dims, build_summary3
+        from daily_review.render.render_html import build_market_overview_7d, build_sentiment_explain_dims
 
-        market_data["summary3"] = build_summary3(market_data=market_data)
         market_data["marketOverview7d"] = build_market_overview_7d(market_data=market_data)
         market_data["sentimentExplainDims"] = build_sentiment_explain_dims(market_data=market_data)
     except Exception:
@@ -2950,7 +2940,7 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument(
         "--only",
         nargs="+",
-        help="部分更新：指定模块名，可选：panorama, ladder, ztgc, theme_panels, volume, height_trend, top10, mood, leader, action_guide, zt_analysis, summary3, learning_notes",
+        help="部分更新：指定模块名，可选：panorama, ladder, ztgc, theme_panels, volume, height_trend, top10, mood, leader, zt_analysis, learning_notes",
     )
     ap.add_argument(
         "--mode",

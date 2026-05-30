@@ -79,6 +79,134 @@ def build_action_advisor(*, market_data: Dict[str, Any]) -> Dict[str, Any]:
                 break
         return c
 
+    def _theme_score(row: Dict[str, Any]) -> float:
+        zt = _num(row.get("zt"), 0.0)
+        zb = _num(row.get("zb"), 0.0)
+        dt = _num(row.get("dt"), 0.0)
+        net = _num(row.get("net"), 0.0)
+        risk_v = _num(row.get("risk"), 0.0)
+        return round(zt * 2.6 + net * 1.4 - zb * 1.3 - dt * 2.2 - risk_v * 0.7, 2)
+
+    def _format_theme(theme: Dict[str, Any]) -> str:
+        name = str(theme.get("name") or "").strip()
+        if not name:
+            return ""
+        zt = int(_num(theme.get("zt"), 0))
+        leader = str(theme.get("leader_name") or "").strip()
+        pieces = [name]
+        if zt > 0:
+            pieces.append(f"{zt}涨停")
+        if leader:
+            pieces.append(f"龙头{leader}")
+        return "（" + "，".join(pieces[1:]) + "）" if len(pieces) > 1 else name
+
+    def _theme_label(theme: Dict[str, Any]) -> str:
+        name = str(theme.get("name") or "").strip()
+        if not name:
+            return ""
+        detail = _format_theme(theme)
+        return f"{name}{detail}" if detail.startswith("（") else name
+
+    def _build_sector_context() -> Dict[str, Any]:
+        rows_in = ((market_data.get("themePanels") or {}).get("strengthRows") or []) if isinstance(market_data.get("themePanels"), dict) else []
+        leaders_in = market_data.get("leaders") or []
+        if not isinstance(rows_in, list):
+            rows_in = []
+        if not isinstance(leaders_in, list):
+            leaders_in = []
+
+        leader_map: dict[str, dict[str, Any]] = {}
+        for item in leaders_in:
+            if not isinstance(item, dict):
+                continue
+            theme_name = str(item.get("theme") or "").strip()
+            if not theme_name:
+                continue
+            if theme_name not in leader_map or _num(item.get("score"), 0.0) > _num(leader_map[theme_name].get("score"), 0.0):
+                leader_map[theme_name] = item
+
+        themes: list[dict[str, Any]] = []
+        for row in rows_in:
+            if not isinstance(row, dict):
+                continue
+            name = str(row.get("name") or "").strip()
+            if not name:
+                continue
+            leader = leader_map.get(name) or {}
+            score_v = _theme_score(row)
+            themes.append(
+                {
+                    "name": name,
+                    "zt": int(_num(row.get("zt"), 0)),
+                    "zb": int(_num(row.get("zb"), 0)),
+                    "dt": int(_num(row.get("dt"), 0)),
+                    "net": round(_num(row.get("net"), 0.0), 1),
+                    "risk": round(_num(row.get("risk"), 0.0), 1),
+                    "score": score_v,
+                    "leader_name": str(leader.get("name") or "").strip(),
+                    "leader_code": str(leader.get("code") or "").strip(),
+                    "leader_score": round(_num(leader.get("score"), 0.0), 1),
+                }
+            )
+
+        if not themes:
+            return {
+                "top_theme": None,
+                "follow_themes": [],
+                "avoid_themes": [],
+                "focus_clause": "",
+                "avoid_clause": "",
+                "detail_clause": "",
+            }
+
+        themes.sort(key=lambda x: (x["score"], x["zt"], x["net"], -x["risk"]), reverse=True)
+
+        top_theme = themes[0]
+        follow_themes = [
+            x for x in themes[1:]
+            if x["zt"] >= 3 and x["dt"] <= 1 and x["risk"] <= 3.8 and x["score"] >= max(4.0, top_theme["score"] * 0.45)
+        ][:2]
+
+        avoid_themes = sorted(
+            [x for x in themes if x["zb"] >= 3 or x["dt"] >= 3 or x["risk"] >= 4.5],
+            key=lambda x: (x["risk"] + x["zb"] * 1.5 + x["dt"] * 1.3, x["zt"]),
+            reverse=True,
+        )[:2]
+
+        focus_bits = [_theme_label(top_theme)]
+        focus_bits.extend(_theme_label(x) for x in follow_themes if x.get("name") != top_theme.get("name"))
+        focus_bits = [x for x in focus_bits if x]
+
+        avoid_bits = [_theme_label(x) for x in avoid_themes if x.get("name") not in {top_theme.get("name"), *(t.get("name") for t in follow_themes)}]
+
+        focus_clause = ""
+        if focus_bits:
+            focus_clause = "板块上聚焦" + "、".join(focus_bits[:3])
+
+        avoid_clause = ""
+        if avoid_bits:
+            avoid_clause = "回避" + "、".join(avoid_bits[:2]) + "这类高分歧方向"
+
+        detail_parts: list[str] = []
+        if top_theme:
+            detail_parts.append(
+                f"主看{top_theme['name']}，{top_theme['zt']}涨停、风险{top_theme['risk']:.1f}"
+                + (f"，锚定{top_theme['leader_name']}" if top_theme.get("leader_name") else "")
+            )
+        if follow_themes:
+            detail_parts.append("回流备选看" + "、".join(str(x["name"]) for x in follow_themes[:2]))
+        if avoid_bits:
+            detail_parts.append("高分歧回避" + "、".join(str(x["name"]) for x in avoid_themes[:2]))
+
+        return {
+            "top_theme": top_theme,
+            "follow_themes": follow_themes,
+            "avoid_themes": avoid_themes,
+            "focus_clause": focus_clause,
+            "avoid_clause": avoid_clause,
+            "detail_clause": "；".join(x for x in detail_parts if x),
+        }
+
     # === 输入 ===
     mood_stage = market_data.get("moodStage") or {}
     stage_title = str(mood_stage.get("title") or "").strip() or "-"
@@ -146,6 +274,7 @@ def build_action_advisor(*, market_data: Dict[str, Any]) -> Dict[str, Any]:
     duanban_max_drop_hc = float(_num(mi.get("duanban_max_drop_hc"), 0.0))
     duanban_worst_name = str(mi.get("duanban_worst_name") or "").strip()
     duanban_worst_lb = int(_num(mi.get("duanban_worst_lb"), 0))
+    sector_ctx = _build_sector_context()
     # === 基底建议（按周期）===
     BASE = {
         "亢奋": {"posture": "进攻", "position": "5-7成"},
@@ -207,13 +336,20 @@ def build_action_advisor(*, market_data: Dict[str, Any]) -> Dict[str, Any]:
         tags.append({"key": "空间", "value": "压缩", "detail": ""})
 
     # === 证据式输出：像复盘，不像模板 ===
-    zt_now = int(_num(mi.get("zt_count"), zt_seq[-1] if zt_seq else 0))
+    action_sheet = market_data.get("actionSheet") or {}
+    key_numbers = (action_sheet.get("keyNumbers") or {}) if isinstance(action_sheet, dict) else {}
+    ladder_rows = market_data.get("ladder") or []
+    if not isinstance(ladder_rows, list):
+        ladder_rows = []
+
+    zt_now = int(_num(mi.get("zt_count"), key_numbers.get("zt", zt_seq[-1] if zt_seq else 0)))
     zt_prev = int(zt_seq[-2]) if len(zt_seq) >= 2 else zt_now
-    dt_now = int(_num(mi.get("dt_count"), dt_seq[-1] if dt_seq else 0))
+    dt_now = int(_num(mi.get("dt_count"), key_numbers.get("dt", dt_seq[-1] if dt_seq else 0)))
     dt_prev = int(dt_seq[-2]) if len(dt_seq) >= 2 else dt_now
-    fb_now = float(_num(mi.get("fb_rate"), fb_seq[-1] if fb_seq else 0.0))
+    fb_now = float(_num(mi.get("fb_rate"), key_numbers.get("fb", fb_seq[-1] if fb_seq else 0.0)))
     lb_now = int(_num(mi.get("lianban_count"), lb_seq[-1] if lb_seq else 0))
-    maxlb_now = int(_num(mi.get("max_lb"), maxlb_seq[-1] if maxlb_seq else 0))
+    ladder_max_badge = max((int(_num(x.get("badge"), 0)) for x in ladder_rows if isinstance(x, dict)), default=0)
+    maxlb_now = int(_num(mi.get("max_lb"), key_numbers.get("maxLb", maxlb_seq[-1] if maxlb_seq else ladder_max_badge)))
     recent_high_7d = int(max(maxlb_seq[:-1])) if len(maxlb_seq) >= 2 else maxlb_now
 
     # === 关键状态 ===
@@ -321,6 +457,9 @@ def build_action_advisor(*, market_data: Dict[str, Any]) -> Dict[str, Any]:
     if risk_clause:
         summary += f"，{risk_clause}"
     summary = summary.rstrip("，") + "。"
+    sector_sentences = [x for x in [sector_ctx.get("focus_clause", ""), sector_ctx.get("avoid_clause", "")] if x]
+    if sector_sentences:
+        summary += " ".join(s.rstrip("。") + "。" for s in sector_sentences)
     summary += _action_clause()
 
     # === 动态证据池：先生成候选，再按权重调配输出 ===
@@ -504,6 +643,20 @@ def build_action_advisor(*, market_data: Dict[str, Any]) -> Dict[str, Any]:
             icon="✅",
             score_v=40 + max(0, 35 - risk) * 0.5 + max(0, 10 - loss) * 1.0,
             text="风险端没有继续抬头 = 修复环境相对可控",
+        )
+
+    if sector_ctx.get("detail_clause"):
+        top_theme = sector_ctx.get("top_theme") or {}
+        avoid_cnt = len(sector_ctx.get("avoid_themes") or [])
+        sector_icon = "✅"
+        if avoid_cnt >= 2 and top_theme.get("risk", 0) >= 4.0:
+            sector_icon = "⚠️"
+        score_v = 44 + max(0, _num(top_theme.get("zt"), 0)) * 2.2 + max(0.0, 4.0 - _num(top_theme.get("risk"), 0.0)) * 3.0
+        _push_evidence(
+            group="sector",
+            icon=sector_icon,
+            score_v=score_v,
+            text=f"板块节奏：{sector_ctx['detail_clause']}",
         )
 
     # 同组只保留最高分候选，再全局排序取前 4

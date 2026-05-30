@@ -56,6 +56,57 @@ class TideSignalTest(unittest.TestCase):
         self.assertGreater(power["resilience"], 0)
         self.assertIn("电力", signal["summary"]["mainline_candidates"])
 
+    def test_strength_confirms_mainline(self) -> None:
+        signal = build_tide_signal(
+            market_data={
+                "date": "2026-05-29",
+                "sentiment": {"score": 50},
+                "panorama": {"limitUp": 50, "ratio": "60%"},
+                "plateRankTop10": [{"rank": 2, "name": "电力", "strength": 4500, "barPct": 84}],
+                "prev": {
+                    "sentiment": {"score": 70},
+                    "panorama": {"limitUp": 100, "ratio": "80%"},
+                },
+            },
+            theme_trend_cache={
+                "by_day": {
+                    "2026-05-27": {"电力": 12},
+                    "2026-05-28": {"电力": 10},
+                    "2026-05-29": {"电力": 8},
+                }
+            },
+        )
+
+        power = next(t for t in signal["themes"] if t["name"] == "电力")
+        self.assertEqual(power["status"], "confirmed_mainline")
+        self.assertEqual(power["strength_rank"], 2)
+        self.assertEqual(power["confidence"], "high")
+
+    def test_weak_strength_downgrades_traverse(self) -> None:
+        signal = build_tide_signal(
+            market_data={
+                "date": "2026-05-29",
+                "sentiment": {"score": 50},
+                "panorama": {"limitUp": 50, "ratio": "60%"},
+                "sectorHeatmap": {"rows": [{"name": "电力", "score": 30}]},
+                "prev": {
+                    "sentiment": {"score": 70},
+                    "panorama": {"limitUp": 100, "ratio": "80%"},
+                },
+            },
+            theme_trend_cache={
+                "by_day": {
+                    "2026-05-27": {"电力": 12},
+                    "2026-05-28": {"电力": 10},
+                    "2026-05-29": {"电力": 8},
+                }
+            },
+        )
+
+        power = next(t for t in signal["themes"] if t["name"] == "电力")
+        self.assertEqual(power["status"], "micro_traverse")
+        self.assertEqual(power["strength_score"], 30)
+
     def test_rebound_warning_under_shrinking_volume(self) -> None:
         signal = build_tide_signal(
             market_data={
@@ -93,4 +144,3 @@ class TideSignalTest(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
-

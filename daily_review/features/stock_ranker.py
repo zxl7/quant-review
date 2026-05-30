@@ -856,7 +856,7 @@ def _build_tide_theme_map(tide_signal: dict[str, Any] | None) -> dict[str, dict[
     return out
 
 
-def _tide_match_priority(theme: dict[str, Any]) -> tuple[int, int, float]:
+def _tide_match_priority(theme: dict[str, Any]) -> tuple[int, int, int, float, float]:
     status = str(theme.get("status") or "")
     priority = {
         "rebound_warning": 70,
@@ -869,7 +869,9 @@ def _tide_match_priority(theme: dict[str, Any]) -> tuple[int, int, float]:
     }.get(status, 0)
     return (
         priority,
+        int(theme.get("tide_score") or 0),
         int(theme.get("today_zt") or 0),
+        float(theme.get("strength_score") or -1),
         float(theme.get("resilience") or -999),
     )
 

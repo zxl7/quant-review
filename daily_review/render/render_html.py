@@ -1286,12 +1286,6 @@ if __name__ == "__main__":
         # 缓存缺失或格式异常时忽略，不影响主页面渲染
         pass
 
-    # 离线增强：用 Python 算法生成「明日计划」（避免前端出现「写死文案」的错觉）
-    try:
-        market_data.setdefault("actionGuideV2", build_action_guide_v2(market_data))
-    except Exception:
-        market_data.setdefault("actionGuideV2", {"observe": [], "do": [], "avoid": []})
-
     # 离线增强：龙头识别（如果 marketData 中还没有 leaders，则补齐）
     try:
         if not market_data.get("leaders"):
@@ -1300,12 +1294,6 @@ if __name__ == "__main__":
             market_data.update(rebuild_leaders(market_data))
     except Exception:
         market_data.setdefault("leaders", [])
-
-    # 离线增强：全站三句话（口径统一）
-    try:
-        market_data.setdefault("summary3", build_summary3(market_data=market_data))
-    except Exception:
-        market_data.setdefault("summary3", {"lines": []})
 
     # 离线增强：市场全景 · 7日对比（量能 / 涨停 / 炸板 / 高度统一看）
     try:

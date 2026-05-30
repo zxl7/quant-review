@@ -7,6 +7,8 @@ from __future__ import annotations
 
 from typing import Any, Iterable
 
+from daily_review.features.sector_resolver import normalize_sector
+
 
 TideStatus = str
 
@@ -34,6 +36,7 @@ def build_tide_signal(
 
     market = _build_market_tide(today_snap, prev_snap)
     signal["market"] = market
+    strength_map = _build_strength_map(md)
 
     days = _resolve_theme_days(cache, signal["date"])
     if len(days) < 2:
@@ -63,6 +66,7 @@ def build_tide_signal(
                 prev_zt=prev_zt,
                 pre_prev_zt=pre_prev_zt,
                 market=market,
+                strength_info=_match_strength_info(name, strength_map),
             )
         )
 
@@ -227,6 +231,122 @@ def _theme_day_map(day: Any) -> dict[str, int]:
     return out
 
 
+def _theme_key(name: Any) -> str:
+    """题材匹配用 key：先复用板块归一化，再去掉常见修饰符。"""
+    text = str(normalize_sector(str(name or "").strip()) or "").strip().lower()
+    for ch in (" ", "\t", "\n", "·", "・", "-", "_", "/", "\\", "（", "）", "(", ")"):
+        text = text.replace(ch, "")
+    for suffix in ("概念", "板块", "产业链", "方向", "行情"):
+        if text.endswith(suffix):
+            text = text[: -len(suffix)]
+    return text
+
+
+def _build_strength_map(market_data: dict[str, Any]) -> dict[str, dict[str, Any]]:
+    """提取板块强度。
+
+    强度只做“确认层”，不替代涨停数韧性。来源优先级：
+    1. plateRankTop10 / plateRotateTop：更像全市场板块强度排名。
+    2. sectorHeatmap.rows：细分题材的热力分，用于风能、核电等细分名称兜底。
+    """
+    out: dict[str, dict[str, Any]] = {}
+
+    ranked_rows: list[dict[str, Any]] = []
+    for key in ("plateRankTop10", "plateRotateTop"):
+        rows = market_data.get(key)
+        if isinstance(rows, list):
+            ranked_rows.extend([r for r in rows if isinstance(r, dict)])
+
+    max_strength = max((_to_float(r.get("strength")) or 0.0 for r in ranked_rows), default=0.0)
+    for idx, row in enumerate(ranked_rows, 1):
+        name = str(row.get("name") or "").strip()
+        if not name:
+            continue
+        raw_strength = _to_float(row.get("strength"))
+        score = _to_float(row.get("barPct"))
+        if score is None and raw_strength is not None and max_strength > 0:
+            score = raw_strength / max_strength * 100.0
+        rank = _to_int(row.get("rank"), idx)
+        _merge_strength(
+            out,
+            name,
+            {
+                "strength": raw_strength,
+                "strength_rank": rank,
+                "strength_score": _round_or_none(score),
+                "strength_source": "plate_rank",
+            },
+        )
+
+    heatmap = market_data.get("sectorHeatmap")
+    heat_rows = heatmap.get("rows") if isinstance(heatmap, dict) else None
+    if isinstance(heat_rows, list):
+        for row in heat_rows:
+            if not isinstance(row, dict):
+                continue
+            name = str(row.get("name") or "").strip()
+            if not name:
+                continue
+            score = _to_float(row.get("score"))
+            _merge_strength(
+                out,
+                name,
+                {
+                    "strength": score,
+                    "strength_rank": None,
+                    "strength_score": _round_or_none(score),
+                    "strength_source": "sector_heatmap",
+                },
+            )
+    return out
+
+
+def _merge_strength(out: dict[str, dict[str, Any]], name: str, info: dict[str, Any]) -> None:
+    key = _theme_key(name)
+    if not key:
+        return
+    prev = out.get(key)
+    # 多个来源命中同一 canonical 时，保留更能说明市场认可度的一条。
+    if prev is None or _strength_priority(info) > _strength_priority(prev):
+        out[key] = info
+
+
+def _strength_priority(info: dict[str, Any]) -> tuple[float, float]:
+    rank = info.get("strength_rank")
+    rank_score = 120.0 - float(rank) * 8.0 if isinstance(rank, (int, float)) and rank > 0 else 0.0
+    score = float(info.get("strength_score") or 0.0)
+    return (max(score, rank_score), score)
+
+
+def _match_strength_info(name: str, strength_map: dict[str, dict[str, Any]]) -> dict[str, Any]:
+    key = _theme_key(name)
+    if not key or not strength_map:
+        return {"strength": None, "strength_rank": None, "strength_score": None, "strength_source": ""}
+    if key in strength_map:
+        return strength_map[key]
+    for strength_key, info in strength_map.items():
+        if key in strength_key or strength_key in key:
+            return info
+    return {"strength": None, "strength_rank": None, "strength_score": None, "strength_source": ""}
+
+
+def _is_strength_strong(info: dict[str, Any]) -> bool:
+    rank = info.get("strength_rank")
+    score = info.get("strength_score")
+    return (
+        (isinstance(rank, (int, float)) and rank <= 5)
+        or (isinstance(score, (int, float)) and score >= 65)
+    )
+
+
+def _is_strength_weak(info: dict[str, Any]) -> bool:
+    rank = info.get("strength_rank")
+    score = info.get("strength_score")
+    if isinstance(rank, (int, float)) and rank <= 10:
+        return False
+    return isinstance(score, (int, float)) and score < 45
+
+
 def _build_theme_tide(
     *,
     name: str,
@@ -234,6 +354,7 @@ def _build_theme_tide(
     prev_zt: int | None,
     pre_prev_zt: int | None,
     market: dict[str, Any],
+    strength_info: dict[str, Any],
 ) -> dict[str, Any]:
     prev_val = 0 if prev_zt is None else prev_zt
     pre_prev_val = 0 if pre_prev_zt is None else pre_prev_zt
@@ -246,6 +367,10 @@ def _build_theme_tide(
     status: TideStatus = "neutral"
     warning_level = "none"
     action_hint = "潮汐中性，按梯队和辨识度判断"
+    strength_score = strength_info.get("strength_score")
+    strength_rank = strength_info.get("strength_rank")
+    strength_strong = _is_strength_strong(strength_info)
+    strength_weak = _is_strength_weak(strength_info)
 
     rebounded = theme_delta_pct is not None and theme_delta_pct >= 80
     shrunk = isinstance(market.get("volume_delta_pct"), (int, float)) and float(market["volume_delta_pct"]) <= -5
@@ -263,10 +388,22 @@ def _build_theme_tide(
         status = "traverse_candidate"
         warning_level = "watch"
         action_hint = "退潮穿越候选：次日观察是否继续抗跌"
+        if strength_strong and (resilience or 0) >= 10:
+            # 板块强度排名/热力同步靠前，说明抗跌不是孤立涨停数，优先升级为确认主线。
+            status = "confirmed_mainline"
+            warning_level = "none"
+            action_hint = "韧性与板块强度共振，确认主线优先跟踪"
+        elif strength_weak:
+            # 只有涨停数相对抗跌，但板块强度没有得到市场确认，先降为微型穿越观察。
+            status = "micro_traverse"
+            action_hint = "涨停韧性尚可但板块强度不足，先按微型穿越观察"
     elif prev_val >= 5 and prev_val <= 7 and today_zt >= prev_val:
         status = "micro_traverse"
         warning_level = "watch"
         action_hint = "低基数微型穿越：可观察，不按大主线处理"
+        if strength_strong and today_zt >= 5:
+            # 低基数题材如果同步进入强度前排，保留观察但提高置信度。
+            action_hint = "低基数微型穿越，板块强度同步改善，次日验证持续性"
     elif pre_prev_val >= 8 and prev_val >= 5 and today_zt >= prev_val and (resilience is None or resilience >= -10):
         status = "confirmed_mainline"
         action_hint = "穿越后确认主线：推荐线可提高优先级"
@@ -274,6 +411,14 @@ def _build_theme_tide(
         status = "weak"
         warning_level = "watch"
         action_hint = "弱于市场：降低主线权重"
+    elif prev_zt is None and today_zt >= 3 and strength_strong:
+        # 新题材没有历史韧性可比，但强度榜已经确认，避免简单显示“潮汐不足”。
+        status = "micro_traverse"
+        warning_level = "watch"
+        action_hint = "新题材强度靠前，历史不足，先按微型穿越观察"
+
+    confidence = _theme_confidence(resilience, strength_info)
+    tide_score = _theme_tide_score(resilience, strength_info, status)
 
     return {
         "name": name,
@@ -282,9 +427,43 @@ def _build_theme_tide(
         "prev_zt": prev_zt,
         "pre_prev_zt": pre_prev_zt,
         "resilience": _round_or_none(resilience),
+        "strength": _round_or_none(strength_info.get("strength")),
+        "strength_rank": strength_rank,
+        "strength_score": _round_or_none(strength_score),
+        "strength_source": strength_info.get("strength_source") or "",
+        "tide_score": tide_score,
+        "confidence": confidence,
         "warning_level": warning_level,
         "action_hint": action_hint,
     }
+
+
+def _theme_confidence(resilience: float | None, strength_info: dict[str, Any]) -> str:
+    has_resilience = resilience is not None
+    has_strength = strength_info.get("strength_score") is not None or strength_info.get("strength_rank") is not None
+    if has_resilience and has_strength:
+        return "high"
+    if has_resilience or has_strength:
+        return "medium"
+    return "low"
+
+
+def _theme_tide_score(resilience: float | None, strength_info: dict[str, Any], status: str) -> int:
+    base = 50.0
+    if resilience is not None:
+        # 韧性仍是主因子：强弱相对市场表现直接决定潮汐底色。
+        base += max(-35.0, min(35.0, resilience * 0.55))
+    score = strength_info.get("strength_score")
+    rank = strength_info.get("strength_rank")
+    if isinstance(score, (int, float)):
+        base += (float(score) - 50.0) * 0.25
+    if isinstance(rank, (int, float)) and rank > 0:
+        base += max(0.0, 12.0 - float(rank))
+    if status in {"rebound_warning", "volume_rebound"}:
+        base -= 18.0
+    elif status == "confirmed_mainline":
+        base += 8.0
+    return max(0, min(100, round(base)))
 
 
 def _theme_sort_key(theme: dict[str, Any]) -> tuple[int, int, float]:
@@ -321,4 +500,3 @@ def _market_action_hint(
     if any(market.get(k) is not None for k in ("sentiment_delta", "limit_up_delta_pct", "seal_rate_delta_pct")):
         return "潮汐无极端信号，按原系统判断。"
     return "潮汐数据不足，按原系统判断"
-

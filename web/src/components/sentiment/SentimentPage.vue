@@ -19,7 +19,7 @@ const heatColor = (v: number) => {
 const riskColor = (v: number) => {
   const n = Number(v || 0);
   if (n <= 45) return '#16a34a';
-  if (n <= 75) return '#65a30d';
+  if (n <= 75) return '#0db110ff';
   return '#f59e0b';
 };
 

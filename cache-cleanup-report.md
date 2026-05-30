@@ -41,8 +41,7 @@
 
 ## 建议清理
 
-- `market_data-20260519.json`：超出最近 7 个 market_data 快照
-- `market_data-20260520.json`：超出最近 7 个 market_data 快照
+- 无
 
 ## 线上依赖目录
 
