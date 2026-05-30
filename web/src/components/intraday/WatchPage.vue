@@ -733,3 +733,5 @@ onBeforeUnmount(() => {
     </div>
   </Teleport>
 </template>
+
+<style scoped src="./WatchPage.css"></style>

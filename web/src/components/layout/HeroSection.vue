@@ -143,3 +143,5 @@ const emit = defineEmits<{
     </div>
   </header>
 </template>
+
+<style scoped src="./HeroSection.css"></style>

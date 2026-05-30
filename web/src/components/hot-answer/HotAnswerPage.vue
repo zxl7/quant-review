@@ -557,3 +557,5 @@ onMounted(() => {
     <ShortReminderFooter />
   </div>
 </template>
+
+<style scoped src="./HotAnswerPage.css"></style>

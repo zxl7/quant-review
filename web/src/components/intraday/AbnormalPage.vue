@@ -803,3 +803,5 @@ onBeforeUnmount(() => {
     <ShortReminderFooter />
   </div>
 </template>
+
+<style scoped src="./AbnormalPage.css"></style>

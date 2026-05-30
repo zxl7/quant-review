@@ -1,0 +1,135 @@
+@media (min-width: 1100px) {
+  .tabbar {
+    position: relative;
+              left: auto;
+              width: 100%;
+              flex-direction: row;
+              align-items: center;
+              gap: 8px;
+              padding: 8px;
+              border-radius: 999px;
+              background: color-mix(in oklab, var(--bg-card) 84%, rgba(2, 6, 23, 0.03));
+              border: 1px solid color-mix(in oklab, var(--border) 76%, rgba(2, 6, 23, 0.08));
+              box-shadow: 0 10px 30px rgba(2, 6, 23, 0.08);
+              backdrop-filter: blur(10px);
+  }
+  .tab-btn {
+    flex: 1;
+              text-align: center;
+              justify-content: center;
+              padding: 8px 14px;
+              font-size: 13px;
+  }
+  .tab-btn.active {
+    box-shadow: 0 12px 28px rgba(2, 6, 23, 0.1);
+  }
+}
+@media (max-width: 390px) {
+  .tabbar {
+    overflow-x: auto;
+              -webkit-overflow-scrolling: touch;
+  }
+  .tab-btn {
+    flex: 0 0 auto;
+  }
+}
+@media (max-width: 520px) {
+  .tabbar {
+    padding: 8px 8px;
+              gap: 8px;
+  }
+  .tab-btn {
+    padding: 9px 10px;
+              font-size: 12px;
+              min-height: 36px;
+  }
+}
+.tabbar-wrap {
+  position: relative;
+          width: 100%;
+          margin: 6px 0;
+}
+.tabbar {
+  position: relative;
+          left: auto;
+          transform: none;
+          z-index: 200;
+          isolation: isolate;
+          display: flex;
+          gap: 6px;
+          padding: 2px;
+          width: 100%;
+          background: color-mix(in oklab, var(--bg-card) 72%, var(--theme-soft) 28%);
+          border: 1px solid color-mix(in oklab, var(--border) 70%, var(--theme-glow) 30%);
+          border-radius: 999px;
+          backdrop-filter: blur(12px);
+          -webkit-backdrop-filter: blur(12px);
+          box-shadow: var(--shadow-sm);
+          transition: background 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+.tabbar.is-floating {
+  background: color-mix(in oklab, var(--bg-card) 94%, var(--theme-soft) 6%);
+          border-color: color-mix(in oklab, var(--theme-glow) 55%, var(--border) 45%);
+          box-shadow: 0 12px 30px -12px rgba(15, 23, 42, 0.32), 0 4px 12px -6px rgba(15, 23, 42, 0.18);
+          backdrop-filter: blur(18px) saturate(140%);
+          -webkit-backdrop-filter: blur(18px) saturate(140%);
+          animation: tabbarFloatIn 0.22s ease both;
+}
+@keyframes tabbarFloatIn {
+  from { transform: translateY(-6px); opacity: 0.85; }
+          to { transform: translateY(0); opacity: 1; }
+}
+[data-theme="dark"] .tabbar {
+  background: rgba(30, 41, 59, 0.62);
+}
+[data-theme="dark"] .tabbar.is-floating {
+  background: rgba(15, 23, 42, 0.9);
+          box-shadow: 0 14px 32px -14px rgba(0, 0, 0, 0.6), 0 4px 12px -6px rgba(0, 0, 0, 0.45);
+}
+.tab-btn {
+  flex: 1;
+          appearance: none;
+          border: 1px solid transparent;
+          background: transparent;
+          color: var(--text-secondary);
+          border-radius: 999px;
+          padding: 6px 12px;
+          font-size: 12.5px;
+          font-weight: 900;
+          cursor: pointer;
+          transition:
+            background 0.18s ease,
+            transform 0.18s ease,
+            color 0.18s ease;
+}
+.tab-btn:hover {
+  background: rgba(255, 255, 255, 0.18);
+}
+[data-theme="dark"] .tab-btn:hover {
+  background: rgba(148, 163, 184, 0.12);
+}
+.tab-btn.active {
+  color: var(--text-primary);
+          background: var(--bg-card);
+          border-color: rgba(148, 163, 184, 0.18);
+          box-shadow: 0 10px 22px rgba(2, 6, 23, 0.1);
+          transform: translateY(-0.5px);
+}
+.tabbar {
+  background: rgba(255, 255, 255, 0.92);
+          border: 1px solid rgba(15, 23, 42, 0.08);
+          box-shadow: 0 8px 22px rgba(15, 23, 42, 0.06);
+}
+.tab-btn.active {
+  color: #fff;
+          background: var(--theme-accent);
+          border-color: var(--theme-accent);
+          box-shadow: 0 8px 18px rgba(230, 0, 18, 0.16);
+}
+@media (max-width: 600px) {
+  .tab-btn {
+    padding: 8px 9px;
+              font-size: 11px;
+              min-height: 34px;
+  }
+}

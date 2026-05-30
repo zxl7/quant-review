@@ -317,3 +317,5 @@ const selectPlateTheme = (row: any) => {
     <ShortReminderFooter />
   </div>
 </template>
+
+<style scoped src="./ThemesPage.css"></style>

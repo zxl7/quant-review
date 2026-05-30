@@ -30,3 +30,5 @@ const { marketData } = useMarketData();
     <p>K线为王 · 数据先行 · 不虚构不猜测</p>
   </div>
 </template>
+
+<style scoped src="./ShortReminderFooter.css"></style>

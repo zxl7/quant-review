@@ -547,3 +547,5 @@ useECharts(heightChartRef, heightOptions);
     <ShortReminderFooter />
   </div>
 </template>
+
+<style scoped src="./LadderPage.css"></style>

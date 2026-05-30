@@ -95,3 +95,5 @@ const tabbarStyle = computed(() =>
     </div>
   </div>
 </template>
+
+<style scoped src="./TabBar.css"></style>

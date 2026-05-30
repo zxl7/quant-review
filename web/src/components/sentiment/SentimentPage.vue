@@ -585,3 +585,5 @@ useECharts(volumeChartRef, volumeOptions);
     <ShortReminderFooter />
   </div>
 </template>
+
+<style scoped src="./SentimentPage.css"></style>
