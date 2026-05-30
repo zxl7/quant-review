@@ -44,6 +44,7 @@ from daily_review.data.eastmoney_theme import save_tomorrow_snapshot  # noqa: E4
 from daily_review.features.sector_resolver import resolve  # noqa: E402
 from daily_review.features.ladder_builder import build_ladder  # noqa: E402
 from daily_review.features.stock_ranker import build_picks_advisor  # noqa: E402
+from daily_review.metrics.tide import build_tide_signal  # noqa: E402
 
 
 def _now_bj_date() -> str:
@@ -93,6 +94,9 @@ def _build_payload(
         pools_date: pools_cache.ztgc 内取哪一天的涨停数据，通常是上一交易日
     """
     pools_cache = read_json(root / "cache_online" / "pools_cache.json", default={})
+    theme_trend_cache = read_json(root / "cache_online" / "theme_trend_cache.json", default=None)
+    if not isinstance(theme_trend_cache, dict) or not isinstance(theme_trend_cache.get("by_day"), dict):
+        theme_trend_cache = read_json(root / "cache" / "theme_trend_cache.json", default={})
 
     # market_data：优先取与 pools_date 同日；否则取最新
     market_data: dict[str, Any] = {}
@@ -112,10 +116,15 @@ def _build_payload(
         date=pools_date,
         market_data=market_data,
     )
+    tide_signal = build_tide_signal(
+        market_data=market_data,
+        theme_trend_cache=theme_trend_cache if isinstance(theme_trend_cache, dict) else {},
+    )
     picks_advisor = build_picks_advisor(
         ladder=ladder,
         market_data=market_data,
-        top_k_lines=3,
+        tide_signal=tide_signal,
+        top_k_lines=4,
         buy_n=3,
         watch_n=5,
         min_main_line_conf=0.40,
@@ -128,6 +137,7 @@ def _build_payload(
         "pools_date": pools_date,         # 涨停池快照日期
         "sector_resolution": resolution.to_dict(),
         "ladder": ladder.to_dict(),
+        "tide_signal": tide_signal,
         "picks_advisor": picks_advisor.to_dict(),
     }
 
@@ -194,7 +204,11 @@ def main(argv: list[str] | None = None) -> int:
     # 简明 stdout 摘要
     diag = payload["ladder"]["diagnostics"]
     main_lines = payload["ladder"]["main_lines"]
-    print(f"✅ watchlist 已写入: {output_path.relative_to(ROOT)}")
+    try:
+        display_path = output_path.relative_to(ROOT)
+    except ValueError:
+        display_path = output_path
+    print(f"✅ watchlist 已写入: {display_path}")
     print(f"   数据日: {date}  /  涨停池日: {pools_date}")
     print(f"   涨停股: {diag['zt_total']}  /  主线数: {diag['main_lines_total']}")
     print(f"   主线 Top3:")

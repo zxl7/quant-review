@@ -18,6 +18,7 @@ from .sentiment.v3_collapse import V3_COLLAPSE_MODULE
 # ════════════════ 板块题材 (themes/) ════════════════
 from .themes.theme_panels import THEME_PANELS_MODULE
 from .themes.theme_trend import THEME_TREND_MODULE
+from .themes.tide import TIDE_MODULE
 from .themes.theme_layers import THEME_LAYERS_MODULE
 from .themes.theme_ladder_v2 import THEME_LADDER_V2_MODULE
 from .themes.rotation import ROTATION_MODULE
@@ -36,7 +37,6 @@ from .ladder.leader_dragon_v2 import LEADER_DRAGON_V2_MODULE
 # ════════════════ 明日计划 (plan/) ════════════════
 from .plan.action_guide import ACTION_GUIDE_MODULE
 from .plan.action_sheet import ACTION_SHEET_MODULE
-from .plan.picks_advisor import PICKS_ADVISOR_MODULE
 from .plan.strategy_v2 import STRATEGY_V2_MODULE
 from .plan.position_v2 import POSITION_V2_MODULE
 from .plan.psychology_v2 import PSYCHOLOGY_V2_MODULE
@@ -93,6 +93,7 @@ ALL_MODULES = [
     ZTGC_MODULE,
     THEME_PANELS_MODULE,
     THEME_TREND_MODULE,
+    TIDE_MODULE,
     VOLUME_MODULE,
     HEIGHT_TREND_MODULE,
     TOP10_MODULE,
@@ -117,7 +118,6 @@ ALL_MODULES = [
     SENTIMENT_SPEC_MODULE,
     ZT_ANALYSIS_MODULE,
     ACTION_SHEET_MODULE,
-    PICKS_ADVISOR_MODULE,
     ACTION_GUIDE_MODULE,
     SUMMARY3_MODULE,
     LEARNING_NOTES_MODULE,

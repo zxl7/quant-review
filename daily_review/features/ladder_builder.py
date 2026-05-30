@@ -358,6 +358,7 @@ def _score_main_line(
             if code in cells:
                 stock_codes.add(code)
     biying_signal = min(1.0, len(stock_codes) / 6.0)
+    max_lbc = max((cells[code].lbc for code in stock_codes if code in cells), default=0)
 
     # em_signal：取链内最优 rank（越小越好），有 hot 加成
     best_rank: int | None = None
@@ -391,6 +392,14 @@ def _score_main_line(
     xgb_signal = min(1.0, total_events / 5.0 + (0.2 if has_xgb_desc else 0.0))
 
     confidence = 0.40 * biying_signal + 0.35 * em_signal + 0.25 * xgb_signal
+    # 给带空间板的主线一点额外权重，避免高位锚定题材被纯题材热度挤掉。
+    if max_lbc >= 5:
+        confidence += 0.12
+    elif max_lbc >= 4:
+        confidence += 0.08
+    elif max_lbc >= 3:
+        confidence += 0.04
+    confidence = min(1.0, confidence)
 
     # 领头股：构成股按 (lbc, score, cje) 倒序取前 5
     leading = sorted(

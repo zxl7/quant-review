@@ -22,6 +22,7 @@ from dataclasses import dataclass, field
 from typing import Any, Literal, Dict, List, Tuple
 
 from daily_review.features.ladder_builder import LadderResult, MainLine, TierCell
+from daily_review.features.sector_resolver import normalize_sector
 
 
 # ===========================================================================
@@ -81,6 +82,8 @@ class StockScore:
     style_tag: str = ""
     style_confidence: int = 0
     relay_power_score: int = 0
+    tide_status: str = ""
+    tide_adjust: int = 0
 
     def to_dict(self) -> dict[str, Any]:
         """转换为前端消费的字典格式"""
@@ -109,6 +112,8 @@ class StockScore:
             "style_tag": self.style_tag,
             "style_confidence": self.style_confidence,
             "relay_power_score": self.relay_power_score,
+            "tide_status": self.tide_status,
+            "tide_adjust": self.tide_adjust,
         }
 
 @dataclass
@@ -570,6 +575,7 @@ def build_picks_advisor(
     *,
     ladder: LadderResult,
     market_data: dict[str, Any] | None = None,
+    tide_signal: dict[str, Any] | None = None,
     top_k_lines: int = 3,
     buy_n: int = 3,
     watch_n: int = 5,
@@ -588,6 +594,7 @@ def build_picks_advisor(
     ls_map = _build_leaders_score_map(market_data) if market_data else {}
     zt_map = _build_zt_analysis_map(market_data) if market_data else {}
     env_ctx = _build_market_env_context(market_data) if market_data else {}
+    tide_map = _build_tide_theme_map(tide_signal)
     all_cells = {c.code: c for tier in ladder.tiers.values() for c in tier}
     
     # 预计算板块涨停数
@@ -645,6 +652,19 @@ def build_picks_advisor(
 
         if not ml_members:
             continue
+
+        tide_theme = _match_tide_theme(ml, tide_map)
+        tide_adjust = _tide_adjust(tide_theme)
+        if tide_adjust:
+            tide_reason, tide_caution = _tide_labels(tide_theme)
+            for s in ml_members:
+                s.score = max(0, min(100, s.score + tide_adjust))
+                s.tide_status = str((tide_theme or {}).get("status") or "")
+                s.tide_adjust = tide_adjust
+                if tide_reason:
+                    s.reasons = list(dict.fromkeys([*s.reasons, tide_reason]))
+                if tide_caution:
+                    s.cautions = list(dict.fromkeys([*s.cautions, tide_caution]))
 
         # 3. 筛选策略 (Selection Strategy)
         ml_members.sort(
@@ -719,6 +739,9 @@ def build_picks_advisor(
                     "env_gate": env_ctx.get("gate"),
                     "relay_hits": sum(1 for s in ml_members if s.zt_placement == "relay"),
                     "line_penalty": line_penalty,
+                    "tide_status": (tide_theme or {}).get("status") or "",
+                    "tide_adjust": tide_adjust,
+                    "tide_hint": (tide_theme or {}).get("action_hint") or "",
                 }
             )
         )
@@ -733,6 +756,8 @@ def build_picks_advisor(
             "main_lines_processed": len(main_line_picks),
             "market_gate": env_ctx.get("gate"),
             "market_cycle": env_ctx.get("cycle"),
+            "tide_market_ebb": bool(((tide_signal or {}).get("market") or {}).get("is_ebb_day"))
+            if isinstance(tide_signal, dict) else False,
         }
     )
 
@@ -800,6 +825,100 @@ def _build_market_env_context(market_data: dict[str, Any]) -> dict[str, Any]:
         "posture": str((action_advisor or {}).get("posture") or ""),
         "score": float(score or 0.0),
     }
+
+
+def _normalize_theme_name(name: Any) -> str:
+    text = str(normalize_sector(str(name or "").strip()) or "").strip().lower()
+    for ch in (" ", "\t", "\n", "·", "・", "-", "_", "/", "\\", "（", "）", "(", ")"):
+        text = text.replace(ch, "")
+    for suffix in ("概念", "板块", "产业链", "方向", "行情"):
+        if text.endswith(suffix):
+            text = text[: -len(suffix)]
+    return text
+
+
+def _build_tide_theme_map(tide_signal: dict[str, Any] | None) -> dict[str, dict[str, Any]]:
+    if not isinstance(tide_signal, dict):
+        return {}
+    rows = tide_signal.get("themes")
+    if not isinstance(rows, list):
+        return {}
+    out: dict[str, dict[str, Any]] = {}
+    for row in rows:
+        if not isinstance(row, dict):
+            continue
+        name = str(row.get("name") or "").strip()
+        key = _normalize_theme_name(name)
+        if key:
+            prev = out.get(key)
+            if prev is None or _tide_match_priority(row) > _tide_match_priority(prev):
+                out[key] = row
+    return out
+
+
+def _tide_match_priority(theme: dict[str, Any]) -> tuple[int, int, float]:
+    status = str(theme.get("status") or "")
+    priority = {
+        "rebound_warning": 70,
+        "volume_rebound": 60,
+        "confirmed_mainline": 50,
+        "traverse_candidate": 45,
+        "micro_traverse": 35,
+        "neutral": 20,
+        "weak": 10,
+    }.get(status, 0)
+    return (
+        priority,
+        int(theme.get("today_zt") or 0),
+        float(theme.get("resilience") or -999),
+    )
+
+
+def _match_tide_theme(ml: MainLine, tide_map: dict[str, dict[str, Any]]) -> dict[str, Any] | None:
+    if not tide_map:
+        return None
+    candidates = [ml.name, *ml.constituents]
+    keys = [_normalize_theme_name(x) for x in candidates if _normalize_theme_name(x)]
+    for key in keys:
+        if key in tide_map:
+            return tide_map[key]
+    for key in keys:
+        for tide_key, theme in tide_map.items():
+            if not tide_key:
+                continue
+            if key in tide_key or tide_key in key:
+                return theme
+    return None
+
+
+def _tide_adjust(theme: dict[str, Any] | None) -> int:
+    status = str((theme or {}).get("status") or "")
+    return {
+        "confirmed_mainline": 8,
+        "traverse_candidate": 5,
+        "micro_traverse": 3,
+        "rebound_warning": -12,
+        "volume_rebound": -7,
+        "weak": -4,
+        "neutral": 0,
+    }.get(status, 0)
+
+
+def _tide_labels(theme: dict[str, Any] | None) -> tuple[str, str]:
+    status = str((theme or {}).get("status") or "")
+    if status == "confirmed_mainline":
+        return "潮汐确认主线", ""
+    if status == "traverse_candidate":
+        return "潮汐穿越候选", ""
+    if status == "micro_traverse":
+        return "潮汐微穿越", ""
+    if status == "rebound_warning":
+        return "", "潮汐回光返照"
+    if status == "volume_rebound":
+        return "", "缩量反弹"
+    if status == "weak":
+        return "", "潮汐弱势"
+    return "", ""
 
 
 def _style_rank(tag: str) -> int:

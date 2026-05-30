@@ -133,7 +133,7 @@ const ztDebugPlacementClass = (placement: string) => {
 
 const ztTagRows = (row: any) => Array.isArray(row?.tagRows) ? row.tagRows : [];
 
-// 算法建议（picks_advisor）：来自 inject_data.py 透传的 watchlist.picks_advisor
+// 推荐线：来自 watchlist.picks_advisor，合并展示在板块·梯队推票内。
 type PickStock = {
   code: string; name: string; action: string; score: number;
   main_line: string; primary_sector: string; primary_confidence: number;
@@ -143,12 +143,32 @@ type PickStock = {
   relay_power_score?: number;
   style_tag?: string;
   style_confidence?: number;
+  tide_status?: string;
+  tide_adjust?: number;
 };
 
 type MainLinePicks = {
   main_line: string; confidence: number; is_chain: boolean; constituents: string[];
   buy: PickStock[]; watch: PickStock[]; summary: string;
-  diagnostics?: { member_count: number; avg_score: number };
+  diagnostics?: { member_count: number; avg_score: number; tide_status?: string; tide_adjust?: number; tide_hint?: string };
+};
+
+type TideTheme = {
+  name: string;
+  status: 'traverse_candidate' | 'confirmed_mainline' | 'micro_traverse' | 'rebound_warning' | 'volume_rebound' | 'weak' | 'neutral';
+  today_zt: number;
+  prev_zt: number | null;
+  pre_prev_zt: number | null;
+  resilience: number | null;
+  warning_level: 'none' | 'watch' | 'risk' | 'danger';
+  action_hint: string;
+};
+
+type TideSignal = {
+  date: string;
+  market?: { is_ebb_day?: boolean; trigger_count?: number; triggers?: string[] };
+  themes?: TideTheme[];
+  summary?: { action_hint?: string };
 };
 
 const picksAdvisor = computed(() => {
@@ -163,6 +183,74 @@ const picksAdvisor = computed(() => {
     generated_at_bj: (marketData.value as any)?.watchlist?.generated_at_bj || '',
   };
 });
+
+const tideSignal = computed<TideSignal | null>(() => {
+  const md = marketData.value as any;
+  const fromWatchlist = md?.watchlist?.tide_signal;
+  if (fromWatchlist && typeof fromWatchlist === 'object') return fromWatchlist as TideSignal;
+  const fromMarket = md?.tideSignal;
+  if (fromMarket && typeof fromMarket === 'object') return fromMarket as TideSignal;
+  return null;
+});
+
+const tideThemeRows = computed(() => Array.isArray(tideSignal.value?.themes) ? tideSignal.value!.themes! : []);
+
+const tideThemeMatches = (tide: TideTheme, names: string[]) => {
+  const key = normalizeThemeName(tide.name || '');
+  if (!key) return false;
+  return names.some((raw) => {
+    const name = normalizeThemeName(raw);
+    return !!name && (name === key || name.includes(key) || key.includes(name));
+  });
+};
+
+const tideThemeForBucket = (theme: string, matched: string[] = [], advisor?: MainLinePicks | null) => {
+  const names = [theme, ...matched, advisor?.main_line || '', ...(advisor?.constituents || [])].filter(Boolean);
+  return tideThemeRows.value.find((row) => tideThemeMatches(row, names)) || null;
+};
+
+const tideStatusLabel = (status?: string) => {
+  const labels: Record<string, string> = {
+    confirmed_mainline: '确认主线',
+    traverse_candidate: '退潮穿越',
+    micro_traverse: '微型穿越',
+    rebound_warning: '回光返照',
+    volume_rebound: '缩量反弹',
+    weak: '潮汐退潮',
+    neutral: '中性观察',
+  };
+  return labels[String(status || '')] || '';
+};
+
+const tideHintClass = (level?: string) => {
+  if (level === 'danger' || level === 'risk') return 'stp-tide-hint is-risk';
+  if (level === 'watch') return 'stp-tide-hint is-watch';
+  return 'stp-tide-hint';
+};
+
+const formatResilience = (v: number | null | undefined) => {
+  if (v === null || v === undefined || Number.isNaN(Number(v))) return '';
+  const n = Number(v);
+  return `${n >= 0 ? '+' : ''}${n.toFixed(1)}`;
+};
+
+const tideCornerClass = (status?: string) => {
+  if (status === 'confirmed_mainline') return 'is-main';
+  if (status === 'traverse_candidate' || status === 'micro_traverse') return 'is-watch';
+  if (status === 'rebound_warning' || status === 'volume_rebound') return 'is-risk';
+  if (status === 'weak') return 'is-weak';
+  return 'is-neutral';
+};
+
+const tideCornerText = (tide?: TideTheme | null) => {
+  if (!tide) return '潮汐不足';
+  const label = tideStatusLabel(tide.status) || '潮汐中性';
+  if (tide.status === 'rebound_warning' || tide.status === 'volume_rebound') {
+    return `${label} · 不开新仓`;
+  }
+  const resilience = formatResilience(tide.resilience);
+  return resilience ? `${label} · ${resilience}` : label;
+};
 
 const confClass = (c: number) => {
   if (c >= 0.7) return 'conf-strong';
@@ -186,6 +274,30 @@ const pickPrimaryTag = (s: PickStock) => {
 
 const pickReasonBrief = (s: PickStock) => Array.isArray(s.reasons) ? s.reasons.slice(0, 2) : [];
 const pickCautionBrief = (s: PickStock) => Array.isArray(s.cautions) ? s.cautions.slice(0, 1) : [];
+const advisorMatchesTheme = (ml: MainLinePicks, theme: string, matched: string[] = []) => {
+  const names = [theme, ...matched].map((x) => normalizeThemeName(x)).filter(Boolean);
+  const main = normalizeThemeName(ml.main_line);
+  const constituents = (ml.constituents || []).map((x) => normalizeThemeName(x)).filter(Boolean);
+  return names.some((name) => {
+    if (!name) return false;
+    if (main && (name === main || name.includes(main) || main.includes(name))) return true;
+    return constituents.some((c) => c === name || name.includes(c) || c.includes(name));
+  });
+};
+const advisorForBucket = (theme: string, matched: string[] = []) => {
+  const rows = picksAdvisor.value?.main_line_picks || [];
+  return rows.find((ml) => advisorMatchesTheme(ml, theme, matched)) || null;
+};
+const advisorStockToZtPick = (s: PickStock): ZtStockPick => ({
+  code: String(s.code || '').trim(),
+  name: String(s.name || s.code || '').trim(),
+  lbc: Number(s.lbc || 0),
+  cjeYi: Number(s.cje_yi || 0),
+  zjYi: Number(s.seal_fund_yi || 0),
+  zbc: 0,
+  source: 'local',
+  score: Number(s.score || 0),
+});
 
 // watchlist 反向索引：code → { primary_sector, primary_confidence, main_line, main_line_confidence }
 // 数据来自 inject_data.py 的 _build_watchlist_stock_index（M3/M4 多源融合结果）。
@@ -220,7 +332,7 @@ type ZtStockPick = {
 
 type SectorBucket = {
   theme: string;
-  source: 'realtime' | 'fallback';
+  source: 'realtime' | 'fallback' | 'advisor';
   sources: string[];
   description: string;
   count: number;
@@ -234,6 +346,8 @@ type SectorBucket = {
   resonanceScore: number;
   themeScore: number;
   themeTags: Array<{ text: string; cls: string }>;
+  advisor?: MainLinePicks | null;
+  tide?: TideTheme | null;
 };
 
 const plateStrengthByName = computed(() => {
@@ -402,7 +516,7 @@ const calculateResonanceScore = (
 const makeBucket = (
   plateId: string,
   theme: string,
-  source: 'realtime' | 'fallback',
+  source: 'realtime' | 'fallback' | 'advisor',
   sources: string[],
   description: string,
   stocks: ZtStockPick[],
@@ -427,6 +541,8 @@ const makeBucket = (
   const mergedStocks = Array.from(mergedMap.values());
   const maxLbc = mergedStocks[0]?.lbc || 0;
   const plateInfo = plateStrengthByName.value.get(theme) || (matched.length ? plateStrengthByName.value.get(matched[0]) : undefined);
+  const advisor = advisorForBucket(theme, matched);
+  const tide = tideThemeForBucket(theme, matched, advisor);
   const resonanceScore = calculateResonanceScore(sources, mergedStocks, plateInfo?.strength);
   const scoredStocks = mergedStocks
     .map((stock) => {
@@ -457,6 +573,8 @@ const makeBucket = (
     resonanceScore,
     themeScore,
     themeTags,
+    advisor,
+    tide,
   };
 };
 
@@ -528,6 +646,19 @@ const sectorTierPicks = computed<SectorBucket[]>(() => {
     // (已经包含在 realtimeBuckets,无需额外动作)
   }
 
+  (picksAdvisor.value?.main_line_picks || []).forEach((ml) => {
+    const exists = buckets.some((bucket) => advisorMatchesTheme(ml, bucket.theme, bucket.matchedLocalThemes));
+    if (exists) return;
+    const { stocks, matched } = aggregateStocksForTheme(ml.main_line);
+    const advisorStocks = [...(ml.buy || []), ...(ml.watch || [])].map(advisorStockToZtPick).filter((s) => s.code);
+    const merged = new Map<string, ZtStockPick>();
+    [...advisorStocks, ...stocks].forEach((s) => {
+      if (!s.code || merged.has(s.code)) return;
+      merged.set(s.code, s);
+    });
+    buckets.push(makeBucket('', ml.main_line, 'advisor', ['推荐线'], ml.summary || '', Array.from(merged.values()), matched));
+  });
+
   // 排序:共振评分优先 → 有涨停股的在前 → maxLbc
   buckets.sort((a, b) => {
     if (b.resonanceScore !== a.resonanceScore) return b.resonanceScore - a.resonanceScore;
@@ -550,6 +681,7 @@ const sectorPicksMeta = computed(() => {
     bucketTotal: buckets.length,
     realtimeCnt,
     fallbackUsed,
+    advisorCnt: buckets.filter((b) => b.advisor).length,
     xgbCnt: xgbPlates.value.length,
     tmrCnt: tmrThemes.value.length,
     tmrHotCnt: tmrThemes.value.filter((t) => t.isHot).length,
@@ -622,62 +754,6 @@ const sectorPicksMeta = computed(() => {
       </div>
     </div>
 
-    <div class="card" data-page="plan" id="sec-picks-advisor" v-if="picksAdvisor">
-      <div class="card-header">
-        <div>
-          <div class="card-title">算法建议（买入 · 观察）</div>
-          <div class="advisor-subtitle">
-            <strong class="orange-text">{{ picksAdvisor.diagnostics?.total_buy ?? 0 }}</strong> 买入 /
-            <strong class="blue-text">{{ picksAdvisor.diagnostics?.total_watch ?? 0 }}</strong> 观察
-            <span class="advisor-meta" v-if="picksAdvisor.generated_at_bj">· 更新 {{ picksAdvisor.generated_at_bj.slice(11, 16) }}</span>
-          </div>
-        </div>
-      </div>
-      <div class="advisor-grid">
-        <div class="advisor-mainline" v-for="ml in picksAdvisor.main_line_picks" :key="'adv-ml-'+ml.main_line">
-          <div class="advisor-ml-header">
-            <span class="advisor-ml-name">{{ ml.main_line }}</span>
-            <span class="advisor-ml-chain" v-if="ml.is_chain" :title="ml.constituents.join('·')">产业链</span>
-            <span class="advisor-ml-count">{{ ml.diagnostics?.member_count ?? 0 }}只成员</span>
-          </div>
-
-          <div class="advisor-section" v-if="ml.buy?.length">
-            <div class="advisor-label advisor-label-buy">推荐</div>
-            <div class="advisor-row advisor-row-buy" v-for="s in ml.buy" :key="'b-'+s.code">
-              <div class="advisor-row-top">
-                <a class="advisor-name" :href="xqUrl(s.code)" target="_blank" rel="noopener noreferrer">{{ s.name }}</a>
-                <div class="advisor-meta-row">
-                  <span class="advisor-score" :class="scoreClass(s.score)" title="算法评分">评 {{ s.score }}</span>
-                  <span v-if="pickPrimaryTag(s)" class="advisor-tier">{{ pickPrimaryTag(s) }}</span>
-                </div>
-              </div>
-              <div class="advisor-reasons" v-if="pickReasonBrief(s).length">
-                <span class="advisor-reason" v-for="(r, ri) in pickReasonBrief(s)" :key="'r-'+s.code+'-'+ri">{{ r }}</span>
-              </div>
-              <div class="advisor-cautions" v-if="pickCautionBrief(s).length">
-                <span class="advisor-caution" v-for="(c, ci) in pickCautionBrief(s)" :key="'c-'+s.code+'-'+ci">{{ c }}</span>
-              </div>
-            </div>
-          </div>
-
-          <div class="advisor-section" v-if="ml.watch?.length">
-            <div class="advisor-label advisor-label-watch">观察</div>
-            <div class="advisor-watch-grid">
-              <a class="advisor-watch-item" v-for="s in ml.watch" :key="'w-'+s.code"
-                :href="xqUrl(s.code)" target="_blank" rel="noopener noreferrer"
-                :title="s.reasons.join(' · ')">
-                <span class="advisor-name">{{ s.name }}</span>
-                <span class="advisor-watch-score" :class="scoreClass(s.score)">{{ s.score }}</span>
-                <span class="advisor-watch-lbc" v-if="pickPrimaryTag(s)">{{ pickPrimaryTag(s) }}</span>
-              </a>
-            </div>
-          </div>
-
-          <div class="advisor-summary">{{ ml.summary }}</div>
-        </div>
-      </div>
-    </div>
-
     <div class="card" data-page="plan" id="sec-sector-tier-picks" v-if="sectorTierPicks.length">
       <div class="card-header">
         <div>
@@ -689,6 +765,10 @@ const sectorPicksMeta = computed(() => {
              {{ sectorPicksMeta.xgbCnt }}
             <span class="stp-sep">·</span>
              {{ sectorPicksMeta.tmrHotCnt }}/{{ sectorPicksMeta.tmrCnt }}
+            <template v-if="sectorPicksMeta.advisorCnt">
+              <span class="stp-sep">·</span>
+              推荐线 <strong>{{ sectorPicksMeta.advisorCnt }}</strong>
+            </template>
             <template v-if="sectorPicksMeta.fallbackUsed">
               <span class="stp-sep">·</span>
               <span class="orange-text" style="font-weight: 900" title="实时接口无数据,退回本地涨停归集">⚠ 本地兜底</span>
@@ -702,7 +782,7 @@ const sectorPicksMeta = computed(() => {
           v-for="(bucket, i) in sectorTierPicks"
           :key="'stp-'+bucket.theme+'-'+i"
           class="sector-tier-card"
-          :class="[bucket.source === 'realtime' ? 'is-realtime' : 'is-fallback', !bucket.count ? 'is-empty' : '']">
+          :class="[bucket.source === 'realtime' ? 'is-realtime' : bucket.source === 'advisor' ? 'is-advisor' : 'is-fallback', !bucket.count ? 'is-empty' : '']">
           <div class="stp-head">
             <div class="stp-name">
               <span class="stp-rank">{{ i + 1 }}</span>
@@ -710,10 +790,11 @@ const sectorPicksMeta = computed(() => {
               <span class="stp-theme-score" :class="scoreClass(bucket.themeScore)">主题 {{ bucket.themeScore }}</span>
               <span class="stp-resonance-badge" :class="scoreClass(bucket.resonanceScore)">共振 {{ bucket.resonanceScore }}</span>
             </div>
-            <span class="stp-source-pill" :class="bucket.sources[0] && bucket.sources[0].includes('选股宝') ? 'src-xgb' : (bucket.sources[0] && bucket.sources[0].includes('东财') ? 'src-tmr' : 'src-local')" :title="bucket.sources.join(' · ')">
-              <template v-if="bucket.sources[0] && bucket.sources[0].includes('选股宝')">🔥 选股宝</template>
-              <template v-else-if="bucket.sources[0] && bucket.sources[0].includes('东财')">⏭ 东财明日</template>
-              <template v-else>本地</template>
+            <span
+              class="stp-tide-corner"
+              :class="tideCornerClass(bucket.tide?.status)"
+              :title="bucket.tide?.action_hint || '潮汐数据不足，按原系统判断'">
+              {{ tideCornerText(bucket.tide) }}
             </span>
           </div>
           <div class="stp-tag-row" v-if="bucket.themeTags?.length">
@@ -731,7 +812,50 @@ const sectorPicksMeta = computed(() => {
               梯队阵型：<strong>{{ getEchelonFormation(bucket) }}</strong>
             </div>
           </div>
+          <div
+            v-if="bucket.tide && bucket.tide.action_hint && bucket.tide.status !== 'neutral'"
+            :class="tideHintClass(bucket.tide.warning_level)">
+            {{ bucket.tide.action_hint }}
+          </div>
           <div class="stp-desc" v-if="bucket.description" :title="bucket.description">{{ bucket.description }}</div>
+          <div class="stp-advisor" v-if="bucket.advisor">
+            <div class="stp-advisor-head">
+              <span>推票明细</span>
+              <span v-if="bucket.advisor.diagnostics?.member_count">{{ bucket.advisor.diagnostics.member_count }}只成员</span>
+            </div>
+            <div class="stp-advisor-section" v-if="bucket.advisor.buy?.length">
+              <div class="stp-advisor-label buy">推荐</div>
+              <a
+                class="stp-advisor-row buy"
+                v-for="s in bucket.advisor.buy"
+                :key="'stp-buy-'+bucket.theme+'-'+s.code"
+                :href="xqUrl(s.code)"
+                target="_blank"
+                rel="noopener noreferrer">
+                <span class="stp-advisor-name">{{ s.name }}</span>
+                <span class="stp-advisor-score" :class="scoreClass(s.score)">评 {{ s.score }}</span>
+                <span class="stp-advisor-tag" v-if="pickPrimaryTag(s)">{{ pickPrimaryTag(s) }}</span>
+                <span class="stp-advisor-reason" v-for="(r, ri) in pickReasonBrief(s)" :key="'stp-buy-r-'+s.code+'-'+ri">{{ r }}</span>
+              </a>
+            </div>
+            <div class="stp-advisor-section" v-if="bucket.advisor.watch?.length">
+              <div class="stp-advisor-label watch">观察</div>
+              <div class="stp-advisor-watch">
+                <a
+                  class="stp-advisor-watch-item"
+                  v-for="s in bucket.advisor.watch"
+                  :key="'stp-watch-'+bucket.theme+'-'+s.code"
+                  :href="xqUrl(s.code)"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  :title="s.reasons.join(' · ')">
+                  <span>{{ s.name }}</span>
+                  <strong :class="scoreClass(s.score)">{{ s.score }}</strong>
+                  <em v-if="pickPrimaryTag(s)">{{ pickPrimaryTag(s) }}</em>
+                </a>
+              </div>
+            </div>
+          </div>
           <div class="stp-empty" v-if="!bucket.count">
             narrative 热但涨停池暂未跟上 · 留意首板异动
           </div>
@@ -1204,6 +1328,246 @@ const sectorPicksMeta = computed(() => {
   background: rgba(20, 184, 166, 0.08);
 }
 
+:deep(.sector-tier-card.is-advisor) {
+  border-color: rgba(230, 0, 18, 0.16);
+  background:
+    linear-gradient(135deg, rgba(255, 241, 242, 0.52), rgba(255, 255, 255, 0.72)),
+    var(--bg-card);
+}
+
+.stp-advisor {
+  margin-top: 10px;
+  padding: 9px 10px;
+  border-radius: 8px;
+  border: 1px solid rgba(230, 0, 18, 0.12);
+  background: linear-gradient(135deg, rgba(255, 247, 247, 0.84), rgba(255, 255, 255, 0.72));
+}
+
+.stp-advisor-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 7px;
+  color: var(--text-secondary);
+  font-size: 11px;
+  font-weight: 950;
+}
+
+.stp-advisor-head span:first-child {
+  color: #b91c1c;
+}
+
+.stp-advisor-section + .stp-advisor-section {
+  margin-top: 8px;
+}
+
+.stp-advisor-label {
+  margin-bottom: 5px;
+  font-size: 10.5px;
+  font-weight: 950;
+}
+
+.stp-advisor-label.buy {
+  color: var(--danger);
+}
+
+.stp-advisor-label.watch {
+  color: var(--warning);
+}
+
+.stp-advisor-row {
+  display: grid;
+  grid-template-columns: minmax(66px, 1fr) auto auto;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 0;
+  color: var(--text-primary);
+  text-decoration: none;
+  border-top: 1px dashed rgba(148, 163, 184, 0.18);
+}
+
+.stp-advisor-row:first-of-type {
+  border-top: 0;
+}
+
+.stp-advisor-name {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 13px;
+  font-weight: 950;
+}
+
+.stp-advisor-score,
+.stp-advisor-tag {
+  white-space: nowrap;
+  border-radius: 6px;
+  border: 1px solid rgba(148, 163, 184, 0.18);
+  padding: 1px 6px;
+  font-size: 10.5px;
+  font-weight: 950;
+  background: rgba(255, 255, 255, 0.72);
+}
+
+.stp-advisor-reason {
+  grid-column: 1 / -1;
+  color: var(--text-muted);
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.stp-advisor-watch {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.stp-advisor-watch-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  min-width: 0;
+  max-width: 100%;
+  color: var(--text-secondary);
+  text-decoration: none;
+  border: 1px solid rgba(148, 163, 184, 0.18);
+  border-radius: 7px;
+  padding: 4px 7px;
+  background: rgba(255, 255, 255, 0.68);
+  font-size: 11.5px;
+  font-weight: 850;
+}
+
+.stp-advisor-watch-item span {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.stp-advisor-watch-item strong {
+  font-size: 10.5px;
+}
+
+.stp-advisor-watch-item em {
+  color: var(--text-muted);
+  font-style: normal;
+  font-size: 10px;
+}
+
+.stp-tide-corner {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  max-width: 168px;
+  min-height: 22px;
+  padding: 0 9px;
+  border-radius: 999px;
+  border: 1px solid rgba(148, 163, 184, 0.22);
+  background: rgba(248, 250, 252, 0.82);
+  color: var(--text-secondary);
+  box-shadow: 0 8px 18px rgba(15, 23, 42, 0.06);
+  font-size: 10.5px;
+  font-weight: 950;
+  line-height: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.stp-tide-corner.is-main {
+  color: #b91c1c;
+  border-color: rgba(239, 68, 68, 0.24);
+  background: rgba(254, 226, 226, 0.68);
+}
+
+.stp-tide-corner.is-watch {
+  color: #b45309;
+  border-color: rgba(245, 158, 11, 0.28);
+  background: rgba(254, 243, 199, 0.72);
+}
+
+.stp-tide-corner.is-risk {
+  color: #7f1d1d;
+  border-color: rgba(185, 28, 28, 0.3);
+  background: linear-gradient(135deg, rgba(254, 202, 202, 0.86), rgba(255, 247, 237, 0.7));
+}
+
+.stp-tide-corner.is-weak {
+  color: #475569;
+  border-color: rgba(100, 116, 139, 0.26);
+  background: rgba(241, 245, 249, 0.82);
+}
+
+.stp-tide-corner.is-neutral {
+  color: #64748b;
+}
+
+.stp-tide-hint {
+  margin-top: 7px;
+  padding: 7px 9px;
+  border-radius: 8px;
+  border: 1px dashed rgba(148, 163, 184, 0.22);
+  background: rgba(248, 250, 252, 0.72);
+  color: var(--text-secondary);
+  font-size: 11.5px;
+  font-weight: 850;
+  line-height: 1.55;
+}
+
+.stp-tide-hint.is-watch {
+  border-color: rgba(245, 158, 11, 0.28);
+  background: rgba(255, 251, 235, 0.78);
+  color: #92400e;
+}
+
+.stp-tide-hint.is-risk {
+  border-color: rgba(239, 68, 68, 0.28);
+  background: rgba(254, 242, 242, 0.78);
+  color: #991b1b;
+}
+
+[data-theme="dark"] :deep(.sector-tier-card.is-advisor) {
+  background:
+    linear-gradient(135deg, rgba(69, 10, 10, 0.2), rgba(15, 23, 42, 0.62)),
+    var(--bg-card);
+}
+
+[data-theme="dark"] .stp-advisor {
+  background: linear-gradient(135deg, rgba(69, 10, 10, 0.28), rgba(15, 23, 42, 0.54));
+  border-color: rgba(248, 113, 113, 0.18);
+}
+
+[data-theme="dark"] .stp-advisor-score,
+[data-theme="dark"] .stp-advisor-tag,
+[data-theme="dark"] .stp-advisor-watch-item {
+  background: rgba(15, 23, 42, 0.58);
+}
+
+[data-theme="dark"] .stp-tide-corner,
+[data-theme="dark"] .stp-tide-hint {
+  background: rgba(15, 23, 42, 0.58);
+  border-color: rgba(148, 163, 184, 0.22);
+}
+
+[data-theme="dark"] .stp-tide-corner.is-main,
+[data-theme="dark"] .stp-tide-corner.is-risk,
+[data-theme="dark"] .stp-tide-hint.is-risk {
+  color: #fecaca;
+  background: rgba(127, 29, 29, 0.28);
+  border-color: rgba(248, 113, 113, 0.24);
+}
+
+[data-theme="dark"] .stp-tide-corner.is-watch,
+[data-theme="dark"] .stp-tide-hint.is-watch {
+  color: #fde68a;
+  background: rgba(120, 53, 15, 0.24);
+  border-color: rgba(251, 191, 36, 0.24);
+}
+
 @media (max-width: 760px) {
   .zt-header-actions {
     width: 100%;
@@ -1222,6 +1586,15 @@ const sectorPicksMeta = computed(() => {
 
   .zt-debug-score {
     justify-items: start;
+  }
+
+  .stp-advisor-row {
+    grid-template-columns: 1fr auto;
+  }
+
+  .stp-advisor-tag {
+    grid-column: 1 / -1;
+    justify-self: start;
   }
 }
 </style>

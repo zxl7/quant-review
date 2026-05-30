@@ -197,6 +197,11 @@ def _enhance_with_watchlist(md: dict, watchlist: dict) -> None:
     if isinstance(picks, dict) and picks.get("main_line_picks"):
         md["picks_advisor"] = picks
 
+    # ---- 5. tide_signal 提级到顶层（watchlist 口径优先） ----
+    tide = watchlist.get("tide_signal")
+    if isinstance(tide, dict):
+        md["tideSignal"] = tide
+
 
 def inject(date8: str, source: Optional[str] = None) -> Path:
     """注入数据并返回输出路径"""
