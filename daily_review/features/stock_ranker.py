@@ -576,6 +576,7 @@ def build_picks_advisor(
     ladder: LadderResult,
     market_data: dict[str, Any] | None = None,
     tide_signal: dict[str, Any] | None = None,
+    core_tide_signal: dict[str, Any] | None = None,
     top_k_lines: int = 3,
     buy_n: int = 3,
     watch_n: int = 5,
@@ -594,7 +595,9 @@ def build_picks_advisor(
     ls_map = _build_leaders_score_map(market_data) if market_data else {}
     zt_map = _build_zt_analysis_map(market_data) if market_data else {}
     env_ctx = _build_market_env_context(market_data) if market_data else {}
-    tide_map = _build_tide_theme_map(tide_signal)
+    # 推荐线只消费统一潮汐产物：优先核心潮汐，缺失时兜底基础 tideSignal。
+    tide_source = core_tide_signal if isinstance(core_tide_signal, dict) and core_tide_signal.get("themes") else tide_signal
+    tide_map = _build_tide_theme_map(tide_source)
     all_cells = {c.code: c for tier in ladder.tiers.values() for c in tier}
     
     # 预计算板块涨停数
@@ -758,6 +761,8 @@ def build_picks_advisor(
             "market_cycle": env_ctx.get("cycle"),
             "tide_market_ebb": bool(((tide_signal or {}).get("market") or {}).get("is_ebb_day"))
             if isinstance(tide_signal, dict) else False,
+            "core_tide_status": str(((core_tide_signal or {}).get("marketRegime") or {}).get("status") or "")
+            if isinstance(core_tide_signal, dict) else "",
         }
     )
 
@@ -857,8 +862,15 @@ def _build_tide_theme_map(tide_signal: dict[str, Any] | None) -> dict[str, dict[
 
 
 def _tide_match_priority(theme: dict[str, Any]) -> tuple[int, int, int, float, float]:
-    status = str(theme.get("status") or "")
+    status = str(theme.get("base_tide_status") or theme.get("status") or "")
     priority = {
+        "core_mainline": 80,
+        "resonance_traverse": 72,
+        "observe_candidate": 42,
+        "neutral_wait": 20,
+        "avoid_weak": 10,
+        "shrinking_rebound": 5,
+        "afterglow_risk": 0,
         "rebound_warning": 70,
         "volume_rebound": 60,
         "confirmed_mainline": 50,
@@ -869,7 +881,7 @@ def _tide_match_priority(theme: dict[str, Any]) -> tuple[int, int, int, float, f
     }.get(status, 0)
     return (
         priority,
-        int(theme.get("tide_score") or 0),
+        int(theme.get("core_score") or theme.get("tide_score") or 0),
         int(theme.get("today_zt") or 0),
         float(theme.get("strength_score") or -1),
         float(theme.get("resilience") or -999),
@@ -895,7 +907,21 @@ def _match_tide_theme(ml: MainLine, tide_map: dict[str, dict[str, Any]]) -> dict
 
 def _tide_adjust(theme: dict[str, Any] | None) -> int:
     status = str((theme or {}).get("status") or "")
+    action = str((theme or {}).get("action") or "")
+    if action == "confirm":
+        return 10 if status == "core_mainline" else 7
+    if action == "no_new_position":
+        return -12
+    if action == "avoid":
+        return -6
     return {
+        "core_mainline": 10,
+        "resonance_traverse": 7,
+        "observe_candidate": 3,
+        "neutral_wait": 0,
+        "avoid_weak": -6,
+        "shrinking_rebound": -10,
+        "afterglow_risk": -14,
         "confirmed_mainline": 8,
         "traverse_candidate": 5,
         "micro_traverse": 3,
@@ -908,6 +934,19 @@ def _tide_adjust(theme: dict[str, Any] | None) -> int:
 
 def _tide_labels(theme: dict[str, Any] | None) -> tuple[str, str]:
     status = str((theme or {}).get("status") or "")
+    action = str((theme or {}).get("action") or "")
+    if status == "core_mainline":
+        return "核心潮汐确认", ""
+    if status == "resonance_traverse":
+        return "核心潮汐穿越", "" if action == "confirm" else "市场未共振"
+    if status == "observe_candidate":
+        return "核心潮汐观察", ""
+    if status == "afterglow_risk":
+        return "", "核心潮汐回光返照"
+    if status == "shrinking_rebound":
+        return "", "核心潮汐缩量反弹"
+    if status == "avoid_weak":
+        return "", "核心潮汐弱势"
     if status == "confirmed_mainline":
         return "潮汐确认主线", ""
     if status == "traverse_candidate":

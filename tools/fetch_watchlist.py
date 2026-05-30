@@ -44,6 +44,7 @@ from daily_review.data.eastmoney_theme import save_tomorrow_snapshot  # noqa: E4
 from daily_review.features.sector_resolver import resolve  # noqa: E402
 from daily_review.features.ladder_builder import build_ladder  # noqa: E402
 from daily_review.features.stock_ranker import build_picks_advisor  # noqa: E402
+from daily_review.metrics.core_tide import build_core_tide_signal  # noqa: E402
 from daily_review.metrics.tide import build_tide_signal  # noqa: E402
 
 
@@ -120,10 +121,17 @@ def _build_payload(
         market_data=market_data,
         theme_trend_cache=theme_trend_cache if isinstance(theme_trend_cache, dict) else {},
     )
+    catalyst_data = _load_catalyst_data(root=root, date=date)
+    core_tide_signal = build_core_tide_signal(
+        market_data=market_data,
+        tide_signal=tide_signal,
+        catalyst_data=catalyst_data,
+    )
     picks_advisor = build_picks_advisor(
         ladder=ladder,
         market_data=market_data,
         tide_signal=tide_signal,
+        core_tide_signal=core_tide_signal,
         top_k_lines=4,
         buy_n=3,
         watch_n=5,
@@ -138,7 +146,19 @@ def _build_payload(
         "sector_resolution": resolution.to_dict(),
         "ladder": ladder.to_dict(),
         "tide_signal": tide_signal,
+        "core_tide_signal": core_tide_signal,
         "picks_advisor": picks_advisor.to_dict(),
+    }
+
+
+def _load_catalyst_data(*, root: Path, date: str) -> dict[str, Any]:
+    """读取消息面缓存并交给纯算法；这里是 I/O 边界，算法层不碰文件。"""
+    d8 = str(date or "").replace("-", "")
+    cache_dir = root / "cache_online"
+    return {
+        "abnormal": read_json(cache_dir / f"xuangubao_abnormal-{d8}.json", default={}),
+        "surge_plates": read_json(cache_dir / f"xuangubao_surge_plates-{d8}.json", default={}),
+        "tomorrow_themes": read_json(cache_dir / f"eastmoney_tomorrow_themes-{d8}.json", default={}),
     }
 
 

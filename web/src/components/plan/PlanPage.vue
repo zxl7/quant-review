@@ -144,23 +144,43 @@ type MainLinePicks = {
 
 type TideTheme = {
   name: string
-  status: "traverse_candidate" | "confirmed_mainline" | "micro_traverse" | "rebound_warning" | "volume_rebound" | "weak" | "neutral"
-  today_zt: number
-  prev_zt: number | null
-  pre_prev_zt: number | null
-  resilience: number | null
+  status:
+    | "core_mainline"
+    | "resonance_traverse"
+    | "observe_candidate"
+    | "neutral_wait"
+    | "avoid_weak"
+    | "afterglow_risk"
+    | "shrinking_rebound"
+    | "traverse_candidate"
+    | "confirmed_mainline"
+    | "micro_traverse"
+    | "rebound_warning"
+    | "volume_rebound"
+    | "weak"
+    | "neutral"
+  base_tide_status?: string
+  action?: "confirm" | "watch" | "avoid" | "no_new_position"
+  core_score?: number
+  today_zt?: number
+  prev_zt?: number | null
+  pre_prev_zt?: number | null
+  resilience?: number | null
   strength: number | null
   strength_rank: number | null
   strength_score: number | null
-  tide_score: number
+  tide_score?: number
+  news_score?: number
+  market_score?: number
   confidence: "low" | "medium" | "high"
-  warning_level: "none" | "watch" | "risk" | "danger"
+  warning_level?: "none" | "watch" | "risk" | "danger"
   action_hint: string
 }
 
 type TideSignal = {
   date: string
   market?: { is_ebb_day?: boolean; trigger_count?: number; triggers?: string[] }
+  marketRegime?: { status?: string; score?: number; risk_level?: string; reasons?: string[] }
   themes?: TideTheme[]
   summary?: { action_hint?: string }
 }
@@ -180,6 +200,10 @@ const picksAdvisor = computed(() => {
 
 const tideSignal = computed<TideSignal | null>(() => {
   const md = marketData.value as any
+  const fromWatchlistCore = md?.watchlist?.core_tide_signal
+  if (fromWatchlistCore && typeof fromWatchlistCore === "object") return fromWatchlistCore as TideSignal
+  const fromMarketCore = md?.coreTideSignal
+  if (fromMarketCore && typeof fromMarketCore === "object") return fromMarketCore as TideSignal
   const fromWatchlist = md?.watchlist?.tide_signal
   if (fromWatchlist && typeof fromWatchlist === "object") return fromWatchlist as TideSignal
   const fromMarket = md?.tideSignal
@@ -205,6 +229,13 @@ const tideThemeForBucket = (theme: string, matched: string[] = [], advisor?: Mai
 
 const tideStatusLabel = (status?: string) => {
   const labels: Record<string, string> = {
+    core_mainline: "核心确认",
+    resonance_traverse: "核心穿越",
+    observe_candidate: "核心观察",
+    neutral_wait: "中性等待",
+    avoid_weak: "不开新仓",
+    afterglow_risk: "回光返照",
+    shrinking_rebound: "缩量反弹",
     confirmed_mainline: "确认主线",
     traverse_candidate: "退潮穿越",
     micro_traverse: "微型穿越",
@@ -229,6 +260,10 @@ const formatResilience = (v: number | null | undefined) => {
 }
 
 const tideCornerClass = (status?: string) => {
+  if (status === "core_mainline" || status === "resonance_traverse") return "is-main"
+  if (status === "observe_candidate") return "is-watch"
+  if (status === "afterglow_risk" || status === "shrinking_rebound") return "is-risk"
+  if (status === "avoid_weak") return "is-weak"
   if (status === "confirmed_mainline") return "is-main"
   if (status === "traverse_candidate" || status === "micro_traverse") return "is-watch"
   if (status === "rebound_warning" || status === "volume_rebound") return "is-risk"
@@ -239,8 +274,11 @@ const tideCornerClass = (status?: string) => {
 const tideCornerText = (tide?: TideTheme | null) => {
   if (!tide) return "潮汐不足"
   const label = tideStatusLabel(tide.status) || "潮汐中性"
-  if (tide.status === "rebound_warning" || tide.status === "volume_rebound") {
+  if (tide.action === "no_new_position" || tide.status === "rebound_warning" || tide.status === "volume_rebound") {
     return `${label} · 不开新仓`
+  }
+  if (Number.isFinite(Number(tide.core_score))) {
+    return `${label} · 核${Math.round(Number(tide.core_score))}`
   }
   if (tide.status === "confirmed_mainline" && tide.strength_score !== null && tide.strength_score !== undefined) {
     return `${label} · 强${Math.round(Number(tide.strength_score))}`
@@ -253,7 +291,10 @@ const tideCornerTitle = (tide?: TideTheme | null) => {
   if (!tide) return "潮汐数据不足，按原系统判断"
   const parts = [tide.action_hint]
   // 这里只解释后端统一产出的字段；前端不重新计算潮汐状态。
+  if (Number.isFinite(Number(tide.core_score))) parts.push(`核心分 ${Math.round(Number(tide.core_score))}`)
   if (Number.isFinite(Number(tide.tide_score))) parts.push(`潮汐分 ${Math.round(Number(tide.tide_score))}`)
+  if (Number.isFinite(Number(tide.news_score))) parts.push(`消息 ${Math.round(Number(tide.news_score))}`)
+  if (Number.isFinite(Number(tide.market_score))) parts.push(`市场 ${Math.round(Number(tide.market_score))}`)
   if (formatResilience(tide.resilience)) parts.push(`韧性 ${formatResilience(tide.resilience)}`)
   if (tide.strength_rank) parts.push(`强度排名 ${tide.strength_rank}`)
   if (tide.strength_score !== null && tide.strength_score !== undefined) parts.push(`板块强度 ${Math.round(Number(tide.strength_score))}`)

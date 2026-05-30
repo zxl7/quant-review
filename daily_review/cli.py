@@ -1441,7 +1441,8 @@ def run_rebuild(
     ctx.raw["index_klines"] = _load_index_klines_cache(root)
     ctx.raw["height_trend_cache"] = _load_height_trend_cache(root)
     ctx.raw["theme_trend_cache"] = _load_theme_trend_cache(root)
-    _log("离线数据已注入 (pools/themes/klines/height_trend/theme_trend)")
+    ctx.raw["catalyst_cache"] = _load_catalyst_cache(root, date)
+    _log("离线数据已注入 (pools/themes/klines/height_trend/theme_trend/catalyst)")
 
     # 修复：三大指数涨幅在离线重建中可能残留为 +0.00%
     # 这里用指数日K缓存按“报告日收盘价 vs 前收”重算，确保与报告日期一致。
@@ -2773,6 +2774,21 @@ def _load_theme_trend_cache(root: Path) -> dict:
         return {}
 
 
+def _load_catalyst_cache(root: Path, date: str) -> dict:
+    """
+    读取本地消息面缓存，供 core_tide 模块作为可选输入。
+
+    注意：这里只是编排层 I/O，核心潮汐算法仍保持纯函数。
+    """
+    d8 = str(date or "").replace("-", "")
+    cache_dir = root / "cache_online"
+    return {
+        "abnormal": read_json(cache_dir / f"xuangubao_abnormal-{d8}.json", default={}),
+        "surge_plates": read_json(cache_dir / f"xuangubao_surge_plates-{d8}.json", default={}),
+        "tomorrow_themes": read_json(cache_dir / f"eastmoney_tomorrow_themes-{d8}.json", default={}),
+    }
+
+
 def _prev_trade_date(all_dates: list[str], date: str) -> str | None:
     """
     用缓存里已有日期序列推断上一交易日。
@@ -2834,6 +2850,9 @@ def run_partial(date: str, modules: list[str]) -> int:
 
     # 注入题材持续性缓存：供 theme_trend 模块离线重算
     ctx.raw["theme_trend_cache"] = _load_theme_trend_cache(root)
+
+    # 注入消息面缓存：供 core_tide 模块离线重算
+    ctx.raw["catalyst_cache"] = _load_catalyst_cache(root, date)
 
     # partial 同样用指数日K修正三大指数涨幅（与报告日一致）
     try:

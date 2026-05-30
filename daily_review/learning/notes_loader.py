@@ -7,7 +7,8 @@
 职责：
 - 仅从工作区 `心法.md` 读取候选
 - 优先读取“标准调用池”，按 `ICE / START / FERMENT / CLIMAX` 精准分层
-- 基于历史做近 7 日去重轮播
+- 全量纳入其余素材，避免非标准池条目长期失活
+- 基于历史做完整轮播，尽量在重复前覆盖整池内容
 """
 
 from __future__ import annotations
@@ -60,7 +61,7 @@ def build_learning_notes(*, market_data: Dict[str, Any], cache_dir: Path) -> Dic
         t = title.strip().replace(" ", "")
         mode = current_mode
         bucket = current_bucket
-        primary_only = any(k in t for k in ("标准调用池", "日报优先", "标准分层", "龙头战法"))
+        primary_only = any(k in t for k in ("标准调用池", "日报优先", "标准分层"))
 
         if any(k in t for k in ("短线提醒", "提醒")):
             mode = "tip"
@@ -91,11 +92,10 @@ def build_learning_notes(*, market_data: Dict[str, Any], cache_dir: Path) -> Dic
             bucket = "fire"
         return mode, bucket, primary_only
 
-    def _parse_md_buckets() -> tuple[dict[str, list[tuple[str, str]]], bool]:
+    def _parse_md_buckets() -> tuple[dict[str, dict[str, list[tuple[str, str]]]], bool]:
         """
         统一解析心法.md。
-        若存在“标准调用池”，优先只使用该区域条目；
-        否则回退全文件语义解析。
+        若存在“标准调用池”，优先使用该区域条目，但不会丢弃其余素材。
         """
         workspace_root = cache_dir.parent
         md_path = workspace_root / "心法.md"
@@ -135,33 +135,53 @@ def build_learning_notes(*, market_data: Dict[str, Any], cache_dir: Path) -> Dic
                 for p in _split_sentences(s0):
                     _append("quote", bucket, p, in_primary)
 
-        # 如果存在标准调用池，只用它；否则用全量
-        use_primary = any(primary for _, _, _, primary in entries)
-        buckets: dict[str, list[tuple[str, str]]] = {}
+        has_primary = any(primary for _, _, _, primary in entries)
+        buckets: dict[str, dict[str, list[tuple[str, str]]]] = {}
         seen_by_key: dict[str, set[str]] = {}
         for mode_key, bucket_key, text, primary_flag in entries:
-            if use_primary and not primary_flag:
-                continue
             key = f"{mode_key}:{bucket_key}"
             seen = seen_by_key.setdefault(key, set())
             if text in seen:
                 continue
             seen.add(text)
             _id = "u" + hashlib.md5(f"{key}:{text}".encode("utf-8")).hexdigest()[:8]
-            buckets.setdefault(key, []).append((_id, text))
-        return (buckets, use_primary)
+            lane = "primary" if primary_flag else "secondary"
+            bucket_entry = buckets.setdefault(key, {"primary": [], "secondary": []})
+            bucket_entry[lane].append((_id, text))
+        return (buckets, has_primary)
 
     buckets, using_primary_pool = _parse_md_buckets()
 
     def _merge_keys(mode_key: str, keys: list[str]) -> list[tuple[str, str]]:
+        primary: list[tuple[str, str]] = []
+        secondary: list[tuple[str, str]] = []
+        for k in keys:
+            bucket_entry = buckets.get(f"{mode_key}:{k}", {})
+            primary.extend(bucket_entry.get("primary", []))
+            secondary.extend(bucket_entry.get("secondary", []))
+
         out: list[tuple[str, str]] = []
         seen_ids: set[str] = set()
-        for k in keys:
-            for _id, txt in buckets.get(f"{mode_key}:{k}", []):
+
+        def _extend(items: list[tuple[str, str]]) -> None:
+            for _id, txt in items:
                 if _id in seen_ids:
                     continue
                 seen_ids.add(_id)
                 out.append((_id, txt))
+
+        if using_primary_pool and primary and secondary:
+            mixed: list[tuple[str, str]] = []
+            total = max(len(primary), len(secondary))
+            for i in range(total):
+                if i < len(primary):
+                    mixed.append(primary[i])
+                if i < len(secondary):
+                    mixed.append(secondary[i])
+            _extend(mixed)
+        else:
+            _extend(primary)
+            _extend(secondary)
         return out
 
     # 精准调用顺序：cycle 优先，type 次级，common 兜底
@@ -200,35 +220,56 @@ def build_learning_notes(*, market_data: Dict[str, Any], cache_dir: Path) -> Dic
     except Exception:
         history = {"tip_ids": [], "quote_ids": [], "last_date": ""}
 
-    tip_used = set((history.get("tip_ids") or [])[:7])
-    quote_used = set((history.get("quote_ids") or [])[:7])
+    if not isinstance(history.get("rotation"), dict):
+        history["rotation"] = {}
 
-    def pick_one(pool: list[tuple[str, str]], used: set[str], seed_key: str) -> tuple[str, str]:
-        if not pool:
-            return ("", "")
-        seed = int(hashlib.md5(seed_key.encode("utf-8")).hexdigest(), 16)
-        start = seed % len(pool)
-        for i in range(len(pool)):
-            _id, _txt = pool[(start + i) % len(pool)]
-            if _id not in used:
-                return (_id, _txt)
-        return pool[start]
+    def _pool_signature(pool: list[tuple[str, str]]) -> str:
+        ids = [item_id for item_id, _ in pool]
+        return hashlib.md5("|".join(ids).encode("utf-8")).hexdigest()[:12]
 
-    tip_id, tip_txt = pick_one(tip_pool, tip_used, f"{date}:{cycle_code or stage_type}:tip:1")
-    tip_id2, tip_txt2 = pick_one(tip_pool, tip_used | ({tip_id} if tip_id else set()), f"{date}:{cycle_code or stage_type}:tip:2")
-    quote_id, quote_txt = pick_one(quote_pool, quote_used, f"{date}:{cycle_code or stage_type}:quote")
+    def _rotation_state(scope: str, pool: list[tuple[str, str]]) -> dict[str, Any]:
+        sig = _pool_signature(pool)
+        key = f"{scope}:{sig}"
+        rotation = history["rotation"]
+        state = rotation.get(key)
+        ids = [item_id for item_id, _ in pool]
+        if not isinstance(state, dict) or state.get("ids") != ids:
+            state = {"ids": ids, "cursor": 0}
+            rotation[key] = state
+        return state
+
+    def pick_many(pool: list[tuple[str, str]], *, scope: str, count: int) -> list[tuple[str, str]]:
+        if not pool or count <= 0:
+            return []
+        state = _rotation_state(scope, pool)
+        cursor = int(state.get("cursor") or 0)
+        size = len(pool)
+        picks: list[tuple[str, str]] = []
+        span = min(count, size)
+        for i in range(span):
+            picks.append(pool[(cursor + i) % size])
+        if history.get("last_date") != date:
+            state["cursor"] = (cursor + span) % size
+        return picks
+
+    tip_picks = pick_many(tip_pool, scope=f"tip:{cycle_code or stage_type or 'default'}", count=2)
+    quote_picks = pick_many(quote_pool, scope=f"quote:{cycle_code or stage_type or 'default'}", count=1)
+
+    tip_ids = [item_id for item_id, _ in tip_picks]
+    quote_ids = [item_id for item_id, _ in quote_picks]
+    tip_texts = [txt for _, txt in tip_picks]
+    quote_texts = [txt for _, txt in quote_picks]
 
     tips: list[str] = []
-    for txt in [tip_txt, tip_txt2]:
+    for txt in tip_texts:
         if txt and txt not in tips:
             tips.append(txt)
     tips = tips[:2]
 
     try:
         if history.get("last_date") != date:
-            new_tip_ids = [x for x in [tip_id, tip_id2] if x]
-            history["tip_ids"] = new_tip_ids + list(history.get("tip_ids") or [])
-            history["quote_ids"] = [quote_id] + list(history.get("quote_ids") or [])
+            history["tip_ids"] = tip_ids + list(history.get("tip_ids") or [])
+            history["quote_ids"] = quote_ids + list(history.get("quote_ids") or [])
             history["tip_ids"] = (history["tip_ids"] or [])[:7]
             history["quote_ids"] = (history["quote_ids"] or [])[:7]
             history["last_date"] = date
@@ -238,12 +279,12 @@ def build_learning_notes(*, market_data: Dict[str, Any], cache_dir: Path) -> Dic
 
     return {
         "tips": tips,
-        "quotes": [quote_txt] if quote_txt else [],
+        "quotes": quote_texts[:1],
         "meta": {
             "cycle": cycle_code or "-",
             "stageType": stage_type or "-",
             "tipKeys": tip_keys,
             "quoteKeys": quote_keys,
-            "source": "心法标准调用池" if using_primary_pool else "心法素材库",
+            "source": "心法全量素材库（标准池优先）" if using_primary_pool else "心法素材库",
         },
     }

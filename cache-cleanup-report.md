@@ -1,6 +1,6 @@
 # Cache 清理与线上同步报告
 
-- 最新报告日期：`2026-05-29`
+- 最新报告日期：`2026-05-27`
 - 线上目录模式：`minimal`
 
 ## 当前脚本自动清理现状
@@ -19,6 +19,7 @@
 - `concept_fund_flow_cache.json`：板块排行兜底数据
 - `dragon_tiger-20260522.json`：未知文件，保守保留
 - `dragon_tiger-20260526.json`：未知文件，保守保留
+- `dragon_tiger-20260527.json`：未知文件，保守保留
 - `dragon_tiger-20260528.json`：未知文件，保守保留
 - `dragon_tiger-20260529.json`：未知文件，保守保留
 - `height_trend_cache.json`：高度趋势模块依赖

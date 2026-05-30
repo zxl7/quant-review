@@ -210,6 +210,11 @@ def _enhance_with_watchlist(md: dict, watchlist: dict) -> None:
     if isinstance(tide, dict):
         md["tideSignal"] = tide
 
+    # ---- 6. core_tide_signal 提级到顶层（推荐线与展示共用同一口径） ----
+    core_tide = watchlist.get("core_tide_signal")
+    if isinstance(core_tide, dict):
+        md["coreTideSignal"] = core_tide
+
 
 def inject(date8: str, source: Optional[str] = None) -> Path:
     """注入数据并返回输出路径"""

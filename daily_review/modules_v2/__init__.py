@@ -19,6 +19,7 @@ from .sentiment.v3_collapse import V3_COLLAPSE_MODULE
 from .themes.theme_panels import THEME_PANELS_MODULE
 from .themes.theme_trend import THEME_TREND_MODULE
 from .themes.tide import TIDE_MODULE
+from .themes.core_tide import CORE_TIDE_MODULE
 from .themes.theme_layers import THEME_LAYERS_MODULE
 from .themes.theme_ladder_v2 import THEME_LADDER_V2_MODULE
 from .themes.rotation import ROTATION_MODULE
@@ -92,6 +93,7 @@ ALL_MODULES = [
     THEME_PANELS_MODULE,
     THEME_TREND_MODULE,
     TIDE_MODULE,
+    CORE_TIDE_MODULE,
     VOLUME_MODULE,
     HEIGHT_TREND_MODULE,
     TOP10_MODULE,
