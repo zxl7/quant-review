@@ -154,8 +154,21 @@ sync_online_cache_dir() {
   fi
 }
 
+build_web_dist() {
+  # 仅 Vite 构建 + inject_data 写旁路数据。
+  # 调用约束：调用方必须先保证 cache/market_data-${yyyymmdd}.json 已是目标日期最新的 pipeline 产物。
+  # 这个函数本身不重算 pipeline，是 render_offline 拆出来的"末端打包"段。
+  local yyyymmdd="$1"
+  (cd web && npm run build) || die "Vue3 构建失败"
+  python3 inject_data.py "${yyyymmdd}" || die "web 数据生成失败"
+  echo "✅ Web 构建完成: web/dist/index.html"
+}
+
 render_offline() {
-  # Web 构建 + 数据文件刷新。旧的 html/复盘日记 单文件路径已下线。
+  # 离线 rebuild + Web 构建 + 数据文件刷新。
+  # 适用：./qr.sh render（没走 fetch，需要先离线重算 pipeline）。
+  # 注意：./qr.sh fetch 不要再调本函数——daily_review.cli --fetch 内部已经 rebuild 过，
+  #   重复 rebuild 会让 _inject_prd_v2_metrics 又跑一次（~1 分钟）。fetch 路径请直接调 build_web_dist。
   local date10="$1"
   local yyyymmdd market_json
   yyyymmdd="$(date10_to_date8 "${date10}")"
@@ -166,11 +179,7 @@ render_offline() {
   # 离线重建 pipeline（不请求接口）
   PYTHONPATH=. python3 -u -m daily_review.cli --date "${date10}" --rebuild
 
-  # Web 构建 + 数据文件刷新
-  (cd web && npm run build) || die "Vue3 构建失败"
-  python3 inject_data.py "${yyyymmdd}" || die "web 数据生成失败"
-
-  echo "✅ Web 构建完成: web/dist/index.html"
+  build_web_dist "${yyyymmdd}"
 }
 
 cmd_fetch() {
@@ -179,26 +188,27 @@ cmd_fetch() {
 
   info "在线取数生成缓存（会请求接口，有成本） -> 离线 pipeline 重建 -> web 数据缓存"
   if [[ -n "${DATE_ARG}" ]]; then
+    # daily_review.cli --fetch 内部已经 rebuild 过，下面只补 web 构建即可（不再重复 rebuild）
     PYTHONPATH=. python3 -u -m daily_review.cli --fetch --date "${DATE_ARG}"
     prune_cache_keep_latest_n 7
     prune_extra_cache_artifacts
     sync_online_cache_dir "${DATE_ARG}"
     refresh_watchlist_cache "${DATE_ARG}"
-    render_offline "${DATE_ARG}"
+    build_web_dist "$(date10_to_date8 "${DATE_ARG}")"
     return 0
   fi
 
   # 不指定日期：由 cli 负责自动回退到最近交易日
   PYTHONPATH=. python3 -u -m daily_review.cli --fetch
 
-  # 用缓存里最新的 market_data-*.json 再离线构建 web（不再取数）
+  # 用缓存里最新的 market_data-*.json 再做 web 构建（不再取数，也不重复 rebuild）
   local d8 d10
   d8="$(pick_latest_cache_date8)" || die "未找到 cache/market_data-*.json（尚未生成缓存？）"
   d10="$(date8_to_date10 "${d8}")"
-  # 先 sync 到 cache_online（会清空目录），再生成 watchlist 推票，最后刷新 web 数据
+  # 先 sync 到 cache_online（会清空目录），再生成 watchlist 推票，最后构建 web
   sync_online_cache_dir "${d10}"
   refresh_watchlist_cache "${d10}"
-  render_offline "${d10}"
+  build_web_dist "${d8}"
   prune_cache_keep_latest_n 7
   prune_extra_cache_artifacts
   python3 inject_data.py "${d8}" --dev-only 2>/dev/null || true
