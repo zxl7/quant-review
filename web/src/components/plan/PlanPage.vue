@@ -107,7 +107,7 @@ const ztDebugPlacementClass = (placement: string) => {
 
 const ztTagRows = (row: any) => (Array.isArray(row?.tagRows) ? row.tagRows : [])
 
-// 推荐线：来自 watchlist.picks_advisor，合并展示在板块·梯队推票内。
+// 推荐线：来自 watchlist.picks_advisor，合并展示在板块·梯队 内。
 type PickStock = {
   code: string
   name: string
@@ -962,7 +962,7 @@ const sectorPicksMeta = computed(() => {
     <div class="card" data-page="plan" id="sec-sector-tier-picks" v-if="sectorTierPicks.length">
       <div class="card-header">
         <div>
-          <div class="card-title">板块·梯队推票</div>
+          <div class="card-title">板块·梯队 </div>
           <div class="stp-subtitle">
             <span class="stp-dot-realtime"></span>
             实时驱动
@@ -1066,7 +1066,7 @@ const sectorPicksMeta = computed(() => {
           <div class="stp-desc" v-if="bucket.description" :title="bucket.description">{{ bucket.description }}</div>
           <div class="stp-advisor" v-if="bucket.advisor">
             <div class="stp-advisor-head">
-              <span>推票明细</span>
+              <span> 明细</span>
               <span v-if="bucket.advisor.diagnostics?.member_count">{{ bucket.advisor.diagnostics.member_count }}只成员</span>
             </div>
             <div class="stp-advisor-section" v-if="bucket.advisor.buy?.length">
@@ -1159,7 +1159,6 @@ const sectorPicksMeta = computed(() => {
           </div>
         </div>
         <div class="zt-header-actions">
-          <div class="card-badge">封单 · 板块归属 · 量能 · 炸板 · 梯队</div>
           <button class="plan-toggle-btn" :class="{ expanded: ztAnalysisExpanded }" type="button" :aria-expanded="ztAnalysisExpanded" @click="ztAnalysisExpanded = !ztAnalysisExpanded">
             <span class="plan-toggle-btn__label">涨停数据分析</span>
             <span class="plan-toggle-btn__state">{{ ztAnalysisExpanded ? "收起" : "展开" }}</span>
