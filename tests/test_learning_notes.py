@@ -101,6 +101,26 @@ class LearningNotesLoaderTest(unittest.TestCase):
             self.assertEqual(notes["quotes"], ["主动靠拢龙头，本质上就是拥抱最强大最有价值的企业"])
             self.assertEqual(notes["meta"]["source"], "心法素材库")
 
+    def test_signed_multi_sentence_quote_keeps_signer_after_split(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            workspace = Path(tmp)
+            (workspace / "心法.md").write_text(
+                "\n".join(
+                    [
+                        "## 语录（Quotes）",
+                        "### 语录｜通用",
+                        "- 永不止损，永不止盈。只有进场，出局 -----养家",
+                    ]
+                ),
+                encoding="utf-8",
+            )
+
+            day1 = self._build_notes(workspace=workspace, date="2026-05-29", cycle="", stage_type="warn")
+            day2 = self._build_notes(workspace=workspace, date="2026-05-30", cycle="", stage_type="warn")
+
+            self.assertEqual(day1["quotes"], ["永不止损，永不止盈-----养家"])
+            self.assertEqual(day2["quotes"], ["只有进场，出局-----养家"])
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -63,12 +63,7 @@ const emit = defineEmits<{
 <template>
   <header class="hero">
     <div class="hero-grain" aria-hidden="true"></div>
-    <div class="hero-controls">
-      <div class="view-switch" role="tablist" aria-label="视图模式">
-        <button class="view-switch-btn" :class="{ active: modeView === 'review' }" type="button" @click="emit('set-mode', 'review')">复盘</button>
-        <button class="view-switch-btn" :class="{ active: modeView === 'intraday' }" type="button" @click="emit('set-mode', 'intraday')">盘中</button>
-      </div>
-    </div>
+
     <div class="hero-grid">
       <div class="hero-top">
         <div class="cycle-tag mood-badge" :class="'mood-' + marketToneClass">
@@ -85,8 +80,17 @@ const emit = defineEmits<{
 
       <div class="hero-panel">
         <div class="hero-panel-title">
-          <span>今日概览</span>
-          <span style="opacity: 0.78; font-weight: 900">{{ marketData.mood?.score ?? "-" }} 分</span>
+          <span>
+            今日概览：
+            <span class="title-score" style="opacity: 0.78; font-weight: 900">{{ marketData.mood?.score ?? "-" }} 分</span>
+          </span>
+
+          <div class="hero-controls">
+            <div class="view-switch" role="tablist" aria-label="视图模式">
+              <button class="view-switch-btn" :class="{ active: modeView === 'review' }" type="button" @click="emit('set-mode', 'review')">复盘</button>
+              <button class="view-switch-btn" :class="{ active: modeView === 'intraday' }" type="button" @click="emit('set-mode', 'intraday')">盘中</button>
+            </div>
+          </div>
         </div>
         <div class="hero-panel-sub">一眼看清：阶段 · 热/险 · 量能 · 高度</div>
         <div class="hero-kpi-grid">

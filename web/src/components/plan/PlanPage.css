@@ -693,6 +693,110 @@
   color: color-mix(in oklab, var(--text-muted) 50%, transparent);
   margin: 0 1px;
 }
+
+.stp-tide-risk-panel {
+  margin-top: 12px;
+  padding: 10px 12px;
+  border: 1px solid rgba(239, 68, 68, 0.22);
+  border-radius: 14px;
+  background:
+    linear-gradient(135deg, rgba(254, 242, 242, 0.94), rgba(255, 251, 235, 0.72)),
+    repeating-linear-gradient(135deg, rgba(185, 28, 28, 0.04) 0 1px, transparent 1px 8px);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.72);
+}
+
+.stp-tide-risk-main,
+.stp-tide-zones,
+.stp-tide-zone {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 7px;
+  color: #7f1d1d;
+  font-size: 11.5px;
+  font-weight: 900;
+}
+
+.stp-tide-risk-badge {
+  padding: 4px 8px;
+  border-radius: 999px;
+  color: #fff;
+  background: linear-gradient(135deg, #991b1b, #ea580c);
+  letter-spacing: 0.02em;
+}
+
+.stp-tide-zones {
+  margin-top: 8px;
+  align-items: stretch;
+  gap: 8px;
+}
+
+.stp-tide-zone {
+  padding: 7px 8px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.48);
+}
+
+.stp-tide-risk-label {
+  color: #991b1b;
+  opacity: 0.78;
+}
+
+.stp-tide-risk-chip {
+  padding: 1px 8px;
+  border-radius: 999px;
+  border: 1px solid rgba(185, 28, 28, 0.18);
+  background: rgba(255, 255, 255, 0.68);
+  color: #7f1d1d;
+  font-weight: 950;
+}
+
+.stp-tide-zone.is-rise .stp-tide-risk-chip {
+  border-color: rgba(239, 68, 68, 0.18);
+  color: #b91c1c;
+}
+
+.stp-tide-zone.is-neutral .stp-tide-risk-chip {
+  border-color: rgba(148, 163, 184, 0.22);
+  color: #475569;
+}
+
+.stp-tide-zone.is-ebb .stp-tide-risk-chip {
+  border-color: rgba(15, 23, 42, 0.24);
+  color: #1f2937;
+  background: rgba(241, 245, 249, 0.86);
+}
+
+.stp-tide-risk-triggers {
+  margin-top: 7px;
+  color: #991b1b;
+  font-size: 11px;
+  font-weight: 780;
+  opacity: 0.8;
+}
+
+[data-theme="dark"] .stp-tide-risk-panel {
+  border-color: rgba(248, 113, 113, 0.28);
+  background: linear-gradient(135deg, rgba(69, 10, 10, 0.72), rgba(67, 56, 20, 0.5));
+}
+
+[data-theme="dark"] .stp-tide-risk-main,
+[data-theme="dark"] .stp-tide-zones,
+[data-theme="dark"] .stp-tide-zone,
+[data-theme="dark"] .stp-tide-risk-chip,
+[data-theme="dark"] .stp-tide-risk-label,
+[data-theme="dark"] .stp-tide-risk-triggers {
+  color: #fecaca;
+}
+
+[data-theme="dark"] .stp-tide-risk-chip {
+  background: rgba(127, 29, 29, 0.28);
+  border-color: rgba(248, 113, 113, 0.24);
+}
+
+[data-theme="dark"] .stp-tide-zone {
+  background: rgba(15, 23, 42, 0.28);
+}
 .advisor-subtitle {
   margin-top: 6px;
   font-size: 12px;
@@ -848,7 +952,7 @@
   margin-top: 2px;
   display: flex;
   flex-wrap: wrap;
-  gap: 4px 8px;
+  gap: 1px 8px;
   font-size: 10.5px;
 }
 .advisor-caution {
@@ -1494,58 +1598,31 @@
 
 .sector-tier-grid {
   display: grid;
-  grid-template-columns: 1fr;
-  gap: 12px;
-  overflow: visible;
-  padding: 0;
+  align-items: stretch;
+  gap: 14px;
+  margin-top: 12px;
+  overflow-x: auto;
+  overflow-y: visible;
+  padding: 0 2px 8px;
+  scroll-snap-type: x proximity;
+  scroll-padding-left: 2px;
+  -webkit-overflow-scrolling: touch;
 }
 
 :deep(.sector-tier-card) {
-  display: grid;
-  grid-template-columns: minmax(220px, 0.9fr) minmax(260px, 1.05fr) minmax(320px, 1.35fr);
-  grid-template-areas:
-    "head advisor tiers"
-    "tags advisor tiers"
-    "meta advisor tiers"
-    "hint advisor tiers"
-    "desc advisor tiers";
-  align-items: start;
-  column-gap: 14px;
-  row-gap: 6px;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 8px;
   width: 100%;
-  min-width: 0;
+  min-width: 320px;
   min-height: 0;
+  scroll-snap-align: start;
 }
 
-:deep(.sector-tier-card .stp-head) {
-  grid-area: head;
-}
-
-:deep(.sector-tier-card .stp-tag-row) {
-  grid-area: tags;
-}
-
-:deep(.sector-tier-card .stp-meta) {
-  grid-area: meta;
-}
-
-:deep(.sector-tier-card .stp-tide-hint) {
-  grid-area: hint;
-}
-
-:deep(.sector-tier-card .stp-desc) {
-  grid-area: desc;
-}
-
-:deep(.sector-tier-card .stp-advisor) {
-  grid-area: advisor;
-  margin-top: 0;
-  height: 100%;
-}
-
+:deep(.sector-tier-card .stp-advisor),
 :deep(.sector-tier-card .stp-tiers),
 :deep(.sector-tier-card .stp-empty) {
-  grid-area: tiers;
   margin-top: 0;
 }
 
@@ -1785,17 +1862,29 @@
   border-color: rgba(251, 191, 36, 0.24);
 }
 
+.sector-tier-grid::-webkit-scrollbar {
+  height: 8px;
+}
+
+.sector-tier-grid::-webkit-scrollbar-thumb {
+  background: rgba(148, 163, 184, 0.36);
+  border-radius: 999px;
+}
+
+.sector-tier-grid::-webkit-scrollbar-track {
+  background: rgba(148, 163, 184, 0.08);
+  border-radius: 999px;
+}
+
 @media (max-width: 760px) {
+  .sector-tier-grid {
+    grid-auto-columns: minmax(282px, calc(100vw - 28px));
+    gap: 12px;
+    padding-bottom: 6px;
+  }
+
   :deep(.sector-tier-card) {
-    grid-template-columns: 1fr;
-    grid-template-areas:
-      "head"
-      "tags"
-      "meta"
-      "hint"
-      "desc"
-      "advisor"
-      "tiers";
+    min-width: 282px;
   }
 
   .zt-header-actions {

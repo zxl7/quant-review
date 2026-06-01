@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue';
-import * as echarts from 'echarts';
+import { echarts } from '../../echarts-setup';
 import { useMarketData } from '../../composables/useMarketData';
 import { useECharts } from '../../composables/useECharts';
 import { useThemeHotStore } from '../../composables/useThemeHotStore';

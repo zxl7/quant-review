@@ -96,6 +96,16 @@ def _empty_signal(date: str = "") -> dict[str, Any]:
             "limit_up_delta_pct": None,
             "seal_rate_delta_pct": None,
             "volume_delta_pct": None,
+            "loss_effect": {
+                "score": None,
+                "level": "unknown",
+                "limit_down": None,
+                "broken": None,
+                "broken_rate": None,
+                "negative_score": None,
+                "risk": None,
+                "reasons": [],
+            },
         },
         "themes": [],
         "summary": {
@@ -154,6 +164,7 @@ def _market_snapshot(md: dict[str, Any]) -> dict[str, float | str | None]:
     panorama = md.get("panorama") if isinstance(md.get("panorama"), dict) else {}
     volume = md.get("volume") if isinstance(md.get("volume"), dict) else {}
     volume_values = volume.get("values") if isinstance(volume.get("values"), list) else []
+    sub_scores = sentiment.get("sub_scores") if isinstance(sentiment.get("sub_scores"), dict) else {}
 
     vol = _to_float(volume_values[-1]) if volume_values else None
     if vol is None:
@@ -163,8 +174,12 @@ def _market_snapshot(md: dict[str, Any]) -> dict[str, float | str | None]:
         "date": str(md.get("date") or ""),
         "sentiment": _first_number([sentiment.get("score"), mood.get("score"), md.get("sentiment_score")]),
         "limit_up": _first_number([panorama.get("limitUp"), panorama.get("limit_up"), md.get("limitUp")]),
+        "limit_down": _first_number([panorama.get("limitDown"), panorama.get("limit_down"), md.get("limitDown")]),
+        "broken": _first_number([panorama.get("broken"), panorama.get("zab"), panorama.get("zb")]),
         "seal_rate": _parse_pct(panorama.get("ratio") or panorama.get("sealRate") or panorama.get("seal_rate")),
         "volume": vol,
+        "negative_score": _first_number([sub_scores.get("negative"), md.get("negative_score")]),
+        "risk": _first_number([sentiment.get("risk"), mood.get("risk"), md.get("risk")]),
     }
 
 
@@ -173,6 +188,7 @@ def _build_market_tide(today: dict[str, Any], prev: dict[str, Any]) -> dict[str,
     limit_up_delta_pct = _pct_change(_num(today.get("limit_up")), _num(prev.get("limit_up")))
     seal_rate_delta_pct = _delta(today.get("seal_rate"), prev.get("seal_rate"))
     volume_delta_pct = _pct_change(_num(today.get("volume")), _num(prev.get("volume")))
+    loss_effect = _build_loss_effect(today, prev)
 
     triggers: list[str] = []
     if sentiment_delta is not None and sentiment_delta <= -15:
@@ -181,16 +197,128 @@ def _build_market_tide(today: dict[str, Any], prev: dict[str, Any]) -> dict[str,
         triggers.append(f"涨停降幅{limit_up_delta_pct:.1f}%")
     if seal_rate_delta_pct is not None and seal_rate_delta_pct <= -10:
         triggers.append(f"封板率下降{seal_rate_delta_pct:.1f}pct")
+    if loss_effect["score"] is not None and loss_effect["score"] >= 65:
+        triggers.append(f"亏钱扩散{loss_effect['score']:.1f}")
+    elif loss_effect["delta"] is not None and loss_effect["delta"] >= 20:
+        triggers.append(f"亏钱抬升{loss_effect['delta']:.1f}")
 
+    loss_danger = loss_effect["score"] is not None and loss_effect["score"] >= 75
     return {
-        "is_ebb_day": len(triggers) >= 2,
+        # 亏钱效应是退潮的硬风控触发：跌停/炸板/负反馈极端时，不再等待第二个进攻端信号确认。
+        "is_ebb_day": len(triggers) >= 2 or loss_danger,
         "trigger_count": len(triggers),
         "triggers": triggers,
         "sentiment_delta": _round_or_none(sentiment_delta),
         "limit_up_delta_pct": _round_or_none(limit_up_delta_pct),
         "seal_rate_delta_pct": _round_or_none(seal_rate_delta_pct),
         "volume_delta_pct": _round_or_none(volume_delta_pct),
+        "loss_effect": loss_effect,
     }
+
+
+def _build_loss_effect(today: dict[str, Any], prev: dict[str, Any]) -> dict[str, Any]:
+    """亏钱效应：退潮模块的风险端，偏跌停/炸板/负反馈。"""
+    limit_down = _num(today.get("limit_down"))
+    broken = _num(today.get("broken"))
+    limit_up = _num(today.get("limit_up"))
+    negative_score = _num(today.get("negative_score"))
+    risk = _num(today.get("risk"))
+    broken_rate = None
+    if broken is not None and limit_up is not None and (broken + limit_up) > 0:
+        broken_rate = broken / (broken + limit_up) * 100.0
+
+    score = _loss_effect_score(
+        limit_down=limit_down,
+        broken=broken,
+        broken_rate=broken_rate,
+        negative_score=negative_score,
+        risk=risk,
+    )
+    prev_score = _loss_effect_score(
+        limit_down=_num(prev.get("limit_down")),
+        broken=_num(prev.get("broken")),
+        broken_rate=_calc_broken_rate(prev),
+        negative_score=_num(prev.get("negative_score")),
+        risk=_num(prev.get("risk")),
+    )
+    delta = _delta(score, prev_score)
+    return {
+        "score": _round_or_none(score, 1),
+        "level": _loss_effect_level(score),
+        "delta": _round_or_none(delta, 1),
+        "limit_down": _round_or_none(limit_down, 0),
+        "broken": _round_or_none(broken, 0),
+        "broken_rate": _round_or_none(broken_rate, 1),
+        "negative_score": _round_or_none(negative_score, 1),
+        "risk": _round_or_none(risk, 1),
+        "reasons": _loss_effect_reasons(limit_down, broken, broken_rate, negative_score, risk),
+    }
+
+
+def _calc_broken_rate(snap: dict[str, Any]) -> float | None:
+    broken = _num(snap.get("broken"))
+    limit_up = _num(snap.get("limit_up"))
+    if broken is None or limit_up is None or (broken + limit_up) <= 0:
+        return None
+    return broken / (broken + limit_up) * 100.0
+
+
+def _loss_effect_score(
+    *,
+    limit_down: float | None,
+    broken: float | None,
+    broken_rate: float | None,
+    negative_score: float | None,
+    risk: float | None,
+) -> float | None:
+    if all(v is None for v in (limit_down, broken, broken_rate, negative_score, risk)):
+        return None
+    score = 0.0
+    if limit_down is not None:
+        score += min(45.0, limit_down / 30.0 * 45.0)
+    if broken_rate is not None:
+        score += min(25.0, broken_rate / 40.0 * 25.0)
+    elif broken is not None:
+        score += min(18.0, broken / 35.0 * 18.0)
+    if negative_score is not None:
+        # 上游 negative 是“负反馈健康分”：越低越危险，因此反向计入亏钱效应。
+        score += min(20.0, max(0.0, 10.0 - negative_score) / 10.0 * 20.0)
+    if risk is not None:
+        score += min(10.0, risk / 80.0 * 10.0)
+    return max(0.0, min(100.0, score))
+
+
+def _loss_effect_level(score: float | None) -> str:
+    if score is None:
+        return "unknown"
+    if score >= 75:
+        return "danger"
+    if score >= 60:
+        return "risk"
+    if score >= 40:
+        return "watch"
+    return "low"
+
+
+def _loss_effect_reasons(
+    limit_down: float | None,
+    broken: float | None,
+    broken_rate: float | None,
+    negative_score: float | None,
+    risk: float | None,
+) -> list[str]:
+    reasons: list[str] = []
+    if limit_down is not None and limit_down >= 20:
+        reasons.append(f"跌停{int(round(limit_down))}")
+    if broken_rate is not None and broken_rate >= 30:
+        reasons.append(f"炸板率{broken_rate:.1f}%")
+    elif broken is not None and broken >= 30:
+        reasons.append(f"炸板{int(round(broken))}")
+    if negative_score is not None and negative_score <= 3:
+        reasons.append(f"负反馈{negative_score:.1f}")
+    if risk is not None and risk >= 60:
+        reasons.append(f"风险{risk:.0f}")
+    return reasons[:4]
 
 
 def _num(v: Any) -> float | None:

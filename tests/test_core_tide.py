@@ -97,6 +97,34 @@ class CoreTideSignalTest(unittest.TestCase):
         self.assertEqual(signal["themes"], [])
         self.assertEqual(signal["summary"]["action_hint"], "核心潮汐数据不足，按原系统判断。")
 
+    def test_loss_score_pushes_market_to_ebb(self) -> None:
+        signal = build_core_tide_signal(
+            market_data={
+                "date": "2026-05-29",
+                "sentiment": {"score": 62, "risk": 58, "sub_scores": {"negative": 0}},
+                "panorama": {"limitUp": 60, "broken": 38, "limitDown": 50, "ratio": "65%"},
+                "volume": {"change": "+6%"},
+                "indices": [{"name": "上证", "chg": "+0.1%", "price": 3000, "ma5": 2990, "ma20": 2980}],
+            },
+            tide_signal={
+                "date": "2026-05-29",
+                "market": {
+                    "is_ebb_day": True,
+                    "loss_effect": {
+                        "score": 94,
+                        "level": "danger",
+                        "reasons": ["跌停50", "炸板率38.8%", "负反馈0.0"],
+                    },
+                },
+                "themes": [],
+            },
+        )
+
+        market = signal["marketRegime"]
+        self.assertEqual(market["loss_score"], 94)
+        self.assertIn(market["status"], {"ebb", "ice"})
+        self.assertIn("跌停50", market["reasons"])
+
 
 if __name__ == "__main__":
     unittest.main()

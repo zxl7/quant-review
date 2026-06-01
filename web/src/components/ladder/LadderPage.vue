@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue';
-import * as echarts from 'echarts';
+import { echarts } from '../../echarts-setup';
 import { useMarketData } from '../../composables/useMarketData';
 import { useECharts } from '../../composables/useECharts';
 import ShortReminderFooter from '../common/ShortReminderFooter.vue';

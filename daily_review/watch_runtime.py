@@ -61,32 +61,6 @@ def _date8_to_10(date8: str) -> str:
     return d8
 
 
-def _purge_previous_day_published(*, root: Path, keep_date10: str) -> None:
-    """清理前一天的已发布文件（latest_intraday*.json），确保每天重建。"""
-    html_dir = root / "html"
-    keep_date8 = _date10_to_8(keep_date10)
-    # 清理 latest_intraday.json（单日快照）
-    lip = html_dir / "latest_intraday.json"
-    if lip.exists():
-        try:
-            data = json.loads(lip.read_text(encoding="utf-8"))
-            d = str(data.get("date") or "")
-            if d != keep_date10 and _date10_to_8(d) != keep_date8:
-                lip.unlink()
-        except Exception:
-            pass
-    # 清理 latest_intraday_slices.json（盘中切片）
-    lsp = html_dir / "latest_intraday_slices.json"
-    if lsp.exists():
-        try:
-            data = json.loads(lsp.read_text(encoding="utf-8"))
-            d = str(data.get("date") or "")
-            if d != keep_date10 and _date10_to_8(d) != keep_date8:
-                lsp.unlink()
-        except Exception:
-            pass
-
-
 def _purge_previous_day_slices(*, root: Path, keep_date10: str) -> None:
     """执行前清理前一日及更早的盘中切片缓存，仅保留当日文件。"""
     cache_dir = root / "cache"
@@ -287,16 +261,9 @@ def append_intraday_slice(*, root: Path, snapshot: dict[str, Any]) -> dict[str, 
     return envelope
 
 
-def publish_runtime_files(*, root: Path, latest_snapshot: dict[str, Any], slices_payload: dict[str, Any]) -> None:
-    html_dir = root / "html"
-    _write_json(html_dir / "latest_intraday.json", latest_snapshot)
-    _write_json(html_dir / "latest_intraday_slices.json", slices_payload)
-
-
 def main() -> int:
     ap = argparse.ArgumentParser(description="生成实时盯盘切片 JSON")
     ap.add_argument("--date", default="", help="YYYYMMDD；为空取北京时间今天")
-    ap.add_argument("--publish", action="store_true", help="同时输出 html/latest_intraday*.json")
     ap.add_argument("--offline", action="store_true", help="离线模式：允许使用本地缓存（用于测试）")
     args = ap.parse_args()
 
@@ -314,17 +281,12 @@ def main() -> int:
     date10 = resolved_date10
     date8 = _date10_to_8(date10)
 
-    # 先清前一日缓存和已发布文件，确保每天重建
+    # 先清前一日缓存，确保每天重建
     _purge_previous_day_slices(root=root, keep_date10=date10)
-    _purge_previous_day_published(root=root, keep_date10=date10)
 
     snap = build_live_snapshot(date8, intraday=intraday).to_dict()
-    payload = append_intraday_slice(root=root, snapshot=snap)
-    if args.publish:
-        publish_runtime_files(root=root, latest_snapshot=snap, slices_payload=payload)
+    append_intraday_slice(root=root, snapshot=snap)
     print(f"✅ 实时切片已写入: {_intraday_slices_path(root, str(snap.get('date') or ''))}")
-    if args.publish:
-        print("✅ 已发布 latest_intraday.json / latest_intraday_slices.json")
     if args.offline:
         print("⚠️  离线模式：数据可能非实时")
     return 0

@@ -9,7 +9,6 @@ import PlanPage from "./components/plan/PlanPage.vue"
 import WatchPage from "./components/intraday/WatchPage.vue"
 import AbnormalPage from "./components/intraday/AbnormalPage.vue"
 import FlashPage from "./components/intraday/FlashPage.vue"
-import DragonTigerPage from "./components/dragon-tiger/DragonTigerPage.vue"
 import HotAnswerPage from "./components/hot-answer/HotAnswerPage.vue"
 import TomorrowPicksPage from "./components/tomorrow/TomorrowPicksPage.vue"
 import { resolveMarketThemeToneByScore, useMarketData } from "./composables/useMarketData"
@@ -43,7 +42,6 @@ const reviewTabs = [
   { id: "tomorrow", name: "今日题材" },
   { id: "themes", name: "板块强度" },
   { id: "ladder", name: "连板天梯" },
-  { id: "dragonTiger", name: "龙虎榜" },
 ] as const
 const intradayTabs = [
   { id: "watch", name: "实时盯盘" },
@@ -217,7 +215,6 @@ watchEffect(() => {
         <ThemesPage v-else-if="currentTab === 'themes'" />
         <LadderPage v-else-if="currentTab === 'ladder'" />
         <PlanPage v-else-if="currentTab === 'plan'" />
-        <DragonTigerPage v-else-if="currentTab === 'dragonTiger'" />
         <HotAnswerPage v-else-if="currentTab === 'hotAnswer'" />
         <TomorrowPicksPage v-else-if="currentTab === 'tomorrow'" />
         <WatchPage v-else-if="currentTab === 'watch'" />

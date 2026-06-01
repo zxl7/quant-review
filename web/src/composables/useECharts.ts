@@ -1,5 +1,5 @@
 import { onBeforeUnmount, onMounted, watch, type ComputedRef, type Ref } from 'vue';
-import * as echarts from 'echarts';
+import { echarts } from '../echarts-setup';
 
 export function useECharts(elRef: Ref<HTMLElement | null>, optionRef: ComputedRef<any>) {
   let chart: echarts.ECharts | null = null;

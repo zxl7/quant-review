@@ -39,13 +39,19 @@ def build_learning_notes(*, market_data: Dict[str, Any], cache_dir: Path) -> Dic
         return s
 
     def _split_sentences(text: str) -> list[str]:
+        signer = ""
+        signer_match = re.search(r"\s*-{3,}\s*([^\s]+)\s*$", text)
+        if signer_match:
+            signer = f"-----{signer_match.group(1)}"
+            text = text[: signer_match.start()].strip()
+
         parts = re.split(r"[。！？!?\n]+", text)
         out: list[str] = []
         for p in parts:
             p = p.strip()
             if not p:
                 continue
-            out.extend([x.strip() for x in re.split(r"[；;]+", p) if x.strip()])
+            out.extend([f"{x.strip()} {signer}".strip() for x in re.split(r"[；;]+", p) if x.strip()])
         return out
 
     def _bucket_key(title: str, current_mode: str = "", current_bucket: str = "common") -> tuple[str, str, bool]:

@@ -377,10 +377,9 @@ jobs:
               print("WARNING: ztAnalysis relay empty while watch exists; publish continues because an empty relay pool can be valid intraday.")
           PY
 
-      - name: Pre-fetch external data (龙虎榜 + 明日策略池 + 东方财富今日题材)
+      - name: Pre-fetch external data (明日策略池 + 东方财富今日题材)
         if: ${{ steps.pushmode.outputs.mode != 'intraday' }}
         run: |
-          python3 tools/fetch_dragon_tiger.py web/public/dragon_tiger_data.json || echo "⚠ dragon tiger fetch failed, using cache"
           python3 tools/fetch_tomorrow_picks.py web/public/tomorrow_picks.json || echo "⚠ tomorrow picks fetch failed, using cache"
           python3 tools/fetch_eastmoney_tomorrow.py web/public/eastmoney_tomorrow.json || echo "⚠ eastmoney tomorrow fetch failed, using cache"
 
@@ -405,27 +404,44 @@ jobs:
         if: ${{ (github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true') && (github.event_name != 'schedule' || steps.tradeday.outputs.is_trade_today == 'true') }}
         run: |
           set -euo pipefail
-          mode="${{ steps.pushmode.outputs.mode }}"
-          if [ "${mode}" = "intraday" ]; then
-            # intraday 输出文件名历史上存在两种：
-            # - 复盘日记-YYYYMMDD-intra.html
-            # - 复盘日记-YYYYMMDD-intraday-tab-v1.html
-            report_html="$(ls -t ./html/*-intra.html ./html/*-intraday-tab-v1.html ./html/*intraday*.html 2>/dev/null | head -n 1 || true)"
-            # 盘中仅更新 JSON，若当天还没有完整报告，则回退到最近一份日终 HTML
-            if [ -z "${report_html}" ]; then
-              report_html="$(ls -t ./html/*tab-v1.html 2>/dev/null | head -n 1 || true)"
-            fi
+          report_html=""
+          if [ -f "./web/dist/index.html" ]; then
+            report_html="./web/dist/index.html"
           else
-            report_html="$(ls -t ./html/*tab-v1.html 2>/dev/null | head -n 1 || true)"
+            mode="${{ steps.pushmode.outputs.mode }}"
+            if [ -d "./html" ]; then
+              if [ "${mode}" = "intraday" ]; then
+                # intraday 输出文件名历史上存在两种：
+                # - 复盘日记-YYYYMMDD-intra.html
+                # - 复盘日记-YYYYMMDD-intraday-tab-v1.html
+                report_html="$(ls -t ./html/*-intra.html ./html/*-intraday-tab-v1.html ./html/*intraday*.html 2>/dev/null | head -n 1 || true)"
+                if [ -z "${report_html}" ]; then
+                  report_html="$(ls -t ./html/*tab-v1.html 2>/dev/null | head -n 1 || true)"
+                fi
+              else
+                report_html="$(ls -t ./html/*tab-v1.html 2>/dev/null | head -n 1 || true)"
+              fi
+            fi
           fi
           if [ -z "${report_html}" ]; then
-            echo "No report html found in ./html/"
+            echo "No publishable html found."
+            ls -la ./web/dist || true
             ls -la ./html || true
             exit 2
           fi
           run_date="${{ steps.pushmode.outputs.date10 }}"
-          if ! grep -q "\"date\": \"${run_date}\"" "${report_html}"; then
-            echo "Report HTML date mismatch: expected ${run_date} in ${report_html}"
+          d8="$(echo "${run_date}" | tr -d '-')"
+          source_path="cache/market_data-${d8}.json"
+          if [ "${{ steps.pushmode.outputs.mode }}" = "intraday" ]; then
+            source_path="cache/market_data-${d8}-intraday.json"
+          fi
+          if [ ! -f "${source_path}" ]; then
+            echo "Source market data not found: ${source_path}"
+            ls -la cache || true
+            exit 3
+          fi
+          if ! python3 -c 'import json, sys; data = json.load(open(sys.argv[1], encoding="utf-8")); raise SystemExit(0 if str(data.get("date") or "") == sys.argv[2] else 1)' "${source_path}" "${run_date}"; then
+            echo "Source market data date mismatch: expected ${run_date} in ${source_path}"
             exit 3
           fi
           # 发布目录：只保留“最新一份报告 + index.html”
@@ -433,16 +449,33 @@ jobs:
           mkdir -p ./site
           cp -f "${report_html}" ./site/
           cp -f "${report_html}" ./site/index.html
-          cp -f ./html/latest_intraday.json ./site/ 2>/dev/null || true
-          cp -f ./html/latest_intraday_slices.json ./site/ 2>/dev/null || true
-          cp -f ./web/public/dragon_tiger_data.json ./site/ 2>/dev/null || true
-          cp -f ./web/public/dragon_tiger_data.js ./site/ 2>/dev/null || true
-          cp -f ./web/public/tomorrow_picks.json ./site/ 2>/dev/null || true
-          cp -f ./web/public/tomorrow_picks.js ./site/ 2>/dev/null || true
-          cp -f ./web/public/eastmoney_tomorrow.json ./site/ 2>/dev/null || true
+          # market_data 是新 web 路径下 HTML 运行时 fetch 的必需文件，必须随 index.html 发布
+          missing=()
+          for f in market_data.json market_data.js; do
+            if [ -f "./web/dist/${f}" ]; then
+              cp -f "./web/dist/${f}" "./site/${f}"
+            else
+              missing+=("${f}")
+            fi
+          done
+          if [ ${#missing[@]} -gt 0 ]; then
+            echo "Missing required runtime data files in web/dist: ${missing[*]}"
+            ls -la ./web/dist || true
+            exit 4
+          fi
+          # 旁路数据（前端有兜底逻辑，缺失不致命）：优先 web/dist，回退 web/public
+          for f in tomorrow_picks.json tomorrow_picks.js eastmoney_tomorrow.json intraday_resonance.json; do
+            if [ -f "./web/dist/${f}" ]; then
+              cp -f "./web/dist/${f}" "./site/${f}"
+            elif [ -f "./web/public/${f}" ]; then
+              cp -f "./web/public/${f}" "./site/${f}"
+            fi
+          done
           cp -f ./cache_online/intraday_resonance-*.json ./site/ 2>/dev/null || true
           touch ./site/.nojekyll
           echo "site=index.html from: ${report_html}"
+          echo "site data files:"
+          ls -la ./site/ | grep -E '\.(json|js|html)$' || true
 
       - name: Commit & push to gh-pages
         if: ${{ (github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true') && (github.event_name != 'schedule' || steps.tradeday.outputs.is_trade_today == 'true') }}
@@ -458,12 +491,18 @@ jobs:
           for f in ./site/*.html; do
             if [ -f "$f" ]; then cp -f "$f" site_prev/; fi
           done
-          # 龙虎榜数据 + 明日策略池 + 东方财富今日题材（前端运行时通过 fetch 回退加载）
-          cp -f ./site/dragon_tiger_data.json site_prev/ 2>/dev/null || true
-          cp -f ./site/tomorrow_picks.json site_prev/ 2>/dev/null || true
-          cp -f ./site/eastmoney_tomorrow.json site_prev/ 2>/dev/null || true
-          cp -f ./web/public/dragon_tiger_data.js site_prev/ 2>/dev/null || true
-          cp -f ./web/public/tomorrow_picks.js site_prev/ 2>/dev/null || true
+          # 运行时数据文件（market_data 是必需，其余有兜底）一律从 ./site/ 镜像到 gh-pages
+          for f in market_data.json market_data.js \
+                   tomorrow_picks.json tomorrow_picks.js eastmoney_tomorrow.json intraday_resonance.json; do
+            if [ -f "./site/${f}" ]; then
+              cp -f "./site/${f}" "site_prev/${f}"
+            fi
+          done
+          if [ ! -f site_prev/market_data.json ] || [ ! -f site_prev/market_data.js ]; then
+            echo "FATAL: market_data.{json,js} missing in site_prev/, aborting push"
+            ls -la site_prev/ || true
+            exit 5
+          fi
 
           # 同步历史 cache（只保留最近 7 个 market_data-YYYYMMDD.json）
           mkdir -p site_prev/cache
@@ -487,8 +526,6 @@ jobs:
             rm -f "${sfiles[@]:0:${#sfiles[@]}-2}"
           fi
 
-          cp -f ./html/latest_intraday.json site_prev/ 2>/dev/null || true
-          cp -f ./html/latest_intraday_slices.json site_prev/ 2>/dev/null || true
           cp -f ./cache_online/intraday_resonance-*.json site_prev/ 2>/dev/null || true
 
           if git -C site_prev diff --quiet; then

@@ -9282,52 +9282,13 @@
               return true
             },
             async refreshLive(force = false) {
-              // 定时渲染模式：实时数据已内嵌在 HTML 内，不再前端 fetch
-              if (this.marketData?.meta?.live_embedded === true) return
-              // 仅在“实时盯盘”页拉取；force=true 用于手动刷新
-              try {
-                if (!force && currentPage !== "watch") return
-                if (this._liveReqInFlight) return
-                this._liveReqInFlight = true
-                this.liveLoading = true
-                this.liveError = ""
-                const ts = Date.now()
-                const [resLive, resSlices] = await Promise.all([
-                  fetch(`latest_intraday.json?ts=${ts}`, { cache: "no-store" }),
-                  fetch(`latest_intraday_slices.json?ts=${ts}`, { cache: "no-store" }).catch(() => null),
-                ])
-                if (!resLive.ok) throw new Error(`HTTP ${resLive.status}`)
-                const live = await resLive.json()
-                let slices = null
-                if (resSlices && resSlices.ok) {
-                  slices = await resSlices.json()
-                }
-                this.applyLiveSnapshotPayload(live, slices)
-                this._consecutiveLiveFail = 0
-                // 快照源携带 interval_min 时，动态对齐轮询频率。
-                const nextIntervalMin = this.normalizePollIntervalMin(slices?.interval_min)
-                if (nextIntervalMin !== this._pollIntervalMin) this.startLivePolling(true)
-              } catch (e) {
-                this._consecutiveLiveFail = Number(this._consecutiveLiveFail || 0) + 1
-                this.liveError = `实时数据获取失败：${String(e && e.message ? e.message : e)}`
-              } finally {
-                this._liveReqInFlight = false
-                this.liveLoading = false
-              }
+              return false
             },
             startLivePolling(forceRestart = false) {
-              // 定时渲染模式：不轮询（避免 file:// 场景 fetch 失败）
-              if (this.marketData?.meta?.live_embedded === true) return
-              if (this._liveTimer && !forceRestart) return
-              if (this._liveTimer && forceRestart) {
+              if (this._liveTimer) {
                 clearInterval(this._liveTimer)
                 this._liveTimer = null
               }
-              const intervalMin = this.normalizePollIntervalMin(this.marketData?.intradaySnapshots?.interval_min)
-              this._pollIntervalMin = intervalMin
-              // 先拉一次
-              this.refreshLive(false)
-              this._liveTimer = setInterval(() => this.refreshLive(false), intervalMin * 60 * 1000)
             },
             stopLivePolling() {
               if (this._liveTimer) {

@@ -141,6 +141,30 @@ class TideSignalTest(unittest.TestCase):
         self.assertEqual(signal["themes"], [])
         self.assertEqual(signal["summary"]["action_hint"], "潮汐数据不足，按原系统判断")
 
+    def test_loss_effect_triggers_ebb(self) -> None:
+        signal = build_tide_signal(
+            market_data={
+                "date": "2026-05-29",
+                "sentiment": {
+                    "score": 62,
+                    "risk": 62,
+                    "sub_scores": {"negative": 0},
+                },
+                "panorama": {"limitUp": 60, "broken": 38, "limitDown": 50, "ratio": "65%"},
+                "prev": {
+                    "sentiment": {"score": 64, "risk": 25, "sub_scores": {"negative": 8}},
+                    "panorama": {"limitUp": 62, "broken": 16, "limitDown": 6, "ratio": "68%"},
+                },
+            },
+            theme_trend_cache={},
+        )
+
+        loss = signal["market"]["loss_effect"]
+        self.assertGreaterEqual(loss["score"], 75)
+        self.assertEqual(loss["level"], "danger")
+        self.assertTrue(signal["market"]["is_ebb_day"])
+        self.assertTrue(any("亏钱" in x for x in signal["market"]["triggers"]))
+
 
 if __name__ == "__main__":
     unittest.main()

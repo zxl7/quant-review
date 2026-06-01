@@ -9,10 +9,10 @@
 # - 尽量函数式：小函数 + 明确入参/出参，副作用集中在命令末端
 #
 # 用法：
-#   ./qr.sh fetch [YYYY-MM-DD]   # 在线取数 + pipeline 重建 + V3 构建/注入 html/复盘日记-YYYYMMDD-tab-v1.html
-#   ./qr.sh render [YYYY-MM-DD]  # 只用 cache 离线重建 + V3 构建/注入（不请求接口）
+#   ./qr.sh fetch [YYYY-MM-DD]   # 在线取数 + pipeline 重建 + web 数据缓存
+#   ./qr.sh render [YYYY-MM-DD]  # 只用 cache 离线重建 + web 构建/数据刷新（不请求接口）
 #   ./qr.sh sync-cache [YYYY-MM-DD] # 同步 cache_online/（远端自动构建依赖目录）
-#   ./qr.sh deploy              # （可选）把最新 tab-v1 报告发布到 gh-pages/index.html
+#   ./qr.sh deploy              # （可选）把 web/dist/index.html 发布到 gh-pages/index.html
 #
 set -euo pipefail
 
@@ -77,16 +77,6 @@ date10_to_date8() {
   echo "$1" | tr -d '-'
 }
 
-refresh_dragon_tiger_cache() {
-  local date10="$1"
-  local d8
-  d8="$(date10_to_date8 "${date10}")"
-  if [[ -f "tools/fetch_dragon_tiger.py" ]]; then
-    info "抓取龙虎榜本地缓存: ${date10}"
-    python3 tools/fetch_dragon_tiger.py "${d8}" || warn "龙虎榜抓取失败，继续使用已有本地缓存"
-  fi
-}
-
 refresh_watchlist_cache() {
   # 拉异动/板块/明日主题接口 + 跑 M3/M4/M5 推票
   # 产出 cache_online/watchlist_cache-YYYYMMDD.json，由 inject_data.py 注入前端 picks_advisor
@@ -106,17 +96,6 @@ refresh_watchlist_cache() {
     PYTHONPATH=. python3 tools/fetch_watchlist.py --date "${date10}" \
       || warn "fetch_watchlist 失败，将沿用已有 watchlist_cache（若存在）"
   fi
-}
-
-cleanup_timestamp_html() {
-  # 只保留 tab-v1，删除旧版脚本生成的带时分秒版本（复盘日记-YYYYMMDD-HHMMSS.html）
-  local yyyymmdd="$1"
-  shopt -s nullglob
-  local files=( "html/复盘日记-${yyyymmdd}-"[0-9][0-9][0-9][0-9][0-9][0-9].html )
-  if ((${#files[@]})); then
-    rm -f "${files[@]}"
-  fi
-  shopt -u nullglob
 }
 
 prune_cache_keep_latest_n() {
@@ -175,23 +154,8 @@ sync_online_cache_dir() {
   fi
 }
 
-prune_html_keep_latest_report() {
-  # 只保留最新一份「复盘日记-*.html」，其余历史报告全部删除
-  local latest
-  latest="$(ls -t html/复盘日记-*.html 2>/dev/null | head -n 1 || true)"
-  [[ -n "${latest}" ]] || return 0
-  shopt -s nullglob
-  local files=( html/复盘日记-*.html )
-  shopt -u nullglob
-  for f in "${files[@]}"; do
-    if [[ "${f}" != "${latest}" ]]; then
-      rm -f "${f}"
-    fi
-  done
-}
-
 render_offline() {
-  # V3 构建 + 数据注入 → 单文件 HTML
+  # Web 构建 + 数据文件刷新。旧的 html/复盘日记 单文件路径已下线。
   local date10="$1"
   local yyyymmdd market_json
   yyyymmdd="$(date10_to_date8 "${date10}")"
@@ -202,43 +166,39 @@ render_offline() {
   # 离线重建 pipeline（不请求接口）
   PYTHONPATH=. python3 -u -m daily_review.cli --date "${date10}" --rebuild
 
-  # V3 构建 + 数据注入
+  # Web 构建 + 数据文件刷新
   (cd web && npm run build) || die "Vue3 构建失败"
-  python3 inject_data.py "${yyyymmdd}" || die "数据注入失败"
+  python3 inject_data.py "${yyyymmdd}" || die "web 数据生成失败"
 
-  echo "✅ V3 构建完成: html/复盘日记-${yyyymmdd}-tab-v1.html"
-  prune_html_keep_latest_report
+  echo "✅ Web 构建完成: web/dist/index.html"
 }
 
 cmd_fetch() {
   load_dotenv_if_needed
   ensure_token
 
-  info "在线取数生成缓存（会请求接口，有成本） -> 离线 pipeline 重建 -> 输出 tab-v1"
+  info "在线取数生成缓存（会请求接口，有成本） -> 离线 pipeline 重建 -> web 数据缓存"
   if [[ -n "${DATE_ARG}" ]]; then
     PYTHONPATH=. python3 -u -m daily_review.cli --fetch --date "${DATE_ARG}"
-    refresh_dragon_tiger_cache "${DATE_ARG}"
-    cleanup_timestamp_html "$(date10_to_date8 "${DATE_ARG}")"
     prune_cache_keep_latest_n 7
     prune_extra_cache_artifacts
     sync_online_cache_dir "${DATE_ARG}"
     refresh_watchlist_cache "${DATE_ARG}"
+    render_offline "${DATE_ARG}"
     return 0
   fi
 
   # 不指定日期：由 cli 负责自动回退到最近交易日
   PYTHONPATH=. python3 -u -m daily_review.cli --fetch
 
-  # 用缓存里最新的 market_data-*.json 再离线渲染一份 v1（不再取数）
+  # 用缓存里最新的 market_data-*.json 再离线构建 web（不再取数）
   local d8 d10
   d8="$(pick_latest_cache_date8)" || die "未找到 cache/market_data-*.json（尚未生成缓存？）"
   d10="$(date8_to_date10 "${d8}")"
-  refresh_dragon_tiger_cache "${d10}"
-  # 先 sync 到 cache_online（会清空目录），再生成 watchlist 推票，最后 render_offline 注入前端
+  # 先 sync 到 cache_online（会清空目录），再生成 watchlist 推票，最后刷新 web 数据
   sync_online_cache_dir "${d10}"
   refresh_watchlist_cache "${d10}"
   render_offline "${d10}"
-  cleanup_timestamp_html "${d8}"
   prune_cache_keep_latest_n 7
   prune_extra_cache_artifacts
   python3 inject_data.py "${d8}" --dev-only 2>/dev/null || true
@@ -252,7 +212,6 @@ cmd_gen() {
   info "仅在线取数并生成缓存（不做离线 pipeline 重建/渲染）"
   if [[ -n "${DATE_ARG}" ]]; then
     PYTHONPATH=. python3 -u -m daily_review.cli --fetch --date "${DATE_ARG}"
-    refresh_dragon_tiger_cache "${DATE_ARG}"
     sync_online_cache_dir "${DATE_ARG}"
     refresh_watchlist_cache "${DATE_ARG}"
   else
@@ -260,7 +219,6 @@ cmd_gen() {
     local d8 d10
     d8="$(pick_latest_cache_date8)" || die "未找到 cache/market_data-*.json（尚未生成缓存？）"
     d10="$(date8_to_date10 "${d8}")"
-    refresh_dragon_tiger_cache "${d10}"
     sync_online_cache_dir "${d10}"
     refresh_watchlist_cache "${d10}"
   fi
@@ -269,10 +227,9 @@ cmd_gen() {
 cmd_render() {
   load_dotenv_if_needed
   if [[ -n "${DATE_ARG}" ]]; then
-    # 先 sync + 用本地缓存重算 watchlist + 刷新龙虎榜，再 render_offline 注入前端
+    # 先 sync + 用本地缓存重算 watchlist，再刷新 web 数据
     sync_online_cache_dir "${DATE_ARG}"
     refresh_watchlist_cache "${DATE_ARG}" "--skip-fetch"
-    refresh_dragon_tiger_cache "${DATE_ARG}"
     render_offline "${DATE_ARG}"
     prune_cache_keep_latest_n 7
     prune_extra_cache_artifacts
@@ -284,7 +241,6 @@ cmd_render() {
   d10="$(date8_to_date10 "${d8}")"
   sync_online_cache_dir "${d10}"
   refresh_watchlist_cache "${d10}" "--skip-fetch"
-  refresh_dragon_tiger_cache "${d10}"
   render_offline "${d10}"
   prune_cache_keep_latest_n 7
   prune_extra_cache_artifacts
@@ -305,10 +261,13 @@ cmd_build_web() {
   if [[ ! -f "cache/market_data-${d8}.json" ]]; then
     die "数据缓存不存在: cache/market_data-${d8}.json，请先执行：./qr.sh fetch ${d10}"
   fi
-  info "V3 构建 + 数据注入 -> html/复盘日记-${d8}-tab-v1.html"
+  # build-web 也要先重算算法缓存，确保 web 入口消费最新 tide/coreTide/watchlist。
+  sync_online_cache_dir "${d10}"
+  refresh_watchlist_cache "${d10}" "--skip-fetch"
+  info "Web 构建 + 算法数据刷新 -> web/dist/index.html"
   (cd web && npm run build) || die "Vue3 构建失败"
-  python3 inject_data.py "${d8}" || die "数据注入失败"
-  info "构建完成: html/复盘日记-${d8}-tab-v1.html"
+  python3 inject_data.py "${d8}" || die "web 数据生成失败"
+  info "构建完成: web/dist/index.html"
 }
 
 cmd_sync_cache() {
@@ -361,8 +320,8 @@ cmd_deploy() {
   fi
 
   local report_html
-  report_html="$(ls -t ./html/*tab-v1.html 2>/dev/null | head -n 1 || true)"
-  [[ -n "${report_html}" ]] || die "未找到可发布的报告文件：./html/*tab-v1.html"
+  report_html="./web/dist/index.html"
+  [[ -f "${report_html}" ]] || die "未找到可发布的 web 构建入口：./web/dist/index.html"
 
   local tmp
   tmp="$(mktemp -t deploy_pages.XXXXXX.html)"
@@ -389,11 +348,11 @@ cmd_deploy() {
 usage() {
   cat <<'EOF'
 用法：
-  ./qr.sh fetch [YYYY-MM-DD]   在线取数 + 算法推票 + pipeline 重建 + Vue3 构建 → tab-v1 HTML
+  ./qr.sh fetch [YYYY-MM-DD]   在线取数 + 算法推票 + pipeline 重建 + web 数据缓存
   ./qr.sh render [YYYY-MM-DD]  仅用 cache 离线重建 + 推票重算(--skip-fetch) + Vue3 构建（不请求接口）
-  ./qr.sh build-web [YYYY-MM-DD]  仅 Vue3 构建 + 注入（不跑 pipeline，改 UI 用）
+  ./qr.sh build-web [YYYY-MM-DD]  仅 Vue3 构建 + web 数据刷新（不跑 pipeline，改 UI 用）
   ./qr.sh watch-slice [YYYY-MM-DD]  仅生成实时盯盘切片 JSON（供页面动态读取）
-  ./qr.sh deploy               （可选）发布最新 tab-v1 到 gh-pages/index.html
+  ./qr.sh deploy               （可选）发布 web/dist/index.html 到 gh-pages/index.html
 EOF
 }
 

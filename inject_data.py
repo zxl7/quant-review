@@ -1,8 +1,8 @@
 """
 Vue3 数据注入脚本（inject_data.py）
 
-将 cache/market_data-YYYYMMDD.json 注入到 Vite 构建产物 web/dist/index.html，
-产出最终单文件 HTML 报告。
+将 cache/market_data-YYYYMMDD.json 转换为 web 可直接消费的数据文件。
+当前只维护 web 路径：web/public 用于 dev，web/dist 用于构建产物预览/部署。
 
 架构位置：Layer 2（数据加工）→ Layer 3（渲染）的桥梁
 """
@@ -32,14 +32,6 @@ def _resolve_data_path(date8: str, source: Optional[str] = None) -> Path:
             data_path = ROOT / data_path
         return data_path
     return ROOT / "cache" / f"market_data-{date8}.json"
-
-
-def _resolve_dragon_tiger_path(date8: str) -> Path:
-    # 优先用 cache 目录的当日缓存（fetch 流程产出），兜底 web/public（dev 场景）
-    cached = ROOT / "cache" / f"dragon_tiger-{date8}.json"
-    if cached.exists():
-        return cached
-    return ROOT / "web" / "public" / "dragon_tiger_data.json"
 
 
 def _resolve_eastmoney_tomorrow_path() -> Path:
@@ -216,8 +208,8 @@ def _enhance_with_watchlist(md: dict, watchlist: dict) -> None:
         md["coreTideSignal"] = core_tide
 
 
-def inject(date8: str, source: Optional[str] = None) -> Path:
-    """注入数据并返回输出路径"""
+def build_web_data(date8: str, source: Optional[str] = None) -> Path:
+    """生成 web/dist 旁路数据文件并返回 dist 目录。"""
     # 读取市场数据
     data_path = _resolve_data_path(date8, source)
     if not data_path.exists():
@@ -238,11 +230,6 @@ def inject(date8: str, source: Optional[str] = None) -> Path:
             print(f"⚠ watchlist 增强失败（跳过）: {e}", file=sys.stderr)
 
     payload = json.dumps(md, ensure_ascii=False)
-    dragon_payload = "{}"
-    dragon_path = _resolve_dragon_tiger_path(date8)
-    if dragon_path.exists():
-        dragon_data = json.loads(dragon_path.read_text(encoding="utf-8"))
-        dragon_payload = json.dumps(dragon_data, ensure_ascii=False)
     # 明日策略池
     tp_path = ROOT / "web" / "public" / "tomorrow_picks.json"
     tp_payload = "{}"
@@ -265,36 +252,12 @@ def inject(date8: str, source: Optional[str] = None) -> Path:
     if res_path.exists():
         resonance_payload = res_path.read_text(encoding="utf-8")
 
-    # 读取 Vite 构建产物
-    built = ROOT / "web" / "dist" / "index.html"
-    if not built.exists():
-        raise FileNotFoundError(f"Vite 构建产物不存在: {built}\n请先执行: cd web && npm run build")
-
-    html = built.read_text(encoding="utf-8")
-
-    # 注入 window.__MARKET_DATA__ 到 </head> 前
-    data_script = f"<script>window.__MARKET_DATA__={payload};window.__DRAGON_TIGER_DATA__={dragon_payload};window.__TOMORROW_PICKS__={tp_payload};window.__EASTMONEY_TOMORROW_DATA__={em_payload};window.__INTRADAY_RESONANCE__={resonance_payload};</script>"
-    if "</head>" in html:
-        html = html.replace("</head>", f"{data_script}\n  </head>")
-    else:
-        html = data_script + "\n" + html
-
-    # 写入输出
-    out_dir = ROOT / "html"
-    out_dir.mkdir(parents=True, exist_ok=True)
-    out_path = out_dir / f"复盘日记-{date8}-tab-v1.html"
-    out_path.write_text(html, encoding="utf-8")
-
-    # 同时写 index.html 用于本地预览
-    index_path = out_dir / "index.html"
-    index_path.write_text(html, encoding="utf-8")
-
-    # 同步 dist 旁路数据文件，支持直接打开 web/dist/index.html
+    # 同步 dist 旁路数据文件，支持通过 web/dist/index.html 加载同目录数据。
     dist_dir = ROOT / "web" / "dist"
+    if not (dist_dir / "index.html").exists():
+        raise FileNotFoundError(f"Vite 构建产物不存在: {dist_dir / 'index.html'}\n请先执行: cd web && npm run build")
     (dist_dir / "market_data.json").write_text(payload, encoding="utf-8")
     (dist_dir / "market_data.js").write_text(f"window.__MARKET_DATA__={payload};", encoding="utf-8")
-    (dist_dir / "dragon_tiger_data.json").write_text(dragon_payload, encoding="utf-8")
-    (dist_dir / "dragon_tiger_data.js").write_text(f"window.__DRAGON_TIGER_DATA__={dragon_payload};", encoding="utf-8")
     if tp_payload != "{}":
         (dist_dir / "tomorrow_picks.json").write_text(tp_payload, encoding="utf-8")
     if em_payload != "{}":
@@ -302,7 +265,12 @@ def inject(date8: str, source: Optional[str] = None) -> Path:
     if resonance_payload != "[]":
         (dist_dir / "intraday_resonance.json").write_text(resonance_payload, encoding="utf-8")
 
-    return out_path
+    return dist_dir
+
+
+def inject(date8: str, source: Optional[str] = None) -> Path:
+    """兼容旧调用名：只生成 web 数据，不再生成 html/复盘日记。"""
+    return build_web_data(date8, source)
 
 
 def refresh_dev_data(date8: str, source: Optional[str] = None) -> None:
@@ -322,20 +290,11 @@ def refresh_dev_data(date8: str, source: Optional[str] = None) -> None:
         except Exception as e:
             print(f"⚠ watchlist 增强失败（dev 跳过）: {e}", file=sys.stderr)
     payload = json.dumps(md, ensure_ascii=False)
-    dragon_payload = "{}"
-    dragon_path = _resolve_dragon_tiger_path(date8)
-    if dragon_path.exists():
-        dragon_data = json.loads(dragon_path.read_text(encoding="utf-8"))
-        dragon_payload = json.dumps(dragon_data, ensure_ascii=False)
     dev_file = ROOT / "web" / "public" / "market_data.json"
     dev_script = ROOT / "web" / "public" / "market_data.js"
-    dev_dragon_file = ROOT / "web" / "public" / "dragon_tiger_data.json"
-    dev_dragon_script = ROOT / "web" / "public" / "dragon_tiger_data.js"
     dev_file.parent.mkdir(parents=True, exist_ok=True)
     dev_file.write_text(payload, encoding="utf-8")
     dev_script.write_text(f"window.__MARKET_DATA__={payload};", encoding="utf-8")
-    dev_dragon_file.write_text(dragon_payload, encoding="utf-8")
-    dev_dragon_script.write_text(f"window.__DRAGON_TIGER_DATA__={dragon_payload};", encoding="utf-8")
     # 同步盘中共振数据
     res_file = _resolve_intraday_resonance_path(date8)
     if res_file.exists():
@@ -346,14 +305,12 @@ def refresh_dev_data(date8: str, source: Optional[str] = None) -> None:
             print(f"  盘中共振 dev 数据已同步")
     print(f"  dev 数据已刷新: {dev_file}")
     print(f"  dev 脚本已刷新: {dev_script}")
-    print(f"  龙虎榜 dev 数据已刷新: {dev_dragon_file}")
-    print(f"  龙虎榜 dev 脚本已刷新: {dev_dragon_script}")
 
 
 if __name__ == "__main__":
     import argparse
 
-    ap = argparse.ArgumentParser(description="将 market_data 注入到 V3 构建产物中")
+    ap = argparse.ArgumentParser(description="将 market_data 写入 web/public 与 web/dist 数据文件")
     ap.add_argument("date8", nargs="?", help="交易日，格式 YYYYMMDD；不传则自动取最新缓存")
     ap.add_argument("--dev-only", action="store_true", help="仅刷新 web/public 下的数据文件")
     ap.add_argument("--source", help="显式指定数据源 JSON 路径，可用于 intraday 缓存")
@@ -381,10 +338,10 @@ if __name__ == "__main__":
         date8 = files[-1].name.replace("market_data-", "").replace(".json", "")
 
     out = inject(date8, args.source)
-    print(f"✅ 数据已注入: {out}")
+    print(f"✅ web 数据已生成: {out}")
     source_path = _resolve_data_path(date8, args.source)
     print(f"   数据来源: {source_path.relative_to(ROOT) if source_path.is_relative_to(ROOT) else source_path}")
-    print(f"   渲染来源: web/dist/index.html")
+    print(f"   Web 入口: web/dist/index.html")
 
     # 同时刷新 dev 数据
     refresh_dev_data(date8, args.source)

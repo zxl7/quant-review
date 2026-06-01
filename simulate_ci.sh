@@ -157,38 +157,72 @@ echo ""
 # ─── 步骤 5: 准备站点目录（模拟 CI 的 "Prepare Pages site"）──
 echo -e "${YELLOW}[5/6]${NC} 准备 Pages 站点目录"
 mkdir -p site
-rm -rf site/*.html site/*.json 2>/dev/null || true
+rm -rf site/*.html site/*.json site/*.js 2>/dev/null || true
 
-# 找最新的 HTML（和 CI 逻辑一样）
-if [ "${MODE}" = "intraday" ]; then
-    report_html="$(ls -t ./html/*-intra.html ./html/*-intraday-tab-v1.html ./html/*intraday*.html 2>/dev/null | head -n 1 || true)"
-    [ -z "${report_html}" ] && report_html="$(ls -t ./html/*tab-v1.html 2>/dev/null | head -n 1 || true)"
-else
-    report_html="$(ls -t ./html/*tab-v1.html 2>/dev/null | head -n 1 || true)"
+# HTML 来源：优先 web/dist/index.html（新 web 路径），兜底 ./html/ 旧产物
+report_html=""
+if [ -f "./web/dist/index.html" ]; then
+    report_html="./web/dist/index.html"
+elif [ -d "./html" ]; then
+    if [ "${MODE}" = "intraday" ]; then
+        report_html="$(ls -t ./html/*-intra.html ./html/*-intraday-tab-v1.html ./html/*intraday*.html 2>/dev/null | head -n 1 || true)"
+        [ -z "${report_html}" ] && report_html="$(ls -t ./html/*tab-v1.html 2>/dev/null | head -n 1 || true)"
+    else
+        report_html="$(ls -t ./html/*tab-v1.html 2>/dev/null | head -n 1 || true)"
+    fi
 fi
 
 if [ -z "${report_html}" ]; then
     echo -e "  ${RED}⚠️  未找到 HTML 报告${NC}"
-    ls -la ./html/ 2>/dev/null || echo "  html/ 目录为空"
+    ls -la ./web/dist 2>/dev/null || echo "  web/dist/ 不存在"
+    ls -la ./html 2>/dev/null || echo "  html/ 不存在"
 else
     cp -f "${report_html}" ./site/
     cp -f "${report_html}" ./site/index.html
     echo "  ✓ ${report_html} -> site/index.html"
 fi
-cp -f ./html/latest_intraday.json ./site/ 2>/dev/null || true
-cp -f ./html/latest_intraday_slices.json ./site/ 2>/dev/null || true
+
+# 运行时数据：market_data 必需，其余旁路有兜底
+missing=()
+for f in market_data.json market_data.js; do
+    if [ -f "./web/dist/${f}" ]; then
+        cp -f "./web/dist/${f}" "./site/${f}"
+    else
+        missing+=("${f}")
+    fi
+done
+if [ ${#missing[@]} -gt 0 ]; then
+    echo -e "  ${RED}⚠️  web/dist 缺关键数据文件: ${missing[*]}${NC}"
+fi
+for f in tomorrow_picks.json tomorrow_picks.js eastmoney_tomorrow.json intraday_resonance.json; do
+    if [ -f "./web/dist/${f}" ]; then
+        cp -f "./web/dist/${f}" "./site/${f}"
+    elif [ -f "./web/public/${f}" ]; then
+        cp -f "./web/public/${f}" "./site/${f}"
+    fi
+done
 touch ./site/.nojekyll
 echo ""
 
 # ─── 步骤 6: 同步到 site_prev（模拟 CI 的 push to gh-pages）──
 echo -e "${YELLOW}[6/6]${NC} 同步到 site_prev/（模拟 push 到 gh-pages）"
 mkdir -p site_prev
-rm -f site_prev/*.html 2>/dev/null || true
+rm -f site_prev/*.html site_prev/market_data.* \
+      site_prev/tomorrow_picks.* site_prev/eastmoney_tomorrow.* \
+      site_prev/intraday_resonance.* 2>/dev/null || true
 cp -f ./site/.nojekyll site_prev/.nojekyll 2>/dev/null || true
 cp -f ./site/index.html site_prev/index.html 2>/dev/null || true
 for f in ./site/*.html; do
     [ -f "$f" ] && cp -f "$f" site_prev/ 2>/dev/null || true
 done
+# 运行时数据文件：保持 site/ 与 site_prev/ 一致
+for f in market_data.json market_data.js \
+         tomorrow_picks.json tomorrow_picks.js eastmoney_tomorrow.json intraday_resonance.json; do
+    [ -f "./site/${f}" ] && cp -f "./site/${f}" "site_prev/${f}"
+done
+if [ ! -f site_prev/market_data.json ] || [ ! -f site_prev/market_data.js ]; then
+    echo -e "  ${RED}⚠️  site_prev/ 缺 market_data.{json,js}，线上将无法渲染${NC}"
+fi
 mkdir -p site_prev/cache
 cp -f cache/market_data-*.json site_prev/cache/ 2>/dev/null || true
 cp -f cache/pools_cache.json site_prev/cache/ 2>/dev/null || true

@@ -108,17 +108,19 @@ def _build_market_regime(md: dict[str, Any], tide: dict[str, Any]) -> dict[str, 
     index_score, index_reasons = _calc_index_score(md)
     volume_score, volume_reasons = _calc_volume_score(md)
     breadth_score, breadth_reasons = _calc_breadth_score(md, tide)
+    loss_score, loss_reasons = _calc_loss_score(md, tide)
 
     score = (
-        emotion_score * 0.35
-        + breadth_score * 0.25
-        + index_score * 0.20
-        + volume_score * 0.20
+        emotion_score * 0.30
+        + breadth_score * 0.22
+        + index_score * 0.18
+        + volume_score * 0.15
+        + (100.0 - loss_score) * 0.15
     )
     ebb = bool(((tide.get("market") or {}) if isinstance(tide, dict) else {}).get("is_ebb_day"))
-    status = _market_status(score, ebb, breadth_score)
+    status = _market_status(score, ebb, breadth_score, loss_score)
     risk_level = "high" if status in {"ebb", "ice"} else ("mid" if status == "divergence" else "low")
-    reasons = [*emotion_reasons, *breadth_reasons, *volume_reasons, *index_reasons]
+    reasons = [*emotion_reasons, *loss_reasons, *breadth_reasons, *volume_reasons, *index_reasons]
     if ebb and "基础潮汐退潮" not in reasons:
         reasons.insert(0, "基础潮汐退潮")
 
@@ -129,6 +131,7 @@ def _build_market_regime(md: dict[str, Any], tide: dict[str, Any]) -> dict[str, 
         "index_score": round(index_score),
         "volume_score": round(volume_score),
         "breadth_score": round(breadth_score),
+        "loss_score": round(loss_score),
         "risk_level": risk_level,
         "reasons": reasons[:6],
     }
@@ -246,10 +249,43 @@ def _calc_breadth_score(md: dict[str, Any], tide: dict[str, Any]) -> tuple[float
     return _clamp(score), reasons
 
 
-def _market_status(score: float, is_ebb_day: bool, breadth_score: float) -> str:
+def _calc_loss_score(md: dict[str, Any], tide: dict[str, Any]) -> tuple[float, list[str]]:
+    tide_market = tide.get("market") if isinstance(tide.get("market"), dict) else {}
+    loss = tide_market.get("loss_effect") if isinstance(tide_market.get("loss_effect"), dict) else {}
+    score = _to_float(loss.get("score"))
+    if score is None:
+        panorama = md.get("panorama") if isinstance(md.get("panorama"), dict) else {}
+        sentiment = md.get("sentiment") if isinstance(md.get("sentiment"), dict) else {}
+        sub_scores = sentiment.get("sub_scores") if isinstance(sentiment.get("sub_scores"), dict) else {}
+        limit_down = _to_float(panorama.get("limitDown") or panorama.get("limit_down"))
+        broken = _to_float(panorama.get("broken"))
+        limit_up = _to_float(panorama.get("limitUp") or panorama.get("limit_up"))
+        broken_rate = broken / (broken + limit_up) * 100.0 if broken is not None and limit_up is not None and (broken + limit_up) > 0 else None
+        negative_score = _to_float(sub_scores.get("negative"))
+        risk = _first_number([sentiment.get("risk"), (md.get("mood") or {}).get("risk") if isinstance(md.get("mood"), dict) else None])
+        score = 0.0
+        if limit_down is not None:
+            score += min(45.0, limit_down / 30.0 * 45.0)
+        if broken_rate is not None:
+            score += min(25.0, broken_rate / 40.0 * 25.0)
+        elif broken is not None:
+            score += min(18.0, broken / 35.0 * 18.0)
+        if negative_score is not None:
+            score += min(20.0, max(0.0, 10.0 - negative_score) / 10.0 * 20.0)
+        if risk is not None:
+            score += min(10.0, risk / 80.0 * 10.0)
+    reasons = loss.get("reasons") if isinstance(loss.get("reasons"), list) else []
+    if not reasons and score is not None and score >= 60:
+        reasons = [f"亏钱效应{score:.0f}"]
+    return _clamp(float(score if score is not None else 50.0)), [str(x) for x in reasons[:3]]
+
+
+def _market_status(score: float, is_ebb_day: bool, breadth_score: float, loss_score: float) -> str:
     if is_ebb_day and score < 38:
         return "ice"
-    if is_ebb_day or breadth_score < 35 or score < 42:
+    if loss_score >= 78 and (is_ebb_day or breadth_score < 45):
+        return "ice"
+    if is_ebb_day or breadth_score < 35 or score < 42 or loss_score >= 70:
         return "ebb"
     if score < 55:
         return "divergence"
@@ -366,6 +402,14 @@ def _build_core_theme(
         + volume_score * 0.10
     )
     status, action = _theme_status_action(core_score, theme, market_regime)
+    ebb_score = _theme_ebb_score(
+        core_score=core_score,
+        tide_score=tide_score,
+        strength_score=strength_score,
+        status=status,
+        action=action,
+        base_status=str(theme.get("status") or ""),
+    )
     reasons, cautions = _theme_reasons(theme, catalyst, market_regime, status)
     confirms = {
         "emotion": int(market_regime.get("emotion_score") or 0) >= 55,
@@ -379,7 +423,9 @@ def _build_core_theme(
         "status": status,
         "base_tide_status": str(theme.get("status") or ""),
         "action": action,
+        "tide_zone": _theme_tide_zone(status, action),
         "core_score": round(_clamp(core_score)),
+        "ebb_score": round(_clamp(ebb_score)),
         "tide_score": round(_clamp(tide_score)),
         "emotion_score": int(market_regime.get("emotion_score") or 50),
         "strength_score": round(_clamp(strength_score)),
@@ -430,6 +476,36 @@ def _theme_volume_score(theme: dict[str, Any], market_regime: dict[str, Any]) ->
     if str(theme.get("status") or "") == "rebound_warning":
         base -= 24.0
     return _clamp(base)
+
+
+def _theme_ebb_score(
+    *,
+    core_score: float,
+    tide_score: float,
+    strength_score: float,
+    status: str,
+    action: str,
+    base_status: str,
+) -> float:
+    """退潮强度分：专门用于“谁退潮最猛”的排序，不等同于核心关注分。"""
+    score = (100.0 - tide_score) * 0.45 + (100.0 - strength_score) * 0.25 + (100.0 - core_score) * 0.20
+    if action == "avoid":
+        score += 10.0
+    elif action == "no_new_position":
+        score += 14.0
+    if status in {"avoid_weak", "afterglow_risk", "shrinking_rebound"}:
+        score += 8.0
+    if base_status in {"weak", "rebound_warning", "volume_rebound"}:
+        score += 8.0
+    return _clamp(score)
+
+
+def _theme_tide_zone(status: str, action: str) -> str:
+    if action == "confirm" or status in {"core_mainline", "resonance_traverse"}:
+        return "rising"
+    if action in {"avoid", "no_new_position"} or status in {"avoid_weak", "afterglow_risk", "shrinking_rebound"}:
+        return "ebbing"
+    return "neutral"
 
 
 def _theme_status_action(

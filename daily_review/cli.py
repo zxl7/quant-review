@@ -1023,16 +1023,14 @@ def run_fetch_and_rebuild(date: str | None) -> int:
     _log("开始离线重建 pipeline...")
     rc = run_rebuild(actual_date, allow_network=True)
 
-    # 同步生成盯盘快照：每次 fetch 都追加一条盘中切片 + 发布 latest_intraday*.json
+    # 同步生成盯盘快照：每次 fetch 都追加一条盘中切片
     # 注意：run_rebuild 会将完整 market_data（含 volume/plateRankTop10/mood_inputs）写回缓存文件
     # 快照构建需从缓存文件重新读取，确保拿到 rebuild 后的完整数据
     try:
         import datetime as _dt
         from daily_review.watch_runtime import (
             _purge_previous_day_slices,
-            _purge_previous_day_published,
             append_intraday_slice,
-            publish_runtime_files,
         )
         # 从 rebuild 后的缓存重新读取完整 market_data
         rebuilt_data = json.loads(market_path.read_text(encoding="utf-8")) if market_path.exists() else market_data
@@ -1043,7 +1041,6 @@ def run_fetch_and_rebuild(date: str | None) -> int:
             _dt.timezone(_dt.timedelta(hours=8))
         ).strftime("%Y-%m-%d")
         _purge_previous_day_slices(root=root, keep_date10=now_bj_date)
-        _purge_previous_day_published(root=root, keep_date10=now_bj_date)
         now_bj = _dt.datetime.now(
             _dt.timezone(_dt.timedelta(hours=8))
         ).strftime("%Y-%m-%d %H:%M:%S")
@@ -1085,9 +1082,8 @@ def run_fetch_and_rebuild(date: str | None) -> int:
             ],
             "alerts": [],
         }
-        slices_payload = append_intraday_slice(root=root, snapshot=watch_snap)
-        publish_runtime_files(root=root, latest_snapshot=watch_snap, slices_payload=slices_payload)
-        print("✅ 盯盘快照已追加并发布")
+        append_intraday_slice(root=root, snapshot=watch_snap)
+        print("✅ 盯盘快照已追加")
     except Exception as e:
         print(f"⚠️ 盯盘快照生成失败（不影响主流程）: {e}")
 
@@ -1330,37 +1326,6 @@ def run_intraday_snapshot(date: str | None) -> int:
     # 第二次：把"半小时快照列表"注入页面后再渲染一次（离线，成本很低）
     _log("pipeline 二次重建（含快照注入）...")
     run_rebuild(actual_date, suffix="intraday", source_market_path=market_path, allow_network=True)
-
-    # 同步发布 latest_intraday*.json，避免前端轮询时用旧的轻量文件把当前页内嵌轨迹覆盖掉
-    try:
-        from daily_review.watch_runtime import publish_runtime_files
-
-        rebuilt_intraday = json.loads(market_path.read_text(encoding="utf-8")) if market_path.exists() else market_data
-        published_snaps = _load_intraday_snapshots(root=root, date=actual_date)
-        latest_snapshot = published_snaps[-1] if published_snaps else {
-            "date": actual_date,
-            "time": now_str,
-            "ts_bj": f"{actual_date} {now_str}",
-            "heat": ((rebuilt_intraday.get("mood") or {}).get("heat")),
-            "risk": ((rebuilt_intraday.get("mood") or {}).get("risk")),
-            "shift_score": ((rebuilt_intraday.get("mood") or {}).get("score")),
-        }
-        slices_payload = {
-            "schema": "intraday_snapshot_v1",
-            "render_mode": "snapshot_stream",
-            "date": actual_date,
-            "count": len(published_snaps),
-            "interval_min": None,
-            "simulated": False,
-            "snapshots": published_snaps,
-            "latest": latest_snapshot,
-            "updated_at": str(latest_snapshot.get("ts_bj") or ""),
-            "snapshot_sig": f"{actual_date}|{latest_snapshot.get('ts_bj') or ''}|{len(published_snaps)}",
-        }
-        publish_runtime_files(root=root, latest_snapshot=latest_snapshot, slices_payload=slices_payload)
-        _log("盘中 latest_intraday*.json 已同步发布")
-    except Exception:
-        pass
 
     # 在输出 HTML 中注入盘中快照标记
     out_dir = root / "html"

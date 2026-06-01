@@ -161,7 +161,9 @@ type TideTheme = {
     | "neutral"
   base_tide_status?: string
   action?: "confirm" | "watch" | "avoid" | "no_new_position"
+  tide_zone?: "rising" | "neutral" | "ebbing"
   core_score?: number
+  ebb_score?: number
   today_zt?: number
   prev_zt?: number | null
   pre_prev_zt?: number | null
@@ -179,10 +181,15 @@ type TideTheme = {
 
 type TideSignal = {
   date: string
-  market?: { is_ebb_day?: boolean; trigger_count?: number; triggers?: string[] }
-  marketRegime?: { status?: string; score?: number; risk_level?: string; reasons?: string[] }
+  market?: {
+    is_ebb_day?: boolean
+    trigger_count?: number
+    triggers?: string[]
+    loss_effect?: { score?: number; level?: string; reasons?: string[] }
+  }
+  marketRegime?: { status?: string; score?: number; risk_level?: string; reasons?: string[]; loss_score?: number }
   themes?: TideTheme[]
-  summary?: { action_hint?: string }
+  summary?: { action_hint?: string; avoid?: string[]; risk_themes?: string[] }
 }
 
 const picksAdvisor = computed(() => {
@@ -233,7 +240,7 @@ const tideStatusLabel = (status?: string) => {
     resonance_traverse: "核心穿越",
     observe_candidate: "核心观察",
     neutral_wait: "中性等待",
-    avoid_weak: "不开新仓",
+    avoid_weak: "潮汐退潮",
     afterglow_risk: "回光返照",
     shrinking_rebound: "缩量反弹",
     confirmed_mainline: "确认主线",
@@ -246,6 +253,114 @@ const tideStatusLabel = (status?: string) => {
   }
   return labels[String(status || "")] || ""
 }
+
+const isTideRiskTheme = (row: TideTheme) => {
+  const status = String(row?.status || "")
+  return row?.tide_zone === "ebbing" || row?.action === "avoid" || row?.action === "no_new_position" || ["avoid_weak", "weak", "afterglow_risk", "shrinking_rebound", "rebound_warning", "volume_rebound"].includes(status)
+}
+
+const isTideRisingTheme = (row: TideTheme) => {
+  const status = String(row?.status || "")
+  return row?.tide_zone === "rising" || row?.action === "confirm" || ["core_mainline", "resonance_traverse", "confirmed_mainline", "traverse_candidate"].includes(status)
+}
+
+const tideEbbSortScore = (row: TideTheme) => {
+  if (Number.isFinite(Number(row.ebb_score))) return Number(row.ebb_score)
+  const tide = Number(row.tide_score ?? 50)
+  const core = Number(row.core_score ?? 50)
+  const strength = Number(row.strength_score ?? 50)
+  return Math.max(0, Math.min(100, (100 - tide) * 0.45 + (100 - strength) * 0.25 + (100 - core) * 0.2))
+}
+
+const tideDisplayGroup = (name: string) => {
+  const text = String(name || "")
+  if (/半导体|芯片|chiplet|igbt|光刻|封装|存储|soc|oled|mled|pcb/i.test(text)) return "半导体链"
+  if (/电力|风电|风能|核电|特高压|电网|虚拟电厂|水电|绿电|绿色电力/.test(text)) return "电力链"
+  if (/机器人|减速器|机器视觉|丝杠|伺服/.test(text)) return "机器人链"
+  if (/光伏|储能|锂电|电池|新能源/.test(text)) return "新能源链"
+  if (/算力|服务器|数据中心|液冷|cpo|光模块|ai应用|aigc|人工智能/i.test(text)) return "AI算力链"
+  return text
+}
+
+const tideDisplayTitle = (theme: TideTheme & { children?: string[] }) => {
+  const parts = [tideCornerTitle(theme)]
+  if (theme.children?.length) parts.push(`细分：${theme.children.join(" / ")}`)
+  return parts.filter(Boolean).join("｜")
+}
+
+const tideThemeScore = (row: TideTheme) => Number(row.core_score ?? row.tide_score ?? 0)
+
+const tideZonePanel = computed(() => {
+  const grouped = new Map<
+    string,
+    {
+      rising?: TideTheme
+      neutral?: TideTheme
+      ebbing?: TideTheme
+      children: Set<string>
+    }
+  >()
+
+  tideThemeRows.value.forEach((row) => {
+    const group = tideDisplayGroup(row.name)
+    const bucket = grouped.get(group) || { children: new Set<string>() }
+    bucket.children.add(row.name)
+    if (isTideRisingTheme(row)) {
+      if (!bucket.rising || tideThemeScore(row) > tideThemeScore(bucket.rising)) bucket.rising = row
+    } else if (isTideRiskTheme(row)) {
+      if (!bucket.ebbing || tideEbbSortScore(row) > tideEbbSortScore(bucket.ebbing)) bucket.ebbing = row
+    } else if (!bucket.neutral || tideThemeScore(row) > tideThemeScore(bucket.neutral)) {
+      bucket.neutral = row
+    }
+    grouped.set(group, bucket)
+  })
+
+  const rising: Array<TideTheme & { children?: string[] }> = []
+  const neutral: Array<TideTheme & { children?: string[] }> = []
+  const ebbing: Array<TideTheme & { children?: string[] }> = []
+
+  grouped.forEach((bucket, group) => {
+    const children = Array.from(bucket.children).filter((x) => x !== group).slice(0, 4)
+    if (bucket.rising) {
+      rising.push({ ...bucket.rising, name: group, children })
+    } else if (bucket.ebbing) {
+      ebbing.push({ ...bucket.ebbing, name: group, children })
+    } else if (bucket.neutral) {
+      neutral.push({ ...bucket.neutral, name: group, children })
+    }
+  })
+
+  rising.sort((a, b) => tideThemeScore(b) - tideThemeScore(a))
+  neutral.sort((a, b) => tideThemeScore(b) - tideThemeScore(a))
+  ebbing.sort((a, b) => tideEbbSortScore(b) - tideEbbSortScore(a))
+  return {
+    rising: rising.slice(0, 6),
+    neutral: neutral.slice(0, 6),
+    ebbing: ebbing.slice(0, 8),
+  }
+})
+
+const tideRiskPanel = computed(() => {
+  const signal = tideSignal.value
+  if (!signal) return null
+  const marketStatus = String(signal.marketRegime?.status || (signal.market?.is_ebb_day ? "ebb" : ""))
+  const lossScore = Number(signal.marketRegime?.loss_score ?? signal.market?.loss_effect?.score)
+  const triggers = Array.isArray(signal.market?.triggers) ? signal.market!.triggers! : []
+  const reasons = Array.isArray(signal.marketRegime?.reasons)
+    ? signal.marketRegime!.reasons!
+    : Array.isArray(signal.market?.loss_effect?.reasons)
+      ? signal.market!.loss_effect!.reasons!
+      : []
+  const hasRisk = marketStatus === "ebb" || marketStatus === "ice" || Number.isFinite(lossScore) || tideZonePanel.value.ebbing.length > 0
+  if (!hasRisk) return null
+  return {
+    status: marketStatus === "ice" ? "冰点退潮" : marketStatus === "ebb" ? "市场退潮" : "潮汐观察",
+    lossScore: Number.isFinite(lossScore) ? Math.round(lossScore) : null,
+    triggers,
+    reasons,
+    zones: tideZonePanel.value,
+  }
+})
 
 const tideHintClass = (level?: string) => {
   if (level === "danger" || level === "risk") return "stp-tide-hint is-risk"
@@ -868,6 +983,36 @@ const sectorPicksMeta = computed(() => {
           </div>
         </div>
         <div class="card-badge">narrative × 涨停 × 梯队</div>
+      </div>
+      <div class="stp-tide-risk-panel" v-if="tideRiskPanel">
+        <div class="stp-tide-risk-main">
+          <span class="stp-tide-risk-badge">{{ tideRiskPanel.status }}</span>
+          <span v-if="tideRiskPanel.lossScore !== null">亏钱效应 {{ tideRiskPanel.lossScore }}</span>
+          <span v-for="(reason, ri) in tideRiskPanel.reasons.slice(0, 3)" :key="'tide-risk-reason-' + ri">{{ reason }}</span>
+        </div>
+        <div class="stp-tide-zones">
+          <div class="stp-tide-zone is-rise" v-if="tideRiskPanel.zones.rising.length">
+            <span class="stp-tide-risk-label">涨潮</span>
+            <span v-for="theme in tideRiskPanel.zones.rising" :key="'tide-rise-' + theme.name" class="stp-tide-risk-chip" :title="tideDisplayTitle(theme)">
+              {{ theme.name }}<template v-if="Number.isFinite(Number(theme.core_score))"> {{ Math.round(Number(theme.core_score)) }}</template>
+            </span>
+          </div>
+          <div class="stp-tide-zone is-neutral" v-if="tideRiskPanel.zones.neutral.length">
+            <span class="stp-tide-risk-label">中性</span>
+            <span v-for="theme in tideRiskPanel.zones.neutral" :key="'tide-neutral-' + theme.name" class="stp-tide-risk-chip" :title="tideDisplayTitle(theme)">
+              {{ theme.name }}<template v-if="Number.isFinite(Number(theme.core_score))"> {{ Math.round(Number(theme.core_score)) }}</template>
+            </span>
+          </div>
+          <div class="stp-tide-zone is-ebb" v-if="tideRiskPanel.zones.ebbing.length">
+            <span class="stp-tide-risk-label">退潮</span>
+            <span v-for="theme in tideRiskPanel.zones.ebbing" :key="'tide-ebb-' + theme.name" class="stp-tide-risk-chip" :title="tideDisplayTitle(theme)">
+              {{ theme.name }}<template v-if="Number.isFinite(Number(theme.ebb_score))"> {{ Math.round(Number(theme.ebb_score)) }}</template>
+            </span>
+          </div>
+        </div>
+        <div class="stp-tide-risk-triggers" v-if="tideRiskPanel.triggers.length">
+          {{ tideRiskPanel.triggers.slice(0, 4).join(" / ") }}
+        </div>
       </div>
       <div class="sector-tier-grid">
         <div

@@ -99,16 +99,8 @@ def _build_payload(
     if not isinstance(theme_trend_cache, dict) or not isinstance(theme_trend_cache.get("by_day"), dict):
         theme_trend_cache = read_json(root / "cache" / "theme_trend_cache.json", default={})
 
-    # market_data：优先取与 pools_date 同日；否则取最新
-    market_data: dict[str, Any] = {}
-    md_candidate = root / "cache_online" / f"market_data-{pools_date.replace('-', '')}.json"
-    if md_candidate.exists():
-        market_data = read_json(md_candidate, default={})
-    else:
-        # 兜底：选最近一天
-        files = sorted((root / "cache_online").glob("market_data-*.json"))
-        if files:
-            market_data = read_json(files[-1], default={})
+    # market_data 必须锚定 pools_date，避免历史重算时误读 cache_online 最新交易日。
+    market_data = _load_market_data_for_date(root=root, pools_date=pools_date)
 
     resolution = resolve(root=root, date=date, pools_cache=pools_cache, min_confidence=0.3)
     ladder = build_ladder(
@@ -160,6 +152,19 @@ def _load_catalyst_data(*, root: Path, date: str) -> dict[str, Any]:
         "surge_plates": read_json(cache_dir / f"xuangubao_surge_plates-{d8}.json", default={}),
         "tomorrow_themes": read_json(cache_dir / f"eastmoney_tomorrow_themes-{d8}.json", default={}),
     }
+
+
+def _load_market_data_for_date(*, root: Path, pools_date: str) -> dict[str, Any]:
+    """按涨停池基准日读取 market_data；历史日期不再回退到最新交易日。"""
+    d8 = str(pools_date or "").replace("-", "")
+    candidates = [
+        root / "cache_online" / f"market_data-{d8}.json",
+        root / "cache" / f"market_data-{d8}.json",
+    ]
+    for path in candidates:
+        if path.exists():
+            return read_json(path, default={})
+    return {}
 
 
 def _resolve_pools_date(root: Path, prefer_date: str) -> str:
