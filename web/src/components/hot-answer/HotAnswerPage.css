@@ -406,13 +406,30 @@
           100% { background-position: 0% 50%; }
 }
 @media (max-width: 860px) {
+  .hot-page {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .hot-card {
+    min-width: 0;
+  }
   .hot-layout {
-    grid-template-columns: 1fr;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+    min-height: 0;
+    scroll-padding-left: 4px;
+    width: 100%;
+    max-width: 100%;
   }
   .hot-plates,
-        .hot-detail {
-    min-height: 260px;
-              max-height: 520px;
+  .hot-detail {
+    flex: 0 0 88vw;
+    max-width: 88vw;
+    min-height: 480px;
+    max-height: 70vh;
+    scroll-snap-align: start;
   }
   .hot-stock-main {
     flex-direction: column;
