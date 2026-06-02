@@ -500,6 +500,7 @@ type SectorBucket = {
   source: "realtime" | "fallback" | "advisor"
   sources: string[]
   description: string
+  descriptionUrl?: string
   count: number
   maxLbc: number
   highTier: ZtStockPick[]
@@ -657,6 +658,24 @@ const buildThemeTags = (theme: string, stocks: ZtStockPick[], sources: string[],
   return tags.slice(0, 4)
 }
 
+const extractFirstUrl = (text?: string | null) => {
+  const raw = String(text || "").trim()
+  if (!raw) return ""
+  const m = raw.match(/https?:\/\/[^\s]+/i)
+  return m?.[0] || ""
+}
+
+const baiduSearchUrl = (keyword: string) => `https://www.baidu.com/s?wd=${encodeURIComponent(keyword)}`
+
+const bucketDescUrl = (bucket: SectorBucket) => {
+  const explicit = String(bucket.descriptionUrl || "").trim()
+  if (explicit) return explicit
+  const embedded = extractFirstUrl(bucket.description)
+  if (embedded) return embedded
+  const keyword = [bucket.theme, bucket.description].filter(Boolean).join(" ")
+  return baiduSearchUrl(keyword || bucket.theme || "A股 题材")
+}
+
 const getRealtimeStocksForPlate = (plateId: string, _plateName: string): ZtStockPick[] => {
   const pid = String(plateId || "").trim()
   const rows = pid ? xgbStocksByPlateId.value?.[pid] || [] : []
@@ -694,7 +713,16 @@ const calculateResonanceScore = (sources: string[], stocks: ZtStockPick[], plate
   return Math.min(Math.round(score), 100)
 }
 
-const makeBucket = (plateId: string, theme: string, source: "realtime" | "fallback" | "advisor", sources: string[], description: string, stocks: ZtStockPick[], matched: string[]): SectorBucket => {
+const makeBucket = (
+  plateId: string,
+  theme: string,
+  source: "realtime" | "fallback" | "advisor",
+  sources: string[],
+  description: string,
+  stocks: ZtStockPick[],
+  matched: string[],
+  descriptionUrl = "",
+): SectorBucket => {
   const realtimeStocks = source === "realtime" ? getRealtimeStocksForPlate(plateId, theme) : []
   const mergedMap = new Map<string, ZtStockPick>()
   ;[...realtimeStocks, ...stocks].forEach((s) => {
@@ -735,6 +763,7 @@ const makeBucket = (plateId: string, theme: string, source: "realtime" | "fallba
     source,
     sources,
     description,
+    descriptionUrl,
     count: scoredStocks.length,
     maxLbc,
     highTier: scoredStocks.filter((s) => s.lbc >= 3).slice(0, 3),
@@ -1063,7 +1092,15 @@ const sectorPicksMeta = computed(() => {
           <div v-if="bucket.tide && bucket.tide.action_hint && bucket.tide.status !== 'neutral'" :class="tideHintClass(bucket.tide.warning_level)">
             {{ bucket.tide.action_hint }}
           </div>
-          <div class="stp-desc" v-if="bucket.description" :title="bucket.description">{{ bucket.description }}</div>
+          <a
+            class="stp-desc stp-desc-link"
+            v-if="bucket.description"
+            :href="bucketDescUrl(bucket)"
+            :title="bucket.description"
+            target="_blank"
+            rel="noopener noreferrer">
+            {{ bucket.description }}
+          </a>
           <div class="stp-advisor" v-if="bucket.advisor">
             <div class="stp-advisor-head">
               <span> 明细</span>
