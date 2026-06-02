@@ -267,24 +267,38 @@ useECharts(volumeChartRef, volumeOptions);
       <div class="thermo-mini">
         <div class="thermo-mini-head">
           <div class="thermo-mini-title">情绪温度</div>
-          <div class="thermo-mini-meta">热 / 险 · {{ marketData.mood?.score ?? '-' }}/100</div>
+          <div class="thermo-mini-meta">综合 {{ marketData.mood?.score ?? '-' }} / 短线 {{ marketData.mood?.short_score ?? '-' }} / 大盘 {{ marketData.mood?.market_score ?? '-' }}</div>
         </div>
 
         <div class="thermo-mini-rows">
           <div class="thermo-mini-row">
-            <span class="thermo-mini-label">情绪热度</span>
+            <span class="thermo-mini-label">短线热度</span>
             <div class="insight-meter" style="margin-top: 0">
               <div class="insight-meter-fill" :style="{ width: String((marketData.mood?.heat ?? 0)) + '%', background: heatColor(marketData.mood?.heat ?? 0) }"></div>
             </div>
             <span class="val">{{ marketData.mood?.heat ?? '-' }}</span>
           </div>
           <div class="thermo-mini-row">
-            <span class="thermo-mini-label">风险压力</span>
+            <span class="thermo-mini-label">短线风险</span>
             <div class="insight-meter" style="margin-top: 0">
               <div class="insight-meter-fill" :style="{ width: String((marketData.mood?.risk ?? 0)) + '%', background: riskColor(marketData.mood?.risk ?? 0) }"></div>
             </div>
             <span class="val">{{ marketData.mood?.risk ?? '-' }}</span>
           </div>
+          <div class="thermo-mini-row">
+            <span class="thermo-mini-label">大盘强弱</span>
+            <div class="insight-meter" style="margin-top: 0">
+              <div class="insight-meter-fill" :style="{ width: String((marketData.mood?.market_score ?? 0)) + '%', background: heatColor(marketData.mood?.market_score ?? 0) }"></div>
+            </div>
+            <span class="val">{{ marketData.mood?.market_score ?? '-' }}</span>
+          </div>
+        </div>
+
+        <div class="thermo-mini-meta" style="margin-top: 8px">
+          {{ marketData.mood?.market_label || '-' }}
+          · 指数 {{ marketData.mood?.market_components?.index_score ?? '-' }}
+          / 广度 {{ marketData.mood?.market_components?.breadth_score ?? '-' }}
+          / 量能 {{ marketData.mood?.market_components?.volume_score ?? '-' }}
         </div>
 
         <details style="margin-top: 10px" v-if="(marketData.sentimentExplainDims || []).length" open data-open-default="1">

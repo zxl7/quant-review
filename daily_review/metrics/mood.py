@@ -33,6 +33,118 @@ def class_for_bad_rate(rate: float, hi: float = 30, mid: float = 15) -> str:
     return "green-text"
 
 
+def _to_num(v: Any, default: float = 0.0) -> float:
+    try:
+        if v is None or v == "":
+            return default
+        if isinstance(v, str):
+            return float(v.replace("%", "").replace("亿", "").strip())
+        return float(v)
+    except Exception:
+        return default
+
+
+def _clamp100(v: float) -> float:
+    return max(0.0, min(100.0, float(v)))
+
+
+def _market_index_score(market_data: Dict[str, Any]) -> float:
+    indices = market_data.get("indices") if isinstance(market_data.get("indices"), list) else []
+    rows = [x for x in indices if isinstance(x, dict)]
+    if not rows:
+        return 50.0
+
+    changes = [_to_num(x.get("chg"), 0.0) for x in rows]
+    avg_chg = sum(changes) / len(changes)
+    base = 50.0 + avg_chg * 18.0
+
+    up_count = len([x for x in changes if x > 0])
+    down_count = len([x for x in changes if x < 0])
+    if up_count == len(changes):
+        base += 8.0
+    elif down_count == len(changes):
+        base -= 8.0
+
+    trend_bonus = 0.0
+    for row in rows:
+        price = _to_num(row.get("price"), _to_num(row.get("val"), 0.0))
+        ma5 = _to_num(row.get("ma5"), 0.0)
+        ma20 = _to_num(row.get("ma20"), 0.0)
+        if price > 0 and ma5 > 0 and price >= ma5:
+            trend_bonus += 5.0
+        if price > 0 and ma20 > 0 and price >= ma20:
+            trend_bonus += 3.0
+    base += min(24.0, trend_bonus)
+    return _clamp100(base)
+
+
+def _market_volume_score(market_data: Dict[str, Any]) -> float:
+    volume = market_data.get("volume") if isinstance(market_data.get("volume"), dict) else {}
+    change = _to_num(volume.get("change"), 0.0)
+    return _clamp100(50.0 + change * 2.0)
+
+
+def _market_breadth_score(market_data: Dict[str, Any]) -> tuple[float, int | None, int | None]:
+    raw = market_data.get("raw") if isinstance(market_data.get("raw"), dict) else {}
+    quotes = raw.get("quotes") if isinstance(raw.get("quotes"), dict) else {}
+    items = quotes.get("items") if isinstance(quotes.get("items"), dict) else {}
+
+    if isinstance(items, dict) and items:
+        up = 0
+        down = 0
+        for it in items.values():
+            if not isinstance(it, dict):
+                continue
+            pc = _to_num(it.get("pc"), None)
+            if pc is None:
+                continue
+            if pc > 0:
+                up += 1
+            elif pc < 0:
+                down += 1
+        total = up + down
+        if total > 0:
+            return _clamp100(up / total * 100.0), up, down
+
+    regime = (((market_data.get("coreTideSignal") or {}) if isinstance(market_data.get("coreTideSignal"), dict) else {}).get("marketRegime") or {})
+    breadth_score = _to_num(regime.get("breadth_score"), None)
+    if breadth_score is not None:
+        return _clamp100(breadth_score), None, None
+
+    return 50.0, None, None
+
+
+def calc_market_score(market_data: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    大盘强弱分：更看指数、广度、量能，不与短线接力口径混用。
+    """
+    index_score = _market_index_score(market_data)
+    breadth_score, up_count, down_count = _market_breadth_score(market_data)
+    volume_score = _market_volume_score(market_data)
+    score = round(_clamp100(index_score * 0.45 + breadth_score * 0.35 + volume_score * 0.20))
+
+    if score >= 68:
+        tone = "good"
+        label = "大盘偏强"
+    elif score <= 45:
+        tone = "fire"
+        label = "大盘偏弱"
+    else:
+        tone = "warn"
+        label = "大盘分化"
+
+    return {
+        "score": score,
+        "tone": tone,
+        "label": label,
+        "index_score": round(index_score),
+        "breadth_score": round(breadth_score),
+        "volume_score": round(volume_score),
+        "up_count": up_count,
+        "down_count": down_count,
+    }
+
+
 def calc_stage(*, heat_score: float, risk_score: float, inputs: Dict[str, Any]) -> Dict[str, Any]:
     """
     复刻当前 gen_report_v4 的阶段判定逻辑（便于保持输出一致），后续你可以只改这里的规则。
@@ -406,7 +518,7 @@ def calc_stage_sublabel(*, stage_title: str, inputs: Dict[str, Any]) -> Dict[str
     }
 
 
-def rebuild_mood(inputs: Dict[str, Any]) -> Dict[str, Any]:
+def rebuild_mood(inputs: Dict[str, Any], market_data: Dict[str, Any] | None = None) -> Dict[str, Any]:
     """
     统一输出：
     - mood
@@ -444,7 +556,9 @@ def rebuild_mood(inputs: Dict[str, Any]) -> Dict[str, Any]:
     cards = build_cards(inputs)
 
     # 阶段已经明确进入退潮/冰点时，颜色要与语义一致，避免总分仍停在黄色。
-    sentiment_score = score.sentiment
+    short_score = score.sentiment
+    market_track = calc_market_score(market_data or {})
+    sentiment_score = round(_clamp100(short_score * 0.6 + market_track["score"] * 0.4))
     if str(stage.get("type") or "") == "fire":
         sentiment_score = min(sentiment_score, 45)
 
@@ -455,7 +569,23 @@ def rebuild_mood(inputs: Dict[str, Any]) -> Dict[str, Any]:
     stage["sublabelDetail"] = sub["sublabelDetail"]
 
     return {
-        "mood": {"heat": score.heat, "risk": score.risk, "score": sentiment_score},
+        "mood": {
+            "heat": score.heat,
+            "risk": score.risk,
+            "score": sentiment_score,
+            "overall_score": sentiment_score,
+            "short_score": short_score,
+            "market_score": market_track["score"],
+            "market_tone": market_track["tone"],
+            "market_label": market_track["label"],
+            "market_components": {
+                "index_score": market_track["index_score"],
+                "breadth_score": market_track["breadth_score"],
+                "volume_score": market_track["volume_score"],
+                "up_count": market_track["up_count"],
+                "down_count": market_track["down_count"],
+            },
+        },
         "moodStage": stage,
         "moodCards": cards,
     }

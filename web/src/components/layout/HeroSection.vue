@@ -82,7 +82,7 @@ const emit = defineEmits<{
         <div class="hero-panel-title">
           <span>
             今日概览：
-            <span class="title-score" style="opacity: 0.78; font-weight: 900">{{ marketData.mood?.score ?? "-" }} 分</span>
+            <span class="title-score" style="opacity: 0.78; font-weight: 900">综合 {{ marketData.mood?.score ?? "-" }} 分</span>
           </span>
 
           <div class="hero-controls">
@@ -92,23 +92,23 @@ const emit = defineEmits<{
             </div>
           </div>
         </div>
-        <div class="hero-panel-sub">一眼看清：阶段 · 热/险 · 量能 · 高度</div>
+        <div class="hero-panel-sub">一眼看清：综合分 · 短线情绪 · 大盘强弱 · 高度量能</div>
         <div class="hero-kpi-grid">
           <div class="hero-kpi hero-kpi-stage">
             <div class="k">情绪阶段</div>
             <div class="v">{{ marketData.moodStage?.title || "-" }}</div>
-            <div class="s">总分 {{ marketData.mood?.score ?? "-" }} · {{ marketData.moodStage?.type || "-" }}</div>
+            <div class="s">综合 {{ marketData.mood?.score ?? "-" }} · 短线 {{ marketData.mood?.short_score ?? "-" }} · {{ marketData.moodStage?.type || "-" }}</div>
           </div>
           <div class="hero-kpi">
             <div class="ring-pack">
               <div class="ring-center hero-kpi-thermo">
-                <div class="k">热 / 险</div>
+                <div class="k">短线热 / 险</div>
                 <div class="big">
                   <span :class="heatClass(marketData.mood?.heat)">{{ marketData.mood?.heat ?? "-" }}</span>
                   /
                   <span :class="riskClass(marketData.mood?.risk)">{{ marketData.mood?.risk ?? "-" }}</span>
                 </div>
-                <div class="small">综合 {{ marketData.mood?.score ?? "-" }} 分</div>
+                <div class="small">短线 {{ marketData.mood?.short_score ?? "-" }} 分</div>
               </div>
               <svg class="ring ring-dual" viewBox="0 0 60 60" aria-hidden="true">
                 <circle class="track outer" cx="30" cy="30" r="22"></circle>
@@ -119,15 +119,20 @@ const emit = defineEmits<{
             </div>
           </div>
           <div class="hero-kpi hero-kpi-balanced">
-            <div class="k">量能（较昨）</div>
-            <div class="v">{{ marketData.volume?.change ?? "-" }}</div>
-            <div class="s">两市 {{ marketData.volume?.total ?? "-" }}</div>
+            <div class="k">大盘强弱</div>
+            <div class="v">{{ marketData.mood?.market_score ?? "-" }} 分</div>
+            <div class="s">
+              {{ marketData.mood?.market_label || "-" }} · 指数 {{ marketData.mood?.market_components?.index_score ?? "-" }} / 广度 {{ marketData.mood?.market_components?.breadth_score ?? "-" }}
+            </div>
           </div>
           <div class="hero-kpi hero-kpi-balanced">
-            <div class="k">高度 / 质量</div>
-            <div class="v">{{ marketData.ladder?.[0]?.badge ?? "-" }} 板</div>
+            <div class="k">量能 / 高度</div>
+            <div class="v">{{ marketData.volume?.change ?? "-" }}</div>
             <div class="s">
-              封板 {{ marketData.panorama?.ratio ?? "-" }} · 晋级
+              两市 {{ marketData.volume?.total ?? "-" }} · 最高 {{ marketData.ladder?.[0]?.badge ?? "-" }} 板 · 封板 {{ marketData.panorama?.ratio ?? "-" }}
+            </div>
+            <div class="s">
+              晋级
               {{
                 marketData.features?.mood_inputs?.jj_rate === undefined || marketData.features?.mood_inputs?.jj_rate === null ? "-" : Number(marketData.features.mood_inputs.jj_rate).toFixed(1) + "%"
               }}

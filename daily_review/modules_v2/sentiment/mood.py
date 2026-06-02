@@ -16,7 +16,7 @@ from daily_review.pipeline.module import Module
 
 def _compute(ctx: Context) -> Dict[str, Any]:
     inputs = (ctx.features.get("mood_inputs") or {})
-    patch = rebuild_mood(inputs)
+    patch = rebuild_mood(inputs, ctx.market_data)
     return {
         "marketData.mood": patch["mood"],
         "marketData.moodStage": patch["moodStage"],
@@ -30,4 +30,3 @@ MOOD_MODULE = Module(
     provides=["marketData.mood", "marketData.moodStage", "marketData.moodCards"],
     compute=_compute,
 )
-
