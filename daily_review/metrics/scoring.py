@@ -25,6 +25,36 @@ def blend_sentiment_score(*, heat: float, risk: float) -> int:
     return round(clamp(heat * 0.58 + (100 - risk) * 0.42, 0, 100))
 
 
+def _calc_structure_adjustment(
+    *,
+    risk: float,
+    jj_rate: float,
+    broken_lb_rate: float,
+    loss: float,
+    avg_zt_zbc: float,
+    zt_zbc_ge3_ratio: float,
+    yest_zt_avg_chg: float,
+) -> float:
+    """
+    结构修正只做“二次校准”，不再把已进入 risk 的压力整轮重罚一次。
+
+    原先 structure_penalty 与 risk 共享大量输入字段（晋级率、断板率、大面、炸板等），
+    在“热度不差但结构分歧”的盘面里容易把分数从中位区直接打到冰点附近。
+    这里保留结构校准，但按 risk 做衰减并加总封顶，避免重复计提。
+    """
+    raw_penalty = (
+        clamp((max(0.0, 35.0 - jj_rate) / 15.0) * 8.0, 0, 8)
+        + clamp((max(0.0, broken_lb_rate - 35.0) / 20.0) * 7.0, 0, 7)
+        + clamp((max(0.0, loss - 10.0) / 8.0) * 8.0, 0, 8)
+        + clamp((max(0.0, zt_zbc_ge3_ratio - 15.0) / 15.0) * 5.0, 0, 5)
+        + clamp((max(0.0, avg_zt_zbc - 1.6) / 1.0) * 4.0, 0, 4)
+        + clamp((max(0.0, -yest_zt_avg_chg) / 3.0) * 6.0, 0, 6)
+    )
+
+    attenuation = max(0.25, 1.0 - clamp(risk, 0, 100) / 100.0)
+    return min(10.0, raw_penalty * attenuation)
+
+
 def calc_heat_risk(
     *,
     fb_rate: float,
@@ -77,13 +107,14 @@ def calc_heat_risk(
         )
     )
 
-    structure_penalty = (
-        clamp((max(0.0, 35.0 - jj_rate) / 15.0) * 8.0, 0, 8)
-        + clamp((max(0.0, broken_lb_rate - 35.0) / 20.0) * 7.0, 0, 7)
-        + clamp((max(0.0, loss - 10.0) / 8.0) * 8.0, 0, 8)
-        + clamp((max(0.0, zt_zbc_ge3_ratio - 15.0) / 15.0) * 5.0, 0, 5)
-        + clamp((max(0.0, avg_zt_zbc - 1.6) / 1.0) * 4.0, 0, 4)
-        + clamp((max(0.0, -yest_zt_avg_chg) / 3.0) * 6.0, 0, 6)
+    structure_adjustment = _calc_structure_adjustment(
+        risk=risk,
+        jj_rate=jj_rate,
+        broken_lb_rate=broken_lb_rate,
+        loss=loss,
+        avg_zt_zbc=avg_zt_zbc,
+        zt_zbc_ge3_ratio=zt_zbc_ge3_ratio,
+        yest_zt_avg_chg=yest_zt_avg_chg,
     )
-    sentiment = round(clamp(blend_sentiment_score(heat=heat, risk=risk) - structure_penalty, 0, 100))
+    sentiment = round(clamp(blend_sentiment_score(heat=heat, risk=risk) - structure_adjustment, 0, 100))
     return HeatRiskScore(heat=heat, risk=risk, sentiment=sentiment)
