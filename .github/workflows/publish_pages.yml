@@ -1,8 +1,27 @@
 name: Publish gh-pages
 
 on:
-  # 手动触发（本地 launchd / gh workflow run 走这条）
-  workflow_dispatch: {}
+  # 手动补跑
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: "手动运行模式：auto/fetch/intraday/eod"
+        required: false
+        default: "auto"
+        type: choice
+        options:
+          - auto
+          - fetch
+          - intraday
+          - eod
+      date10:
+        description: "指定交易日（YYYY-MM-DD），留空则自动判断"
+        required: false
+        default: ""
+        type: string
+  # 工作日北京时间 09:30-15:30 期间每 5 分钟心跳一次，由 timecheck 决定是否真正执行
+  schedule:
+    - cron: "*/5 1-7 * * 1-5"
   # 提交代码后触发（main 分支）
   push:
     branches:
@@ -55,7 +74,7 @@ jobs:
 
           t_close=$((15*60+12))
           hit_close=false
-          if [ $(( now_min >= 15*60 && now_min < t_close + 20 )) -eq 1 ]; then
+          if [ $(( now_min >= t_close && now_min < t_close + 20 )) -eq 1 ]; then
             hit_close=true
           fi
 
@@ -277,7 +296,16 @@ jobs:
           latest_trade="${{ steps.tradeday.outputs.latest_trade_date }}"
           today_bj="${{ steps.tradeday.outputs.today_bj }}"
           realtime_market_date="${{ steps.tradeday.outputs.realtime_market_date }}"
-          if [ "${realtime_market_date}" = "${today_bj}" ]; then
+          input_mode="${{ github.event.inputs.mode || '' }}"
+          input_date10="${{ github.event.inputs.date10 || '' }}"
+
+          if [ -n "${input_date10}" ]; then
+            if ! printf '%s' "${input_date10}" | grep -Eq '^[0-9]{4}-[0-9]{2}-[0-9]{2}$'; then
+              echo "Invalid workflow_dispatch input date10=${input_date10}, expected YYYY-MM-DD"
+              exit 2
+            fi
+            date10="${input_date10}"
+          elif [ "${realtime_market_date}" = "${today_bj}" ]; then
             date10="${today_bj}"
           else
             date10="${latest_trade}"
@@ -288,13 +316,20 @@ jobs:
           fi
           now_min=$((10#$(date +%H)*60 + 10#$(date +%M)))
           mode="fetch"
-          if [ "${{ github.event_name }}" = "schedule" ] && { [ $(( now_min >= 9*60+30 && now_min <= 11*60+30 )) -eq 1 ] || [ $(( now_min >= 13*60 && now_min < 15*60 )) -eq 1 ]; }; then
+          if [ "${input_mode}" = "fetch" ] || [ "${input_mode}" = "intraday" ] || [ "${input_mode}" = "eod" ]; then
+            mode="${input_mode}"
+          elif [ "${{ github.event_name }}" = "schedule" ] && { [ $(( now_min >= 9*60+30 && now_min <= 11*60+30 )) -eq 1 ] || [ $(( now_min >= 13*60 && now_min < 15*60 )) -eq 1 ]; }; then
             mode="intraday"
           fi
-          if [ $(( now_min >= 15*60 && now_min < 15*60+20 )) -eq 1 ]; then
+          if [ "${input_mode}" = "auto" ] || [ -z "${input_mode}" ]; then
+            if [ $(( now_min >= 15*60+12 && now_min < 15*60+32 )) -eq 1 ]; then
+              mode="eod"
+            fi
+          fi
+          if [ "${input_mode}" = "eod" ]; then
             mode="eod"
           fi
-          echo "event=${{ github.event_name }} → mode=${mode} date10=${date10}"
+          echo "event=${{ github.event_name }} input_mode=${input_mode:-auto} → mode=${mode} date10=${date10}"
           echo "mode=${mode}" >> "$GITHUB_OUTPUT"
           echo "date10=${date10}" >> "$GITHUB_OUTPUT"
           echo "run_mode=${mode} (date10=${date10})"
