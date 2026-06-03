@@ -19,7 +19,7 @@ on:
         required: false
         default: ""
         type: string
-  # 工作日北京时间 09:30-15:30 期间每 5 分钟心跳一次，由 timecheck 决定是否真正执行
+  # 工作日北京时间 09:25-15:55 期间每 5 分钟心跳一次，由 timecheck 决定是否真正执行
   schedule:
     - cron: "*/5 1-7 * * 1-5"
   # 提交代码后触发（main 分支）
@@ -63,9 +63,9 @@ jobs:
           echo "DEBUG: event_name=${{ github.event_name }}"
           echo "DEBUG: beijing_now=${now_bj}"
           now_min=$((10#$(date +%H)*60 + 10#$(date +%M)))
-          # 盘中：上午 09:30-11:30，下午 13:00-14:59。每 5 分钟心跳命中即抓一次。
+          # 盘中：上午 09:25-11:30，下午 13:00-14:59。每 5 分钟心跳命中即抓一次。
           hit_intraday=false
-          if [ $(( now_min >= 9*60+30 && now_min <= 11*60+30 )) -eq 1 ]; then
+          if [ $(( now_min >= 9*60+25 && now_min <= 11*60+30 )) -eq 1 ]; then
             hit_intraday=true
           fi
           if [ $(( now_min >= 13*60 && now_min < 15*60 )) -eq 1 ]; then
@@ -318,7 +318,7 @@ jobs:
           mode="fetch"
           if [ "${input_mode}" = "fetch" ] || [ "${input_mode}" = "intraday" ] || [ "${input_mode}" = "eod" ]; then
             mode="${input_mode}"
-          elif [ "${{ github.event_name }}" = "schedule" ] && { [ $(( now_min >= 9*60+30 && now_min <= 11*60+30 )) -eq 1 ] || [ $(( now_min >= 13*60 && now_min < 15*60 )) -eq 1 ]; }; then
+          elif [ "${{ github.event_name }}" = "schedule" ] && { [ $(( now_min >= 9*60+25 && now_min <= 11*60+30 )) -eq 1 ] || [ $(( now_min >= 13*60 && now_min < 15*60 )) -eq 1 ]; }; then
             mode="intraday"
           fi
           if [ "${input_mode}" = "auto" ] || [ -z "${input_mode}" ]; then

@@ -205,6 +205,11 @@ const picksAdvisor = computed(() => {
   }
 })
 
+const planUpdatedAt = computed(() => {
+  const md = marketData.value as any
+  return picksAdvisor.value?.generated_at_bj || md?.watchlist?.generated_at_bj || md?.meta?.generatedAt || "-"
+})
+
 const tideSignal = computed<TideSignal | null>(() => {
   const md = marketData.value as any
   const fromWatchlistCore = md?.watchlist?.core_tide_signal
@@ -1097,6 +1102,7 @@ const sectorPicksMeta = computed(() => {
 <template>
   <div class="plan-page">
     <div class="card" data-page="plan" id="sec-action">
+      <div class="zt-header-meta">研究数据更新时间 {{ planUpdatedAt }}</div>
       <div class="card-title">行动指南</div>
       <div class="plan-top-grid">
         <div class="plan-main-stack">

@@ -310,6 +310,76 @@ def _load_latest_valid_zt_analysis(*, root: Path, current_date: str) -> dict | N
     return None
 
 
+def _load_latest_valid_research_snapshot(*, root: Path, current_date: str) -> dict | None:
+    """
+    盘中模式下给「个股研究 / 个股回测」页提供上一份有效收盘快照。
+
+    只保留这两个页面真正依赖的字段，避免把整份 market_data 再复制一遍。
+    """
+    cache_dir = root / "cache"
+    current_d8 = str(current_date or "").replace("-", "")
+    candidates = []
+    for fp in cache_dir.glob("market_data-*.json"):
+        stem = fp.stem
+        if not stem.startswith("market_data-"):
+            continue
+        d8 = stem.replace("market_data-", "")
+        if not (len(d8) == 8 and d8.isdigit()):
+            continue
+        if current_d8 and d8 >= current_d8:
+            continue
+        candidates.append((d8, fp))
+
+    keep_keys = (
+        "date",
+        "meta",
+        "planGuide",
+        "themePanels",
+        "leaders",
+        "plateRankTop10",
+        "ztgc",
+        "zt_code_themes",
+        "ztAnalysis",
+        "watchlist",
+        "watchlist_stock_index",
+        "picks_advisor",
+        "tideSignal",
+        "coreTideSignal",
+        "theme_alias_map",
+        "stockResearchBacktest",
+    )
+
+    for _, fp in sorted(candidates, reverse=True):
+        try:
+            data = json.loads(fp.read_text(encoding="utf-8"))
+        except Exception:
+            continue
+        if not isinstance(data, dict):
+            continue
+
+        zt = data.get("ztAnalysis") if isinstance(data.get("ztAnalysis"), dict) else {}
+        relay = zt.get("relay") if isinstance(zt.get("relay"), list) else []
+        watch = zt.get("watch") if isinstance(zt.get("watch"), list) else []
+        backtest = data.get("stockResearchBacktest") if isinstance(data.get("stockResearchBacktest"), dict) else {}
+        has_backtest = isinstance(backtest.get("summary"), dict)
+        if not (relay or watch or has_backtest):
+            continue
+
+        snapshot = {key: data.get(key) for key in keep_keys if key in data}
+        meta = snapshot.get("meta") if isinstance(snapshot.get("meta"), dict) else {}
+        snapshot["meta"] = {
+            **meta,
+            "preservedFromDate": data.get("date") or fp.stem.replace("market_data-", ""),
+            "preserveReason": "盘中不重算个股研究/个股回测，沿用上一份收盘结果",
+        }
+        return {
+            "marketData": snapshot,
+            "preservedFromDate": snapshot["meta"]["preservedFromDate"],
+            "preserveReason": snapshot["meta"]["preserveReason"],
+        }
+    return None
+
+
 def _build_plan_guide(market_data: dict) -> dict | None:
     """
     为前端生成轻量版“明日行动指南”字段，避免模板直接依赖 v2/v3 大对象。
@@ -1574,6 +1644,13 @@ def run_rebuild(
 
     # ztAnalysis：明日接力/观察是收盘后推演；盘中只刷新实时情绪时，沿用上一份有效收盘推演。
     preserve_zt = str(os.environ.get("PRESERVE_ZT_ANALYSIS") or "").strip().lower() in {"1", "true", "yes", "on"}
+    if preserve_zt:
+        preserved_research = _load_latest_valid_research_snapshot(root=root, current_date=date)
+        if preserved_research:
+            market_data["preservedResearch"] = preserved_research
+            _log(f"个股研究/回测已保留上一份收盘快照 ({preserved_research.get('preservedFromDate')})")
+        else:
+            market_data.pop("preservedResearch", None)
     try:
         if preserve_zt:
             preserved = _load_latest_valid_zt_analysis(root=root, current_date=date)

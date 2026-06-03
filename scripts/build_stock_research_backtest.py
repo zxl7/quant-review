@@ -16,7 +16,7 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 from daily_review.config import load_config_from_env
-from daily_review.data.biying import fetch_stock_history_k
+from daily_review.data.biying import fetch_stock_history_k, fetch_stocks_realtime, normalize_stock_code
 from daily_review.http import HttpClient
 
 
@@ -170,6 +170,20 @@ def _parse_super_open_threshold(text: str) -> float | None:
     return None
 
 
+def _parse_amount_threshold_yi(text: str, pattern: str) -> float | None:
+    m = re.search(pattern, text)
+    if not m:
+        return None
+    return round(float(m.group(1)), 2)
+
+
+def _parse_open_board_limit(text: str) -> int | None:
+    m = re.search(r"开板≤\s*(\d+)", text)
+    if not m:
+        return None
+    return int(m.group(1))
+
+
 def _extract_expectation(reason_html: str) -> dict[str, Any]:
     flat = _strip_html(reason_html)
     expected_match = re.search(r"预期\s*(.+?)(?=\s*超预期|\s*低预期|$)", flat)
@@ -185,6 +199,9 @@ def _extract_expectation(reason_html: str) -> dict[str, Any]:
         "expected_range": _parse_expected_range(expected_text),
         "super_gap_min": _parse_super_open_threshold(super_text),
         "super_requires_reseal": "回封" in super_text,
+        "super_requires_open_board_limit": _parse_open_board_limit(super_text),
+        "auction_amount_min_yi": _parse_amount_threshold_yi(super_text, r"竞价成交额≥\s*([0-9]+(?:\.[0-9]+)?)亿"),
+        "seal_amount_min_yi": _parse_amount_threshold_yi(super_text, r"(?:封单回补|回封后封单)≥\s*([0-9]+(?:\.[0-9]+)?)亿"),
         "raw_text": flat,
     }
 
@@ -243,6 +260,356 @@ def _load_stock_research_rows() -> tuple[list[dict[str, Any]], list[str]]:
 
     rows.sort(key=lambda x: (x["date"], -x["score"], x["code"]))
     return rows, used_files
+
+
+def _load_latest_stock_research_snapshot(date10: str) -> dict[str, Any]:
+    if len(date10) != 10:
+        return {}
+    fp = CACHE_DIR / f"market_data-{date10.replace('-', '')}.json"
+    raw = _load_json(fp, default={})
+    return raw if isinstance(raw, dict) else {}
+
+
+def _is_entry_window_time(hhmmss: str) -> bool:
+    text = str(hhmmss or "").strip()
+    if not text:
+        return False
+    if " " in text:
+        text = text.split(" ")[-1]
+    if len(text) >= 8:
+        text = text[:8]
+    try:
+        hour, minute, second = [int(part) for part in text.split(":")[:3]]
+    except Exception:
+        return False
+    if hour != 9:
+        return False
+    total = hour * 3600 + minute * 60 + second
+    return 9 * 3600 + 25 * 60 <= total < 9 * 3600 + 30 * 60
+
+
+def _should_request_realtime_quotes(now: datetime | None = None) -> bool:
+    current = now or _now_bj()
+    total = current.hour * 3600 + current.minute * 60 + current.second
+    return 9 * 3600 + 25 * 60 <= total < 9 * 3600 + 30 * 60
+
+
+def _load_preserved_realtime_buy(latest_date10: str) -> dict[str, Any] | None:
+    candidates = []
+    for fp in CACHE_DIR.glob("market_data-*.json"):
+        stem = fp.stem
+        if not stem.startswith("market_data-"):
+            continue
+        d8 = stem.replace("market_data-", "")
+        if len(d8) == 8 and d8.isdigit():
+            candidates.append((d8, fp))
+
+    for _, fp in sorted(candidates, reverse=True):
+        data = _load_json(fp, default={})
+        if not isinstance(data, dict):
+            continue
+        backtest = data.get("stockResearchBacktest")
+        if not isinstance(backtest, dict):
+            continue
+        realtime_buy = backtest.get("realtimeBuy")
+        if not isinstance(realtime_buy, dict):
+            continue
+        if str(realtime_buy.get("reference_date") or "") != latest_date10:
+            continue
+        quote_time = str(realtime_buy.get("quote_time") or "")
+        if not _is_entry_window_time(quote_time):
+            continue
+        return json.loads(json.dumps(realtime_buy, ensure_ascii=False))
+    return None
+
+
+def _normalize_realtime_quote(row: dict[str, Any]) -> dict[str, Any] | None:
+    code6 = normalize_stock_code(str(row.get("dm") or row.get("code") or row.get("symbol") or ""))
+    if not code6:
+        return None
+    prev_close = float(row.get("yc") or 0.0)
+    open_price = float(row.get("o") or 0.0)
+    last_price = float(row.get("p") or row.get("c") or 0.0)
+    auction_price = open_price if open_price > 0 else last_price
+    auction_amount_yuan = float(row.get("cje") or 0.0)
+    open_board_count = row.get("zbc")
+    try:
+        open_board_count = int(float(open_board_count)) if open_board_count not in (None, "") else None
+    except Exception:
+        open_board_count = None
+    return {
+        "code": code6,
+        "time": str(row.get("t") or "").strip(),
+        "prev_close": round(prev_close, 2),
+        "open_price": round(open_price, 2) if open_price > 0 else 0.0,
+        "last_price": round(last_price, 2) if last_price > 0 else 0.0,
+        "auction_price": round(auction_price, 2) if auction_price > 0 else 0.0,
+        "auction_price_field": "o" if open_price > 0 else ("p" if last_price > 0 else ""),
+        "auction_amount_yuan": auction_amount_yuan,
+        "auction_amount_yi": round(auction_amount_yuan / 1e8, 2) if auction_amount_yuan > 0 else 0.0,
+        "open_board_count": open_board_count,
+        "raw": row,
+    }
+
+
+def _fetch_realtime_quotes(codes: list[str], *, fallback_quotes: dict[str, Any] | None = None) -> tuple[dict[str, dict[str, Any]], dict[str, Any]]:
+    normalized_codes = [normalize_stock_code(code) for code in codes if normalize_stock_code(code)]
+    uniq_codes = sorted(dict.fromkeys(normalized_codes))
+    diagnostics: dict[str, Any] = {
+        "requested": len(uniq_codes),
+        "received": 0,
+        "remote_received": 0,
+        "fallback_used": 0,
+        "missing": [],
+        "source": "remote",
+        "as_of": "",
+        "error": "",
+        "request_window": "09:25-09:30",
+    }
+    quotes_map: dict[str, dict[str, Any]] = {}
+
+    if _should_request_realtime_quotes():
+        try:
+            cfg = load_config_from_env()
+            client = HttpClient(base_url=cfg.base_url, token=cfg.token, timeout=12, retries=0)
+            step = 20
+            for i in range(0, len(uniq_codes), step):
+                batch = uniq_codes[i : i + step]
+                rows = fetch_stocks_realtime(client, ",".join(batch)) if batch else []
+                if not isinstance(rows, list):
+                    continue
+                for row in rows:
+                    if not isinstance(row, dict):
+                        continue
+                    quote = _normalize_realtime_quote(row)
+                    if not quote or not _is_entry_window_time(str(quote.get("time") or "")):
+                        continue
+                    if quote.get("time") and not diagnostics["as_of"]:
+                        diagnostics["as_of"] = quote["time"]
+                    quotes_map[quote["code"]] = quote
+            diagnostics["remote_received"] = len(quotes_map)
+        except Exception as exc:
+            diagnostics["error"] = str(exc)
+    else:
+        diagnostics["source"] = "window_closed"
+        diagnostics["error"] = "仅允许在 09:25-09:30 请求批量竞价接口，当前时段跳过远端请求。"
+
+    fallback_map = fallback_quotes if isinstance(fallback_quotes, dict) else {}
+    if fallback_map:
+        for code6 in uniq_codes:
+            if code6 in quotes_map:
+                continue
+            raw = fallback_map.get(code6)
+            if not isinstance(raw, dict):
+                continue
+            quote = _normalize_realtime_quote(raw)
+            if not quote or not _is_entry_window_time(str(quote.get("time") or "")):
+                continue
+            quotes_map[code6] = quote
+            diagnostics["fallback_used"] += 1
+            if quote.get("time") and not diagnostics["as_of"]:
+                diagnostics["as_of"] = quote["time"]
+
+    if not quotes_map and diagnostics["fallback_used"] > 0:
+        diagnostics["source"] = "cache.raw.quotes"
+    elif quotes_map and diagnostics["fallback_used"] > 0:
+        diagnostics["source"] = "remote+cache.raw.quotes"
+    elif not quotes_map and diagnostics["source"] != "window_closed":
+        diagnostics["source"] = "unavailable"
+
+    diagnostics["received"] = len(quotes_map)
+    diagnostics["missing"] = [code for code in uniq_codes if code not in quotes_map]
+    return quotes_map, diagnostics
+
+
+def _signal_rank(status: str) -> int:
+    if status == "super":
+        return 0
+    if status == "expected":
+        return 1
+    if status == "pending":
+        return 2
+    if status == "reject":
+        return 3
+    return 4
+
+
+def _evaluate_realtime_signal(record: dict[str, Any], quote: dict[str, Any] | None) -> dict[str, Any]:
+    exp = record.get("expectation") or {}
+    expected_range = exp.get("expected_range")
+    super_gap_min = exp.get("super_gap_min")
+    auction_amount_min_yi = float(exp.get("auction_amount_min_yi") or 0.0)
+    seal_amount_min_yi = float(exp.get("seal_amount_min_yi") or 0.0)
+    open_board_limit = exp.get("super_requires_open_board_limit")
+    requires_reseal = bool(exp.get("super_requires_reseal"))
+    base = {
+        "date10": record.get("date10"),
+        "code": record.get("code"),
+        "name": record.get("name"),
+        "bucket": record.get("bucket"),
+        "bucket_label": record.get("bucket_label"),
+        "score": record.get("score"),
+        "main_line": record.get("main_line"),
+        "reason_text": record.get("reason_text"),
+        "expected_text": exp.get("expected_text") or "",
+        "super_text": exp.get("super_text") or "",
+        "quote_time": str((quote or {}).get("time") or "").strip(),
+        "auction_amount_need_yi": round(auction_amount_min_yi, 2),
+        "seal_amount_need_yi": round(seal_amount_min_yi, 2),
+        "requires_reseal": requires_reseal,
+        "open_board_limit": open_board_limit,
+    }
+    if not isinstance(quote, dict):
+        return {
+            **base,
+            "decision_status": "unavailable",
+            "decision_label": "报价缺失",
+            "signal_status": "unavailable",
+            "signal_label": "无法判断",
+            "note": "未拿到 9:25 实时报价，当前不生成买入信号。",
+        }
+
+    prev_close = float(quote.get("prev_close") or 0.0)
+    auction_price = float(quote.get("auction_price") or 0.0)
+    auction_amount_yi = float(quote.get("auction_amount_yi") or 0.0)
+    gap_pct = round((auction_price - prev_close) / prev_close * 100.0, 2) if prev_close > 0 and auction_price > 0 else None
+    base.update(
+        {
+            "prev_close": round(prev_close, 2) if prev_close > 0 else None,
+            "auction_price": round(auction_price, 2) if auction_price > 0 else None,
+            "auction_price_field": quote.get("auction_price_field") or "",
+            "auction_amount_yi": round(auction_amount_yi, 2),
+            "open_board_count": quote.get("open_board_count"),
+            "gap_pct": gap_pct,
+        }
+    )
+    if prev_close <= 0 or auction_price <= 0 or auction_amount_yi <= 0:
+        return {
+            **base,
+            "decision_status": "unavailable",
+            "decision_label": "价格/量能不完整",
+            "signal_status": "unavailable",
+            "signal_label": "无法判断",
+            "note": "9:25 价格或竞价成交额缺失，暂不纳入买入列表。",
+        }
+
+    super_gap_ok = super_gap_min is not None and gap_pct is not None and gap_pct >= float(super_gap_min)
+    expected_ok = expected_range is not None and gap_pct is not None and expected_range[0] <= gap_pct <= expected_range[1]
+    auction_ok = auction_amount_yi >= auction_amount_min_yi if auction_amount_min_yi > 0 else True
+
+    pending_reasons: list[str] = []
+    if requires_reseal:
+        pending_reasons.append("需要回封确认")
+    if seal_amount_min_yi > 0:
+        pending_reasons.append(f"需要封单回补≥{seal_amount_min_yi:.2f}亿")
+    if open_board_limit is not None:
+        pending_reasons.append(f"需要开板≤{open_board_limit}")
+
+    if super_gap_ok and auction_ok and not pending_reasons:
+        return {
+            **base,
+            "decision_status": "buy",
+            "decision_label": "直接买入",
+            "signal_status": "super",
+            "signal_label": "超预期",
+            "rule_text": exp.get("super_text") or "",
+            "note": f"高开 {gap_pct:+.2f}% 且竞价成交额 {auction_amount_yi:.2f} 亿，满足 9:25 可执行超预期条件。",
+        }
+
+    if super_gap_ok and auction_ok and pending_reasons:
+        return {
+            **base,
+            "decision_status": "pending",
+            "decision_label": "待盘中确认",
+            "signal_status": "pending",
+            "signal_label": "超预期待确认",
+            "rule_text": exp.get("super_text") or "",
+            "pending_reasons": pending_reasons,
+            "note": "竞价价格和量能已到位，但策略还要求盘中确认条件，9:25 不直接买入。",
+        }
+
+    if expected_ok:
+        return {
+            **base,
+            "decision_status": "buy",
+            "decision_label": "直接买入",
+            "signal_status": "expected",
+            "signal_label": "符合预期",
+            "rule_text": exp.get("expected_text") or "",
+            "note": f"开盘缺口 {gap_pct:+.2f}% 落在预期区间内，按计划列入开盘买入列表。",
+        }
+
+    if super_gap_ok and not auction_ok:
+        return {
+            **base,
+            "decision_status": "reject",
+            "decision_label": "量能不达标",
+            "signal_status": "reject",
+            "signal_label": "未达买点",
+            "rule_text": exp.get("super_text") or "",
+            "note": f"高开达到超预期，但竞价成交额 {auction_amount_yi:.2f} 亿，小于阈值 {auction_amount_min_yi:.2f} 亿。",
+        }
+
+    return {
+        **base,
+        "decision_status": "reject",
+        "decision_label": "未达买点",
+        "signal_status": "reject",
+        "signal_label": "未达买点",
+        "rule_text": exp.get("low_text") or exp.get("expected_text") or "",
+        "note": "9:25 缺口未落在符合预期或可直接执行的超预期区间内。",
+    }
+
+
+def _build_realtime_buy_payload(rows: list[dict[str, Any]], *, latest_date10: str) -> dict[str, Any]:
+    latest_rows = [dict(row) for row in rows if row.get("date10") == latest_date10]
+    if not _should_request_realtime_quotes():
+        preserved = _load_preserved_realtime_buy(latest_date10)
+        if isinstance(preserved, dict):
+            diagnostics = preserved.get("diagnostics") if isinstance(preserved.get("diagnostics"), dict) else {}
+            preserved["diagnostics"] = {
+                **diagnostics,
+                "source": "preserved_snapshot",
+                "request_window": "09:25-09:30",
+                "preserved_note": "当前不在 09:25-09:30，复用已落地的竞价观察结果，不重复请求远端接口。",
+            }
+            return preserved
+
+    latest_raw = _load_latest_stock_research_snapshot(latest_date10)
+    raw_quotes = latest_raw.get("raw", {}).get("quotes", {}).get("items", {}) if isinstance(latest_raw.get("raw"), dict) else {}
+    codes = [str(row.get("code") or "").strip() for row in latest_rows if str(row.get("code") or "").strip()]
+    quotes_map, quote_diag = _fetch_realtime_quotes(codes, fallback_quotes=raw_quotes if isinstance(raw_quotes, dict) else None)
+
+    decisions = [_evaluate_realtime_signal(row, quotes_map.get(str(row.get("code") or "").strip())) for row in latest_rows]
+    decisions.sort(key=lambda x: (_signal_rank(str(x.get("signal_status") or "")), -int(x.get("score") or 0), str(x.get("code") or "")))
+
+    buy_list = [row for row in decisions if row.get("decision_status") == "buy"]
+    pending_list = [row for row in decisions if row.get("decision_status") == "pending"]
+    rejected_list = [row for row in decisions if row.get("decision_status") == "reject"]
+    unavailable_list = [row for row in decisions if row.get("decision_status") == "unavailable"]
+    direct_super = [row for row in buy_list if row.get("signal_status") == "super"]
+    direct_expected = [row for row in buy_list if row.get("signal_status") == "expected"]
+
+    return {
+        "reference_date": latest_date10,
+        "entry_window": "09:25-09:30",
+        "quote_time": quote_diag.get("as_of") or _now_bj().strftime("%Y-%m-%d %H:%M:%S"),
+        "source_module": "ztAnalysis.relay/watch",
+        "quote_source": "biying hsrl/ssjy_more 实时行情（失败时回退 raw.quotes）",
+        "candidate_count": len(latest_rows),
+        "quoted_count": quote_diag.get("received", 0),
+        "buy_count": len(buy_list),
+        "direct_super_count": len(direct_super),
+        "direct_expected_count": len(direct_expected),
+        "pending_count": len(pending_list),
+        "rejected_count": len(rejected_list),
+        "unavailable_count": len(unavailable_list),
+        "buy_list": buy_list,
+        "pending_list": pending_list,
+        "rejected_list": rejected_list,
+        "unavailable_list": unavailable_list,
+        "diagnostics": quote_diag,
+    }
 
 
 def _classify_open_window(record: dict[str, Any], entry_bar: dict[str, Any]) -> dict[str, Any]:
@@ -420,7 +787,9 @@ def build_stock_research_backtest_payload() -> dict[str, Any]:
 
     unique_codes = sorted({r["code"] for r in rows if r["code"]})
     date_list = sorted({r["date10"] for r in rows})
+    latest_date10 = date_list[-1]
     histories, price_diag = _get_price_histories(unique_codes, st8=date_list[0].replace("-", ""), et8=_now_bj().strftime("%Y%m%d"))
+    realtime_buy = _build_realtime_buy_payload(rows, latest_date10=latest_date10)
 
     enriched_rows: list[dict[str, Any]] = []
     for row in rows:
@@ -454,13 +823,14 @@ def build_stock_research_backtest_payload() -> dict[str, Any]:
     return {
         "meta": {
             "title": "个股研究开盘回测",
-            "subtitle": "同源读取 ztAnalysis 接力/观察推荐，只在次日 09:25-09:30 满足符合预期或超预期开口径时，按开盘价记为入场。",
+            "subtitle": "同源读取 ztAnalysis 接力/观察推荐；首屏先看最新推荐在 09:25-09:30 的实时买入列表，历史样本继续用于开盘回测复盘。",
             "dates": date_list,
             "generated_at_bj": _now_bj().strftime("%Y-%m-%d %H:%M:%S"),
             "generated_from": generated_from,
             "price_source": "biying hsstock/history + 本地 recommendation_price_history 缓存",
             "entry_window": "09:25-09:30",
             "source_module": "ztAnalysis.relay/watch",
+            "latest_recommendation_date": latest_date10,
         },
         "summary": {
             "total_samples": total,
@@ -473,9 +843,15 @@ def build_stock_research_backtest_payload() -> dict[str, Any]:
             "trade_days": len(date_list),
             "priced_codes": len(histories),
             "missing_price_codes": price_diag["missing"],
+            "realtime_candidate_count": realtime_buy["candidate_count"],
+            "realtime_buy_count": realtime_buy["buy_count"],
+            "realtime_pending_count": realtime_buy["pending_count"],
+            "realtime_unavailable_count": realtime_buy["unavailable_count"],
         },
         "assumptions": [
             "样本池只取 cache/market_data-YYYYMMDD.json 中 ztAnalysis.relay 与 ztAnalysis.watch 这组同源推荐。",
+            "最新推荐日的 9:25 买入列表只允许在北京时区 09:25-09:30 请求 biying 批量竞价接口；窗口外只复用已落地结果，不因页面刷新重复取数。",
+            "如果当前环境拿不到远端数据，只会展示待补齐/报价缺失，不会伪造买点。",
             "入场窗口限定为次日 09:25-09:30；只有开盘缺口满足“符合预期”或可在开盘窗口确认“超预期”时，才记为买入样本。",
             "若超预期文案要求“回封/封单回补/开板≤1”等开盘后行为，当前历史回测会保守记为 wait_reseal，不在开盘窗口直接入场。",
             "当前仓库没有历史竞价成交额与逐分钟封单回补明细，因此超预期中的竞价量能条件暂按开盘缺口代理，不把它当成完全等价的实盘复刻。",
@@ -488,6 +864,7 @@ def build_stock_research_backtest_payload() -> dict[str, Any]:
             "by_date_status": [{"date": k, **v} for k, v in sorted(by_date_status.items())],
         },
         "metrics": metrics,
+        "realtimeBuy": realtime_buy,
         "records": enriched_rows,
         "spotlight": {
             "super_candidates": sorted(super_rows, key=lambda x: (-x["score"], x["date"], x["code"]))[:10],
@@ -497,6 +874,7 @@ def build_stock_research_backtest_payload() -> dict[str, Any]:
         },
         "diagnostics": {
             "price_history": price_diag,
+            "realtime_buy": realtime_buy.get("diagnostics", {}),
         },
     }
 

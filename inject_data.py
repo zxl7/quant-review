@@ -125,7 +125,12 @@ def _ensure_stock_research_backtest(md: dict) -> None:
     if not isinstance(md, dict):
         return
     existing = md.get("stockResearchBacktest")
-    if isinstance(existing, dict) and existing.get("summary"):
+    if isinstance(existing, dict) and existing.get("summary") and isinstance(existing.get("realtimeBuy"), dict):
+        return
+    preserved = ((md.get("preservedResearch") or {}) if isinstance(md.get("preservedResearch"), dict) else {}).get("marketData")
+    preserved_backtest = preserved.get("stockResearchBacktest") if isinstance(preserved, dict) else None
+    if isinstance(preserved_backtest, dict) and preserved_backtest.get("summary") and isinstance(preserved_backtest.get("realtimeBuy"), dict):
+        md["stockResearchBacktest"] = preserved_backtest
         return
     try:
         from scripts.build_stock_research_backtest import build_stock_research_backtest_payload

@@ -3,6 +3,13 @@ import { computed } from "vue"
 import { useMarketData } from "../../composables/useMarketData"
 
 const { marketData } = useMarketData()
+const backtestSource = computed<any>(() => {
+  const md = marketData.value as any
+  if (md?.meta?.mode === "intraday" && md?.preservedResearch?.marketData && typeof md.preservedResearch.marketData === "object") {
+    return md.preservedResearch.marketData
+  }
+  return md || {}
+})
 
 const emptyPayload = {
   meta: {
@@ -12,6 +19,7 @@ const emptyPayload = {
     source_module: "ztAnalysis.relay/watch",
     generated_at_bj: "",
     generated_from: [],
+    latest_recommendation_date: "",
   },
   summary: {
     total_samples: 0,
@@ -24,6 +32,10 @@ const emptyPayload = {
     trade_days: 0,
     priced_codes: 0,
     missing_price_codes: [],
+    realtime_candidate_count: 0,
+    realtime_buy_count: 0,
+    realtime_pending_count: 0,
+    realtime_unavailable_count: 0,
   },
   assumptions: [],
   breakdowns: {
@@ -34,10 +46,28 @@ const emptyPayload = {
   records: [],
   spotlight: {},
   diagnostics: {},
+  realtimeBuy: {
+    reference_date: "",
+    entry_window: "09:25-09:30",
+    quote_time: "",
+    candidate_count: 0,
+    quoted_count: 0,
+    buy_count: 0,
+    direct_super_count: 0,
+    direct_expected_count: 0,
+    pending_count: 0,
+    rejected_count: 0,
+    unavailable_count: 0,
+    buy_list: [],
+    pending_list: [],
+    rejected_list: [],
+    unavailable_list: [],
+    diagnostics: {},
+  },
 }
 
 const payload = computed<any>(() => {
-  const raw = (marketData.value as any)?.stockResearchBacktest
+  const raw = backtestSource.value?.stockResearchBacktest
   return raw && typeof raw === "object" ? raw : emptyPayload
 })
 
@@ -46,8 +76,17 @@ const summary = computed(() => payload.value?.summary || emptyPayload.summary)
 const assumptions = computed<string[]>(() => (Array.isArray(payload.value?.assumptions) ? payload.value.assumptions : []))
 const mainlineBreakdown = computed<any[]>(() => (Array.isArray(payload.value?.breakdowns?.by_mainline) ? payload.value.breakdowns.by_mainline.slice(0, 8) : []))
 const statusBreakdown = computed<any[]>(() => (Array.isArray(payload.value?.breakdowns?.by_open_status) ? payload.value.breakdowns.by_open_status : []))
-const sourceFiles = computed<string[]>(() => (Array.isArray(meta.value?.generated_from) ? meta.value.generated_from : []))
 const missingPriceCodes = computed<string[]>(() => (Array.isArray(summary.value?.missing_price_codes) ? summary.value.missing_price_codes : []))
+
+const realtimeBuy = computed<any>(() => {
+  const raw = payload.value?.realtimeBuy
+  return raw && typeof raw === "object" ? raw : emptyPayload.realtimeBuy
+})
+const backtestUpdatedAt = computed(() => meta.value?.generated_at_bj || backtestSource.value?.meta?.generatedAt || (marketData.value as any)?.meta?.generatedAt || "-")
+const quoteUpdatedAt = computed(() => realtimeBuy.value?.quote_time || "-")
+const realtimeBuyList = computed<any[]>(() => (Array.isArray(realtimeBuy.value?.buy_list) ? realtimeBuy.value.buy_list : []))
+const realtimePendingList = computed<any[]>(() => (Array.isArray(realtimeBuy.value?.pending_list) ? realtimeBuy.value.pending_list : []))
+const realtimeUnavailableList = computed<any[]>(() => (Array.isArray(realtimeBuy.value?.unavailable_list) ? realtimeBuy.value.unavailable_list : []))
 
 const metrics = computed(() => {
   const data = payload.value?.metrics || {}
@@ -113,6 +152,13 @@ function formatSigned(val: unknown, digits = 1) {
   return `${sign}${n.toFixed(digits).replace(/\.0$/, "")}`
 }
 
+function formatPlain(val: unknown, digits = 2) {
+  if (val === undefined || val === null || val === "") return "-"
+  const n = Number(val)
+  if (!Number.isFinite(n)) return "-"
+  return n.toFixed(digits).replace(/\.00$/, "").replace(/(\.\d)0$/, "$1")
+}
+
 function xqUrl(code?: string | null) {
   const raw = String(code || "").trim()
   if (!raw) return "https://xueqiu.com"
@@ -131,7 +177,7 @@ function openStatusClass(status?: string) {
   const key = String(status || "")
   if (key === "super") return "is-super"
   if (key === "expected") return "is-expected"
-  if (key === "wait_reseal") return "is-wait"
+  if (key === "pending" || key === "wait_reseal") return "is-wait"
   if (key === "reject") return "is-reject"
   return "is-neutral"
 }
@@ -141,9 +187,20 @@ function openStatusLabel(status?: string, label?: string) {
   const key = String(status || "")
   if (key === "super") return "超预期开盘"
   if (key === "expected") return "符合预期"
+  if (key === "pending") return "待盘中确认"
   if (key === "wait_reseal") return "待回封确认"
   if (key === "reject") return "低预期/未确认"
   return "暂无判断"
+}
+
+function decisionLabel(status?: string, label?: string) {
+  if (label) return label
+  const key = String(status || "")
+  if (key === "buy") return "直接买入"
+  if (key === "pending") return "待盘中确认"
+  if (key === "reject") return "未达买点"
+  if (key === "unavailable") return "报价缺失"
+  return "待判断"
 }
 
 function strategyReturnText(performance: any, key: string) {
@@ -180,31 +237,163 @@ function strategyReturnClass(performance: any, key: string) {
           <div class="bt-subtitle">
             {{ meta.subtitle || "同源读取个股研究推荐，只在次日 09:25-09:30 满足符合预期或超预期开口径时，按开盘价记为入场。" }}
           </div>
+          <div class="bt-meta">
+            <div>回测生成时间 {{ backtestUpdatedAt }}</div>
+            <div>9:25 报价时间 {{ quoteUpdatedAt }}</div>
+          </div>
         </div>
-        <div class="bt-badge">{{ meta.entry_window || "09:25-09:30" }}</div>
+        <div class="bt-badge">{{ realtimeBuy.entry_window || meta.entry_window || "09:25-09:30" }}</div>
       </div>
-
-      <div class="summary-box">
-        <div class="summary-text">
-          这里只统计次日开盘窗口能直接执行的样本。若推荐文案要求
-          <span class="red-text">“超预期但需回封确认”</span>，
-          当前会保守记为
-          <span class="blue-text">wait_reseal</span>，
-          不在开盘 9:25-9:30 直接算买入。
-        </div>
-      </div>
-
       <div class="bt-kpi-grid">
         <div class="bt-kpi-card">
-          <div class="bt-kpi-label">总样本</div>
+          <div class="bt-kpi-label">今日候选</div>
+          <div class="bt-kpi-value">{{ realtimeBuy.candidate_count ?? 0 }}</div>
+          <div class="bt-kpi-note">推荐日 {{ realtimeBuy.reference_date || "-" }}</div>
+        </div>
+        <div class="bt-kpi-card">
+          <div class="bt-kpi-label">9:25 买入</div>
+          <div class="bt-kpi-value red-text">{{ realtimeBuy.buy_count ?? 0 }}</div>
+          <div class="bt-kpi-note">超预期 {{ realtimeBuy.direct_super_count ?? 0 }} ｜ 符合预期 {{ realtimeBuy.direct_expected_count ?? 0 }}</div>
+        </div>
+        <div class="bt-kpi-card">
+          <div class="bt-kpi-label">待盘中确认</div>
+          <div class="bt-kpi-value blue-text">{{ realtimeBuy.pending_count ?? 0 }}</div>
+          <div class="bt-kpi-note">回封 / 封单 / 开板条件未在 9:25 直接确认</div>
+        </div>
+        <div class="bt-kpi-card">
+          <div class="bt-kpi-label">报价覆盖</div>
+          <div class="bt-kpi-value">{{ realtimeBuy.quoted_count ?? 0 }}/{{ realtimeBuy.candidate_count ?? 0 }}</div>
+          <div class="bt-kpi-note">更新时间 {{ realtimeBuy.quote_time || "-" }}</div>
+        </div>
+        <div class="bt-kpi-card">
+          <div class="bt-kpi-label">历史总样本</div>
           <div class="bt-kpi-value">{{ summary.total_samples ?? 0 }}</div>
           <div class="bt-kpi-note">覆盖 {{ summary.trade_days ?? 0 }} 个推荐交易日</div>
         </div>
         <div class="bt-kpi-card">
-          <div class="bt-kpi-label">可执行样本</div>
+          <div class="bt-kpi-label">历史可执行样本</div>
           <div class="bt-kpi-value">{{ summary.eligible_samples ?? 0 }}</div>
           <div class="bt-kpi-note">开盘入场率 {{ entryRate }}%</div>
         </div>
+      </div>
+
+      <div class="bt-pill-row" v-if="mainlineBreakdown.length">
+        <span v-for="item in mainlineBreakdown" :key="'ml-' + item.name" class="bt-pill is-neutral">
+          {{ item.name }} {{ item.count ?? 0 }}
+        </span>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <div>
+          <div class="card-title">9:25 买入列表</div>
+          <div class="bt-subtitle">只有在开盘竞价价格和量能已经满足条件时，才会直接进入这张清单。</div>
+        </div>
+      </div>
+
+      <div class="summary-box" v-if="!realtimeBuyList.length">
+        <div class="summary-text">当前没有直接买入标的。可能是今天没有符合预期/超预期的开口，也可能是远端报价尚未返回。</div>
+      </div>
+
+      <div class="bt-live-grid" v-else>
+        <div class="bt-live-card" v-for="row in realtimeBuyList" :key="'buy-' + row.code">
+          <div class="bt-live-head">
+            <div class="bt-live-main">
+              <a class="stock-link" :href="xqUrl(row.code)" target="_blank" rel="noopener noreferrer">{{ row.name }}</a>
+              <div class="bt-name-sub">代码 {{ row.code || "-" }} ｜ {{ row.bucket_label || row.bucket || "-" }} ｜ 分数 {{ row.score ?? "-" }}</div>
+            </div>
+            <div class="bt-live-badges">
+              <span class="bt-pill" :class="openStatusClass(row.signal_status)">{{ openStatusLabel(row.signal_status, row.signal_label) }}</span>
+              <span class="bt-pill is-neutral">{{ decisionLabel(row.decision_status, row.decision_label) }}</span>
+            </div>
+          </div>
+          <div class="bt-live-stats">
+            <div class="bt-live-stat">
+              <span>竞价价</span>
+              <strong>{{ formatPlain(row.auction_price, 2) }}</strong>
+            </div>
+            <div class="bt-live-stat">
+              <span>缺口</span>
+              <strong :class="signedClass(row.gap_pct)">{{ formatSigned(row.gap_pct, 2) }}%</strong>
+            </div>
+            <div class="bt-live-stat">
+              <span>竞价成交额</span>
+              <strong>{{ formatPlain(row.auction_amount_yi, 2) }}亿</strong>
+            </div>
+            <div class="bt-live-stat">
+              <span>量能阈值</span>
+              <strong>{{ formatPlain(row.auction_amount_need_yi, 2) }}亿</strong>
+            </div>
+          </div>
+          <div class="bt-live-rule">{{ row.rule_text || row.expected_text || row.super_text || "-" }}</div>
+          <div class="bt-cell-sub">{{ row.note || "-" }}</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="bt-live-split">
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <div class="card-title">待盘中确认</div>
+            <div class="bt-subtitle">这类标的竞价价格和量能可能已接近买点，但还需要盘中回封、封单或开板限制确认。</div>
+          </div>
+        </div>
+        <div class="summary-box" v-if="!realtimePendingList.length">
+          <div class="summary-text">当前没有待盘中确认的标的。</div>
+        </div>
+        <div class="bt-mini-list" v-else>
+          <div class="bt-mini-item" v-for="row in realtimePendingList" :key="'pending-' + row.code">
+            <div class="bt-mini-head">
+              <a class="stock-link" :href="xqUrl(row.code)" target="_blank" rel="noopener noreferrer">{{ row.name }}</a>
+              <span class="bt-pill is-wait">{{ decisionLabel(row.decision_status, row.decision_label) }}</span>
+            </div>
+            <div class="bt-cell-sub">
+              {{ formatSigned(row.gap_pct, 2) }}% ｜ {{ formatPlain(row.auction_amount_yi, 2) }}亿
+              <span v-if="Array.isArray(row.pending_reasons) && row.pending_reasons.length"> ｜ {{ row.pending_reasons.join(" / ") }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <div class="card-title">报价缺失 / 待补齐</div>
+            <div class="bt-subtitle">如果实时接口没有返回，先留在这里，不会误放进买入列表。</div>
+          </div>
+        </div>
+        <div class="summary-box" v-if="!realtimeUnavailableList.length">
+          <div class="summary-text">当前报价覆盖完整，没有缺失标的。</div>
+        </div>
+        <div class="bt-mini-list" v-else>
+          <div class="bt-mini-item" v-for="row in realtimeUnavailableList" :key="'na-' + row.code">
+            <div class="bt-mini-head">
+              <a class="stock-link" :href="xqUrl(row.code)" target="_blank" rel="noopener noreferrer">{{ row.name }}</a>
+              <span class="bt-pill is-neutral">{{ decisionLabel(row.decision_status, row.decision_label) }}</span>
+            </div>
+            <div class="bt-cell-sub">{{ row.note || "-" }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <div>
+          <div class="card-title">历史回测概览</div>
+          <div class="bt-subtitle">下面继续保留原来的开盘回测统计，用来复盘“这套预期文案长期好不好用”。</div>
+        </div>
+      </div>
+
+      <div class="bt-pill-row" v-if="statusBreakdown.length">
+        <span v-for="item in statusBreakdown" :key="'status-' + item.name" class="bt-pill" :class="openStatusClass(item.name)">
+          {{ openStatusLabel(item.name) }} {{ item.count ?? 0 }}
+        </span>
+      </div>
+
+      <div class="bt-kpi-grid">
         <div class="bt-kpi-card">
           <div class="bt-kpi-label">超预期开盘</div>
           <div class="bt-kpi-value red-text">{{ summary.super_count ?? 0 }}</div>
@@ -221,27 +410,10 @@ function strategyReturnClass(performance: any, key: string) {
           <div class="bt-kpi-note">超预期但需要盘中行为确认</div>
         </div>
         <div class="bt-kpi-card">
-          <div class="bt-kpi-label">已覆盖标的</div>
+          <div class="bt-kpi-label">价格覆盖</div>
           <div class="bt-kpi-value">{{ summary.priced_codes ?? 0 }}/{{ summary.unique_codes ?? 0 }}</div>
           <div class="bt-kpi-note">缺失价格 {{ missingPriceCodes.length }} 只</div>
         </div>
-      </div>
-
-      <div class="bt-pill-row" v-if="statusBreakdown.length">
-        <span v-for="item in statusBreakdown" :key="'status-' + item.name" class="bt-pill" :class="openStatusClass(item.name)">
-          {{ openStatusLabel(item.name) }} {{ item.count ?? 0 }}
-        </span>
-      </div>
-
-      <div class="bt-pill-row" v-if="mainlineBreakdown.length">
-        <span v-for="item in mainlineBreakdown" :key="'ml-' + item.name" class="bt-pill is-neutral">
-          {{ item.name }} {{ item.count ?? 0 }}
-        </span>
-      </div>
-
-      <div class="bt-meta" v-if="sourceFiles.length || missingPriceCodes.length">
-        <div v-if="sourceFiles.length">样本来源文件：{{ sourceFiles.join("、") }}</div>
-        <div v-if="missingPriceCodes.length">缺失价格代码：{{ missingPriceCodes.join("、") }}</div>
       </div>
     </div>
 

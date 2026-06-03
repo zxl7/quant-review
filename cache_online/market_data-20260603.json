@@ -4,14 +4,14 @@
   "meta": {
     "asOf": {
       "indices": "收盘",
-      "pools": "22:51:02",
-      "themes": "22:51:02",
+      "pools": "23:48:04",
+      "themes": "23:48:04",
       "quotes": "15:00:03",
       "plate_rotate": "2026-06-03",
-      "concept_fund_flow": "22:51:02"
+      "concept_fund_flow": "23:48:04"
     },
     "version": "1.0",
-    "generatedAt": "2026-06-03 22:51:02"
+    "generatedAt": "2026-06-03 23:48:04"
   },
   "indices": [
     {
@@ -356,8 +356,8 @@
     ],
     "overlap": {
       "themes": [
-        "专精特新",
-        "机器人概念"
+        "机器人概念",
+        "专精特新"
       ],
       "score": "40%",
       "note": "涨停主线与炸板主杀题材的重叠度（越高越提示主线在分歧/退潮）"
@@ -27467,7 +27467,7 @@
     }
   ],
   "moodSignals": {
-    "updatedAt": "2026-06-03 22:51:02",
+    "updatedAt": "2026-06-03 23:48:04",
     "headline": "分歧/扩散偏大，优先防守",
     "pos": [
       {
@@ -31289,7 +31289,7 @@
   },
   "intradaySnapshots": {
     "date": "2026-06-03",
-    "count": 2,
+    "count": 3,
     "snapshots": [
       {
         "time": "12:38:59",
@@ -31392,13 +31392,64 @@
         "shift_score": 45,
         "shift_label": "走弱",
         "note": "炸板/跌停抬升，情绪明显走弱。"
+      },
+      {
+        "time": "22:51:32",
+        "ts_bj": "2026-06-03 22:51:32",
+        "date": "2026-06-03",
+        "source": "intraday_live",
+        "provider": "fetch",
+        "zt": 66,
+        "dt": 11,
+        "zab": 51,
+        "zb": 43.6,
+        "fb": 56.4,
+        "jj": 16.7,
+        "lianban": 11,
+        "max_lb": 3,
+        "amount": "31302.79亿",
+        "bf": 0,
+        "heat": 45,
+        "risk": 55,
+        "headline": "走弱",
+        "concepts": [
+          {
+            "name": "芯片",
+            "lead": "华特气体",
+            "chg_pct": null
+          },
+          {
+            "name": "机器人概念",
+            "lead": "北投科技",
+            "chg_pct": null
+          },
+          {
+            "name": "通信",
+            "lead": "天洋新材",
+            "chg_pct": null
+          },
+          {
+            "name": "ST板块",
+            "lead": "*ST美芝",
+            "chg_pct": null
+          },
+          {
+            "name": "化工",
+            "lead": "红星发展",
+            "chg_pct": null
+          }
+        ],
+        "alerts": [],
+        "shift_score": 45,
+        "shift_label": "走弱",
+        "note": "情绪整体平稳，维持当前节奏。"
       }
     ],
     "simulated": false,
     "interval_min": null,
     "latest": {
-      "time": "20:44:32",
-      "ts_bj": "2026-06-03 20:44:32",
+      "time": "22:51:32",
+      "ts_bj": "2026-06-03 22:51:32",
       "date": "2026-06-03",
       "source": "intraday_live",
       "provider": "fetch",
@@ -31445,7 +31496,7 @@
       "alerts": [],
       "shift_score": 45,
       "shift_label": "走弱",
-      "note": "炸板/跌停抬升，情绪明显走弱。"
+      "note": "情绪整体平稳，维持当前节奏。"
     }
   },
   "prev": {
@@ -31584,7 +31635,7 @@
   "stockResearchBacktest": {
     "meta": {
       "title": "个股研究开盘回测",
-      "subtitle": "同源读取 ztAnalysis 接力/观察推荐，只在次日 09:25-09:30 满足符合预期或超预期开口径时，按开盘价记为入场。",
+      "subtitle": "同源读取 ztAnalysis 接力/观察推荐；首屏先看最新推荐在 09:25-09:30 的实时买入列表，历史样本继续用于开盘回测复盘。",
       "dates": [
         "2026-05-26",
         "2026-05-27",
@@ -31593,7 +31644,7 @@
         "2026-06-01",
         "2026-06-02"
       ],
-      "generated_at_bj": "2026-06-03 22:51:17",
+      "generated_at_bj": "2026-06-03 23:48:40",
       "generated_from": [
         "market_data-20260526.json",
         "market_data-20260527.json",
@@ -31604,7 +31655,8 @@
       ],
       "price_source": "biying hsstock/history + 本地 recommendation_price_history 缓存",
       "entry_window": "09:25-09:30",
-      "source_module": "ztAnalysis.relay/watch"
+      "source_module": "ztAnalysis.relay/watch",
+      "latest_recommendation_date": "2026-06-02"
     },
     "summary": {
       "total_samples": 65,
@@ -31616,10 +31668,15 @@
       "unique_codes": 47,
       "trade_days": 6,
       "priced_codes": 47,
-      "missing_price_codes": []
+      "missing_price_codes": [],
+      "realtime_candidate_count": 10,
+      "realtime_buy_count": 0,
+      "realtime_pending_count": 0,
+      "realtime_unavailable_count": 10
     },
     "assumptions": [
       "样本池只取 cache/market_data-YYYYMMDD.json 中 ztAnalysis.relay 与 ztAnalysis.watch 这组同源推荐。",
+      "最新推荐日的 9:25 买入列表优先走 biying 实时接口；如果当前环境拿不到远端数据，只会展示待补齐/报价缺失，不会伪造买点。",
       "入场窗口限定为次日 09:25-09:30；只有开盘缺口满足“符合预期”或可在开盘窗口确认“超预期”时，才记为买入样本。",
       "若超预期文案要求“回封/封单回补/开板≤1”等开盘后行为，当前历史回测会保守记为 wait_reseal，不在开盘窗口直接入场。",
       "当前仓库没有历史竞价成交额与逐分钟封单回补明细，因此超预期中的竞价量能条件暂按开盘缺口代理，不把它当成完全等价的实盘复刻。",
@@ -32139,6 +32196,267 @@
         "note": "只统计 ztAnalysis 同源推荐；仅在次日 09:25-09:30 开盘信号满足符合预期或超预期开口径时记为入场。"
       }
     },
+    "realtimeBuy": {
+      "reference_date": "2026-06-02",
+      "entry_window": "09:25-09:30",
+      "quote_time": "2026-06-03 23:48:40",
+      "source_module": "ztAnalysis.relay/watch",
+      "quote_source": "biying hsrl/ssjy_more 实时行情（失败时回退 raw.quotes）",
+      "candidate_count": 10,
+      "quoted_count": 0,
+      "buy_count": 0,
+      "direct_super_count": 0,
+      "direct_expected_count": 0,
+      "pending_count": 0,
+      "rejected_count": 0,
+      "unavailable_count": 10,
+      "buy_list": [],
+      "pending_list": [],
+      "rejected_list": [],
+      "unavailable_list": [
+        {
+          "date10": "2026-06-02",
+          "code": "002579",
+          "name": "中京电子",
+          "bucket": "relay",
+          "bucket_label": "接力候选",
+          "score": 52,
+          "main_line": "专精特新",
+          "reason_text": "专精特新龙头带动 · 梯队带动火炬电子、天洋新材 · 极强主线 · 题材持续 · 反复回封 · 早封 · 容量够 · 高度压制 · 断板风险高 预期 低开（-2%~+0%） 超预期 高开≥+0% + 回封后封单≥0.62亿（≈今1.79亿×35%） + 竞价成交额≥1.39亿 低预期 低开≤-2% 或 开板继续放大",
+          "expected_text": "低开（-2%~+0%）",
+          "super_text": "高开≥+0% + 回封后封单≥0.62亿（≈今1.79亿×35%） + 竞价成交额≥1.39亿",
+          "quote_time": "",
+          "auction_amount_need_yi": 1.39,
+          "seal_amount_need_yi": 0.62,
+          "requires_reseal": true,
+          "open_board_limit": null,
+          "decision_status": "unavailable",
+          "decision_label": "报价缺失",
+          "signal_status": "unavailable",
+          "signal_label": "无法判断",
+          "note": "未拿到 9:25 实时报价，当前不生成买入信号。"
+        },
+        {
+          "date10": "2026-06-02",
+          "code": "000055",
+          "name": "方大集团",
+          "bucket": "watch",
+          "bucket_label": "观察池",
+          "score": 51,
+          "main_line": "太阳能（光伏）",
+          "reason_text": "太阳能（光伏）龙头带动 · 梯队带动嘉欣丝绸、天洋新材 · 极强主线 · 题材持续 · 温和放量 · 封板稳 · 早封 · 高度压制 · 晋级生态弱(18%/81%) 预期 低开（-2%~+0%） 超预期 高开≥+0% + 竞价成交额≥0.15亿（≈今1.96亿×3%） + 开板≤1 低预期 低于-2% 或 竞价量能",
+          "expected_text": "低开（-2%~+0%）",
+          "super_text": "高开≥+0% + 竞价成交额≥0.15亿（≈今1.96亿×3%） + 开板≤1",
+          "quote_time": "",
+          "auction_amount_need_yi": 0.15,
+          "seal_amount_need_yi": 0.0,
+          "requires_reseal": false,
+          "open_board_limit": 1,
+          "decision_status": "unavailable",
+          "decision_label": "报价缺失",
+          "signal_status": "unavailable",
+          "signal_label": "无法判断",
+          "note": "未拿到 9:25 实时报价，当前不生成买入信号。"
+        },
+        {
+          "date10": "2026-06-02",
+          "code": "603890",
+          "name": "春秋电子",
+          "bucket": "watch",
+          "bucket_label": "观察池",
+          "score": 49,
+          "main_line": "新能源车",
+          "reason_text": "新能源车龙头带动 · 梯队带动中京电子、福达合金 · 极强主线 · 突破新高(3板) · 加速确认 · 封单偏强 · 早封 · 高度压制 · 断板风险高 预期 低开（-2%~+0%） 超预期 高开≥+0% + 竞价成交额≥0.15亿（≈今1.15亿×5%） + 开板≤1 低预期 低于-2% 或 竞价量能",
+          "expected_text": "低开（-2%~+0%）",
+          "super_text": "高开≥+0% + 竞价成交额≥0.15亿（≈今1.15亿×5%） + 开板≤1",
+          "quote_time": "",
+          "auction_amount_need_yi": 0.15,
+          "seal_amount_need_yi": 0.0,
+          "requires_reseal": false,
+          "open_board_limit": 1,
+          "decision_status": "unavailable",
+          "decision_label": "报价缺失",
+          "signal_status": "unavailable",
+          "signal_label": "无法判断",
+          "note": "未拿到 9:25 实时报价，当前不生成买入信号。"
+        },
+        {
+          "date10": "2026-06-02",
+          "code": "603678",
+          "name": "火炬电子",
+          "bucket": "relay",
+          "bucket_label": "接力候选",
+          "score": 46,
+          "main_line": "专精特新",
+          "reason_text": "核心梯队 · 梯队跟随 · 极强主线 · 题材持续 · 温和放量 · 早封 · 容量够 · 高度压制 · 晋级生态弱(18%/81%) 预期 低开（-2%~+0%） 超预期 高开≥+0% + 竞价成交额≥0.81亿（≈今26.89亿×3%） + 开板≤1 低预期 低于-2% 或 竞价量能",
+          "expected_text": "低开（-2%~+0%）",
+          "super_text": "高开≥+0% + 竞价成交额≥0.81亿（≈今26.89亿×3%） + 开板≤1",
+          "quote_time": "",
+          "auction_amount_need_yi": 0.81,
+          "seal_amount_need_yi": 0.0,
+          "requires_reseal": false,
+          "open_board_limit": 1,
+          "decision_status": "unavailable",
+          "decision_label": "报价缺失",
+          "signal_status": "unavailable",
+          "signal_label": "无法判断",
+          "note": "未拿到 9:25 实时报价，当前不生成买入信号。"
+        },
+        {
+          "date10": "2026-06-02",
+          "code": "002896",
+          "name": "中大力德",
+          "bucket": "watch",
+          "bucket_label": "观察池",
+          "score": 40,
+          "main_line": "太阳能（光伏）",
+          "reason_text": "梯队跟随 · 极强主线 · 题材持续 · 题材联动 · 温和放量 · 封板稳 · 早封 · 高度压制 · 断板风险高 预期 低开（-4%~-1%） 超预期 高开≥-1% + 竞价成交额≥0.61亿（≈今13.57亿×5%） + 开板≤1 低预期 低于-4% 或 竞价量能",
+          "expected_text": "低开（-4%~-1%）",
+          "super_text": "高开≥-1% + 竞价成交额≥0.61亿（≈今13.57亿×5%） + 开板≤1",
+          "quote_time": "",
+          "auction_amount_need_yi": 0.61,
+          "seal_amount_need_yi": 0.0,
+          "requires_reseal": false,
+          "open_board_limit": 1,
+          "decision_status": "unavailable",
+          "decision_label": "报价缺失",
+          "signal_status": "unavailable",
+          "signal_label": "无法判断",
+          "note": "未拿到 9:25 实时报价，当前不生成买入信号。"
+        },
+        {
+          "date10": "2026-06-02",
+          "code": "600367",
+          "name": "红星发展",
+          "bucket": "watch",
+          "bucket_label": "观察池",
+          "score": 39,
+          "main_line": "",
+          "reason_text": "核心梯队 · 温和放量 · 封板稳 · 早封 · 高度压制 · 断板风险高 预期 低开（-4%~-1%） 超预期 高开≥-1% + 竞价成交额≥0.51亿（≈今11.37亿×5%） + 开板≤1 低预期 低于-4% 或 竞价量能",
+          "expected_text": "低开（-4%~-1%）",
+          "super_text": "高开≥-1% + 竞价成交额≥0.51亿（≈今11.37亿×5%） + 开板≤1",
+          "quote_time": "",
+          "auction_amount_need_yi": 0.51,
+          "seal_amount_need_yi": 0.0,
+          "requires_reseal": false,
+          "open_board_limit": 1,
+          "decision_status": "unavailable",
+          "decision_label": "报价缺失",
+          "signal_status": "unavailable",
+          "signal_label": "无法判断",
+          "note": "未拿到 9:25 实时报价，当前不生成买入信号。"
+        },
+        {
+          "date10": "2026-06-02",
+          "code": "600459",
+          "name": "贵研铂业",
+          "bucket": "watch",
+          "bucket_label": "观察池",
+          "score": 39,
+          "main_line": "专精特新",
+          "reason_text": "梯队跟随 · 极强主线 · 题材持续 · 题材联动 · 温和放量 · 封板稳 · 容量够 · 高度压制 · 断板风险高 预期 低开（-4%~-1%） 超预期 高开≥-1% + 竞价成交额≥0.58亿（≈今12.92亿×5%） + 开板≤1 低预期 低于-4% 或 竞价量能",
+          "expected_text": "低开（-4%~-1%）",
+          "super_text": "高开≥-1% + 竞价成交额≥0.58亿（≈今12.92亿×5%） + 开板≤1",
+          "quote_time": "",
+          "auction_amount_need_yi": 0.58,
+          "seal_amount_need_yi": 0.0,
+          "requires_reseal": false,
+          "open_board_limit": 1,
+          "decision_status": "unavailable",
+          "decision_label": "报价缺失",
+          "signal_status": "unavailable",
+          "signal_label": "无法判断",
+          "note": "未拿到 9:25 实时报价，当前不生成买入信号。"
+        },
+        {
+          "date10": "2026-06-02",
+          "code": "301566",
+          "name": "达利凯普",
+          "bucket": "watch",
+          "bucket_label": "观察池",
+          "score": 38,
+          "main_line": "专精特新",
+          "reason_text": "梯队跟随 · 极强主线 · 题材持续 · 题材联动 · 封板稳 · 早封 · 容量够 · 高度压制 · 断板风险高 预期 低开（-4%~-1%） 超预期 高开≥-1% + 竞价成交额≥0.51亿（≈今11.35亿×5%） + 开板≤1 低预期 低于-4% 或 竞价量能",
+          "expected_text": "低开（-4%~-1%）",
+          "super_text": "高开≥-1% + 竞价成交额≥0.51亿（≈今11.35亿×5%） + 开板≤1",
+          "quote_time": "",
+          "auction_amount_need_yi": 0.51,
+          "seal_amount_need_yi": 0.0,
+          "requires_reseal": false,
+          "open_board_limit": 1,
+          "decision_status": "unavailable",
+          "decision_label": "报价缺失",
+          "signal_status": "unavailable",
+          "signal_label": "无法判断",
+          "note": "未拿到 9:25 实时报价，当前不生成买入信号。"
+        },
+        {
+          "date10": "2026-06-02",
+          "code": "002421",
+          "name": "达实智能",
+          "bucket": "watch",
+          "bucket_label": "观察池",
+          "score": 37,
+          "main_line": "华为概念",
+          "reason_text": "核心梯队 · 梯队跟随 · 极强主线 · 题材持续 · 反复回封 · 早封 · 容量够 · 高度压制 · 断板风险高 预期 低开（-4%~-1%） 超预期 高开≥-1% + 回封后封单≥0.35亿（≈今1.00亿×35%） + 竞价成交额≥1.23亿 低预期 低开≤-4% 或 开板继续放大",
+          "expected_text": "低开（-4%~-1%）",
+          "super_text": "高开≥-1% + 回封后封单≥0.35亿（≈今1.00亿×35%） + 竞价成交额≥1.23亿",
+          "quote_time": "",
+          "auction_amount_need_yi": 1.23,
+          "seal_amount_need_yi": 0.35,
+          "requires_reseal": true,
+          "open_board_limit": null,
+          "decision_status": "unavailable",
+          "decision_label": "报价缺失",
+          "signal_status": "unavailable",
+          "signal_label": "无法判断",
+          "note": "未拿到 9:25 实时报价，当前不生成买入信号。"
+        },
+        {
+          "date10": "2026-06-02",
+          "code": "002951",
+          "name": "金时科技",
+          "bucket": "watch",
+          "bucket_label": "观察池",
+          "score": 37,
+          "main_line": "光通信",
+          "reason_text": "核心梯队 · 梯队跟随 · 强主线 · 题材联动 · 温和放量 · 封板稳 · 量价共振 · 高度压制 · 断板风险高 预期 低开（-4%~-1%） 超预期 高开≥-1% + 竞价成交额≥0.33亿（≈今7.28亿×5%） + 开板≤1 低预期 低于-4% 或 竞价量能",
+          "expected_text": "低开（-4%~-1%）",
+          "super_text": "高开≥-1% + 竞价成交额≥0.33亿（≈今7.28亿×5%） + 开板≤1",
+          "quote_time": "",
+          "auction_amount_need_yi": 0.33,
+          "seal_amount_need_yi": 0.0,
+          "requires_reseal": false,
+          "open_board_limit": 1,
+          "decision_status": "unavailable",
+          "decision_label": "报价缺失",
+          "signal_status": "unavailable",
+          "signal_label": "无法判断",
+          "note": "未拿到 9:25 实时报价，当前不生成买入信号。"
+        }
+      ],
+      "diagnostics": {
+        "requested": 10,
+        "received": 0,
+        "remote_received": 0,
+        "fallback_used": 0,
+        "missing": [
+          "000055",
+          "002421",
+          "002579",
+          "002896",
+          "002951",
+          "301566",
+          "600367",
+          "600459",
+          "603678",
+          "603890"
+        ],
+        "source": "unavailable",
+        "as_of": "",
+        "error": ""
+      }
+    },
     "records": [
       {
         "date": "20260526",
@@ -32172,6 +32490,9 @@
           ],
           "super_gap_min": 0.0,
           "super_requires_reseal": false,
+          "super_requires_open_board_limit": 1,
+          "auction_amount_min_yi": 0.74,
+          "seal_amount_min_yi": null,
           "raw_text": "国资改革龙头带动 · 梯队带动三佳科技、华塑控股 · 强主线 · 突破新高(3板) · 温和放量 · 封板稳 · 容量够 · 高度压制 · 断板风险高 预期 低开（-2%~+0%） 超预期 高开≥+0% + 竞价成交额≥0.74亿（≈今16.55亿×5%） + 开板≤1 低预期 低于-2% 或 竞价量能"
         },
         "performance": {
@@ -32255,6 +32576,9 @@
           ],
           "super_gap_min": null,
           "super_requires_reseal": true,
+          "super_requires_open_board_limit": null,
+          "auction_amount_min_yi": 0.64,
+          "seal_amount_min_yi": 0.07,
           "raw_text": "前排龙头梯队 · 梯队完整 · 强主线 · 突破新高(3板) · 分歧烂板 · 早封 · 容量够 · 高度压制 · 断板风险高 预期 低开（-4%~-1%） 超预期 回封 + 封单回补≥0.07亿（≈今0.14亿×50%） + 竞价成交额≥0.64亿（≈今14.30亿×5%） 低预期 不回封 或 多开板继续放大"
         },
         "performance": {
@@ -32317,6 +32641,9 @@
           ],
           "super_gap_min": -1.0,
           "super_requires_reseal": true,
+          "super_requires_open_board_limit": null,
+          "auction_amount_min_yi": 1.02,
+          "seal_amount_min_yi": 0.21,
           "raw_text": "MSCI中国龙头带动 · 梯队带动华天科技、长电科技 · 突破新高(3板) · 题材联动 · 反复回封 · 早封 · 容量够 · 高度压制 · 断板风险高 预期 低开（-4%~-1%） 超预期 高开≥-1% + 回封后封单≥0.21亿（≈今0.59亿×35%） + 竞价成交额≥1.02亿 低预期 低开≤-4% 或 开板继续放大"
         },
         "performance": {
@@ -32379,6 +32706,9 @@
           ],
           "super_gap_min": -1.0,
           "super_requires_reseal": true,
+          "super_requires_open_board_limit": null,
+          "auction_amount_min_yi": 5.06,
+          "seal_amount_min_yi": 2.9,
           "raw_text": "汽车电子龙头带动 · 梯队带动长电科技 · 题材联动 · 分歧烂板 · 封单偏强 · 早封 · 高度压制 · 断板风险高 预期 低开（-4%~-1%） 超预期 高开≥-1% + 回封后封单≥2.90亿（≈今8.27亿×35%） + 竞价成交额≥5.06亿 低预期 低开≤-4% 或 开板继续放大"
         },
         "performance": {
@@ -32441,6 +32771,9 @@
           ],
           "super_gap_min": -1.0,
           "super_requires_reseal": false,
+          "super_requires_open_board_limit": 1,
+          "auction_amount_min_yi": 0.68,
+          "seal_amount_min_yi": null,
           "raw_text": "核心梯队 · 梯队跟随 · 强主线 · 题材联动 · 封板稳 · 早封 · 容量够 · 高度压制 · 断板风险高 预期 低开（-4%~-1%） 超预期 高开≥-1% + 竞价成交额≥0.68亿（≈今15.19亿×5%） + 开板≤1 低预期 低于-4% 或 竞价量能"
         },
         "performance": {
@@ -32524,6 +32857,9 @@
           ],
           "super_gap_min": -1.0,
           "super_requires_reseal": true,
+          "super_requires_open_board_limit": null,
+          "auction_amount_min_yi": 0.5,
+          "seal_amount_min_yi": 0.08,
           "raw_text": "核心梯队 · 温和放量 · 容量够 · 高度压制 · 断板风险高 预期 低开（-4%~-1%） 超预期 高开≥-1% + 回封后封单≥0.08亿（≈今0.22亿×35%） + 竞价成交额≥0.50亿 低预期 低开≤-4% 或 开板继续放大"
         },
         "performance": {
@@ -32607,6 +32943,9 @@
           ],
           "super_gap_min": -1.0,
           "super_requires_reseal": false,
+          "super_requires_open_board_limit": 1,
+          "auction_amount_min_yi": 0.15,
+          "seal_amount_min_yi": null,
           "raw_text": "核心梯队 · 梯队跟随 · 强主线 · 题材联动 · 加速确认 · 封板稳 · 早封 · 高度压制 · 断板风险高 预期 低开（-4%~-1%） 超预期 高开≥-1% + 竞价成交额≥0.15亿（≈今2.99亿×5%） + 开板≤1 低预期 低于-4% 或 竞价量能"
         },
         "performance": {
@@ -32690,6 +33029,9 @@
           ],
           "super_gap_min": -1.0,
           "super_requires_reseal": false,
+          "super_requires_open_board_limit": 1,
+          "auction_amount_min_yi": 0.17,
+          "seal_amount_min_yi": null,
           "raw_text": "核心梯队 · 梯队跟随 · 强主线 · 题材联动 · 温和放量 · 封板稳 · 早封 · 高度压制 · 断板风险高 预期 低开（-4%~-1%） 超预期 高开≥-1% + 竞价成交额≥0.17亿（≈今3.73亿×5%） + 开板≤1 低预期 低于-4% 或 竞价量能"
         },
         "performance": {
@@ -32773,6 +33115,9 @@
           ],
           "super_gap_min": -1.0,
           "super_requires_reseal": false,
+          "super_requires_open_board_limit": 1,
+          "auction_amount_min_yi": 12.95,
+          "seal_amount_min_yi": null,
           "raw_text": "核心梯队 · 梯队跟随 · 题材联动 · 温和放量 · 封板稳 · 容量够 · 高度压制 · 断板风险高 预期 低开（-4%~-1%） 超预期 高开≥-1% + 竞价成交额≥12.95亿（≈今287.85亿×5%） + 开板≤1 低预期 低于-4% 或 竞价量能"
         },
         "performance": {
@@ -32856,6 +33201,9 @@
           ],
           "super_gap_min": 0.0,
           "super_requires_reseal": false,
+          "super_requires_open_board_limit": 1,
+          "auction_amount_min_yi": 0.47,
+          "seal_amount_min_yi": null,
           "raw_text": "腾讯概念龙头带动 · 梯队带动中百集团 · 温和放量 · 封板稳 · 容量够 · 高度压制 · 晋级生态弱(25%/75%) 预期 低开（-2%~+0%） 超预期 高开≥+0% + 竞价成交额≥0.47亿（≈今15.77亿×3%） + 开板≤1 低预期 低于-2% 或 竞价量能"
         },
         "performance": {
@@ -32939,6 +33287,9 @@
           ],
           "super_gap_min": 0.0,
           "super_requires_reseal": false,
+          "super_requires_open_board_limit": 1,
+          "auction_amount_min_yi": 0.51,
+          "seal_amount_min_yi": null,
           "raw_text": "前排龙头梯队 · 梯队完整 · 突破新高(3板) · 封单充足 · 封板稳 · 早封 · 高度压制 · 断板风险高 预期 低开（-2%~+0%） 超预期 高开≥+0% + 竞价成交额≥0.51亿（≈今16.95亿×3%） + 开板≤1 低预期 低于-2% 或 竞价量能"
         },
         "performance": {
@@ -33022,6 +33373,9 @@
           ],
           "super_gap_min": 0.0,
           "super_requires_reseal": true,
+          "super_requires_open_board_limit": null,
+          "auction_amount_min_yi": 1.73,
+          "seal_amount_min_yi": 0.56,
           "raw_text": "核心梯队 · 梯队完整 · 反复回封 · 早封 · 容量够 · 高度压制 · 断板风险高 预期 低开（-2%~+0%） 超预期 高开≥+0% + 回封后封单≥0.56亿（≈今1.60亿×35%） + 竞价成交额≥1.73亿 低预期 低开≤-2% 或 开板继续放大"
         },
         "performance": {
@@ -33084,6 +33438,9 @@
           ],
           "super_gap_min": 0.0,
           "super_requires_reseal": false,
+          "super_requires_open_board_limit": 1,
+          "auction_amount_min_yi": 0.15,
+          "seal_amount_min_yi": null,
           "raw_text": "人工智能龙头带动 · 梯队带动真视通 · 突破新高(3板) · 温和放量 · 封板稳 · 早封 · 高度压制 · 断板风险高 预期 低开（-2%~+0%） 超预期 高开≥+0% + 竞价成交额≥0.15亿（≈今3.16亿×3%） + 开板≤1 低预期 低于-2% 或 竞价量能"
         },
         "performance": {
@@ -33167,6 +33524,9 @@
           ],
           "super_gap_min": -1.0,
           "super_requires_reseal": false,
+          "super_requires_open_board_limit": 1,
+          "auction_amount_min_yi": 0.53,
+          "seal_amount_min_yi": null,
           "raw_text": "梯队完整 · 温和放量 · 封板稳 · 早封 · 高度压制 · 断板风险高 预期 低开（-4%~-1%） 超预期 高开≥-1% + 竞价成交额≥0.53亿（≈今11.84亿×5%） + 开板≤1 低预期 低于-4% 或 竞价量能"
         },
         "performance": {
@@ -33250,6 +33610,9 @@
           ],
           "super_gap_min": -1.0,
           "super_requires_reseal": false,
+          "super_requires_open_board_limit": 1,
+          "auction_amount_min_yi": 0.47,
+          "seal_amount_min_yi": null,
           "raw_text": "前排龙头梯队 · 属性标签：低价 · 突破新高(3板) · 换手承接 · 早封 · 容量够 · 高度压制 · 断板风险高 预期 低开（-4%~-1%） 超预期 高开≥-1% + 竞价成交额≥0.47亿（≈今15.78亿×3%） + 开板≤1 低预期 低于-4% 或 竞价量能"
         },
         "performance": {
@@ -33333,6 +33696,9 @@
           ],
           "super_gap_min": -1.0,
           "super_requires_reseal": false,
+          "super_requires_open_board_limit": 1,
+          "auction_amount_min_yi": 1.21,
+          "seal_amount_min_yi": null,
           "raw_text": "梯队跟随 · 主线加成 · 题材联动 · 温和放量 · 封板稳 · 早封 · 高度压制 · 断板风险高 预期 低开（-4%~-1%） 超预期 高开≥-1% + 竞价成交额≥1.21亿（≈今26.91亿×5%） + 开板≤1 低预期 低于-4% 或 竞价量能"
         },
         "performance": {
@@ -33416,6 +33782,9 @@
           ],
           "super_gap_min": -1.0,
           "super_requires_reseal": false,
+          "super_requires_open_board_limit": 1,
+          "auction_amount_min_yi": 3.81,
+          "seal_amount_min_yi": null,
           "raw_text": "梯队完整 · 封单偏强 · 封板稳 · 早封 · 高度压制 · 断板风险高 预期 低开（-4%~-1%） 超预期 高开≥-1% + 竞价成交额≥3.81亿（≈今84.70亿×5%） + 开板≤1 低预期 低于-4% 或 竞价量能"
         },
         "performance": {
@@ -33499,6 +33868,9 @@
           ],
           "super_gap_min": -1.0,
           "super_requires_reseal": false,
+          "super_requires_open_board_limit": 1,
+          "auction_amount_min_yi": 0.34,
+          "seal_amount_min_yi": null,
           "raw_text": "核心梯队 · 换手承接 · 封板稳 · 早封 · 高度压制 · 晋级生态弱(25%/75%) 预期 低开（-4%~-1%） 超预期 高开≥-1% + 竞价成交额≥0.34亿（≈今11.20亿×3%） + 开板≤1 低预期 低于-4% 或 竞价量能"
         },
         "performance": {
@@ -33582,6 +33954,9 @@
           ],
           "super_gap_min": -1.0,
           "super_requires_reseal": true,
+          "super_requires_open_board_limit": null,
+          "auction_amount_min_yi": 0.68,
+          "seal_amount_min_yi": 0.36,
           "raw_text": "梯队完整 · 温和放量 · 容量够 · 放量+板块 · 高度压制 · 断板风险高 预期 低开（-4%~-1%） 超预期 高开≥-1% + 回封后封单≥0.36亿（≈今1.02亿×35%） + 竞价成交额≥0.68亿 低预期 低开≤-4% 或 开板继续放大"
         },
         "performance": {
@@ -33665,6 +34040,9 @@
           ],
           "super_gap_min": -1.0,
           "super_requires_reseal": false,
+          "super_requires_open_board_limit": 1,
+          "auction_amount_min_yi": 0.61,
+          "seal_amount_min_yi": null,
           "raw_text": "梯队跟随 · 题材联动 · 温和放量 · 封板稳 · 早封 · 高度压制 · 断板风险高 预期 低开（-4%~-1%） 超预期 高开≥-1% + 竞价成交额≥0.61亿（≈今13.52亿×5%） + 开板≤1 低预期 低于-4% 或 竞价量能"
         },
         "performance": {
@@ -33748,6 +34126,9 @@
           ],
           "super_gap_min": 6.0,
           "super_requires_reseal": false,
+          "super_requires_open_board_limit": 1,
+          "auction_amount_min_yi": 0.25,
+          "seal_amount_min_yi": null,
           "raw_text": "国资改革龙头带动 · 梯队带动华电能源、粤电力Ａ · 极强主线 · 突破新高(4板) · 加速确认 · 封板稳 · 早封 预期 高开（+3%~+6%） 超预期 高开≥+6% + 竞价成交额≥0.25亿（≈今3.52亿×7%） + 开板≤1 低预期 低于+3% 或 竞价量能"
         },
         "performance": {
@@ -33824,6 +34205,9 @@
           ],
           "super_gap_min": 7.0,
           "super_requires_reseal": false,
+          "super_requires_open_board_limit": 1,
+          "auction_amount_min_yi": 2.79,
+          "seal_amount_min_yi": null,
           "raw_text": "新能源车龙头带动 · 梯队带动江海股份、合锻智能 · 极强主线 · 题材持续 · 换手承接 · 封板稳 · 容量够 预期 高开（+4%~+7%） 超预期 高开≥+7% + 竞价成交额≥2.79亿（≈今39.89亿×7%） + 开板≤1 低预期 低于+4% 或 竞价量能"
         },
         "performance": {
@@ -33900,6 +34284,9 @@
           ],
           "super_gap_min": 6.0,
           "super_requires_reseal": true,
+          "super_requires_open_board_limit": null,
+          "auction_amount_min_yi": 1.5,
+          "seal_amount_min_yi": 0.92,
           "raw_text": "前排龙头梯队 · 梯队跟随 · 极强主线 · 突破新高(4板) · 温和放量 · 早封 · 容量够 · 分歧偏大 预期 高开（+0%~+6%） 超预期 高开≥+6% + 回封后封单≥0.92亿（≈今2.64亿×35%） + 竞价成交额≥1.50亿 低预期 低开≤+3% 或 开板继续放大"
         },
         "performance": {
@@ -33976,6 +34363,9 @@
           ],
           "super_gap_min": 4.0,
           "super_requires_reseal": false,
+          "super_requires_open_board_limit": 1,
+          "auction_amount_min_yi": 0.26,
+          "seal_amount_min_yi": null,
           "raw_text": "梯队完整 · 极强主线 · 题材持续 · 高度修复 · 温和放量 · 封板稳 · 早封 预期 高开（+1%~+4%） 超预期 高开≥+4% + 竞价成交额≥0.26亿（≈今3.41亿×8%） + 开板≤1 低预期 低于+1% 或 竞价量能"
         },
         "performance": {
@@ -34038,6 +34428,9 @@
           ],
           "super_gap_min": 4.0,
           "super_requires_reseal": false,
+          "super_requires_open_board_limit": 1,
+          "auction_amount_min_yi": 1.19,
+          "seal_amount_min_yi": null,
           "raw_text": "算力板块龙头 · 梯队跟随 · 极强主线 · 题材持续 · 温和放量 · 封板稳 · 容量够 预期 高开（+1%~+4%） 超预期 高开≥+4% + 竞价成交额≥1.19亿（≈今15.88亿×8%） + 开板≤1 低预期 低于+1% 或 竞价量能"
         },
         "performance": {
@@ -34100,6 +34493,9 @@
           ],
           "super_gap_min": 4.0,
           "super_requires_reseal": false,
+          "super_requires_open_board_limit": 1,
+          "auction_amount_min_yi": 0.9,
+          "seal_amount_min_yi": null,
           "raw_text": "梯队跟随 · 极强主线 · 题材持续 · 题材联动 · 温和放量 · 早封 · 容量够 预期 高开（+1%~+4%） 超预期 高开≥+4% + 竞价成交额≥0.90亿（≈今11.99亿×8%） + 开板≤1 低预期 低于+1% 或 竞价量能"
         },
         "performance": {
@@ -34176,6 +34572,9 @@
           ],
           "super_gap_min": 4.0,
           "super_requires_reseal": false,
+          "super_requires_open_board_limit": 1,
+          "auction_amount_min_yi": 1.22,
+          "seal_amount_min_yi": null,
           "raw_text": "梯队跟随 · 极强主线 · 题材持续 · 题材联动 · 封板稳 · 早封 · 容量够 预期 高开（+1%~+4%） 超预期 高开≥+4% + 竞价成交额≥1.22亿（≈今16.25亿×8%） + 开板≤1 低预期 低于+1% 或 竞价量能"
         },
         "performance": {
@@ -34252,6 +34651,9 @@
           ],
           "super_gap_min": 4.0,
           "super_requires_reseal": false,
+          "super_requires_open_board_limit": 1,
+          "auction_amount_min_yi": 1.48,
+          "seal_amount_min_yi": null,
           "raw_text": "梯队完整 · 极强主线 · 题材持续 · 高度修复 · 封板稳 · 早封 · 容量够 预期 高开（+1%~+4%） 超预期 高开≥+4% + 竞价成交额≥1.48亿（≈今24.64亿×6%） + 开板≤1 低预期 低于+1% 或 竞价量能"
         },
         "performance": {
@@ -34328,6 +34730,9 @@
           ],
           "super_gap_min": 4.0,
           "super_requires_reseal": true,
+          "super_requires_open_board_limit": null,
+          "auction_amount_min_yi": 1.43,
+          "seal_amount_min_yi": 0.21,
           "raw_text": "梯队完整 · 极强主线 · 题材持续 · 高度修复 · 温和放量 · 早封 · 容量够 · 分歧偏大 预期 高开（+0%~+4%） 超预期 高开≥+4% + 回封后封单≥0.21亿（≈今0.59亿×35%） + 竞价成交额≥1.43亿 低预期 低开≤+1% 或 开板继续放大"
         },
         "performance": {
@@ -34404,6 +34809,9 @@
           ],
           "super_gap_min": 4.0,
           "super_requires_reseal": false,
+          "super_requires_open_board_limit": 1,
+          "auction_amount_min_yi": 4.67,
+          "seal_amount_min_yi": null,
           "raw_text": "梯队跟随 · 极强主线 · 题材持续 · 题材联动 · 封单偏强 · 封板稳 · 容量够 预期 高开（+1%~+4%） 超预期 高开≥+4% + 竞价成交额≥4.67亿（≈今77.81亿×6%） + 开板≤1 低预期 低于+1% 或 竞价量能"
         },
         "performance": {
@@ -34480,6 +34888,9 @@
           ],
           "super_gap_min": 4.0,
           "super_requires_reseal": false,
+          "super_requires_open_board_limit": 1,
+          "auction_amount_min_yi": 1.88,
+          "seal_amount_min_yi": null,
           "raw_text": "梯队跟随 · 极强主线 · 题材持续 · 题材联动 · 封板稳 · 早封 · 容量够 预期 高开（+1%~+4%） 超预期 高开≥+4% + 竞价成交额≥1.88亿（≈今31.26亿×6%） + 开板≤1 低预期 低于+1% 或 竞价量能"
         },
         "performance": {
@@ -34556,6 +34967,9 @@
           ],
           "super_gap_min": 4.0,
           "super_requires_reseal": false,
+          "super_requires_open_board_limit": 1,
+          "auction_amount_min_yi": 4.9,
+          "seal_amount_min_yi": null,
           "raw_text": "梯队跟随 · 极强主线 · 题材持续 · 题材联动 · 温和放量 · 封单偏强 · 封板稳 预期 高开（+1%~+4%） 超预期 高开≥+4% + 竞价成交额≥4.90亿（≈今81.63亿×6%） + 开板≤1 低预期 低于+1% 或 竞价量能"
         },
         "performance": {
@@ -34618,6 +35032,9 @@
           ],
           "super_gap_min": 4.0,
           "super_requires_reseal": true,
+          "super_requires_open_board_limit": null,
+          "auction_amount_min_yi": 4.4,
+          "seal_amount_min_yi": 0.76,
           "raw_text": "梯队跟随 · 极强主线 · 题材持续 · 题材联动 · 早封 · 容量够 · 晋级生态强(50%/50%) · 分歧偏大 预期 高开（+0%~+4%） 超预期 高开≥+4% + 回封后封单≥0.76亿（≈今2.17亿×35%） + 竞价成交额≥4.40亿 低预期 低开≤+1% 或 开板继续放大"
         },
         "performance": {
@@ -34680,6 +35097,9 @@
           ],
           "super_gap_min": 4.0,
           "super_requires_reseal": true,
+          "super_requires_open_board_limit": null,
+          "auction_amount_min_yi": 1.21,
+          "seal_amount_min_yi": 0.14,
           "raw_text": "梯队跟随 · 极强主线 · 题材持续 · 题材联动 · 容量够 · 晋级生态强(50%/50%) · 分歧偏大 预期 高开（+0%~+4%） 超预期 高开≥+4% + 回封后封单≥0.14亿（≈今0.40亿×35%） + 竞价成交额≥1.21亿 低预期 低开≤+1% 或 开板继续放大"
         },
         "performance": {
@@ -34756,6 +35176,9 @@
           ],
           "super_gap_min": 4.0,
           "super_requires_reseal": false,
+          "super_requires_open_board_limit": 1,
+          "auction_amount_min_yi": 1.98,
+          "seal_amount_min_yi": null,
           "raw_text": "梯队跟随 · 极强主线 · 题材持续 · 题材联动 · 温和放量 · 容量够 · 量价共振 预期 高开（+1%~+4%） 超预期 高开≥+4% + 竞价成交额≥1.98亿（≈今32.96亿×6%） + 开板≤1 低预期 低于+1% 或 竞价量能"
         },
         "performance": {
@@ -34818,6 +35241,9 @@
           ],
           "super_gap_min": 4.0,
           "super_requires_reseal": true,
+          "super_requires_open_board_limit": null,
+          "auction_amount_min_yi": 0.88,
+          "seal_amount_min_yi": 0.41,
           "raw_text": "梯队跟随 · 极强主线 · 题材持续 · 题材联动 · 温和放量 · 早封 · 容量够 · 分歧偏大 预期 高开（+0%~+4%） 超预期 高开≥+4% + 回封后封单≥0.41亿（≈今1.17亿×35%） + 竞价成交额≥0.88亿 低预期 低开≤+1% 或 开板继续放大"
         },
         "performance": {
@@ -34880,6 +35306,9 @@
           ],
           "super_gap_min": 3.0,
           "super_requires_reseal": false,
+          "super_requires_open_board_limit": 1,
+          "auction_amount_min_yi": 0.15,
+          "seal_amount_min_yi": null,
           "raw_text": "地产链板块龙头 · 梯队完整 · 突破新高(5板) · 高度修复 · 加速确认 · 封板稳 · 早封 预期 高开（+1%~+3%） 超预期 高开≥+3% + 竞价成交额≥0.15亿（≈今3.16亿×5%） + 开板≤1 低预期 低于+1% 或 竞价量能"
         },
         "performance": {
@@ -34942,6 +35371,9 @@
           ],
           "super_gap_min": 1.0,
           "super_requires_reseal": false,
+          "super_requires_open_board_limit": 1,
+          "auction_amount_min_yi": 0.41,
+          "seal_amount_min_yi": null,
           "raw_text": "通信板块龙头 · 梯队带动诺德股份 · 题材联动 · 高度修复 · 温和放量 · 封单偏强 · 早封 预期 平开（-1%~+1%） 超预期 高开≥+1% + 竞价成交额≥0.41亿（≈今13.52亿×3%） + 开板≤1 低预期 低于-1% 或 竞价量能"
         },
         "performance": {
@@ -35018,6 +35450,9 @@
           ],
           "super_gap_min": 2.0,
           "super_requires_reseal": true,
+          "super_requires_open_board_limit": null,
+          "auction_amount_min_yi": 0.51,
+          "seal_amount_min_yi": 0.6,
           "raw_text": "电力板块龙头 · 板块归属：电力、煤炭 · 突破新高(5板) · 高度修复 · 反复回封 · 封单偏强 · 早封 · 题材转弱 · 分歧偏大 预期 高开（+0%~+2%） 超预期 高开≥+2% + 回封后封单≥0.60亿（≈今1.71亿×35%） + 竞价成交额≥0.51亿 低预期 低开≤+0% 或 开板继续放大"
         },
         "performance": {
@@ -35080,6 +35515,9 @@
           ],
           "super_gap_min": 1.0,
           "super_requires_reseal": false,
+          "super_requires_open_board_limit": 1,
+          "auction_amount_min_yi": 0.31,
+          "seal_amount_min_yi": null,
           "raw_text": "梯队完整 · 高度修复 · 温和放量 · 封单偏强 · 封板稳 · 题材转弱 预期 平开（-1%~+1%） 超预期 高开≥+1% + 竞价成交额≥0.31亿（≈今10.24亿×3%） + 开板≤1 低预期 低于-1% 或 竞价量能"
         },
         "performance": {
@@ -35156,6 +35594,9 @@
           ],
           "super_gap_min": 2.0,
           "super_requires_reseal": false,
+          "super_requires_open_board_limit": 1,
+          "auction_amount_min_yi": 0.15,
+          "seal_amount_min_yi": null,
           "raw_text": "梯队完整 · 高度修复 · 温和放量 · 封板稳 · 早封 预期 高开（+0%~+2%） 超预期 高开≥+2% + 竞价成交额≥0.15亿（≈今4.15亿×3%） + 开板≤1 低预期 低于+0% 或 竞价量能"
         },
         "performance": {
@@ -35232,6 +35673,9 @@
           ],
           "super_gap_min": 2.0,
           "super_requires_reseal": false,
+          "super_requires_open_board_limit": 1,
+          "auction_amount_min_yi": 0.3,
+          "seal_amount_min_yi": null,
           "raw_text": "梯队完整 · 高度修复 · 换手承接 · 早封 · 晋级生态强(44%/55%) 预期 高开（+0%~+2%） 超预期 高开≥+2% + 竞价成交额≥0.30亿（≈今9.90亿×3%） + 开板≤1 低预期 低于+0% 或 竞价量能"
         },
         "performance": {
@@ -35308,6 +35752,9 @@
           ],
           "super_gap_min": 0.0,
           "super_requires_reseal": false,
+          "super_requires_open_board_limit": 1,
+          "auction_amount_min_yi": 0.61,
+          "seal_amount_min_yi": null,
           "raw_text": "梯队跟随 · 题材联动 · 高度修复 · 封单偏强 · 封板稳 · 早封 · 题材转弱 预期 低开（-3%~+0%） 超预期 高开≥+0% + 竞价成交额≥0.61亿（≈今20.22亿×3%） + 开板≤1 低预期 低于-3% 或 竞价量能"
         },
         "performance": {
@@ -35384,6 +35831,9 @@
           ],
           "super_gap_min": 0.0,
           "super_requires_reseal": false,
+          "super_requires_open_board_limit": 1,
+          "auction_amount_min_yi": 0.38,
+          "seal_amount_min_yi": null,
           "raw_text": "高度修复 · 温和放量 · 容量够 · 晋级生态强(44%/55%) 预期 低开（-3%~+0%） 超预期 高开≥+0% + 竞价成交额≥0.38亿（≈今12.83亿×3%） + 开板≤1 低预期 低于-3% 或 竞价量能"
         },
         "performance": {
@@ -35460,6 +35910,9 @@
           ],
           "super_gap_min": 0.0,
           "super_requires_reseal": false,
+          "super_requires_open_board_limit": 1,
+          "auction_amount_min_yi": 0.94,
+          "seal_amount_min_yi": null,
           "raw_text": "梯队跟随 · 题材联动 · 高度修复 · 温和放量 · 封板稳 · 容量够 预期 低开（-3%~+0%） 超预期 高开≥+0% + 竞价成交额≥0.94亿（≈今31.47亿×3%） + 开板≤1 低预期 低于-3% 或 竞价量能"
         },
         "performance": {
@@ -35536,6 +35989,9 @@
           ],
           "super_gap_min": 5.0,
           "super_requires_reseal": false,
+          "super_requires_open_board_limit": 1,
+          "auction_amount_min_yi": 0.35,
+          "seal_amount_min_yi": null,
           "raw_text": "AI应用板块龙头 · 梯队完整 · 极强主线 · 题材持续 · 换手承接 · 封板稳 · 早封 预期 高开（+2%~+5%） 超预期 高开≥+5% + 竞价成交额≥0.35亿（≈今7.08亿×5%） + 开板≤1 低预期 低于+2% 或 竞价量能"
         },
         "performance": {
@@ -35605,6 +36061,9 @@
           ],
           "super_gap_min": 3.0,
           "super_requires_reseal": false,
+          "super_requires_open_board_limit": 1,
+          "auction_amount_min_yi": 0.42,
+          "seal_amount_min_yi": null,
           "raw_text": "一带一路龙头带动 · 梯队带动泓淋电力、华能国际 · 极强主线 · 突破新高(4板) · 温和放量 · 封板稳 · 早封 预期 高开（+1%~+3%） 超预期 高开≥+3% + 竞价成交额≥0.42亿（≈今9.37亿×5%） + 开板≤1 低预期 低于+1% 或 竞价量能"
         },
         "performance": {
@@ -35674,6 +36133,9 @@
           ],
           "super_gap_min": null,
           "super_requires_reseal": true,
+          "super_requires_open_board_limit": null,
+          "auction_amount_min_yi": 1.57,
+          "seal_amount_min_yi": 0.11,
           "raw_text": "算力板块龙头 · 梯队带动晋控电力 · 极强主线 · 突破新高(4板) · 分歧烂板 · 早封 · 容量够 · 强分歧(多开板) 预期 高开（+0%~+2%） 超预期 回封 + 封单回补≥0.11亿（≈今0.21亿×50%） + 竞价成交额≥1.57亿（≈今44.95亿×4%） 低预期 不回封 或 多开板继续放大"
         },
         "performance": {
@@ -35736,6 +36198,9 @@
           ],
           "super_gap_min": 1.0,
           "super_requires_reseal": false,
+          "super_requires_open_board_limit": 1,
+          "auction_amount_min_yi": 0.48,
+          "seal_amount_min_yi": null,
           "raw_text": "梯队跟随 · 极强主线 · 题材持续 · 题材联动 · 温和放量 · 封板稳 · 早封 预期 平开（-1%~+1%） 超预期 高开≥+1% + 竞价成交额≥0.48亿（≈今10.68亿×5%） + 开板≤1 低预期 低于-1% 或 竞价量能"
         },
         "performance": {
@@ -35798,6 +36263,9 @@
           ],
           "super_gap_min": 1.0,
           "super_requires_reseal": false,
+          "super_requires_open_board_limit": 1,
+          "auction_amount_min_yi": 0.72,
+          "seal_amount_min_yi": null,
           "raw_text": "梯队跟随 · 极强主线 · 题材持续 · 题材联动 · 封板稳 · 早封 · 容量够 预期 平开（-1%~+1%） 超预期 高开≥+1% + 竞价成交额≥0.72亿（≈今16.05亿×5%） + 开板≤1 低预期 低于-1% 或 竞价量能"
         },
         "performance": {
@@ -35867,6 +36335,9 @@
           ],
           "super_gap_min": 1.0,
           "super_requires_reseal": false,
+          "super_requires_open_board_limit": 1,
+          "auction_amount_min_yi": 1.29,
+          "seal_amount_min_yi": null,
           "raw_text": "梯队跟随 · 极强主线 · 题材持续 · 题材联动 · 温和放量 · 封单偏强 · 封板稳 预期 平开（-1%~+1%） 超预期 高开≥+1% + 竞价成交额≥1.29亿（≈今28.58亿×5%） + 开板≤1 低预期 低于-1% 或 竞价量能"
         },
         "performance": {
@@ -35936,6 +36407,9 @@
           ],
           "super_gap_min": 1.0,
           "super_requires_reseal": false,
+          "super_requires_open_board_limit": 1,
+          "auction_amount_min_yi": 0.47,
+          "seal_amount_min_yi": null,
           "raw_text": "梯队跟随 · 极强主线 · 题材持续 · 题材联动 · 温和放量 · 封板稳 · 早封 预期 平开（-1%~+1%） 超预期 高开≥+1% + 竞价成交额≥0.47亿（≈今10.35亿×5%） + 开板≤1 低预期 低于-1% 或 竞价量能"
         },
         "performance": {
@@ -36005,6 +36479,9 @@
           ],
           "super_gap_min": 1.0,
           "super_requires_reseal": false,
+          "super_requires_open_board_limit": 1,
+          "auction_amount_min_yi": 0.65,
+          "seal_amount_min_yi": null,
           "raw_text": "梯队跟随 · 极强主线 · 题材持续 · 题材联动 · 封板稳 · 早封 · 容量够 预期 平开（-1%~+1%） 超预期 高开≥+1% + 竞价成交额≥0.65亿（≈今14.45亿×5%） + 开板≤1 低预期 低于-1% 或 竞价量能"
         },
         "performance": {
@@ -36074,6 +36551,9 @@
           ],
           "super_gap_min": 1.0,
           "super_requires_reseal": false,
+          "super_requires_open_board_limit": 1,
+          "auction_amount_min_yi": 0.65,
+          "seal_amount_min_yi": null,
           "raw_text": "梯队跟随 · 极强主线 · 题材持续 · 题材联动 · 温和放量 · 封板稳 · 早封 预期 平开（-1%~+1%） 超预期 高开≥+1% + 竞价成交额≥0.65亿（≈今14.47亿×5%） + 开板≤1 低预期 低于-1% 或 竞价量能"
         },
         "performance": {
@@ -36143,6 +36623,9 @@
           ],
           "super_gap_min": 1.0,
           "super_requires_reseal": true,
+          "super_requires_open_board_limit": null,
+          "auction_amount_min_yi": 1.19,
+          "seal_amount_min_yi": 0.14,
           "raw_text": "梯队跟随 · 极强主线 · 题材持续 · 题材联动 · 早封 · 容量够 · 分歧偏大 预期 平开（-1%~+1%） 超预期 高开≥+1% + 回封后封单≥0.14亿（≈今0.39亿×35%） + 竞价成交额≥1.19亿 低预期 低开≤-1% 或 开板继续放大"
         },
         "performance": {
@@ -36205,6 +36688,9 @@
           ],
           "super_gap_min": 0.0,
           "super_requires_reseal": true,
+          "super_requires_open_board_limit": null,
+          "auction_amount_min_yi": 1.39,
+          "seal_amount_min_yi": 0.62,
           "raw_text": "专精特新龙头带动 · 梯队带动火炬电子、天洋新材 · 极强主线 · 题材持续 · 反复回封 · 早封 · 容量够 · 高度压制 · 断板风险高 预期 低开（-2%~+0%） 超预期 高开≥+0% + 回封后封单≥0.62亿（≈今1.79亿×35%） + 竞价成交额≥1.39亿 低预期 低开≤-2% 或 开板继续放大"
         },
         "performance": {
@@ -36267,6 +36753,9 @@
           ],
           "super_gap_min": 0.0,
           "super_requires_reseal": false,
+          "super_requires_open_board_limit": 1,
+          "auction_amount_min_yi": 0.15,
+          "seal_amount_min_yi": null,
           "raw_text": "太阳能（光伏）龙头带动 · 梯队带动嘉欣丝绸、天洋新材 · 极强主线 · 题材持续 · 温和放量 · 封板稳 · 早封 · 高度压制 · 晋级生态弱(18%/81%) 预期 低开（-2%~+0%） 超预期 高开≥+0% + 竞价成交额≥0.15亿（≈今1.96亿×3%） + 开板≤1 低预期 低于-2% 或 竞价量能"
         },
         "performance": {
@@ -36336,6 +36825,9 @@
           ],
           "super_gap_min": 0.0,
           "super_requires_reseal": false,
+          "super_requires_open_board_limit": 1,
+          "auction_amount_min_yi": 0.15,
+          "seal_amount_min_yi": null,
           "raw_text": "新能源车龙头带动 · 梯队带动中京电子、福达合金 · 极强主线 · 突破新高(3板) · 加速确认 · 封单偏强 · 早封 · 高度压制 · 断板风险高 预期 低开（-2%~+0%） 超预期 高开≥+0% + 竞价成交额≥0.15亿（≈今1.15亿×5%） + 开板≤1 低预期 低于-2% 或 竞价量能"
         },
         "performance": {
@@ -36405,6 +36897,9 @@
           ],
           "super_gap_min": 0.0,
           "super_requires_reseal": false,
+          "super_requires_open_board_limit": 1,
+          "auction_amount_min_yi": 0.81,
+          "seal_amount_min_yi": null,
           "raw_text": "核心梯队 · 梯队跟随 · 极强主线 · 题材持续 · 温和放量 · 早封 · 容量够 · 高度压制 · 晋级生态弱(18%/81%) 预期 低开（-2%~+0%） 超预期 高开≥+0% + 竞价成交额≥0.81亿（≈今26.89亿×3%） + 开板≤1 低预期 低于-2% 或 竞价量能"
         },
         "performance": {
@@ -36474,6 +36969,9 @@
           ],
           "super_gap_min": -1.0,
           "super_requires_reseal": false,
+          "super_requires_open_board_limit": 1,
+          "auction_amount_min_yi": 0.61,
+          "seal_amount_min_yi": null,
           "raw_text": "梯队跟随 · 极强主线 · 题材持续 · 题材联动 · 温和放量 · 封板稳 · 早封 · 高度压制 · 断板风险高 预期 低开（-4%~-1%） 超预期 高开≥-1% + 竞价成交额≥0.61亿（≈今13.57亿×5%） + 开板≤1 低预期 低于-4% 或 竞价量能"
         },
         "performance": {
@@ -36543,6 +37041,9 @@
           ],
           "super_gap_min": -1.0,
           "super_requires_reseal": false,
+          "super_requires_open_board_limit": 1,
+          "auction_amount_min_yi": 0.51,
+          "seal_amount_min_yi": null,
           "raw_text": "核心梯队 · 温和放量 · 封板稳 · 早封 · 高度压制 · 断板风险高 预期 低开（-4%~-1%） 超预期 高开≥-1% + 竞价成交额≥0.51亿（≈今11.37亿×5%） + 开板≤1 低预期 低于-4% 或 竞价量能"
         },
         "performance": {
@@ -36612,6 +37113,9 @@
           ],
           "super_gap_min": -1.0,
           "super_requires_reseal": false,
+          "super_requires_open_board_limit": 1,
+          "auction_amount_min_yi": 0.58,
+          "seal_amount_min_yi": null,
           "raw_text": "梯队跟随 · 极强主线 · 题材持续 · 题材联动 · 温和放量 · 封板稳 · 容量够 · 高度压制 · 断板风险高 预期 低开（-4%~-1%） 超预期 高开≥-1% + 竞价成交额≥0.58亿（≈今12.92亿×5%） + 开板≤1 低预期 低于-4% 或 竞价量能"
         },
         "performance": {
@@ -36681,6 +37185,9 @@
           ],
           "super_gap_min": -1.0,
           "super_requires_reseal": false,
+          "super_requires_open_board_limit": 1,
+          "auction_amount_min_yi": 0.51,
+          "seal_amount_min_yi": null,
           "raw_text": "梯队跟随 · 极强主线 · 题材持续 · 题材联动 · 封板稳 · 早封 · 容量够 · 高度压制 · 断板风险高 预期 低开（-4%~-1%） 超预期 高开≥-1% + 竞价成交额≥0.51亿（≈今11.35亿×5%） + 开板≤1 低预期 低于-4% 或 竞价量能"
         },
         "performance": {
@@ -36750,6 +37257,9 @@
           ],
           "super_gap_min": -1.0,
           "super_requires_reseal": true,
+          "super_requires_open_board_limit": null,
+          "auction_amount_min_yi": 1.23,
+          "seal_amount_min_yi": 0.35,
           "raw_text": "核心梯队 · 梯队跟随 · 极强主线 · 题材持续 · 反复回封 · 早封 · 容量够 · 高度压制 · 断板风险高 预期 低开（-4%~-1%） 超预期 高开≥-1% + 回封后封单≥0.35亿（≈今1.00亿×35%） + 竞价成交额≥1.23亿 低预期 低开≤-4% 或 开板继续放大"
         },
         "performance": {
@@ -36819,6 +37329,9 @@
           ],
           "super_gap_min": -1.0,
           "super_requires_reseal": false,
+          "super_requires_open_board_limit": 1,
+          "auction_amount_min_yi": 0.33,
+          "seal_amount_min_yi": null,
           "raw_text": "核心梯队 · 梯队跟随 · 强主线 · 题材联动 · 温和放量 · 封板稳 · 量价共振 · 高度压制 · 断板风险高 预期 低开（-4%~-1%） 超预期 高开≥-1% + 竞价成交额≥0.33亿（≈今7.28亿×5%） + 开板≤1 低预期 低于-4% 或 竞价量能"
         },
         "performance": {
@@ -36891,6 +37404,9 @@
             ],
             "super_gap_min": 6.0,
             "super_requires_reseal": false,
+            "super_requires_open_board_limit": 1,
+            "auction_amount_min_yi": 0.25,
+            "seal_amount_min_yi": null,
             "raw_text": "国资改革龙头带动 · 梯队带动华电能源、粤电力Ａ · 极强主线 · 突破新高(4板) · 加速确认 · 封板稳 · 早封 预期 高开（+3%~+6%） 超预期 高开≥+6% + 竞价成交额≥0.25亿（≈今3.52亿×7%） + 开板≤1 低预期 低于+3% 或 竞价量能"
           },
           "performance": {
@@ -36967,6 +37483,9 @@
             ],
             "super_gap_min": 4.0,
             "super_requires_reseal": false,
+            "super_requires_open_board_limit": 1,
+            "auction_amount_min_yi": 0.9,
+            "seal_amount_min_yi": null,
             "raw_text": "梯队跟随 · 极强主线 · 题材持续 · 题材联动 · 温和放量 · 早封 · 容量够 预期 高开（+1%~+4%） 超预期 高开≥+4% + 竞价成交额≥0.90亿（≈今11.99亿×8%） + 开板≤1 低预期 低于+1% 或 竞价量能"
           },
           "performance": {
@@ -37043,6 +37562,9 @@
             ],
             "super_gap_min": 4.0,
             "super_requires_reseal": false,
+            "super_requires_open_board_limit": 1,
+            "auction_amount_min_yi": 1.22,
+            "seal_amount_min_yi": null,
             "raw_text": "梯队跟随 · 极强主线 · 题材持续 · 题材联动 · 封板稳 · 早封 · 容量够 预期 高开（+1%~+4%） 超预期 高开≥+4% + 竞价成交额≥1.22亿（≈今16.25亿×8%） + 开板≤1 低预期 低于+1% 或 竞价量能"
           },
           "performance": {
@@ -37119,6 +37641,9 @@
             ],
             "super_gap_min": 4.0,
             "super_requires_reseal": false,
+            "super_requires_open_board_limit": 1,
+            "auction_amount_min_yi": 1.48,
+            "seal_amount_min_yi": null,
             "raw_text": "梯队完整 · 极强主线 · 题材持续 · 高度修复 · 封板稳 · 早封 · 容量够 预期 高开（+1%~+4%） 超预期 高开≥+4% + 竞价成交额≥1.48亿（≈今24.64亿×6%） + 开板≤1 低预期 低于+1% 或 竞价量能"
           },
           "performance": {
@@ -37195,6 +37720,9 @@
             ],
             "super_gap_min": 4.0,
             "super_requires_reseal": false,
+            "super_requires_open_board_limit": 1,
+            "auction_amount_min_yi": 4.67,
+            "seal_amount_min_yi": null,
             "raw_text": "梯队跟随 · 极强主线 · 题材持续 · 题材联动 · 封单偏强 · 封板稳 · 容量够 预期 高开（+1%~+4%） 超预期 高开≥+4% + 竞价成交额≥4.67亿（≈今77.81亿×6%） + 开板≤1 低预期 低于+1% 或 竞价量能"
           },
           "performance": {
@@ -37271,6 +37799,9 @@
             ],
             "super_gap_min": 4.0,
             "super_requires_reseal": false,
+            "super_requires_open_board_limit": 1,
+            "auction_amount_min_yi": 1.88,
+            "seal_amount_min_yi": null,
             "raw_text": "梯队跟随 · 极强主线 · 题材持续 · 题材联动 · 封板稳 · 早封 · 容量够 预期 高开（+1%~+4%） 超预期 高开≥+4% + 竞价成交额≥1.88亿（≈今31.26亿×6%） + 开板≤1 低预期 低于+1% 或 竞价量能"
           },
           "performance": {
@@ -37347,6 +37878,9 @@
             ],
             "super_gap_min": 5.0,
             "super_requires_reseal": false,
+            "super_requires_open_board_limit": 1,
+            "auction_amount_min_yi": 0.35,
+            "seal_amount_min_yi": null,
             "raw_text": "AI应用板块龙头 · 梯队完整 · 极强主线 · 题材持续 · 换手承接 · 封板稳 · 早封 预期 高开（+2%~+5%） 超预期 高开≥+5% + 竞价成交额≥0.35亿（≈今7.08亿×5%） + 开板≤1 低预期 低于+2% 或 竞价量能"
           },
           "performance": {
@@ -37416,6 +37950,9 @@
             ],
             "super_gap_min": 1.0,
             "super_requires_reseal": false,
+            "super_requires_open_board_limit": 1,
+            "auction_amount_min_yi": 0.41,
+            "seal_amount_min_yi": null,
             "raw_text": "通信板块龙头 · 梯队带动诺德股份 · 题材联动 · 高度修复 · 温和放量 · 封单偏强 · 早封 预期 平开（-1%~+1%） 超预期 高开≥+1% + 竞价成交额≥0.41亿（≈今13.52亿×3%） + 开板≤1 低预期 低于-1% 或 竞价量能"
           },
           "performance": {
@@ -37492,6 +38029,9 @@
             ],
             "super_gap_min": 1.0,
             "super_requires_reseal": false,
+            "super_requires_open_board_limit": 1,
+            "auction_amount_min_yi": 0.72,
+            "seal_amount_min_yi": null,
             "raw_text": "梯队跟随 · 极强主线 · 题材持续 · 题材联动 · 封板稳 · 早封 · 容量够 预期 平开（-1%~+1%） 超预期 高开≥+1% + 竞价成交额≥0.72亿（≈今16.05亿×5%） + 开板≤1 低预期 低于-1% 或 竞价量能"
           },
           "performance": {
@@ -37561,6 +38101,9 @@
             ],
             "super_gap_min": 1.0,
             "super_requires_reseal": false,
+            "super_requires_open_board_limit": 1,
+            "auction_amount_min_yi": 1.29,
+            "seal_amount_min_yi": null,
             "raw_text": "梯队跟随 · 极强主线 · 题材持续 · 题材联动 · 温和放量 · 封单偏强 · 封板稳 预期 平开（-1%~+1%） 超预期 高开≥+1% + 竞价成交额≥1.29亿（≈今28.58亿×5%） + 开板≤1 低预期 低于-1% 或 竞价量能"
           },
           "performance": {
@@ -37632,6 +38175,9 @@
             ],
             "super_gap_min": 7.0,
             "super_requires_reseal": false,
+            "super_requires_open_board_limit": 1,
+            "auction_amount_min_yi": 2.79,
+            "seal_amount_min_yi": null,
             "raw_text": "新能源车龙头带动 · 梯队带动江海股份、合锻智能 · 极强主线 · 题材持续 · 换手承接 · 封板稳 · 容量够 预期 高开（+4%~+7%） 超预期 高开≥+7% + 竞价成交额≥2.79亿（≈今39.89亿×7%） + 开板≤1 低预期 低于+4% 或 竞价量能"
           },
           "performance": {
@@ -37708,6 +38254,9 @@
             ],
             "super_gap_min": 6.0,
             "super_requires_reseal": true,
+            "super_requires_open_board_limit": null,
+            "auction_amount_min_yi": 1.5,
+            "seal_amount_min_yi": 0.92,
             "raw_text": "前排龙头梯队 · 梯队跟随 · 极强主线 · 突破新高(4板) · 温和放量 · 早封 · 容量够 · 分歧偏大 预期 高开（+0%~+6%） 超预期 高开≥+6% + 回封后封单≥0.92亿（≈今2.64亿×35%） + 竞价成交额≥1.50亿 低预期 低开≤+3% 或 开板继续放大"
           },
           "performance": {
@@ -37784,6 +38333,9 @@
             ],
             "super_gap_min": 4.0,
             "super_requires_reseal": true,
+            "super_requires_open_board_limit": null,
+            "auction_amount_min_yi": 1.43,
+            "seal_amount_min_yi": 0.21,
             "raw_text": "梯队完整 · 极强主线 · 题材持续 · 高度修复 · 温和放量 · 早封 · 容量够 · 分歧偏大 预期 高开（+0%~+4%） 超预期 高开≥+4% + 回封后封单≥0.21亿（≈今0.59亿×35%） + 竞价成交额≥1.43亿 低预期 低开≤+1% 或 开板继续放大"
           },
           "performance": {
@@ -37860,6 +38412,9 @@
             ],
             "super_gap_min": 4.0,
             "super_requires_reseal": true,
+            "super_requires_open_board_limit": null,
+            "auction_amount_min_yi": 1.21,
+            "seal_amount_min_yi": 0.14,
             "raw_text": "梯队跟随 · 极强主线 · 题材持续 · 题材联动 · 容量够 · 晋级生态强(50%/50%) · 分歧偏大 预期 高开（+0%~+4%） 超预期 高开≥+4% + 回封后封单≥0.14亿（≈今0.40亿×35%） + 竞价成交额≥1.21亿 低预期 低开≤+1% 或 开板继续放大"
           },
           "performance": {
@@ -37936,6 +38491,9 @@
             ],
             "super_gap_min": 3.0,
             "super_requires_reseal": false,
+            "super_requires_open_board_limit": 1,
+            "auction_amount_min_yi": 0.42,
+            "seal_amount_min_yi": null,
             "raw_text": "一带一路龙头带动 · 梯队带动泓淋电力、华能国际 · 极强主线 · 突破新高(4板) · 温和放量 · 封板稳 · 早封 预期 高开（+1%~+3%） 超预期 高开≥+3% + 竞价成交额≥0.42亿（≈今9.37亿×5%） + 开板≤1 低预期 低于+1% 或 竞价量能"
           },
           "performance": {
@@ -38005,6 +38563,9 @@
             ],
             "super_gap_min": 0.0,
             "super_requires_reseal": false,
+            "super_requires_open_board_limit": 1,
+            "auction_amount_min_yi": 0.47,
+            "seal_amount_min_yi": null,
             "raw_text": "腾讯概念龙头带动 · 梯队带动中百集团 · 温和放量 · 封板稳 · 容量够 · 高度压制 · 晋级生态弱(25%/75%) 预期 低开（-2%~+0%） 超预期 高开≥+0% + 竞价成交额≥0.47亿（≈今15.77亿×3%） + 开板≤1 低预期 低于-2% 或 竞价量能"
           },
           "performance": {
@@ -38088,6 +38649,9 @@
             ],
             "super_gap_min": 0.0,
             "super_requires_reseal": false,
+            "super_requires_open_board_limit": 1,
+            "auction_amount_min_yi": 0.74,
+            "seal_amount_min_yi": null,
             "raw_text": "国资改革龙头带动 · 梯队带动三佳科技、华塑控股 · 强主线 · 突破新高(3板) · 温和放量 · 封板稳 · 容量够 · 高度压制 · 断板风险高 预期 低开（-2%~+0%） 超预期 高开≥+0% + 竞价成交额≥0.74亿（≈今16.55亿×5%） + 开板≤1 低预期 低于-2% 或 竞价量能"
           },
           "performance": {
@@ -38171,6 +38735,9 @@
             ],
             "super_gap_min": 2.0,
             "super_requires_reseal": false,
+            "super_requires_open_board_limit": 1,
+            "auction_amount_min_yi": 0.15,
+            "seal_amount_min_yi": null,
             "raw_text": "梯队完整 · 高度修复 · 温和放量 · 封板稳 · 早封 预期 高开（+0%~+2%） 超预期 高开≥+2% + 竞价成交额≥0.15亿（≈今4.15亿×3%） + 开板≤1 低预期 低于+0% 或 竞价量能"
           },
           "performance": {
@@ -38247,6 +38814,9 @@
             ],
             "super_gap_min": 0.0,
             "super_requires_reseal": false,
+            "super_requires_open_board_limit": 1,
+            "auction_amount_min_yi": 0.94,
+            "seal_amount_min_yi": null,
             "raw_text": "梯队跟随 · 题材联动 · 高度修复 · 温和放量 · 封板稳 · 容量够 预期 低开（-3%~+0%） 超预期 高开≥+0% + 竞价成交额≥0.94亿（≈今31.47亿×3%） + 开板≤1 低预期 低于-3% 或 竞价量能"
           },
           "performance": {
@@ -38323,6 +38893,9 @@
             ],
             "super_gap_min": -1.0,
             "super_requires_reseal": true,
+            "super_requires_open_board_limit": null,
+            "auction_amount_min_yi": 1.23,
+            "seal_amount_min_yi": 0.35,
             "raw_text": "核心梯队 · 梯队跟随 · 极强主线 · 题材持续 · 反复回封 · 早封 · 容量够 · 高度压制 · 断板风险高 预期 低开（-4%~-1%） 超预期 高开≥-1% + 回封后封单≥0.35亿（≈今1.00亿×35%） + 竞价成交额≥1.23亿 低预期 低开≤-4% 或 开板继续放大"
           },
           "performance": {
@@ -38468,6 +39041,27 @@
         "fetched": 47,
         "cached": 0,
         "missing": []
+      },
+      "realtime_buy": {
+        "requested": 10,
+        "received": 0,
+        "remote_received": 0,
+        "fallback_used": 0,
+        "missing": [
+          "000055",
+          "002421",
+          "002579",
+          "002896",
+          "002951",
+          "301566",
+          "600367",
+          "600459",
+          "603678",
+          "603890"
+        ],
+        "source": "unavailable",
+        "as_of": "",
+        "error": ""
       }
     }
   },
@@ -40503,8 +41097,8 @@
       },
       "overlap": {
         "themes": [
-          "专精特新",
-          "机器人概念"
+          "机器人概念",
+          "专精特新"
         ],
         "score": "40%",
         "note": "涨停主线与炸板主杀题材的重叠度（越高越提示主线在分歧/退潮）"
