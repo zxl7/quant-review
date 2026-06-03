@@ -1593,6 +1593,16 @@ def run_rebuild(
     except Exception:
         pass
 
+    # stockResearchBacktest：复用个股研究同源推荐（当前接 ztAnalysis.relay/watch），
+    # 只统计次日 09:25-09:30 满足“符合预期/超预期”的开盘入场样本。
+    try:
+        from scripts.build_stock_research_backtest import build_stock_research_backtest_payload
+
+        market_data["stockResearchBacktest"] = build_stock_research_backtest_payload()
+        _log("stockResearchBacktest 已生成")
+    except Exception:
+        pass
+
     # 历史趋势/昨日对比说明维度：保留结构化数据，不再生成行动指南底部文案。
     try:
         from daily_review.render.render_html import build_market_overview_7d, build_sentiment_explain_dims
@@ -2889,6 +2899,13 @@ def run_partial(date: str, modules: list[str]) -> int:
         from daily_review.metrics.zt_analysis import build_zt_analysis
 
         market_data["ztAnalysis"] = build_zt_analysis(market_data=market_data)
+    except Exception:
+        pass
+
+    try:
+        from scripts.build_stock_research_backtest import build_stock_research_backtest_payload
+
+        market_data["stockResearchBacktest"] = build_stock_research_backtest_payload()
     except Exception:
         pass
 

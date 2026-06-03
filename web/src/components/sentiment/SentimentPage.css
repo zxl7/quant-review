@@ -960,7 +960,7 @@ body[data-market-tone="bear"] .fear-card {
 .ov7-head {
   margin-top: 8px;
           display: grid;
-          grid-template-columns: repeat(4, minmax(0, 1fr));
+          grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
           gap: 8px;
 }
 @media (max-width: 720px) {
@@ -1002,6 +1002,9 @@ body[data-market-tone="bear"] .fear-card {
 }
 .ov7-highlights li {
   margin: 4px 0;
+}
+.mood-trend-chart {
+  height: 280px;
 }
 .summarybar {
   background: color-mix(in oklab, var(--bg-card) 86%, var(--theme-soft) 14%);

@@ -1,45 +1,45 @@
 .ladder-badge {
   --lb-accent: rgba(148, 163, 184, 0.7);
-          display: inline-block;
-          padding: 4px 12px;
-          border-radius: 10px;
-          font-size: 12px;
-          font-weight: 950;
-          min-width: 46px;
-          border: 1px solid color-mix(in oklab, var(--border) 72%, var(--lb-accent) 28%);
-          background: color-mix(in oklab, var(--lb-accent) 12%, rgba(255, 255, 255, 0.7));
-          color: var(--text-primary);
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 10px;
+  font-size: 12px;
+  font-weight: 950;
+  min-width: 46px;
+  border: 1px solid color-mix(in oklab, var(--border) 72%, var(--lb-accent) 28%);
+  background: color-mix(in oklab, var(--lb-accent) 12%, rgba(255, 255, 255, 0.7));
+  color: var(--text-primary);
 }
 [data-theme="dark"] .ladder-badge {
   background: color-mix(in oklab, var(--lb-accent) 14%, rgba(15, 23, 42, 0.62));
-          border-color: rgba(148, 163, 184, 0.22);
+  border-color: rgba(148, 163, 184, 0.22);
 }
 .badge-6 {
   --lb-accent: rgba(239, 68, 68, 0.92);
-          color: #7f1d1d;
+  color: #7f1d1d;
 }
 .badge-5 {
   --lb-accent: rgba(239, 68, 68, 0.92);
-          color: #7f1d1d;
+  color: #7f1d1d;
 }
 .badge-4 {
   --lb-accent: rgba(245, 158, 11, 0.92);
-          color: #78350f;
+  color: #78350f;
 }
 .badge-3 {
   --lb-accent: rgba(16, 185, 129, 0.9);
-          color: #064e3b;
+  color: #064e3b;
 }
 .badge-2 {
   --lb-accent: rgba(37, 99, 235, 0.92);
-          color: #1e3a8a;
+  color: #1e3a8a;
 }
 .badge-1 {
   --lb-accent: rgba(148, 163, 184, 0.7);
-          color: var(--text-secondary);
+  color: var(--text-secondary);
 }
 [data-theme="dark"] .badge-6,
-      [data-theme="dark"] .badge-5 {
+[data-theme="dark"] .badge-5 {
   color: rgba(252, 165, 165, 0.95);
 }
 [data-theme="dark"] .badge-4 {
@@ -53,84 +53,84 @@
 }
 .ladder-rows {
   display: flex;
-          flex-direction: column;
-          gap: 10px;
+  flex-direction: column;
+  gap: 8px;
 }
 .ladder-row {
   display: grid;
-          grid-template-columns: 78px 1fr;
-          gap: 12px;
-          align-items: start;
-          background: var(--bg-elevated);
-          border: 1px solid var(--border);
-          border-radius: var(--radius-md);
-          padding: 12px 12px;
-          box-shadow: none;
+  grid-template-columns: 88px 1fr;
+  gap: 4px;
+  align-items: start;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 12px 12px;
+  box-shadow: none;
 }
 @media (max-width: 600px) {
   .ladder-row {
-    grid-template-columns: 78px 1fr;
-              gap: 10px;
-              padding: 8px;
+    grid-template-columns: 88px 1fr;
+    gap: 4px;
+    padding: 8px;
   }
 }
 .ladder-left {
   position: sticky;
-          left: 0;
+  left: 0;
 }
 .ladder-left-top {
   display: flex;
-          align-items: center;
-          gap: 8px;
+  align-items: center;
+  gap: 8px;
 }
 .ladder-left-meta {
   margin: 6px 0 0 12px;
-          font-size: 11px;
-          color: var(--text-muted);
-          font-weight: 800;
-          line-height: 1.35;
-          display: flex;
-          flex-direction: column;
-          gap: 2px;
+  font-size: 11px;
+  color: var(--text-muted);
+  font-weight: 800;
+  line-height: 1.35;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
 }
 .ladder-left-meta .muted {
   font-size: 10px;
-          color: var(--text-muted);
-          font-weight: 750;
+  color: var(--text-muted);
+  font-weight: 750;
 }
 .ladder-left-meta .val {
   font-size: 12px;
-          color: var(--text-primary);
-          font-weight: 800;
+  color: var(--text-primary);
+  font-weight: 800;
 }
 .ladder-left-meta .val-sector {
   font-size: 10px;
-          color: var(--primary);
-          font-weight: 850;
-          background: var(--theme-soft);
-          padding: 1px 5px;
-          border-radius: 4px;
-          display: inline-block;
-          margin-top: 2px;
-          width: fit-content;
+  color: var(--primary);
+  font-weight: 850;
+  background: var(--theme-soft);
+  padding: 1px 5px;
+  border-radius: 4px;
+  display: inline-block;
+  margin-top: 2px;
+  width: fit-content;
 }
 .ladder-left-kpi {
   margin: 6px 0 0 12px;
-          font-size: 11px;
-          color: var(--text-secondary);
-          font-weight: 900;
-          display: flex;
-          flex-direction: column;
-          gap: 4px;
+  font-size: 11px;
+  color: var(--text-secondary);
+  font-weight: 900;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
 }
 .kpi-item {
   display: flex;
-          flex-direction: column;
-          gap: 1px;
+  flex-direction: column;
+  gap: 1px;
 }
 .ladder-left-kpi .muted {
   color: var(--text-muted);
-          font-weight: 800;
+  font-weight: 800;
 }
 .ladder-left-kpi .kpi-red {
   color: var(--danger);
@@ -143,189 +143,189 @@
 }
 .kpi-row {
   display: flex;
-          align-items: center;
-          gap: 8px;
+  align-items: center;
+  gap: 8px;
 }
 .kpi-res-score {
   font-size: 10px;
-          font-weight: 900;
-          color: #ef4444;
-          background: rgba(239, 68, 68, 0.1);
-          padding: 1px 4px;
-          border-radius: 4px;
+  font-weight: 900;
+  color: #ef4444;
+  background: rgba(239, 68, 68, 0.1);
+  padding: 1px 4px;
+  border-radius: 4px;
 }
 .sector-row {
   display: flex;
-          flex-wrap: wrap;
-          gap: 4px;
+  flex-wrap: wrap;
+  gap: 4px;
 }
 .ladder-row-footer {
   grid-column: 1 / -1;
-          margin-top: 8px;
-          padding-top: 8px;
-          border-top: 1px dashed var(--border);
-          font-size: 11px;
-          color: var(--text-muted);
-          font-weight: 750;
-          line-height: 1.25;
-          display: flex;
-          gap: 10px;
-          flex-wrap: nowrap; /* 一行小字，必要时横向滚动 */
-          overflow-x: auto;
-          -webkit-overflow-scrolling: touch;
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px dashed var(--border);
+  font-size: 11px;
+  color: var(--text-muted);
+  font-weight: 750;
+  line-height: 1.25;
+  display: flex;
+  gap: 10px;
+  flex-wrap: nowrap; /* 一行小字，必要时横向滚动 */
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
 }
 .ladder-row-footer .pill {
   padding: 2px 8px;
-          border-radius: 999px;
-          background: color-mix(in oklab, var(--theme-soft) 10%, rgba(148, 163, 184, 0.08));
-          border: 1px solid color-mix(in oklab, var(--border) 78%, var(--theme-glow) 22%);
-          white-space: nowrap;
+  border-radius: 999px;
+  background: color-mix(in oklab, var(--theme-soft) 10%, rgba(148, 163, 184, 0.08));
+  border: 1px solid color-mix(in oklab, var(--border) 78%, var(--theme-glow) 22%);
+  white-space: nowrap;
 }
 .ladder-stock-list {
   display: flex;
-          flex-wrap: wrap;
-          gap: 8px;
+  flex-wrap: wrap;
+  gap: 8px;
 }
 .ladder-stock-card {
   min-width: 140px;
-          background: var(--bg-card);
-          border: 1px solid var(--border);
-          border-radius: 12px;
-          padding: 8px;
-          box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 8px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.3);
 }
 .ladder-stock-top {
   display: flex;
-          align-items: center;
-          justify-content: space-between;
-          gap: 10px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
 }
 .ladder-stock-name {
   font-size: 13px;
-          font-weight: 800;
-          color: var(--text-primary);
+  font-weight: 800;
+  color: var(--text-primary);
 }
 .ladder-stock-tags {
   display: flex;
-          gap: 6px;
-          align-items: center;
-          justify-content: flex-end;
-          flex-wrap: nowrap;
+  gap: 6px;
+  align-items: center;
+  justify-content: flex-end;
+  flex-wrap: nowrap;
 }
 .ladder-meta-row {
   margin-top: 6px;
-          display: flex;
-          gap: 6px;
-          flex-wrap: wrap;
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
 }
 .ladder-meta-row .ladder-chip {
   padding: 2px 6px;
 }
 .ladder-chip-note {
   margin-top: 5px;
-          font-size: 10px;
-          color: var(--text-muted);
-          line-height: 1.2;
+  font-size: 10px;
+  color: var(--text-muted);
+  line-height: 1.2;
 }
 .ladder-summary {
   display: flex;
-          gap: 10px;
-          flex-wrap: nowrap; /* 小屏也不换行：强制一排 */
-          overflow-x: auto; /* 小屏不足时横向滚动 */
-          -webkit-overflow-scrolling: touch;
-          margin-bottom: 12px;
+  gap: 10px;
+  flex-wrap: nowrap; /* 小屏也不换行：强制一排 */
+  overflow-x: auto; /* 小屏不足时横向滚动 */
+  -webkit-overflow-scrolling: touch;
+  margin-bottom: 12px;
 }
 .ladder-summary-item {
   flex: 1;
-          background: var(--bg-elevated);
-          border: 1px solid var(--border);
-          border-radius: var(--radius-md);
-          padding: 10px 12px;
-          border-left: none;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 10px 12px;
+  border-left: none;
 }
 .ladder-summary-k {
   font-size: 11px;
-          font-weight: 900;
-          color: var(--text-muted);
-          display: flex;
-          align-items: center;
-          gap: 6px;
+  font-weight: 900;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 .ladder-summary-icon {
   width: 22px;
-          height: 22px;
-          border-radius: 8px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          background: rgba(37, 99, 235, 0.14);
-          font-size: 12px;
+  height: 22px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(37, 99, 235, 0.14);
+  font-size: 12px;
 }
 .ladder-summary-v {
   margin-top: 6px;
-          font-size: 13px;
-          font-weight: 900;
-          color: var(--text-primary);
-          font-variant-numeric: tabular-nums;
+  font-size: 13px;
+  font-weight: 900;
+  color: var(--text-primary);
+  font-variant-numeric: tabular-nums;
 }
 .ladder-summary-sub {
   margin-top: 4px;
-          font-size: 11px;
-          color: var(--text-secondary);
+  font-size: 11px;
+  color: var(--text-secondary);
 }
 .ladder-rows {
   position: relative;
 }
 .ladder-step {
   margin-left: var(--step-offset, 0px);
-          border-radius: 18px;
-          border: 1px solid color-mix(in oklab, var(--border) 70%, var(--theme-glow) 30%);
-          background: linear-gradient(135deg, color-mix(in oklab, var(--theme-soft) 18%, rgba(255, 255, 255, 0.04)), rgba(255, 255, 255, 0.02));
-          padding: 12px 12px;
-          overflow: hidden;
+  border-radius: 18px;
+  border: 1px solid color-mix(in oklab, var(--border) 70%, var(--theme-glow) 30%);
+  background: linear-gradient(135deg, color-mix(in oklab, var(--theme-soft) 18%, rgba(255, 255, 255, 0.04)), rgba(255, 255, 255, 0.02));
+  padding: 12px 12px;
+  overflow: hidden;
 }
 [data-theme="dark"] .ladder-step {
   background: linear-gradient(135deg, color-mix(in oklab, var(--theme-soft) 12%, rgba(15, 23, 42, 0.7)), rgba(15, 23, 42, 0.22));
-          border-color: rgba(148, 163, 184, 0.22);
+  border-color: rgba(148, 163, 184, 0.22);
 }
 .ladder-step + .ladder-step {
   margin-top: 10px;
 }
 .ladder-step::before {
   /* 已禁用：顶部渐变装饰条（减少渐变） */
-          content: none;
+  content: none;
 }
 .ladder-step-header {
   display: flex;
-          align-items: center;
-          justify-content: space-between;
-          gap: 10px;
-          margin-bottom: 10px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 10px;
 }
 .ladder-step-left {
   display: flex;
-          align-items: center;
-          gap: 10px;
-          min-width: 0;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
 }
 .ladder-step-count {
   font-size: 11px;
-          font-weight: 950;
-          color: var(--text-muted);
-          padding: 4px 10px;
-          border-radius: 999px;
-          border: 1px solid color-mix(in oklab, var(--border) 75%, var(--theme-glow) 25%);
-          background: rgba(255, 255, 255, 0.45);
-          white-space: nowrap;
+  font-weight: 950;
+  color: var(--text-muted);
+  padding: 4px 10px;
+  border-radius: 999px;
+  border: 1px solid color-mix(in oklab, var(--border) 75%, var(--theme-glow) 25%);
+  background: rgba(255, 255, 255, 0.45);
+  white-space: nowrap;
 }
 [data-theme="dark"] .ladder-step-count {
   background: rgba(15, 23, 42, 0.55);
-          border-color: rgba(148, 163, 184, 0.22);
+  border-color: rgba(148, 163, 184, 0.22);
 }
 .ladder-stock-list {
   display: grid;
-          grid-template-columns: repeat(3, minmax(0, 1fr));
-          gap: 8px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
 }
 @media (max-width: 700px) {
   .ladder-stock-list {
@@ -334,32 +334,32 @@
 }
 .ladder-stock-card {
   min-width: 0;
-          background: linear-gradient(135deg, rgba(255, 255, 255, 0.62), color-mix(in oklab, var(--theme-soft) 10%, rgba(255, 255, 255, 0.45)));
-          border: 1px solid color-mix(in oklab, var(--border) 78%, var(--theme-glow) 22%);
-          border-radius: 14px;
-          padding: 8px;
-          box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.62), color-mix(in oklab, var(--theme-soft) 10%, rgba(255, 255, 255, 0.45)));
+  border: 1px solid color-mix(in oklab, var(--border) 78%, var(--theme-glow) 22%);
+  border-radius: 14px;
+  padding: 8px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35);
 }
 [data-theme="dark"] .ladder-stock-card {
   background: linear-gradient(135deg, rgba(15, 23, 42, 0.52), color-mix(in oklab, var(--theme-soft) 10%, rgba(15, 23, 42, 0.38)));
-          border-color: rgba(148, 163, 184, 0.22);
-          box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  border-color: rgba(148, 163, 184, 0.22);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
 }
 .ladder-stock-name {
   font-size: 14px;
-          font-weight: 950;
-          letter-spacing: 0.15px;
+  font-weight: 950;
+  letter-spacing: 0.15px;
 }
 .height-trend-wrap {
   border-radius: 18px;
-          border: 1px solid color-mix(in oklab, var(--border) 70%, var(--theme-glow) 30%);
-          background: linear-gradient(135deg, color-mix(in oklab, var(--theme-soft) 14%, rgba(255, 255, 255, 0.04)), rgba(255, 255, 255, 0.02));
-          padding: 8px;
-          overflow: hidden;
+  border: 1px solid color-mix(in oklab, var(--border) 70%, var(--theme-glow) 30%);
+  background: linear-gradient(135deg, color-mix(in oklab, var(--theme-soft) 14%, rgba(255, 255, 255, 0.04)), rgba(255, 255, 255, 0.02));
+  padding: 8px;
+  overflow: hidden;
 }
 [data-theme="dark"] .height-trend-wrap {
   background: linear-gradient(135deg, color-mix(in oklab, var(--theme-soft) 12%, rgba(15, 23, 42, 0.7)), rgba(15, 23, 42, 0.22));
-          border-color: rgba(148, 163, 184, 0.22);
+  border-color: rgba(148, 163, 184, 0.22);
 }
 @media (max-width: 600px) {
   .ladder-step {

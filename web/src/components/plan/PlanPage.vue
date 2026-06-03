@@ -220,17 +220,45 @@ const tideSignal = computed<TideSignal | null>(() => {
 
 const tideThemeRows = computed(() => (Array.isArray(tideSignal.value?.themes) ? tideSignal.value!.themes! : []))
 
+const todayHotThemeAliasMap = computed(() => {
+  const raw = (marketData.value as any)?.theme_alias_map
+  const map = new Map<string, string[]>()
+  if (!raw || typeof raw !== "object") return map
+  Object.entries(raw).forEach(([key, aliases]) => {
+    const normalized = normalizeThemeName(String(key || ""))
+    if (!normalized) return
+    const values = Array.isArray(aliases) ? aliases.map((x) => String(x || "").trim()).filter(Boolean) : []
+    map.set(normalized, Array.from(new Set([normalized, ...values])))
+  })
+  return map
+})
+
+const expandTodayThemeNames = (names: Array<string | null | undefined>) => {
+  const out = new Set<string>()
+  names.forEach((value) => {
+    const raw = String(value || "").trim()
+    if (!raw) return
+    out.add(raw)
+    const normalized = normalizeThemeName(raw)
+    if (!normalized) return
+    out.add(normalized)
+    const aliases = todayHotThemeAliasMap.value.get(normalized)
+    aliases?.forEach((alias) => out.add(alias))
+  })
+  return Array.from(out)
+}
+
 const tideThemeMatches = (tide: TideTheme, names: string[]) => {
   const key = normalizeThemeName(tide.name || "")
   if (!key) return false
-  return names.some((raw) => {
+  return expandTodayThemeNames(names).some((raw) => {
     const name = normalizeThemeName(raw)
     return !!name && (name === key || name.includes(key) || key.includes(name))
   })
 }
 
 const tideThemeForBucket = (theme: string, matched: string[] = [], advisor?: MainLinePicks | null) => {
-  const names = [theme, ...matched, advisor?.main_line || "", ...(advisor?.constituents || [])].filter(Boolean)
+  const names = expandTodayThemeNames([theme, ...matched, advisor?.main_line || "", ...(advisor?.constituents || [])])
   return tideThemeRows.value.find((row) => tideThemeMatches(row, names)) || null
 }
 
@@ -440,7 +468,7 @@ const pickPrimaryTag = (s: PickStock) => {
 const pickReasonBrief = (s: PickStock) => (Array.isArray(s.reasons) ? s.reasons.slice(0, 2) : [])
 const pickCautionBrief = (s: PickStock) => (Array.isArray(s.cautions) ? s.cautions.slice(0, 1) : [])
 const advisorMatchesTheme = (ml: MainLinePicks, theme: string, matched: string[] = []) => {
-  const names = [theme, ...matched].map((x) => normalizeThemeName(x)).filter(Boolean)
+  const names = expandTodayThemeNames([theme, ...matched]).map((x) => normalizeThemeName(x)).filter(Boolean)
   const main = normalizeThemeName(ml.main_line)
   const constituents = (ml.constituents || []).map((x) => normalizeThemeName(x)).filter(Boolean)
   return names.some((name) => {
@@ -514,6 +542,19 @@ type SectorBucket = {
   themeTags: Array<{ text: string; cls: string }>
   advisor?: MainLinePicks | null
   tide?: TideTheme | null
+  ztEvidence?: ZtThemeEvidence | null
+}
+
+type ZtThemeEvidence = {
+  relayCount: number
+  watchCount: number
+  maxRelayFactorScore: number
+  maxRiskControlScore: number
+  maxEnvironmentScore: number
+  maxSectorTrendScore: number
+  minBreakRisk: number | null
+  watchGroups: string[]
+  stockNames: string[]
 }
 
 const themePanelRows = computed(() => (Array.isArray(marketData.value?.themePanels?.strengthRows) ? marketData.value.themePanels.strengthRows : []))
@@ -573,17 +614,18 @@ const themeToZtStocks = computed(() => {
 })
 
 const findMatchingLocalThemes = (hotName: string): string[] => {
-  const key = normalizeThemeName(hotName)
-  if (!key) return []
+  const expandedNames = expandTodayThemeNames([hotName])
+  if (!expandedNames.length) return []
   const matches: string[] = []
   themeToZtStocks.value.forEach((_v, k) => {
     const kk = normalizeThemeName(k)
     if (!kk) return
-    if (kk === key) {
-      matches.unshift(k)
-      return
-    }
-    if (kk.includes(key) || (key.length >= 3 && key.includes(kk))) matches.push(k)
+    const hit = expandedNames.some((candidate) => {
+      const key = normalizeThemeName(candidate)
+      return !!key && (kk === key || kk.includes(key) || (key.length >= 3 && key.includes(kk)))
+    })
+    if (!hit || matches.includes(k)) return
+    matches.push(k)
   })
   return matches
 }
@@ -599,6 +641,72 @@ const aggregateStocksForTheme = (hotName: string): { stocks: ZtStockPick[]; matc
   const stocks = Array.from(dedup.values())
   stocks.sort((a, b) => b.lbc - a.lbc || b.zjYi - a.zjYi || b.cjeYi - a.cjeYi)
   return { stocks, matched }
+}
+
+const ztThemeEvidenceByName = computed(() => {
+  const map = new Map<string, ZtThemeEvidence>()
+  const rows = [
+    ...((marketData.value?.ztAnalysis?.relay || []) as any[]).map((row) => ({ ...row, __placement: "relay" as const })),
+    ...((marketData.value?.ztAnalysis?.watch || []) as any[]).map((row) => ({ ...row, __placement: "watch" as const })),
+  ]
+
+  rows.forEach((row) => {
+    const names = [String(row?.predTheme || "").trim(), String(row?.plateName || "").trim()].filter(Boolean)
+    if (!names.length) return
+    names.forEach((rawName) => {
+      const key = normalizeThemeName(rawName)
+      if (!key) return
+      const prev = map.get(key) || {
+        relayCount: 0,
+        watchCount: 0,
+        maxRelayFactorScore: 0,
+        maxRiskControlScore: 0,
+        maxEnvironmentScore: 0,
+        maxSectorTrendScore: 0,
+        minBreakRisk: null,
+        watchGroups: [],
+        stockNames: [],
+      }
+      if (row.__placement === "relay") prev.relayCount += 1
+      if (row.__placement === "watch") prev.watchCount += 1
+      prev.maxRelayFactorScore = Math.max(prev.maxRelayFactorScore, Number(row?.relayFactorScore || 0))
+      prev.maxRiskControlScore = Math.max(prev.maxRiskControlScore, Number(row?.riskControlScore || 0))
+      prev.maxEnvironmentScore = Math.max(prev.maxEnvironmentScore, Number(row?.environmentScore || 0))
+      prev.maxSectorTrendScore = Math.max(prev.maxSectorTrendScore, Number(row?.sectorTrendScore || 0))
+      const breakRisk = Number(row?.breakRisk)
+      if (Number.isFinite(breakRisk)) {
+        prev.minBreakRisk = prev.minBreakRisk === null ? breakRisk : Math.min(prev.minBreakRisk, breakRisk)
+      }
+      const watchGroup = String(row?.watchGroup || "").trim()
+      if (watchGroup && !prev.watchGroups.includes(watchGroup)) prev.watchGroups.push(watchGroup)
+      const stockName = String(row?.name || "").trim()
+      if (stockName && !prev.stockNames.includes(stockName)) prev.stockNames.push(stockName)
+      map.set(key, prev)
+    })
+  })
+
+  return map
+})
+
+const ztEvidenceWeight = (evidence?: ZtThemeEvidence | null) => {
+  if (!evidence) return -1
+  const breakRisk = Number.isFinite(Number(evidence.minBreakRisk)) ? Number(evidence.minBreakRisk) : 100
+  return evidence.relayCount * 18 + evidence.watchCount * 8 + evidence.maxRelayFactorScore * 0.45 + evidence.maxSectorTrendScore * 0.2 + (100 - breakRisk) * 0.08
+}
+
+const ztEvidenceForBucket = (theme: string, matched: string[] = [], advisor?: MainLinePicks | null) => {
+  const names = expandTodayThemeNames([theme, ...matched, advisor?.main_line || "", ...(advisor?.constituents || [])])
+  if (!names.length) return null
+  let best: ZtThemeEvidence | null = null
+  ztThemeEvidenceByName.value.forEach((evidence, key) => {
+    const hit = names.some((raw) => {
+      const name = normalizeThemeName(raw)
+      return !!name && (name === key || name.includes(key) || key.includes(name))
+    })
+    if (!hit) return
+    if (!best || ztEvidenceWeight(evidence) > ztEvidenceWeight(best)) best = evidence
+  })
+  return best
 }
 
 const scoreClassByValue = (s: number) => {
@@ -635,7 +743,7 @@ const calculateStockScore = (stock: ZtStockPick, plateStrength = 0, isRealtimePl
   return Math.max(0, Math.min(100, Math.round(score)))
 }
 
-const calculateThemeScore = (bucket: { sources: string[]; stocks: ZtStockPick[]; plateStrength?: number; resonanceScore: number }) => {
+const calculateThemeScore = (bucket: { sources: string[]; stocks: ZtStockPick[]; plateStrength?: number; resonanceScore: number; ztEvidence?: ZtThemeEvidence | null }) => {
   let score = 22
   score += Math.min(bucket.resonanceScore * 0.42, 42)
   score += Math.min((bucket.plateStrength || 0) / 4, 16)
@@ -643,10 +751,22 @@ const calculateThemeScore = (bucket: { sources: string[]; stocks: ZtStockPick[];
   score += Math.min((bucket.stocks[0]?.lbc || 0) * 6, 18)
   if (bucket.sources.some((x) => x.includes("选股宝"))) score += 6
   if (bucket.sources.some((x) => x.includes("热门"))) score += 5
+  if (bucket.ztEvidence) {
+    // 接力/观察池是涨停分析已经算好的证据层，这里只做兼容消费，不再前端重算。
+    score += Math.min(bucket.ztEvidence.relayCount * 6, 16)
+    score += Math.min(bucket.ztEvidence.watchCount * 2, 6)
+    score += Math.min(bucket.ztEvidence.maxRelayFactorScore * 0.08, 8)
+    score += Math.min(bucket.ztEvidence.maxEnvironmentScore * 0.05, 5)
+    score += Math.max(0, bucket.ztEvidence.maxRiskControlScore - 55) * 0.12
+    score -= Math.max(0, 45 - bucket.ztEvidence.maxRiskControlScore) * 0.2
+    if (Number.isFinite(Number(bucket.ztEvidence.minBreakRisk))) {
+      score -= Math.max(0, Number(bucket.ztEvidence.minBreakRisk) - 68) * 0.18
+    }
+  }
   return Math.max(0, Math.min(100, Math.round(score)))
 }
 
-const buildThemeTags = (theme: string, stocks: ZtStockPick[], sources: string[], plateStrength?: number) => {
+const buildThemeTags = (theme: string, stocks: ZtStockPick[], sources: string[], plateStrength?: number, resonanceScore = 0, ztEvidence?: ZtThemeEvidence | null) => {
   const tags: Array<{ text: string; cls: string }> = []
   if (sources.some((x) => x.includes("选股宝"))) tags.push({ text: "实时热点", cls: "stp-chip stp-chip-hot" })
   if (sources.some((x) => x.includes("热门"))) tags.push({ text: "明日热门", cls: "stp-chip stp-chip-red" })
@@ -654,8 +774,28 @@ const buildThemeTags = (theme: string, stocks: ZtStockPick[], sources: string[],
   else if ((stocks[0]?.lbc || 0) === 2) tags.push({ text: "2板承接", cls: "stp-chip stp-chip-amber" })
   if ((plateStrength || 0) >= 70) tags.push({ text: "板块强", cls: "stp-chip stp-chip-blue" })
   else if ((plateStrength || 0) >= 45) tags.push({ text: "板块活跃", cls: "stp-chip stp-chip-blue" })
+  if (ztEvidence?.relayCount) tags.push({ text: `接力池${ztEvidence.relayCount}`, cls: "stp-chip stp-chip-red" })
+  else if (ztEvidence?.watchCount) tags.push({ text: `观察池${ztEvidence.watchCount}`, cls: "stp-chip stp-chip-blue" })
+  if (ztEvidence && (ztEvidence.maxRiskControlScore < 40 || Number(ztEvidence.minBreakRisk ?? 0) >= 70)) {
+    tags.push({ text: "风险偏大", cls: "stp-chip stp-chip-amber" })
+  }
+  if (resonanceScore >= 85) tags.push({ text: "强共振", cls: "stp-chip stp-chip-red" })
+  else if (resonanceScore >= 70) tags.push({ text: "有共振", cls: "stp-chip stp-chip-slate" })
   if (stocks.length >= 4) tags.push({ text: `${stocks.length}股联动`, cls: "stp-chip stp-chip-slate" })
   return tags.slice(0, 4)
+}
+
+const ztEvidenceSummary = (evidence?: ZtThemeEvidence | null) => {
+  if (!evidence) return ""
+  const bits = []
+  if (evidence.relayCount) bits.push(`接力池${evidence.relayCount}`)
+  if (evidence.watchCount) bits.push(`观察池${evidence.watchCount}`)
+  if (Number.isFinite(Number(evidence.maxSectorTrendScore)) && evidence.maxSectorTrendScore > 0) bits.push(`板块势${Math.round(evidence.maxSectorTrendScore)}`)
+  if (Number.isFinite(Number(evidence.maxRiskControlScore)) && evidence.maxRiskControlScore > 0) {
+    bits.push(evidence.maxRiskControlScore >= 60 ? `风控稳${Math.round(evidence.maxRiskControlScore)}` : `风控弱${Math.round(evidence.maxRiskControlScore)}`)
+  }
+  if (evidence.stockNames.length) bits.push(`命中${evidence.stockNames.slice(0, 2).join(" / ")}`)
+  return bits.join(" · ")
 }
 
 const extractFirstUrl = (text?: string | null) => {
@@ -744,6 +884,7 @@ const makeBucket = (
   const plateInfo = plateStrengthByName.value.get(theme) || (matched.length ? plateStrengthByName.value.get(matched[0]) : undefined)
   const advisor = advisorForBucket(theme, matched)
   const tide = tideThemeForBucket(theme, matched, advisor)
+  const ztEvidence = ztEvidenceForBucket(theme, matched, advisor)
   const resonanceScore = calculateResonanceScore(sources, mergedStocks, plateInfo?.strength)
   const scoredStocks = mergedStocks
     .map((stock) => {
@@ -755,8 +896,8 @@ const makeBucket = (
       }
     })
     .sort((a, b) => Number(b.score || 0) - Number(a.score || 0) || b.lbc - a.lbc || (b.changePct || 0) - (a.changePct || 0) || b.zjYi - a.zjYi || b.cjeYi - a.cjeYi)
-  const themeScore = calculateThemeScore({ sources, stocks: scoredStocks, plateStrength: plateInfo?.strength, resonanceScore })
-  const themeTags = buildThemeTags(theme, scoredStocks, sources, plateInfo?.strength)
+  const themeScore = calculateThemeScore({ sources, stocks: scoredStocks, plateStrength: plateInfo?.strength, resonanceScore, ztEvidence })
+  const themeTags = buildThemeTags(theme, scoredStocks, sources, plateInfo?.strength, resonanceScore, ztEvidence)
 
   return {
     theme,
@@ -777,6 +918,7 @@ const makeBucket = (
     themeTags,
     advisor,
     tide,
+    ztEvidence,
   }
 }
 
@@ -920,8 +1062,10 @@ const sectorTierPicks = computed<SectorBucket[]>(() => {
     buckets = buildThemePanelFallbackBuckets()
   }
 
-  // 排序:共振评分优先 → 有涨停股的在前 → maxLbc
+  // 先按综合势能，再参考涨停分析证据与共振，保证板块卡和涨停分析口径一致。
   buckets.sort((a, b) => {
+    if (b.themeScore !== a.themeScore) return b.themeScore - a.themeScore
+    if (ztEvidenceWeight(b.ztEvidence) !== ztEvidenceWeight(a.ztEvidence)) return ztEvidenceWeight(b.ztEvidence) - ztEvidenceWeight(a.ztEvidence)
     if (b.resonanceScore !== a.resonanceScore) return b.resonanceScore - a.resonanceScore
     const aHas = a.count > 0 ? 1 : 0
     const bHas = b.count > 0 ? 1 : 0
@@ -1053,8 +1197,7 @@ const sectorPicksMeta = computed(() => {
             <div class="stp-name">
               <span class="stp-rank">{{ i + 1 }}</span>
               <span class="stp-name-text">{{ bucket.theme }}</span>
-              <span class="stp-theme-score" :class="scoreClass(bucket.themeScore)">主题 {{ bucket.themeScore }}</span>
-              <span class="stp-resonance-badge" :class="scoreClass(bucket.resonanceScore)">共振 {{ bucket.resonanceScore }}</span>
+              <span class="stp-theme-score" :class="scoreClass(bucket.themeScore)">势能 {{ bucket.themeScore }}</span>
             </div>
             <span class="stp-tide-corner" :class="tideCornerClass(bucket.tide?.status)" :title="tideCornerTitle(bucket.tide)">
               {{ tideCornerText(bucket.tide) }}
@@ -1089,8 +1232,8 @@ const sectorPicksMeta = computed(() => {
               <strong>{{ getEchelonFormation(bucket) }}</strong>
             </div>
           </div>
-          <div v-if="bucket.tide && bucket.tide.action_hint && bucket.tide.status !== 'neutral'" :class="tideHintClass(bucket.tide.warning_level)">
-            {{ bucket.tide.action_hint }}
+          <div class="stp-evidence" v-if="bucket.ztEvidence">
+            {{ ztEvidenceSummary(bucket.ztEvidence) }}
           </div>
           <a
             class="stp-desc stp-desc-link"
@@ -1102,12 +1245,8 @@ const sectorPicksMeta = computed(() => {
             {{ bucket.description }}
           </a>
           <div class="stp-advisor" v-if="bucket.advisor">
-            <div class="stp-advisor-head">
-              <span> 明细</span>
-              <span v-if="bucket.advisor.diagnostics?.member_count">{{ bucket.advisor.diagnostics.member_count }}只成员</span>
-            </div>
             <div class="stp-advisor-section" v-if="bucket.advisor.buy?.length">
-              <div class="stp-advisor-label buy">推荐</div>
+              <div class="stp-advisor-label buy">核心推荐</div>
               <a class="stp-advisor-row buy" v-for="s in bucket.advisor.buy" :key="'stp-buy-' + bucket.theme + '-' + s.code" :href="xqUrl(s.code)" target="_blank" rel="noopener noreferrer">
                 <span class="stp-advisor-name">{{ s.name }}</span>
                 <span class="stp-advisor-score" :class="scoreClass(s.score)">评 {{ s.score }}</span>

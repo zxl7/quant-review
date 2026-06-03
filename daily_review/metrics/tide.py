@@ -370,6 +370,13 @@ def _theme_key(name: Any) -> str:
     return text
 
 
+def _canonical_theme_name(name: Any) -> str:
+    raw = str(name or "").strip()
+    if not raw:
+        return ""
+    return str(normalize_sector(raw) or raw).strip()
+
+
 def _build_strength_map(market_data: dict[str, Any]) -> dict[str, dict[str, Any]]:
     """提取板块强度。
 
@@ -484,6 +491,7 @@ def _build_theme_tide(
     market: dict[str, Any],
     strength_info: dict[str, Any],
 ) -> dict[str, Any]:
+    canonical_name = _canonical_theme_name(name)
     prev_val = 0 if prev_zt is None else prev_zt
     pre_prev_val = 0 if pre_prev_zt is None else pre_prev_zt
     theme_delta_pct = _pct_change(float(today_zt), float(prev_val)) if prev_val > 0 else None
@@ -550,6 +558,7 @@ def _build_theme_tide(
 
     return {
         "name": name,
+        "canonical_name": canonical_name,
         "status": status,
         "today_zt": today_zt,
         "prev_zt": prev_zt,

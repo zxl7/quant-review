@@ -16,12 +16,123 @@ from typing import Optional
 ROOT = Path(__file__).resolve().parent
 
 
+def _build_theme_alias_map(md: dict, watchlist: Optional[dict] = None) -> dict:
+    """
+    汇总今日题材别名映射：canonical_name → 出现过的原始名集合。
+
+    归一化责任已经下沉到后端算法层（tide / core_tide / zt_analysis），
+    本函数只做“收集 + 分组”：
+    - 后端已带 canonical 字段的来源（tide/core_tide/zt_analysis）：
+      用算法层吐出来的 canonical 作为分组 key，把同行的 raw name 一并塞进桶里。
+    - 上游没带 canonical 的来源（plateRankTop10/sectors/leaders/zt_code_themes/watchlist）：
+      用 raw name 自身作为分组 key，等同于“透传”。
+
+    这样前端拿到的 alias_map 直接反映后端的判定结果，不需要在 inject_data 里
+    再跑一遍 normalize_sector。
+    """
+    alias_map: dict[str, set[str]] = {}
+
+    def push(name: object, canonical: object = None) -> None:
+        raw = str(name or "").strip()
+        canon = str(canonical or "").strip()
+        # 没 canonical → 用 raw 自己做 key（透传，前端按 raw 匹配）
+        key = canon or raw
+        if not key:
+            return
+        bucket = alias_map.setdefault(key, set())
+        bucket.add(key)
+        if raw:
+            bucket.add(raw)
+
+    # ---- 上游：未带 canonical，按 raw 透传 ----
+    for row in md.get("plateRankTop10") or []:
+        if isinstance(row, dict):
+            push(row.get("name"))
+    for row in md.get("sectors") or []:
+        if isinstance(row, dict):
+            push(row.get("name"))
+    theme_panels = md.get("themePanels") if isinstance(md.get("themePanels"), dict) else {}
+    for key in ("strengthRows", "ztTop", "zbTop", "dtTop"):
+        for row in theme_panels.get(key) or []:
+            if isinstance(row, dict):
+                push(row.get("name"))
+    for row in md.get("leaders") or []:
+        if isinstance(row, dict):
+            push(row.get("theme"))
+    code_themes = md.get("zt_code_themes") if isinstance(md.get("zt_code_themes"), dict) else {}
+    for themes in code_themes.values():
+        for theme in themes or []:
+            push(theme)
+
+    # ---- 算法层：直接读 canonical_name / predThemeCanonical / plateNameCanonical ----
+    for signal_key in ("tideSignal", "coreTideSignal"):
+        signal = md.get(signal_key) if isinstance(md.get(signal_key), dict) else {}
+        for row in signal.get("themes") or []:
+            if isinstance(row, dict):
+                push(row.get("name"), row.get("canonical_name"))
+    zt_analysis = md.get("ztAnalysis") if isinstance(md.get("ztAnalysis"), dict) else {}
+    for bucket_key in ("relay", "watch"):
+        for row in zt_analysis.get(bucket_key) or []:
+            if not isinstance(row, dict):
+                continue
+            push(row.get("predTheme"), row.get("predThemeCanonical"))
+            push(row.get("plateName"), row.get("plateNameCanonical"))
+
+    # ---- watchlist：未带 canonical，按 raw 透传 ----
+    if isinstance(watchlist, dict):
+        ladder = watchlist.get("ladder") if isinstance(watchlist.get("ladder"), dict) else {}
+        for row in ladder.get("main_lines") or []:
+            if not isinstance(row, dict):
+                continue
+            push(row.get("name"))
+            for theme in row.get("constituents") or []:
+                push(theme)
+        picks = watchlist.get("picks_advisor") if isinstance(watchlist.get("picks_advisor"), dict) else {}
+        for row in picks.get("main_line_picks") or []:
+            if not isinstance(row, dict):
+                continue
+            push(row.get("main_line"))
+            for theme in row.get("constituents") or []:
+                push(theme)
+        sector_resolution = watchlist.get("sector_resolution") if isinstance(watchlist.get("sector_resolution"), dict) else {}
+        stock_to_sectors = sector_resolution.get("stock_to_sectors") if isinstance(sector_resolution.get("stock_to_sectors"), dict) else {}
+        for info in stock_to_sectors.values():
+            sectors = info.get("sectors") if isinstance(info, dict) else []
+            for sector in sectors or []:
+                if isinstance(sector, dict):
+                    push(sector.get("sector"))
+
+    return {key: sorted(values) for key, values in alias_map.items() if key and values}
+
+
 def _prune_plan_text_fields(md: dict) -> None:
     """移除明日行动指南已下线的聚焦/底部文案字段。"""
     if not isinstance(md, dict):
         return
     md.pop("actionGuideV2", None)
     md.pop("summary3", None)
+
+
+def _ensure_stock_research_backtest(md: dict) -> None:
+    """
+    为 web 数据补齐个股回测。
+
+    说明：
+    - 优先保留 cache/market_data 已经写入的 stockResearchBacktest；
+    - 若旧缓存里还没有，则在 inject 阶段现场补算，保证 web 新 tab 有数据可读；
+    - 失败时静默跳过，前端会展示空态说明。
+    """
+    if not isinstance(md, dict):
+        return
+    existing = md.get("stockResearchBacktest")
+    if isinstance(existing, dict) and existing.get("summary"):
+        return
+    try:
+        from scripts.build_stock_research_backtest import build_stock_research_backtest_payload
+
+        md["stockResearchBacktest"] = build_stock_research_backtest_payload()
+    except Exception:
+        return
 
 
 def _resolve_data_path(date8: str, source: Optional[str] = None) -> Path:
@@ -207,6 +318,9 @@ def _enhance_with_watchlist(md: dict, watchlist: dict) -> None:
     if isinstance(core_tide, dict):
         md["coreTideSignal"] = core_tide
 
+    # ---- 7. 当日题材别名映射（统一由 Python 出数，前端只读） ----
+    md["theme_alias_map"] = _build_theme_alias_map(md, watchlist)
+
 
 def build_web_data(date8: str, source: Optional[str] = None) -> Path:
     """生成 web/dist 旁路数据文件并返回 dist 目录。"""
@@ -219,6 +333,14 @@ def build_web_data(date8: str, source: Optional[str] = None) -> Path:
     # 清理前端不需要的大字段
     md.pop("raw", None)
     _prune_plan_text_fields(md)
+    _ensure_stock_research_backtest(md)
+    try:
+        from daily_review.render.render_html import build_market_overview_7d, build_mood_trend_7d
+
+        md["marketOverview7d"] = build_market_overview_7d(market_data=md)
+        md["moodTrend7d"] = build_mood_trend_7d(market_data=md)
+    except Exception as e:
+        print(f"⚠ 7日情绪衍生字段重算失败（跳过）: {e}", file=sys.stderr)
 
     # watchlist 增强：让现有前端自动消费更准的板块归属 + 主线（前端 UI 零改动）
     wl_path = _resolve_watchlist_path(date8)
@@ -228,6 +350,8 @@ def build_web_data(date8: str, source: Optional[str] = None) -> Path:
             _enhance_with_watchlist(md, watchlist)
         except Exception as e:
             print(f"⚠ watchlist 增强失败（跳过）: {e}", file=sys.stderr)
+    if "theme_alias_map" not in md:
+        md["theme_alias_map"] = _build_theme_alias_map(md)
 
     payload = json.dumps(md, ensure_ascii=False)
     # 明日策略池
@@ -281,6 +405,14 @@ def refresh_dev_data(date8: str, source: Optional[str] = None) -> None:
     md = json.loads(data_path.read_text(encoding="utf-8"))
     md.pop("raw", None)
     _prune_plan_text_fields(md)
+    _ensure_stock_research_backtest(md)
+    try:
+        from daily_review.render.render_html import build_market_overview_7d, build_mood_trend_7d
+
+        md["marketOverview7d"] = build_market_overview_7d(market_data=md)
+        md["moodTrend7d"] = build_mood_trend_7d(market_data=md)
+    except Exception as e:
+        print(f"⚠ 7日情绪衍生字段重算失败（dev 跳过）: {e}", file=sys.stderr)
     # watchlist 增强：dev 路径保持与 inject() 一致
     wl_path = _resolve_watchlist_path(date8)
     if wl_path.exists():
@@ -289,6 +421,8 @@ def refresh_dev_data(date8: str, source: Optional[str] = None) -> None:
             _enhance_with_watchlist(md, watchlist)
         except Exception as e:
             print(f"⚠ watchlist 增强失败（dev 跳过）: {e}", file=sys.stderr)
+    if "theme_alias_map" not in md:
+        md["theme_alias_map"] = _build_theme_alias_map(md)
     payload = json.dumps(md, ensure_ascii=False)
     dev_file = ROOT / "web" / "public" / "market_data.json"
     dev_script = ROOT / "web" / "public" / "market_data.js"

@@ -13,6 +13,8 @@ import math
 import re
 from typing import Any, Dict, Iterable, List, Tuple
 
+from daily_review.features.sector_resolver import normalize_sector
+
 
 def _to_num(v: Any, d: float = 0.0) -> float:
     try:
@@ -617,7 +619,10 @@ def build_zt_analysis(*, market_data: Dict[str, Any]) -> Dict[str, Any]:
         return ""
 
     def canonical_theme_name(name: Any) -> str:
-        return matched_strength_name_of(name) or str(name or "")
+        raw = str(name or "").strip()
+        if not raw:
+            return ""
+        return matched_strength_name_of(raw) or str(normalize_sector(raw) or raw)
 
     def matched_trend_name_of(theme_name: Any) -> str:
         t = str(theme_name or "")
@@ -1074,6 +1079,7 @@ def build_zt_analysis(*, market_data: Dict[str, Any]) -> Dict[str, Any]:
         has_trade_theme = bool(action_theme)
         is_broad_only = (not has_trade_theme) and any(_is_broad_theme(t.get("name")) for t in top_themes)
         pred_theme = str((action_theme or (top_themes[0] if top_themes else {})).get("name") or "")
+        pred_theme_canonical = canonical_theme_name(pred_theme)
         theme_net = _to_num(action_theme.get("net"), 0.0) if action_theme else 0.0
         theme_risk = _to_num(action_theme.get("risk"), 0.0) if action_theme else 0.0
         theme_zt = _to_num(action_theme.get("zt"), 0.0) if action_theme else 0.0
@@ -1229,6 +1235,7 @@ def build_zt_analysis(*, market_data: Dict[str, Any]) -> Dict[str, Any]:
         plate_score = _to_num(plate_ctx.get("score"), 50.0)
         plate_rank = _to_num(plate_ctx.get("rank"), 99.0)
         plate_name = str(plate_ctx.get("name") or "")
+        plate_name_canonical = canonical_theme_name(plate_name)
         plate_lead = str(plate_ctx.get("lead") or "")
         is_plate_leader = bool(plate_lead and plate_lead == name)
         plate_is_strong = bool(1 <= plate_rank <= 5 and plate_score >= 62)
@@ -1736,6 +1743,7 @@ def build_zt_analysis(*, market_data: Dict[str, Any]) -> Dict[str, Any]:
                 "fundYi": fund_yi,
                 "open": int(open_cnt) if float(open_cnt).is_integer() else open_cnt,
                 "predTheme": pred_theme,
+                "predThemeCanonical": pred_theme_canonical,
                 "hasTier": has_tier,
                 "hasTradeTheme": has_trade_theme,
                 "isBroadOnly": is_broad_only,
@@ -1783,6 +1791,7 @@ def build_zt_analysis(*, market_data: Dict[str, Any]) -> Dict[str, Any]:
                 "sectorRankScore": _round(sector_rank_context_score),
                 "plateRank": plate_ctx.get("rank"),
                 "plateName": plate_ctx.get("name"),
+                "plateNameCanonical": plate_name_canonical,
                 "factorLabels": {
                     "environment": _factor_label(env_score),
                     "sector": _factor_label(sector_sentiment_score),

@@ -1106,6 +1106,7 @@ def build_market_overview_7d(*, market_data: Dict[str, Any]) -> Dict[str, Any]:
     zt_hist = _tail(mi.get("hist_zt"), 7)
     dt_hist = _tail(mi.get("hist_dt"), 7)
     fb_hist = _tail(mi.get("hist_fb_rate"), 7)
+    jj_hist = _tail(mi.get("hist_jj_rate"), 7)
     maxlb_hist = _tail(mi.get("hist_max_lb"), 7)
     lb_hist = _tail(mi.get("hist_lianban"), 7)
     broken_hist = _tail(mi.get("hist_broken_lb_rate"), 7)
@@ -1124,6 +1125,8 @@ def build_market_overview_7d(*, market_data: Dict[str, Any]) -> Dict[str, Any]:
     series = []
     series.append(_series_meta(key="volume", label="两市成交", values=volume_values[-7:], dates=volume_dates[-7:] if volume_dates else dates7, kind="yi"))
     series.append(_series_meta(key="zt", label="涨停家数", values=zt_hist, dates=dates7, kind="count"))
+    series.append(_series_meta(key="fb_rate", label="封板率", values=fb_hist, dates=dates7, kind="pct"))
+    series.append(_series_meta(key="jj_rate", label="晋级率", values=jj_hist, dates=dates7, kind="pct"))
     series.append(_series_meta(key="zb_rate", label="炸板率", values=zb_hist, dates=dates7, kind="pct"))
     series.append(_series_meta(key="dt", label="跌停家数", values=dt_hist, dates=dates7, kind="count"))
     series.append(_series_meta(key="max_lb", label="最高高度", values=maxlb_hist, dates=dates7, kind="board"))
@@ -1138,6 +1141,8 @@ def build_market_overview_7d(*, market_data: Dict[str, Any]) -> Dict[str, Any]:
         return {}
 
     zt_meta = _find("zt")
+    fb_meta = _find("fb_rate")
+    jj_meta = _find("jj_rate")
     zb_meta = _find("zb_rate")
     high_meta = _find("max_lb")
     vol_meta = _find("volume")
@@ -1145,6 +1150,10 @@ def build_market_overview_7d(*, market_data: Dict[str, Any]) -> Dict[str, Any]:
     highlights: list[str] = []
     if zt_meta:
         highlights.append(f"7日最高涨停家数 {zt_meta.get('max')}（{zt_meta.get('maxDate', '-')}）")
+    if fb_meta:
+        highlights.append(f"7日最高封板率 {fb_meta.get('max')}（{fb_meta.get('maxDate', '-')}）")
+    if jj_meta:
+        highlights.append(f"7日最高晋级率 {jj_meta.get('max')}（{jj_meta.get('maxDate', '-')}）")
     if zb_meta:
         highlights.append(f"7日最高炸板率 {zb_meta.get('max')}（{zb_meta.get('maxDate', '-')}）")
     if high_meta:
@@ -1156,7 +1165,52 @@ def build_market_overview_7d(*, market_data: Dict[str, Any]) -> Dict[str, Any]:
         "window": 7,
         "dates": dates7,
         "series": series,
-        "highlights": highlights[:4],
+        "highlights": highlights[:6],
+    }
+
+
+def build_mood_trend_7d(*, market_data: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    情绪温度 · 近7日五线趋势
+    - 后端直接整理成前端可渲染结构
+    - 前端只负责画图，不再自行拼接 hist_* 序列
+    """
+
+    def _tail(arr: Any, n: int = 7) -> list[float]:
+        if not isinstance(arr, list):
+            return []
+        out: list[float] = []
+        for x in arr[-n:]:
+            try:
+                out.append(float(str(x).replace("%", "").replace("板", "").replace("亿", "").strip()))
+            except Exception:
+                continue
+        return out
+
+    feats = market_data.get("features") or {}
+    mi = (feats.get("mood_inputs") or {}) if isinstance(feats, dict) else {}
+    hist_days = list(mi.get("hist_days") or []) if isinstance(mi.get("hist_days"), list) else []
+    dates7 = [(d[5:] if len(str(d)) >= 10 else str(d)) for d in hist_days[-7:]]
+
+    zt = _tail(mi.get("hist_zt"), 7)
+    lb = _tail(mi.get("hist_lianban"), 7)
+    dt = _tail(mi.get("hist_dt"), 7)
+    fb = _tail(mi.get("hist_fb_rate"), 7)
+    jj = _tail(mi.get("hist_jj_rate"), 7)
+
+    n = min(len(dates7), len(zt), len(lb), len(dt), len(fb), len(jj))
+    if n < 2:
+        return {"dates": [], "series": []}
+
+    return {
+        "dates": dates7[-n:],
+        "series": [
+            {"key": "zt", "name": "涨停", "yAxisIndex": 0, "values": zt[-n:]},
+            {"key": "lb", "name": "连板", "yAxisIndex": 0, "values": lb[-n:]},
+            {"key": "dt", "name": "跌停", "yAxisIndex": 0, "values": dt[-n:]},
+            {"key": "fb", "name": "封板率", "yAxisIndex": 1, "values": fb[-n:]},
+            {"key": "jj", "name": "晋级率", "yAxisIndex": 1, "values": jj[-n:]},
+        ],
     }
 
 

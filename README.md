@@ -82,7 +82,12 @@ cd web && npm run build       # 产出 dist/index.html（单文件）
 - Settings → Secrets → 添加 `BIYING_TOKEN`、`BIYING_BASE_URL`
 - Settings → Pages → Source: Deploy from branch, `gh-pages` / `/(root)`
 
-**触发**：push 到 `main` 分支自动发布；工作日定时 cron 盘中/收盘自动跑。
+**触发**：
+- `push` 到 `main` 分支自动发布
+- GitHub Actions `schedule` 在工作日北京时间盘中/收盘时段自动跑
+- `workflow_dispatch` 可手动补跑
+
+现在建议以 GitHub Actions 为唯一生产调度入口，本地不再依赖 `launchd`/`gh workflow run` 常驻触发。
 
 ---
 

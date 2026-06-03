@@ -304,6 +304,13 @@ def _theme_key(name: Any) -> str:
     return text
 
 
+def _canonical_theme_name(name: Any) -> str:
+    raw = str(name or "").strip()
+    if not raw:
+        return ""
+    return str(normalize_sector(raw) or raw).strip()
+
+
 def _build_catalyst_map(catalyst_data: dict[str, Any]) -> dict[str, dict[str, Any]]:
     out: dict[str, dict[str, Any]] = {}
     _ingest_surge_plates(catalyst_data.get("surge_plates"), out)
@@ -388,6 +395,7 @@ def _build_core_theme(
     catalyst: dict[str, Any],
 ) -> dict[str, Any]:
     name = str(theme.get("name") or "")
+    canonical_name = _canonical_theme_name(theme.get("canonical_name") or name)
     tide_score = float(theme.get("tide_score") or _status_base_score(str(theme.get("status") or "")))
     strength_score = _theme_strength_score(theme)
     news_score = float(catalyst.get("score") or 50.0)
@@ -420,6 +428,7 @@ def _build_core_theme(
     }
     return {
         "name": name,
+        "canonical_name": canonical_name,
         "status": status,
         "base_tide_status": str(theme.get("status") or ""),
         "action": action,

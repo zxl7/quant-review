@@ -259,6 +259,56 @@ const volumeOptions = computed<any>(() => {
   };
 });
 useECharts(volumeChartRef, volumeOptions);
+
+const moodTrendChartRef = ref<HTMLElement | null>(null);
+const moodTrendOptions = computed<any>(() => {
+  const trend = marketData.value?.moodTrend7d;
+  const days = Array.isArray(trend?.dates) ? trend.dates : [];
+  const series = Array.isArray(trend?.series) ? trend.series : [];
+  if (days.length < 2 || series.length < 5) return null;
+  const byKey = new Map(series.map((item: any) => [String(item?.key || ''), Array.isArray(item?.values) ? item.values.map((v: unknown) => toNum(v)) : []]));
+  return {
+    backgroundColor: 'transparent',
+    tooltip: { trigger: 'axis', axisPointer: { type: 'line' } },
+    legend: {
+      data: ['涨停', '连板', '跌停', '封板率', '晋级率'],
+      top: 0,
+      textStyle: { color: 'var(--text-muted)', fontWeight: 700, fontSize: 11 },
+      icon: 'circle',
+    },
+    grid: { top: 34, left: '3%', right: '5%', bottom: 24, containLabel: true },
+    xAxis: {
+      type: 'category',
+      data: days,
+      axisLine: { lineStyle: { color: 'var(--text-muted)' } },
+      axisLabel: { color: 'var(--text-muted)', fontWeight: 700, fontSize: 10 },
+    },
+    yAxis: [
+      {
+        type: 'value',
+        name: '数量',
+        axisLabel: { color: 'var(--text-muted)', fontWeight: 700, fontSize: 10 },
+        splitLine: { lineStyle: { type: 'dashed', color: 'var(--border)' } },
+      },
+      {
+        type: 'value',
+        name: '%',
+        min: 0,
+        max: 100,
+        axisLabel: { color: 'var(--text-muted)', fontWeight: 700, fontSize: 10, formatter: '{value}%' },
+        splitLine: { show: false },
+      },
+    ],
+    series: [
+      { name: '涨停', type: 'line', data: byKey.get('zt') || [], smooth: true, showSymbol: false, lineStyle: { width: 2.4, color: '#ef4444' } },
+      { name: '连板', type: 'line', data: byKey.get('lb') || [], smooth: true, showSymbol: false, lineStyle: { width: 2.2, color: '#8b5cf6' } },
+      { name: '跌停', type: 'line', data: byKey.get('dt') || [], smooth: true, showSymbol: false, lineStyle: { width: 2.2, color: '#10b981' } },
+      { name: '封板率', yAxisIndex: 1, type: 'line', data: byKey.get('fb') || [], smooth: true, showSymbol: false, lineStyle: { width: 2.6, color: '#f59e0b' } },
+      { name: '晋级率', yAxisIndex: 1, type: 'line', data: byKey.get('jj') || [], smooth: true, showSymbol: false, lineStyle: { width: 2.6, color: '#60a5fa' } },
+    ],
+  };
+});
+useECharts(moodTrendChartRef, moodTrendOptions);
 </script>
 
 <template>
@@ -353,7 +403,7 @@ useECharts(volumeChartRef, volumeOptions);
       <div class="section-header">7日对比总览</div>
       <div class="inset" v-if="marketData.marketOverview7d">
         <div class="ov7-head" v-if="(marketData.marketOverview7d.series || []).length">
-          <div class="ov7-item" v-for="it in (marketData.marketOverview7d.series || []).slice(0, 4)" :key="'ov7-'+it.key">
+          <div class="ov7-item" v-for="it in (marketData.marketOverview7d.series || [])" :key="'ov7-'+it.key">
             <div class="ek-row"><span class="k">{{ it.label }}</span><span class="v">{{ it.current }}</span></div>
             <div class="s">{{ it.note }}</div>
           </div>
@@ -361,6 +411,15 @@ useECharts(volumeChartRef, volumeOptions);
         <ul class="ov7-highlights" v-if="(marketData.marketOverview7d.highlights || []).length">
           <li v-for="(x, i) in (marketData.marketOverview7d.highlights || [])" :key="'ov7h-'+i">{{ x }}</li>
         </ul>
+      </div>
+
+      <div class="section-header" v-if="moodTrendOptions">情绪温度趋势</div>
+      <div class="inset" v-if="moodTrendOptions">
+        <div class="inset-head">
+          <div class="h">近 7 日五线</div>
+          <div class="s">涨停、连板、跌停、封板率、晋级率</div>
+        </div>
+        <div ref="moodTrendChartRef" class="chart-container mood-trend-chart" style="margin-bottom: 0"></div>
       </div>
 
       <div class="section-header">量能趋势</div>

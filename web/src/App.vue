@@ -6,6 +6,7 @@ import SentimentPage from "./components/sentiment/SentimentPage.vue"
 import ThemesPage from "./components/themes/ThemesPage.vue"
 import LadderPage from "./components/ladder/LadderPage.vue"
 import PlanPage from "./components/plan/PlanPage.vue"
+import BacktestPage from "./components/backtest/BacktestPage.vue"
 import WatchPage from "./components/intraday/WatchPage.vue"
 import AbnormalPage from "./components/intraday/AbnormalPage.vue"
 import FlashPage from "./components/intraday/FlashPage.vue"
@@ -37,11 +38,12 @@ const defaultMode = isTradingSessionNow() || marketData.value?.meta?.mode === "i
 const modeView = ref<"review" | "intraday">(defaultMode)
 const reviewTabs = [
   { id: "sentiment", name: "情绪分析" },
-  { id: "plan", name: "个股研究" },
   { id: "hotAnswer", name: "今日热点" },
   { id: "tomorrow", name: "今日题材" },
   { id: "themes", name: "板块强度" },
   { id: "ladder", name: "连板天梯" },
+  { id: "plan", name: "个股研究" },
+  { id: "backtest", name: "个股回测" },
 ] as const
 const intradayTabs = [
   { id: "watch", name: "实时盯盘" },
@@ -215,6 +217,7 @@ watchEffect(() => {
         <ThemesPage v-else-if="currentTab === 'themes'" />
         <LadderPage v-else-if="currentTab === 'ladder'" />
         <PlanPage v-else-if="currentTab === 'plan'" />
+        <BacktestPage v-else-if="currentTab === 'backtest'" />
         <HotAnswerPage v-else-if="currentTab === 'hotAnswer'" />
         <TomorrowPicksPage v-else-if="currentTab === 'tomorrow'" />
         <WatchPage v-else-if="currentTab === 'watch'" />
