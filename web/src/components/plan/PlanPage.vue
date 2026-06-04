@@ -6,6 +6,14 @@ import { normalizeThemeName } from "../../utils/themeUtils"
 
 const { marketData } = useMarketData()
 const { xgbUpdatedAt, tmrUpdatedAt, xgbPlates, tmrThemes, xgbStocksByPlateId } = useThemeHotStore()
+const preserveResearchView = computed(() => {
+  const md = marketData.value as any
+  return md?.meta?.mode === "intraday" && md?.preservedResearch?.marketData && typeof md.preservedResearch.marketData === "object"
+})
+const planSource = computed<any>(() => {
+  const md = marketData.value as any
+  return preserveResearchView.value ? md.preservedResearch.marketData : (md || {})
+})
 
 const xqUrl = (code?: string | null) => {
   const raw = String(code || "").trim()
@@ -26,7 +34,7 @@ const formatPosition = (v: unknown) => {
   return String(v)
 }
 
-const planGuide = computed(() => marketData.value?.planGuide || null)
+const planGuide = computed(() => planSource.value?.planGuide || null)
 const planGuidePills = computed(() => {
   const g = planGuide.value
   if (!g) return []
@@ -40,17 +48,17 @@ const planGuidePills = computed(() => {
 const planGuideWarnings = computed(() => (Array.isArray(planGuide.value?.warnings) ? planGuide.value?.warnings : []))
 
 const positionAdvice = computed(() => {
-  const finalPosition = formatPosition(marketData.value?.planGuide?.position)
+  const finalPosition = formatPosition(planSource.value?.planGuide?.position)
   if (finalPosition && finalPosition !== "-") {
-    const rightside = String(marketData.value?.planGuide?.rightsideText || "")
+    const rightside = String(planSource.value?.planGuide?.rightsideText || "")
     const stance = rightside === "禁止" ? "防守" : rightside === "允许" ? "进攻" : "均衡"
     const cls = stance === "进攻" ? "pos-attack" : stance === "防守" ? "pos-def" : "pos-balance"
     const pillCls = stance === "进攻" ? "attack" : stance === "防守" ? "def" : "balance"
     return { stance, range: finalPosition, note: "", cls, pillCls }
   }
-  const heat = Number(marketData.value?.mood?.heat ?? 0)
-  const risk = Number(marketData.value?.mood?.risk ?? 0)
-  const stage = String(marketData.value?.moodStage?.type || "")
+  const heat = Number(planSource.value?.mood?.heat ?? marketData.value?.mood?.heat ?? 0)
+  const risk = Number(planSource.value?.mood?.risk ?? marketData.value?.mood?.risk ?? 0)
+  const stage = String(planSource.value?.moodStage?.type || marketData.value?.moodStage?.type || "")
   let stance = "均衡"
   let range = "35–50%"
   let note = "围绕主线核心，低位试错为主；不追高位一致。"
@@ -72,8 +80,8 @@ const positionAdvice = computed(() => {
   return { stance, range, note, cls, pillCls }
 })
 
-const ztRelaySorted = computed(() => (marketData.value?.ztAnalysis?.relay || []).slice())
-const ztWatchSorted = computed(() => (marketData.value?.ztAnalysis?.watch || []).slice())
+const ztRelaySorted = computed(() => (planSource.value?.ztAnalysis?.relay || []).slice())
+const ztWatchSorted = computed(() => (planSource.value?.ztAnalysis?.watch || []).slice())
 const ztAnalysisExpanded = ref(false)
 const ztDebugExpanded = ref(false)
 const ztDebugPlacement = ref<"all" | "relay" | "watch" | "excluded">("all")
@@ -81,7 +89,7 @@ const isLocalDebug = computed(() => {
   if (typeof window === "undefined") return false
   return ["localhost", "127.0.0.1"].includes(window.location.hostname) || window.location.protocol === "file:"
 })
-const ztDebugRows = computed(() => (Array.isArray(marketData.value?.ztAnalysis?.meta?.debug?.rows) ? marketData.value.ztAnalysis.meta.debug.rows : []))
+const ztDebugRows = computed(() => (Array.isArray(planSource.value?.ztAnalysis?.meta?.debug?.rows) ? planSource.value.ztAnalysis.meta.debug.rows : []))
 const ztDebugFiltered = computed(() => {
   if (ztDebugPlacement.value === "all") return ztDebugRows.value
   return ztDebugRows.value.filter((row: any) => String(row?.placement || "") === ztDebugPlacement.value)
@@ -193,7 +201,7 @@ type TideSignal = {
 }
 
 const picksAdvisor = computed(() => {
-  const pa = (marketData.value as any)?.picks_advisor
+  const pa = planSource.value?.picks_advisor
   if (!pa || typeof pa !== "object") return null
   const picks = Array.isArray(pa.main_line_picks) ? (pa.main_line_picks as MainLinePicks[]) : []
   if (!picks.length) return null
@@ -201,17 +209,17 @@ const picksAdvisor = computed(() => {
   return {
     main_line_picks: picks,
     diagnostics: pa.diagnostics || {},
-    generated_at_bj: (marketData.value as any)?.watchlist?.generated_at_bj || "",
+    generated_at_bj: planSource.value?.watchlist?.generated_at_bj || "",
   }
 })
 
 const planUpdatedAt = computed(() => {
-  const md = marketData.value as any
+  const md = planSource.value as any
   return picksAdvisor.value?.generated_at_bj || md?.watchlist?.generated_at_bj || md?.meta?.generatedAt || "-"
 })
 
 const tideSignal = computed<TideSignal | null>(() => {
-  const md = marketData.value as any
+  const md = planSource.value as any
   const fromWatchlistCore = md?.watchlist?.core_tide_signal
   if (fromWatchlistCore && typeof fromWatchlistCore === "object") return fromWatchlistCore as TideSignal
   const fromMarketCore = md?.coreTideSignal
@@ -226,7 +234,7 @@ const tideSignal = computed<TideSignal | null>(() => {
 const tideThemeRows = computed(() => (Array.isArray(tideSignal.value?.themes) ? tideSignal.value!.themes! : []))
 
 const todayHotThemeAliasMap = computed(() => {
-  const raw = (marketData.value as any)?.theme_alias_map
+  const raw = planSource.value?.theme_alias_map
   const map = new Map<string, string[]>()
   if (!raw || typeof raw !== "object") return map
   Object.entries(raw).forEach(([key, aliases]) => {
@@ -502,7 +510,7 @@ const advisorStockToZtPick = (s: PickStock): ZtStockPick => ({
 const mainLineOf = (code: unknown) => {
   const k = String(code || "").trim()
   if (!k) return null
-  const idx = (marketData.value as any)?.watchlist_stock_index
+  const idx = planSource.value?.watchlist_stock_index
   if (!idx || typeof idx !== "object") return null
   const info = idx[k]
   if (!info) return null
@@ -562,11 +570,11 @@ type ZtThemeEvidence = {
   stockNames: string[]
 }
 
-const themePanelRows = computed(() => (Array.isArray(marketData.value?.themePanels?.strengthRows) ? marketData.value.themePanels.strengthRows : []))
+const themePanelRows = computed(() => (Array.isArray(planSource.value?.themePanels?.strengthRows) ? planSource.value.themePanels.strengthRows : []))
 
 const leaderByTheme = computed(() => {
   const map = new Map<string, { name: string; code: string; score: number }>()
-  ;(Array.isArray(marketData.value?.leaders) ? marketData.value.leaders : []).forEach((row: any) => {
+  ;(Array.isArray(planSource.value?.leaders) ? planSource.value.leaders : []).forEach((row: any) => {
     const key = normalizeThemeName(String(row?.theme || ""))
     if (!key) return
     const next = {
@@ -582,7 +590,7 @@ const leaderByTheme = computed(() => {
 
 const plateStrengthByName = computed(() => {
   const map = new Map<string, { strength: number; lead: string }>()
-  ;(marketData.value?.plateRankTop10 || []).forEach((p: any) => {
+  ;(planSource.value?.plateRankTop10 || []).forEach((p: any) => {
     const name = normalizeThemeName(p?.name || "")
     if (!name) return
     map.set(name, { strength: Number(p?.strength || 0), lead: String(p?.lead || "").trim() })
@@ -592,8 +600,8 @@ const plateStrengthByName = computed(() => {
 
 const themeToZtStocks = computed(() => {
   const out = new Map<string, ZtStockPick[]>()
-  const ztgc = Array.isArray(marketData.value?.ztgc) ? marketData.value.ztgc : []
-  const themesMap = (marketData.value?.zt_code_themes || {}) as Record<string, string[]>
+  const ztgc = Array.isArray(planSource.value?.ztgc) ? planSource.value.ztgc : []
+  const themesMap = (planSource.value?.zt_code_themes || {}) as Record<string, string[]>
   ztgc.forEach((s: any) => {
     const code = String(s?.dm || s?.code || "").trim()
     if (!code) return
@@ -651,8 +659,8 @@ const aggregateStocksForTheme = (hotName: string): { stocks: ZtStockPick[]; matc
 const ztThemeEvidenceByName = computed(() => {
   const map = new Map<string, ZtThemeEvidence>()
   const rows = [
-    ...((marketData.value?.ztAnalysis?.relay || []) as any[]).map((row) => ({ ...row, __placement: "relay" as const })),
-    ...((marketData.value?.ztAnalysis?.watch || []) as any[]).map((row) => ({ ...row, __placement: "watch" as const })),
+    ...((planSource.value?.ztAnalysis?.relay || []) as any[]).map((row) => ({ ...row, __placement: "relay" as const })),
+    ...((planSource.value?.ztAnalysis?.watch || []) as any[]).map((row) => ({ ...row, __placement: "watch" as const })),
   ]
 
   rows.forEach((row) => {
@@ -993,11 +1001,11 @@ const sectorTierPicks = computed<SectorBucket[]>(() => {
   void xgbUpdatedAt.value
   void tmrUpdatedAt.value
 
-  const ztgcLen = Array.isArray(marketData.value?.ztgc) ? marketData.value.ztgc.length : 0
+  const ztgcLen = Array.isArray(planSource.value?.ztgc) ? planSource.value.ztgc.length : 0
   if (!ztgcLen) return []
 
-  const xgb = xgbPlates.value
-  const tmr = tmrThemes.value
+  const xgb = preserveResearchView.value ? [] : xgbPlates.value
+  const tmr = preserveResearchView.value ? [] : tmrThemes.value
 
   // 实时优先:用选股宝热点板块 / 东财明日题材驱动
   const realtimeBuckets = new Map<string, SectorBucket>()
@@ -1029,7 +1037,7 @@ const sectorTierPicks = computed<SectorBucket[]>(() => {
   // 实时数据完全为空 → 本地兜底:按 ztgc theme 命中数最高的前 N 个 theme
   if (!xgb.length && !tmr.length) {
     const themeCount = new Map<string, number>()
-    const themesMap = (marketData.value?.zt_code_themes || {}) as Record<string, string[]>
+    const themesMap = (planSource.value?.zt_code_themes || {}) as Record<string, string[]>
     Object.values(themesMap).forEach((arr: any) => {
       ;(Array.isArray(arr) ? arr : []).forEach((t: any) => {
         const k = String(t || "").trim()
@@ -1087,14 +1095,17 @@ const sectorPicksMeta = computed(() => {
   const buckets = sectorTierPicks.value
   const realtimeCnt = buckets.filter((b) => b.source === "realtime").length
   const fallbackUsed = buckets.some((b) => b.source === "fallback")
+  const xgbCount = preserveResearchView.value ? 0 : xgbPlates.value.length
+  const tmrCount = preserveResearchView.value ? 0 : tmrThemes.value.length
+  const tmrHotCount = preserveResearchView.value ? 0 : tmrThemes.value.filter((t) => t.isHot).length
   return {
     bucketTotal: buckets.length,
     realtimeCnt,
     fallbackUsed,
     advisorCnt: buckets.filter((b) => b.advisor).length,
-    xgbCnt: xgbPlates.value.length,
-    tmrCnt: tmrThemes.value.length,
-    tmrHotCnt: tmrThemes.value.filter((t) => t.isHot).length,
+    xgbCnt: xgbCount,
+    tmrCnt: tmrCount,
+    tmrHotCnt: tmrHotCount,
   }
 })
 </script>
@@ -1121,8 +1132,8 @@ const sectorPicksMeta = computed(() => {
 
               <div class="pos-tags">
                 <span class="pos-pill" :class="positionAdvice.pillCls">{{ positionAdvice.stance }}</span>
-                <span class="pos-pill">热{{ marketData.mood?.heat ?? "-" }}/险{{ marketData.mood?.risk ?? "-" }}</span>
-                <span class="pos-pill">{{ marketData.moodStage?.title || "-" }}</span>
+                <span class="pos-pill">热{{ planSource.mood?.heat ?? marketData.mood?.heat ?? "-" }}/险{{ planSource.mood?.risk ?? marketData.mood?.risk ?? "-" }}</span>
+                <span class="pos-pill">{{ planSource.moodStage?.title || marketData.moodStage?.title || "-" }}</span>
               </div>
             </div>
             <div class="advice" :class="planGuide.rightsideText === '禁止' ? 'danger' : planGuide.rightsideText === '允许' ? '' : 'warn'" v-if="planGuide.advice">{{ planGuide.advice }}</div>
@@ -1326,17 +1337,17 @@ const sectorPicksMeta = computed(() => {
         <div class="zt-header-left">
           <div class="card-title">
             <span>涨停数据分析</span>
-            <span class="zt-header-sector" v-if="marketData.ztAnalysis?.meta?.tierThemeCount">
-              梯队：{{ marketData.ztAnalysis?.meta?.tierThemeCount }}板块
-              <template v-if="marketData.ztAnalysis?.meta?.tierThemeTop">（{{ marketData.ztAnalysis?.meta?.tierThemeTop }}）</template>
+            <span class="zt-header-sector" v-if="planSource.ztAnalysis?.meta?.tierThemeCount">
+              梯队：{{ planSource.ztAnalysis?.meta?.tierThemeCount }}板块
+              <template v-if="planSource.ztAnalysis?.meta?.tierThemeTop">（{{ planSource.ztAnalysis?.meta?.tierThemeTop }}）</template>
             </span>
             <div class="zt-header-meta-inline">
               <span class="sep">｜</span>
               涨停池
-              <span class="orange-text">{{ marketData.ztgc?.length ?? 0 }}</span>
+              <span class="orange-text">{{ planSource.ztgc?.length ?? 0 }}</span>
               <span class="sep">·</span>
               题材映射
-              <span class="orange-text">{{ marketData.zt_code_themes ? Object.keys(marketData.zt_code_themes).length : 0 }}</span>
+              <span class="orange-text">{{ planSource.zt_code_themes ? Object.keys(planSource.zt_code_themes).length : 0 }}</span>
             </div>
           </div>
         </div>
@@ -1421,10 +1432,10 @@ const sectorPicksMeta = computed(() => {
           </div>
         </div>
       </div>
-      <div class="summary-box" v-if="!marketData.ztgc || !marketData.ztgc.length">
+      <div class="summary-box" v-if="!planSource.ztgc || !planSource.ztgc.length">
         <div class="summary-text">未注入当日涨停池明细（ztgc）。请用渲染脚本从 pools_cache.json 注入后再查看本模块。</div>
       </div>
-      <div class="summary-box" v-else-if="!((marketData.ztAnalysis?.relay || []).length || (marketData.ztAnalysis?.watch || []).length)">
+      <div class="summary-box" v-else-if="!((planSource.ztAnalysis?.relay || []).length || (planSource.ztAnalysis?.watch || []).length)">
         <div class="summary-text">涨停分析暂未生成，请检查涨停池、题材映射或前端派生逻辑。</div>
       </div>
       <div v-else-if="!ztAnalysisExpanded" class="zt-collapsed-note">默认折叠，展开后查看接力候选、观察池以及每只票的封单、炸板、梯队和题材归属。</div>

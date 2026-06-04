@@ -22,10 +22,11 @@ on:
   # 工作日北京时间 09:25-15:55 期间每 5 分钟心跳一次，由 timecheck 决定是否真正执行
   schedule:
     - cron: "*/5 1-7 * * 1-5"
-  # 提交代码后触发（main 分支）
+  # 提交代码后触发（除 gh-pages 外的所有分支）
   push:
     branches:
-      - main
+      - "**"
+      - "!gh-pages"
 
 permissions:
   # 你的 Pages 使用 “Deploy from branch: gh-pages”，因此需要把生成结果直接提交到 gh-pages 分支
@@ -136,6 +137,7 @@ jobs:
           cp -f site_prev/cache/theme_trend_cache.json cache/ 2>/dev/null || true
           cp -f site_prev/cache/concept_fund_flow_cache.json cache/ 2>/dev/null || true
           cp -f site_prev/cache/money_flow_cache.json cache/ 2>/dev/null || true
+          cp -f site_prev/cache/stock_research_backtest_pool.json cache/ 2>/dev/null || true
           cp -f site_prev/cache/trade_days_cache.json cache/ 2>/dev/null || true
           cp -f site_prev/cache/intraday_slices-*.json cache/ 2>/dev/null || true
           cp -f site_prev/cache/intraday_snapshots-*.json cache/ 2>/dev/null || true
@@ -550,6 +552,7 @@ jobs:
           cp -f cache/theme_trend_cache.json site_prev/cache/ 2>/dev/null || true
           cp -f cache/concept_fund_flow_cache.json site_prev/cache/ 2>/dev/null || true
           cp -f cache/money_flow_cache.json site_prev/cache/ 2>/dev/null || true
+          cp -f cache/stock_research_backtest_pool.json site_prev/cache/ 2>/dev/null || true
           cp -f cache/trade_days_cache.json site_prev/cache/ 2>/dev/null || true
           cp -f cache/intraday_slices-*.json site_prev/cache/ 2>/dev/null || true
           cfiles=( $(ls -1 site_prev/cache/market_data-*.json 2>/dev/null | sort || true) )

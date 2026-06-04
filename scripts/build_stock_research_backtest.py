@@ -25,6 +25,7 @@ OUT_DIR = ROOT / "html" / "recommendation-preview"
 OUT_JSON = OUT_DIR / "stock_research_backtest.json"
 OUT_JS = OUT_DIR / "stock_research_backtest.js"
 PRICE_CACHE = ROOT / "cache_online" / "recommendation_price_history.json"
+BACKTEST_POOL = CACHE_DIR / "stock_research_backtest_pool.json"
 TZ_BJ = timezone(timedelta(hours=8))
 
 STRATEGIES = (
@@ -235,7 +236,92 @@ def _row_from_item(item: dict[str, Any], *, date10: str, bucket: str) -> dict[st
     }
 
 
+def _default_backtest_pool() -> dict[str, Any]:
+    return {
+        "schema": "stock_research_backtest_pool_v1",
+        "updated_at_bj": "",
+        "days": {},
+    }
+
+
+def _load_backtest_pool() -> dict[str, Any]:
+    data = _load_json(BACKTEST_POOL, default={})
+    if not isinstance(data, dict):
+        return _default_backtest_pool()
+    data.setdefault("schema", "stock_research_backtest_pool_v1")
+    data.setdefault("updated_at_bj", "")
+    data.setdefault("days", {})
+    if not isinstance(data.get("days"), dict):
+        data["days"] = {}
+    return data
+
+
+def upsert_daily_backtest_pool(market_data: dict[str, Any], *, force: bool = False) -> dict[str, Any]:
+    """
+    将单日个股研究样本固化到独立历史池。
+
+    这个池只保存“个股回测”真正需要的每日同源样本，不依赖 market_data 历史文件是否仍然保留。
+    """
+    if not isinstance(market_data, dict):
+        return _load_backtest_pool()
+
+    date10 = str(market_data.get("date") or "").strip()
+    if len(date10) != 10:
+        return _load_backtest_pool()
+
+    zt = market_data.get("ztAnalysis") if isinstance(market_data.get("ztAnalysis"), dict) else {}
+    relay = zt.get("relay") if isinstance(zt.get("relay"), list) else []
+    watch = zt.get("watch") if isinstance(zt.get("watch"), list) else []
+    if not relay and not watch and not force:
+        return _load_backtest_pool()
+
+    pool = _load_backtest_pool()
+    days = pool.setdefault("days", {})
+    if not isinstance(days, dict):
+        days = {}
+        pool["days"] = days
+
+    relay_rows = [_row_from_item(item, date10=date10, bucket="relay") for item in relay if isinstance(item, dict)]
+    watch_rows = [_row_from_item(item, date10=date10, bucket="watch") for item in watch if isinstance(item, dict)]
+    days[date10] = {
+        "date": date10,
+        "generated_at_bj": _now_bj().strftime("%Y-%m-%d %H:%M:%S"),
+        "source_module": "ztAnalysis.relay/watch",
+        "source_market_data": f"market_data-{date10.replace('-', '')}.json",
+        "relay": relay_rows,
+        "watch": watch_rows,
+        "summary": {
+            "relay_count": len(relay_rows),
+            "watch_count": len(watch_rows),
+            "total": len(relay_rows) + len(watch_rows),
+        },
+    }
+    pool["updated_at_bj"] = _now_bj().strftime("%Y-%m-%d %H:%M:%S")
+    _write_json(BACKTEST_POOL, pool)
+    return pool
+
+
 def _load_stock_research_rows() -> tuple[list[dict[str, Any]], list[str]]:
+    pool = _load_backtest_pool()
+    days = pool.get("days") if isinstance(pool.get("days"), dict) else {}
+    if days:
+        rows: list[dict[str, Any]] = []
+        used_days: list[str] = []
+        for date10 in sorted(days.keys()):
+            day = days.get(date10)
+            if not isinstance(day, dict):
+                continue
+            relay = day.get("relay") if isinstance(day.get("relay"), list) else []
+            watch = day.get("watch") if isinstance(day.get("watch"), list) else []
+            if not relay and not watch:
+                continue
+            used_days.append(str(day.get("source_market_data") or f"stock_research_backtest_pool.json:{date10}"))
+            rows.extend([dict(item) for item in relay if isinstance(item, dict)])
+            rows.extend([dict(item) for item in watch if isinstance(item, dict)])
+        rows.sort(key=lambda x: (x["date"], -x["score"], x["code"]))
+        if rows:
+            return rows, used_days
+
     files = sorted(CACHE_DIR.glob("market_data-*.json"))
     rows: list[dict[str, Any]] = []
     used_files: list[str] = []

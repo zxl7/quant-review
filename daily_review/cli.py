@@ -333,6 +333,8 @@ def _load_latest_valid_research_snapshot(*, root: Path, current_date: str) -> di
     keep_keys = (
         "date",
         "meta",
+        "mood",
+        "moodStage",
         "planGuide",
         "themePanels",
         "leaders",
@@ -1670,13 +1672,35 @@ def run_rebuild(
     except Exception:
         pass
 
+    # 个股回测独立池：只在收盘/离线正式口径下固化当日研究样本，不把 intraday 保留快照误写成当天数据。
+    try:
+        if str((market_data.get("meta") or {}).get("mode") or "").strip() != "intraday":
+            from scripts.build_stock_research_backtest import upsert_daily_backtest_pool
+
+            upsert_daily_backtest_pool(market_data)
+            _log("stockResearchBacktestPool 已更新")
+    except Exception:
+        pass
+
     # stockResearchBacktest：复用个股研究同源推荐（当前接 ztAnalysis.relay/watch），
     # 只统计次日 09:25-09:30 满足“符合预期/超预期”的开盘入场样本。
     try:
-        from scripts.build_stock_research_backtest import build_stock_research_backtest_payload
+        if preserve_zt and isinstance(market_data.get("preservedResearch"), dict):
+            preserved_md = market_data["preservedResearch"].get("marketData")
+            preserved_backtest = preserved_md.get("stockResearchBacktest") if isinstance(preserved_md, dict) else None
+            if isinstance(preserved_backtest, dict) and isinstance(preserved_backtest.get("summary"), dict):
+                market_data["stockResearchBacktest"] = preserved_backtest
+                _log("stockResearchBacktest 已保留上一份收盘结果")
+            else:
+                from scripts.build_stock_research_backtest import build_stock_research_backtest_payload
 
-        market_data["stockResearchBacktest"] = build_stock_research_backtest_payload()
-        _log("stockResearchBacktest 已生成")
+                market_data["stockResearchBacktest"] = build_stock_research_backtest_payload()
+                _log("未找到可沿用 stockResearchBacktest，已按当前样本重算")
+        else:
+            from scripts.build_stock_research_backtest import build_stock_research_backtest_payload
+
+            market_data["stockResearchBacktest"] = build_stock_research_backtest_payload()
+            _log("stockResearchBacktest 已生成")
     except Exception:
         pass
 
@@ -2976,6 +3000,14 @@ def run_partial(date: str, modules: list[str]) -> int:
         from daily_review.metrics.zt_analysis import build_zt_analysis
 
         market_data["ztAnalysis"] = build_zt_analysis(market_data=market_data)
+    except Exception:
+        pass
+
+    try:
+        if str((market_data.get("meta") or {}).get("mode") or "").strip() != "intraday":
+            from scripts.build_stock_research_backtest import upsert_daily_backtest_pool
+
+            upsert_daily_backtest_pool(market_data)
     except Exception:
         pass
 

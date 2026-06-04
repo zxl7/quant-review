@@ -116,6 +116,18 @@ const records = computed<any[]>(() => {
   })
   return rows
 })
+const latestRecommendationDate = computed(() => String(meta.value?.latest_recommendation_date || realtimeBuy.value?.reference_date || "").trim())
+const currentRecords = computed<any[]>(() => {
+  const date10 = latestRecommendationDate.value
+  if (!date10) return []
+  return records.value.filter((row) => String(row?.date10 || "") === date10)
+})
+const currentEligibleCount = computed(() => currentRecords.value.filter((row) => !!row?.performance?.open_check?.can_enter).length)
+const historicalRecords = computed<any[]>(() => {
+  const date10 = latestRecommendationDate.value
+  if (!date10) return records.value
+  return records.value.filter((row) => String(row?.date10 || "") !== date10)
+})
 
 const entryRate = computed(() => {
   const total = toNum(summary.value?.total_samples, 0)
@@ -235,11 +247,12 @@ function strategyReturnClass(performance: any, key: string) {
         <div>
           <div class="card-title">{{ meta.title || "个股回测" }}</div>
           <div class="bt-subtitle">
-            {{ meta.subtitle || "同源读取个股研究推荐，只在次日 09:25-09:30 满足符合预期或超预期开口径时，按开盘价记为入场。" }}
+            {{ meta.subtitle || "同源读取个股研究推荐。当前研究池只看最新推荐日，历史样本单独用于回测统计。" }}
           </div>
           <div class="bt-meta">
             <div>回测生成时间 {{ backtestUpdatedAt }}</div>
             <div>9:25 报价时间 {{ quoteUpdatedAt }}</div>
+            <div>当前研究池 {{ latestRecommendationDate || "-" }}</div>
           </div>
         </div>
         <div class="bt-badge">{{ realtimeBuy.entry_window || meta.entry_window || "09:25-09:30" }}</div>
@@ -266,14 +279,14 @@ function strategyReturnClass(performance: any, key: string) {
           <div class="bt-kpi-note">更新时间 {{ realtimeBuy.quote_time || "-" }}</div>
         </div>
         <div class="bt-kpi-card">
-          <div class="bt-kpi-label">历史总样本</div>
-          <div class="bt-kpi-value">{{ summary.total_samples ?? 0 }}</div>
-          <div class="bt-kpi-note">覆盖 {{ summary.trade_days ?? 0 }} 个推荐交易日</div>
+          <div class="bt-kpi-label">当前研究池</div>
+          <div class="bt-kpi-value">{{ currentRecords.length }}</div>
+          <div class="bt-kpi-note">和个股研究同源，推荐日 {{ latestRecommendationDate || "-" }}</div>
         </div>
         <div class="bt-kpi-card">
-          <div class="bt-kpi-label">历史可执行样本</div>
-          <div class="bt-kpi-value">{{ summary.eligible_samples ?? 0 }}</div>
-          <div class="bt-kpi-note">开盘入场率 {{ entryRate }}%</div>
+          <div class="bt-kpi-label">当前可执行</div>
+          <div class="bt-kpi-value">{{ currentEligibleCount }}</div>
+          <div class="bt-kpi-note">当前研究池里开盘可直接执行的样本</div>
         </div>
       </div>
 
@@ -332,6 +345,71 @@ function strategyReturnClass(performance: any, key: string) {
       </div>
     </div>
 
+    <div class="card">
+      <div class="card-header">
+        <div>
+          <div class="card-title">当前研究池</div>
+          <div class="bt-subtitle">这一段只展示最新推荐日的样本，和“个股研究”页读取的是同一份 `ztAnalysis.relay/watch`。</div>
+        </div>
+      </div>
+
+      <div class="summary-box" v-if="!currentRecords.length">
+        <div class="summary-text">当前研究池还没有可展示的同源样本。</div>
+      </div>
+
+      <div class="bt-table-wrap" v-else>
+        <table class="ladder-table">
+          <thead>
+            <tr>
+              <th>推荐日</th>
+              <th>标的</th>
+              <th>池子</th>
+              <th>主线</th>
+              <th>开盘判断</th>
+              <th>缺口</th>
+              <th>T+1</th>
+              <th>T+3</th>
+              <th>T+5</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="row in currentRecords" :key="'current-record-' + row.date10 + '-' + row.code">
+              <td>{{ row.date10 || "-" }}</td>
+              <td class="bt-name-cell">
+                <div class="bt-name-line">
+                  <a v-if="row.code" class="stock-link" :href="xqUrl(row.code)" target="_blank" rel="noopener noreferrer">{{ row.name }}</a>
+                  <span v-else>{{ row.name || "-" }}</span>
+                </div>
+                <div class="bt-name-sub">代码 {{ row.code || "-" }} ｜ 分数 {{ row.score ?? "-" }} ｜ {{ row.score_sub_label || row.style_tag || row.bucket_label || "-" }}</div>
+              </td>
+              <td>{{ row.bucket_label || row.bucket || "-" }}</td>
+              <td class="bt-left-cell">
+                <div>{{ row.main_line || "-" }}</div>
+                <div class="bt-cell-sub">{{ row.hy || row.plate_name || "-" }}</div>
+              </td>
+              <td class="bt-left-cell">
+                <span class="bt-pill" :class="openStatusClass(row.performance?.open_check?.status)">{{ openStatusLabel(row.performance?.open_check?.status, row.performance?.open_check?.label) }}</span>
+                <div class="bt-cell-sub">{{ row.performance?.open_check?.note || "-" }}</div>
+              </td>
+              <td :class="signedClass(row.performance?.open_check?.gap_pct)">{{ formatSigned(row.performance?.open_check?.gap_pct, 2) }}%</td>
+              <td :class="strategyReturnClass(row.performance, 'next_day')">
+                {{ strategyReturnText(row.performance, "next_day") }}
+                <div class="bt-cell-sub">{{ strategyReturnNote(row.performance, "next_day") }}</div>
+              </td>
+              <td :class="strategyReturnClass(row.performance, 'hold_3d')">
+                {{ strategyReturnText(row.performance, "hold_3d") }}
+                <div class="bt-cell-sub">{{ strategyReturnNote(row.performance, "hold_3d") }}</div>
+              </td>
+              <td :class="strategyReturnClass(row.performance, 'hold_5d')">
+                {{ strategyReturnText(row.performance, "hold_5d") }}
+                <div class="bt-cell-sub">{{ strategyReturnNote(row.performance, "hold_5d") }}</div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
     <div class="bt-live-split">
       <div class="card">
         <div class="card-header">
@@ -383,7 +461,7 @@ function strategyReturnClass(performance: any, key: string) {
       <div class="card-header">
         <div>
           <div class="card-title">历史回测概览</div>
-          <div class="bt-subtitle">下面继续保留原来的开盘回测统计，用来复盘“这套预期文案长期好不好用”。</div>
+          <div class="bt-subtitle">这一段是跨多个推荐交易日的历史统计，用来复盘“这套预期文案长期好不好用”。</div>
         </div>
       </div>
 
@@ -394,6 +472,16 @@ function strategyReturnClass(performance: any, key: string) {
       </div>
 
       <div class="bt-kpi-grid">
+        <div class="bt-kpi-card">
+          <div class="bt-kpi-label">历史总样本</div>
+          <div class="bt-kpi-value">{{ summary.total_samples ?? 0 }}</div>
+          <div class="bt-kpi-note">覆盖 {{ summary.trade_days ?? 0 }} 个推荐交易日</div>
+        </div>
+        <div class="bt-kpi-card">
+          <div class="bt-kpi-label">历史可执行样本</div>
+          <div class="bt-kpi-value">{{ summary.eligible_samples ?? 0 }}</div>
+          <div class="bt-kpi-note">开盘入场率 {{ entryRate }}%</div>
+        </div>
         <div class="bt-kpi-card">
           <div class="bt-kpi-label">超预期开盘</div>
           <div class="bt-kpi-value red-text">{{ summary.super_count ?? 0 }}</div>
@@ -507,13 +595,13 @@ function strategyReturnClass(performance: any, key: string) {
     <div class="card">
       <div class="card-header">
         <div>
-          <div class="card-title">逐笔复盘明细</div>
-          <div class="bt-subtitle">按推荐日倒序展示，方便直接回看“推荐理由 -> 开盘判断 -> 收益表现”的完整链路。</div>
+          <div class="card-title">历史样本明细</div>
+          <div class="bt-subtitle">这里保留跨多个推荐日的完整回测样本，方便回看“推荐理由 -> 开盘判断 -> 收益表现”的历史链路。</div>
         </div>
       </div>
 
-      <div class="summary-box" v-if="!records.length">
-        <div class="summary-text">当前还没有回测明细。只要 `marketData.stockResearchBacktest` 注入完成，这里会自动展示系统内回测结果。</div>
+      <div class="summary-box" v-if="!historicalRecords.length">
+        <div class="summary-text">当前还没有历史样本明细。只要累计多个推荐交易日，这里会自动展示跨日回测结果。</div>
       </div>
 
       <div class="bt-table-wrap" v-else>
@@ -532,7 +620,7 @@ function strategyReturnClass(performance: any, key: string) {
             </tr>
           </thead>
           <tbody>
-            <tr v-for="row in records" :key="'record-' + row.date10 + '-' + row.code">
+            <tr v-for="row in historicalRecords" :key="'record-' + row.date10 + '-' + row.code">
               <td>{{ row.date10 || "-" }}</td>
               <td class="bt-name-cell">
                 <div class="bt-name-line">
