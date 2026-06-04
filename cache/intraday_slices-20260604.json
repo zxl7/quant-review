@@ -1,10 +1,6 @@
 {
-  "schema": "intraday_snapshot_v1",
-  "render_mode": "snapshot_stream",
   "date": "2026-06-04",
-  "count": 18,
-  "interval_min": 10,
-  "simulated": false,
+  "count": 19,
   "snapshots": [
     {
       "time": "09:26:52",
@@ -802,7 +798,7 @@
           "action": "拥挤高→只做主线核心/回封；避免高位跟风扩散"
         }
       ],
-      "shift_score": 61,
+      "shift_score": 66,
       "shift_label": "修复"
     },
     {
@@ -957,59 +953,170 @@
       "shift_score": 65,
       "shift_label": "修复",
       "note": "情绪略有回落，注意午后分歧。"
+    },
+    {
+      "time": "13:10:59",
+      "ts_bj": "2026-06-04 13:10:59",
+      "date": "2026-06-04",
+      "source": "intraday_live",
+      "headline": "震荡中性，等待确认点",
+      "heat": 60,
+      "risk": 30,
+      "fb": null,
+      "jj": null,
+      "zt": 62,
+      "lianban": 0,
+      "zab": 0,
+      "zb": null,
+      "dt": 2,
+      "bf": null,
+      "max_lb": null,
+      "amount": "31302.79亿",
+      "loss": null,
+      "hm2": 64.5,
+      "pos": [
+        {
+          "key": "support",
+          "title": "承接是否回暖",
+          "value": "晋级 27.3%",
+          "delta": "",
+          "status": "off",
+          "why": "对比近20日中位数 27.3%",
+          "action": "承接强→可做回封/换手接力；承接弱→降低出手频次"
+        },
+        {
+          "key": "consistency",
+          "title": "一致性（封板/早封）",
+          "value": "封 79.5% · 早 53.2%",
+          "delta": "",
+          "status": "off",
+          "why": "对比近20日中位数 封79.5%/早53.2%",
+          "action": "一致性强→优先做主线辨识度；一致性弱→只做确认点/低位试错"
+        },
+        {
+          "key": "loss_converge",
+          "title": "亏钱是否收敛",
+          "value": "扩散 8",
+          "delta": "",
+          "status": "off",
+          "why": "对比近20日中位数 8",
+          "action": "扩散收敛→可提高仓位上限；扩散走高→只做低位/快进快出"
+        }
+      ],
+      "riskSignals": [
+        {
+          "key": "diverge",
+          "title": "分歧是否升级",
+          "value": "炸 20.5% · ≥3开 12.9% · 均开 1.06",
+          "delta": "",
+          "status": "off",
+          "why": "对比近20日中位数 炸20.5%",
+          "action": "分歧大→只做回封确认；不追一致；优先低位"
+        },
+        {
+          "key": "loss_spike",
+          "title": "亏钱扩散是否突刺",
+          "value": "扩散 8",
+          "delta": "",
+          "status": "off",
+          "why": "对比近20日中位数 8",
+          "action": "突刺出现→减仓/撤退；只保留最强辨识度"
+        },
+        {
+          "key": "crowd",
+          "title": "题材集中/拥挤",
+          "value": "TOP3占比 0.0% · 重叠 0.0%",
+          "delta": "",
+          "status": "off",
+          "why": "集中度过高时更容易走向一致末端 → 分歧加速",
+          "action": "拥挤高→只做主线核心/回封；避免高位跟风扩散"
+        }
+      ],
+      "shift_score": 62,
+      "shift_label": "修复"
     }
   ],
+  "simulated": false,
+  "interval_min": null,
   "latest": {
-    "time": "13:09:38",
-    "ts_bj": "2026-06-04 13:09:38",
+    "time": "13:10:59",
+    "ts_bj": "2026-06-04 13:10:59",
     "date": "2026-06-04",
     "source": "intraday_live",
-    "provider": "fetch",
-    "zt": 59,
-    "dt": 3,
-    "zab": 15,
-    "zb": 20.3,
-    "fb": 79.7,
-    "jj": 16.9,
-    "lianban": 10,
-    "max_lb": 4,
-    "amount": "17256.98亿",
-    "bf": 0,
-    "heat": 56,
-    "risk": 22,
-    "headline": "修复",
-    "concepts": [
+    "headline": "震荡中性，等待确认点",
+    "heat": 60,
+    "risk": 30,
+    "fb": null,
+    "jj": null,
+    "zt": 62,
+    "lianban": 0,
+    "zab": 0,
+    "zb": null,
+    "dt": 2,
+    "bf": null,
+    "max_lb": null,
+    "amount": "31302.79亿",
+    "loss": null,
+    "hm2": 64.5,
+    "pos": [
       {
-        "name": "芯片",
-        "lead": "华特气体",
-        "chg_pct": null
+        "key": "support",
+        "title": "承接是否回暖",
+        "value": "晋级 27.3%",
+        "delta": "",
+        "status": "off",
+        "why": "对比近20日中位数 27.3%",
+        "action": "承接强→可做回封/换手接力；承接弱→降低出手频次"
       },
       {
-        "name": "机器人概念",
-        "lead": "北投科技",
-        "chg_pct": null
+        "key": "consistency",
+        "title": "一致性（封板/早封）",
+        "value": "封 79.5% · 早 53.2%",
+        "delta": "",
+        "status": "off",
+        "why": "对比近20日中位数 封79.5%/早53.2%",
+        "action": "一致性强→优先做主线辨识度；一致性弱→只做确认点/低位试错"
       },
       {
-        "name": "通信",
-        "lead": "天洋新材",
-        "chg_pct": null
-      },
-      {
-        "name": "ST板块",
-        "lead": "*ST美芝",
-        "chg_pct": null
-      },
-      {
-        "name": "化工",
-        "lead": "红星发展",
-        "chg_pct": null
+        "key": "loss_converge",
+        "title": "亏钱是否收敛",
+        "value": "扩散 8",
+        "delta": "",
+        "status": "off",
+        "why": "对比近20日中位数 8",
+        "action": "扩散收敛→可提高仓位上限；扩散走高→只做低位/快进快出"
       }
     ],
-    "alerts": [],
-    "shift_score": 65,
-    "shift_label": "修复",
-    "note": "情绪略有回落，注意午后分歧。"
-  },
-  "updated_at": "2026-06-04 13:09:38",
-  "snapshot_sig": "2026-06-04|2026-06-04 13:09:38|18"
+    "riskSignals": [
+      {
+        "key": "diverge",
+        "title": "分歧是否升级",
+        "value": "炸 20.5% · ≥3开 12.9% · 均开 1.06",
+        "delta": "",
+        "status": "off",
+        "why": "对比近20日中位数 炸20.5%",
+        "action": "分歧大→只做回封确认；不追一致；优先低位"
+      },
+      {
+        "key": "loss_spike",
+        "title": "亏钱扩散是否突刺",
+        "value": "扩散 8",
+        "delta": "",
+        "status": "off",
+        "why": "对比近20日中位数 8",
+        "action": "突刺出现→减仓/撤退；只保留最强辨识度"
+      },
+      {
+        "key": "crowd",
+        "title": "题材集中/拥挤",
+        "value": "TOP3占比 0.0% · 重叠 0.0%",
+        "delta": "",
+        "status": "off",
+        "why": "集中度过高时更容易走向一致末端 → 分歧加速",
+        "action": "拥挤高→只做主线核心/回封；避免高位跟风扩散"
+      }
+    ],
+    "shift_score": 62,
+    "shift_label": "修复"
+  }
 }
