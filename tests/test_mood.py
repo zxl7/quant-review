@@ -9,7 +9,7 @@ from daily_review.metrics.mood import rebuild_mood
 
 
 class MoodDualTrackTest(unittest.TestCase):
-    def test_rebuild_mood_outputs_dual_track_scores(self) -> None:
+    def test_rebuild_mood_keeps_market_score_but_restores_shortline_judgment(self) -> None:
         patch = rebuild_mood(
             {
                 "fb_rate": 74.5,
@@ -53,7 +53,8 @@ class MoodDualTrackTest(unittest.TestCase):
         mood = patch["mood"]
         self.assertEqual(mood["short_score"], 48)
         self.assertGreater(mood["market_score"], mood["short_score"])
-        self.assertEqual(mood["score"], 61)
+        self.assertEqual(mood["score"], 48)
+        self.assertEqual(mood["overall_score"], 48)
         self.assertEqual(mood["market_tone"], "good")
         self.assertEqual(mood["market_label"], "大盘偏强")
 

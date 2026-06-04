@@ -336,6 +336,61 @@ def fetch_stocks_realtime(client: HttpClient, stock_codes: str) -> list:
         return []
 
 
+# ssjy_more 文档允许一次最多 20 只
+SSJY_MORE_BATCH_SIZE = 20
+
+
+def fetch_stocks_realtime_map(
+    client: HttpClient,
+    codes: list[str],
+    *,
+    limit: int | None = None,
+    batch_size: int = SSJY_MORE_BATCH_SIZE,
+) -> tuple[dict[str, dict], str]:
+    """对 ssjy_more 的薄包装：去重 + 分批 + code6 映射 + 抓首个 as_of。
+
+    Args:
+        client: HTTP 客户端
+        codes: 原始代码列表，允许混带后缀/重复
+        limit: 处理上限（去重后），None 表示不限
+        batch_size: 单次请求条数，默认 20（接口上限）
+
+    Returns:
+        (quotes_map by code6, as_of 时间串)
+    """
+    uniq: list[str] = []
+    seen: set[str] = set()
+    for raw in codes:
+        c6 = normalize_stock_code(str(raw or ""))
+        if not c6 or c6 in seen:
+            continue
+        seen.add(c6)
+        uniq.append(c6)
+    if limit is not None:
+        uniq = uniq[: max(1, limit)]
+
+    quotes_map: dict[str, dict] = {}
+    as_of = ""
+    step = max(1, min(batch_size, SSJY_MORE_BATCH_SIZE))
+    for i in range(0, len(uniq), step):
+        batch = uniq[i : i + step]
+        if not batch:
+            continue
+        rows = fetch_stocks_realtime(client, ",".join(batch))
+        if not isinstance(rows, list):
+            continue
+        for row in rows:
+            if not isinstance(row, dict):
+                continue
+            c6 = normalize_stock_code(str(row.get("dm") or row.get("code") or row.get("symbol") or ""))
+            if not c6:
+                continue
+            quotes_map[c6] = row
+            if not as_of:
+                as_of = str(row.get("t") or "").strip()
+    return quotes_map, as_of
+
+
 # === K线数据（v3扩展）===
 
 def fetch_stock_latest_k(

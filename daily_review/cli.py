@@ -33,7 +33,7 @@ from daily_review.data.biying import (
     fetch_index_history_k,
     fetch_pool,
     fetch_stock_themes,
-    fetch_stocks_realtime,
+    fetch_stocks_realtime_map,
     get_trading_days_from_index_k,
     normalize_stock_code,
     resolve_trade_date,
@@ -394,32 +394,8 @@ def _collect_research_codes_from_snapshot(snapshot: dict | None) -> list[str]:
     return codes
 
 
-def _fetch_realtime_quotes_map(client: HttpClient, codes: list[str], *, limit: int = 220, batch_size: int = 10) -> dict[str, Any]:
-    uniq: list[str] = []
-    seen: set[str] = set()
-    for code6 in codes:
-        c6 = normalize_stock_code(code6)
-        if not c6 or c6 in seen:
-            continue
-        seen.add(c6)
-        uniq.append(c6)
-    uniq = uniq[:max(1, limit)]
-
-    quotes_map: dict[str, Any] = {}
-    step = max(1, batch_size)
-    for i in range(0, len(uniq), step):
-        batch = uniq[i : i + step]
-        if not batch:
-            continue
-        quotes_list = fetch_stocks_realtime(client, ",".join(batch))
-        if not isinstance(quotes_list, list):
-            continue
-        for it in quotes_list:
-            if not isinstance(it, dict):
-                continue
-            c6 = normalize_stock_code(str(it.get("dm") or it.get("code") or it.get("symbol") or ""))
-            if c6:
-                quotes_map[c6] = it
+def _fetch_realtime_quotes_map(client: HttpClient, codes: list[str], *, limit: int = 220, batch_size: int = 20) -> dict[str, Any]:
+    quotes_map, _ = fetch_stocks_realtime_map(client, codes, limit=limit, batch_size=batch_size)
     return quotes_map
 
 
@@ -1085,7 +1061,7 @@ def run_fetch_and_rebuild(date: str | None) -> int:
                     codes.append(code6)
         preserved_research = _load_latest_valid_research_snapshot(root=root, current_date=actual_date)
         codes.extend(_collect_research_codes_from_snapshot(preserved_research))
-        quotes_map = _fetch_realtime_quotes_map(client, codes, limit=220, batch_size=10)
+        quotes_map = _fetch_realtime_quotes_map(client, codes, limit=220, batch_size=20)
         market_data["raw"]["quotes"] = {"as_of": indices_asof, "items": quotes_map, "count": len(quotes_map)}
         # meta 标记：有实时行情增强
         meta = market_data.get("meta") if isinstance(market_data.get("meta"), dict) else {}
@@ -1402,7 +1378,7 @@ def run_intraday_snapshot(date: str | None) -> int:
                     codes.append(code6)
         preserved_research = _load_latest_valid_research_snapshot(root=root, current_date=actual_date)
         codes.extend(_collect_research_codes_from_snapshot(preserved_research))
-        quotes_map = _fetch_realtime_quotes_map(client, codes, limit=220, batch_size=10)
+        quotes_map = _fetch_realtime_quotes_map(client, codes, limit=220, batch_size=20)
         market_data["raw"]["quotes"] = {"as_of": now_str, "items": quotes_map, "count": len(quotes_map)}
         meta = market_data.get("meta") if isinstance(market_data.get("meta"), dict) else {}
         if not isinstance(meta, dict):

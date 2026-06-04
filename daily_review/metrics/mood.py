@@ -555,12 +555,10 @@ def rebuild_mood(inputs: Dict[str, Any], market_data: Dict[str, Any] | None = No
     stage = calc_stage(heat_score=score.heat, risk_score=score.risk, inputs=stage_inputs)
     cards = build_cards(inputs)
 
-    # 阶段已经明确进入退潮/冰点时，颜色要与语义一致，避免总分仍停在黄色。
+    # 最终情绪判断回到原始短线口径，大盘强弱只做并行展示，不再抬高/压低主色判断。
     short_score = score.sentiment
     market_track = calc_market_score(market_data or {})
-    sentiment_score = round(_clamp100(short_score * 0.6 + market_track["score"] * 0.4))
-    if str(stage.get("type") or "") == "fire":
-        sentiment_score = min(sentiment_score, 45)
+    sentiment_score = short_score
 
     # 情绪阶段细分（真假判断）
     sub = calc_stage_sublabel(stage_title=stage.get("title", ""), inputs=inputs)

@@ -13,7 +13,7 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 from daily_review.config import load_config_from_env
-from daily_review.data.biying import fetch_stocks_realtime, normalize_stock_code
+from daily_review.data.biying import fetch_stocks_realtime_map, normalize_stock_code
 from daily_review.http import HttpClient
 from scripts.build_stock_research_backtest import _load_stock_research_rows, save_prefetched_realtime_quotes
 
@@ -72,23 +72,7 @@ def main() -> int:
 
     cfg = load_config_from_env()
     client = HttpClient(base_url=cfg.base_url, token=cfg.token, timeout=12, retries=0)
-    quotes_map: dict[str, dict] = {}
-    as_of = ""
-    step = 10
-    for i in range(0, len(codes), step):
-        batch = codes[i : i + step]
-        rows_rt = fetch_stocks_realtime(client, ",".join(batch)) if batch else []
-        if not isinstance(rows_rt, list):
-            continue
-        for row in rows_rt:
-            if not isinstance(row, dict):
-                continue
-            code6 = normalize_stock_code(str(row.get("dm") or row.get("code") or row.get("symbol") or ""))
-            if not code6:
-                continue
-            quotes_map[code6] = row
-            if not as_of:
-                as_of = str(row.get("t") or "").strip()
+    quotes_map, as_of = fetch_stocks_realtime_map(client, codes)
 
     if not quotes_map:
         print(f"skip: no realtime quotes fetched for {reference_date}")
