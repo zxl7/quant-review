@@ -285,6 +285,8 @@ def _empty_backtest_payload(*, generated_from: list[str] | None = None) -> dict[
         },
         "summary": {
             "total_samples": 0,
+            "source_samples": 0,
+            "filtered_non_backtest_samples": 0,
             "eligible_samples": 0,
             "expected_count": 0,
             "super_count": 0,
@@ -330,6 +332,7 @@ def _empty_backtest_payload(*, generated_from: list[str] | None = None) -> dict[
             "unavailable_list": [],
             "diagnostics": {"source": "empty"},
         },
+        "currentPoolRecords": [],
         "records": [],
         "spotlight": {
             "super_candidates": [],
@@ -918,16 +921,76 @@ def _summarize_strategy(records: list[dict[str, Any]], key: str, label: str) -> 
     }
 
 
+def _is_backtest_ready_record(record: dict[str, Any]) -> bool:
+    performance = record.get("performance") if isinstance(record.get("performance"), dict) else {}
+    open_check = performance.get("open_check") if isinstance(performance.get("open_check"), dict) else {}
+    return str(open_check.get("status") or "") != "missing"
+
+
+def _pick_realtime_reference_date(rows: list[dict[str, Any]], *, current_market_data: dict[str, Any] | None = None) -> str:
+    dates = sorted({str(row.get("date10") or "") for row in rows if str(row.get("date10") or "")})
+    if not dates:
+        return ""
+    as_of_date10 = ""
+    if isinstance(current_market_data, dict):
+        as_of_date10 = str(current_market_data.get("date") or "").strip()
+    if len(as_of_date10) != 10:
+        as_of_date10 = _now_bj().strftime("%Y-%m-%d")
+    older = [date10 for date10 in dates if date10 < as_of_date10]
+    return older[-1] if older else dates[-1]
+
+
+def _merge_current_pool_with_realtime(rows: list[dict[str, Any]], realtime_buy: dict[str, Any]) -> list[dict[str, Any]]:
+    decision_map: dict[str, dict[str, Any]] = {}
+    for bucket in ("buy_list", "pending_list", "rejected_list", "unavailable_list"):
+        for row in realtime_buy.get(bucket) or []:
+            if not isinstance(row, dict):
+                continue
+            code = str(row.get("code") or "").strip()
+            if code:
+                decision_map[code] = row
+
+    merged_rows: list[dict[str, Any]] = []
+    for row in rows:
+        rec = json.loads(json.dumps(row, ensure_ascii=False))
+        code = str(rec.get("code") or "").strip()
+        decision = decision_map.get(code)
+        if not decision:
+            merged_rows.append(rec)
+            continue
+
+        performance = rec.get("performance") if isinstance(rec.get("performance"), dict) else {}
+        open_check = performance.get("open_check") if isinstance(performance.get("open_check"), dict) else {}
+        if str(open_check.get("status") or "") == "missing":
+            signal_status = str(decision.get("signal_status") or "")
+            performance["open_check"] = {
+                "status": signal_status or ("expected" if decision.get("decision_status") == "buy" else "reject"),
+                "label": decision.get("signal_label") or decision.get("decision_label") or "待判断",
+                "gap_pct": decision.get("gap_pct"),
+                "note": decision.get("note") or "已按 9:25 实时竞价补齐开盘判断。",
+                "can_enter": str(decision.get("decision_status") or "") == "buy",
+            }
+            for key, label in STRATEGIES:
+                item = performance.get(key) if isinstance(performance.get(key), dict) else {}
+                if str(item.get("status") or "") == "missing":
+                    performance[key] = {
+                        "status": "pending",
+                        "label": label,
+                        "note": "已拿到 9:25 开盘判断，待收盘后补齐收益表现。",
+                    }
+        rec["performance"] = performance
+        merged_rows.append(rec)
+    return merged_rows
+
+
 def build_stock_research_backtest_payload(*, current_market_data: dict[str, Any] | None = None) -> dict[str, Any]:
     rows, generated_from = _load_stock_research_rows()
     if not rows:
         return _empty_backtest_payload(generated_from=generated_from)
 
     unique_codes = sorted({r["code"] for r in rows if r["code"]})
-    date_list = sorted({r["date10"] for r in rows})
-    latest_date10 = date_list[-1]
-    histories, price_diag = _get_price_histories(unique_codes, st8=date_list[0].replace("-", ""), et8=_now_bj().strftime("%Y%m%d"))
-    realtime_buy = _build_realtime_buy_payload(rows, latest_date10=latest_date10, current_market_data=current_market_data)
+    source_date_list = sorted({r["date10"] for r in rows})
+    histories, price_diag = _get_price_histories(unique_codes, st8=source_date_list[0].replace("-", ""), et8=_now_bj().strftime("%Y%m%d"))
 
     enriched_rows: list[dict[str, Any]] = []
     for row in rows:
@@ -935,27 +998,47 @@ def build_stock_research_backtest_payload(*, current_market_data: dict[str, Any]
         rec["performance"] = _evaluate_one(rec, histories.get(rec["code"], []))
         enriched_rows.append(rec)
 
-    total = len(enriched_rows)
-    eligible_rows = [r for r in enriched_rows if (r.get("performance") or {}).get("open_check", {}).get("can_enter")]
-    super_rows = [r for r in enriched_rows if (r.get("performance") or {}).get("open_check", {}).get("status") == "super"]
-    expected_rows = [r for r in enriched_rows if (r.get("performance") or {}).get("open_check", {}).get("status") == "expected"]
-    wait_reseal_rows = [r for r in enriched_rows if (r.get("performance") or {}).get("open_check", {}).get("status") == "wait_reseal"]
-    rejected_rows = [r for r in enriched_rows if (r.get("performance") or {}).get("open_check", {}).get("status") == "reject"]
+    reference_date10 = _pick_realtime_reference_date(enriched_rows, current_market_data=current_market_data)
+    current_pool_rows = [r for r in enriched_rows if str(r.get("date10") or "") == reference_date10]
+    realtime_buy = _build_realtime_buy_payload(current_pool_rows or enriched_rows, latest_date10=reference_date10, current_market_data=current_market_data) if reference_date10 else _empty_backtest_payload()["realtimeBuy"]
+    current_pool_rows = _merge_current_pool_with_realtime(current_pool_rows, realtime_buy)
 
-    by_bucket = Counter(r["bucket"] for r in enriched_rows)
-    by_open_status = Counter((r.get("performance") or {}).get("open_check", {}).get("status") or "unknown" for r in enriched_rows)
-    by_mainline = Counter(r["main_line"] for r in enriched_rows if r["main_line"])
+    backtest_rows = [r for r in enriched_rows if _is_backtest_ready_record(r)]
+    if not backtest_rows:
+        payload = _empty_backtest_payload(generated_from=generated_from)
+        payload["summary"]["source_samples"] = len(enriched_rows)
+        payload["summary"]["filtered_non_backtest_samples"] = len(enriched_rows)
+        payload["meta"]["latest_recommendation_date"] = reference_date10
+        payload["realtimeBuy"] = realtime_buy
+        payload["currentPoolRecords"] = current_pool_rows
+        payload["assumptions"].append("当天尚未走完次日开盘验证的数据会被清洗掉，不混入回测统计。")
+        payload["diagnostics"]["filtered_non_backtest_codes"] = [r["code"] for r in enriched_rows if r.get("code")]
+        return payload
+
+    date_list = sorted({r["date10"] for r in backtest_rows})
+    latest_backtest_date10 = date_list[-1]
+
+    total = len(backtest_rows)
+    eligible_rows = [r for r in backtest_rows if (r.get("performance") or {}).get("open_check", {}).get("can_enter")]
+    super_rows = [r for r in backtest_rows if (r.get("performance") or {}).get("open_check", {}).get("status") == "super"]
+    expected_rows = [r for r in backtest_rows if (r.get("performance") or {}).get("open_check", {}).get("status") == "expected"]
+    wait_reseal_rows = [r for r in backtest_rows if (r.get("performance") or {}).get("open_check", {}).get("status") == "wait_reseal"]
+    rejected_rows = [r for r in backtest_rows if (r.get("performance") or {}).get("open_check", {}).get("status") == "reject"]
+
+    by_bucket = Counter(r["bucket"] for r in backtest_rows)
+    by_open_status = Counter((r.get("performance") or {}).get("open_check", {}).get("status") or "unknown" for r in backtest_rows)
+    by_mainline = Counter(r["main_line"] for r in backtest_rows if r["main_line"])
     by_date_status: dict[str, dict[str, int]] = defaultdict(lambda: {"super": 0, "expected": 0, "wait_reseal": 0, "reject": 0})
-    for row in enriched_rows:
+    for row in backtest_rows:
         status = (row.get("performance") or {}).get("open_check", {}).get("status") or "reject"
         if status not in by_date_status[row["date10"]]:
             by_date_status[row["date10"]][status] = 0
         by_date_status[row["date10"]][status] += 1
 
     metrics = {
-        "next_day": _summarize_strategy(enriched_rows, "next_day", "隔日收益"),
-        "hold_3d": _summarize_strategy(enriched_rows, "hold_3d", "3日收益"),
-        "hold_5d": _summarize_strategy(enriched_rows, "hold_5d", "5日收益"),
+        "next_day": _summarize_strategy(backtest_rows, "next_day", "隔日收益"),
+        "hold_3d": _summarize_strategy(backtest_rows, "hold_3d", "3日收益"),
+        "hold_5d": _summarize_strategy(backtest_rows, "hold_5d", "5日收益"),
     }
 
     return {
@@ -968,10 +1051,12 @@ def build_stock_research_backtest_payload(*, current_market_data: dict[str, Any]
             "price_source": "biying hsstock/history + 本地 recommendation_price_history 缓存",
             "entry_window": "09:25-09:30",
             "source_module": "ztAnalysis.relay/watch",
-            "latest_recommendation_date": latest_date10,
+            "latest_recommendation_date": reference_date10 or latest_backtest_date10,
         },
         "summary": {
             "total_samples": total,
+            "source_samples": len(enriched_rows),
+            "filtered_non_backtest_samples": len(enriched_rows) - total,
             "eligible_samples": len(eligible_rows),
             "expected_count": len(expected_rows),
             "super_count": len(super_rows),
@@ -988,6 +1073,7 @@ def build_stock_research_backtest_payload(*, current_market_data: dict[str, Any]
         },
         "assumptions": [
             "回测样本只取当前可用 cache/market_data-YYYYMMDD.json 中 ztAnalysis.relay 与 ztAnalysis.watch 这组同源推荐。",
+            "当天尚未走完次日开盘验证的数据会被清洗掉，不混入回测统计或策略表现。",
             "最新推荐日的 9:25 买入列表只允许在北京时区 09:25-09:30 请求 biying 批量竞价接口；窗口外只复用已落地结果，不因页面刷新重复取数。",
             "如果当前环境拿不到远端数据，只会展示待补齐/报价缺失，不会伪造买点。",
             "入场窗口限定为次日 09:25-09:30；只有开盘缺口满足“符合预期”或可在开盘窗口确认“超预期”时，才记为买入样本。",
@@ -1003,7 +1089,8 @@ def build_stock_research_backtest_payload(*, current_market_data: dict[str, Any]
         },
         "metrics": metrics,
         "realtimeBuy": realtime_buy,
-        "records": enriched_rows,
+        "currentPoolRecords": current_pool_rows,
+        "records": backtest_rows,
         "spotlight": {
             "super_candidates": sorted(super_rows, key=lambda x: (-x["score"], x["date"], x["code"]))[:10],
             "expected_candidates": sorted(expected_rows, key=lambda x: (-x["score"], x["date"], x["code"]))[:10],
@@ -1013,6 +1100,7 @@ def build_stock_research_backtest_payload(*, current_market_data: dict[str, Any]
         "diagnostics": {
             "price_history": price_diag,
             "realtime_buy": realtime_buy.get("diagnostics", {}),
+            "filtered_non_backtest_codes": [r["code"] for r in enriched_rows if not _is_backtest_ready_record(r) and r.get("code")],
         },
     }
 

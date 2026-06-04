@@ -20,6 +20,8 @@ const emptyPayload = {
   },
   summary: {
     total_samples: 0,
+    source_samples: 0,
+    filtered_non_backtest_samples: 0,
     eligible_samples: 0,
     expected_count: 0,
     super_count: 0,
@@ -40,6 +42,7 @@ const emptyPayload = {
     by_open_status: [],
   },
   metrics: {},
+  currentPoolRecords: [],
   records: [],
   spotlight: {},
   diagnostics: {},
@@ -102,6 +105,16 @@ const spotlight = computed(() => {
   }
 })
 
+const currentPoolRecords = computed<any[]>(() => {
+  const rows = Array.isArray(payload.value?.currentPoolRecords) ? [...payload.value.currentPoolRecords] : []
+  rows.sort((a, b) => {
+    const scoreDiff = toNum(b?.score, 0) - toNum(a?.score, 0)
+    if (scoreDiff) return scoreDiff
+    return String(a?.code || "").localeCompare(String(b?.code || ""))
+  })
+  return rows
+})
+
 const records = computed<any[]>(() => {
   const rows = Array.isArray(payload.value?.records) ? [...payload.value.records] : []
   rows.sort((a, b) => {
@@ -114,17 +127,9 @@ const records = computed<any[]>(() => {
   return rows
 })
 const latestRecommendationDate = computed(() => String(meta.value?.latest_recommendation_date || realtimeBuy.value?.reference_date || "").trim())
-const currentRecords = computed<any[]>(() => {
-  const date10 = latestRecommendationDate.value
-  if (!date10) return []
-  return records.value.filter((row) => String(row?.date10 || "") === date10)
-})
+const currentRecords = computed<any[]>(() => currentPoolRecords.value)
 const currentEligibleCount = computed(() => currentRecords.value.filter((row) => !!row?.performance?.open_check?.can_enter).length)
-const historicalRecords = computed<any[]>(() => {
-  const date10 = latestRecommendationDate.value
-  if (!date10) return records.value
-  return records.value.filter((row) => String(row?.date10 || "") !== date10)
-})
+const historicalRecords = computed<any[]>(() => records.value)
 
 const entryRate = computed(() => {
   const total = toNum(summary.value?.total_samples, 0)
@@ -472,7 +477,7 @@ function strategyReturnClass(performance: any, key: string) {
         <div class="bt-kpi-card">
           <div class="bt-kpi-label">历史总样本</div>
           <div class="bt-kpi-value">{{ summary.total_samples ?? 0 }}</div>
-          <div class="bt-kpi-note">覆盖 {{ summary.trade_days ?? 0 }} 个推荐交易日</div>
+          <div class="bt-kpi-note">源样本 {{ summary.source_samples ?? summary.total_samples ?? 0 }} ｜ 清洗掉 {{ summary.filtered_non_backtest_samples ?? 0 }}</div>
         </div>
         <div class="bt-kpi-card">
           <div class="bt-kpi-label">历史可执行样本</div>

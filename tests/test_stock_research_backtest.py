@@ -124,7 +124,15 @@ class StockResearchBacktestRowsTest(unittest.TestCase):
                 ), patch.object(
                     backtest,
                     "_get_price_histories",
-                    return_value=({}, {"source": "mock", "fetched": 0, "cached": 0, "missing": []}),
+                    return_value=(
+                        {
+                            "000003": [
+                                {"date": "2026-06-03", "open": 10.0, "close": 10.0, "prev_close": 9.9},
+                                {"date": "2026-06-04", "open": 10.2, "close": 10.5, "prev_close": 10.0},
+                            ]
+                        },
+                        {"source": "mock", "fetched": 1, "cached": 0, "missing": []},
+                    ),
                 ):
                     payload = backtest.build_stock_research_backtest_payload()
 
@@ -132,6 +140,7 @@ class StockResearchBacktestRowsTest(unittest.TestCase):
         self.assertEqual(payload["realtimeBuy"]["buy_count"], 1)
         self.assertEqual(payload["realtimeBuy"]["direct_expected_count"], 1)
         self.assertEqual(payload["realtimeBuy"]["diagnostics"]["source"], "cache.raw.quotes")
+        self.assertEqual(payload["realtimeBuy"]["reference_date"], "2026-06-03")
 
     def test_preserved_realtime_buy_reads_intraday_snapshot(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
@@ -183,6 +192,83 @@ class StockResearchBacktestRowsTest(unittest.TestCase):
                 snapshot = backtest._load_latest_stock_research_snapshot("2026-06-03")
 
         self.assertEqual(snapshot["raw"]["quotes"]["items"]["000002"]["dm"], "000002")
+
+    def test_current_day_non_backtest_rows_are_filtered_out(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            cache_dir = Path(tmp) / "cache"
+            cache_dir.mkdir()
+            (cache_dir / "market_data-20260603.json").write_text(
+                json.dumps(
+                    {
+                        "date": "2026-06-03",
+                        "meta": {"mode": "eod"},
+                        "ztAnalysis": {
+                            "relay": [{"code": "000003", "name": "昨日接力", "factorScore": 90, "reason": "预期 +1% ~ +3%"}],
+                            "watch": [],
+                        },
+                    },
+                    ensure_ascii=False,
+                ),
+                encoding="utf-8",
+            )
+            (cache_dir / "market_data-20260604.json").write_text(
+                json.dumps(
+                    {
+                        "date": "2026-06-04",
+                        "meta": {"mode": "eod"},
+                        "ztAnalysis": {
+                            "relay": [{"code": "000004", "name": "当天接力", "factorScore": 88, "reason": "预期 +1% ~ +3%"}],
+                            "watch": [],
+                        },
+                    },
+                    ensure_ascii=False,
+                ),
+                encoding="utf-8",
+            )
+
+            histories = {
+                "000003": [
+                    {"date": "2026-06-03", "open": 10.0, "close": 10.0, "prev_close": 9.9},
+                    {"date": "2026-06-04", "open": 10.2, "close": 10.5, "prev_close": 10.0},
+                ],
+                "000004": [
+                    {"date": "2026-06-04", "open": 8.0, "close": 8.1, "prev_close": 7.9},
+                ],
+            }
+
+            with patch.object(backtest, "CACHE_DIR", cache_dir), patch.object(
+                backtest,
+                "_get_price_histories",
+                return_value=(histories, {"source": "mock", "fetched": 2, "cached": 0, "missing": []}),
+            ), patch.object(
+                backtest, "_should_request_realtime_quotes", return_value=False
+            ), patch.object(
+                backtest, "_load_preserved_realtime_buy", return_value=None
+            ):
+                backtest.save_prefetched_realtime_quotes(
+                    date10="2026-06-03",
+                    items={
+                        "000003": {
+                            "dm": "000003",
+                            "t": "2026-06-04 09:25:03",
+                            "yc": 10.0,
+                            "o": 10.2,
+                            "p": 10.2,
+                            "cje": 200000000,
+                        }
+                    },
+                    as_of="2026-06-04 09:25:03",
+                    source="unit_test",
+                )
+                payload = backtest.build_stock_research_backtest_payload()
+
+        self.assertEqual(payload["summary"]["source_samples"], 2)
+        self.assertEqual(payload["summary"]["filtered_non_backtest_samples"], 1)
+        self.assertEqual(payload["summary"]["total_samples"], 1)
+        self.assertEqual(payload["meta"]["latest_recommendation_date"], "2026-06-03")
+        self.assertEqual(payload["realtimeBuy"]["reference_date"], "2026-06-03")
+        self.assertEqual([row["code"] for row in payload["records"]], ["000003"])
+        self.assertEqual(payload["diagnostics"]["filtered_non_backtest_codes"], ["000004"])
 
 
 if __name__ == "__main__":
