@@ -304,9 +304,9 @@ def upsert_daily_backtest_pool(market_data: dict[str, Any], *, force: bool = Fal
 def _load_stock_research_rows() -> tuple[list[dict[str, Any]], list[str]]:
     pool = _load_backtest_pool()
     days = pool.get("days") if isinstance(pool.get("days"), dict) else {}
+    rows_by_date: dict[str, list[dict[str, Any]]] = {}
+    sources_by_date: dict[str, str] = {}
     if days:
-        rows: list[dict[str, Any]] = []
-        used_days: list[str] = []
         for date10 in sorted(days.keys()):
             day = days.get(date10)
             if not isinstance(day, dict):
@@ -315,37 +315,39 @@ def _load_stock_research_rows() -> tuple[list[dict[str, Any]], list[str]]:
             watch = day.get("watch") if isinstance(day.get("watch"), list) else []
             if not relay and not watch:
                 continue
-            used_days.append(str(day.get("source_market_data") or f"stock_research_backtest_pool.json:{date10}"))
-            rows.extend([dict(item) for item in relay if isinstance(item, dict)])
-            rows.extend([dict(item) for item in watch if isinstance(item, dict)])
-        rows.sort(key=lambda x: (x["date"], -x["score"], x["code"]))
-        if rows:
-            return rows, used_days
+            rows_by_date[date10] = [dict(item) for item in relay if isinstance(item, dict)]
+            rows_by_date[date10].extend(dict(item) for item in watch if isinstance(item, dict))
+            sources_by_date[date10] = str(day.get("source_market_data") or f"stock_research_backtest_pool.json:{date10}")
 
     files = sorted(CACHE_DIR.glob("market_data-*.json"))
-    rows: list[dict[str, Any]] = []
-    used_files: list[str] = []
 
     for fp in files:
         raw = _load_json(fp)
+        meta = raw.get("meta") if isinstance(raw.get("meta"), dict) else {}
+        if str(meta.get("mode") or "").strip() == "intraday":
+            continue
         date10 = str(raw.get("date") or "")
-        if len(date10) != 10:
+        if len(date10) != 10 or date10 in rows_by_date:
             continue
         zt = raw.get("ztAnalysis") if isinstance(raw.get("ztAnalysis"), dict) else {}
         relay = zt.get("relay") if isinstance(zt.get("relay"), list) else []
         watch = zt.get("watch") if isinstance(zt.get("watch"), list) else []
         if not relay and not watch:
             continue
-        used_files.append(fp.name)
-        for item in relay:
-            if isinstance(item, dict):
-                rows.append(_row_from_item(item, date10=date10, bucket="relay"))
-        for item in watch:
-            if isinstance(item, dict):
-                rows.append(_row_from_item(item, date10=date10, bucket="watch"))
+        rows_by_date[date10] = [_row_from_item(item, date10=date10, bucket="relay") for item in relay if isinstance(item, dict)]
+        rows_by_date[date10].extend(_row_from_item(item, date10=date10, bucket="watch") for item in watch if isinstance(item, dict))
+        sources_by_date[date10] = fp.name
 
+    rows: list[dict[str, Any]] = []
+    used_sources: list[str] = []
+    for date10 in sorted(rows_by_date.keys()):
+        day_rows = rows_by_date[date10]
+        if not day_rows:
+            continue
+        used_sources.append(sources_by_date.get(date10) or f"stock_research_backtest_pool.json:{date10}")
+        rows.extend(day_rows)
     rows.sort(key=lambda x: (x["date"], -x["score"], x["code"]))
-    return rows, used_files
+    return rows, used_sources
 
 
 def _load_latest_stock_research_snapshot(date10: str) -> dict[str, Any]:
