@@ -34,6 +34,8 @@ const ALERT_KEEP_COUNT = 300;
 const ALERT_RAW_SEEN_LIMIT = 800;
 const RESONANCE_THRESHOLD_COUNT = 3;
 const RESONANCE_WINDOW_SEC = 300;
+const RESONANCE_MIN_UNIQUE_STOCKS = 2;
+const RESONANCE_COOLDOWN_SEC = 900;
 const STORAGE_KEY = 'quant_review_alert_history';
 
 const getPersistentHistory = (): IntradayAlertItem[] => {
@@ -146,6 +148,9 @@ const buildSymbolUrl = (symbol?: string | null) => {
   return `https://xueqiu.com/S/${market}${raw}`;
 };
 
+const resonanceBucketKey = (sector: string, eventTimestamp: number) =>
+  `resonance:${sector}:${Math.floor(eventTimestamp / RESONANCE_COOLDOWN_SEC)}`;
+
 const parseAlertItem = (event: any): IntradayAlertItem | null => {
   if (!event || typeof event !== 'object') return null;
   const eventType = Number(event.event_type || 0);
@@ -249,8 +254,7 @@ export function useIntradayAlertPool() {
     const injResonance = (window as any).__INTRADAY_RESONANCE__;
     if (Array.isArray(injResonance) && injResonance.length) {
       for (const r of injResonance) {
-        const bucket = Math.floor((r.eventTimestamp || 0) / ALERT_DEDUPE_BUCKET_SEC);
-        const key = `resonance:${r.sector || ''}:${Math.floor((r.eventTimestamp || 0) / 300)}`;
+        const key = resonanceBucketKey(String(r.sector || ''), Number(r.eventTimestamp || 0));
         if (poolByBucket.has(key) || rawSeenKeys.has(r.id)) continue;
         rawSeenKeys.add(r.id);
         const item: IntradayAlertItem = {
@@ -341,7 +345,7 @@ export function useIntradayAlertPool() {
   };
 
   const detectResonance = (allCurrentItems: IntradayAlertItem[]) => {
-    const sectorHits = new Map<string, { count: number; stockBriefs: Map<string, { name: string; pct: string }>; lastTs: number }>();
+    const sectorHits = new Map<string, { plateCount: number; platePcp?: number; stockBriefs: Map<string, { name: string; pct: string; ts: number }>; lastTs: number }>();
     const now = Math.floor(Date.now() / 1000);
 
     // 共振检测基于全局已积累的全部 items（而不仅是本轮新数据），避免漏判
@@ -353,14 +357,16 @@ export function useIntradayAlertPool() {
 
       const sectors = item.isPlate ? [item.title] : item.relatedNames;
       sectors.forEach(s => {
-        if (!sectorHits.has(s)) sectorHits.set(s, { count: 0, stockBriefs: new Map(), lastTs: 0 });
+        if (!s) return;
+        if (!sectorHits.has(s)) sectorHits.set(s, { plateCount: 0, stockBriefs: new Map(), lastTs: 0 });
         const hit = sectorHits.get(s)!;
-        hit.count += 1;
-        // 收集个股异动摘要（去重，同一只只保留最新）
-        if (!item.isPlate && item.primarySymbol) {
+        if (item.isPlate) {
+          hit.plateCount += 1;
+          if (item.pcp !== undefined) hit.platePcp = item.pcp;
+        } else if (item.primarySymbol) {
           const existing = hit.stockBriefs.get(item.primarySymbol);
-          if (!existing || item.eventTimestamp > (existing as any)._ts) {
-            hit.stockBriefs.set(item.primarySymbol, { name: item.title, pct: item.valueText, _ts: item.eventTimestamp } as any);
+          if (!existing || item.eventTimestamp > existing.ts) {
+            hit.stockBriefs.set(item.primarySymbol, { name: item.title, pct: item.valueText, ts: item.eventTimestamp });
           }
         }
         hit.lastTs = Math.max(hit.lastTs, item.eventTimestamp);
@@ -369,47 +375,50 @@ export function useIntradayAlertPool() {
 
     const newResonanceItems: IntradayAlertItem[] = [];
     sectorHits.forEach((hit, sector) => {
-      if (hit.count >= RESONANCE_THRESHOLD_COUNT) {
-        const key = `resonance:${sector}:${Math.floor(hit.lastTs / 300)}`;
-        if (poolByBucket.has(key)) return;
+      const uniqueStockCount = hit.stockBriefs.size;
+      const signalCount = uniqueStockCount + (hit.plateCount > 0 ? 1 : 0);
+      if (hit.plateCount <= 0) return;
+      if (uniqueStockCount < RESONANCE_MIN_UNIQUE_STOCKS) return;
+      if (signalCount < RESONANCE_THRESHOLD_COUNT) return;
 
-        // 只取板块异动本身的 pcp，没有就不显示
-        const plateItem = poolItems.find(x => x.isPlate && x.title === sector);
-        const pcp = plateItem?.pcp;
-        const meta = eventMeta(99999, pcp);
+      const lastResonance = items.value.find(x => x.eventType === 99999 && x.relatedNames[0] === sector);
+      if (lastResonance && hit.lastTs - lastResonance.eventTimestamp < RESONANCE_COOLDOWN_SEC) return;
 
-        // 拼接异动个股摘要：名称 +涨跌幅，最多5只
-        const stockParts = [...hit.stockBriefs.values()]
-          .sort((a, b) => (b as any)._ts - (a as any)._ts)
-          .slice(0, 5)
-          .map(s => `${s.name}${s.pct ? ' ' + s.pct : ''}`);
-        const subtitle = stockParts.length
-          ? stockParts.join(' / ')
-          : `${hit.count} 只异动联动`;
+      const key = resonanceBucketKey(sector, hit.lastTs);
+      if (poolByBucket.has(key)) return;
 
-        const resItem: IntradayAlertItem = {
-          id: `resonance-${hit.lastTs}-${sector}`,
-          bucketKey: key,
-          isPlate: true,
-          title: `🔥 板块共振：${sector}`,
-          subtitle,
-          eventType: 99999,
-          eventTypeLabel: meta.label,
-          tone: meta.tone,
-          priorityLevel: 'high',
-          priorityLabel: '共振',
-          valueText: pcp !== undefined ? horrorValue(pcp) : '',
-          momentText: '',
-          time: formatTime(hit.lastTs),
-          eventTimestamp: hit.lastTs,
-          primarySymbol: '',
-          relatedNames: [sector],
-          unread: true,
-          pcp: pcp ?? 0,
-          mtm: 0,
-        };
-        newResonanceItems.push(resItem);
-      }
+      const pcp = hit.platePcp;
+      const meta = eventMeta(99999, pcp);
+      const stockParts = [...hit.stockBriefs.values()]
+        .sort((a, b) => b.ts - a.ts)
+        .slice(0, 5)
+        .map(s => `${s.name}${s.pct ? ' ' + s.pct : ''}`);
+      const subtitle = stockParts.length
+        ? stockParts.join(' / ')
+        : `${signalCount} 路信号联动`;
+
+      const resItem: IntradayAlertItem = {
+        id: `resonance-${hit.lastTs}-${sector}`,
+        bucketKey: key,
+        isPlate: true,
+        title: `🔥 板块共振：${sector}`,
+        subtitle,
+        eventType: 99999,
+        eventTypeLabel: meta.label,
+        tone: meta.tone,
+        priorityLevel: 'high',
+        priorityLabel: '共振',
+        valueText: pcp !== undefined ? horrorValue(pcp) : '',
+        momentText: '',
+        time: formatTime(hit.lastTs),
+        eventTimestamp: hit.lastTs,
+        primarySymbol: '',
+        relatedNames: [sector],
+        unread: true,
+        pcp: pcp ?? 0,
+        mtm: 0,
+      };
+      newResonanceItems.push(resItem);
     });
     return newResonanceItems;
   };

@@ -20,8 +20,13 @@ from daily_review.cache_io import read_json
 
 RESONANCE_WINDOW_SEC = 300
 RESONANCE_THRESHOLD_COUNT = 3
+RESONANCE_MIN_UNIQUE_STOCKS = 2
 # 前端 ALERT_FETCH_TYPES（与 useIntradayAlertPool.ts 一致）
 ALERT_TYPES = {11000, 11001, 10005, 10006, 10003, 10004, 10009, 10010, 10008, 10007}
+
+
+def _is_st_name(name: Any) -> bool:
+    return "ST" in str(name or "").upper()
 
 
 def _normalize_pct(pcp: Any, *, default: float | None = None) -> float | None:
@@ -47,6 +52,89 @@ def _format_bj_time(ts: int) -> str:
     from datetime import datetime, timezone, timedelta
     bj = timezone(timedelta(hours=8))
     return datetime.fromtimestamp(ts, tz=bj).strftime("%H:%M:%S")
+
+
+def _blank_sector_hit() -> dict[str, Any]:
+    return {
+        "lastTs": 0,
+        "stockBriefs": {},
+        "platePcp": None,
+        "_signals": [],
+    }
+
+
+def _latest_resonance_signal(signals: list[dict[str, Any]]) -> dict[str, Any] | None:
+    """
+    在 300 秒窗口内寻找“更准确”的共振确认：
+    - 必须有板块异动背书；
+    - 至少 2 只不同个股联动；
+    - 同一只股票多次异动不重复计数。
+    """
+    ordered = sorted(
+        (
+            sig for sig in signals
+            if isinstance(sig, dict) and isinstance(sig.get("ts"), (int, float))
+        ),
+        key=lambda sig: int(sig["ts"]),
+    )
+    if len(ordered) < RESONANCE_THRESHOLD_COUNT:
+        return None
+
+    left = 0
+
+    matched: dict[str, Any] | None = None
+
+    for right, sig in enumerate(ordered):
+        right_ts = int(sig["ts"])
+        while left <= right and right_ts - int(ordered[left]["ts"]) > RESONANCE_WINDOW_SEC:
+            left += 1
+
+        window = ordered[left:right + 1]
+        plate_count = 0
+        latest_plate_pcp: float | None = None
+        stock_latest: dict[str, dict[str, Any]] = {}
+        for candidate in window:
+            if candidate.get("kind") == "plate":
+                plate_count += 1
+                pcp = _normalize_pct(candidate.get("pcp"))
+                if pcp is not None:
+                    latest_plate_pcp = pcp
+                continue
+            symbol = str(candidate.get("symbol") or "").strip()
+            if not symbol:
+                continue
+            prev = stock_latest.get(symbol)
+            if prev is None or int(candidate.get("ts", 0)) >= int(prev.get("ts", 0)):
+                stock_latest[symbol] = candidate
+
+        unique_stock_count = len(stock_latest)
+        if plate_count <= 0 or unique_stock_count < RESONANCE_MIN_UNIQUE_STOCKS:
+            continue
+        signal_count = unique_stock_count + 1
+        if signal_count < RESONANCE_THRESHOLD_COUNT:
+            continue
+
+        briefs = sorted(
+            stock_latest.values(),
+            key=lambda item: int(item.get("ts", 0)),
+            reverse=True,
+        )[:5]
+        matched = {
+            "ts": right_ts,
+            "platePcp": latest_plate_pcp,
+            "uniqueStockCount": unique_stock_count,
+            "signalCount": signal_count,
+            "briefs": [
+                {
+                    "name": str(item.get("name") or ""),
+                    "symbol": str(item.get("symbol") or ""),
+                    "pct": _format_pct(_normalize_pct(item.get("pcp"))) if _normalize_pct(item.get("pcp")) is not None else "",
+                }
+                for item in briefs
+            ],
+        }
+
+    return matched
 
 
 def detect_resonance_from_cache(root: Path, date8: str) -> list[dict[str, Any]]:
@@ -104,8 +192,7 @@ def detect_resonance_from_cache(root: Path, date8: str) -> list[dict[str, Any]]:
     if not all_events:
         return []
 
-    # 2) 按板块聚合：sector → { count, lastTs, stockBriefs }
-    from collections import defaultdict
+    # 2) 按板块聚合：只保留前端同口径的题材信息（最多前 3 个 related_plates）
     sector_hits: dict[str, dict[str, Any]] = {}
 
     for e in all_events:
@@ -123,11 +210,14 @@ def detect_resonance_from_cache(root: Path, date8: str) -> list[dict[str, Any]]:
 
         if isinstance(plate_data, dict) and et >= 11000:
             sector_name = plate_data.get("plate_name", "").strip()
-            if sector_name:
-                hit = sector_hits.setdefault(sector_name, {"count": 0, "lastTs": 0, "stockBriefs": {}, "platePcp": None, "_event_timestamps": []})
-                hit["count"] += 1
+            if sector_name and not _is_st_name(sector_name):
+                hit = sector_hits.setdefault(sector_name, _blank_sector_hit())
                 hit["lastTs"] = max(hit["lastTs"], ts)
-                hit["_event_timestamps"].append(ts)
+                hit["_signals"].append({
+                    "kind": "plate",
+                    "ts": int(ts),
+                    "pcp": plate_data.get("pcp"),
+                })
                 pcp = _normalize_pct(plate_data.get("pcp"))
                 if pcp is not None:
                     hit["platePcp"] = pcp
@@ -137,6 +227,7 @@ def detect_resonance_from_cache(root: Path, date8: str) -> list[dict[str, Any]]:
             plates = stock_data.get("related_plates") or []
             if not isinstance(plates, list):
                 plates = []
+            plates = plates[:3]
             symbol = str(stock_data.get("symbol", "") or "").strip()
             name = str(stock_data.get("name", "") or "").strip()
             pcp = _normalize_pct(stock_data.get("pcp"))
@@ -145,12 +236,17 @@ def detect_resonance_from_cache(root: Path, date8: str) -> list[dict[str, Any]]:
                 if not isinstance(p, dict):
                     continue
                 pn = p.get("plate_name", "").strip()
-                if not pn:
+                if not pn or _is_st_name(pn):
                     continue
-                hit = sector_hits.setdefault(pn, {"count": 0, "lastTs": 0, "stockBriefs": {}, "platePcp": None, "_event_timestamps": []})
-                hit["count"] += 1
+                hit = sector_hits.setdefault(pn, _blank_sector_hit())
                 hit["lastTs"] = max(hit["lastTs"], ts)
-                hit["_event_timestamps"].append(ts)
+                hit["_signals"].append({
+                    "kind": "stock",
+                    "ts": int(ts),
+                    "symbol": symbol,
+                    "name": name,
+                    "pcp": pcp,
+                })
                 # 同一只个股只保留最新
                 if symbol:
                     brief = hit["stockBriefs"].get(symbol)
@@ -165,55 +261,35 @@ def detect_resonance_from_cache(root: Path, date8: str) -> list[dict[str, Any]]:
     # 3) 筛选共振：滑动窗口 300 秒内 >= 3 次
     results: list[dict[str, Any]] = []
     for sector, hit in sorted(sector_hits.items(), key=lambda x: -x[1]["lastTs"]):
-        if hit["count"] < RESONANCE_THRESHOLD_COUNT:
-            continue
-
-        # 获取该板块所有事件的时间戳，排序后用滑动窗口检测
-        timestamps: list[int] = sorted(hit.get("_event_timestamps", []))
-        has_resonance_window = False
-        window_last_ts = 0
-        # 双指针滑动窗口
-        left = 0
-        for right in range(len(timestamps)):
-            while timestamps[right] - timestamps[left] > RESONANCE_WINDOW_SEC:
-                left += 1
-            if right - left + 1 >= RESONANCE_THRESHOLD_COUNT:
-                has_resonance_window = True
-                window_last_ts = max(window_last_ts, timestamps[right])
-
-        if not has_resonance_window:
+        resonance = _latest_resonance_signal(hit.get("_signals", []))
+        if not resonance:
             continue
 
         # 拼装个股摘要
-        stock_briefs = list(hit["stockBriefs"].values())
-        stock_briefs.sort(key=lambda x: -(x.get("_ts", 0)))
-        briefs_for_subtitle = stock_briefs[:5]
+        briefs_for_subtitle = resonance.get("briefs", [])
         subtitle_parts = [
             f'{s["name"]}{" " + s["pct"] if s.get("pct") else ""}'
             for s in briefs_for_subtitle
         ]
 
         # 板块涨跌幅
-        plate_pcp = hit.get("platePcp")
+        plate_pcp = resonance.get("platePcp", hit.get("platePcp"))
         tone = "blue"
         if plate_pcp is not None:
             tone = "red" if plate_pcp >= 0 else "green"
 
-        ts = hit["lastTs"]
-        # 使用共振窗口内的最后时间戳
-        if window_last_ts > 0:
-            ts = window_last_ts
+        ts = int(resonance.get("ts") or hit["lastTs"] or 0)
         results.append({
             "id": f"resonance-{ts}-{sector}",
             "title": f"🔥 板块共振：{sector}",
-            "subtitle": " / ".join(subtitle_parts) if subtitle_parts else f'{hit["count"]} 只异动联动',
+            "subtitle": " / ".join(subtitle_parts) if subtitle_parts else f'{resonance.get("signalCount", 0)} 路信号联动',
             "time": _format_bj_time(ts),
             "eventTimestamp": ts,
             "tone": tone,
             "eventTypeLabel": "共振爆发",
             "valueText": _format_pct(plate_pcp) if plate_pcp is not None else "",
             "sector": sector,
-            "count": hit["count"],
+            "count": int(resonance.get("signalCount", 0) or 0),
             "stocks": [{"name": s["name"], "symbol": s["symbol"], "pct": s.get("pct", "")} for s in briefs_for_subtitle],
         })
 

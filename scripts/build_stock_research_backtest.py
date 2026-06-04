@@ -970,7 +970,7 @@ def _merge_current_pool_with_realtime(rows: list[dict[str, Any]], realtime_buy: 
                 "note": decision.get("note") or "已按 9:25 实时竞价补齐开盘判断。",
                 "can_enter": str(decision.get("decision_status") or "") == "buy",
             }
-            for key, label in STRATEGIES:
+            for key, label, _ in STRATEGIES:
                 item = performance.get(key) if isinstance(performance.get(key), dict) else {}
                 if str(item.get("status") or "") == "missing":
                     performance[key] = {
