@@ -506,8 +506,8 @@ def fetch_stock_money_flow(
     code: str,
     st: str = "",
     et: str = "",
-) -> dict | None:
-    """获取个股资金流向（大单动向）数据。
+) -> list[dict[str, Any]]:
+    """获取个股资金流向（大单动向）数据列表。
 
     Args:
         client: HTTP客户端
@@ -516,7 +516,7 @@ def fetch_stock_money_flow(
         et: 结束日期 YYYYMMDD
 
     Returns:
-        资金流向字典或None
+        资金流向列表
     端点: hsstock/history/transaction/{code}/...
     """
     try:
@@ -528,9 +528,42 @@ def fetch_stock_money_flow(
             params.append(f"et={et}")
         url = f"{base_url}?{'&'.join(params)}"
         data = client.get_json(url)
-        return data if isinstance(data, dict) else None
+        if isinstance(data, list):
+            return [row for row in data if isinstance(row, dict)]
+        if isinstance(data, dict):
+            for key in ("data", "list", "items", "result", "rows"):
+                rows = data.get(key)
+                if isinstance(rows, list):
+                    return [row for row in rows if isinstance(row, dict)]
+        return []
     except Exception:
-        return None
+        return []
+
+
+def extract_money_flow_day_map(rows: list[dict[str, Any]]) -> dict[str, float]:
+    """把区间资金流明细映射成 {YYYYMMDD: 大单净流入(亿)}。"""
+
+    def _to_num(value: Any) -> float:
+        try:
+            if value is None or value == "":
+                return 0.0
+            return float(value)
+        except Exception:
+            return 0.0
+
+    out: dict[str, float] = {}
+    for row in rows:
+        if not isinstance(row, dict):
+            continue
+        raw_date = str(row.get("t") or row.get("date") or row.get("day") or "").strip()
+        digits = "".join(ch for ch in raw_date if ch.isdigit())
+        if len(digits) < 8:
+            continue
+        day8 = digits[:8]
+        buy = _to_num(row.get("zmbtdcje")) + _to_num(row.get("zmbddcje"))
+        sell = _to_num(row.get("zmstdcje")) + _to_num(row.get("zmsddcje"))
+        out[day8] = round((buy - sell) / 1e8, 2)
+    return out
 
 
 # === 财务数据（v3扩展）===

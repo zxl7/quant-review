@@ -29,9 +29,11 @@ from daily_review.cache_io import read_json, write_json
 from daily_review.config import load_config_from_env
 from daily_review.config import DEFAULT_CONFIG
 from daily_review.data.biying import (
+    extract_money_flow_day_map,
     fetch_indices_realtime,
     fetch_index_history_k,
     fetch_pool,
+    fetch_stock_money_flow,
     fetch_stock_themes,
     fetch_stocks_realtime_map,
     get_trading_days_from_index_k,
@@ -2381,24 +2383,17 @@ def _inject_prd_v2_metrics(*, root: Path, date: str, market_data: dict, allow_ne
         p = _money_flow_cache_path(root=root)
         write_json(p, data)
 
-    def _net_big_order_flow_yi(client: Any, *, date8: str, code6: str) -> float | None:
+    def _fetch_money_flow_day_map(client: Any, *, code6: str, st8: str, et8: str) -> dict[str, float]:
         """
-        使用资金流向接口：特大单+大单 主买 - 主卖（单位：亿）。
-
-        端点（同 divergenceEngine 使用口径）：
-        hsstock/history/transaction/{code}.{SZ|SH}/{token}?st=YYYYMMDD&et=YYYYMMDD&lt=1
+        区间拉取单股资金流后拆成按日映射，避免 7 日窗口内同一股票重复请求。
         """
         code = _code_with_market(code6)
         if not code:
-            return None
-        url = f"{client.base_url}/hsstock/history/transaction/{code}/{client.token}?st={date8}&et={date8}&lt=1"
-        data = client.get_json(url)
-        if not isinstance(data, list) or not data:
-            return None
-        it = data[-1] if isinstance(data[-1], dict) else {}
-        buy = _to_num(it.get("zmbtdcje"), 0) + _to_num(it.get("zmbddcje"), 0)
-        sell = _to_num(it.get("zmstdcje"), 0) + _to_num(it.get("zmsddcje"), 0)
-        return round((buy - sell) / 1e8, 2)  # 元 -> 亿
+            return {}
+        rows = fetch_stock_money_flow(client, code=code, st=st8, et=et8)
+        if not isinstance(rows, list) or not rows:
+            return {}
+        return extract_money_flow_day_map(rows)
 
     def _inject_sector_flow_7d(*, root: Path, date: str, market_data: dict, client: Any) -> None:
         """
@@ -2466,18 +2461,27 @@ def _inject_prd_v2_metrics(*, root: Path, date: str, market_data: dict, allow_ne
         if not isinstance(by_day, dict):
             by_day = {}
 
-        # 3) 批量补齐缺失的 (day, code) 资金流向
+        # 3) 按股票一次性补齐近 7 日区间资金流，再拆回 day->code 缓存。
+        window_start8 = days[0].replace("-", "")
+        window_end8 = days[-1].replace("-", "")
+        need_codes: set[str] = set()
         for day8, c6 in sorted(list(pairs)):
             day_map = by_day.get(day8) or {}
-            if not isinstance(day_map, dict):
-                day_map = {}
-            if c6 in day_map:
+            if not isinstance(day_map, dict) or c6 not in day_map:
+                need_codes.add(c6)
+
+        for c6 in sorted(need_codes):
+            day_map_full = _fetch_money_flow_day_map(client, code6=c6, st8=window_start8, et8=window_end8)
+            if not day_map_full:
                 continue
-            v = _net_big_order_flow_yi(client, date8=day8, code6=c6)
-            if v is None:
-                continue
-            day_map[c6] = v
-            by_day[day8] = day_map
+            for day8, value in day_map_full.items():
+                if day8 not in {d.replace("-", "") for d in days}:
+                    continue
+                current_day_map = by_day.get(day8) or {}
+                if not isinstance(current_day_map, dict):
+                    current_day_map = {}
+                current_day_map[c6] = value
+                by_day[day8] = current_day_map
 
         cache["by_day"] = by_day
         # 裁剪：只保留近 7 个交易日（day8 格式 YYYYMMDD）
