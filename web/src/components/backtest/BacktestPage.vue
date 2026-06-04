@@ -5,9 +5,6 @@ import { useMarketData } from "../../composables/useMarketData"
 const { marketData } = useMarketData()
 const backtestSource = computed<any>(() => {
   const md = marketData.value as any
-  if (md?.meta?.mode === "intraday" && md?.preservedResearch?.marketData && typeof md.preservedResearch.marketData === "object") {
-    return md.preservedResearch.marketData
-  }
   return md || {}
 })
 

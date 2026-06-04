@@ -137,8 +137,8 @@ jobs:
           cp -f site_prev/cache/theme_trend_cache.json cache/ 2>/dev/null || true
           cp -f site_prev/cache/concept_fund_flow_cache.json cache/ 2>/dev/null || true
           cp -f site_prev/cache/money_flow_cache.json cache/ 2>/dev/null || true
-          cp -f site_prev/cache/stock_research_backtest_pool.json cache/ 2>/dev/null || true
           cp -f site_prev/cache/trade_days_cache.json cache/ 2>/dev/null || true
+          cp -f site_prev/cache/stock_research_realtime_quotes-*.json cache/ 2>/dev/null || true
           cp -f site_prev/cache/intraday_slices-*.json cache/ 2>/dev/null || true
           cp -f site_prev/cache/intraday_snapshots-*.json cache/ 2>/dev/null || true
 
@@ -151,6 +151,23 @@ jobs:
           if [ ${#sfiles[@]} -gt 2 ]; then
             rm -f "${sfiles[@]:0:${#sfiles[@]}-2}"
           fi
+          rfiles=( $(ls -1 cache/stock_research_realtime_quotes-*.json 2>/dev/null | sort || true) )
+          if [ ${#rfiles[@]} -gt 7 ]; then
+            rm -f "${rfiles[@]:0:${#rfiles[@]}-7}"
+          fi
+
+      - name: Prefetch stock research quotes (09:25 window)
+        if: ${{ github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true' }}
+        env:
+          BIYING_TOKEN: ${{ secrets.BIYING_TOKEN }}
+          BIYING_BASE_URL: ${{ secrets.BIYING_BASE_URL }}
+        run: |
+          set -euo pipefail
+          if [ -z "${BIYING_TOKEN}" ]; then
+            echo "Skip prefetch: missing BIYING_TOKEN"
+            exit 0
+          fi
+          PYTHONPATH=. python3 scripts/prefetch_stock_research_quotes.py --date "$(date +%F)" || echo "⚠ stock research quote prefetch failed, continue"
 
       - name: Setup Python
         uses: actions/setup-python@v5
@@ -552,8 +569,8 @@ jobs:
           cp -f cache/theme_trend_cache.json site_prev/cache/ 2>/dev/null || true
           cp -f cache/concept_fund_flow_cache.json site_prev/cache/ 2>/dev/null || true
           cp -f cache/money_flow_cache.json site_prev/cache/ 2>/dev/null || true
-          cp -f cache/stock_research_backtest_pool.json site_prev/cache/ 2>/dev/null || true
           cp -f cache/trade_days_cache.json site_prev/cache/ 2>/dev/null || true
+          cp -f cache/stock_research_realtime_quotes-*.json site_prev/cache/ 2>/dev/null || true
           cp -f cache/intraday_slices-*.json site_prev/cache/ 2>/dev/null || true
           cfiles=( $(ls -1 site_prev/cache/market_data-*.json 2>/dev/null | sort || true) )
           if [ ${#cfiles[@]} -gt 7 ]; then
@@ -562,6 +579,10 @@ jobs:
           sfiles=( $(ls -1 site_prev/cache/intraday_slices-*.json 2>/dev/null | sort || true) )
           if [ ${#sfiles[@]} -gt 2 ]; then
             rm -f "${sfiles[@]:0:${#sfiles[@]}-2}"
+          fi
+          rfiles=( $(ls -1 site_prev/cache/stock_research_realtime_quotes-*.json 2>/dev/null | sort || true) )
+          if [ ${#rfiles[@]} -gt 7 ]; then
+            rm -f "${rfiles[@]:0:${#rfiles[@]}-7}"
           fi
 
           cp -f ./cache_online/intraday_resonance-*.json site_prev/ 2>/dev/null || true

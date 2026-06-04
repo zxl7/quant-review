@@ -25,7 +25,6 @@ OUT_DIR = ROOT / "html" / "recommendation-preview"
 OUT_JSON = OUT_DIR / "stock_research_backtest.json"
 OUT_JS = OUT_DIR / "stock_research_backtest.js"
 PRICE_CACHE = ROOT / "cache_online" / "recommendation_price_history.json"
-BACKTEST_POOL = CACHE_DIR / "stock_research_backtest_pool.json"
 TZ_BJ = timezone(timedelta(hours=8))
 
 STRATEGIES = (
@@ -236,89 +235,9 @@ def _row_from_item(item: dict[str, Any], *, date10: str, bucket: str) -> dict[st
     }
 
 
-def _default_backtest_pool() -> dict[str, Any]:
-    return {
-        "schema": "stock_research_backtest_pool_v1",
-        "updated_at_bj": "",
-        "days": {},
-    }
-
-
-def _load_backtest_pool() -> dict[str, Any]:
-    data = _load_json(BACKTEST_POOL, default={})
-    if not isinstance(data, dict):
-        return _default_backtest_pool()
-    data.setdefault("schema", "stock_research_backtest_pool_v1")
-    data.setdefault("updated_at_bj", "")
-    data.setdefault("days", {})
-    if not isinstance(data.get("days"), dict):
-        data["days"] = {}
-    return data
-
-
-def upsert_daily_backtest_pool(market_data: dict[str, Any], *, force: bool = False) -> dict[str, Any]:
-    """
-    将单日个股研究样本固化到独立历史池。
-
-    这个池只保存“个股回测”真正需要的每日同源样本，不依赖 market_data 历史文件是否仍然保留。
-    """
-    if not isinstance(market_data, dict):
-        return _load_backtest_pool()
-
-    date10 = str(market_data.get("date") or "").strip()
-    if len(date10) != 10:
-        return _load_backtest_pool()
-
-    zt = market_data.get("ztAnalysis") if isinstance(market_data.get("ztAnalysis"), dict) else {}
-    relay = zt.get("relay") if isinstance(zt.get("relay"), list) else []
-    watch = zt.get("watch") if isinstance(zt.get("watch"), list) else []
-    if not relay and not watch and not force:
-        return _load_backtest_pool()
-
-    pool = _load_backtest_pool()
-    days = pool.setdefault("days", {})
-    if not isinstance(days, dict):
-        days = {}
-        pool["days"] = days
-
-    relay_rows = [_row_from_item(item, date10=date10, bucket="relay") for item in relay if isinstance(item, dict)]
-    watch_rows = [_row_from_item(item, date10=date10, bucket="watch") for item in watch if isinstance(item, dict)]
-    days[date10] = {
-        "date": date10,
-        "generated_at_bj": _now_bj().strftime("%Y-%m-%d %H:%M:%S"),
-        "source_module": "ztAnalysis.relay/watch",
-        "source_market_data": f"market_data-{date10.replace('-', '')}.json",
-        "relay": relay_rows,
-        "watch": watch_rows,
-        "summary": {
-            "relay_count": len(relay_rows),
-            "watch_count": len(watch_rows),
-            "total": len(relay_rows) + len(watch_rows),
-        },
-    }
-    pool["updated_at_bj"] = _now_bj().strftime("%Y-%m-%d %H:%M:%S")
-    _write_json(BACKTEST_POOL, pool)
-    return pool
-
-
 def _load_stock_research_rows() -> tuple[list[dict[str, Any]], list[str]]:
-    pool = _load_backtest_pool()
-    days = pool.get("days") if isinstance(pool.get("days"), dict) else {}
     rows_by_date: dict[str, list[dict[str, Any]]] = {}
     sources_by_date: dict[str, str] = {}
-    if days:
-        for date10 in sorted(days.keys()):
-            day = days.get(date10)
-            if not isinstance(day, dict):
-                continue
-            relay = day.get("relay") if isinstance(day.get("relay"), list) else []
-            watch = day.get("watch") if isinstance(day.get("watch"), list) else []
-            if not relay and not watch:
-                continue
-            rows_by_date[date10] = [dict(item) for item in relay if isinstance(item, dict)]
-            rows_by_date[date10].extend(dict(item) for item in watch if isinstance(item, dict))
-            sources_by_date[date10] = str(day.get("source_market_data") or f"stock_research_backtest_pool.json:{date10}")
-
     files = sorted(CACHE_DIR.glob("market_data-*.json"))
 
     for fp in files:
@@ -344,18 +263,145 @@ def _load_stock_research_rows() -> tuple[list[dict[str, Any]], list[str]]:
         day_rows = rows_by_date[date10]
         if not day_rows:
             continue
-        used_sources.append(sources_by_date.get(date10) or f"stock_research_backtest_pool.json:{date10}")
+        used_sources.append(sources_by_date.get(date10) or f"market_data:{date10}")
         rows.extend(day_rows)
     rows.sort(key=lambda x: (x["date"], -x["score"], x["code"]))
     return rows, used_sources
 
 
+def _empty_backtest_payload(*, generated_from: list[str] | None = None) -> dict[str, Any]:
+    return {
+        "meta": {
+            "title": "个股研究开盘回测",
+            "subtitle": "回测数据独立从现有 market_data 缓存即时派生；当前没有可用样本时只展示空结果。",
+            "dates": [],
+            "generated_at_bj": _now_bj().strftime("%Y-%m-%d %H:%M:%S"),
+            "generated_from": list(generated_from or []),
+            "price_source": "biying hsstock/history + 本地 recommendation_price_history 缓存",
+            "entry_window": "09:25-09:30",
+            "source_module": "ztAnalysis.relay/watch",
+            "latest_recommendation_date": "",
+            "is_empty": True,
+        },
+        "summary": {
+            "total_samples": 0,
+            "eligible_samples": 0,
+            "expected_count": 0,
+            "super_count": 0,
+            "wait_reseal_count": 0,
+            "rejected_count": 0,
+            "unique_codes": 0,
+            "trade_days": 0,
+            "priced_codes": 0,
+            "missing_price_codes": [],
+            "realtime_candidate_count": 0,
+            "realtime_buy_count": 0,
+            "realtime_pending_count": 0,
+            "realtime_unavailable_count": 0,
+        },
+        "assumptions": [
+            "回测数据是从当前可用的 cache/market_data-YYYYMMDD.json 即时派生，不再维护独立历史池。",
+            "没有同源研究样本时不补造数据，页面只展示空结果。",
+        ],
+        "breakdowns": {
+            "by_bucket": [],
+            "by_open_status": [],
+            "by_mainline": [],
+            "by_date_status": [],
+        },
+        "metrics": {},
+        "realtimeBuy": {
+            "reference_date": "",
+            "entry_window": "09:25-09:30",
+            "quote_time": "",
+            "source_module": "ztAnalysis.relay/watch",
+            "quote_source": "biying hsrl/ssjy_more 实时行情（失败时回退 raw.quotes）",
+            "candidate_count": 0,
+            "quoted_count": 0,
+            "buy_count": 0,
+            "direct_super_count": 0,
+            "direct_expected_count": 0,
+            "pending_count": 0,
+            "rejected_count": 0,
+            "unavailable_count": 0,
+            "buy_list": [],
+            "pending_list": [],
+            "rejected_list": [],
+            "unavailable_list": [],
+            "diagnostics": {"source": "empty"},
+        },
+        "records": [],
+        "spotlight": {
+            "super_candidates": [],
+            "expected_candidates": [],
+            "best_t3_trades": [],
+            "worst_t3_trades": [],
+        },
+        "diagnostics": {
+            "price_history": {"source": "empty", "fetched": 0, "cached": 0, "missing": []},
+            "realtime_buy": {"source": "empty"},
+        },
+    }
+
+
+def _market_data_snapshot_candidates(*, date10: str = "") -> list[Path]:
+    candidates: list[tuple[str, int, Path]] = []
+    for fp in CACHE_DIR.glob("market_data-*.json"):
+        match = re.match(r"^market_data-(\d{8})(-intraday)?$", fp.stem)
+        if not match:
+            continue
+        d8 = match.group(1)
+        if date10 and d8 != date10.replace("-", ""):
+            continue
+        # 同日优先使用 intraday 快照，避免 9:25 的盘中结果后续无法复用。
+        priority = 1 if match.group(2) else 0
+        candidates.append((d8, priority, fp))
+    return [fp for _, _, fp in sorted(candidates, reverse=True)]
+
+
 def _load_latest_stock_research_snapshot(date10: str) -> dict[str, Any]:
     if len(date10) != 10:
         return {}
-    fp = CACHE_DIR / f"market_data-{date10.replace('-', '')}.json"
-    raw = _load_json(fp, default={})
-    return raw if isinstance(raw, dict) else {}
+    for fp in _market_data_snapshot_candidates(date10=date10):
+        raw = _load_json(fp, default={})
+        if isinstance(raw, dict):
+            return raw
+    return {}
+
+
+def _extract_raw_quotes_items(market_data: dict[str, Any] | None) -> dict[str, Any]:
+    if not isinstance(market_data, dict):
+        return {}
+    raw = market_data.get("raw") if isinstance(market_data.get("raw"), dict) else {}
+    quotes = raw.get("quotes") if isinstance(raw.get("quotes"), dict) else {}
+    items = quotes.get("items")
+    return items if isinstance(items, dict) else {}
+
+
+def _research_quotes_cache_path(date10: str) -> Path:
+    return CACHE_DIR / f"stock_research_realtime_quotes-{date10.replace('-', '')}.json"
+
+
+def load_prefetched_realtime_quotes(date10: str) -> dict[str, Any]:
+    if len(date10) != 10:
+        return {}
+    data = _load_json(_research_quotes_cache_path(date10), default={})
+    return data if isinstance(data, dict) else {}
+
+
+def save_prefetched_realtime_quotes(*, date10: str, items: dict[str, Any], as_of: str, source: str) -> Path:
+    payload = {
+        "schema": "stock_research_realtime_quotes_v1",
+        "date": date10,
+        "as_of": as_of,
+        "source": source,
+        "count": len(items),
+        "items": items,
+        "saved_at_bj": _now_bj().strftime("%Y-%m-%d %H:%M:%S"),
+    }
+    path = _research_quotes_cache_path(date10)
+    _write_json(path, payload)
+    return path
 
 
 def _is_entry_window_time(hhmmss: str) -> bool:
@@ -383,16 +429,7 @@ def _should_request_realtime_quotes(now: datetime | None = None) -> bool:
 
 
 def _load_preserved_realtime_buy(latest_date10: str) -> dict[str, Any] | None:
-    candidates = []
-    for fp in CACHE_DIR.glob("market_data-*.json"):
-        stem = fp.stem
-        if not stem.startswith("market_data-"):
-            continue
-        d8 = stem.replace("market_data-", "")
-        if len(d8) == 8 and d8.isdigit():
-            candidates.append((d8, fp))
-
-    for _, fp in sorted(candidates, reverse=True):
+    for fp in _market_data_snapshot_candidates():
         data = _load_json(fp, default={})
         if not isinstance(data, dict):
             continue
@@ -498,7 +535,9 @@ def _fetch_realtime_quotes(codes: list[str], *, fallback_quotes: dict[str, Any] 
             if quote.get("time") and not diagnostics["as_of"]:
                 diagnostics["as_of"] = quote["time"]
 
-    if not quotes_map and diagnostics["fallback_used"] > 0:
+    if diagnostics["source"] == "window_closed" and diagnostics["fallback_used"] > 0:
+        diagnostics["source"] = "cache.raw.quotes"
+    elif not quotes_map and diagnostics["fallback_used"] > 0:
         diagnostics["source"] = "cache.raw.quotes"
     elif quotes_map and diagnostics["fallback_used"] > 0:
         diagnostics["source"] = "remote+cache.raw.quotes"
@@ -649,7 +688,12 @@ def _evaluate_realtime_signal(record: dict[str, Any], quote: dict[str, Any] | No
     }
 
 
-def _build_realtime_buy_payload(rows: list[dict[str, Any]], *, latest_date10: str) -> dict[str, Any]:
+def _build_realtime_buy_payload(
+    rows: list[dict[str, Any]],
+    *,
+    latest_date10: str,
+    current_market_data: dict[str, Any] | None = None,
+) -> dict[str, Any]:
     latest_rows = [dict(row) for row in rows if row.get("date10") == latest_date10]
     if not _should_request_realtime_quotes():
         preserved = _load_preserved_realtime_buy(latest_date10)
@@ -663,8 +707,14 @@ def _build_realtime_buy_payload(rows: list[dict[str, Any]], *, latest_date10: st
             }
             return preserved
 
+    raw_quotes: dict[str, Any] = {}
     latest_raw = _load_latest_stock_research_snapshot(latest_date10)
-    raw_quotes = latest_raw.get("raw", {}).get("quotes", {}).get("items", {}) if isinstance(latest_raw.get("raw"), dict) else {}
+    raw_quotes.update(_extract_raw_quotes_items(latest_raw))
+    raw_quotes.update(_extract_raw_quotes_items(current_market_data))
+    prefetched = load_prefetched_realtime_quotes(latest_date10)
+    items = prefetched.get("items")
+    if isinstance(items, dict):
+        raw_quotes.update(items)
     codes = [str(row.get("code") or "").strip() for row in latest_rows if str(row.get("code") or "").strip()]
     quotes_map, quote_diag = _fetch_realtime_quotes(codes, fallback_quotes=raw_quotes if isinstance(raw_quotes, dict) else None)
 
@@ -868,16 +918,16 @@ def _summarize_strategy(records: list[dict[str, Any]], key: str, label: str) -> 
     }
 
 
-def build_stock_research_backtest_payload() -> dict[str, Any]:
+def build_stock_research_backtest_payload(*, current_market_data: dict[str, Any] | None = None) -> dict[str, Any]:
     rows, generated_from = _load_stock_research_rows()
     if not rows:
-        raise ValueError("No ztAnalysis stock research rows found in cache/market_data-*.json")
+        return _empty_backtest_payload(generated_from=generated_from)
 
     unique_codes = sorted({r["code"] for r in rows if r["code"]})
     date_list = sorted({r["date10"] for r in rows})
     latest_date10 = date_list[-1]
     histories, price_diag = _get_price_histories(unique_codes, st8=date_list[0].replace("-", ""), et8=_now_bj().strftime("%Y%m%d"))
-    realtime_buy = _build_realtime_buy_payload(rows, latest_date10=latest_date10)
+    realtime_buy = _build_realtime_buy_payload(rows, latest_date10=latest_date10, current_market_data=current_market_data)
 
     enriched_rows: list[dict[str, Any]] = []
     for row in rows:
@@ -911,7 +961,7 @@ def build_stock_research_backtest_payload() -> dict[str, Any]:
     return {
         "meta": {
             "title": "个股研究开盘回测",
-            "subtitle": "同源读取 ztAnalysis 接力/观察推荐；首屏先看最新推荐在 09:25-09:30 的实时买入列表，历史样本继续用于开盘回测复盘。",
+            "subtitle": "回测结果独立从现有 market_data 缓存即时派生；首屏先看最新推荐在 09:25-09:30 的实时买入列表，历史样本继续用于开盘回测复盘。",
             "dates": date_list,
             "generated_at_bj": _now_bj().strftime("%Y-%m-%d %H:%M:%S"),
             "generated_from": generated_from,
@@ -937,7 +987,7 @@ def build_stock_research_backtest_payload() -> dict[str, Any]:
             "realtime_unavailable_count": realtime_buy["unavailable_count"],
         },
         "assumptions": [
-            "样本池只取 cache/market_data-YYYYMMDD.json 中 ztAnalysis.relay 与 ztAnalysis.watch 这组同源推荐。",
+            "回测样本只取当前可用 cache/market_data-YYYYMMDD.json 中 ztAnalysis.relay 与 ztAnalysis.watch 这组同源推荐。",
             "最新推荐日的 9:25 买入列表只允许在北京时区 09:25-09:30 请求 biying 批量竞价接口；窗口外只复用已落地结果，不因页面刷新重复取数。",
             "如果当前环境拿不到远端数据，只会展示待补齐/报价缺失，不会伪造买点。",
             "入场窗口限定为次日 09:25-09:30；只有开盘缺口满足“符合预期”或可在开盘窗口确认“超预期”时，才记为买入样本。",

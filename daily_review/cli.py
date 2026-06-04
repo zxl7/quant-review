@@ -312,9 +312,9 @@ def _load_latest_valid_zt_analysis(*, root: Path, current_date: str) -> dict | N
 
 def _load_latest_valid_research_snapshot(*, root: Path, current_date: str) -> dict | None:
     """
-    盘中模式下给「个股研究 / 个股回测」页提供上一份有效收盘快照。
+    盘中模式下给「个股研究」页提供上一份有效收盘快照。
 
-    只保留这两个页面真正依赖的字段，避免把整份 market_data 再复制一遍。
+    只保留研究页真正依赖的字段，避免把整份 market_data 再复制一遍。
     """
     cache_dir = root / "cache"
     current_d8 = str(current_date or "").replace("-", "")
@@ -348,7 +348,6 @@ def _load_latest_valid_research_snapshot(*, root: Path, current_date: str) -> di
         "tideSignal",
         "coreTideSignal",
         "theme_alias_map",
-        "stockResearchBacktest",
     )
 
     for _, fp in sorted(candidates, reverse=True):
@@ -362,9 +361,7 @@ def _load_latest_valid_research_snapshot(*, root: Path, current_date: str) -> di
         zt = data.get("ztAnalysis") if isinstance(data.get("ztAnalysis"), dict) else {}
         relay = zt.get("relay") if isinstance(zt.get("relay"), list) else []
         watch = zt.get("watch") if isinstance(zt.get("watch"), list) else []
-        backtest = data.get("stockResearchBacktest") if isinstance(data.get("stockResearchBacktest"), dict) else {}
-        has_backtest = isinstance(backtest.get("summary"), dict)
-        if not (relay or watch or has_backtest):
+        if not (relay or watch):
             continue
 
         snapshot = {key: data.get(key) for key in keep_keys if key in data}
@@ -372,7 +369,7 @@ def _load_latest_valid_research_snapshot(*, root: Path, current_date: str) -> di
         snapshot["meta"] = {
             **meta,
             "preservedFromDate": data.get("date") or fp.stem.replace("market_data-", ""),
-            "preserveReason": "盘中不重算个股研究/个股回测，沿用上一份收盘结果",
+            "preserveReason": "盘中不重算个股研究，沿用上一份收盘结果",
         }
         return {
             "marketData": snapshot,
@@ -380,6 +377,50 @@ def _load_latest_valid_research_snapshot(*, root: Path, current_date: str) -> di
             "preserveReason": snapshot["meta"]["preserveReason"],
         }
     return None
+
+
+def _collect_research_codes_from_snapshot(snapshot: dict | None) -> list[str]:
+    market_data = snapshot.get("marketData") if isinstance(snapshot, dict) and isinstance(snapshot.get("marketData"), dict) else {}
+    zt = market_data.get("ztAnalysis") if isinstance(market_data.get("ztAnalysis"), dict) else {}
+    codes: list[str] = []
+    for bucket in ("relay", "watch"):
+        rows = zt.get(bucket) if isinstance(zt.get(bucket), list) else []
+        for row in rows:
+            if not isinstance(row, dict):
+                continue
+            code6 = normalize_stock_code(str(row.get("code") or row.get("dm") or ""))
+            if code6:
+                codes.append(code6)
+    return codes
+
+
+def _fetch_realtime_quotes_map(client: HttpClient, codes: list[str], *, limit: int = 220, batch_size: int = 10) -> dict[str, Any]:
+    uniq: list[str] = []
+    seen: set[str] = set()
+    for code6 in codes:
+        c6 = normalize_stock_code(code6)
+        if not c6 or c6 in seen:
+            continue
+        seen.add(c6)
+        uniq.append(c6)
+    uniq = uniq[:max(1, limit)]
+
+    quotes_map: dict[str, Any] = {}
+    step = max(1, batch_size)
+    for i in range(0, len(uniq), step):
+        batch = uniq[i : i + step]
+        if not batch:
+            continue
+        quotes_list = fetch_stocks_realtime(client, ",".join(batch))
+        if not isinstance(quotes_list, list):
+            continue
+        for it in quotes_list:
+            if not isinstance(it, dict):
+                continue
+            c6 = normalize_stock_code(str(it.get("dm") or it.get("code") or it.get("symbol") or ""))
+            if c6:
+                quotes_map[c6] = it
+    return quotes_map
 
 
 def _build_plan_guide(market_data: dict) -> dict | None:
@@ -1042,31 +1083,9 @@ def run_fetch_and_rebuild(date: str | None) -> int:
                 code6 = normalize_stock_code(str(s.get("dm") or s.get("code") or ""))
                 if code6:
                     codes.append(code6)
-        # 去重 + 限制长度（控制成本与响应时间）
-        uniq = []
-        seen = set()
-        for c6 in codes:
-            if c6 in seen:
-                continue
-            seen.add(c6)
-            uniq.append(c6)
-        uniq = uniq[:180]
-        # 分批（避免 URL 过长/接口限制）
-        quotes_map: dict[str, Any] = {}
-        # ssjy_more 单次可承载的 codes 数量较小（实测 10 以内较稳）
-        step = 10
-        for i in range(0, len(uniq), step):
-            batch = uniq[i : i + step]
-            if not batch:
-                continue
-            quotes_list = fetch_stocks_realtime(client, ",".join(batch)) if batch else []
-            if isinstance(quotes_list, list):
-                for it in quotes_list:
-                    if not isinstance(it, dict):
-                        continue
-                    c6 = normalize_stock_code(str(it.get("dm") or it.get("code") or it.get("symbol") or ""))
-                    if c6:
-                        quotes_map[c6] = it
+        preserved_research = _load_latest_valid_research_snapshot(root=root, current_date=actual_date)
+        codes.extend(_collect_research_codes_from_snapshot(preserved_research))
+        quotes_map = _fetch_realtime_quotes_map(client, codes, limit=220, batch_size=10)
         market_data["raw"]["quotes"] = {"as_of": indices_asof, "items": quotes_map, "count": len(quotes_map)}
         # meta 标记：有实时行情增强
         meta = market_data.get("meta") if isinstance(market_data.get("meta"), dict) else {}
@@ -1370,7 +1389,33 @@ def run_intraday_snapshot(date: str | None) -> int:
         "theme_trend_cache": {"as_of": actual_date, "by_day": {}},
     }
 
-    mood_inputs = build_mood_inputs(pools=raw_pools)
+    try:
+        codes = []
+        for arr in (raw_pools.get("ztgc") or [], raw_pools.get("qsgc") or [], raw_pools.get("zbgc") or [], raw_pools.get("dtgc") or []):
+            if not isinstance(arr, list):
+                continue
+            for s in arr[:80]:
+                if not isinstance(s, dict):
+                    continue
+                code6 = normalize_stock_code(str(s.get("dm") or s.get("code") or ""))
+                if code6:
+                    codes.append(code6)
+        preserved_research = _load_latest_valid_research_snapshot(root=root, current_date=actual_date)
+        codes.extend(_collect_research_codes_from_snapshot(preserved_research))
+        quotes_map = _fetch_realtime_quotes_map(client, codes, limit=220, batch_size=10)
+        market_data["raw"]["quotes"] = {"as_of": now_str, "items": quotes_map, "count": len(quotes_map)}
+        meta = market_data.get("meta") if isinstance(market_data.get("meta"), dict) else {}
+        if not isinstance(meta, dict):
+            meta = {}
+        meta.setdefault("asOf", {})
+        if isinstance(meta.get("asOf"), dict):
+            meta["asOf"]["quotes"] = now_str
+        market_data["meta"] = meta
+        _log(f"盘中个股实时行情已获取 ({len(quotes_map)} 只)")
+    except Exception:
+        pass
+
+    mood_inputs = build_mood_inputs(pools=raw_pools, quotes=((market_data.get("raw") or {}).get("quotes") or {}).get("items") or {})
     market_data["features"]["mood_inputs"] = mood_inputs
     market_data["features"]["chart_palette"] = default_chart_palette()
 
@@ -1650,7 +1695,7 @@ def run_rebuild(
         preserved_research = _load_latest_valid_research_snapshot(root=root, current_date=date)
         if preserved_research:
             market_data["preservedResearch"] = preserved_research
-            _log(f"个股研究/回测已保留上一份收盘快照 ({preserved_research.get('preservedFromDate')})")
+            _log(f"个股研究已保留上一份收盘快照 ({preserved_research.get('preservedFromDate')})")
         else:
             market_data.pop("preservedResearch", None)
     try:
@@ -1672,35 +1717,13 @@ def run_rebuild(
     except Exception:
         pass
 
-    # 个股回测独立池：只在收盘/离线正式口径下固化当日研究样本，不把 intraday 保留快照误写成当天数据。
+    # stockResearchBacktest：作为独立衍生物，从当前可用 market_data 缓存即时派生，
+    # 不再维护单独的历史样本池，也不复用 preservedResearch 中的旧成品。
     try:
-        if str((market_data.get("meta") or {}).get("mode") or "").strip() != "intraday":
-            from scripts.build_stock_research_backtest import upsert_daily_backtest_pool
+        from scripts.build_stock_research_backtest import build_stock_research_backtest_payload
 
-            upsert_daily_backtest_pool(market_data)
-            _log("stockResearchBacktestPool 已更新")
-    except Exception:
-        pass
-
-    # stockResearchBacktest：复用个股研究同源推荐（当前接 ztAnalysis.relay/watch），
-    # 只统计次日 09:25-09:30 满足“符合预期/超预期”的开盘入场样本。
-    try:
-        if preserve_zt and isinstance(market_data.get("preservedResearch"), dict):
-            preserved_md = market_data["preservedResearch"].get("marketData")
-            preserved_backtest = preserved_md.get("stockResearchBacktest") if isinstance(preserved_md, dict) else None
-            if isinstance(preserved_backtest, dict) and isinstance(preserved_backtest.get("summary"), dict):
-                market_data["stockResearchBacktest"] = preserved_backtest
-                _log("stockResearchBacktest 已保留上一份收盘结果")
-            else:
-                from scripts.build_stock_research_backtest import build_stock_research_backtest_payload
-
-                market_data["stockResearchBacktest"] = build_stock_research_backtest_payload()
-                _log("未找到可沿用 stockResearchBacktest，已按当前样本重算")
-        else:
-            from scripts.build_stock_research_backtest import build_stock_research_backtest_payload
-
-            market_data["stockResearchBacktest"] = build_stock_research_backtest_payload()
-            _log("stockResearchBacktest 已生成")
+        market_data["stockResearchBacktest"] = build_stock_research_backtest_payload(current_market_data=market_data)
+        _log("stockResearchBacktest 已按当前缓存派生")
     except Exception:
         pass
 
@@ -3004,17 +3027,9 @@ def run_partial(date: str, modules: list[str]) -> int:
         pass
 
     try:
-        if str((market_data.get("meta") or {}).get("mode") or "").strip() != "intraday":
-            from scripts.build_stock_research_backtest import upsert_daily_backtest_pool
-
-            upsert_daily_backtest_pool(market_data)
-    except Exception:
-        pass
-
-    try:
         from scripts.build_stock_research_backtest import build_stock_research_backtest_payload
 
-        market_data["stockResearchBacktest"] = build_stock_research_backtest_payload()
+        market_data["stockResearchBacktest"] = build_stock_research_backtest_payload(current_market_data=market_data)
     except Exception:
         pass
 
