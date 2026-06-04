@@ -3,6 +3,7 @@ import { computed, ref, onMounted } from "vue"
 import { useMarketData } from "../../composables/useMarketData"
 import { useThemeHotStore } from "../../composables/useThemeHotStore"
 import { normalizeThemeName } from "../../utils/themeUtils"
+import ShortReminderFooter from "../common/ShortReminderFooter.vue"
 
 const { marketData } = useMarketData()
 const { xgbUpdatedAt, tmrUpdatedAt, xgbPlates, tmrThemes, xgbStocksByPlateId } = useThemeHotStore()
@@ -1509,6 +1510,8 @@ const sectorPicksMeta = computed(() => {
         </div>
       </div>
     </div>
+
+    <ShortReminderFooter />
   </div>
 </template>
 

@@ -265,8 +265,8 @@ class StockResearchBacktestRowsTest(unittest.TestCase):
         self.assertEqual(payload["summary"]["source_samples"], 2)
         self.assertEqual(payload["summary"]["filtered_non_backtest_samples"], 1)
         self.assertEqual(payload["summary"]["total_samples"], 1)
-        self.assertEqual(payload["meta"]["latest_recommendation_date"], "2026-06-03")
-        self.assertEqual(payload["realtimeBuy"]["reference_date"], "2026-06-03")
+        self.assertEqual(payload["meta"]["latest_recommendation_date"], "2026-06-04")
+        self.assertEqual(payload["realtimeBuy"]["reference_date"], "2026-06-04")
         self.assertEqual([row["code"] for row in payload["records"]], ["000003"])
         self.assertEqual(payload["diagnostics"]["filtered_non_backtest_codes"], ["000004"])
 

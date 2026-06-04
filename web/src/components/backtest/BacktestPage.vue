@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed } from "vue"
 import { useMarketData } from "../../composables/useMarketData"
-
+import ShortReminderFooter from "../common/ShortReminderFooter.vue"
 const { marketData } = useMarketData()
 const backtestSource = computed<any>(() => {
   const md = marketData.value as any
@@ -44,7 +44,6 @@ const emptyPayload = {
   metrics: {},
   currentPoolRecords: [],
   records: [],
-  spotlight: {},
   diagnostics: {},
   realtimeBuy: {
     reference_date: "",
@@ -84,9 +83,21 @@ const realtimeBuy = computed<any>(() => {
 })
 const backtestUpdatedAt = computed(() => meta.value?.generated_at_bj || backtestSource.value?.meta?.generatedAt || (marketData.value as any)?.meta?.generatedAt || "-")
 const quoteUpdatedAt = computed(() => realtimeBuy.value?.quote_time || "-")
-const realtimeBuyList = computed<any[]>(() => (Array.isArray(realtimeBuy.value?.buy_list) ? realtimeBuy.value.buy_list : []))
-const realtimePendingList = computed<any[]>(() => (Array.isArray(realtimeBuy.value?.pending_list) ? realtimeBuy.value.pending_list : []))
-const realtimeUnavailableList = computed<any[]>(() => (Array.isArray(realtimeBuy.value?.unavailable_list) ? realtimeBuy.value.unavailable_list : []))
+const allCandidates = computed<any[]>(() => {
+  const buy = Array.isArray(realtimeBuy.value?.buy_list) ? realtimeBuy.value.buy_list : []
+  const rejected = Array.isArray(realtimeBuy.value?.rejected_list) ? realtimeBuy.value.rejected_list : []
+  const pending = Array.isArray(realtimeBuy.value?.pending_list) ? realtimeBuy.value.pending_list : []
+  const unavailable = Array.isArray(realtimeBuy.value?.unavailable_list) ? realtimeBuy.value.unavailable_list : []
+  const all = [...buy, ...pending, ...rejected, ...unavailable]
+  const rank: Record<string, number> = { super: 0, expected: 1, pending: 2, reject: 3, unavailable: 4 }
+  all.sort((a, b) => {
+    const ra = rank[String(a?.signal_status || "")] ?? 9
+    const rb = rank[String(b?.signal_status || "")] ?? 9
+    if (ra !== rb) return ra - rb
+    return (b?.score ?? 0) - (a?.score ?? 0)
+  })
+  return all
+})
 
 const metrics = computed(() => {
   const data = payload.value?.metrics || {}
@@ -95,14 +106,6 @@ const metrics = computed(() => {
     { key: "hold_3d", label: "3日收益", data: data.hold_3d || {} },
     { key: "hold_5d", label: "5日收益", data: data.hold_5d || {} },
   ]
-})
-
-const spotlight = computed(() => {
-  const data = payload.value?.spotlight || {}
-  return {
-    best: Array.isArray(data.best_t3_trades) ? data.best_t3_trades : [],
-    worst: Array.isArray(data.worst_t3_trades) ? data.worst_t3_trades : [],
-  }
 })
 
 const currentPoolRecords = computed<any[]>(() => {
@@ -199,21 +202,23 @@ function openStatusClass(status?: string) {
 function openStatusLabel(status?: string, label?: string) {
   if (label) return label
   const key = String(status || "")
-  if (key === "super") return "超预期开盘"
+  if (key === "super") return "超预期"
   if (key === "expected") return "符合预期"
-  if (key === "pending") return "待盘中确认"
-  if (key === "wait_reseal") return "待回封确认"
-  if (key === "reject") return "低预期/未确认"
+  if (key === "pending") return "待确认"
+  if (key === "wait_reseal") return "待确认"
+  if (key === "reject") return "低预期"
   return "暂无判断"
 }
 
-function decisionLabel(status?: string, label?: string) {
-  if (label) return label
-  const key = String(status || "")
-  if (key === "buy") return "直接买入"
-  if (key === "pending") return "待盘中确认"
-  if (key === "reject") return "未达买点"
-  if (key === "unavailable") return "报价缺失"
+function decisionLabel(signalStatus?: string, decisionStatus?: string, fallbackLabel?: string) {
+  const s = String(signalStatus || "")
+  const d = String(decisionStatus || "")
+  if (s === "super") return "买入"
+  if (s === "expected") return "观察"
+  if (s === "reject") return "低预期"
+  if (d === "pending") return "待盘中确认"
+  if (d === "unavailable") return "报价缺失"
+  if (fallbackLabel) return fallbackLabel
   return "待判断"
 }
 
@@ -247,263 +252,59 @@ function strategyReturnClass(performance: any, key: string) {
     <div class="card">
       <div class="card-header">
         <div>
-          <div class="card-title">{{ meta.title || "个股回测" }}</div>
-          <div class="bt-subtitle">
-            {{ meta.subtitle || "同源读取个股研究推荐。当前研究池只看最新推荐日，历史样本单独用于回测统计。" }}
-          </div>
-          <div class="bt-meta">
-            <div>回测生成时间 {{ backtestUpdatedAt }}</div>
-            <div>9:25 报价时间 {{ quoteUpdatedAt }}</div>
-            <div>当前研究池 {{ latestRecommendationDate || "-" }}</div>
-          </div>
-        </div>
-        <div class="bt-badge">{{ realtimeBuy.entry_window || meta.entry_window || "09:25-09:30" }}</div>
-      </div>
-      <div class="bt-kpi-grid">
-        <div class="bt-kpi-card">
-          <div class="bt-kpi-label">今日候选</div>
-          <div class="bt-kpi-value">{{ realtimeBuy.candidate_count ?? 0 }}</div>
-          <div class="bt-kpi-note">推荐日 {{ realtimeBuy.reference_date || "-" }}</div>
-        </div>
-        <div class="bt-kpi-card">
-          <div class="bt-kpi-label">9:25 买入</div>
-          <div class="bt-kpi-value red-text">{{ realtimeBuy.buy_count ?? 0 }}</div>
-          <div class="bt-kpi-note">超预期 {{ realtimeBuy.direct_super_count ?? 0 }} ｜ 符合预期 {{ realtimeBuy.direct_expected_count ?? 0 }}</div>
-        </div>
-        <div class="bt-kpi-card">
-          <div class="bt-kpi-label">待盘中确认</div>
-          <div class="bt-kpi-value blue-text">{{ realtimeBuy.pending_count ?? 0 }}</div>
-          <div class="bt-kpi-note">回封 / 封单 / 开板条件未在 9:25 直接确认</div>
-        </div>
-        <div class="bt-kpi-card">
-          <div class="bt-kpi-label">报价覆盖</div>
-          <div class="bt-kpi-value">{{ realtimeBuy.quoted_count ?? 0 }}/{{ realtimeBuy.candidate_count ?? 0 }}</div>
-          <div class="bt-kpi-note">更新时间 {{ realtimeBuy.quote_time || "-" }}</div>
-        </div>
-        <div class="bt-kpi-card">
-          <div class="bt-kpi-label">当前研究池</div>
-          <div class="bt-kpi-value">{{ currentRecords.length }}</div>
-          <div class="bt-kpi-note">和个股研究同源，推荐日 {{ latestRecommendationDate || "-" }}</div>
-        </div>
-        <div class="bt-kpi-card">
-          <div class="bt-kpi-label">当前可执行</div>
-          <div class="bt-kpi-value">{{ currentEligibleCount }}</div>
-          <div class="bt-kpi-note">当前研究池里开盘可直接执行的样本</div>
+          <div class="card-title">9:25 竞价结果 — {{ realtimeBuy.reference_date || latestRecommendationDate }}</div>
+          <div class="bt-subtitle">超预期 = 买入，符合预期 = 观察，低预期 = 不入场。</div>
         </div>
       </div>
 
-      <div class="bt-pill-row" v-if="mainlineBreakdown.length">
-        <span v-for="item in mainlineBreakdown" :key="'ml-' + item.name" class="bt-pill is-neutral">
-          {{ item.name }} {{ item.count ?? 0 }}
-        </span>
-      </div>
-    </div>
-
-    <div class="card">
-      <div class="card-header">
-        <div>
-          <div class="card-title">9:25 买入列表</div>
-          <div class="bt-subtitle">只有在开盘竞价价格和量能已经满足条件时，才会直接进入这张清单。</div>
-        </div>
-      </div>
-
-      <div class="summary-box" v-if="!realtimeBuyList.length">
-        <div class="summary-text">当前没有直接买入标的。可能是今天没有符合预期/超预期的开口，也可能是远端报价尚未返回。</div>
-      </div>
-
-      <div class="bt-live-grid" v-else>
-        <div class="bt-live-card" v-for="row in realtimeBuyList" :key="'buy-' + row.code">
-          <div class="bt-live-head">
-            <div class="bt-live-main">
-              <a class="stock-link" :href="xqUrl(row.code)" target="_blank" rel="noopener noreferrer">{{ row.name }}</a>
-              <div class="bt-name-sub">代码 {{ row.code || "-" }} ｜ {{ row.bucket_label || row.bucket || "-" }} ｜ 分数 {{ row.score ?? "-" }}</div>
-            </div>
-            <div class="bt-live-badges">
-              <span class="bt-pill" :class="openStatusClass(row.signal_status)">{{ openStatusLabel(row.signal_status, row.signal_label) }}</span>
-              <span class="bt-pill is-neutral">{{ decisionLabel(row.decision_status, row.decision_label) }}</span>
-            </div>
-          </div>
-          <div class="bt-live-stats">
-            <div class="bt-live-stat">
-              <span>竞价价</span>
-              <strong>{{ formatPlain(row.auction_price, 2) }}</strong>
-            </div>
-            <div class="bt-live-stat">
-              <span>缺口</span>
-              <strong :class="signedClass(row.gap_pct)">{{ formatSigned(row.gap_pct, 2) }}%</strong>
-            </div>
-            <div class="bt-live-stat">
-              <span>竞价成交额</span>
-              <strong>{{ formatPlain(row.auction_amount_yi, 2) }}亿</strong>
-            </div>
-            <div class="bt-live-stat">
-              <span>量能阈值</span>
-              <strong>{{ formatPlain(row.auction_amount_need_yi, 2) }}亿</strong>
-            </div>
-          </div>
-          <div class="bt-live-rule">{{ row.rule_text || row.expected_text || row.super_text || "-" }}</div>
-          <div class="bt-cell-sub">{{ row.note || "-" }}</div>
-        </div>
-      </div>
-    </div>
-
-    <div class="card">
-      <div class="card-header">
-        <div>
-          <div class="card-title">当前研究池</div>
-          <div class="bt-subtitle">这一段只展示最新推荐日的样本，和“个股研究”页读取的是同一份 `ztAnalysis.relay/watch`。</div>
-        </div>
-      </div>
-
-      <div class="summary-box" v-if="!currentRecords.length">
-        <div class="summary-text">当前研究池还没有可展示的同源样本。</div>
+      <div class="summary-box" v-if="!allCandidates.length">
+        <div class="summary-text">当前没有竞价标的。</div>
       </div>
 
       <div class="bt-table-wrap" v-else>
         <table class="ladder-table">
           <thead>
             <tr>
-              <th>推荐日</th>
               <th>标的</th>
               <th>池子</th>
               <th>主线</th>
-              <th>开盘判断</th>
-              <th>缺口</th>
-              <th>T+1</th>
-              <th>T+3</th>
-              <th>T+5</th>
+              <th>昨收</th>
+              <th>开盘</th>
+              <th>涨幅</th>
+              <th>成交额</th>
+              <th>量能阈值</th>
+              <th>命中</th>
+              <th>条件</th>
             </tr>
           </thead>
           <tbody>
-            <tr v-for="row in currentRecords" :key="'current-record-' + row.date10 + '-' + row.code">
-              <td>{{ row.date10 || "-" }}</td>
+            <tr v-for="row in allCandidates" :key="'cand-' + row.code">
               <td class="bt-name-cell">
                 <div class="bt-name-line">
-                  <a v-if="row.code" class="stock-link" :href="xqUrl(row.code)" target="_blank" rel="noopener noreferrer">{{ row.name }}</a>
-                  <span v-else>{{ row.name || "-" }}</span>
+                  <a v-if="row.code" class="stock-link" :class="signedClass(row.gap_pct)" :href="xqUrl(row.code)" target="_blank" rel="noopener noreferrer">{{ row.name }}</a>
+                  <span v-else :class="signedClass(row.gap_pct)">{{ row.name || "-" }}</span>
                 </div>
-                <div class="bt-name-sub">代码 {{ row.code || "-" }} ｜ 分数 {{ row.score ?? "-" }} ｜ {{ row.score_sub_label || row.style_tag || row.bucket_label || "-" }}</div>
+                <div class="bt-name-sub">{{ row.code || "-" }} ｜ {{ row.score ?? "-" }}</div>
               </td>
               <td>{{ row.bucket_label || row.bucket || "-" }}</td>
               <td class="bt-left-cell">
                 <div>{{ row.main_line || "-" }}</div>
-                <div class="bt-cell-sub">{{ row.hy || row.plate_name || "-" }}</div>
               </td>
-              <td class="bt-left-cell">
-                <span class="bt-pill" :class="openStatusClass(row.performance?.open_check?.status)">{{ openStatusLabel(row.performance?.open_check?.status, row.performance?.open_check?.label) }}</span>
-                <div class="bt-cell-sub">{{ row.performance?.open_check?.note || "-" }}</div>
+              <td>{{ formatPlain(row.prev_close, 2) }}元</td>
+              <td :class="signedClass(row.gap_pct)">{{ formatPlain(row.auction_price, 2) }}元</td>
+              <td :class="signedClass(row.gap_pct)">{{ formatSigned(row.gap_pct, 2) }}%</td>
+              <td>{{ formatPlain(row.auction_amount_yi, 2) }}亿</td>
+              <td>{{ formatPlain(row.auction_amount_need_yi, 2) }}亿</td>
+              <td>
+                <span class="bt-pill" :class="openStatusClass(row.signal_status)">{{ decisionLabel(row.signal_status, row.decision_status) }}</span>
               </td>
-              <td :class="signedClass(row.performance?.open_check?.gap_pct)">{{ formatSigned(row.performance?.open_check?.gap_pct, 2) }}%</td>
-              <td :class="strategyReturnClass(row.performance, 'next_day')">
-                {{ strategyReturnText(row.performance, "next_day") }}
-                <div class="bt-cell-sub">{{ strategyReturnNote(row.performance, "next_day") }}</div>
-              </td>
-              <td :class="strategyReturnClass(row.performance, 'hold_3d')">
-                {{ strategyReturnText(row.performance, "hold_3d") }}
-                <div class="bt-cell-sub">{{ strategyReturnNote(row.performance, "hold_3d") }}</div>
-              </td>
-              <td :class="strategyReturnClass(row.performance, 'hold_5d')">
-                {{ strategyReturnText(row.performance, "hold_5d") }}
-                <div class="bt-cell-sub">{{ strategyReturnNote(row.performance, "hold_5d") }}</div>
+              <td class="bt-cond-cell">
+                <span class="bt-pill" :class="openStatusClass(row.signal_status)" style="margin-right:4px">{{ row.signal_label || '-' }}</span>
+                <span class="bt-cell-sub">{{ row.rule_text || "-" }}</span>
               </td>
             </tr>
           </tbody>
         </table>
-      </div>
-    </div>
-
-    <div class="bt-live-split">
-      <div class="card">
-        <div class="card-header">
-          <div>
-            <div class="card-title">待盘中确认</div>
-            <div class="bt-subtitle">这类标的竞价价格和量能可能已接近买点，但还需要盘中回封、封单或开板限制确认。</div>
-          </div>
-        </div>
-        <div class="summary-box" v-if="!realtimePendingList.length">
-          <div class="summary-text">当前没有待盘中确认的标的。</div>
-        </div>
-        <div class="bt-mini-list" v-else>
-          <div class="bt-mini-item" v-for="row in realtimePendingList" :key="'pending-' + row.code">
-            <div class="bt-mini-head">
-              <a class="stock-link" :href="xqUrl(row.code)" target="_blank" rel="noopener noreferrer">{{ row.name }}</a>
-              <span class="bt-pill is-wait">{{ decisionLabel(row.decision_status, row.decision_label) }}</span>
-            </div>
-            <div class="bt-cell-sub">
-              {{ formatSigned(row.gap_pct, 2) }}% ｜ {{ formatPlain(row.auction_amount_yi, 2) }}亿
-              <span v-if="Array.isArray(row.pending_reasons) && row.pending_reasons.length"> ｜ {{ row.pending_reasons.join(" / ") }}</span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="card">
-        <div class="card-header">
-          <div>
-            <div class="card-title">报价缺失 / 待补齐</div>
-            <div class="bt-subtitle">如果实时接口没有返回，先留在这里，不会误放进买入列表。</div>
-          </div>
-        </div>
-        <div class="summary-box" v-if="!realtimeUnavailableList.length">
-          <div class="summary-text">当前报价覆盖完整，没有缺失标的。</div>
-        </div>
-        <div class="bt-mini-list" v-else>
-          <div class="bt-mini-item" v-for="row in realtimeUnavailableList" :key="'na-' + row.code">
-            <div class="bt-mini-head">
-              <a class="stock-link" :href="xqUrl(row.code)" target="_blank" rel="noopener noreferrer">{{ row.name }}</a>
-              <span class="bt-pill is-neutral">{{ decisionLabel(row.decision_status, row.decision_label) }}</span>
-            </div>
-            <div class="bt-cell-sub">{{ row.note || "-" }}</div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="card">
-      <div class="card-header">
-        <div>
-          <div class="card-title">历史回测概览</div>
-          <div class="bt-subtitle">这一段是跨多个推荐交易日的历史统计，用来复盘“这套预期文案长期好不好用”。</div>
-        </div>
-      </div>
-
-      <div class="bt-pill-row" v-if="statusBreakdown.length">
-        <span v-for="item in statusBreakdown" :key="'status-' + item.name" class="bt-pill" :class="openStatusClass(item.name)">
-          {{ openStatusLabel(item.name) }} {{ item.count ?? 0 }}
-        </span>
-      </div>
-
-      <div class="bt-kpi-grid">
-        <div class="bt-kpi-card">
-          <div class="bt-kpi-label">历史总样本</div>
-          <div class="bt-kpi-value">{{ summary.total_samples ?? 0 }}</div>
-          <div class="bt-kpi-note">源样本 {{ summary.source_samples ?? summary.total_samples ?? 0 }} ｜ 清洗掉 {{ summary.filtered_non_backtest_samples ?? 0 }}</div>
-        </div>
-        <div class="bt-kpi-card">
-          <div class="bt-kpi-label">历史可执行样本</div>
-          <div class="bt-kpi-value">{{ summary.eligible_samples ?? 0 }}</div>
-          <div class="bt-kpi-note">开盘入场率 {{ entryRate }}%</div>
-        </div>
-        <div class="bt-kpi-card">
-          <div class="bt-kpi-label">超预期开盘</div>
-          <div class="bt-kpi-value red-text">{{ summary.super_count ?? 0 }}</div>
-          <div class="bt-kpi-note">强确认开口，单独观察收益质量</div>
-        </div>
-        <div class="bt-kpi-card">
-          <div class="bt-kpi-label">符合预期开盘</div>
-          <div class="bt-kpi-value orange-text">{{ summary.expected_count ?? 0 }}</div>
-          <div class="bt-kpi-note">按预案正常开口的入场样本</div>
-        </div>
-        <div class="bt-kpi-card">
-          <div class="bt-kpi-label">待回封确认</div>
-          <div class="bt-kpi-value blue-text">{{ summary.wait_reseal_count ?? 0 }}</div>
-          <div class="bt-kpi-note">超预期但需要盘中行为确认</div>
-        </div>
-        <div class="bt-kpi-card">
-          <div class="bt-kpi-label">价格覆盖</div>
-          <div class="bt-kpi-value">{{ summary.priced_codes ?? 0 }}/{{ summary.unique_codes ?? 0 }}</div>
-          <div class="bt-kpi-note">缺失价格 {{ missingPriceCodes.length }} 只</div>
-        </div>
       </div>
     </div>
 
@@ -518,7 +319,7 @@ function strategyReturnClass(performance: any, key: string) {
       <div class="bt-metrics-grid">
         <div class="bt-metric-card" v-for="item in metrics" :key="item.key">
           <div class="section-header">{{ item.label }}</div>
-          <div class="bt-metric-rows">
+          <div class="bt-metric-rows" style="border:none">
             <div class="bt-metric-row">
               <div>
                 <div class="bt-metric-k">覆盖样本</div>
@@ -542,63 +343,21 @@ function strategyReturnClass(performance: any, key: string) {
             </div>
           </div>
 
-          <div class="bt-split-row">
-            <div class="bt-split-box">
-              <div class="bt-split-label red-text">超预期</div>
-              <div class="bt-split-value">{{ item.data?.by_open_status?.super?.covered ?? 0 }} 笔</div>
-              <div class="bt-split-note">均值 {{ formatSigned(item.data?.by_open_status?.super?.avg_return, 2) }}% ｜ 胜率 {{ item.data?.by_open_status?.super?.win_rate ?? 0 }}%</div>
-            </div>
-            <div class="bt-split-box">
-              <div class="bt-split-label orange-text">符合预期</div>
-              <div class="bt-split-value">{{ item.data?.by_open_status?.expected?.covered ?? 0 }} 笔</div>
-              <div class="bt-split-note">均值 {{ formatSigned(item.data?.by_open_status?.expected?.avg_return, 2) }}% ｜ 胜率 {{ item.data?.by_open_status?.expected?.win_rate ?? 0 }}%</div>
+          <div class="bt-split-row" style="border:none;background:none;padding:0">
+            <div style="font-size:11px;color:var(--text-muted);padding:4px 8px">
+              均值 <span class="red-text">{{ formatSigned(item.data?.by_open_status?.super?.avg_return, 2) }}%</span> ｜ 胜率 {{ item.data?.by_open_status?.super?.win_rate ?? 0 }}%
             </div>
           </div>
         </div>
       </div>
     </div>
 
-    <div class="card" v-if="spotlight.best.length || spotlight.worst.length">
-      <div class="card-header">
-        <div>
-          <div class="card-title">T+3 复盘聚焦</div>
-          <div class="bt-subtitle">优先看最强兑现和最差反馈，帮助校正第二天开盘入场后的风险收益预期。</div>
-        </div>
-      </div>
-
-      <div class="bt-spotlight-grid">
-        <div class="bt-spotlight-card">
-          <div class="section-header">T+3 最强样本</div>
-          <div class="bt-spotlight-list">
-            <div class="bt-spotlight-item" v-for="row in spotlight.best" :key="'best-' + row.date + '-' + row.code">
-              <div class="bt-spotlight-main">
-                <a class="stock-link" :href="xqUrl(row.code)" target="_blank" rel="noopener noreferrer">{{ row.name }}</a>
-                <span class="bt-spotlight-sub">{{ row.date }} ｜ {{ row.bucket === "relay" ? "接力候选" : "观察池" }}</span>
-              </div>
-              <div class="bt-spotlight-v red-text">{{ formatSigned(row.return_pct, 2) }}%</div>
-            </div>
-          </div>
-        </div>
-        <div class="bt-spotlight-card">
-          <div class="section-header">T+3 最差样本</div>
-          <div class="bt-spotlight-list">
-            <div class="bt-spotlight-item" v-for="row in spotlight.worst" :key="'worst-' + row.date + '-' + row.code">
-              <div class="bt-spotlight-main">
-                <a class="stock-link" :href="xqUrl(row.code)" target="_blank" rel="noopener noreferrer">{{ row.name }}</a>
-                <span class="bt-spotlight-sub">{{ row.date }} ｜ {{ row.bucket === "relay" ? "接力候选" : "观察池" }}</span>
-              </div>
-              <div class="bt-spotlight-v green-text">{{ formatSigned(row.return_pct, 2) }}%</div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
 
     <div class="card">
       <div class="card-header">
         <div>
           <div class="card-title">历史样本明细</div>
-          <div class="bt-subtitle">这里保留跨多个推荐日的完整回测样本，方便回看“推荐理由 -> 开盘判断 -> 收益表现”的历史链路。</div>
+          <div class="bt-subtitle">这里保留跨多个推荐日的完整回测样本，方便回看"推荐理由 -> 开盘判断 -> 收益表现"的历史链路。</div>
         </div>
       </div>
 
@@ -615,7 +374,7 @@ function strategyReturnClass(performance: any, key: string) {
               <th>池子</th>
               <th>主线</th>
               <th>开盘判断</th>
-              <th>缺口</th>
+              <th>涨幅</th>
               <th>T+1</th>
               <th>T+3</th>
               <th>T+5</th>
@@ -629,7 +388,7 @@ function strategyReturnClass(performance: any, key: string) {
                   <a v-if="row.code" class="stock-link" :href="xqUrl(row.code)" target="_blank" rel="noopener noreferrer">{{ row.name }}</a>
                   <span v-else>{{ row.name || "-" }}</span>
                 </div>
-                <div class="bt-name-sub">代码 {{ row.code || "-" }} ｜ 分数 {{ row.score ?? "-" }} ｜ {{ row.score_sub_label || row.style_tag || row.bucket_label || "-" }}</div>
+                <div class="bt-name-sub">{{ row.code || "-" }} ｜ {{ row.score ?? "-" }} ｜ {{ row.score_sub_label || row.style_tag || row.bucket_label || "-" }}</div>
               </td>
               <td>{{ row.bucket_label || row.bucket || "-" }}</td>
               <td class="bt-left-cell">
@@ -659,17 +418,7 @@ function strategyReturnClass(performance: any, key: string) {
       </div>
     </div>
 
-    <div class="card" v-if="assumptions.length">
-      <div class="card-header">
-        <div>
-          <div class="card-title">回测口径说明</div>
-          <div class="bt-subtitle">当前保持和“个股研究”同源，同时对无法复刻的竞价与回封细节做保守处理。</div>
-        </div>
-      </div>
-      <ul class="bt-assumptions">
-        <li v-for="(item, idx) in assumptions" :key="'assumption-' + idx">{{ item }}</li>
-      </ul>
-    </div>
+    <ShortReminderFooter />
   </div>
 </template>
 

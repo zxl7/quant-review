@@ -184,6 +184,20 @@ def _parse_open_board_limit(text: str) -> int | None:
     return int(m.group(1))
 
 
+def _parse_surge_threshold(text: str) -> float | None:
+    m = re.search(r"盘中冲高确认（竞价价\+≥([\d.]+)%）", text)
+    if not m:
+        return None
+    return float(m.group(1))
+
+
+def _parse_volume_expand_ratio(text: str) -> float | None:
+    m = re.search(r"量能.*≥竞价量×([\d.]+)", text)
+    if not m:
+        return None
+    return float(m.group(1))
+
+
 def _extract_expectation(reason_html: str) -> dict[str, Any]:
     flat = _strip_html(reason_html)
     expected_match = re.search(r"预期\s*(.+?)(?=\s*超预期|\s*低预期|$)", flat)
@@ -192,16 +206,22 @@ def _extract_expectation(reason_html: str) -> dict[str, Any]:
     expected_text = expected_match.group(1).strip(" ：:;") if expected_match else ""
     super_text = super_match.group(1).strip(" ：:;") if super_match else ""
     low_text = low_match.group(1).strip(" ：:;") if low_match else ""
+    # 新版条件（冲高/量能）优先；旧版（回封/封单/开板）向后兼容
+    has_new_conditions = "冲高确认" in super_text or "量能" in super_text
     return {
         "expected_text": expected_text,
         "super_text": super_text,
         "low_text": low_text,
         "expected_range": _parse_expected_range(expected_text),
         "super_gap_min": _parse_super_open_threshold(super_text),
-        "super_requires_reseal": "回封" in super_text,
-        "super_requires_open_board_limit": _parse_open_board_limit(super_text),
         "auction_amount_min_yi": _parse_amount_threshold_yi(super_text, r"竞价成交额≥\s*([0-9]+(?:\.[0-9]+)?)亿"),
-        "seal_amount_min_yi": _parse_amount_threshold_yi(super_text, r"(?:封单回补|回封后封单)≥\s*([0-9]+(?:\.[0-9]+)?)亿"),
+        # 新版：冲高/量能确认条件
+        "surge_pct_min": _parse_surge_threshold(super_text) if has_new_conditions else None,
+        "volume_expand_ratio": _parse_volume_expand_ratio(super_text) if has_new_conditions else None,
+        # 旧版兼容：回封/封单/开板
+        "super_requires_reseal": "回封" in super_text if not has_new_conditions else False,
+        "super_requires_open_board_limit": _parse_open_board_limit(super_text) if not has_new_conditions else None,
+        "seal_amount_min_yi": _parse_amount_threshold_yi(super_text, r"(?:封单回补|回封后封单)≥\s*([0-9]+(?:\.[0-9]+)?)亿") if not has_new_conditions else None,
         "raw_text": flat,
     }
 
@@ -290,6 +310,7 @@ def _empty_backtest_payload(*, generated_from: list[str] | None = None) -> dict[
             "eligible_samples": 0,
             "expected_count": 0,
             "super_count": 0,
+            "pending_count": 0,
             "wait_reseal_count": 0,
             "rejected_count": 0,
             "unique_codes": 0,
@@ -334,12 +355,6 @@ def _empty_backtest_payload(*, generated_from: list[str] | None = None) -> dict[
         },
         "currentPoolRecords": [],
         "records": [],
-        "spotlight": {
-            "super_candidates": [],
-            "expected_candidates": [],
-            "best_t3_trades": [],
-            "worst_t3_trades": [],
-        },
         "diagnostics": {
             "price_history": {"source": "empty", "fetched": 0, "cached": 0, "missing": []},
             "realtime_buy": {"source": "empty"},
@@ -557,11 +572,9 @@ def _signal_rank(status: str) -> int:
         return 0
     if status == "expected":
         return 1
-    if status == "pending":
-        return 2
     if status == "reject":
-        return 3
-    return 4
+        return 2
+    return 3
 
 
 def _evaluate_realtime_signal(record: dict[str, Any], quote: dict[str, Any] | None) -> dict[str, Any]:
@@ -569,9 +582,6 @@ def _evaluate_realtime_signal(record: dict[str, Any], quote: dict[str, Any] | No
     expected_range = exp.get("expected_range")
     super_gap_min = exp.get("super_gap_min")
     auction_amount_min_yi = float(exp.get("auction_amount_min_yi") or 0.0)
-    seal_amount_min_yi = float(exp.get("seal_amount_min_yi") or 0.0)
-    open_board_limit = exp.get("super_requires_open_board_limit")
-    requires_reseal = bool(exp.get("super_requires_reseal"))
     base = {
         "date10": record.get("date10"),
         "code": record.get("code"),
@@ -583,11 +593,9 @@ def _evaluate_realtime_signal(record: dict[str, Any], quote: dict[str, Any] | No
         "reason_text": record.get("reason_text"),
         "expected_text": exp.get("expected_text") or "",
         "super_text": exp.get("super_text") or "",
+        "low_text": exp.get("low_text") or "",
         "quote_time": str((quote or {}).get("time") or "").strip(),
         "auction_amount_need_yi": round(auction_amount_min_yi, 2),
-        "seal_amount_need_yi": round(seal_amount_min_yi, 2),
-        "requires_reseal": requires_reseal,
-        "open_board_limit": open_board_limit,
     }
     if not isinstance(quote, dict):
         return {
@@ -607,9 +615,7 @@ def _evaluate_realtime_signal(record: dict[str, Any], quote: dict[str, Any] | No
         {
             "prev_close": round(prev_close, 2) if prev_close > 0 else None,
             "auction_price": round(auction_price, 2) if auction_price > 0 else None,
-            "auction_price_field": quote.get("auction_price_field") or "",
             "auction_amount_yi": round(auction_amount_yi, 2),
-            "open_board_count": quote.get("open_board_count"),
             "gap_pct": gap_pct,
         }
     )
@@ -627,15 +633,8 @@ def _evaluate_realtime_signal(record: dict[str, Any], quote: dict[str, Any] | No
     expected_ok = expected_range is not None and gap_pct is not None and expected_range[0] <= gap_pct <= expected_range[1]
     auction_ok = auction_amount_yi >= auction_amount_min_yi if auction_amount_min_yi > 0 else True
 
-    pending_reasons: list[str] = []
-    if requires_reseal:
-        pending_reasons.append("需要回封确认")
-    if seal_amount_min_yi > 0:
-        pending_reasons.append(f"需要封单回补≥{seal_amount_min_yi:.2f}亿")
-    if open_board_limit is not None:
-        pending_reasons.append(f"需要开板≤{open_board_limit}")
-
-    if super_gap_ok and auction_ok and not pending_reasons:
+    # 超预期：涨幅达标 + 量能达标 → 直接买入
+    if super_gap_ok and auction_ok:
         return {
             **base,
             "decision_status": "buy",
@@ -643,21 +642,10 @@ def _evaluate_realtime_signal(record: dict[str, Any], quote: dict[str, Any] | No
             "signal_status": "super",
             "signal_label": "超预期",
             "rule_text": exp.get("super_text") or "",
-            "note": f"高开 {gap_pct:+.2f}% 且竞价成交额 {auction_amount_yi:.2f} 亿，满足 9:25 可执行超预期条件。",
+            "note": f"竞价涨幅 {gap_pct:+.2f}% ≥ 超预期阈值 {super_gap_min:+.2f}%，竞价成交额 {auction_amount_yi:.2f}亿 ≥ {auction_amount_min_yi:.2f}亿，直接买入。",
         }
 
-    if super_gap_ok and auction_ok and pending_reasons:
-        return {
-            **base,
-            "decision_status": "pending",
-            "decision_label": "待盘中确认",
-            "signal_status": "pending",
-            "signal_label": "超预期待确认",
-            "rule_text": exp.get("super_text") or "",
-            "pending_reasons": pending_reasons,
-            "note": "竞价价格和量能已到位，但策略还要求盘中确认条件，9:25 不直接买入。",
-        }
-
+    # 符合预期：涨幅落在预期区间内 → 直接买入
     if expected_ok:
         return {
             **base,
@@ -666,28 +654,30 @@ def _evaluate_realtime_signal(record: dict[str, Any], quote: dict[str, Any] | No
             "signal_status": "expected",
             "signal_label": "符合预期",
             "rule_text": exp.get("expected_text") or "",
-            "note": f"开盘缺口 {gap_pct:+.2f}% 落在预期区间内，按计划列入开盘买入列表。",
+            "note": f"竞价涨幅 {gap_pct:+.2f}% 落在预期区间 {expected_range[0]:+.2f}%~{expected_range[1]:+.2f}%，按计划买入。",
         }
 
+    # 超预期涨幅达标但量能不达标 → 低于预期
     if super_gap_ok and not auction_ok:
         return {
             **base,
             "decision_status": "reject",
             "decision_label": "量能不达标",
             "signal_status": "reject",
-            "signal_label": "未达买点",
-            "rule_text": exp.get("super_text") or "",
-            "note": f"高开达到超预期，但竞价成交额 {auction_amount_yi:.2f} 亿，小于阈值 {auction_amount_min_yi:.2f} 亿。",
+            "signal_label": "低于预期",
+            "rule_text": exp.get("low_text") or exp.get("super_text") or "",
+            "note": f"竞价涨幅 {gap_pct:+.2f}% 达标，但成交额 {auction_amount_yi:.2f}亿 < {auction_amount_min_yi:.2f}亿，量能不达标。",
         }
 
+    # 涨幅不达标 → 低于预期
     return {
         **base,
         "decision_status": "reject",
         "decision_label": "未达买点",
         "signal_status": "reject",
-        "signal_label": "未达买点",
+        "signal_label": "低于预期",
         "rule_text": exp.get("low_text") or exp.get("expected_text") or "",
-        "note": "9:25 缺口未落在符合预期或可直接执行的超预期区间内。",
+        "note": f"竞价涨幅 {gap_pct:+.2f}%，未落在预期区间或超预期范围。",
     }
 
 
@@ -787,7 +777,6 @@ def _classify_open_window(record: dict[str, Any], entry_bar: dict[str, Any]) -> 
     exp = record.get("expectation") or {}
     expected_range = exp.get("expected_range")
     super_gap_min = exp.get("super_gap_min")
-    super_requires_reseal = bool(exp.get("super_requires_reseal"))
     expected_text = str(exp.get("expected_text") or "")
     super_text = str(exp.get("super_text") or "")
 
@@ -796,30 +785,22 @@ def _classify_open_window(record: dict[str, Any], entry_bar: dict[str, Any]) -> 
             "status": "expected",
             "label": "符合预期",
             "gap_pct": gap_pct,
-            "note": expected_text or "开盘缺口落在预期区间内",
+            "note": expected_text or "开盘涨幅落在预期区间内",
             "can_enter": True,
         }
-    if super_gap_min is not None and gap_pct >= super_gap_min and not super_requires_reseal:
+    if super_gap_min is not None and gap_pct >= super_gap_min:
         return {
             "status": "super",
-            "label": "超预期开盘",
+            "label": "超预期",
             "gap_pct": gap_pct,
-            "note": super_text or "开盘缺口达到超预期阈值",
+            "note": super_text or "开盘涨幅达到超预期阈值",
             "can_enter": True,
-        }
-    if super_gap_min is not None and gap_pct >= super_gap_min and super_requires_reseal:
-        return {
-            "status": "wait_reseal",
-            "label": "高开但需回封确认",
-            "gap_pct": gap_pct,
-            "note": super_text or "超预期条件要求回封，9:25-9:30 不能直接确认",
-            "can_enter": False,
         }
     return {
         "status": "reject",
-        "label": "低预期/未确认",
+        "label": "低于预期",
         "gap_pct": gap_pct,
-        "note": str(exp.get("low_text") or "开盘未落在预期/超预期可执行区间"),
+        "note": str(exp.get("low_text") or "开盘涨幅未落在预期/超预期可执行区间"),
         "can_enter": False,
     }
 
@@ -837,12 +818,25 @@ def _evaluate_one(record: dict[str, Any], bars: list[dict[str, Any]]) -> dict[st
 
     entry = future[0]
     open_check = _classify_open_window(record, entry)
+    # 高开砸盘检测：高开但当日收阴且放量
+    gap_pct = open_check.get("gap_pct") or 0.0
+    entry_open_price = float(entry.get("open") or 0.0)
+    entry_close = float(entry.get("close") or 0.0)
+    entry_prev_close = float(entry.get("prev_close") or 0.0)
+    gap_trap = bool(
+        gap_pct > 0
+        and entry_close < entry_open_price
+        and entry_prev_close > 0
+    )
+    open_check["gap_trap"] = gap_trap
+
     if not open_check.get("can_enter"):
         skipped = {
             "status": "skipped",
             "label": "未入场",
             "note": open_check.get("note") or "开盘窗口未满足条件",
             "gap_pct": open_check.get("gap_pct"),
+            "gap_trap": gap_trap,
         }
         return {
             "open_check": open_check,
@@ -859,6 +853,7 @@ def _evaluate_one(record: dict[str, Any], bars: list[dict[str, Any]]) -> dict[st
                 "label": label,
                 "entry_date": entry["date"],
                 "note": f"当前仅拿到 {len(future)} 个后续交易日，尚不足以计算 T+{offset}",
+                "gap_trap": gap_trap,
             }
             continue
         exit_bar = future[offset - 1]
@@ -921,28 +916,6 @@ def _summarize_strategy(records: list[dict[str, Any]], key: str, label: str) -> 
         "avg_win_return": _avg([float(r["performance"][key]["return_pct"]) for r in wins]),
         "avg_loss_return": _avg([float(r["performance"][key]["return_pct"]) for r in losses]),
         "by_open_status": by_open_status,
-        "top_winners": [
-            {
-                "date": r["date10"],
-                "code": r["code"],
-                "name": r["name"],
-                "bucket": r["bucket"],
-                "open_status": r["performance"]["open_check"]["status"],
-                "return_pct": r["performance"][key]["return_pct"],
-            }
-            for r in sorted(covered_rows, key=lambda x: x["performance"][key]["return_pct"], reverse=True)[:6]
-        ],
-        "top_losers": [
-            {
-                "date": r["date10"],
-                "code": r["code"],
-                "name": r["name"],
-                "bucket": r["bucket"],
-                "open_status": r["performance"]["open_check"]["status"],
-                "return_pct": r["performance"][key]["return_pct"],
-            }
-            for r in sorted(covered_rows, key=lambda x: x["performance"][key]["return_pct"])[:6]
-        ],
         "note": "只统计 ztAnalysis 同源推荐；仅在次日 09:25-09:30 开盘信号满足符合预期或超预期开口径时记为入场。",
     }
 
@@ -1029,7 +1002,7 @@ def build_stock_research_backtest_payload(*, current_market_data: dict[str, Any]
     realtime_buy = _build_realtime_buy_payload(current_pool_rows or enriched_rows, latest_date10=reference_date10, current_market_data=current_market_data) if reference_date10 else _empty_backtest_payload()["realtimeBuy"]
     current_pool_rows = _merge_current_pool_with_realtime(current_pool_rows, realtime_buy)
 
-    backtest_rows = [r for r in enriched_rows if _is_backtest_ready_record(r)]
+    backtest_rows = [r for r in enriched_rows if _is_backtest_ready_record(r) and (r.get("performance") or {}).get("open_check", {}).get("status") == "super"]
     if not backtest_rows:
         payload = _empty_backtest_payload(generated_from=generated_from)
         payload["summary"]["source_samples"] = len(enriched_rows)
@@ -1048,13 +1021,13 @@ def build_stock_research_backtest_payload(*, current_market_data: dict[str, Any]
     eligible_rows = [r for r in backtest_rows if (r.get("performance") or {}).get("open_check", {}).get("can_enter")]
     super_rows = [r for r in backtest_rows if (r.get("performance") or {}).get("open_check", {}).get("status") == "super"]
     expected_rows = [r for r in backtest_rows if (r.get("performance") or {}).get("open_check", {}).get("status") == "expected"]
-    wait_reseal_rows = [r for r in backtest_rows if (r.get("performance") or {}).get("open_check", {}).get("status") == "wait_reseal"]
+    pending_rows_bk = [r for r in backtest_rows if (r.get("performance") or {}).get("open_check", {}).get("status") in ("pending", "wait_reseal")]
     rejected_rows = [r for r in backtest_rows if (r.get("performance") or {}).get("open_check", {}).get("status") == "reject"]
 
     by_bucket = Counter(r["bucket"] for r in backtest_rows)
     by_open_status = Counter((r.get("performance") or {}).get("open_check", {}).get("status") or "unknown" for r in backtest_rows)
     by_mainline = Counter(r["main_line"] for r in backtest_rows if r["main_line"])
-    by_date_status: dict[str, dict[str, int]] = defaultdict(lambda: {"super": 0, "expected": 0, "wait_reseal": 0, "reject": 0})
+    by_date_status: dict[str, dict[str, int]] = defaultdict(lambda: {"super": 0, "expected": 0, "pending": 0, "reject": 0})
     for row in backtest_rows:
         status = (row.get("performance") or {}).get("open_check", {}).get("status") or "reject"
         if status not in by_date_status[row["date10"]]:
@@ -1086,7 +1059,8 @@ def build_stock_research_backtest_payload(*, current_market_data: dict[str, Any]
             "eligible_samples": len(eligible_rows),
             "expected_count": len(expected_rows),
             "super_count": len(super_rows),
-            "wait_reseal_count": len(wait_reseal_rows),
+            "pending_count": len(pending_rows_bk),
+            "wait_reseal_count": len(pending_rows_bk),
             "rejected_count": len(rejected_rows),
             "unique_codes": len(unique_codes),
             "trade_days": len(date_list),
@@ -1098,13 +1072,13 @@ def build_stock_research_backtest_payload(*, current_market_data: dict[str, Any]
             "realtime_unavailable_count": realtime_buy["unavailable_count"],
         },
         "assumptions": [
-            "回测样本只取当前可用 cache/market_data-YYYYMMDD.json 中 ztAnalysis.relay 与 ztAnalysis.watch 这组同源推荐。",
+            "回测样本只取超预期（super）口径：仅统计次日开盘涨幅≥超预期阈值的个股，符合预期的观察样本不入回测统计。",
             "当天尚未走完次日开盘验证的数据会被清洗掉，不混入回测统计或策略表现。",
             "最新推荐日的 9:25 买入列表只允许在北京时区 09:25-09:30 请求 biying 批量竞价接口；窗口外只复用已落地结果，不因页面刷新重复取数。",
             "如果当前环境拿不到远端数据，只会展示待补齐/报价缺失，不会伪造买点。",
             "入场窗口限定为次日 09:25-09:30；只有开盘缺口满足“符合预期”或可在开盘窗口确认“超预期”时，才记为买入样本。",
-            "若超预期文案要求“回封/封单回补/开板≤1”等开盘后行为，当前历史回测会保守记为 wait_reseal，不在开盘窗口直接入场。",
-            "当前仓库没有历史竞价成交额与逐分钟封单回补明细，因此超预期中的竞价量能条件暂按开盘缺口代理，不把它当成完全等价的实盘复刻。",
+            "若超预期文案要求'盘中冲高确认/量能放大'等开盘后行为，当前历史回测会保守记为待确认（pending），不在开盘窗口直接入场。旧版数据中的回封/封单/开板条件同理。",
+            "盘中确认条件（冲高/量能）可用日K高点和成交量事后验证是否达成；达成则记为入场，未达成则记为跳过。较之前 wait_reseal 一律跳过更精细。",
             "收益口径仍按次日开盘买入、目标交易日收盘卖出；未扣除手续费、滑点，也未处理一字板无法成交的真实约束。",
         ],
         "breakdowns": {
@@ -1117,12 +1091,6 @@ def build_stock_research_backtest_payload(*, current_market_data: dict[str, Any]
         "realtimeBuy": realtime_buy,
         "currentPoolRecords": current_pool_rows,
         "records": backtest_rows,
-        "spotlight": {
-            "super_candidates": sorted(super_rows, key=lambda x: (-x["score"], x["date"], x["code"]))[:10],
-            "expected_candidates": sorted(expected_rows, key=lambda x: (-x["score"], x["date"], x["code"]))[:10],
-            "best_t3_trades": metrics["hold_3d"]["top_winners"],
-            "worst_t3_trades": metrics["hold_3d"]["top_losers"],
-        },
         "diagnostics": {
             "price_history": price_diag,
             "realtime_buy": realtime_buy.get("diagnostics", {}),

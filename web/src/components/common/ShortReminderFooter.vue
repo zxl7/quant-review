@@ -7,11 +7,7 @@ const { marketData } = useMarketData();
 <template>
   <div class="footer">
     <div class="footer-learning" v-if="marketData.learningNotes">
-      <div class="footer-learning-title">📌 短线提醒:</div>
-      <div style="font-size: 11px; color: var(--text-muted); font-weight: 800; margin: 0 0 8px 0" v-if="marketData.learningNotes.meta">
-        <span style="opacity: 0.7">｜</span>
-        视图：{{ marketData.learningNotes.meta.stageType || '-' }}
-      </div>
+      <div class="footer-learning-title">📌 短线提醒</div>
       <ul v-if="marketData.learningNotes.tips && marketData.learningNotes.tips.length">
         <li v-for="(t, i) in marketData.learningNotes.tips" :key="'tip-'+i">{{ t }}</li>
       </ul>

@@ -1699,29 +1699,12 @@ def build_zt_analysis(*, market_data: Dict[str, Any]) -> Dict[str, Any]:
         auc_need = max(0.15, cje_yi * auc_ratio) if cje_yi else 0.0
         fund_ref = fund_yi if fund_yi > 0 else 0.0
 
-        if open_cnt >= 8:
-            lo, hi = min(gap_range["lo"], 0), min(gap_range["hi"], 2)
-            need = fund_ref * 0.5 if fund_ref else 0.0
-            observe_point = (
-                f'<div class="exp-row"><span class="exp-pill pill-pre">预期</span>{_gap_label(lo, hi)}（{_pct(lo)}~{_pct(hi)}）</div>'
-                f'<div class="exp-row"><span class="exp-pill pill-hi">超预期</span>回封 + 封单回补≥{need:.2f}亿（≈今{fund_ref:.2f}亿×50%） + 竞价成交额≥{auc_need:.2f}亿（≈今{cje_yi:.2f}亿×{_round(auc_ratio * 100)}%）</div>'
-                '<div class="exp-row"><span class="exp-pill pill-lo">低预期</span>不回封 或 多开板继续放大</div>'
-            )
-        elif open_cnt >= 3:
-            lo, hi = min(gap_range["lo"], 0), gap_range["hi"]
-            need = fund_ref * 0.35 if fund_ref else 0.0
-            observe_point = (
-                f'<div class="exp-row"><span class="exp-pill pill-pre">预期</span>{_gap_label(lo, hi)}（{_pct(lo)}~{_pct(hi)}）</div>'
-                f'<div class="exp-row"><span class="exp-pill pill-hi">超预期</span>高开≥{_pct(hi)} + 回封后封单≥{need:.2f}亿（≈今{fund_ref:.2f}亿×35%） + 竞价成交额≥{auc_need:.2f}亿</div>'
-                f'<div class="exp-row"><span class="exp-pill pill-lo">低预期</span>低开≤{_pct(gap_range["lo"])} 或 开板继续放大</div>'
-            )
-        else:
-            lo, hi = gap_range["lo"], gap_range["hi"]
-            observe_point = (
-                f'<div class="exp-row"><span class="exp-pill pill-pre">预期</span>{_gap_label(lo, hi)}（{_pct(lo)}~{_pct(hi)}）</div>'
-                f'<div class="exp-row"><span class="exp-pill pill-hi">超预期</span>高开≥{_pct(hi)} + 竞价成交额≥{auc_need:.2f}亿（≈今{cje_yi:.2f}亿×{_round(auc_ratio * 100)}%） + 开板≤1</div>'
-                f'<div class="exp-row"><span class="exp-pill pill-lo">低预期</span>低于{_pct(lo)} 或 竞价量能<{auc_need * 0.7:.2f}亿</div>'
-            )
+        lo, hi = gap_range["lo"], gap_range["hi"]
+        observe_point = (
+            f'<div class="exp-row"><span class="exp-pill pill-pre">预期</span>{_gap_label(lo, hi)}（{_pct(lo)}~{_pct(hi)}%）+ 竞价量能≥{auc_need:.2f}亿</div>'
+            f'<div class="exp-row"><span class="exp-pill pill-hi">超预期</span>高开≥{_pct(hi)}% + 竞价量能≥{auc_need:.2f}亿</div>'
+            f'<div class="exp-row"><span class="exp-pill pill-lo">低预期</span>低于{_pct(lo)}% 或 竞价量能<{auc_need * 0.7:.2f}亿</div>'
+        )
 
         head = " · ".join(reason_bits) if reason_bits else "综合条件一般"
         # 三源融合标签（用户端不暴露数据源名）
