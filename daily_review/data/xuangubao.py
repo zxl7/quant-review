@@ -103,6 +103,68 @@ def fetch_surge_plates(*, timeout: int = 15) -> dict[str, Any]:
     return {"url": url, "data": data}
 
 
+def _code6_to_xgb_symbol(code6: str) -> str:
+    """6位代码 → 选股宝 symbol 格式（SH600519 / SZ000001）。"""
+    c = str(code6 or "").strip()
+    return f"SH{c}" if c.startswith("6") else f"SZ{c}"
+
+
+def _xgb_symbol_to_code6(symbol: str) -> str:
+    """选股宝 symbol → 6位代码。"""
+    s = str(symbol or "").strip().upper()
+    if s.startswith("SH") or s.startswith("SZ"):
+        return s[2:]
+    return s
+
+
+def fetch_stock_labels_batch(codes: list[str], *, timeout: int = 20) -> dict[str, list[str]]:
+    """
+    批量获取个股题材标签（选股宝 stock_label/labels）。
+
+    Args:
+        codes: 6位代码列表
+        timeout: 超时秒数
+
+    Returns:
+        {code6: [label_name, ...], ...}
+
+    端点: /api/stock_label/labels?symbols=SH600519,SZ000001
+    """
+    if not codes:
+        return {}
+
+    xgb_symbols = [_code6_to_xgb_symbol(c) for c in codes if str(c or "").strip()]
+    if not xgb_symbols:
+        return {}
+
+    url = f"{BASE_FLASH}/api/stock_label/labels?symbols={','.join(xgb_symbols)}"
+    try:
+        data = _http_get_json(url, timeout=timeout)
+    except (urllib.error.URLError, TimeoutError, OSError):
+        return {}
+
+    result: dict[str, list[str]] = {}
+    items = data.get("data") if isinstance(data, dict) else {}
+    if not isinstance(items, dict):
+        return {}
+
+    for symbol, labels in items.items():
+        code6 = _xgb_symbol_to_code6(symbol)
+        if not code6 or not isinstance(labels, list):
+            continue
+        names: list[str] = []
+        for lb in labels:
+            if not isinstance(lb, dict):
+                continue
+            nm = str(lb.get("label_name") or "").strip()
+            if nm:
+                names.append(nm)
+        if names:
+            result[code6] = names
+
+    return result
+
+
 # ---------------------------------------------------------------------------
 # 缓存写入：约定 cache_online/xuangubao_*.json，由编排层决定何时调用
 # ---------------------------------------------------------------------------

@@ -480,7 +480,7 @@ def _normalize_realtime_quote(row: dict[str, Any]) -> dict[str, Any] | None:
     }
 
 
-def _fetch_realtime_quotes(codes: list[str], *, fallback_quotes: dict[str, Any] | None = None) -> tuple[dict[str, dict[str, Any]], dict[str, Any]]:
+def _fetch_realtime_quotes(codes: list[str], *, fallback_quotes: dict[str, Any] | None = None, force: bool = False) -> tuple[dict[str, dict[str, Any]], dict[str, Any]]:
     normalized_codes = [normalize_stock_code(code) for code in codes if normalize_stock_code(code)]
     uniq_codes = sorted(dict.fromkeys(normalized_codes))
     diagnostics: dict[str, Any] = {
@@ -496,7 +496,7 @@ def _fetch_realtime_quotes(codes: list[str], *, fallback_quotes: dict[str, Any] 
     }
     quotes_map: dict[str, dict[str, Any]] = {}
 
-    if _should_request_realtime_quotes():
+    if force or _should_request_realtime_quotes():
         try:
             cfg = load_config_from_env()
             client = HttpClient(base_url=cfg.base_url, token=cfg.token, timeout=12, retries=0)
@@ -698,7 +698,8 @@ def _build_realtime_buy_payload(
     current_market_data: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     latest_rows = [dict(row) for row in rows if row.get("date10") == latest_date10]
-    if not _should_request_realtime_quotes():
+    in_window = _should_request_realtime_quotes()
+    if not in_window:
         preserved = _load_preserved_realtime_buy(latest_date10)
         if isinstance(preserved, dict):
             diagnostics = preserved.get("diagnostics") if isinstance(preserved.get("diagnostics"), dict) else {}
@@ -719,7 +720,32 @@ def _build_realtime_buy_payload(
     if isinstance(items, dict):
         raw_quotes.update(items)
     codes = [str(row.get("code") or "").strip() for row in latest_rows if str(row.get("code") or "").strip()]
-    quotes_map, quote_diag = _fetch_realtime_quotes(codes, fallback_quotes=raw_quotes if isinstance(raw_quotes, dict) else None)
+
+    if not in_window:
+        # 窗口外：不从远端拉（ssjy_more 的 t 字段不会落在 9:25-9:30，全被过滤）
+        # 直接从缓存构建 quotes_map
+        quotes_map: dict[str, dict[str, Any]] = {}
+        for code6 in codes:
+            raw = raw_quotes.get(code6)
+            if not isinstance(raw, dict):
+                continue
+            quote = _normalize_realtime_quote(raw)
+            if not quote or not _is_entry_window_time(str(quote.get("time") or "")):
+                continue
+            quotes_map[code6] = quote
+        quote_diag: dict[str, Any] = {
+            "requested": len(codes),
+            "received": len(quotes_map),
+            "remote_received": 0,
+            "fallback_used": len(quotes_map),
+            "missing": [c for c in codes if c not in quotes_map],
+            "source": "cache.raw.quotes" if quotes_map else "unavailable",
+            "as_of": "",
+            "error": "窗口外无 preserved 快照，使用本地缓存数据（无远端请求）" if quotes_map else "窗口外无 preserved 快照且无可用缓存数据",
+            "request_window": "09:25-09:30",
+        }
+    else:
+        quotes_map, quote_diag = _fetch_realtime_quotes(codes, fallback_quotes=raw_quotes if isinstance(raw_quotes, dict) else None)
 
     decisions = [_evaluate_realtime_signal(row, quotes_map.get(str(row.get("code") or "").strip())) for row in latest_rows]
     decisions.sort(key=lambda x: (_signal_rank(str(x.get("signal_status") or "")), -int(x.get("score") or 0), str(x.get("code") or "")))
@@ -936,8 +962,8 @@ def _pick_realtime_reference_date(rows: list[dict[str, Any]], *, current_market_
         as_of_date10 = str(current_market_data.get("date") or "").strip()
     if len(as_of_date10) != 10:
         as_of_date10 = _now_bj().strftime("%Y-%m-%d")
-    older = [date10 for date10 in dates if date10 < as_of_date10]
-    return older[-1] if older else dates[-1]
+    available = [date10 for date10 in dates if date10 <= as_of_date10]
+    return available[-1] if available else dates[-1]
 
 
 def _merge_current_pool_with_realtime(rows: list[dict[str, Any]], realtime_buy: dict[str, Any]) -> list[dict[str, Any]]:

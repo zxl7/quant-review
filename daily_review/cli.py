@@ -34,7 +34,6 @@ from daily_review.data.biying import (
     fetch_index_history_k,
     fetch_pool,
     fetch_stock_money_flow,
-    fetch_stock_themes,
     fetch_stocks_realtime_map,
     get_trading_days_from_index_k,
     normalize_stock_code,
@@ -43,6 +42,7 @@ from daily_review.data.biying import (
 )
 from daily_review.features.build_features import build_mood_inputs, default_chart_palette
 from daily_review.data.plate_rotate_fetcher import PlateRotateFetcher
+from daily_review.data.xuangubao import fetch_stock_labels_batch
 
 
 def _workspace_root() -> Path:
@@ -58,6 +58,32 @@ def _now_bj_date8() -> str:
 
 _ABNORMAL_EVENT_TYPES_ALL = [10001, 10002, 10003, 10004, 10005, 10006, 10007, 10008, 10009, 10010, 10012, 10014, 11000, 11001]
 _ABNORMAL_EVENT_TYPES_DEFAULT = [11000, 11001, 10005, 10009, 10010]
+
+
+def _clean_theme_names(raw_names: list[str]) -> list[str]:
+    """清洗并去重题材名（与 gen_report_v4 口径一致）。"""
+    names: list[str] = []
+    for nm in raw_names:
+        nm = str(nm or "").strip()
+        if not nm:
+            continue
+        if nm in DEFAULT_CONFIG.exclude_theme_names:
+            continue
+        if nm in DEFAULT_CONFIG.noise_themes:
+            continue
+        if any(nm.startswith(pfx) for pfx in DEFAULT_CONFIG.noise_prefixes):
+            continue
+        if nm.startswith("A股-热门概念-"):
+            nm = nm.replace("A股-热门概念-", "")
+        names.append(nm)
+    seen: set[str] = set()
+    uniq: list[str] = []
+    for nm in names:
+        if nm in seen:
+            continue
+        seen.add(nm)
+        uniq.append(nm)
+    return uniq
 
 
 def _abnormal_event_sample_path(root: Path, date: str) -> Path:
@@ -762,42 +788,20 @@ def run_fetch_and_rebuild(date: str | None) -> int:
     for arr in (today_zt, today_zb, today_dt):
         if isinstance(arr, list):
             all_today.extend(arr)
+    # 收集今日未缓存的 code6
+    new_codes: list[str] = []
     for s in all_today:
         code6 = normalize_stock_code(str(s.get("dm") or s.get("code") or ""))
-        if not code6 or code6 in codes_map:
-            continue
-        raw_list = fetch_stock_themes(client, code6=code6)
-        # 只做最轻的清洗：保留 name 字段
-        names = []
-        for it in raw_list:
-            if not isinstance(it, dict):
-                continue
-            nm = str(it.get("name") or "").strip()
-            if nm:
-                # 清洗：剔除噪音前缀与噪音题材（与 gen_report_v4 的口径一致）
-                if nm in DEFAULT_CONFIG.exclude_theme_names:
-                    continue
-                if nm in DEFAULT_CONFIG.noise_themes:
-                    continue
-                bad = False
-                for pfx in DEFAULT_CONFIG.noise_prefixes:
-                    if nm.startswith(pfx):
-                        bad = True
-                        break
-                if bad:
-                    continue
-                if nm.startswith("A股-热门概念-"):
-                    nm = nm.replace("A股-热门概念-", "")
-                names.append(nm)
-        # 去重保序
-        seen = set()
-        uniq = []
-        for nm in names:
-            if nm in seen:
-                continue
-            seen.add(nm)
-            uniq.append(nm)
-        codes_map[code6] = uniq
+        if code6 and code6 not in codes_map and code6 not in new_codes:
+            new_codes.append(code6)
+    if new_codes:
+        # 用选股宝批量接口替代 biying hszg/zg 逐只请求
+        labels_batch = fetch_stock_labels_batch(new_codes)
+        for code6 in new_codes:
+            raw_names = labels_batch.get(code6) or []
+            names = _clean_theme_names(raw_names)
+            if names:
+                codes_map[code6] = names
     write_json(themes_path, {"version": 1, "codes": codes_map})
     _log(f"题材缓存已更新 (共 {len(codes_map)} 只股票)")
 
@@ -1267,40 +1271,18 @@ def run_intraday_snapshot(date: str | None) -> int:
     for arr in (today_zt, today_zb, today_dt):
         if isinstance(arr, list):
             all_today.extend(arr)
+    new_codes: list[str] = []
     for s in all_today:
         code6 = normalize_stock_code(str(s.get("dm") or s.get("code") or ""))
-        if not code6 or code6 in codes_map:
-            continue
-        raw_list = fetch_stock_themes(client, code6=code6)
-        names = []
-        for it in raw_list:
-            if not isinstance(it, dict):
-                continue
-            nm = str(it.get("name") or "").strip()
-            if not nm:
-                continue
-            if nm in DEFAULT_CONFIG.exclude_theme_names:
-                continue
-            if nm in DEFAULT_CONFIG.noise_themes:
-                continue
-            bad = False
-            for pfx in DEFAULT_CONFIG.noise_prefixes:
-                if nm.startswith(pfx):
-                    bad = True
-                    break
-            if bad:
-                continue
-            if nm.startswith("A股-热门概念-"):
-                nm = nm.replace("A股-热门概念-", "")
-            names.append(nm)
-        seen = set()
-        uniq = []
-        for nm in names:
-            if nm in seen:
-                continue
-            seen.add(nm)
-            uniq.append(nm)
-        codes_map[code6] = uniq
+        if code6 and code6 not in codes_map and code6 not in new_codes:
+            new_codes.append(code6)
+    if new_codes:
+        labels_batch = fetch_stock_labels_batch(new_codes)
+        for code6 in new_codes:
+            raw_names = labels_batch.get(code6) or []
+            names = _clean_theme_names(raw_names)
+            if names:
+                codes_map[code6] = names
     write_json(themes_path, {"version": 1, "codes": codes_map})
 
     try:
@@ -2686,8 +2668,8 @@ def _inject_prd_v2_metrics(*, root: Path, date: str, market_data: dict, allow_ne
         pass
 
     # 4.3) conceptFundFlow（概念级资金流向榜）：
-    # - 优先读取本地缓存（离线可重建）
-    # - 若缓存缺失且 report_date=北京时间今天，则允许用 AkShare 在线补齐（不依赖 BIYING_TOKEN）
+    # - 仅读本地缓存（不上线抓取；AkShare 单次 >2min 不应阻塞 pipeline）
+    # - 前端已有 surge_stock/plates（选股宝实时）和 plateRotateTop（短线侠缓存）兜底
     try:
         cache = _load_concept_fund_flow_cache(root=root)
         by_day = cache.get("by_day") or {}
@@ -2706,28 +2688,8 @@ def _inject_prd_v2_metrics(*, root: Path, date: str, market_data: dict, allow_ne
                         rows = candidate
                         break
 
-        # 缓存中无精确数据 → 在线补齐（AkShare，不需要 token）
-        if allow_network and not by_day.get(date8):
-            try:
-                _log("概念资金流缓存无精确数据，在线抓取...")
-                rows = _fetch_concept_fund_flow_top(topn=60)
-                if rows:
-                    by_day[date8] = rows
-                    keep8 = {d.replace("-", "") for d in trade_days}
-                    by_day = {k: v for k, v in by_day.items() if k in keep8}
-                    cache["by_day"] = by_day
-                    _write_concept_fund_flow_cache(root=root, data=cache)
-            except Exception:
-                pass
-
         if isinstance(rows, list) and rows:
             market_data["conceptFundFlowTop"] = rows[:20]
-            meta = market_data.get("meta") if isinstance(market_data.get("meta"), dict) else {}
-            if isinstance(meta, dict):
-                meta.setdefault("asOf", {})
-                if isinstance(meta.get("asOf"), dict):
-                    meta["asOf"]["concept_fund_flow"] = meta.get("asOf", {}).get("pools", "")
-                market_data["meta"] = meta
     except Exception:
         pass
 
