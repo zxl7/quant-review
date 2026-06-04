@@ -1,7 +1,7 @@
 import { computed, ref } from 'vue';
 
 type AlertLevel = 'high' | 'mid' | 'low';
-type AlertTone = 'red' | 'green' | 'blue';
+type AlertTone = 'red' | 'green' | 'blue' | 'amber' | 'cyan';
 
 export type IntradayAlertItem = {
   id: string;
@@ -70,8 +70,8 @@ const savePersistentHistory = (items: IntradayAlertItem[]) => {
 };
 
 const eventMetaMap: Record<number, { label: string; tone: AlertTone }> = {
-  10003: { label: '炸板回落', tone: 'blue' },
-  10004: { label: '开板回升', tone: 'blue' },
+  10003: { label: '炸板回落', tone: 'amber' },
+  10004: { label: '开板回升', tone: 'cyan' },
   10005: { label: '逼近涨停', tone: 'red' },
   10006: { label: '逼近跌停', tone: 'green' },
   10007: { label: '封板跌停', tone: 'green' },
@@ -89,7 +89,7 @@ const eventMeta = (eventType: number, pcp?: number): { label: string; tone: Aler
   if (pcp === undefined) return { ...base };
 
   const isUp = pcp >= 0;
-  const tone: AlertTone = eventType === 10003 || eventType === 10004 ? 'blue' : isUp ? 'red' : 'green';
+  const tone: AlertTone = eventType === 10003 ? 'amber' : eventType === 10004 ? 'cyan' : isUp ? 'red' : 'green';
 
   // 封板阈值仅对个股有效，板块/共振没有涨跌停概念
   const isStockType = eventType < 11000 && eventType !== 99999;

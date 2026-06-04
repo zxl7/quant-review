@@ -310,8 +310,8 @@ jobs:
         run: |
           set -euo pipefail
           # 所有触发方式统一使用同一套“当前时间 + 最近交易日”判定。
-          # 仅 schedule 保留盘中轻量 intraday；push / workflow_dispatch 一律走全量 fetch，
-          # 避免发布代码或本地手动触发时拿数不全。
+          # 线上页面需要尽量拿到结构完整的最新数据，因此 schedule 盘中也走全量 fetch；
+          # 不再用轻量 intraday 发布模式，避免线上拿到保留上一份收盘推演的半成品。
           latest_trade="${{ steps.tradeday.outputs.latest_trade_date }}"
           today_bj="${{ steps.tradeday.outputs.today_bj }}"
           realtime_market_date="${{ steps.tradeday.outputs.realtime_market_date }}"
@@ -338,7 +338,7 @@ jobs:
           if [ "${input_mode}" = "fetch" ] || [ "${input_mode}" = "intraday" ] || [ "${input_mode}" = "eod" ]; then
             mode="${input_mode}"
           elif [ "${{ github.event_name }}" = "schedule" ] && { [ $(( now_min >= 9*60+25 && now_min <= 11*60+30 )) -eq 1 ] || [ $(( now_min >= 13*60 && now_min < 15*60 )) -eq 1 ]; }; then
-            mode="intraday"
+            mode="fetch"
           fi
           if [ "${input_mode}" = "auto" ] || [ -z "${input_mode}" ]; then
             if [ $(( now_min >= 15*60+12 && now_min < 15*60+32 )) -eq 1 ]; then

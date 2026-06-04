@@ -113,6 +113,43 @@ def _prune_plan_text_fields(md: dict) -> None:
     md.pop("summary3", None)
 
 
+def _is_complete_stock_research_backtest(payload: object) -> bool:
+    """
+    判断个股回测对象是否为当前前端可直接消费的完整 schema。
+
+    说明：
+    - 早期缓存里可能带着旧版 stockResearchBacktest，对象存在但字段不全；
+    - 这类旧对象若直接透传到线上，会让“当前研究池/历史回测”表现为空或不完整；
+    - 因此这里只要关键字段缺失，就在 inject 阶段强制重算。
+    """
+    if not isinstance(payload, dict):
+        return False
+    summary = payload.get("summary")
+    realtime_buy = payload.get("realtimeBuy")
+    meta = payload.get("meta")
+    current_pool_records = payload.get("currentPoolRecords")
+    records = payload.get("records")
+    if not isinstance(summary, dict) or not isinstance(realtime_buy, dict) or not isinstance(meta, dict):
+        return False
+    if not isinstance(current_pool_records, list) or not isinstance(records, list):
+        return False
+    required_summary_keys = {
+        "total_samples",
+        "source_samples",
+        "filtered_non_backtest_samples",
+        "eligible_samples",
+        "realtime_candidate_count",
+        "realtime_buy_count",
+        "realtime_pending_count",
+        "realtime_unavailable_count",
+    }
+    if not required_summary_keys.issubset(summary.keys()):
+        return False
+    if "latest_recommendation_date" not in meta:
+        return False
+    return True
+
+
 def _ensure_stock_research_backtest(md: dict) -> None:
     """
     为 web 数据补齐个股回测。
@@ -125,17 +162,17 @@ def _ensure_stock_research_backtest(md: dict) -> None:
     if not isinstance(md, dict):
         return
     existing = md.get("stockResearchBacktest")
-    if isinstance(existing, dict) and existing.get("summary") and isinstance(existing.get("realtimeBuy"), dict):
+    if _is_complete_stock_research_backtest(existing):
         return
     preserved = ((md.get("preservedResearch") or {}) if isinstance(md.get("preservedResearch"), dict) else {}).get("marketData")
     preserved_backtest = preserved.get("stockResearchBacktest") if isinstance(preserved, dict) else None
-    if isinstance(preserved_backtest, dict) and preserved_backtest.get("summary") and isinstance(preserved_backtest.get("realtimeBuy"), dict):
+    if _is_complete_stock_research_backtest(preserved_backtest):
         md["stockResearchBacktest"] = preserved_backtest
         return
     try:
         from scripts.build_stock_research_backtest import build_stock_research_backtest_payload
 
-        md["stockResearchBacktest"] = build_stock_research_backtest_payload()
+        md["stockResearchBacktest"] = build_stock_research_backtest_payload(current_market_data=md)
     except Exception:
         return
 
