@@ -818,12 +818,14 @@ def _build_realtime_buy_payload(
     items = prefetched.get("items")
     if isinstance(items, dict):
         raw_quotes.update(items)
+    prefetched_as_of = str(prefetched.get("as_of") or "").strip() if isinstance(prefetched, dict) else ""
     codes = [str(row.get("code") or "").strip() for row in latest_rows if str(row.get("code") or "").strip()]
 
     if not in_window:
         # 窗口外：不从远端拉（ssjy_more 的 t 字段不会落在 9:25-9:30，全被过滤）
         # 直接从缓存构建 quotes_map
         quotes_map: dict[str, dict[str, Any]] = {}
+        as_of = prefetched_as_of
         for code6 in codes:
             raw = raw_quotes.get(code6)
             if not isinstance(raw, dict):
@@ -832,6 +834,8 @@ def _build_realtime_buy_payload(
             if not quote or not _is_entry_window_time(str(quote.get("time") or "")):
                 continue
             quotes_map[code6] = quote
+            if quote.get("time") and not as_of:
+                as_of = str(quote.get("time") or "").strip()
         quote_diag: dict[str, Any] = {
             "requested": len(codes),
             "received": len(quotes_map),
@@ -839,7 +843,7 @@ def _build_realtime_buy_payload(
             "fallback_used": len(quotes_map),
             "missing": [c for c in codes if c not in quotes_map],
             "source": "cache.raw.quotes" if quotes_map else "unavailable",
-            "as_of": "",
+            "as_of": as_of,
             "error": "窗口外无 preserved 快照，使用本地缓存数据（无远端请求）" if quotes_map else "窗口外无 preserved 快照且无可用缓存数据",
             "request_window": "09:25-09:30",
         }

@@ -118,6 +118,8 @@ class StockResearchBacktestRowsTest(unittest.TestCase):
         self.assertEqual(payload["realtimeBuy"]["diagnostics"]["source"], "cache.raw.quotes")
         self.assertEqual(payload["realtimeBuy"]["reference_date"], "2026-06-03")
         self.assertEqual(payload["realtimeBuy"]["trade_date"], "2026-06-04")
+        self.assertEqual(payload["realtimeBuy"]["quote_time"], "2026-06-04 09:25:01")
+        self.assertEqual(payload["realtimeBuy"]["diagnostics"]["as_of"], "2026-06-04 09:25:01")
 
     def test_preserved_realtime_buy_reads_intraday_snapshot(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
