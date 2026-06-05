@@ -305,6 +305,7 @@ jobs:
 
       - name: Decide run mode/date
         id: pushmode
+        if: ${{ github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true' }}
         env:
           BIYING_TOKEN: ${{ secrets.BIYING_TOKEN }}
           BIYING_BASE_URL: ${{ secrets.BIYING_BASE_URL }}
