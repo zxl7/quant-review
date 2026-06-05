@@ -332,6 +332,8 @@ cmd_deploy() {
   local report_html
   report_html="./web/dist/index.html"
   [[ -f "${report_html}" ]] || die "未找到可发布的 web 构建入口：./web/dist/index.html"
+  [[ -f "./web/dist/market_data.json" ]] || die "未找到运行时数据文件：./web/dist/market_data.json"
+  [[ -f "./web/dist/market_data.js" ]] || die "未找到运行时数据文件：./web/dist/market_data.js"
 
   local tmp
   tmp="$(mktemp -t deploy_pages.XXXXXX.html)"
@@ -343,8 +345,18 @@ cmd_deploy() {
   mkdir -p "$(dirname "${pages_file}")" 2>/dev/null || true
   install -m 644 "${tmp}" "${pages_file}"
   rm -f "${tmp}"
+  install -m 644 "./web/dist/market_data.json" "market_data.json"
+  install -m 644 "./web/dist/market_data.js" "market_data.js"
+  for f in tomorrow_picks.json tomorrow_picks.js eastmoney_tomorrow.json intraday_resonance.json; do
+    if [[ -f "./web/dist/${f}" ]]; then
+      install -m 644 "./web/dist/${f}" "${f}"
+    elif [[ -f "./web/public/${f}" ]]; then
+      install -m 644 "./web/public/${f}" "${f}"
+    fi
+  done
 
-  git add "${pages_file}"
+  git add "${pages_file}" market_data.json market_data.js \
+    tomorrow_picks.json tomorrow_picks.js eastmoney_tomorrow.json intraday_resonance.json 2>/dev/null || true
   git commit -m "deploy: $(date '+%F %T')" || true
   git push
 
