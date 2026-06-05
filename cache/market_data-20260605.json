@@ -4,13 +4,13 @@
   "meta": {
     "asOf": {
       "indices": "收盘",
-      "pools": "15:13:14",
-      "themes": "15:13:14",
+      "pools": "17:01:03",
+      "themes": "17:01:03",
       "quotes": "15:00:03",
       "plate_rotate": "2026-06-05"
     },
     "version": "1.0",
-    "generatedAt": "2026-06-05 15:13:14"
+    "generatedAt": "2026-06-05 17:01:03"
   },
   "indices": [
     {
@@ -323,7 +323,7 @@
         "riskClass": "orange-text"
       },
       {
-        "name": "特种玻璃",
+        "name": "绿色建筑",
         "zt": 4,
         "zb": 1,
         "dt": 0,
@@ -333,7 +333,7 @@
         "riskClass": "green-text"
       },
       {
-        "name": "绿色建筑",
+        "name": "特种玻璃",
         "zt": 4,
         "zb": 1,
         "dt": 0,
@@ -355,9 +355,9 @@
     ],
     "overlap": {
       "themes": [
+        "低价",
         "国资改革",
-        "华为概念",
-        "低价"
+        "华为概念"
       ],
       "score": "60%",
       "note": "涨停主线与炸板主杀题材的重叠度（越高越提示主线在分歧/退潮）"
@@ -765,9 +765,9 @@
       "valueClass": "orange-text"
     },
     {
-      "value": "0.5亿",
+      "value": "0.6亿",
       "label": "平均封板资金",
-      "note": "TOP3：神剑股份2亿、祥和实业2亿、武汉凡谷2亿",
+      "note": "TOP3：绿的谐波3亿、神剑股份2亿、祥和实业2亿",
       "valueClass": "green-text"
     },
     {
@@ -849,7 +849,7 @@
       "code": "002354",
       "name": "天娱数科",
       "theme": "低价",
-      "score": 99.7,
+      "score": 99.36,
       "tags": [
         "带动板块",
         "先发"
@@ -860,7 +860,7 @@
           "strictOneWord": false,
           "oneWordScore": 0.0,
           "earlyScore": 8.0,
-          "sealScore": 19.3,
+          "sealScore": 18.96,
           "relScore": 12.0,
           "durMin": 69.8,
           "durScore": 6.0,
@@ -894,10 +894,58 @@
     },
     {
       "rank": 2,
+      "code": "688056",
+      "name": "莱伯泰科",
+      "theme": "通用设备",
+      "score": 88.4,
+      "tags": [
+        "带动板块",
+        "先发"
+      ],
+      "reason": {
+        "ignition": {
+          "oneWord": false,
+          "strictOneWord": false,
+          "oneWordScore": 0.0,
+          "earlyScore": 7.26,
+          "sealScore": 16.94,
+          "relScore": 12.0,
+          "durMin": 288.2,
+          "durScore": 6.0,
+          "spaceScore": 0.0,
+          "space": {
+            "lbc": 1,
+            "limitPct": 0.2
+          },
+          "openPenalty": 2.8
+        },
+        "explosion": {
+          "theme": "通用设备",
+          "hit": true,
+          "count": 6,
+          "follow": 5,
+          "followRatio": 1.0,
+          "spreadMin": 258.5,
+          "boost": ""
+        },
+        "lead": {
+          "lagSec": 0,
+          "themeFirst": "093534"
+        },
+        "tags": [
+          "带动板块",
+          "先发"
+        ],
+        "themeBonus": 0.0,
+        "themeTier": 2
+      }
+    },
+    {
+      "rank": 3,
       "code": "002903",
       "name": "宇环数控",
       "theme": "商业航天（航天航空）",
-      "score": 85.68,
+      "score": 85.34,
       "tags": [
         "带动板块",
         "先发",
@@ -909,7 +957,7 @@
           "strictOneWord": false,
           "oneWordScore": 0.0,
           "earlyScore": 7.63,
-          "sealScore": 19.28,
+          "sealScore": 18.94,
           "relScore": 12.0,
           "durMin": 0.0,
           "durScore": 0.0,
@@ -943,11 +991,11 @@
       }
     },
     {
-      "rank": 3,
+      "rank": 4,
       "code": "600516",
       "name": "方大炭素",
       "theme": "锂电池",
-      "score": 83.7,
+      "score": 83.39,
       "tags": [
         "带动板块",
         "先发",
@@ -959,7 +1007,7 @@
           "strictOneWord": false,
           "oneWordScore": 0.0,
           "earlyScore": 6.91,
-          "sealScore": 17.75,
+          "sealScore": 17.44,
           "relScore": 10.63,
           "durMin": 20.9,
           "durScore": 2.09,
@@ -993,7 +1041,7 @@
       }
     },
     {
-      "rank": 4,
+      "rank": 5,
       "code": "603500",
       "name": "祥和实业",
       "theme": "专精特新",
@@ -1008,7 +1056,7 @@
           "strictOneWord": false,
           "oneWordScore": 14.0,
           "earlyScore": 8.0,
-          "sealScore": 19.81,
+          "sealScore": 19.46,
           "relScore": 12.0,
           "durMin": 0.0,
           "durScore": 0.0,
@@ -1034,54 +1082,6 @@
         },
         "tags": [
           "强封",
-          "先发"
-        ],
-        "themeBonus": 0.0,
-        "themeTier": 2
-      }
-    },
-    {
-      "rank": 5,
-      "code": "003036",
-      "name": "泰坦股份",
-      "theme": "机器人概念",
-      "score": 78.74,
-      "tags": [
-        "带动板块",
-        "先发"
-      ],
-      "reason": {
-        "ignition": {
-          "oneWord": false,
-          "strictOneWord": false,
-          "oneWordScore": 0.0,
-          "earlyScore": 7.19,
-          "sealScore": 17.81,
-          "relScore": 10.73,
-          "durMin": 291.4,
-          "durScore": 6.0,
-          "spaceScore": 2.0,
-          "space": {
-            "lbc": 2,
-            "limitPct": 0.1
-          },
-          "openPenalty": 14.0
-        },
-        "explosion": {
-          "theme": "机器人概念",
-          "hit": true,
-          "count": 6,
-          "follow": 5,
-          "followRatio": 1.0,
-          "spreadMin": 242.0,
-          "boost": ""
-        },
-        "lead": {
-          "lagSec": 0,
-          "themeFirst": "093606"
-        },
-        "tags": [
-          "带动板块",
           "先发"
         ],
         "themeBonus": 0.0,
@@ -1240,7 +1240,7 @@
       "lbc": 1,
       "cje": 305622000.0,
       "zsz": 3248510473.6,
-      "zj": 263242.0,
+      "zj": 14305590.0,
       "zbc": 2,
       "hs": 9.825735092163086,
       "fbt": "093534",
@@ -1720,7 +1720,7 @@
       "lbc": 1,
       "cje": 7928887000.0,
       "zsz": 72048739125.0,
-      "zj": 13978224.0,
+      "zj": 280932906.0,
       "zbc": 2,
       "hs": 12.214991569519043,
       "fbt": "130413",
@@ -25281,7 +25281,7 @@
     }
   ],
   "moodSignals": {
-    "updatedAt": "2026-06-05 15:13:14",
+    "updatedAt": "2026-06-05 17:01:03",
     "headline": "分歧/扩散偏大，优先防守",
     "pos": [
       {
@@ -25509,7 +25509,7 @@
             "code": "603135",
             "placement": "watch",
             "placementLabel": "观察池",
-            "score": 43.0,
+            "score": 42.0,
             "scoreBand": "只观察",
             "lbc": 3.0,
             "nextStep": "3进4",
@@ -25518,14 +25518,14 @@
             "qualityScore": 84.0,
             "environmentScore": 24.0,
             "leaderFactorScore": 78.0,
-            "relayFactorScore": 63.0,
+            "relayFactorScore": 62.0,
             "capacityFactorScore": 52.0,
             "riskControlScore": 20.0,
             "leaderPhilosophyScore": 62.0,
             "stepContextScore": 63.0,
             "breakRisk": 99.0,
             "open": 0.0,
-            "factorHint": "环境24(休息优先) / 板块53 / 龙头78 / 接力63 / 容量52 / 风险20 / 只观察",
+            "factorHint": "环境24(休息优先) / 板块53 / 龙头78 / 接力62 / 容量52 / 风险20 / 只观察",
             "hitRules": [],
             "blockReasons": [
               "断板风险高",
@@ -25578,23 +25578,23 @@
             "code": "002183",
             "placement": "watch",
             "placementLabel": "观察池",
-            "score": 39.0,
+            "score": 38.0,
             "scoreBand": "只观察",
             "lbc": 1.0,
             "nextStep": "1进2",
             "predTheme": "信创概念",
             "marketGateLabel": "休息优先",
-            "qualityScore": 82.66127389135305,
+            "qualityScore": 76.87924658886209,
             "environmentScore": 24.0,
-            "leaderFactorScore": 54.0,
-            "relayFactorScore": 60.0,
+            "leaderFactorScore": 53.0,
+            "relayFactorScore": 57.0,
             "capacityFactorScore": 92.0,
             "riskControlScore": 26.0,
             "leaderPhilosophyScore": 27.0,
             "stepContextScore": 46.0,
             "breakRisk": 100.0,
             "open": 0.0,
-            "factorHint": "环境24(休息优先) / 板块45 / 龙头54 / 接力60 / 容量92 / 风险26 / 只观察",
+            "factorHint": "环境24(休息优先) / 板块45 / 龙头53 / 接力57 / 容量92 / 风险26 / 只观察",
             "hitRules": [],
             "blockReasons": [
               "断板风险高",
@@ -25621,14 +25621,14 @@
             "qualityScore": 96.0,
             "environmentScore": 24.0,
             "leaderFactorScore": 64.0,
-            "relayFactorScore": 68.0,
+            "relayFactorScore": 65.0,
             "capacityFactorScore": 40.0,
             "riskControlScore": 7.0,
             "leaderPhilosophyScore": 35.0,
             "stepContextScore": 60.0,
             "breakRisk": 100.0,
             "open": 0.0,
-            "factorHint": "环境24(休息优先) / 板块53 / 龙头64 / 接力68 / 容量40 / 风险7 / 只观察",
+            "factorHint": "环境24(休息优先) / 板块53 / 龙头64 / 接力65 / 容量40 / 风险7 / 只观察",
             "hitRules": [],
             "blockReasons": [
               "一字难参与",
@@ -25647,60 +25647,25 @@
             "code": "002361",
             "placement": "watch",
             "placementLabel": "观察池",
-            "score": 34.0,
+            "score": 33.0,
             "scoreBand": "只观察",
             "lbc": 1.0,
             "nextStep": "1进2",
             "predTheme": "机器人概念",
             "marketGateLabel": "休息优先",
-            "qualityScore": 93.79697937844904,
+            "qualityScore": 85.0867307040445,
             "environmentScore": 24.0,
-            "leaderFactorScore": 50.0,
-            "relayFactorScore": 64.0,
+            "leaderFactorScore": 49.0,
+            "relayFactorScore": 60.0,
             "capacityFactorScore": 80.0,
             "riskControlScore": 14.0,
             "leaderPhilosophyScore": 27.0,
             "stepContextScore": 46.0,
             "breakRisk": 100.0,
             "open": 1.0,
-            "factorHint": "环境24(休息优先) / 板块52 / 龙头50 / 接力64 / 容量80 / 风险14 / 只观察",
+            "factorHint": "环境24(休息优先) / 板块52 / 龙头49 / 接力60 / 容量80 / 风险14 / 只观察",
             "hitRules": [],
             "blockReasons": [
-              "断板风险高",
-              "首板接力链条弱",
-              "环境不支持"
-            ],
-            "isThemeLeader": false,
-            "isNewHigh": false,
-            "isMain": false,
-            "isYizi": false,
-            "isShrinkSeal": false
-          },
-          {
-            "name": "步步高",
-            "code": "002251",
-            "placement": "watch",
-            "placementLabel": "观察池",
-            "score": 32.0,
-            "scoreBand": "只观察",
-            "lbc": 1.0,
-            "nextStep": "1进2",
-            "predTheme": "",
-            "marketGateLabel": "休息优先",
-            "qualityScore": 81.21948315976717,
-            "environmentScore": 24.0,
-            "leaderFactorScore": 51.0,
-            "relayFactorScore": 56.0,
-            "capacityFactorScore": 83.0,
-            "riskControlScore": 21.0,
-            "leaderPhilosophyScore": 23.0,
-            "stepContextScore": 46.0,
-            "breakRisk": 100.0,
-            "open": 1.0,
-            "factorHint": "环境24(休息优先) / 板块35 / 龙头51 / 接力56 / 容量83 / 风险21 / 只观察",
-            "hitRules": [],
-            "blockReasons": [
-              "无主线题材",
               "断板风险高",
               "首板接力链条弱",
               "环境不支持"
@@ -25722,17 +25687,17 @@
             "nextStep": "1进2",
             "predTheme": "数字经济",
             "marketGateLabel": "休息优先",
-            "qualityScore": 59.24375366081573,
+            "qualityScore": 58.18953449707817,
             "environmentScore": 24.0,
             "leaderFactorScore": 43.0,
-            "relayFactorScore": 46.0,
+            "relayFactorScore": 45.0,
             "capacityFactorScore": 92.0,
             "riskControlScore": 8.0,
             "leaderPhilosophyScore": 10.0,
             "stepContextScore": 46.0,
             "breakRisk": 100.0,
             "open": 7.0,
-            "factorHint": "环境24(休息优先) / 板块55 / 龙头43 / 接力46 / 容量92 / 风险8 / 只观察",
+            "factorHint": "环境24(休息优先) / 板块55 / 龙头43 / 接力45 / 容量92 / 风险8 / 只观察",
             "hitRules": [],
             "blockReasons": [
               "断板风险高",
@@ -25756,22 +25721,57 @@
             "nextStep": "1进2",
             "predTheme": "数字经济",
             "marketGateLabel": "休息优先",
-            "qualityScore": 87.63820527881396,
+            "qualityScore": 82.27352233474093,
             "environmentScore": 24.0,
             "leaderFactorScore": 49.0,
-            "relayFactorScore": 60.0,
+            "relayFactorScore": 57.0,
             "capacityFactorScore": 52.0,
             "riskControlScore": 24.0,
             "leaderPhilosophyScore": 28.0,
             "stepContextScore": 46.0,
             "breakRisk": 100.0,
             "open": 0.0,
-            "factorHint": "环境24(休息优先) / 板块55 / 龙头49 / 接力60 / 容量52 / 风险24 / 只观察",
+            "factorHint": "环境24(休息优先) / 板块55 / 龙头49 / 接力57 / 容量52 / 风险24 / 只观察",
             "hitRules": [],
             "blockReasons": [
               "断板风险高",
               "首板接力链条弱",
               "容量承接偏弱",
+              "环境不支持"
+            ],
+            "isThemeLeader": false,
+            "isNewHigh": false,
+            "isMain": false,
+            "isYizi": false,
+            "isShrinkSeal": false
+          },
+          {
+            "name": "步步高",
+            "code": "002251",
+            "placement": "watch",
+            "placementLabel": "观察池",
+            "score": 31.0,
+            "scoreBand": "只观察",
+            "lbc": 1.0,
+            "nextStep": "1进2",
+            "predTheme": "",
+            "marketGateLabel": "休息优先",
+            "qualityScore": 77.14039890297828,
+            "environmentScore": 24.0,
+            "leaderFactorScore": 50.0,
+            "relayFactorScore": 53.0,
+            "capacityFactorScore": 83.0,
+            "riskControlScore": 21.0,
+            "leaderPhilosophyScore": 23.0,
+            "stepContextScore": 46.0,
+            "breakRisk": 100.0,
+            "open": 1.0,
+            "factorHint": "环境24(休息优先) / 板块35 / 龙头50 / 接力53 / 容量83 / 风险21 / 只观察",
+            "hitRules": [],
+            "blockReasons": [
+              "无主线题材",
+              "断板风险高",
+              "首板接力链条弱",
               "环境不支持"
             ],
             "isThemeLeader": false,
@@ -25791,17 +25791,17 @@
             "nextStep": "1进2",
             "predTheme": "商业航天（航天航空）",
             "marketGateLabel": "休息优先",
-            "qualityScore": 64.54975137582638,
+            "qualityScore": 62.698128108148246,
             "environmentScore": 24.0,
             "leaderFactorScore": 49.0,
-            "relayFactorScore": 51.0,
+            "relayFactorScore": 50.0,
             "capacityFactorScore": 49.0,
             "riskControlScore": 30.0,
             "leaderPhilosophyScore": 10.0,
             "stepContextScore": 46.0,
             "breakRisk": 100.0,
             "open": 1.0,
-            "factorHint": "环境24(休息优先) / 板块54 / 龙头49 / 接力51 / 容量49 / 风险30 / 只观察",
+            "factorHint": "环境24(休息优先) / 板块54 / 龙头49 / 接力50 / 容量49 / 风险30 / 只观察",
             "hitRules": [],
             "blockReasons": [
               "断板风险高",
@@ -25826,93 +25826,22 @@
             "nextStep": "1进2",
             "predTheme": "",
             "marketGateLabel": "休息优先",
-            "qualityScore": 91.1398398309158,
+            "qualityScore": 84.80241855283462,
             "environmentScore": 24.0,
-            "leaderFactorScore": 52.0,
-            "relayFactorScore": 61.0,
+            "leaderFactorScore": 51.0,
+            "relayFactorScore": 58.0,
             "capacityFactorScore": 62.0,
             "riskControlScore": 21.0,
             "leaderPhilosophyScore": 23.0,
             "stepContextScore": 46.0,
             "breakRisk": 100.0,
             "open": 0.0,
-            "factorHint": "环境24(休息优先) / 板块39 / 龙头52 / 接力61 / 容量62 / 风险21 / 只观察",
+            "factorHint": "环境24(休息优先) / 板块39 / 龙头51 / 接力58 / 容量62 / 风险21 / 只观察",
             "hitRules": [],
             "blockReasons": [
               "无主线题材",
               "断板风险高",
               "首板接力链条弱",
-              "环境不支持"
-            ],
-            "isThemeLeader": false,
-            "isNewHigh": false,
-            "isMain": false,
-            "isYizi": false,
-            "isShrinkSeal": false
-          },
-          {
-            "name": "北玻股份",
-            "code": "002613",
-            "placement": "excluded",
-            "placementLabel": "未入池",
-            "score": 30.0,
-            "scoreBand": "只观察",
-            "lbc": 1.0,
-            "nextStep": "1进2",
-            "predTheme": "特种玻璃",
-            "marketGateLabel": "休息优先",
-            "qualityScore": 76.78673705591612,
-            "environmentScore": 24.0,
-            "leaderFactorScore": 53.0,
-            "relayFactorScore": 54.0,
-            "capacityFactorScore": 49.0,
-            "riskControlScore": 28.0,
-            "leaderPhilosophyScore": 27.0,
-            "stepContextScore": 46.0,
-            "breakRisk": 100.0,
-            "open": 1.0,
-            "factorHint": "环境24(休息优先) / 板块45 / 龙头53 / 接力54 / 容量49 / 风险28 / 只观察",
-            "hitRules": [],
-            "blockReasons": [
-              "断板风险高",
-              "首板接力链条弱",
-              "容量承接偏弱",
-              "环境不支持"
-            ],
-            "isThemeLeader": false,
-            "isNewHigh": false,
-            "isMain": false,
-            "isYizi": false,
-            "isShrinkSeal": false
-          },
-          {
-            "name": "创远信科",
-            "code": "920961",
-            "placement": "excluded",
-            "placementLabel": "未入池",
-            "score": 30.0,
-            "scoreBand": "只观察",
-            "lbc": 1.0,
-            "nextStep": "1进2",
-            "predTheme": "",
-            "marketGateLabel": "休息优先",
-            "qualityScore": 72.34646403418725,
-            "environmentScore": 24.0,
-            "leaderFactorScore": 50.0,
-            "relayFactorScore": 52.0,
-            "capacityFactorScore": 48.0,
-            "riskControlScore": 21.0,
-            "leaderPhilosophyScore": 23.0,
-            "stepContextScore": 46.0,
-            "breakRisk": 100.0,
-            "open": 0.0,
-            "factorHint": "环境24(休息优先) / 板块55 / 龙头50 / 接力52 / 容量48 / 风险21 / 只观察",
-            "hitRules": [],
-            "blockReasons": [
-              "无主线题材",
-              "断板风险高",
-              "首板接力链条弱",
-              "容量承接偏弱",
               "环境不支持"
             ],
             "isThemeLeader": false,
@@ -25932,17 +25861,17 @@
             "nextStep": "1进2",
             "predTheme": "商业航天（航天航空）",
             "marketGateLabel": "休息优先",
-            "qualityScore": 66.74965044401537,
+            "qualityScore": 64.81512403632823,
             "environmentScore": 24.0,
             "leaderFactorScore": 49.0,
-            "relayFactorScore": 51.0,
+            "relayFactorScore": 50.0,
             "capacityFactorScore": 42.0,
             "riskControlScore": 30.0,
             "leaderPhilosophyScore": 10.0,
             "stepContextScore": 46.0,
             "breakRisk": 100.0,
             "open": 0.0,
-            "factorHint": "环境24(休息优先) / 板块54 / 龙头49 / 接力51 / 容量42 / 风险30 / 只观察",
+            "factorHint": "环境24(休息优先) / 板块54 / 龙头49 / 接力50 / 容量42 / 风险30 / 只观察",
             "hitRules": [],
             "blockReasons": [
               "断板风险高",
@@ -25967,58 +25896,22 @@
             "nextStep": "1进2",
             "predTheme": "商业航天（航天航空）",
             "marketGateLabel": "休息优先",
-            "qualityScore": 41.9579469414107,
+            "qualityScore": 40.840057706492985,
             "environmentScore": 24.0,
             "leaderFactorScore": 46.0,
-            "relayFactorScore": 37.0,
+            "relayFactorScore": 36.0,
             "capacityFactorScore": 84.0,
             "riskControlScore": 0.0,
             "leaderPhilosophyScore": 10.0,
             "stepContextScore": 46.0,
             "breakRisk": 100.0,
             "open": 15.0,
-            "factorHint": "环境24(休息优先) / 板块54 / 龙头46 / 接力37 / 容量84 / 风险0 / 只观察",
+            "factorHint": "环境24(休息优先) / 板块54 / 龙头46 / 接力36 / 容量84 / 风险0 / 只观察",
             "hitRules": [],
             "blockReasons": [
               "开板过多",
               "断板风险高",
               "首板接力链条弱",
-              "环境不支持"
-            ],
-            "isThemeLeader": false,
-            "isNewHigh": false,
-            "isMain": false,
-            "isYizi": false,
-            "isShrinkSeal": false
-          },
-          {
-            "name": "武汉凡谷",
-            "code": "002194",
-            "placement": "excluded",
-            "placementLabel": "未入池",
-            "score": 29.0,
-            "scoreBand": "只观察",
-            "lbc": 1.0,
-            "nextStep": "1进2",
-            "predTheme": "",
-            "marketGateLabel": "休息优先",
-            "qualityScore": 92.29702282519398,
-            "environmentScore": 24.0,
-            "leaderFactorScore": 53.0,
-            "relayFactorScore": 62.0,
-            "capacityFactorScore": 54.0,
-            "riskControlScore": 21.0,
-            "leaderPhilosophyScore": 23.0,
-            "stepContextScore": 46.0,
-            "breakRisk": 100.0,
-            "open": 0.0,
-            "factorHint": "环境24(休息优先) / 板块39 / 龙头53 / 接力62 / 容量54 / 风险21 / 只观察",
-            "hitRules": [],
-            "blockReasons": [
-              "无主线题材",
-              "断板风险高",
-              "首板接力链条弱",
-              "容量承接偏弱",
               "环境不支持"
             ],
             "isThemeLeader": false,
@@ -26038,17 +25931,17 @@
             "nextStep": "1进2",
             "predTheme": "机器人概念",
             "marketGateLabel": "休息优先",
-            "qualityScore": 84.72275535880868,
+            "qualityScore": 79.06710643169437,
             "environmentScore": 24.0,
-            "leaderFactorScore": 49.0,
-            "relayFactorScore": 60.0,
+            "leaderFactorScore": 48.0,
+            "relayFactorScore": 57.0,
             "capacityFactorScore": 55.0,
             "riskControlScore": 14.0,
             "leaderPhilosophyScore": 27.0,
             "stepContextScore": 46.0,
             "breakRisk": 100.0,
             "open": 0.0,
-            "factorHint": "环境24(休息优先) / 板块52 / 龙头49 / 接力60 / 容量55 / 风险14 / 只观察",
+            "factorHint": "环境24(休息优先) / 板块52 / 龙头48 / 接力57 / 容量55 / 风险14 / 只观察",
             "hitRules": [],
             "blockReasons": [
               "断板风险高",
@@ -26062,29 +25955,65 @@
             "isShrinkSeal": false
           },
           {
-            "name": "东方通信",
-            "code": "600776",
+            "name": "北玻股份",
+            "code": "002613",
             "placement": "excluded",
             "placementLabel": "未入池",
             "score": 29.0,
             "scoreBand": "只观察",
             "lbc": 1.0,
             "nextStep": "1进2",
-            "predTheme": "数字经济",
+            "predTheme": "特种玻璃",
             "marketGateLabel": "休息优先",
-            "qualityScore": 80.18384728193101,
+            "qualityScore": 73.43578645764299,
             "environmentScore": 24.0,
-            "leaderFactorScore": 48.0,
-            "relayFactorScore": 56.0,
-            "capacityFactorScore": 43.0,
-            "riskControlScore": 24.0,
-            "leaderPhilosophyScore": 28.0,
+            "leaderFactorScore": 52.0,
+            "relayFactorScore": 52.0,
+            "capacityFactorScore": 49.0,
+            "riskControlScore": 28.0,
+            "leaderPhilosophyScore": 27.0,
+            "stepContextScore": 46.0,
+            "breakRisk": 100.0,
+            "open": 1.0,
+            "factorHint": "环境24(休息优先) / 板块44 / 龙头52 / 接力52 / 容量49 / 风险28 / 只观察",
+            "hitRules": [],
+            "blockReasons": [
+              "断板风险高",
+              "首板接力链条弱",
+              "容量承接偏弱",
+              "环境不支持"
+            ],
+            "isThemeLeader": false,
+            "isNewHigh": false,
+            "isMain": false,
+            "isYizi": false,
+            "isShrinkSeal": false
+          },
+          {
+            "name": "创远信科",
+            "code": "920961",
+            "placement": "excluded",
+            "placementLabel": "未入池",
+            "score": 29.0,
+            "scoreBand": "只观察",
+            "lbc": 1.0,
+            "nextStep": "1进2",
+            "predTheme": "",
+            "marketGateLabel": "休息优先",
+            "qualityScore": 70.37204244201179,
+            "environmentScore": 24.0,
+            "leaderFactorScore": 47.0,
+            "relayFactorScore": 51.0,
+            "capacityFactorScore": 48.0,
+            "riskControlScore": 21.0,
+            "leaderPhilosophyScore": 5.0,
             "stepContextScore": 46.0,
             "breakRisk": 100.0,
             "open": 0.0,
-            "factorHint": "环境24(休息优先) / 板块55 / 龙头48 / 接力56 / 容量43 / 风险24 / 只观察",
+            "factorHint": "环境24(休息优先) / 板块55 / 龙头47 / 接力51 / 容量48 / 风险21 / 只观察",
             "hitRules": [],
             "blockReasons": [
+              "无主线题材",
               "断板风险高",
               "首板接力链条弱",
               "容量承接偏弱",
@@ -26107,17 +26036,17 @@
             "nextStep": "1进2",
             "predTheme": "",
             "marketGateLabel": "休息优先",
-            "qualityScore": 68.76639414415035,
+            "qualityScore": 66.33344424045359,
             "environmentScore": 24.0,
             "leaderFactorScore": 47.0,
-            "relayFactorScore": 52.0,
+            "relayFactorScore": 50.0,
             "capacityFactorScore": 49.0,
             "riskControlScore": 21.0,
             "leaderPhilosophyScore": 5.0,
             "stepContextScore": 46.0,
             "breakRisk": 100.0,
             "open": 0.0,
-            "factorHint": "环境24(休息优先) / 板块55 / 龙头47 / 接力52 / 容量49 / 风险21 / 只观察",
+            "factorHint": "环境24(休息优先) / 板块55 / 龙头47 / 接力50 / 容量49 / 风险21 / 只观察",
             "hitRules": [],
             "blockReasons": [
               "无主线题材",
@@ -26143,17 +26072,17 @@
             "nextStep": "1进2",
             "predTheme": "特种玻璃",
             "marketGateLabel": "休息优先",
-            "qualityScore": 65.1753849333685,
+            "qualityScore": 63.90177985242053,
             "environmentScore": 24.0,
             "leaderFactorScore": 49.0,
-            "relayFactorScore": 49.0,
+            "relayFactorScore": 48.0,
             "capacityFactorScore": 59.0,
             "riskControlScore": 26.0,
             "leaderPhilosophyScore": 9.0,
             "stepContextScore": 46.0,
             "breakRisk": 100.0,
             "open": 2.0,
-            "factorHint": "环境24(休息优先) / 板块43 / 龙头49 / 接力49 / 容量59 / 风险26 / 只观察",
+            "factorHint": "环境24(休息优先) / 板块42 / 龙头49 / 接力48 / 容量59 / 风险26 / 只观察",
             "hitRules": [],
             "blockReasons": [
               "断板风险高",
@@ -26201,32 +26130,103 @@
             "isShrinkSeal": false
           },
           {
-            "name": "宇环数控",
-            "code": "002903",
+            "name": "武汉凡谷",
+            "code": "002194",
             "placement": "excluded",
             "placementLabel": "未入池",
             "score": 28.0,
             "scoreBand": "只观察",
             "lbc": 1.0,
             "nextStep": "1进2",
-            "predTheme": "机器人概念",
+            "predTheme": "",
             "marketGateLabel": "休息优先",
-            "qualityScore": 84.46286028494606,
+            "qualityScore": 85.42569580333176,
             "environmentScore": 24.0,
-            "leaderFactorScore": 49.0,
+            "leaderFactorScore": 52.0,
             "relayFactorScore": 58.0,
-            "capacityFactorScore": 47.0,
-            "riskControlScore": 14.0,
-            "leaderPhilosophyScore": 27.0,
+            "capacityFactorScore": 54.0,
+            "riskControlScore": 21.0,
+            "leaderPhilosophyScore": 23.0,
             "stepContextScore": 46.0,
             "breakRisk": 100.0,
             "open": 0.0,
-            "factorHint": "环境24(休息优先) / 板块52 / 龙头49 / 接力58 / 容量47 / 风险14 / 只观察",
+            "factorHint": "环境24(休息优先) / 板块39 / 龙头52 / 接力58 / 容量54 / 风险21 / 只观察",
+            "hitRules": [],
+            "blockReasons": [
+              "无主线题材",
+              "断板风险高",
+              "首板接力链条弱",
+              "容量承接偏弱",
+              "环境不支持"
+            ],
+            "isThemeLeader": false,
+            "isNewHigh": false,
+            "isMain": false,
+            "isYizi": false,
+            "isShrinkSeal": false
+          },
+          {
+            "name": "东方通信",
+            "code": "600776",
+            "placement": "excluded",
+            "placementLabel": "未入池",
+            "score": 28.0,
+            "scoreBand": "只观察",
+            "lbc": 1.0,
+            "nextStep": "1进2",
+            "predTheme": "数字经济",
+            "marketGateLabel": "休息优先",
+            "qualityScore": 76.63821447145233,
+            "environmentScore": 24.0,
+            "leaderFactorScore": 48.0,
+            "relayFactorScore": 54.0,
+            "capacityFactorScore": 43.0,
+            "riskControlScore": 24.0,
+            "leaderPhilosophyScore": 28.0,
+            "stepContextScore": 46.0,
+            "breakRisk": 100.0,
+            "open": 0.0,
+            "factorHint": "环境24(休息优先) / 板块55 / 龙头48 / 接力54 / 容量43 / 风险24 / 只观察",
             "hitRules": [],
             "blockReasons": [
               "断板风险高",
               "首板接力链条弱",
               "容量承接偏弱",
+              "环境不支持"
+            ],
+            "isThemeLeader": false,
+            "isNewHigh": false,
+            "isMain": false,
+            "isYizi": false,
+            "isShrinkSeal": false
+          },
+          {
+            "name": "绿的谐波",
+            "code": "688017",
+            "placement": "excluded",
+            "placementLabel": "未入池",
+            "score": 28.0,
+            "scoreBand": "只观察",
+            "lbc": 1.0,
+            "nextStep": "1进2",
+            "predTheme": "",
+            "marketGateLabel": "休息优先",
+            "qualityScore": 76.59076386871915,
+            "environmentScore": 24.0,
+            "leaderFactorScore": 50.0,
+            "relayFactorScore": 59.0,
+            "capacityFactorScore": 64.0,
+            "riskControlScore": 18.0,
+            "leaderPhilosophyScore": 23.0,
+            "stepContextScore": 46.0,
+            "breakRisk": 100.0,
+            "open": 2.0,
+            "factorHint": "环境24(休息优先) / 板块32 / 龙头50 / 接力59 / 容量64 / 风险18 / 只观察",
+            "hitRules": [],
+            "blockReasons": [
+              "无主线题材",
+              "断板风险高",
+              "首板接力链条弱",
               "环境不支持"
             ],
             "isThemeLeader": false,
@@ -26246,91 +26246,21 @@
             "nextStep": "1进2",
             "predTheme": "机器人概念",
             "marketGateLabel": "休息优先",
-            "qualityScore": 77.67966440201987,
+            "qualityScore": 73.15549973295374,
             "environmentScore": 24.0,
-            "leaderFactorScore": 46.0,
-            "relayFactorScore": 54.0,
+            "leaderFactorScore": 45.0,
+            "relayFactorScore": 52.0,
             "capacityFactorScore": 67.0,
             "riskControlScore": 6.0,
             "leaderPhilosophyScore": 9.0,
             "stepContextScore": 46.0,
             "breakRisk": 100.0,
             "open": 4.0,
-            "factorHint": "环境24(休息优先) / 板块52 / 龙头46 / 接力54 / 容量67 / 风险6 / 只观察",
+            "factorHint": "环境24(休息优先) / 板块52 / 龙头45 / 接力52 / 容量67 / 风险6 / 只观察",
             "hitRules": [],
             "blockReasons": [
               "断板风险高",
               "首板接力链条弱",
-              "环境不支持"
-            ],
-            "isThemeLeader": false,
-            "isNewHigh": false,
-            "isMain": false,
-            "isYizi": false,
-            "isShrinkSeal": false
-          },
-          {
-            "name": "荣安地产",
-            "code": "000517",
-            "placement": "excluded",
-            "placementLabel": "未入池",
-            "score": 28.0,
-            "scoreBand": "只观察",
-            "lbc": 1.0,
-            "nextStep": "1进2",
-            "predTheme": "绿色建筑",
-            "marketGateLabel": "休息优先",
-            "qualityScore": 72.94940226965628,
-            "environmentScore": 24.0,
-            "leaderFactorScore": 52.0,
-            "relayFactorScore": 51.0,
-            "capacityFactorScore": 41.0,
-            "riskControlScore": 28.0,
-            "leaderPhilosophyScore": 27.0,
-            "stepContextScore": 46.0,
-            "breakRisk": 100.0,
-            "open": 1.0,
-            "factorHint": "环境24(休息优先) / 板块42 / 龙头52 / 接力51 / 容量41 / 风险28 / 只观察",
-            "hitRules": [],
-            "blockReasons": [
-              "断板风险高",
-              "首板接力链条弱",
-              "容量承接偏弱",
-              "环境不支持"
-            ],
-            "isThemeLeader": false,
-            "isNewHigh": false,
-            "isMain": false,
-            "isYizi": false,
-            "isShrinkSeal": false
-          },
-          {
-            "name": "耀皮玻璃",
-            "code": "600819",
-            "placement": "excluded",
-            "placementLabel": "未入池",
-            "score": 28.0,
-            "scoreBand": "只观察",
-            "lbc": 1.0,
-            "nextStep": "1进2",
-            "predTheme": "特种玻璃",
-            "marketGateLabel": "休息优先",
-            "qualityScore": 65.48764107586436,
-            "environmentScore": 24.0,
-            "leaderFactorScore": 49.0,
-            "relayFactorScore": 50.0,
-            "capacityFactorScore": 43.0,
-            "riskControlScore": 28.0,
-            "leaderPhilosophyScore": 9.0,
-            "stepContextScore": 46.0,
-            "breakRisk": 100.0,
-            "open": 0.0,
-            "factorHint": "环境24(休息优先) / 板块45 / 龙头49 / 接力50 / 容量43 / 风险28 / 只观察",
-            "hitRules": [],
-            "blockReasons": [
-              "断板风险高",
-              "首板接力链条弱",
-              "容量承接偏弱",
               "环境不支持"
             ],
             "isThemeLeader": false,
@@ -26350,17 +26280,17 @@
             "nextStep": "1进2",
             "predTheme": "",
             "marketGateLabel": "休息优先",
-            "qualityScore": 65.28724949172233,
+            "qualityScore": 66.63820167196192,
             "environmentScore": 24.0,
             "leaderFactorScore": 47.0,
-            "relayFactorScore": 47.0,
+            "relayFactorScore": 48.0,
             "capacityFactorScore": 50.0,
             "riskControlScore": 18.0,
             "leaderPhilosophyScore": 5.0,
             "stepContextScore": 46.0,
             "breakRisk": 100.0,
             "open": 2.0,
-            "factorHint": "环境24(休息优先) / 板块55 / 龙头47 / 接力47 / 容量50 / 风险18 / 只观察",
+            "factorHint": "环境24(休息优先) / 板块55 / 龙头47 / 接力48 / 容量50 / 风险18 / 只观察",
             "hitRules": [],
             "blockReasons": [
               "无主线题材",
@@ -26386,17 +26316,17 @@
             "nextStep": "1进2",
             "predTheme": "",
             "marketGateLabel": "休息优先",
-            "qualityScore": 63.455393860286236,
+            "qualityScore": 61.285727443428584,
             "environmentScore": 24.0,
             "leaderFactorScore": 46.0,
-            "relayFactorScore": 46.0,
+            "relayFactorScore": 45.0,
             "capacityFactorScore": 86.0,
             "riskControlScore": 8.0,
             "leaderPhilosophyScore": 5.0,
             "stepContextScore": 46.0,
             "breakRisk": 100.0,
             "open": 6.0,
-            "factorHint": "环境24(休息优先) / 板块35 / 龙头46 / 接力46 / 容量86 / 风险8 / 只观察",
+            "factorHint": "环境24(休息优先) / 板块35 / 龙头46 / 接力45 / 容量86 / 风险8 / 只观察",
             "hitRules": [],
             "blockReasons": [
               "无主线题材",
@@ -26421,17 +26351,17 @@
             "nextStep": "1进2",
             "predTheme": "",
             "marketGateLabel": "休息优先",
-            "qualityScore": 58.29269053893711,
+            "qualityScore": 55.734296305404044,
             "environmentScore": 24.0,
-            "leaderFactorScore": 46.0,
-            "relayFactorScore": 50.0,
+            "leaderFactorScore": 45.0,
+            "relayFactorScore": 48.0,
             "capacityFactorScore": 46.0,
             "riskControlScore": 21.0,
             "leaderPhilosophyScore": 5.0,
             "stepContextScore": 46.0,
             "breakRisk": 100.0,
             "open": 0.0,
-            "factorHint": "环境24(休息优先) / 板块55 / 龙头46 / 接力50 / 容量46 / 风险21 / 只观察",
+            "factorHint": "环境24(休息优先) / 板块55 / 龙头45 / 接力48 / 容量46 / 风险21 / 只观察",
             "hitRules": [],
             "blockReasons": [
               "无主线题材",
@@ -26457,43 +26387,7 @@
             "nextStep": "1进2",
             "predTheme": "",
             "marketGateLabel": "休息优先",
-            "qualityScore": 57.17881901319705,
-            "environmentScore": 24.0,
-            "leaderFactorScore": 45.0,
-            "relayFactorScore": 49.0,
-            "capacityFactorScore": 47.0,
-            "riskControlScore": 21.0,
-            "leaderPhilosophyScore": 5.0,
-            "stepContextScore": 46.0,
-            "breakRisk": 100.0,
-            "open": 0.0,
-            "factorHint": "环境24(休息优先) / 板块55 / 龙头45 / 接力49 / 容量47 / 风险21 / 只观察",
-            "hitRules": [],
-            "blockReasons": [
-              "无主线题材",
-              "断板风险高",
-              "首板接力链条弱",
-              "容量承接偏弱",
-              "环境不支持"
-            ],
-            "isThemeLeader": false,
-            "isNewHigh": false,
-            "isMain": false,
-            "isYizi": false,
-            "isShrinkSeal": false
-          },
-          {
-            "name": "金帝股份",
-            "code": "603270",
-            "placement": "excluded",
-            "placementLabel": "未入池",
-            "score": 28.0,
-            "scoreBand": "只观察",
-            "lbc": 1.0,
-            "nextStep": "1进2",
-            "predTheme": "",
-            "marketGateLabel": "休息优先",
-            "qualityScore": 53.00264488424661,
+            "qualityScore": 54.86145887327082,
             "environmentScore": 24.0,
             "leaderFactorScore": 45.0,
             "relayFactorScore": 48.0,
@@ -26519,8 +26413,44 @@
             "isShrinkSeal": false
           },
           {
-            "name": "达实智能",
-            "code": "002421",
+            "name": "金帝股份",
+            "code": "603270",
+            "placement": "excluded",
+            "placementLabel": "未入池",
+            "score": 28.0,
+            "scoreBand": "只观察",
+            "lbc": 1.0,
+            "nextStep": "1进2",
+            "predTheme": "",
+            "marketGateLabel": "休息优先",
+            "qualityScore": 50.83023074534757,
+            "environmentScore": 24.0,
+            "leaderFactorScore": 45.0,
+            "relayFactorScore": 47.0,
+            "capacityFactorScore": 47.0,
+            "riskControlScore": 21.0,
+            "leaderPhilosophyScore": 5.0,
+            "stepContextScore": 46.0,
+            "breakRisk": 100.0,
+            "open": 0.0,
+            "factorHint": "环境24(休息优先) / 板块55 / 龙头45 / 接力47 / 容量47 / 风险21 / 只观察",
+            "hitRules": [],
+            "blockReasons": [
+              "无主线题材",
+              "断板风险高",
+              "首板接力链条弱",
+              "容量承接偏弱",
+              "环境不支持"
+            ],
+            "isThemeLeader": false,
+            "isNewHigh": false,
+            "isMain": false,
+            "isYizi": false,
+            "isShrinkSeal": false
+          },
+          {
+            "name": "宇环数控",
+            "code": "002903",
             "placement": "excluded",
             "placementLabel": "未入池",
             "score": 27.0,
@@ -26529,21 +26459,57 @@
             "nextStep": "1进2",
             "predTheme": "机器人概念",
             "marketGateLabel": "休息优先",
-            "qualityScore": 68.36885665137329,
+            "qualityScore": 80.00339977830396,
             "environmentScore": 24.0,
-            "leaderFactorScore": 44.0,
-            "relayFactorScore": 49.0,
-            "capacityFactorScore": 71.0,
-            "riskControlScore": 1.0,
-            "leaderPhilosophyScore": 9.0,
+            "leaderFactorScore": 48.0,
+            "relayFactorScore": 56.0,
+            "capacityFactorScore": 47.0,
+            "riskControlScore": 14.0,
+            "leaderPhilosophyScore": 27.0,
             "stepContextScore": 46.0,
             "breakRisk": 100.0,
-            "open": 6.0,
-            "factorHint": "环境24(休息优先) / 板块52 / 龙头44 / 接力49 / 容量71 / 风险1 / 只观察",
+            "open": 0.0,
+            "factorHint": "环境24(休息优先) / 板块52 / 龙头48 / 接力56 / 容量47 / 风险14 / 只观察",
             "hitRules": [],
             "blockReasons": [
               "断板风险高",
               "首板接力链条弱",
+              "容量承接偏弱",
+              "环境不支持"
+            ],
+            "isThemeLeader": false,
+            "isNewHigh": false,
+            "isMain": false,
+            "isYizi": false,
+            "isShrinkSeal": false
+          },
+          {
+            "name": "荣安地产",
+            "code": "000517",
+            "placement": "excluded",
+            "placementLabel": "未入池",
+            "score": 27.0,
+            "scoreBand": "只观察",
+            "lbc": 1.0,
+            "nextStep": "1进2",
+            "predTheme": "绿色建筑",
+            "marketGateLabel": "休息优先",
+            "qualityScore": 71.22793987617807,
+            "environmentScore": 24.0,
+            "leaderFactorScore": 50.0,
+            "relayFactorScore": 50.0,
+            "capacityFactorScore": 41.0,
+            "riskControlScore": 28.0,
+            "leaderPhilosophyScore": 9.0,
+            "stepContextScore": 46.0,
+            "breakRisk": 100.0,
+            "open": 1.0,
+            "factorHint": "环境24(休息优先) / 板块43 / 龙头50 / 接力50 / 容量41 / 风险28 / 只观察",
+            "hitRules": [],
+            "blockReasons": [
+              "断板风险高",
+              "首板接力链条弱",
+              "容量承接偏弱",
               "环境不支持"
             ],
             "isThemeLeader": false,
@@ -26563,7 +26529,7 @@
             "nextStep": "1进2",
             "predTheme": "",
             "marketGateLabel": "休息优先",
-            "qualityScore": 66.4713651241502,
+            "qualityScore": 65.40674086447771,
             "environmentScore": 24.0,
             "leaderFactorScore": 47.0,
             "relayFactorScore": 49.0,
@@ -26589,6 +26555,41 @@
             "isShrinkSeal": false
           },
           {
+            "name": "耀皮玻璃",
+            "code": "600819",
+            "placement": "excluded",
+            "placementLabel": "未入池",
+            "score": 27.0,
+            "scoreBand": "只观察",
+            "lbc": 1.0,
+            "nextStep": "1进2",
+            "predTheme": "特种玻璃",
+            "marketGateLabel": "休息优先",
+            "qualityScore": 64.3719264103645,
+            "environmentScore": 24.0,
+            "leaderFactorScore": 49.0,
+            "relayFactorScore": 49.0,
+            "capacityFactorScore": 43.0,
+            "riskControlScore": 28.0,
+            "leaderPhilosophyScore": 9.0,
+            "stepContextScore": 46.0,
+            "breakRisk": 100.0,
+            "open": 0.0,
+            "factorHint": "环境24(休息优先) / 板块44 / 龙头49 / 接力49 / 容量43 / 风险28 / 只观察",
+            "hitRules": [],
+            "blockReasons": [
+              "断板风险高",
+              "首板接力链条弱",
+              "容量承接偏弱",
+              "环境不支持"
+            ],
+            "isThemeLeader": false,
+            "isNewHigh": false,
+            "isMain": false,
+            "isYizi": false,
+            "isShrinkSeal": false
+          },
+          {
             "name": "维信诺",
             "code": "002387",
             "placement": "excluded",
@@ -26599,7 +26600,7 @@
             "nextStep": "1进2",
             "predTheme": "并购重组",
             "marketGateLabel": "休息优先",
-            "qualityScore": 60.34556011025014,
+            "qualityScore": 59.53017429171876,
             "environmentScore": 24.0,
             "leaderFactorScore": 48.0,
             "relayFactorScore": 45.0,
@@ -26612,42 +26613,6 @@
             "factorHint": "环境24(休息优先) / 板块42 / 龙头48 / 接力45 / 容量63 / 风险18 / 只观察",
             "hitRules": [],
             "blockReasons": [
-              "断板风险高",
-              "首板接力链条弱",
-              "环境不支持"
-            ],
-            "isThemeLeader": false,
-            "isNewHigh": false,
-            "isMain": false,
-            "isYizi": false,
-            "isShrinkSeal": false
-          },
-          {
-            "name": "东土科技",
-            "code": "300353",
-            "placement": "excluded",
-            "placementLabel": "未入池",
-            "score": 27.0,
-            "scoreBand": "只观察",
-            "lbc": 1.0,
-            "nextStep": "1进2",
-            "predTheme": "",
-            "marketGateLabel": "休息优先",
-            "qualityScore": 40.77006688083901,
-            "environmentScore": 24.0,
-            "leaderFactorScore": 43.0,
-            "relayFactorScore": 41.0,
-            "capacityFactorScore": 88.0,
-            "riskControlScore": 3.0,
-            "leaderPhilosophyScore": 5.0,
-            "stepContextScore": 46.0,
-            "breakRisk": 100.0,
-            "open": 8.0,
-            "factorHint": "环境24(休息优先) / 板块39 / 龙头43 / 接力41 / 容量88 / 风险3 / 只观察",
-            "hitRules": [],
-            "blockReasons": [
-              "无主线题材",
-              "开板过多",
               "断板风险高",
               "首板接力链条弱",
               "环境不支持"
@@ -26672,14 +26637,14 @@
             "qualityScore": 90.0,
             "environmentScore": 24.0,
             "leaderFactorScore": 58.0,
-            "relayFactorScore": 61.0,
+            "relayFactorScore": 60.0,
             "capacityFactorScore": 45.0,
             "riskControlScore": 17.0,
             "leaderPhilosophyScore": 23.0,
             "stepContextScore": 60.0,
             "breakRisk": 99.0,
             "open": 0.0,
-            "factorHint": "环境24(休息优先) / 板块27 / 龙头58 / 接力61 / 容量45 / 风险17 / 只观察",
+            "factorHint": "环境24(休息优先) / 板块27 / 龙头58 / 接力60 / 容量45 / 风险17 / 只观察",
             "hitRules": [],
             "blockReasons": [
               "无主线题材",
@@ -26705,17 +26670,17 @@
             "nextStep": "1进2",
             "predTheme": "",
             "marketGateLabel": "休息优先",
-            "qualityScore": 69.02738602280238,
+            "qualityScore": 66.72347116850653,
             "environmentScore": 24.0,
             "leaderFactorScore": 47.0,
-            "relayFactorScore": 49.0,
+            "relayFactorScore": 48.0,
             "capacityFactorScore": 61.0,
             "riskControlScore": 16.0,
             "leaderPhilosophyScore": 5.0,
             "stepContextScore": 46.0,
             "breakRisk": 100.0,
             "open": 3.0,
-            "factorHint": "环境24(休息优先) / 板块39 / 龙头47 / 接力49 / 容量61 / 风险16 / 只观察",
+            "factorHint": "环境24(休息优先) / 板块39 / 龙头47 / 接力48 / 容量61 / 风险16 / 只观察",
             "hitRules": [],
             "blockReasons": [
               "无主线题材",
@@ -26730,33 +26695,31 @@
             "isShrinkSeal": false
           },
           {
-            "name": "德尔未来",
-            "code": "002631",
+            "name": "达实智能",
+            "code": "002421",
             "placement": "excluded",
             "placementLabel": "未入池",
             "score": 26.0,
             "scoreBand": "只观察",
             "lbc": 1.0,
             "nextStep": "1进2",
-            "predTheme": "",
+            "predTheme": "机器人概念",
             "marketGateLabel": "休息优先",
-            "qualityScore": 61.72398348452724,
+            "qualityScore": 65.25750792926311,
             "environmentScore": 24.0,
-            "leaderFactorScore": 46.0,
-            "relayFactorScore": 48.0,
-            "capacityFactorScore": 50.0,
-            "riskControlScore": 21.0,
-            "leaderPhilosophyScore": 5.0,
+            "leaderFactorScore": 44.0,
+            "relayFactorScore": 47.0,
+            "capacityFactorScore": 71.0,
+            "riskControlScore": 1.0,
+            "leaderPhilosophyScore": 9.0,
             "stepContextScore": 46.0,
             "breakRisk": 100.0,
-            "open": 1.0,
-            "factorHint": "环境24(休息优先) / 板块42 / 龙头46 / 接力48 / 容量50 / 风险21 / 只观察",
+            "open": 6.0,
+            "factorHint": "环境24(休息优先) / 板块52 / 龙头44 / 接力47 / 容量71 / 风险1 / 只观察",
             "hitRules": [],
             "blockReasons": [
-              "无主线题材",
               "断板风险高",
               "首板接力链条弱",
-              "容量承接偏弱",
               "环境不支持"
             ],
             "isThemeLeader": false,
@@ -26776,55 +26739,20 @@
             "nextStep": "1进2",
             "predTheme": "",
             "marketGateLabel": "休息优先",
-            "qualityScore": 60.33155248983168,
+            "qualityScore": 56.962402614050696,
             "environmentScore": 24.0,
-            "leaderFactorScore": 46.0,
-            "relayFactorScore": 51.0,
+            "leaderFactorScore": 45.0,
+            "relayFactorScore": 49.0,
             "capacityFactorScore": 52.0,
             "riskControlScore": 21.0,
             "leaderPhilosophyScore": 5.0,
             "stepContextScore": 46.0,
             "breakRisk": 100.0,
             "open": 0.0,
-            "factorHint": "环境24(休息优先) / 板块42 / 龙头46 / 接力51 / 容量52 / 风险21 / 只观察",
+            "factorHint": "环境24(休息优先) / 板块42 / 龙头45 / 接力49 / 容量52 / 风险21 / 只观察",
             "hitRules": [],
             "blockReasons": [
               "无主线题材",
-              "断板风险高",
-              "首板接力链条弱",
-              "容量承接偏弱",
-              "环境不支持"
-            ],
-            "isThemeLeader": false,
-            "isNewHigh": false,
-            "isMain": false,
-            "isYizi": false,
-            "isShrinkSeal": false
-          },
-          {
-            "name": "百傲化学",
-            "code": "603360",
-            "placement": "excluded",
-            "placementLabel": "未入池",
-            "score": 26.0,
-            "scoreBand": "只观察",
-            "lbc": 1.0,
-            "nextStep": "1进2",
-            "predTheme": "机器人概念",
-            "marketGateLabel": "休息优先",
-            "qualityScore": 59.048873826836164,
-            "environmentScore": 24.0,
-            "leaderFactorScore": 43.0,
-            "relayFactorScore": 51.0,
-            "capacityFactorScore": 53.0,
-            "riskControlScore": 14.0,
-            "leaderPhilosophyScore": 9.0,
-            "stepContextScore": 46.0,
-            "breakRisk": 100.0,
-            "open": 0.0,
-            "factorHint": "环境24(休息优先) / 板块50 / 龙头43 / 接力51 / 容量53 / 风险14 / 只观察",
-            "hitRules": [],
-            "blockReasons": [
               "断板风险高",
               "首板接力链条弱",
               "容量承接偏弱",
@@ -26847,7 +26775,7 @@
             "nextStep": "1进2",
             "predTheme": "",
             "marketGateLabel": "休息优先",
-            "qualityScore": 50.35727180558351,
+            "qualityScore": 49.542356009051105,
             "environmentScore": 24.0,
             "leaderFactorScore": 44.0,
             "relayFactorScore": 45.0,
@@ -26883,7 +26811,7 @@
             "nextStep": "1进2",
             "predTheme": "",
             "marketGateLabel": "休息优先",
-            "qualityScore": 48.7381971808812,
+            "qualityScore": 47.7385950875777,
             "environmentScore": 24.0,
             "leaderFactorScore": 44.0,
             "relayFactorScore": 44.0,
@@ -26907,17 +26835,89 @@
             "isMain": false,
             "isYizi": false,
             "isShrinkSeal": false
+          },
+          {
+            "name": "泰和新材",
+            "code": "002254",
+            "placement": "excluded",
+            "placementLabel": "未入池",
+            "score": 26.0,
+            "scoreBand": "只观察",
+            "lbc": 1.0,
+            "nextStep": "1进2",
+            "predTheme": "",
+            "marketGateLabel": "休息优先",
+            "qualityScore": 41.304455578903145,
+            "environmentScore": 24.0,
+            "leaderFactorScore": 43.0,
+            "relayFactorScore": 37.0,
+            "capacityFactorScore": 92.0,
+            "riskControlScore": 0.0,
+            "leaderPhilosophyScore": 5.0,
+            "stepContextScore": 46.0,
+            "breakRisk": 100.0,
+            "open": 13.0,
+            "factorHint": "环境24(休息优先) / 板块35 / 龙头43 / 接力37 / 容量92 / 风险0 / 只观察",
+            "hitRules": [],
+            "blockReasons": [
+              "无主线题材",
+              "开板过多",
+              "断板风险高",
+              "首板接力链条弱",
+              "环境不支持"
+            ],
+            "isThemeLeader": false,
+            "isNewHigh": false,
+            "isMain": false,
+            "isYizi": false,
+            "isShrinkSeal": false
+          },
+          {
+            "name": "东土科技",
+            "code": "300353",
+            "placement": "excluded",
+            "placementLabel": "未入池",
+            "score": 26.0,
+            "scoreBand": "只观察",
+            "lbc": 1.0,
+            "nextStep": "1进2",
+            "predTheme": "",
+            "marketGateLabel": "休息优先",
+            "qualityScore": 38.751060724255325,
+            "environmentScore": 24.0,
+            "leaderFactorScore": 43.0,
+            "relayFactorScore": 39.0,
+            "capacityFactorScore": 88.0,
+            "riskControlScore": 3.0,
+            "leaderPhilosophyScore": 5.0,
+            "stepContextScore": 46.0,
+            "breakRisk": 100.0,
+            "open": 8.0,
+            "factorHint": "环境24(休息优先) / 板块39 / 龙头43 / 接力39 / 容量88 / 风险3 / 只观察",
+            "hitRules": [],
+            "blockReasons": [
+              "无主线题材",
+              "开板过多",
+              "断板风险高",
+              "首板接力链条弱",
+              "环境不支持"
+            ],
+            "isThemeLeader": false,
+            "isNewHigh": false,
+            "isMain": false,
+            "isYizi": false,
+            "isShrinkSeal": false
           }
         ],
         "relayNames": [],
         "watchNames": [
-          "中重科技",
           "大有能源",
+          "中重科技",
           "怡 亚 通",
           "祥和实业",
           "神剑股份",
-          "步步高",
           "能科科技",
+          "步步高",
           "中青宝"
         ]
       },
@@ -26931,242 +26931,6 @@
     },
     "relay": [],
     "watch": [
-      {
-        "name": "中重科技",
-        "code": "603135",
-        "lbc": 3,
-        "hy": "专用设备",
-        "fundYi": 0.57615808,
-        "open": 0,
-        "predTheme": "机器人概念",
-        "predThemeCanonical": "机器人概念",
-        "hasTier": true,
-        "cjeYi": 4.640756,
-        "qualityLabel": "温和放量",
-        "qualityScore": 84.0,
-        "nextStep": "3进4",
-        "stepRate": 0.0,
-        "stepContextScore": 63,
-        "promoEcology": 34,
-        "heightContextScore": 54,
-        "environmentScore": 24,
-        "leaderFactorScore": 78,
-        "relayFactorScore": 63,
-        "capacityFactorScore": 52,
-        "riskControlScore": 20,
-        "breakRisk": 99,
-        "themePersistScore": 54,
-        "leaderPhilosophyScore": 62,
-        "score": 43,
-        "factorScore": 43,
-        "factorBreakdown": {
-          "environment": 24,
-          "market": 25,
-          "themeEnv": 75,
-          "marketGate": -14,
-          "sector": 53,
-          "leader": 78,
-          "relay": 63,
-          "capacity": 52,
-          "risk": 20,
-          "opportunity": 81,
-          "edge": 4,
-          "heightBreakout": 0
-        },
-        "factorHint": "环境24(休息优先) / 板块53 / 龙头78 / 接力63 / 容量52 / 风险20 / 只观察",
-        "scoreBand": "只观察",
-        "scoreBandTone": "cool",
-        "superLeaderTone": "",
-        "scoreAction": "不主动接力",
-        "marketGate": {
-          "score": 24,
-          "label": "休息优先",
-          "action": "不主动接力"
-        },
-        "sectorTrendScore": 67,
-        "sectorRankScore": 92,
-        "plateRank": 0,
-        "plateName": "",
-        "plateNameCanonical": "",
-        "factorLabels": {
-          "environment": "偏弱",
-          "sector": "偏弱",
-          "leader": "偏强",
-          "relay": "中性",
-          "capacity": "偏弱",
-          "risk": "偏弱"
-        },
-        "tags": [
-          {
-            "text": "3进4",
-            "cls": "ladder-chip-strong red-text"
-          },
-          {
-            "text": "3板",
-            "cls": "ladder-chip-cool muted-text"
-          },
-          {
-            "text": "中等主线",
-            "cls": "ladder-chip-warn orange-text"
-          },
-          {
-            "text": "带动泰坦股份",
-            "cls": "ladder-chip-strong red-text"
-          },
-          {
-            "text": "晋级生态弱",
-            "cls": "ladder-chip-warn orange-text"
-          },
-          {
-            "text": "断板风险高",
-            "cls": "ladder-chip-warn orange-text"
-          },
-          {
-            "text": "温和放量",
-            "cls": "ladder-chip-cool muted-text"
-          },
-          {
-            "text": "未开",
-            "cls": "ladder-chip-cool muted-text"
-          },
-          {
-            "text": "首封10:43",
-            "cls": "ladder-chip-cool muted-text"
-          },
-          {
-            "text": "高度修复",
-            "cls": "ladder-chip-strong red-text"
-          },
-          {
-            "text": "放量+板块",
-            "cls": "ladder-chip-cool muted-text"
-          },
-          {
-            "text": "题材发散",
-            "cls": "ladder-chip-cool muted-text"
-          },
-          {
-            "text": "封单0.58亿",
-            "cls": "ladder-chip-cool muted-text"
-          },
-          {
-            "text": "5.6%换手",
-            "cls": "ladder-chip-cool muted-text"
-          },
-          {
-            "text": "成交额4.64亿",
-            "cls": "ladder-chip-cool muted-text"
-          },
-          {
-            "text": "市值89亿",
-            "cls": "ladder-chip-cool muted-text"
-          },
-          {
-            "text": "机器人概念",
-            "cls": "ladder-chip-cool muted-text"
-          },
-          {
-            "text": "数字经济",
-            "cls": "ladder-chip-cool muted-text"
-          }
-        ],
-        "tagRows": [
-          {
-            "tone": "red",
-            "tags": [
-              {
-                "text": "3进4",
-                "cls": "ladder-chip-strong red-text"
-              },
-              {
-                "text": "带动泰坦股份",
-                "cls": "ladder-chip-strong red-text"
-              },
-              {
-                "text": "高度修复",
-                "cls": "ladder-chip-strong red-text"
-              }
-            ]
-          },
-          {
-            "tone": "orange",
-            "tags": [
-              {
-                "text": "中等主线",
-                "cls": "ladder-chip-warn orange-text"
-              },
-              {
-                "text": "晋级生态弱",
-                "cls": "ladder-chip-warn orange-text"
-              },
-              {
-                "text": "断板风险高",
-                "cls": "ladder-chip-warn orange-text"
-              }
-            ]
-          },
-          {
-            "tone": "muted",
-            "tags": [
-              {
-                "text": "3板",
-                "cls": "ladder-chip-cool muted-text"
-              },
-              {
-                "text": "温和放量",
-                "cls": "ladder-chip-cool muted-text"
-              },
-              {
-                "text": "未开",
-                "cls": "ladder-chip-cool muted-text"
-              },
-              {
-                "text": "首封10:43",
-                "cls": "ladder-chip-cool muted-text"
-              },
-              {
-                "text": "放量+板块",
-                "cls": "ladder-chip-cool muted-text"
-              },
-              {
-                "text": "题材发散",
-                "cls": "ladder-chip-cool muted-text"
-              },
-              {
-                "text": "封单0.58亿",
-                "cls": "ladder-chip-cool muted-text"
-              },
-              {
-                "text": "5.6%换手",
-                "cls": "ladder-chip-cool muted-text"
-              },
-              {
-                "text": "成交额4.64亿",
-                "cls": "ladder-chip-cool muted-text"
-              },
-              {
-                "text": "市值89亿",
-                "cls": "ladder-chip-cool muted-text"
-              },
-              {
-                "text": "机器人概念",
-                "cls": "ladder-chip-cool muted-text"
-              },
-              {
-                "text": "数字经济",
-                "cls": "ladder-chip-cool muted-text"
-              }
-            ]
-          }
-        ],
-        "capacityLabel": "弹性票",
-        "reason": "<span class=\"reason-bits\">机器人概念龙头带动 · 梯队带动泰坦股份 · 题材联动 · 高度修复 · 温和放量 · 封板稳 · 早封 · 断板风险高 · 晋级生态弱(20%/80%)</span><div class=\"exp-wrap\"><div class=\"exp-row\"><span class=\"exp-pill pill-pre\">预期</span>低开（-4%~-1%%）+ 竞价量能≥0.21亿</div><div class=\"exp-row\"><span class=\"exp-pill pill-hi\">超预期</span>高开≥-1%% + 竞价量能≥0.21亿</div><div class=\"exp-row\"><span class=\"exp-pill pill-lo\">低预期</span>低于-4%% 或 竞价量能<0.15亿</div></div>",
-        "factorRank": 1,
-        "watchRank": 1,
-        "watchGroup": "高标/题材核心",
-        "scoreLabel": "观察因子",
-        "scoreSubLabel": "高标/题材核心 · 只观察"
-      },
       {
         "name": "大有能源",
         "code": "600403",
@@ -27422,6 +27186,242 @@
         "capacityLabel": "容量核",
         "reason": "<span class=\"reason-bits\">市场唯一高度核心 · 板块归属：国资改革 · 突破新高(5板) · 高度修复 · 温和放量 · 早封 · 容量够 · 题材转弱 · 断板风险高</span><div class=\"exp-wrap\"><div class=\"exp-row\"><span class=\"exp-pill pill-pre\">预期</span>低开（-4%~-1%%）+ 竞价量能≥0.76亿</div><div class=\"exp-row\"><span class=\"exp-pill pill-hi\">超预期</span>高开≥-1%% + 竞价量能≥0.76亿</div><div class=\"exp-row\"><span class=\"exp-pill pill-lo\">低预期</span>低于-4%% 或 竞价量能<0.53亿</div></div>",
         "factorRank": 2,
+        "watchRank": 1,
+        "watchGroup": "高标/题材核心",
+        "scoreLabel": "观察因子",
+        "scoreSubLabel": "高标/题材核心 · 只观察"
+      },
+      {
+        "name": "中重科技",
+        "code": "603135",
+        "lbc": 3,
+        "hy": "专用设备",
+        "fundYi": 0.57615808,
+        "open": 0,
+        "predTheme": "机器人概念",
+        "predThemeCanonical": "机器人概念",
+        "hasTier": true,
+        "cjeYi": 4.640756,
+        "qualityLabel": "温和放量",
+        "qualityScore": 84.0,
+        "nextStep": "3进4",
+        "stepRate": 0.0,
+        "stepContextScore": 63,
+        "promoEcology": 34,
+        "heightContextScore": 54,
+        "environmentScore": 24,
+        "leaderFactorScore": 78,
+        "relayFactorScore": 62,
+        "capacityFactorScore": 52,
+        "riskControlScore": 20,
+        "breakRisk": 99,
+        "themePersistScore": 54,
+        "leaderPhilosophyScore": 62,
+        "score": 42,
+        "factorScore": 42,
+        "factorBreakdown": {
+          "environment": 24,
+          "market": 25,
+          "themeEnv": 75,
+          "marketGate": -14,
+          "sector": 53,
+          "leader": 78,
+          "relay": 62,
+          "capacity": 52,
+          "risk": 20,
+          "opportunity": 81,
+          "edge": 4,
+          "heightBreakout": 0
+        },
+        "factorHint": "环境24(休息优先) / 板块53 / 龙头78 / 接力62 / 容量52 / 风险20 / 只观察",
+        "scoreBand": "只观察",
+        "scoreBandTone": "cool",
+        "superLeaderTone": "",
+        "scoreAction": "不主动接力",
+        "marketGate": {
+          "score": 24,
+          "label": "休息优先",
+          "action": "不主动接力"
+        },
+        "sectorTrendScore": 67,
+        "sectorRankScore": 92,
+        "plateRank": 0,
+        "plateName": "",
+        "plateNameCanonical": "",
+        "factorLabels": {
+          "environment": "偏弱",
+          "sector": "偏弱",
+          "leader": "偏强",
+          "relay": "中性",
+          "capacity": "偏弱",
+          "risk": "偏弱"
+        },
+        "tags": [
+          {
+            "text": "3进4",
+            "cls": "ladder-chip-strong red-text"
+          },
+          {
+            "text": "3板",
+            "cls": "ladder-chip-cool muted-text"
+          },
+          {
+            "text": "中等主线",
+            "cls": "ladder-chip-warn orange-text"
+          },
+          {
+            "text": "带动泰坦股份",
+            "cls": "ladder-chip-strong red-text"
+          },
+          {
+            "text": "晋级生态弱",
+            "cls": "ladder-chip-warn orange-text"
+          },
+          {
+            "text": "断板风险高",
+            "cls": "ladder-chip-warn orange-text"
+          },
+          {
+            "text": "温和放量",
+            "cls": "ladder-chip-cool muted-text"
+          },
+          {
+            "text": "未开",
+            "cls": "ladder-chip-cool muted-text"
+          },
+          {
+            "text": "首封10:43",
+            "cls": "ladder-chip-cool muted-text"
+          },
+          {
+            "text": "高度修复",
+            "cls": "ladder-chip-strong red-text"
+          },
+          {
+            "text": "放量+板块",
+            "cls": "ladder-chip-cool muted-text"
+          },
+          {
+            "text": "题材发散",
+            "cls": "ladder-chip-cool muted-text"
+          },
+          {
+            "text": "封单0.58亿",
+            "cls": "ladder-chip-cool muted-text"
+          },
+          {
+            "text": "5.6%换手",
+            "cls": "ladder-chip-cool muted-text"
+          },
+          {
+            "text": "成交额4.64亿",
+            "cls": "ladder-chip-cool muted-text"
+          },
+          {
+            "text": "市值89亿",
+            "cls": "ladder-chip-cool muted-text"
+          },
+          {
+            "text": "机器人概念",
+            "cls": "ladder-chip-cool muted-text"
+          },
+          {
+            "text": "数字经济",
+            "cls": "ladder-chip-cool muted-text"
+          }
+        ],
+        "tagRows": [
+          {
+            "tone": "red",
+            "tags": [
+              {
+                "text": "3进4",
+                "cls": "ladder-chip-strong red-text"
+              },
+              {
+                "text": "带动泰坦股份",
+                "cls": "ladder-chip-strong red-text"
+              },
+              {
+                "text": "高度修复",
+                "cls": "ladder-chip-strong red-text"
+              }
+            ]
+          },
+          {
+            "tone": "orange",
+            "tags": [
+              {
+                "text": "中等主线",
+                "cls": "ladder-chip-warn orange-text"
+              },
+              {
+                "text": "晋级生态弱",
+                "cls": "ladder-chip-warn orange-text"
+              },
+              {
+                "text": "断板风险高",
+                "cls": "ladder-chip-warn orange-text"
+              }
+            ]
+          },
+          {
+            "tone": "muted",
+            "tags": [
+              {
+                "text": "3板",
+                "cls": "ladder-chip-cool muted-text"
+              },
+              {
+                "text": "温和放量",
+                "cls": "ladder-chip-cool muted-text"
+              },
+              {
+                "text": "未开",
+                "cls": "ladder-chip-cool muted-text"
+              },
+              {
+                "text": "首封10:43",
+                "cls": "ladder-chip-cool muted-text"
+              },
+              {
+                "text": "放量+板块",
+                "cls": "ladder-chip-cool muted-text"
+              },
+              {
+                "text": "题材发散",
+                "cls": "ladder-chip-cool muted-text"
+              },
+              {
+                "text": "封单0.58亿",
+                "cls": "ladder-chip-cool muted-text"
+              },
+              {
+                "text": "5.6%换手",
+                "cls": "ladder-chip-cool muted-text"
+              },
+              {
+                "text": "成交额4.64亿",
+                "cls": "ladder-chip-cool muted-text"
+              },
+              {
+                "text": "市值89亿",
+                "cls": "ladder-chip-cool muted-text"
+              },
+              {
+                "text": "机器人概念",
+                "cls": "ladder-chip-cool muted-text"
+              },
+              {
+                "text": "数字经济",
+                "cls": "ladder-chip-cool muted-text"
+              }
+            ]
+          }
+        ],
+        "capacityLabel": "弹性票",
+        "reason": "<span class=\"reason-bits\">机器人概念龙头带动 · 梯队带动泰坦股份 · 题材联动 · 高度修复 · 温和放量 · 封板稳 · 早封 · 断板风险高 · 晋级生态弱(20%/80%)</span><div class=\"exp-wrap\"><div class=\"exp-row\"><span class=\"exp-pill pill-pre\">预期</span>低开（-4%~-1%%）+ 竞价量能≥0.21亿</div><div class=\"exp-row\"><span class=\"exp-pill pill-hi\">超预期</span>高开≥-1%% + 竞价量能≥0.21亿</div><div class=\"exp-row\"><span class=\"exp-pill pill-lo\">低预期</span>低于-4%% 或 竞价量能<0.15亿</div></div>",
+        "factorRank": 1,
         "watchRank": 2,
         "watchGroup": "高标/题材核心",
         "scoreLabel": "观察因子",
@@ -27439,37 +27439,37 @@
         "hasTier": true,
         "cjeYi": 13.844682,
         "qualityLabel": "",
-        "qualityScore": 82.66127389135305,
+        "qualityScore": 76.87924658886209,
         "nextStep": "1进2",
         "stepRate": 20.0,
         "stepContextScore": 46,
         "promoEcology": 34,
         "heightContextScore": 54,
         "environmentScore": 24,
-        "leaderFactorScore": 54,
-        "relayFactorScore": 60,
+        "leaderFactorScore": 53,
+        "relayFactorScore": 57,
         "capacityFactorScore": 92,
         "riskControlScore": 26,
         "breakRisk": 100,
         "themePersistScore": 49,
         "leaderPhilosophyScore": 27,
-        "score": 39,
-        "factorScore": 39,
+        "score": 38,
+        "factorScore": 38,
         "factorBreakdown": {
           "environment": 24,
           "market": 25,
           "themeEnv": 75,
           "marketGate": -14,
           "sector": 45,
-          "leader": 54,
-          "relay": 60,
+          "leader": 53,
+          "relay": 57,
           "capacity": 92,
           "risk": 26,
-          "opportunity": 81,
+          "opportunity": 79,
           "edge": 1,
           "heightBreakout": 0
         },
-        "factorHint": "环境24(休息优先) / 板块45 / 龙头54 / 接力60 / 容量92 / 风险26 / 只观察",
+        "factorHint": "环境24(休息优先) / 板块45 / 龙头53 / 接力57 / 容量92 / 风险26 / 只观察",
         "scoreBand": "只观察",
         "scoreBandTone": "cool",
         "superLeaderTone": "",
@@ -27488,7 +27488,7 @@
           "environment": "偏弱",
           "sector": "偏弱",
           "leader": "偏弱",
-          "relay": "中性",
+          "relay": "偏弱",
           "capacity": "强",
           "risk": "偏弱"
         },
@@ -27656,7 +27656,7 @@
           }
         ],
         "capacityLabel": "容量核",
-        "reason": "<span class=\"reason-bits\">梯队完整 · 高度修复 · 温和放量 · 封单偏强 · 封板稳 · 断板风险高 · 晋级生态弱(20%/80%)</span><div class=\"exp-wrap\"><div class=\"exp-row\"><span class=\"exp-pill pill-pre\">预期</span>低开（-4%~-1%%）+ 竞价量能≥0.62亿</div><div class=\"exp-row\"><span class=\"exp-pill pill-hi\">超预期</span>高开≥-1%% + 竞价量能≥0.62亿</div><div class=\"exp-row\"><span class=\"exp-pill pill-lo\">低预期</span>低于-4%% 或 竞价量能<0.44亿</div></div>",
+        "reason": "<span class=\"reason-bits\">梯队完整 · 高度修复 · 温和放量 · 封板稳 · 早封 · 断板风险高 · 晋级生态弱(20%/80%)</span><div class=\"exp-wrap\"><div class=\"exp-row\"><span class=\"exp-pill pill-pre\">预期</span>低开（-4%~-1%%）+ 竞价量能≥0.62亿</div><div class=\"exp-row\"><span class=\"exp-pill pill-hi\">超预期</span>高开≥-1%% + 竞价量能≥0.62亿</div><div class=\"exp-row\"><span class=\"exp-pill pill-lo\">低预期</span>低于-4%% 或 竞价量能<0.44亿</div></div>",
         "factorRank": 3,
         "watchRank": 3,
         "watchGroup": "风险观察",
@@ -27683,7 +27683,7 @@
         "heightContextScore": 54,
         "environmentScore": 24,
         "leaderFactorScore": 64,
-        "relayFactorScore": 68,
+        "relayFactorScore": 65,
         "capacityFactorScore": 40,
         "riskControlScore": 7,
         "breakRisk": 100,
@@ -27698,14 +27698,14 @@
           "marketGate": -14,
           "sector": 53,
           "leader": 64,
-          "relay": 68,
+          "relay": 65,
           "capacity": 40,
           "risk": 7,
-          "opportunity": 61,
+          "opportunity": 59,
           "edge": 3,
           "heightBreakout": 0
         },
-        "factorHint": "环境24(休息优先) / 板块53 / 龙头64 / 接力68 / 容量40 / 风险7 / 只观察",
+        "factorHint": "环境24(休息优先) / 板块53 / 龙头64 / 接力65 / 容量40 / 风险7 / 只观察",
         "scoreBand": "只观察",
         "scoreBandTone": "cool",
         "superLeaderTone": "",
@@ -27908,7 +27908,7 @@
           }
         ],
         "capacityLabel": "小盘",
-        "reason": "<span class=\"reason-bits\">梯队完整 · 高度修复 · 加速确认 · 封单偏强 · 早封 · 断板风险高 · 晋级生态弱(20%/80%)</span><div class=\"exp-wrap\"><div class=\"exp-row\"><span class=\"exp-pill pill-pre\">预期</span>低开（-4%~-1%%）+ 竞价量能≥0.15亿</div><div class=\"exp-row\"><span class=\"exp-pill pill-hi\">超预期</span>高开≥-1%% + 竞价量能≥0.15亿</div><div class=\"exp-row\"><span class=\"exp-pill pill-lo\">低预期</span>低于-4%% 或 竞价量能<0.10亿</div></div>",
+        "reason": "<span class=\"reason-bits\">梯队完整 · 高度修复 · 加速确认 · 早封 · 断板风险高 · 晋级生态弱(20%/80%)</span><div class=\"exp-wrap\"><div class=\"exp-row\"><span class=\"exp-pill pill-pre\">预期</span>低开（-4%~-1%%）+ 竞价量能≥0.15亿</div><div class=\"exp-row\"><span class=\"exp-pill pill-hi\">超预期</span>高开≥-1%% + 竞价量能≥0.15亿</div><div class=\"exp-row\"><span class=\"exp-pill pill-lo\">低预期</span>低于-4%% 或 竞价量能<0.10亿</div></div>",
         "factorRank": 4,
         "watchRank": 4,
         "watchGroup": "高标/题材核心",
@@ -27927,37 +27927,37 @@
         "hasTier": true,
         "cjeYi": 24.219219,
         "qualityLabel": "",
-        "qualityScore": 93.79697937844904,
+        "qualityScore": 85.0867307040445,
         "nextStep": "1进2",
         "stepRate": 20.0,
         "stepContextScore": 46,
         "promoEcology": 34,
         "heightContextScore": 54,
         "environmentScore": 24,
-        "leaderFactorScore": 50,
-        "relayFactorScore": 64,
+        "leaderFactorScore": 49,
+        "relayFactorScore": 60,
         "capacityFactorScore": 80,
         "riskControlScore": 14,
         "breakRisk": 100,
         "themePersistScore": 54,
         "leaderPhilosophyScore": 27,
-        "score": 34,
-        "factorScore": 34,
+        "score": 33,
+        "factorScore": 33,
         "factorBreakdown": {
           "environment": 24,
           "market": 25,
           "themeEnv": 75,
           "marketGate": -14,
           "sector": 52,
-          "leader": 50,
-          "relay": 64,
+          "leader": 49,
+          "relay": 60,
           "capacity": 80,
           "risk": 14,
-          "opportunity": 73,
+          "opportunity": 69,
           "edge": -2,
           "heightBreakout": 0
         },
-        "factorHint": "环境24(休息优先) / 板块52 / 龙头50 / 接力64 / 容量80 / 风险14 / 只观察",
+        "factorHint": "环境24(休息优先) / 板块52 / 龙头49 / 接力60 / 容量80 / 风险14 / 只观察",
         "scoreBand": "只观察",
         "scoreBandTone": "cool",
         "superLeaderTone": "",
@@ -28136,202 +28136,6 @@
         "scoreSubLabel": "风险观察 · 只观察"
       },
       {
-        "name": "步步高",
-        "code": "002251",
-        "lbc": 1,
-        "hy": "一般零售",
-        "fundYi": 0.91781182,
-        "open": 1,
-        "predTheme": "",
-        "predThemeCanonical": "",
-        "hasTier": false,
-        "cjeYi": 16.38266,
-        "qualityLabel": "",
-        "qualityScore": 81.21948315976717,
-        "nextStep": "1进2",
-        "stepRate": 20.0,
-        "stepContextScore": 46,
-        "promoEcology": 34,
-        "heightContextScore": 54,
-        "environmentScore": 24,
-        "leaderFactorScore": 51,
-        "relayFactorScore": 56,
-        "capacityFactorScore": 83,
-        "riskControlScore": 21,
-        "breakRisk": 100,
-        "themePersistScore": 0,
-        "leaderPhilosophyScore": 23,
-        "score": 32,
-        "factorScore": 32,
-        "factorBreakdown": {
-          "environment": 24,
-          "market": 25,
-          "themeEnv": 75,
-          "marketGate": -14,
-          "sector": 35,
-          "leader": 51,
-          "relay": 56,
-          "capacity": 83,
-          "risk": 21,
-          "opportunity": 57,
-          "edge": 0,
-          "heightBreakout": 0
-        },
-        "factorHint": "环境24(休息优先) / 板块35 / 龙头51 / 接力56 / 容量83 / 风险21 / 只观察",
-        "scoreBand": "只观察",
-        "scoreBandTone": "cool",
-        "superLeaderTone": "",
-        "scoreAction": "不主动接力",
-        "marketGate": {
-          "score": 24,
-          "label": "休息优先",
-          "action": "不主动接力"
-        },
-        "sectorTrendScore": 21,
-        "sectorRankScore": 42,
-        "plateRank": 0,
-        "plateName": "",
-        "plateNameCanonical": "",
-        "factorLabels": {
-          "environment": "偏弱",
-          "sector": "偏弱",
-          "leader": "偏弱",
-          "relay": "偏弱",
-          "capacity": "强",
-          "risk": "偏弱"
-        },
-        "tags": [
-          {
-            "text": "1进2",
-            "cls": "ladder-chip-cool muted-text"
-          },
-          {
-            "text": "题材待确认",
-            "cls": "ladder-chip-warn orange-text"
-          },
-          {
-            "text": "晋级生态弱",
-            "cls": "ladder-chip-warn orange-text"
-          },
-          {
-            "text": "断板风险高",
-            "cls": "ladder-chip-warn orange-text"
-          },
-          {
-            "text": "1次开板",
-            "cls": "ladder-chip-warn orange-text"
-          },
-          {
-            "text": "首封09:32",
-            "cls": "ladder-chip-cool muted-text"
-          },
-          {
-            "text": "高度修复",
-            "cls": "ladder-chip-strong red-text"
-          },
-          {
-            "text": "封单0.92亿",
-            "cls": "ladder-chip-cool muted-text"
-          },
-          {
-            "text": "15.9%换手",
-            "cls": "ladder-chip-cool muted-text"
-          },
-          {
-            "text": "成交额16.38亿",
-            "cls": "ladder-chip-cool muted-text"
-          },
-          {
-            "text": "市值131亿",
-            "cls": "ladder-chip-cool muted-text"
-          },
-          {
-            "text": "首板",
-            "cls": "ladder-chip-cool muted-text"
-          },
-          {
-            "text": "一般零售×2",
-            "cls": "ladder-chip-cool muted-text"
-          }
-        ],
-        "tagRows": [
-          {
-            "tone": "red",
-            "tags": [
-              {
-                "text": "高度修复",
-                "cls": "ladder-chip-strong red-text"
-              }
-            ]
-          },
-          {
-            "tone": "orange",
-            "tags": [
-              {
-                "text": "题材待确认",
-                "cls": "ladder-chip-warn orange-text"
-              },
-              {
-                "text": "晋级生态弱",
-                "cls": "ladder-chip-warn orange-text"
-              },
-              {
-                "text": "断板风险高",
-                "cls": "ladder-chip-warn orange-text"
-              },
-              {
-                "text": "1次开板",
-                "cls": "ladder-chip-warn orange-text"
-              }
-            ]
-          },
-          {
-            "tone": "muted",
-            "tags": [
-              {
-                "text": "1进2",
-                "cls": "ladder-chip-cool muted-text"
-              },
-              {
-                "text": "首封09:32",
-                "cls": "ladder-chip-cool muted-text"
-              },
-              {
-                "text": "封单0.92亿",
-                "cls": "ladder-chip-cool muted-text"
-              },
-              {
-                "text": "15.9%换手",
-                "cls": "ladder-chip-cool muted-text"
-              },
-              {
-                "text": "成交额16.38亿",
-                "cls": "ladder-chip-cool muted-text"
-              },
-              {
-                "text": "市值131亿",
-                "cls": "ladder-chip-cool muted-text"
-              },
-              {
-                "text": "首板",
-                "cls": "ladder-chip-cool muted-text"
-              },
-              {
-                "text": "一般零售×2",
-                "cls": "ladder-chip-cool muted-text"
-              }
-            ]
-          }
-        ],
-        "capacityLabel": "弹性票",
-        "reason": "<span class=\"reason-bits\">高度修复 · 封板稳 · 早封 · 容量够 · 断板风险高 · 晋级生态弱(20%/80%)</span><div class=\"exp-wrap\"><div class=\"exp-row\"><span class=\"exp-pill pill-pre\">预期</span>低开（-4%~-1%%）+ 竞价量能≥0.74亿</div><div class=\"exp-row\"><span class=\"exp-pill pill-hi\">超预期</span>高开≥-1%% + 竞价量能≥0.74亿</div><div class=\"exp-row\"><span class=\"exp-pill pill-lo\">低预期</span>低于-4%% 或 竞价量能<0.52亿</div></div>",
-        "factorRank": 6,
-        "watchRank": 6,
-        "watchGroup": "风险观察",
-        "scoreLabel": "观察因子",
-        "scoreSubLabel": "风险观察 · 只观察"
-      },
-      {
         "name": "能科科技",
         "code": "603859",
         "lbc": 1,
@@ -28343,7 +28147,7 @@
         "hasTier": true,
         "cjeYi": 10.923196,
         "qualityLabel": "",
-        "qualityScore": 59.24375366081573,
+        "qualityScore": 58.18953449707817,
         "nextStep": "1进2",
         "stepRate": 20.0,
         "stepContextScore": 46,
@@ -28351,7 +28155,7 @@
         "heightContextScore": 54,
         "environmentScore": 24,
         "leaderFactorScore": 43,
-        "relayFactorScore": 46,
+        "relayFactorScore": 45,
         "capacityFactorScore": 92,
         "riskControlScore": 8,
         "breakRisk": 100,
@@ -28366,14 +28170,14 @@
           "marketGate": -14,
           "sector": 55,
           "leader": 43,
-          "relay": 46,
+          "relay": 45,
           "capacity": 92,
           "risk": 8,
           "opportunity": 71,
           "edge": -2,
           "heightBreakout": 0
         },
-        "factorHint": "环境24(休息优先) / 板块55 / 龙头43 / 接力46 / 容量92 / 风险8 / 只观察",
+        "factorHint": "环境24(休息优先) / 板块55 / 龙头43 / 接力45 / 容量92 / 风险8 / 只观察",
         "scoreBand": "只观察",
         "scoreBandTone": "cool",
         "superLeaderTone": "",
@@ -28569,7 +28373,203 @@
         ],
         "capacityLabel": "容量核",
         "reason": "<span class=\"reason-bits\">梯队跟随 · 题材联动 · 高度修复 · 温和放量 · 早封 · 容量够 · 断板风险高 · 晋级生态弱(20%/80%)</span><div class=\"exp-wrap\"><div class=\"exp-row\"><span class=\"exp-pill pill-pre\">预期</span>低开（-4%~-1%%）+ 竞价量能≥0.49亿</div><div class=\"exp-row\"><span class=\"exp-pill pill-hi\">超预期</span>高开≥-1%% + 竞价量能≥0.49亿</div><div class=\"exp-row\"><span class=\"exp-pill pill-lo\">低预期</span>低于-4%% 或 竞价量能<0.34亿</div></div>",
-        "factorRank": 7,
+        "factorRank": 6,
+        "watchRank": 6,
+        "watchGroup": "风险观察",
+        "scoreLabel": "观察因子",
+        "scoreSubLabel": "风险观察 · 只观察"
+      },
+      {
+        "name": "步步高",
+        "code": "002251",
+        "lbc": 1,
+        "hy": "一般零售",
+        "fundYi": 0.91781182,
+        "open": 1,
+        "predTheme": "",
+        "predThemeCanonical": "",
+        "hasTier": false,
+        "cjeYi": 16.38266,
+        "qualityLabel": "",
+        "qualityScore": 77.14039890297828,
+        "nextStep": "1进2",
+        "stepRate": 20.0,
+        "stepContextScore": 46,
+        "promoEcology": 34,
+        "heightContextScore": 54,
+        "environmentScore": 24,
+        "leaderFactorScore": 50,
+        "relayFactorScore": 53,
+        "capacityFactorScore": 83,
+        "riskControlScore": 21,
+        "breakRisk": 100,
+        "themePersistScore": 0,
+        "leaderPhilosophyScore": 23,
+        "score": 31,
+        "factorScore": 31,
+        "factorBreakdown": {
+          "environment": 24,
+          "market": 25,
+          "themeEnv": 75,
+          "marketGate": -14,
+          "sector": 35,
+          "leader": 50,
+          "relay": 53,
+          "capacity": 83,
+          "risk": 21,
+          "opportunity": 56,
+          "edge": 0,
+          "heightBreakout": 0
+        },
+        "factorHint": "环境24(休息优先) / 板块35 / 龙头50 / 接力53 / 容量83 / 风险21 / 只观察",
+        "scoreBand": "只观察",
+        "scoreBandTone": "cool",
+        "superLeaderTone": "",
+        "scoreAction": "不主动接力",
+        "marketGate": {
+          "score": 24,
+          "label": "休息优先",
+          "action": "不主动接力"
+        },
+        "sectorTrendScore": 21,
+        "sectorRankScore": 42,
+        "plateRank": 0,
+        "plateName": "",
+        "plateNameCanonical": "",
+        "factorLabels": {
+          "environment": "偏弱",
+          "sector": "偏弱",
+          "leader": "偏弱",
+          "relay": "偏弱",
+          "capacity": "强",
+          "risk": "偏弱"
+        },
+        "tags": [
+          {
+            "text": "1进2",
+            "cls": "ladder-chip-cool muted-text"
+          },
+          {
+            "text": "题材待确认",
+            "cls": "ladder-chip-warn orange-text"
+          },
+          {
+            "text": "晋级生态弱",
+            "cls": "ladder-chip-warn orange-text"
+          },
+          {
+            "text": "断板风险高",
+            "cls": "ladder-chip-warn orange-text"
+          },
+          {
+            "text": "1次开板",
+            "cls": "ladder-chip-warn orange-text"
+          },
+          {
+            "text": "首封09:32",
+            "cls": "ladder-chip-cool muted-text"
+          },
+          {
+            "text": "高度修复",
+            "cls": "ladder-chip-strong red-text"
+          },
+          {
+            "text": "封单0.92亿",
+            "cls": "ladder-chip-cool muted-text"
+          },
+          {
+            "text": "15.9%换手",
+            "cls": "ladder-chip-cool muted-text"
+          },
+          {
+            "text": "成交额16.38亿",
+            "cls": "ladder-chip-cool muted-text"
+          },
+          {
+            "text": "市值131亿",
+            "cls": "ladder-chip-cool muted-text"
+          },
+          {
+            "text": "首板",
+            "cls": "ladder-chip-cool muted-text"
+          },
+          {
+            "text": "一般零售×2",
+            "cls": "ladder-chip-cool muted-text"
+          }
+        ],
+        "tagRows": [
+          {
+            "tone": "red",
+            "tags": [
+              {
+                "text": "高度修复",
+                "cls": "ladder-chip-strong red-text"
+              }
+            ]
+          },
+          {
+            "tone": "orange",
+            "tags": [
+              {
+                "text": "题材待确认",
+                "cls": "ladder-chip-warn orange-text"
+              },
+              {
+                "text": "晋级生态弱",
+                "cls": "ladder-chip-warn orange-text"
+              },
+              {
+                "text": "断板风险高",
+                "cls": "ladder-chip-warn orange-text"
+              },
+              {
+                "text": "1次开板",
+                "cls": "ladder-chip-warn orange-text"
+              }
+            ]
+          },
+          {
+            "tone": "muted",
+            "tags": [
+              {
+                "text": "1进2",
+                "cls": "ladder-chip-cool muted-text"
+              },
+              {
+                "text": "首封09:32",
+                "cls": "ladder-chip-cool muted-text"
+              },
+              {
+                "text": "封单0.92亿",
+                "cls": "ladder-chip-cool muted-text"
+              },
+              {
+                "text": "15.9%换手",
+                "cls": "ladder-chip-cool muted-text"
+              },
+              {
+                "text": "成交额16.38亿",
+                "cls": "ladder-chip-cool muted-text"
+              },
+              {
+                "text": "市值131亿",
+                "cls": "ladder-chip-cool muted-text"
+              },
+              {
+                "text": "首板",
+                "cls": "ladder-chip-cool muted-text"
+              },
+              {
+                "text": "一般零售×2",
+                "cls": "ladder-chip-cool muted-text"
+              }
+            ]
+          }
+        ],
+        "capacityLabel": "弹性票",
+        "reason": "<span class=\"reason-bits\">高度修复 · 封板稳 · 早封 · 容量够 · 断板风险高 · 晋级生态弱(20%/80%)</span><div class=\"exp-wrap\"><div class=\"exp-row\"><span class=\"exp-pill pill-pre\">预期</span>低开（-4%~-1%%）+ 竞价量能≥0.74亿</div><div class=\"exp-row\"><span class=\"exp-pill pill-hi\">超预期</span>高开≥-1%% + 竞价量能≥0.74亿</div><div class=\"exp-row\"><span class=\"exp-pill pill-lo\">低预期</span>低于-4%% 或 竞价量能<0.52亿</div></div>",
+        "factorRank": 8,
         "watchRank": 7,
         "watchGroup": "风险观察",
         "scoreLabel": "观察因子",
@@ -28587,7 +28587,7 @@
         "hasTier": true,
         "cjeYi": 2.704174,
         "qualityLabel": "",
-        "qualityScore": 87.63820527881396,
+        "qualityScore": 82.27352233474093,
         "nextStep": "1进2",
         "stepRate": 20.0,
         "stepContextScore": 46,
@@ -28595,7 +28595,7 @@
         "heightContextScore": 54,
         "environmentScore": 24,
         "leaderFactorScore": 49,
-        "relayFactorScore": 60,
+        "relayFactorScore": 57,
         "capacityFactorScore": 52,
         "riskControlScore": 24,
         "breakRisk": 100,
@@ -28610,14 +28610,14 @@
           "marketGate": -14,
           "sector": 55,
           "leader": 49,
-          "relay": 60,
+          "relay": 57,
           "capacity": 52,
           "risk": 24,
-          "opportunity": 79,
+          "opportunity": 77,
           "edge": -2,
           "heightBreakout": 0
         },
-        "factorHint": "环境24(休息优先) / 板块55 / 龙头49 / 接力60 / 容量52 / 风险24 / 只观察",
+        "factorHint": "环境24(休息优先) / 板块55 / 龙头49 / 接力57 / 容量52 / 风险24 / 只观察",
         "scoreBand": "只观察",
         "scoreBandTone": "cool",
         "superLeaderTone": "",
@@ -28636,7 +28636,7 @@
           "environment": "偏弱",
           "sector": "偏弱",
           "leader": "偏弱",
-          "relay": "中性",
+          "relay": "偏弱",
           "capacity": "偏弱",
           "risk": "偏弱"
         },
@@ -28804,8 +28804,8 @@
           }
         ],
         "capacityLabel": "小盘",
-        "reason": "<span class=\"reason-bits\">梯队跟随 · 题材联动 · 高度修复 · 温和放量 · 封单偏强 · 封板稳 · 断板风险高 · 晋级生态弱(20%/80%)</span><div class=\"exp-wrap\"><div class=\"exp-row\"><span class=\"exp-pill pill-pre\">预期</span>低开（-4%~-1%%）+ 竞价量能≥0.15亿</div><div class=\"exp-row\"><span class=\"exp-pill pill-hi\">超预期</span>高开≥-1%% + 竞价量能≥0.15亿</div><div class=\"exp-row\"><span class=\"exp-pill pill-lo\">低预期</span>低于-4%% 或 竞价量能<0.10亿</div></div>",
-        "factorRank": 8,
+        "reason": "<span class=\"reason-bits\">梯队跟随 · 题材联动 · 高度修复 · 温和放量 · 封板稳 · 早封 · 断板风险高 · 晋级生态弱(20%/80%)</span><div class=\"exp-wrap\"><div class=\"exp-row\"><span class=\"exp-pill pill-pre\">预期</span>低开（-4%~-1%%）+ 竞价量能≥0.15亿</div><div class=\"exp-row\"><span class=\"exp-pill pill-hi\">超预期</span>高开≥-1%% + 竞价量能≥0.15亿</div><div class=\"exp-row\"><span class=\"exp-pill pill-lo\">低预期</span>低于-4%% 或 竞价量能<0.10亿</div></div>",
+        "factorRank": 7,
         "watchRank": 8,
         "watchGroup": "风险观察",
         "scoreLabel": "观察因子",
@@ -28856,7 +28856,7 @@
   },
   "intradaySnapshots": {
     "date": "2026-06-05",
-    "count": 33,
+    "count": 34,
     "snapshots": [
       {
         "time": "08:09:24",
@@ -30488,28 +30488,79 @@
         "shift_score": 49,
         "shift_label": "分歧",
         "note": "情绪边际修复，但仍需确认持续性。"
+      },
+      {
+        "time": "15:16:28",
+        "ts_bj": "2026-06-05 15:16:28",
+        "date": "2026-06-05",
+        "source": "intraday_live",
+        "provider": "fetch",
+        "zt": 73,
+        "dt": 11,
+        "zab": 52,
+        "zb": 41.6,
+        "fb": 58.4,
+        "jj": 9.6,
+        "lianban": 7,
+        "max_lb": 5,
+        "amount": "30691.92亿",
+        "bf": 0,
+        "heat": 49,
+        "risk": 54,
+        "headline": "分歧",
+        "concepts": [
+          {
+            "name": "芯片",
+            "lead": "*ST皇庭",
+            "chg_pct": null
+          },
+          {
+            "name": "机器人概念",
+            "lead": "瑞贝卡",
+            "chg_pct": null
+          },
+          {
+            "name": "通信",
+            "lead": "金时科技",
+            "chg_pct": null
+          },
+          {
+            "name": "元器件",
+            "lead": "XD红星发",
+            "chg_pct": null
+          },
+          {
+            "name": "算力",
+            "lead": "鼎通科技",
+            "chg_pct": null
+          }
+        ],
+        "alerts": [],
+        "shift_score": 48,
+        "shift_label": "分歧",
+        "note": "情绪整体平稳，维持当前节奏。"
       }
     ],
     "simulated": false,
     "interval_min": null,
     "latest": {
-      "time": "14:59:29",
-      "ts_bj": "2026-06-05 14:59:29",
+      "time": "15:16:28",
+      "ts_bj": "2026-06-05 15:16:28",
       "date": "2026-06-05",
       "source": "intraday_live",
       "provider": "fetch",
-      "zt": 75,
-      "dt": 10,
-      "zab": 50,
-      "zb": 40.0,
-      "fb": 60.0,
-      "jj": 9.3,
+      "zt": 73,
+      "dt": 11,
+      "zab": 52,
+      "zb": 41.6,
+      "fb": 58.4,
+      "jj": 9.6,
       "lianban": 7,
       "max_lb": 5,
-      "amount": "30241.49亿",
+      "amount": "30691.92亿",
       "bf": 0,
-      "heat": 50,
-      "risk": 52,
+      "heat": 49,
+      "risk": 54,
       "headline": "分歧",
       "concepts": [
         {
@@ -30539,9 +30590,9 @@
         }
       ],
       "alerts": [],
-      "shift_score": 49,
+      "shift_score": 48,
       "shift_label": "分歧",
-      "note": "情绪边际修复，但仍需确认持续性。"
+      "note": "情绪整体平稳，维持当前节奏。"
     }
   },
   "prev": {
@@ -30628,8 +30679,8 @@
     "risk": 63.0,
     "posture": "控仓试错",
     "position": "1-2成",
-    "action_line": "修复有延续，但还没形成一致，承接在转强、接力链条回暖，但高位断板负反馈仍重。板块上聚焦机器人概念（12涨停，龙头泰坦股份）、数字经济（7涨停）、商业航天（航天航空）（6涨停，龙头宇环数控）。 回避专精特新（10涨停，龙头祥和实业）这类高分歧方向。次日只做主线核心回封/换手确认，不追高一致。 ✅ 晋级率回暖 = 接力链条开始恢复，不再只有首板热闹 ⚠️ 断板率80.0%且亏钱效应仍高 = 断板负反馈偏强；代表股天洋新材(4板)高低点杀伤19.2% ⚠️ 跌停从7升到11 = 亏钱效应重新扩散 ⚠️ 涨停从80降到73 = 热度微降但属于去伪存真",
-    "summary": "修复有延续，但还没形成一致，承接在转强、接力链条回暖，但高位断板负反馈仍重。板块上聚焦机器人概念（12涨停，龙头泰坦股份）、数字经济（7涨停）、商业航天（航天航空）（6涨停，龙头宇环数控）。 回避专精特新（10涨停，龙头祥和实业）这类高分歧方向。次日只做主线核心回封/换手确认，不追高一致。",
+    "action_line": "修复有延续，但还没形成一致，承接在转强、接力链条回暖，但高位断板负反馈仍重。板块上聚焦机器人概念（12涨停）、数字经济（7涨停）、商业航天（航天航空）（6涨停，龙头宇环数控）。 回避专精特新（10涨停，龙头祥和实业）这类高分歧方向。次日只做主线核心回封/换手确认，不追高一致。 ✅ 晋级率回暖 = 接力链条开始恢复，不再只有首板热闹 ⚠️ 断板率80.0%且亏钱效应仍高 = 断板负反馈偏强；代表股天洋新材(4板)高低点杀伤19.2% ⚠️ 跌停从7升到11 = 亏钱效应重新扩散 ⚠️ 涨停从80降到73 = 热度微降但属于去伪存真",
+    "summary": "修复有延续，但还没形成一致，承接在转强、接力链条回暖，但高位断板负反馈仍重。板块上聚焦机器人概念（12涨停）、数字经济（7涨停）、商业航天（航天航空）（6涨停，龙头宇环数控）。 回避专精特新（10涨停，龙头祥和实业）这类高分歧方向。次日只做主线核心回封/换手确认，不追高一致。",
     "posture_line": "姿态：控仓试错（1-2成）",
     "evidences": [
       {
@@ -30680,7 +30731,7 @@
       "dates": [
         "2026-06-04"
       ],
-      "generated_at_bj": "2026-06-05 15:13:56",
+      "generated_at_bj": "2026-06-05 17:02:05",
       "generated_from": [
         "ztAnalysis.relay/watch.close_push",
         "ztAnalysis.relay/watch.close_push"
@@ -30692,21 +30743,19 @@
       "active_trade_date": "2026-06-08"
     },
     "summary": {
-      "total_samples": 10,
+      "total_samples": 11,
       "source_samples": 19,
-      "filtered_non_backtest_samples": 9,
-      "eligible_samples": 8,
+      "filtered_non_backtest_samples": 8,
+      "eligible_samples": 9,
       "expected_count": 4,
-      "super_count": 4,
+      "super_count": 5,
       "pending_count": 0,
       "wait_reseal_count": 0,
       "rejected_count": 2,
       "unique_codes": 18,
       "trade_days": 1,
-      "priced_codes": 17,
-      "missing_price_codes": [
-        "603516"
-      ],
+      "priced_codes": 18,
+      "missing_price_codes": [],
       "realtime_candidate_count": 8,
       "realtime_buy_count": 0,
       "realtime_pending_count": 0,
@@ -30732,13 +30781,13 @@
         },
         {
           "name": "watch",
-          "count": 7
+          "count": 8
         }
       ],
       "by_open_status": [
         {
           "name": "super",
-          "count": 4
+          "count": 5
         },
         {
           "name": "expected",
@@ -30752,7 +30801,7 @@
       "by_mainline": [
         {
           "name": "集成电路",
-          "count": 3
+          "count": 4
         },
         {
           "name": "储能",
@@ -30786,7 +30835,7 @@
       "by_date_status": [
         {
           "date": "2026-06-04",
-          "super": 4,
+          "super": 5,
           "expected": 4,
           "pending": 0,
           "reject": 2
@@ -30798,30 +30847,30 @@
         "key": "next_day",
         "label": "隔日收益",
         "status": "ready",
-        "covered": 8,
-        "total": 10,
-        "eligible": 8,
+        "covered": 9,
+        "total": 11,
+        "eligible": 9,
         "coverage": 100.0,
         "pending": 0,
         "missing": 0,
         "skipped": 2,
-        "win_count": 6,
+        "win_count": 4,
         "flat_count": 0,
-        "loss_count": 2,
-        "win_rate": 75.0,
-        "avg_return": -0.91,
-        "avg_win_return": 2.95,
-        "avg_loss_return": -12.46,
+        "loss_count": 5,
+        "win_rate": 44.4,
+        "avg_return": -1.87,
+        "avg_win_return": 3.77,
+        "avg_loss_return": -6.38,
         "by_open_status": {
           "super": {
-            "covered": 4,
-            "win_rate": 50.0,
-            "avg_return": -5.08
+            "covered": 5,
+            "win_rate": 40.0,
+            "avg_return": -4.4
           },
           "expected": {
             "covered": 4,
-            "win_rate": 100.0,
-            "avg_return": 3.26
+            "win_rate": 50.0,
+            "avg_return": 1.3
           }
         },
         "note": "只统计 ztAnalysis 同源推荐；仅在次日 09:25-09:30 开盘信号满足符合预期或超预期开口径时记为入场。"
@@ -30831,10 +30880,10 @@
         "label": "3日收益",
         "status": "partial",
         "covered": 0,
-        "total": 10,
-        "eligible": 8,
+        "total": 11,
+        "eligible": 9,
         "coverage": 0.0,
-        "pending": 8,
+        "pending": 9,
         "missing": 0,
         "skipped": 2,
         "win_count": 0,
@@ -30863,10 +30912,10 @@
         "label": "5日收益",
         "status": "partial",
         "covered": 0,
-        "total": 10,
-        "eligible": 8,
+        "total": 11,
+        "eligible": 9,
         "coverage": 0.0,
-        "pending": 8,
+        "pending": 9,
         "missing": 0,
         "skipped": 2,
         "win_count": 0,
@@ -30895,7 +30944,7 @@
       "reference_date": "2026-06-05",
       "trade_date": "2026-06-08",
       "entry_window": "09:25-09:30",
-      "quote_time": "2026-06-05 15:13:56",
+      "quote_time": "2026-06-05 17:02:05",
       "source_module": "ztAnalysis.relay/watch",
       "quote_source": "biying hsrl/ssjy_more 实时行情（失败时回退 raw.quotes）",
       "candidate_count": 8,
@@ -30910,26 +30959,6 @@
       "pending_list": [],
       "rejected_list": [],
       "unavailable_list": [
-        {
-          "date10": "2026-06-05",
-          "code": "603135",
-          "name": "中重科技",
-          "bucket": "watch",
-          "bucket_label": "观察池",
-          "score": 43,
-          "main_line": "机器人概念",
-          "reason_text": "机器人概念龙头带动 · 梯队带动泰坦股份 · 题材联动 · 高度修复 · 温和放量 · 封板稳 · 早封 · 断板风险高 · 晋级生态弱(20%/80%) 预期 低开（-4%~-1%%）+ 竞价量能≥0.21亿 超预期 高开≥-1%% + 竞价量能≥0.21亿 低预期 低于-4%% 或 竞价量能",
-          "expected_text": "低开（-4%~-1%%）+ 竞价量能≥0.21亿",
-          "super_text": "高开≥-1%% + 竞价量能≥0.21亿",
-          "low_text": "低于-4%% 或 竞价量能",
-          "quote_time": "",
-          "auction_amount_need_yi": 0.0,
-          "decision_status": "unavailable",
-          "decision_label": "报价缺失",
-          "signal_status": "unavailable",
-          "signal_label": "无法判断",
-          "note": "未拿到 9:25 实时报价，当前不生成买入信号。"
-        },
         {
           "date10": "2026-06-05",
           "code": "600403",
@@ -30952,13 +30981,33 @@
         },
         {
           "date10": "2026-06-05",
+          "code": "603135",
+          "name": "中重科技",
+          "bucket": "watch",
+          "bucket_label": "观察池",
+          "score": 42,
+          "main_line": "机器人概念",
+          "reason_text": "机器人概念龙头带动 · 梯队带动泰坦股份 · 题材联动 · 高度修复 · 温和放量 · 封板稳 · 早封 · 断板风险高 · 晋级生态弱(20%/80%) 预期 低开（-4%~-1%%）+ 竞价量能≥0.21亿 超预期 高开≥-1%% + 竞价量能≥0.21亿 低预期 低于-4%% 或 竞价量能",
+          "expected_text": "低开（-4%~-1%%）+ 竞价量能≥0.21亿",
+          "super_text": "高开≥-1%% + 竞价量能≥0.21亿",
+          "low_text": "低于-4%% 或 竞价量能",
+          "quote_time": "",
+          "auction_amount_need_yi": 0.0,
+          "decision_status": "unavailable",
+          "decision_label": "报价缺失",
+          "signal_status": "unavailable",
+          "signal_label": "无法判断",
+          "note": "未拿到 9:25 实时报价，当前不生成买入信号。"
+        },
+        {
+          "date10": "2026-06-05",
           "code": "002183",
           "name": "怡 亚 通",
           "bucket": "watch",
           "bucket_label": "观察池",
-          "score": 39,
+          "score": 38,
           "main_line": "信创概念",
-          "reason_text": "梯队完整 · 高度修复 · 温和放量 · 封单偏强 · 封板稳 · 断板风险高 · 晋级生态弱(20%/80%) 预期 低开（-4%~-1%%）+ 竞价量能≥0.62亿 超预期 高开≥-1%% + 竞价量能≥0.62亿 低预期 低于-4%% 或 竞价量能",
+          "reason_text": "梯队完整 · 高度修复 · 温和放量 · 封板稳 · 早封 · 断板风险高 · 晋级生态弱(20%/80%) 预期 低开（-4%~-1%%）+ 竞价量能≥0.62亿 超预期 高开≥-1%% + 竞价量能≥0.62亿 低预期 低于-4%% 或 竞价量能",
           "expected_text": "低开（-4%~-1%%）+ 竞价量能≥0.62亿",
           "super_text": "高开≥-1%% + 竞价量能≥0.62亿",
           "low_text": "低于-4%% 或 竞价量能",
@@ -30978,7 +31027,7 @@
           "bucket_label": "观察池",
           "score": 36,
           "main_line": "轨道交通",
-          "reason_text": "梯队完整 · 高度修复 · 加速确认 · 封单偏强 · 早封 · 断板风险高 · 晋级生态弱(20%/80%) 预期 低开（-4%~-1%%）+ 竞价量能≥0.15亿 超预期 高开≥-1%% + 竞价量能≥0.15亿 低预期 低于-4%% 或 竞价量能",
+          "reason_text": "梯队完整 · 高度修复 · 加速确认 · 早封 · 断板风险高 · 晋级生态弱(20%/80%) 预期 低开（-4%~-1%%）+ 竞价量能≥0.15亿 超预期 高开≥-1%% + 竞价量能≥0.15亿 低预期 低于-4%% 或 竞价量能",
           "expected_text": "低开（-4%~-1%%）+ 竞价量能≥0.15亿",
           "super_text": "高开≥-1%% + 竞价量能≥0.15亿",
           "low_text": "低于-4%% 或 竞价量能",
@@ -30996,31 +31045,11 @@
           "name": "神剑股份",
           "bucket": "watch",
           "bucket_label": "观察池",
-          "score": 34,
+          "score": 33,
           "main_line": "机器人概念",
           "reason_text": "梯队跟随 · 题材联动 · 高度修复 · 封单偏强 · 封板稳 · 早封 · 断板风险高 · 晋级生态弱(20%/80%) 预期 低开（-4%~-1%%）+ 竞价量能≥1.09亿 超预期 高开≥-1%% + 竞价量能≥1.09亿 低预期 低于-4%% 或 竞价量能",
           "expected_text": "低开（-4%~-1%%）+ 竞价量能≥1.09亿",
           "super_text": "高开≥-1%% + 竞价量能≥1.09亿",
-          "low_text": "低于-4%% 或 竞价量能",
-          "quote_time": "",
-          "auction_amount_need_yi": 0.0,
-          "decision_status": "unavailable",
-          "decision_label": "报价缺失",
-          "signal_status": "unavailable",
-          "signal_label": "无法判断",
-          "note": "未拿到 9:25 实时报价，当前不生成买入信号。"
-        },
-        {
-          "date10": "2026-06-05",
-          "code": "002251",
-          "name": "步步高",
-          "bucket": "watch",
-          "bucket_label": "观察池",
-          "score": 32,
-          "main_line": "",
-          "reason_text": "高度修复 · 封板稳 · 早封 · 容量够 · 断板风险高 · 晋级生态弱(20%/80%) 预期 低开（-4%~-1%%）+ 竞价量能≥0.74亿 超预期 高开≥-1%% + 竞价量能≥0.74亿 低预期 低于-4%% 或 竞价量能",
-          "expected_text": "低开（-4%~-1%%）+ 竞价量能≥0.74亿",
-          "super_text": "高开≥-1%% + 竞价量能≥0.74亿",
           "low_text": "低于-4%% 或 竞价量能",
           "quote_time": "",
           "auction_amount_need_yi": 0.0,
@@ -31052,13 +31081,33 @@
         },
         {
           "date10": "2026-06-05",
+          "code": "002251",
+          "name": "步步高",
+          "bucket": "watch",
+          "bucket_label": "观察池",
+          "score": 31,
+          "main_line": "",
+          "reason_text": "高度修复 · 封板稳 · 早封 · 容量够 · 断板风险高 · 晋级生态弱(20%/80%) 预期 低开（-4%~-1%%）+ 竞价量能≥0.74亿 超预期 高开≥-1%% + 竞价量能≥0.74亿 低预期 低于-4%% 或 竞价量能",
+          "expected_text": "低开（-4%~-1%%）+ 竞价量能≥0.74亿",
+          "super_text": "高开≥-1%% + 竞价量能≥0.74亿",
+          "low_text": "低于-4%% 或 竞价量能",
+          "quote_time": "",
+          "auction_amount_need_yi": 0.0,
+          "decision_status": "unavailable",
+          "decision_label": "报价缺失",
+          "signal_status": "unavailable",
+          "signal_label": "无法判断",
+          "note": "未拿到 9:25 实时报价，当前不生成买入信号。"
+        },
+        {
+          "date10": "2026-06-05",
           "code": "300052",
           "name": "中青宝",
           "bucket": "watch",
           "bucket_label": "观察池",
           "score": 31,
           "main_line": "数字经济",
-          "reason_text": "梯队跟随 · 题材联动 · 高度修复 · 温和放量 · 封单偏强 · 封板稳 · 断板风险高 · 晋级生态弱(20%/80%) 预期 低开（-4%~-1%%）+ 竞价量能≥0.15亿 超预期 高开≥-1%% + 竞价量能≥0.15亿 低预期 低于-4%% 或 竞价量能",
+          "reason_text": "梯队跟随 · 题材联动 · 高度修复 · 温和放量 · 封板稳 · 早封 · 断板风险高 · 晋级生态弱(20%/80%) 预期 低开（-4%~-1%%）+ 竞价量能≥0.15亿 超预期 高开≥-1%% + 竞价量能≥0.15亿 低预期 低于-4%% 或 竞价量能",
           "expected_text": "低开（-4%~-1%%）+ 竞价量能≥0.15亿",
           "super_text": "高开≥-1%% + 竞价量能≥0.15亿",
           "low_text": "低于-4%% 或 竞价量能",
@@ -31077,13 +31126,13 @@
         "remote_received": 0,
         "fallback_used": 0,
         "missing": [
-          "603135",
           "600403",
+          "603135",
           "002183",
           "603500",
           "002361",
-          "002251",
           "603859",
+          "002251",
           "300052"
         ],
         "source": "unavailable",
@@ -31093,71 +31142,6 @@
       }
     },
     "currentPoolRecords": [
-      {
-        "date": "20260605",
-        "date10": "2026-06-05",
-        "code": "603135",
-        "name": "中重科技",
-        "bucket": "watch",
-        "bucket_label": "观察池",
-        "score": 43,
-        "score_band": "只观察",
-        "score_sub_label": "高标/题材核心 · 只观察",
-        "main_line": "机器人概念",
-        "style_tag": "温和放量",
-        "lbc": 3,
-        "cje_yi": 4.64,
-        "turnover": 52.0,
-        "tide_status": "休息优先",
-        "next_step": "3进4",
-        "plate_name": "",
-        "hy": "专用设备",
-        "factor_hint": "环境24(休息优先) / 板块53 / 龙头78 / 接力63 / 容量52 / 风险20 / 只观察",
-        "reason_html": "<span class=\"reason-bits\">机器人概念龙头带动 · 梯队带动泰坦股份 · 题材联动 · 高度修复 · 温和放量 · 封板稳 · 早封 · 断板风险高 · 晋级生态弱(20%/80%)</span><div class=\"exp-wrap\"><div class=\"exp-row\"><span class=\"exp-pill pill-pre\">预期</span>低开（-4%~-1%%）+ 竞价量能≥0.21亿</div><div class=\"exp-row\"><span class=\"exp-pill pill-hi\">超预期</span>高开≥-1%% + 竞价量能≥0.21亿</div><div class=\"exp-row\"><span class=\"exp-pill pill-lo\">低预期</span>低于-4%% 或 竞价量能<0.15亿</div></div>",
-        "reason_text": "机器人概念龙头带动 · 梯队带动泰坦股份 · 题材联动 · 高度修复 · 温和放量 · 封板稳 · 早封 · 断板风险高 · 晋级生态弱(20%/80%) 预期 低开（-4%~-1%%）+ 竞价量能≥0.21亿 超预期 高开≥-1%% + 竞价量能≥0.21亿 低预期 低于-4%% 或 竞价量能",
-        "expectation": {
-          "expected_text": "低开（-4%~-1%%）+ 竞价量能≥0.21亿",
-          "super_text": "高开≥-1%% + 竞价量能≥0.21亿",
-          "low_text": "低于-4%% 或 竞价量能",
-          "expected_range": [
-            -4.0,
-            -1.0
-          ],
-          "super_gap_min": -1.0,
-          "auction_amount_min_yi": null,
-          "surge_pct_min": null,
-          "volume_expand_ratio": null,
-          "super_requires_reseal": false,
-          "super_requires_open_board_limit": null,
-          "seal_amount_min_yi": null,
-          "raw_text": "机器人概念龙头带动 · 梯队带动泰坦股份 · 题材联动 · 高度修复 · 温和放量 · 封板稳 · 早封 · 断板风险高 · 晋级生态弱(20%/80%) 预期 低开（-4%~-1%%）+ 竞价量能≥0.21亿 超预期 高开≥-1%% + 竞价量能≥0.21亿 低预期 低于-4%% 或 竞价量能"
-        },
-        "trade_date10": "2026-06-08",
-        "performance": {
-          "open_check": {
-            "status": "unavailable",
-            "label": "无法判断",
-            "gap_pct": null,
-            "note": "未拿到 9:25 实时报价，当前不生成买入信号。",
-            "can_enter": false
-          },
-          "next_day": {
-            "status": "pending",
-            "label": "隔日收益",
-            "note": "已拿到 9:25 开盘判断，待收盘后补齐收益表现。"
-          },
-          "hold_3d": {
-            "status": "pending",
-            "label": "3日收益",
-            "note": "已拿到 9:25 开盘判断，待收盘后补齐收益表现。"
-          },
-          "hold_5d": {
-            "status": "pending",
-            "label": "5日收益",
-            "note": "已拿到 9:25 开盘判断，待收盘后补齐收益表现。"
-          }
-        }
-      },
       {
         "date": "20260605",
         "date10": "2026-06-05",
@@ -31226,11 +31210,76 @@
       {
         "date": "20260605",
         "date10": "2026-06-05",
+        "code": "603135",
+        "name": "中重科技",
+        "bucket": "watch",
+        "bucket_label": "观察池",
+        "score": 42,
+        "score_band": "只观察",
+        "score_sub_label": "高标/题材核心 · 只观察",
+        "main_line": "机器人概念",
+        "style_tag": "温和放量",
+        "lbc": 3,
+        "cje_yi": 4.64,
+        "turnover": 52.0,
+        "tide_status": "休息优先",
+        "next_step": "3进4",
+        "plate_name": "",
+        "hy": "专用设备",
+        "factor_hint": "环境24(休息优先) / 板块53 / 龙头78 / 接力62 / 容量52 / 风险20 / 只观察",
+        "reason_html": "<span class=\"reason-bits\">机器人概念龙头带动 · 梯队带动泰坦股份 · 题材联动 · 高度修复 · 温和放量 · 封板稳 · 早封 · 断板风险高 · 晋级生态弱(20%/80%)</span><div class=\"exp-wrap\"><div class=\"exp-row\"><span class=\"exp-pill pill-pre\">预期</span>低开（-4%~-1%%）+ 竞价量能≥0.21亿</div><div class=\"exp-row\"><span class=\"exp-pill pill-hi\">超预期</span>高开≥-1%% + 竞价量能≥0.21亿</div><div class=\"exp-row\"><span class=\"exp-pill pill-lo\">低预期</span>低于-4%% 或 竞价量能<0.15亿</div></div>",
+        "reason_text": "机器人概念龙头带动 · 梯队带动泰坦股份 · 题材联动 · 高度修复 · 温和放量 · 封板稳 · 早封 · 断板风险高 · 晋级生态弱(20%/80%) 预期 低开（-4%~-1%%）+ 竞价量能≥0.21亿 超预期 高开≥-1%% + 竞价量能≥0.21亿 低预期 低于-4%% 或 竞价量能",
+        "expectation": {
+          "expected_text": "低开（-4%~-1%%）+ 竞价量能≥0.21亿",
+          "super_text": "高开≥-1%% + 竞价量能≥0.21亿",
+          "low_text": "低于-4%% 或 竞价量能",
+          "expected_range": [
+            -4.0,
+            -1.0
+          ],
+          "super_gap_min": -1.0,
+          "auction_amount_min_yi": null,
+          "surge_pct_min": null,
+          "volume_expand_ratio": null,
+          "super_requires_reseal": false,
+          "super_requires_open_board_limit": null,
+          "seal_amount_min_yi": null,
+          "raw_text": "机器人概念龙头带动 · 梯队带动泰坦股份 · 题材联动 · 高度修复 · 温和放量 · 封板稳 · 早封 · 断板风险高 · 晋级生态弱(20%/80%) 预期 低开（-4%~-1%%）+ 竞价量能≥0.21亿 超预期 高开≥-1%% + 竞价量能≥0.21亿 低预期 低于-4%% 或 竞价量能"
+        },
+        "trade_date10": "2026-06-08",
+        "performance": {
+          "open_check": {
+            "status": "unavailable",
+            "label": "无法判断",
+            "gap_pct": null,
+            "note": "未拿到 9:25 实时报价，当前不生成买入信号。",
+            "can_enter": false
+          },
+          "next_day": {
+            "status": "pending",
+            "label": "隔日收益",
+            "note": "已拿到 9:25 开盘判断，待收盘后补齐收益表现。"
+          },
+          "hold_3d": {
+            "status": "pending",
+            "label": "3日收益",
+            "note": "已拿到 9:25 开盘判断，待收盘后补齐收益表现。"
+          },
+          "hold_5d": {
+            "status": "pending",
+            "label": "5日收益",
+            "note": "已拿到 9:25 开盘判断，待收盘后补齐收益表现。"
+          }
+        }
+      },
+      {
+        "date": "20260605",
+        "date10": "2026-06-05",
         "code": "002183",
         "name": "怡 亚 通",
         "bucket": "watch",
         "bucket_label": "观察池",
-        "score": 39,
+        "score": 38,
         "score_band": "只观察",
         "score_sub_label": "风险观察 · 只观察",
         "main_line": "信创概念",
@@ -31242,9 +31291,9 @@
         "next_step": "1进2",
         "plate_name": "",
         "hy": "贸易Ⅱ",
-        "factor_hint": "环境24(休息优先) / 板块45 / 龙头54 / 接力60 / 容量92 / 风险26 / 只观察",
-        "reason_html": "<span class=\"reason-bits\">梯队完整 · 高度修复 · 温和放量 · 封单偏强 · 封板稳 · 断板风险高 · 晋级生态弱(20%/80%)</span><div class=\"exp-wrap\"><div class=\"exp-row\"><span class=\"exp-pill pill-pre\">预期</span>低开（-4%~-1%%）+ 竞价量能≥0.62亿</div><div class=\"exp-row\"><span class=\"exp-pill pill-hi\">超预期</span>高开≥-1%% + 竞价量能≥0.62亿</div><div class=\"exp-row\"><span class=\"exp-pill pill-lo\">低预期</span>低于-4%% 或 竞价量能<0.44亿</div></div>",
-        "reason_text": "梯队完整 · 高度修复 · 温和放量 · 封单偏强 · 封板稳 · 断板风险高 · 晋级生态弱(20%/80%) 预期 低开（-4%~-1%%）+ 竞价量能≥0.62亿 超预期 高开≥-1%% + 竞价量能≥0.62亿 低预期 低于-4%% 或 竞价量能",
+        "factor_hint": "环境24(休息优先) / 板块45 / 龙头53 / 接力57 / 容量92 / 风险26 / 只观察",
+        "reason_html": "<span class=\"reason-bits\">梯队完整 · 高度修复 · 温和放量 · 封板稳 · 早封 · 断板风险高 · 晋级生态弱(20%/80%)</span><div class=\"exp-wrap\"><div class=\"exp-row\"><span class=\"exp-pill pill-pre\">预期</span>低开（-4%~-1%%）+ 竞价量能≥0.62亿</div><div class=\"exp-row\"><span class=\"exp-pill pill-hi\">超预期</span>高开≥-1%% + 竞价量能≥0.62亿</div><div class=\"exp-row\"><span class=\"exp-pill pill-lo\">低预期</span>低于-4%% 或 竞价量能<0.44亿</div></div>",
+        "reason_text": "梯队完整 · 高度修复 · 温和放量 · 封板稳 · 早封 · 断板风险高 · 晋级生态弱(20%/80%) 预期 低开（-4%~-1%%）+ 竞价量能≥0.62亿 超预期 高开≥-1%% + 竞价量能≥0.62亿 低预期 低于-4%% 或 竞价量能",
         "expectation": {
           "expected_text": "低开（-4%~-1%%）+ 竞价量能≥0.62亿",
           "super_text": "高开≥-1%% + 竞价量能≥0.62亿",
@@ -31260,7 +31309,7 @@
           "super_requires_reseal": false,
           "super_requires_open_board_limit": null,
           "seal_amount_min_yi": null,
-          "raw_text": "梯队完整 · 高度修复 · 温和放量 · 封单偏强 · 封板稳 · 断板风险高 · 晋级生态弱(20%/80%) 预期 低开（-4%~-1%%）+ 竞价量能≥0.62亿 超预期 高开≥-1%% + 竞价量能≥0.62亿 低预期 低于-4%% 或 竞价量能"
+          "raw_text": "梯队完整 · 高度修复 · 温和放量 · 封板稳 · 早封 · 断板风险高 · 晋级生态弱(20%/80%) 预期 低开（-4%~-1%%）+ 竞价量能≥0.62亿 超预期 高开≥-1%% + 竞价量能≥0.62亿 低预期 低于-4%% 或 竞价量能"
         },
         "trade_date10": "2026-06-08",
         "performance": {
@@ -31307,9 +31356,9 @@
         "next_step": "2进3",
         "plate_name": "",
         "hy": "轨交设备",
-        "factor_hint": "环境24(休息优先) / 板块53 / 龙头64 / 接力68 / 容量40 / 风险7 / 只观察",
-        "reason_html": "<span class=\"reason-bits\">梯队完整 · 高度修复 · 加速确认 · 封单偏强 · 早封 · 断板风险高 · 晋级生态弱(20%/80%)</span><div class=\"exp-wrap\"><div class=\"exp-row\"><span class=\"exp-pill pill-pre\">预期</span>低开（-4%~-1%%）+ 竞价量能≥0.15亿</div><div class=\"exp-row\"><span class=\"exp-pill pill-hi\">超预期</span>高开≥-1%% + 竞价量能≥0.15亿</div><div class=\"exp-row\"><span class=\"exp-pill pill-lo\">低预期</span>低于-4%% 或 竞价量能<0.10亿</div></div>",
-        "reason_text": "梯队完整 · 高度修复 · 加速确认 · 封单偏强 · 早封 · 断板风险高 · 晋级生态弱(20%/80%) 预期 低开（-4%~-1%%）+ 竞价量能≥0.15亿 超预期 高开≥-1%% + 竞价量能≥0.15亿 低预期 低于-4%% 或 竞价量能",
+        "factor_hint": "环境24(休息优先) / 板块53 / 龙头64 / 接力65 / 容量40 / 风险7 / 只观察",
+        "reason_html": "<span class=\"reason-bits\">梯队完整 · 高度修复 · 加速确认 · 早封 · 断板风险高 · 晋级生态弱(20%/80%)</span><div class=\"exp-wrap\"><div class=\"exp-row\"><span class=\"exp-pill pill-pre\">预期</span>低开（-4%~-1%%）+ 竞价量能≥0.15亿</div><div class=\"exp-row\"><span class=\"exp-pill pill-hi\">超预期</span>高开≥-1%% + 竞价量能≥0.15亿</div><div class=\"exp-row\"><span class=\"exp-pill pill-lo\">低预期</span>低于-4%% 或 竞价量能<0.10亿</div></div>",
+        "reason_text": "梯队完整 · 高度修复 · 加速确认 · 早封 · 断板风险高 · 晋级生态弱(20%/80%) 预期 低开（-4%~-1%%）+ 竞价量能≥0.15亿 超预期 高开≥-1%% + 竞价量能≥0.15亿 低预期 低于-4%% 或 竞价量能",
         "expectation": {
           "expected_text": "低开（-4%~-1%%）+ 竞价量能≥0.15亿",
           "super_text": "高开≥-1%% + 竞价量能≥0.15亿",
@@ -31325,7 +31374,7 @@
           "super_requires_reseal": false,
           "super_requires_open_board_limit": null,
           "seal_amount_min_yi": null,
-          "raw_text": "梯队完整 · 高度修复 · 加速确认 · 封单偏强 · 早封 · 断板风险高 · 晋级生态弱(20%/80%) 预期 低开（-4%~-1%%）+ 竞价量能≥0.15亿 超预期 高开≥-1%% + 竞价量能≥0.15亿 低预期 低于-4%% 或 竞价量能"
+          "raw_text": "梯队完整 · 高度修复 · 加速确认 · 早封 · 断板风险高 · 晋级生态弱(20%/80%) 预期 低开（-4%~-1%%）+ 竞价量能≥0.15亿 超预期 高开≥-1%% + 竞价量能≥0.15亿 低预期 低于-4%% 或 竞价量能"
         },
         "trade_date10": "2026-06-08",
         "performance": {
@@ -31360,7 +31409,7 @@
         "name": "神剑股份",
         "bucket": "watch",
         "bucket_label": "观察池",
-        "score": 34,
+        "score": 33,
         "score_band": "只观察",
         "score_sub_label": "风险观察 · 只观察",
         "main_line": "机器人概念",
@@ -31372,7 +31421,7 @@
         "next_step": "1进2",
         "plate_name": "",
         "hy": "塑料",
-        "factor_hint": "环境24(休息优先) / 板块52 / 龙头50 / 接力64 / 容量80 / 风险14 / 只观察",
+        "factor_hint": "环境24(休息优先) / 板块52 / 龙头49 / 接力60 / 容量80 / 风险14 / 只观察",
         "reason_html": "<span class=\"reason-bits\">梯队跟随 · 题材联动 · 高度修复 · 封单偏强 · 封板稳 · 早封 · 断板风险高 · 晋级生态弱(20%/80%)</span><div class=\"exp-wrap\"><div class=\"exp-row\"><span class=\"exp-pill pill-pre\">预期</span>低开（-4%~-1%%）+ 竞价量能≥1.09亿</div><div class=\"exp-row\"><span class=\"exp-pill pill-hi\">超预期</span>高开≥-1%% + 竞价量能≥1.09亿</div><div class=\"exp-row\"><span class=\"exp-pill pill-lo\">低预期</span>低于-4%% 或 竞价量能<0.76亿</div></div>",
         "reason_text": "梯队跟随 · 题材联动 · 高度修复 · 封单偏强 · 封板稳 · 早封 · 断板风险高 · 晋级生态弱(20%/80%) 预期 低开（-4%~-1%%）+ 竞价量能≥1.09亿 超预期 高开≥-1%% + 竞价量能≥1.09亿 低预期 低于-4%% 或 竞价量能",
         "expectation": {
@@ -31421,71 +31470,6 @@
       {
         "date": "20260605",
         "date10": "2026-06-05",
-        "code": "002251",
-        "name": "步步高",
-        "bucket": "watch",
-        "bucket_label": "观察池",
-        "score": 32,
-        "score_band": "只观察",
-        "score_sub_label": "风险观察 · 只观察",
-        "main_line": "",
-        "style_tag": "",
-        "lbc": 1,
-        "cje_yi": 16.38,
-        "turnover": 83.0,
-        "tide_status": "休息优先",
-        "next_step": "1进2",
-        "plate_name": "",
-        "hy": "一般零售",
-        "factor_hint": "环境24(休息优先) / 板块35 / 龙头51 / 接力56 / 容量83 / 风险21 / 只观察",
-        "reason_html": "<span class=\"reason-bits\">高度修复 · 封板稳 · 早封 · 容量够 · 断板风险高 · 晋级生态弱(20%/80%)</span><div class=\"exp-wrap\"><div class=\"exp-row\"><span class=\"exp-pill pill-pre\">预期</span>低开（-4%~-1%%）+ 竞价量能≥0.74亿</div><div class=\"exp-row\"><span class=\"exp-pill pill-hi\">超预期</span>高开≥-1%% + 竞价量能≥0.74亿</div><div class=\"exp-row\"><span class=\"exp-pill pill-lo\">低预期</span>低于-4%% 或 竞价量能<0.52亿</div></div>",
-        "reason_text": "高度修复 · 封板稳 · 早封 · 容量够 · 断板风险高 · 晋级生态弱(20%/80%) 预期 低开（-4%~-1%%）+ 竞价量能≥0.74亿 超预期 高开≥-1%% + 竞价量能≥0.74亿 低预期 低于-4%% 或 竞价量能",
-        "expectation": {
-          "expected_text": "低开（-4%~-1%%）+ 竞价量能≥0.74亿",
-          "super_text": "高开≥-1%% + 竞价量能≥0.74亿",
-          "low_text": "低于-4%% 或 竞价量能",
-          "expected_range": [
-            -4.0,
-            -1.0
-          ],
-          "super_gap_min": -1.0,
-          "auction_amount_min_yi": null,
-          "surge_pct_min": null,
-          "volume_expand_ratio": null,
-          "super_requires_reseal": false,
-          "super_requires_open_board_limit": null,
-          "seal_amount_min_yi": null,
-          "raw_text": "高度修复 · 封板稳 · 早封 · 容量够 · 断板风险高 · 晋级生态弱(20%/80%) 预期 低开（-4%~-1%%）+ 竞价量能≥0.74亿 超预期 高开≥-1%% + 竞价量能≥0.74亿 低预期 低于-4%% 或 竞价量能"
-        },
-        "trade_date10": "2026-06-08",
-        "performance": {
-          "open_check": {
-            "status": "unavailable",
-            "label": "无法判断",
-            "gap_pct": null,
-            "note": "未拿到 9:25 实时报价，当前不生成买入信号。",
-            "can_enter": false
-          },
-          "next_day": {
-            "status": "pending",
-            "label": "隔日收益",
-            "note": "已拿到 9:25 开盘判断，待收盘后补齐收益表现。"
-          },
-          "hold_3d": {
-            "status": "pending",
-            "label": "3日收益",
-            "note": "已拿到 9:25 开盘判断，待收盘后补齐收益表现。"
-          },
-          "hold_5d": {
-            "status": "pending",
-            "label": "5日收益",
-            "note": "已拿到 9:25 开盘判断，待收盘后补齐收益表现。"
-          }
-        }
-      },
-      {
-        "date": "20260605",
-        "date10": "2026-06-05",
         "code": "603859",
         "name": "能科科技",
         "bucket": "watch",
@@ -31502,7 +31486,7 @@
         "next_step": "1进2",
         "plate_name": "",
         "hy": "IT服务Ⅱ",
-        "factor_hint": "环境24(休息优先) / 板块55 / 龙头43 / 接力46 / 容量92 / 风险8 / 只观察",
+        "factor_hint": "环境24(休息优先) / 板块55 / 龙头43 / 接力45 / 容量92 / 风险8 / 只观察",
         "reason_html": "<span class=\"reason-bits\">梯队跟随 · 题材联动 · 高度修复 · 温和放量 · 早封 · 容量够 · 断板风险高 · 晋级生态弱(20%/80%)</span><div class=\"exp-wrap\"><div class=\"exp-row\"><span class=\"exp-pill pill-pre\">预期</span>低开（-4%~-1%%）+ 竞价量能≥0.49亿</div><div class=\"exp-row\"><span class=\"exp-pill pill-hi\">超预期</span>高开≥-1%% + 竞价量能≥0.49亿</div><div class=\"exp-row\"><span class=\"exp-pill pill-lo\">低预期</span>低于-4%% 或 竞价量能<0.34亿</div></div>",
         "reason_text": "梯队跟随 · 题材联动 · 高度修复 · 温和放量 · 早封 · 容量够 · 断板风险高 · 晋级生态弱(20%/80%) 预期 低开（-4%~-1%%）+ 竞价量能≥0.49亿 超预期 高开≥-1%% + 竞价量能≥0.49亿 低预期 低于-4%% 或 竞价量能",
         "expectation": {
@@ -31551,6 +31535,71 @@
       {
         "date": "20260605",
         "date10": "2026-06-05",
+        "code": "002251",
+        "name": "步步高",
+        "bucket": "watch",
+        "bucket_label": "观察池",
+        "score": 31,
+        "score_band": "只观察",
+        "score_sub_label": "风险观察 · 只观察",
+        "main_line": "",
+        "style_tag": "",
+        "lbc": 1,
+        "cje_yi": 16.38,
+        "turnover": 83.0,
+        "tide_status": "休息优先",
+        "next_step": "1进2",
+        "plate_name": "",
+        "hy": "一般零售",
+        "factor_hint": "环境24(休息优先) / 板块35 / 龙头50 / 接力53 / 容量83 / 风险21 / 只观察",
+        "reason_html": "<span class=\"reason-bits\">高度修复 · 封板稳 · 早封 · 容量够 · 断板风险高 · 晋级生态弱(20%/80%)</span><div class=\"exp-wrap\"><div class=\"exp-row\"><span class=\"exp-pill pill-pre\">预期</span>低开（-4%~-1%%）+ 竞价量能≥0.74亿</div><div class=\"exp-row\"><span class=\"exp-pill pill-hi\">超预期</span>高开≥-1%% + 竞价量能≥0.74亿</div><div class=\"exp-row\"><span class=\"exp-pill pill-lo\">低预期</span>低于-4%% 或 竞价量能<0.52亿</div></div>",
+        "reason_text": "高度修复 · 封板稳 · 早封 · 容量够 · 断板风险高 · 晋级生态弱(20%/80%) 预期 低开（-4%~-1%%）+ 竞价量能≥0.74亿 超预期 高开≥-1%% + 竞价量能≥0.74亿 低预期 低于-4%% 或 竞价量能",
+        "expectation": {
+          "expected_text": "低开（-4%~-1%%）+ 竞价量能≥0.74亿",
+          "super_text": "高开≥-1%% + 竞价量能≥0.74亿",
+          "low_text": "低于-4%% 或 竞价量能",
+          "expected_range": [
+            -4.0,
+            -1.0
+          ],
+          "super_gap_min": -1.0,
+          "auction_amount_min_yi": null,
+          "surge_pct_min": null,
+          "volume_expand_ratio": null,
+          "super_requires_reseal": false,
+          "super_requires_open_board_limit": null,
+          "seal_amount_min_yi": null,
+          "raw_text": "高度修复 · 封板稳 · 早封 · 容量够 · 断板风险高 · 晋级生态弱(20%/80%) 预期 低开（-4%~-1%%）+ 竞价量能≥0.74亿 超预期 高开≥-1%% + 竞价量能≥0.74亿 低预期 低于-4%% 或 竞价量能"
+        },
+        "trade_date10": "2026-06-08",
+        "performance": {
+          "open_check": {
+            "status": "unavailable",
+            "label": "无法判断",
+            "gap_pct": null,
+            "note": "未拿到 9:25 实时报价，当前不生成买入信号。",
+            "can_enter": false
+          },
+          "next_day": {
+            "status": "pending",
+            "label": "隔日收益",
+            "note": "已拿到 9:25 开盘判断，待收盘后补齐收益表现。"
+          },
+          "hold_3d": {
+            "status": "pending",
+            "label": "3日收益",
+            "note": "已拿到 9:25 开盘判断，待收盘后补齐收益表现。"
+          },
+          "hold_5d": {
+            "status": "pending",
+            "label": "5日收益",
+            "note": "已拿到 9:25 开盘判断，待收盘后补齐收益表现。"
+          }
+        }
+      },
+      {
+        "date": "20260605",
+        "date10": "2026-06-05",
         "code": "300052",
         "name": "中青宝",
         "bucket": "watch",
@@ -31567,9 +31616,9 @@
         "next_step": "1进2",
         "plate_name": "",
         "hy": "IT服务Ⅱ",
-        "factor_hint": "环境24(休息优先) / 板块55 / 龙头49 / 接力60 / 容量52 / 风险24 / 只观察",
-        "reason_html": "<span class=\"reason-bits\">梯队跟随 · 题材联动 · 高度修复 · 温和放量 · 封单偏强 · 封板稳 · 断板风险高 · 晋级生态弱(20%/80%)</span><div class=\"exp-wrap\"><div class=\"exp-row\"><span class=\"exp-pill pill-pre\">预期</span>低开（-4%~-1%%）+ 竞价量能≥0.15亿</div><div class=\"exp-row\"><span class=\"exp-pill pill-hi\">超预期</span>高开≥-1%% + 竞价量能≥0.15亿</div><div class=\"exp-row\"><span class=\"exp-pill pill-lo\">低预期</span>低于-4%% 或 竞价量能<0.10亿</div></div>",
-        "reason_text": "梯队跟随 · 题材联动 · 高度修复 · 温和放量 · 封单偏强 · 封板稳 · 断板风险高 · 晋级生态弱(20%/80%) 预期 低开（-4%~-1%%）+ 竞价量能≥0.15亿 超预期 高开≥-1%% + 竞价量能≥0.15亿 低预期 低于-4%% 或 竞价量能",
+        "factor_hint": "环境24(休息优先) / 板块55 / 龙头49 / 接力57 / 容量52 / 风险24 / 只观察",
+        "reason_html": "<span class=\"reason-bits\">梯队跟随 · 题材联动 · 高度修复 · 温和放量 · 封板稳 · 早封 · 断板风险高 · 晋级生态弱(20%/80%)</span><div class=\"exp-wrap\"><div class=\"exp-row\"><span class=\"exp-pill pill-pre\">预期</span>低开（-4%~-1%%）+ 竞价量能≥0.15亿</div><div class=\"exp-row\"><span class=\"exp-pill pill-hi\">超预期</span>高开≥-1%% + 竞价量能≥0.15亿</div><div class=\"exp-row\"><span class=\"exp-pill pill-lo\">低预期</span>低于-4%% 或 竞价量能<0.10亿</div></div>",
+        "reason_text": "梯队跟随 · 题材联动 · 高度修复 · 温和放量 · 封板稳 · 早封 · 断板风险高 · 晋级生态弱(20%/80%) 预期 低开（-4%~-1%%）+ 竞价量能≥0.15亿 超预期 高开≥-1%% + 竞价量能≥0.15亿 低预期 低于-4%% 或 竞价量能",
         "expectation": {
           "expected_text": "低开（-4%~-1%%）+ 竞价量能≥0.15亿",
           "super_text": "高开≥-1%% + 竞价量能≥0.15亿",
@@ -31585,7 +31634,7 @@
           "super_requires_reseal": false,
           "super_requires_open_board_limit": null,
           "seal_amount_min_yi": null,
-          "raw_text": "梯队跟随 · 题材联动 · 高度修复 · 温和放量 · 封单偏强 · 封板稳 · 断板风险高 · 晋级生态弱(20%/80%) 预期 低开（-4%~-1%%）+ 竞价量能≥0.15亿 超预期 高开≥-1%% + 竞价量能≥0.15亿 低预期 低于-4%% 或 竞价量能"
+          "raw_text": "梯队跟随 · 题材联动 · 高度修复 · 温和放量 · 封板稳 · 早封 · 断板风险高 · 晋级生态弱(20%/80%) 预期 低开（-4%~-1%%）+ 竞价量能≥0.15亿 超预期 高开≥-1%% + 竞价量能≥0.15亿 低预期 低于-4%% 或 竞价量能"
         },
         "trade_date10": "2026-06-08",
         "performance": {
@@ -31748,8 +31797,8 @@
             "entry_date": "2026-06-05",
             "exit_date": "2026-06-05",
             "entry_open": 48.65,
-            "exit_close": 50.57,
-            "return_pct": 3.95,
+            "exit_close": 49.5,
+            "return_pct": 1.75,
             "win": true,
             "flat": false,
             "loss": false,
@@ -32054,11 +32103,11 @@
             "entry_date": "2026-06-05",
             "exit_date": "2026-06-05",
             "entry_open": 16.3,
-            "exit_close": 16.66,
-            "return_pct": 2.21,
-            "win": true,
+            "exit_close": 16.15,
+            "return_pct": -0.92,
+            "win": false,
             "flat": false,
-            "loss": false,
+            "loss": true,
             "days_after_pick": 1
           },
           "hold_3d": {
@@ -32124,7 +32173,7 @@
             "gap_pct": 8.88,
             "note": "高开≥+1%% + 竞价量能≥0.36亿",
             "can_enter": true,
-            "gap_trap": false
+            "gap_trap": true
           },
           "next_day": {
             "status": "covered",
@@ -32132,11 +32181,11 @@
             "entry_date": "2026-06-05",
             "exit_date": "2026-06-05",
             "entry_open": 3.68,
-            "exit_close": 3.72,
-            "return_pct": 1.09,
-            "win": true,
+            "exit_close": 3.49,
+            "return_pct": -5.16,
+            "win": false,
             "flat": false,
-            "loss": false,
+            "loss": true,
             "days_after_pick": 1
           },
           "hold_3d": {
@@ -32144,14 +32193,14 @@
             "label": "3日收益",
             "entry_date": "2026-06-05",
             "note": "当前仅拿到 1 个后续交易日，尚不足以计算 T+3",
-            "gap_trap": false
+            "gap_trap": true
           },
           "hold_5d": {
             "status": "pending",
             "label": "5日收益",
             "entry_date": "2026-06-05",
             "note": "当前仅拿到 1 个后续交易日，尚不足以计算 T+5",
-            "gap_trap": false
+            "gap_trap": true
           }
         }
       },
@@ -32210,11 +32259,11 @@
             "entry_date": "2026-06-05",
             "exit_date": "2026-06-05",
             "entry_open": 17.06,
-            "exit_close": 17.34,
-            "return_pct": 1.64,
-            "win": true,
+            "exit_close": 16.91,
+            "return_pct": -0.88,
+            "win": false,
             "flat": false,
-            "loss": false,
+            "loss": true,
             "days_after_pick": 1
           },
           "hold_3d": {
@@ -32382,16 +32431,92 @@
             "gap_trap": false
           }
         }
+      },
+      {
+        "date": "20260604",
+        "date10": "2026-06-04",
+        "code": "603516",
+        "name": "淳中科技",
+        "bucket": "watch",
+        "bucket_label": "观察池",
+        "score": 67,
+        "score_band": "条件触发",
+        "score_sub_label": "风险观察 · 条件触发",
+        "main_line": "集成电路",
+        "style_tag": "",
+        "lbc": 1,
+        "cje_yi": 11.55,
+        "turnover": 80.0,
+        "tide_status": "接力可做",
+        "next_step": "1进2",
+        "plate_name": "",
+        "hy": "计算机设",
+        "factor_hint": "环境77(接力可做) / 板块68 / 龙头56 / 接力61 / 容量80 / 风险35 / 条件触发",
+        "reason_html": "<span class=\"reason-bits\">梯队完整 · 极强主线 · 题材持续 · 高度修复 · 温和放量 · 封板稳 · 早封 · 断板风险高</span><div class=\"exp-wrap\"><div class=\"exp-row\"><span class=\"exp-pill pill-pre\">预期</span>平开（-1%~+1%%）+ 竞价量能≥0.69亿</div><div class=\"exp-row\"><span class=\"exp-pill pill-hi\">超预期</span>高开≥+1%% + 竞价量能≥0.69亿</div><div class=\"exp-row\"><span class=\"exp-pill pill-lo\">低预期</span>低于-1%% 或 竞价量能<0.49亿</div></div>",
+        "reason_text": "梯队完整 · 极强主线 · 题材持续 · 高度修复 · 温和放量 · 封板稳 · 早封 · 断板风险高 预期 平开（-1%~+1%%）+ 竞价量能≥0.69亿 超预期 高开≥+1%% + 竞价量能≥0.69亿 低预期 低于-1%% 或 竞价量能",
+        "expectation": {
+          "expected_text": "平开（-1%~+1%%）+ 竞价量能≥0.69亿",
+          "super_text": "高开≥+1%% + 竞价量能≥0.69亿",
+          "low_text": "低于-1%% 或 竞价量能",
+          "expected_range": [
+            -1.0,
+            1.0
+          ],
+          "super_gap_min": 1.0,
+          "auction_amount_min_yi": null,
+          "surge_pct_min": null,
+          "volume_expand_ratio": null,
+          "super_requires_reseal": false,
+          "super_requires_open_board_limit": null,
+          "seal_amount_min_yi": null,
+          "raw_text": "梯队完整 · 极强主线 · 题材持续 · 高度修复 · 温和放量 · 封板稳 · 早封 · 断板风险高 预期 平开（-1%~+1%%）+ 竞价量能≥0.69亿 超预期 高开≥+1%% + 竞价量能≥0.69亿 低预期 低于-1%% 或 竞价量能"
+        },
+        "trade_date10": "2026-06-05",
+        "performance": {
+          "open_check": {
+            "status": "super",
+            "label": "超预期",
+            "gap_pct": 5.23,
+            "note": "高开≥+1%% + 竞价量能≥0.69亿",
+            "can_enter": true,
+            "gap_trap": false
+          },
+          "next_day": {
+            "status": "covered",
+            "label": "隔日收益",
+            "entry_date": "2026-06-05",
+            "exit_date": "2026-06-05",
+            "entry_open": 133.0,
+            "exit_close": 139.03,
+            "return_pct": 4.53,
+            "win": true,
+            "flat": false,
+            "loss": false,
+            "days_after_pick": 1
+          },
+          "hold_3d": {
+            "status": "pending",
+            "label": "3日收益",
+            "entry_date": "2026-06-05",
+            "note": "当前仅拿到 1 个后续交易日，尚不足以计算 T+3",
+            "gap_trap": false
+          },
+          "hold_5d": {
+            "status": "pending",
+            "label": "5日收益",
+            "entry_date": "2026-06-05",
+            "note": "当前仅拿到 1 个后续交易日，尚不足以计算 T+5",
+            "gap_trap": false
+          }
+        }
       }
     ],
     "diagnostics": {
       "price_history": {
         "source": "cache+api",
-        "fetched": 17,
+        "fetched": 18,
         "cached": 0,
-        "missing": [
-          "603516"
-        ]
+        "missing": []
       },
       "realtime_buy": {
         "requested": 8,
@@ -32399,13 +32524,13 @@
         "remote_received": 0,
         "fallback_used": 0,
         "missing": [
-          "603135",
           "600403",
+          "603135",
           "002183",
           "603500",
           "002361",
-          "002251",
           "603859",
+          "002251",
           "300052"
         ],
         "source": "unavailable",
@@ -32414,14 +32539,13 @@
         "request_window": "09:25-09:30"
       },
       "filtered_non_backtest_codes": [
-        "603516",
-        "603135",
         "600403",
+        "603135",
         "002183",
         "603500",
         "002361",
-        "002251",
         "603859",
+        "002251",
         "300052"
       ]
     }
@@ -33071,11 +33195,11 @@
       }
     },
     "fundDim": {
-      "netBigOrderFlow": 66.73,
+      "netBigOrderFlow": 58.12,
       "judgment": "money_in",
       "meta": {
         "precision": "strict_sample_top10_pools_cje",
-        "sampleSize": 2
+        "sampleSize": 10
       }
     },
     "supportQuality": {
@@ -33096,9 +33220,46 @@
   "plateRotateTop": [
     {
       "rank": 1,
+      "name": "机器人概念",
+      "code": "801159",
+      "strength": 12320.0,
+      "leaders": [
+        {
+          "rank": "龙一",
+          "name": "中重科技",
+          "code": "603135"
+        },
+        {
+          "rank": "龙二",
+          "name": "宇环数控",
+          "code": "002903"
+        },
+        {
+          "rank": "龙三",
+          "name": "泰坦股份",
+          "code": "003036"
+        },
+        {
+          "rank": "龙四",
+          "name": "华瑞股份",
+          "code": "300626"
+        },
+        {
+          "rank": "龙五",
+          "name": "绿的谐波",
+          "code": "688017"
+        }
+      ],
+      "lead": "中重科技",
+      "leadCode": "603135",
+      "volume": 8963,
+      "strengthByDate": 12320
+    },
+    {
+      "rank": 2,
       "name": "芯片",
       "code": "801001",
-      "strength": 13970.0,
+      "strength": 5460.0,
       "leaders": [
         {
           "rank": "龙一",
@@ -33107,415 +33268,285 @@
         },
         {
           "rank": "龙二",
-          "name": "太极实业",
-          "code": "600667"
+          "name": "三孚股份",
+          "code": "603938"
         },
         {
           "rank": "龙三",
-          "name": "中船特气",
-          "code": "688146"
+          "name": "莱伯泰科",
+          "code": "688056"
         },
         {
           "rank": "龙四",
-          "name": "华源控股",
-          "code": "002787"
+          "name": "雷曼光电",
+          "code": "300162"
         },
         {
           "rank": "龙五",
-          "name": "力诺药包",
-          "code": "301188"
+          "name": "汇成股份",
+          "code": "688403"
         }
       ],
       "lead": "*ST皇庭",
       "leadCode": "000056",
-      "volume": 13364,
-      "strengthByDate": 13970
-    },
-    {
-      "rank": 2,
-      "name": "机器人概念",
-      "code": "801159",
-      "strength": 7896.0,
-      "leaders": [
-        {
-          "rank": "龙一",
-          "name": "瑞贝卡",
-          "code": "600439"
-        },
-        {
-          "rank": "龙二",
-          "name": "中重科技",
-          "code": "603135"
-        },
-        {
-          "rank": "龙三",
-          "name": "华源控股",
-          "code": "002787"
-        },
-        {
-          "rank": "龙四",
-          "name": "翔楼新材",
-          "code": "301160"
-        },
-        {
-          "rank": "龙五",
-          "name": "华光新材",
-          "code": "688379"
-        }
-      ],
-      "lead": "瑞贝卡",
-      "leadCode": "600439",
-      "volume": 7759,
-      "strengthByDate": 7896
+      "volume": 15176,
+      "strengthByDate": 5460
     },
     {
       "rank": 3,
       "name": "通信",
       "code": "801660",
-      "strength": 7399.0,
+      "strength": 3944.0,
       "leaders": [
         {
           "rank": "龙一",
-          "name": "金时科技",
-          "code": "002951"
+          "name": "三孚股份",
+          "code": "603938"
         },
         {
           "rank": "龙二",
-          "name": "天洋新材",
-          "code": "603330"
+          "name": "泰坦股份",
+          "code": "003036"
         },
         {
           "rank": "龙三",
-          "name": "鑫科材料",
-          "code": "600255"
+          "name": "武汉凡谷",
+          "code": "002194"
         },
         {
           "rank": "龙四",
-          "name": "奕东电子",
-          "code": "301123"
+          "name": "东方通信",
+          "code": "600776"
         },
         {
           "rank": "龙五",
-          "name": "唯特偶",
-          "code": "301319"
+          "name": "泰和新材",
+          "code": "002254"
         }
       ],
-      "lead": "金时科技",
-      "leadCode": "002951",
-      "volume": 10045,
-      "strengthByDate": 7399
+      "lead": "三孚股份",
+      "leadCode": "603938",
+      "volume": 11935,
+      "strengthByDate": 3944
     },
     {
       "rank": 4,
-      "name": "元器件",
-      "code": "801445",
-      "strength": 7019.0,
+      "name": "算力",
+      "code": "801807",
+      "strength": 3935.0,
       "leaders": [
         {
           "rank": "龙一",
-          "name": "XD红星发",
-          "code": "600367"
+          "name": "达实智能",
+          "code": "002421"
         },
         {
           "rank": "龙二",
-          "name": "金时科技",
-          "code": "002951"
+          "name": "中青宝",
+          "code": "300052"
         },
         {
           "rank": "龙三",
-          "name": "华锋股份",
-          "code": "002806"
+          "name": "冠龙节能",
+          "code": "301151"
         },
         {
           "rank": "龙四",
-          "name": "宏达电子",
-          "code": "300726"
+          "name": "麦捷科技",
+          "code": "300319"
         },
         {
           "rank": "龙五",
-          "name": "祥和实业",
-          "code": "603500"
+          "name": "江顺科技",
+          "code": "001400"
         }
       ],
-      "lead": "XD红星发",
-      "leadCode": "600367",
-      "volume": 1865,
-      "strengthByDate": 7019
+      "lead": "达实智能",
+      "leadCode": "002421",
+      "volume": 12024,
+      "strengthByDate": 3935
     },
     {
       "rank": 5,
-      "name": "算力",
-      "code": "801807",
-      "strength": 5162.0,
+      "name": "玻璃",
+      "code": "801086",
+      "strength": 2946.0,
       "leaders": [
         {
           "rank": "龙一",
-          "name": "鼎通科技",
-          "code": "688668"
+          "name": "三峡新材",
+          "code": "600293"
         },
         {
           "rank": "龙二",
-          "name": "奕东电子",
-          "code": "301123"
+          "name": "北玻股份",
+          "code": "002613"
         },
         {
           "rank": "龙三",
-          "name": "朗科科技",
-          "code": "300042"
+          "name": "安彩高科",
+          "code": "600207"
         },
         {
           "rank": "龙四",
-          "name": "江海股份",
-          "code": "002484"
+          "name": "耀皮玻璃",
+          "code": "600819"
         },
         {
           "rank": "龙五",
-          "name": "中工国际",
-          "code": "002051"
+          "name": "三星新材",
+          "code": "603578"
         }
       ],
-      "lead": "鼎通科技",
-      "leadCode": "688668",
-      "volume": 10480,
-      "strengthByDate": 5162
+      "lead": "三峡新材",
+      "leadCode": "600293",
+      "volume": 223,
+      "strengthByDate": 2946
     },
     {
       "rank": 6,
-      "name": "煤炭",
-      "code": "801080",
-      "strength": 2914.0,
+      "name": "商业航天",
+      "code": "801843",
+      "strength": 2877.0,
       "leaders": [
         {
           "rank": "龙一",
-          "name": "大有能源",
-          "code": "600403"
+          "name": "多浦乐",
+          "code": "301528"
         },
         {
           "rank": "龙二",
-          "name": "*ST瑞茂",
-          "code": "600180"
+          "name": "东方通信",
+          "code": "600776"
         },
         {
           "rank": "龙三",
-          "name": "豫能控股",
-          "code": "001896"
+          "name": "神剑股份",
+          "code": "002361"
         },
         {
           "rank": "龙四",
-          "name": "凯瑞德",
-          "code": "002072"
+          "name": "江顺科技",
+          "code": "001400"
         },
         {
           "rank": "龙五",
-          "name": "安泰集团",
-          "code": "600408"
+          "name": "中天火箭",
+          "code": "003009"
         }
       ],
-      "lead": "大有能源",
-      "leadCode": "600403",
-      "volume": 579,
-      "strengthByDate": 2914
+      "lead": "多浦乐",
+      "leadCode": "301528",
+      "volume": 5735,
+      "strengthByDate": 2877
     },
     {
       "rank": 7,
-      "name": "燃气轮机",
-      "code": "801880",
-      "strength": 2714.0,
+      "name": "物理AI",
+      "code": "803029",
+      "strength": 2554.0,
       "leaders": [
         {
           "rank": "龙一",
-          "name": "博盈特焊",
-          "code": "301468"
+          "name": "达实智能",
+          "code": "002421"
         },
         {
           "rank": "龙二",
-          "name": "中国动力",
-          "code": "600482"
+          "name": "索辰科技",
+          "code": "688507"
         },
         {
           "rank": "龙三",
-          "name": "杰瑞股份",
-          "code": "002353"
+          "name": "工大高科",
+          "code": "688367"
         },
         {
           "rank": "龙四",
-          "name": "联德股份",
-          "code": "605060"
-        }
-      ],
-      "lead": "博盈特焊",
-      "leadCode": "301468",
-      "volume": 286,
-      "strengthByDate": 2714
-    },
-    {
-      "rank": 8,
-      "name": "并购重组",
-      "code": "801250",
-      "strength": 2150.0,
-      "leaders": [
-        {
-          "rank": "龙一",
-          "name": "民爆光电",
-          "code": "301362"
-        },
-        {
-          "rank": "龙二",
-          "name": "杰美特",
-          "code": "300868"
-        },
-        {
-          "rank": "龙三",
-          "name": "*ST纳川",
-          "code": "300198"
-        },
-        {
-          "rank": "龙四",
-          "name": "盈方微",
-          "code": "000670"
+          "name": "天娱数科",
+          "code": "002354"
         },
         {
           "rank": "龙五",
-          "name": "开勒股份",
-          "code": "301070"
+          "name": "能科科技",
+          "code": "603859"
         }
       ],
-      "lead": "民爆光电",
-      "leadCode": "301362",
-      "volume": 4497,
-      "strengthByDate": 2150
+      "lead": "达实智能",
+      "leadCode": "002421",
+      "volume": 1211,
+      "strengthByDate": 2554
+    },
+    {
+      "rank": 8,
+      "name": "北交所",
+      "code": "801595",
+      "strength": 2062.0,
+      "leaders": [],
+      "lead": "",
+      "leadCode": "",
+      "volume": 319,
+      "strengthByDate": 2062
     },
     {
       "rank": 9,
-      "name": "实控人变更",
-      "code": "801787",
-      "strength": 1726.0,
+      "name": "地产链",
+      "code": "801676",
+      "strength": 1977.0,
       "leaders": [
         {
           "rank": "龙一",
-          "name": "华锋股份",
-          "code": "002806"
+          "name": "荣安地产",
+          "code": "000517"
         },
         {
           "rank": "龙二",
-          "name": "锋龙股份",
-          "code": "002931"
+          "name": "荣丰控股",
+          "code": "000668"
         },
         {
           "rank": "龙三",
-          "name": "中持股份",
-          "code": "603903"
+          "name": "阳光股份",
+          "code": "000608"
         },
         {
           "rank": "龙四",
-          "name": "贝因美",
-          "code": "002570"
+          "name": "德尔未来",
+          "code": "002631"
         }
       ],
-      "lead": "华锋股份",
-      "leadCode": "002806",
-      "volume": 647,
-      "strengthByDate": 1726
+      "lead": "荣安地产",
+      "leadCode": "000517",
+      "volume": 868,
+      "strengthByDate": 1977
     },
     {
       "rank": 10,
-      "name": "股权转让",
-      "code": "801273",
-      "strength": 1649.0,
+      "name": "并购重组",
+      "code": "801250",
+      "strength": 1972.0,
       "leaders": [
         {
           "rank": "龙一",
-          "name": "山科智能",
-          "code": "300897"
+          "name": "东土科技",
+          "code": "300353"
         },
         {
           "rank": "龙二",
-          "name": "亨通股份",
-          "code": "600226"
-        },
-        {
-          "rank": "龙三",
-          "name": "凯瑞德",
-          "code": "002072"
+          "name": "爱普股份",
+          "code": "603020"
         }
       ],
-      "lead": "山科智能",
-      "leadCode": "300897",
-      "volume": 4629,
-      "strengthByDate": 1649
+      "lead": "东土科技",
+      "leadCode": "300353",
+      "volume": 4859,
+      "strengthByDate": 1972
     }
   ],
   "plateRotateDetailByCode": {
-    "801001": {
-      "date": [
-        "06-04",
-        "06-03",
-        "06-02",
-        "06-01",
-        "05-29",
-        "05-28",
-        "05-27",
-        "05-26",
-        "05-25",
-        "05-22",
-        "05-21",
-        "05-20",
-        "05-19",
-        "05-18",
-        "05-15",
-        "05-14",
-        "05-13",
-        "05-12",
-        "05-11",
-        "05-08"
-      ],
-      "strengthSeries": [
-        13970,
-        11440,
-        10819,
-        -10555,
-        -66856,
-        18411,
-        3600,
-        5284,
-        20794,
-        18589,
-        3361,
-        21973,
-        9548,
-        14622,
-        7084,
-        12619,
-        15689,
-        11031,
-        24026,
-        3804
-      ],
-      "volumeSeries": [
-        13364,
-        15558,
-        12906,
-        13110,
-        15770,
-        14486,
-        16000,
-        15766,
-        16029,
-        13989,
-        16367,
-        13942,
-        13339,
-        12964,
-        15102,
-        14855,
-        13966,
-        13737,
-        14896,
-        11958
-      ]
-    },
     "801159": {
       "date": [
+        "06-05",
         "06-04",
         "06-03",
         "06-02",
@@ -33534,10 +33565,10 @@
         "05-14",
         "05-13",
         "05-12",
-        "05-11",
-        "05-08"
+        "05-11"
       ],
       "strengthSeries": [
+        12320,
         7896,
         10241,
         5657,
@@ -33556,10 +33587,10 @@
         1935,
         4404,
         303,
-        3331,
-        16304
+        3331
       ],
       "volumeSeries": [
+        8963,
         7759,
         8782,
         7607,
@@ -33578,12 +33609,12 @@
         8705,
         8391,
         8118,
-        9176,
-        8120
+        9176
       ]
     },
-    "801660": {
+    "801001": {
       "date": [
+        "06-05",
         "06-04",
         "06-03",
         "06-02",
@@ -33602,10 +33633,78 @@
         "05-14",
         "05-13",
         "05-12",
-        "05-11",
-        "05-08"
+        "05-11"
       ],
       "strengthSeries": [
+        5460,
+        13970,
+        11440,
+        10819,
+        -10555,
+        -66856,
+        18411,
+        3600,
+        5284,
+        20794,
+        18589,
+        3361,
+        21973,
+        9548,
+        14622,
+        7084,
+        12619,
+        15689,
+        11031,
+        24026
+      ],
+      "volumeSeries": [
+        15176,
+        13364,
+        15558,
+        12906,
+        13110,
+        15770,
+        14486,
+        16000,
+        15766,
+        16029,
+        13989,
+        16367,
+        13942,
+        13339,
+        12964,
+        15102,
+        14855,
+        13966,
+        13737,
+        14896
+      ]
+    },
+    "801660": {
+      "date": [
+        "06-05",
+        "06-04",
+        "06-03",
+        "06-02",
+        "06-01",
+        "05-29",
+        "05-28",
+        "05-27",
+        "05-26",
+        "05-25",
+        "05-22",
+        "05-21",
+        "05-20",
+        "05-19",
+        "05-18",
+        "05-15",
+        "05-14",
+        "05-13",
+        "05-12",
+        "05-11"
+      ],
+      "strengthSeries": [
+        3944,
         7399,
         8290,
         12375,
@@ -33624,10 +33723,10 @@
         4574,
         9307,
         7301,
-        12444,
-        9084
+        12444
       ],
       "volumeSeries": [
+        11935,
         10045,
         12153,
         10071,
@@ -33646,80 +33745,12 @@
         10590,
         10147,
         10104,
-        10451,
-        8680
-      ]
-    },
-    "801445": {
-      "date": [
-        "06-04",
-        "06-03",
-        "06-02",
-        "06-01",
-        "05-29",
-        "05-28",
-        "05-27",
-        "05-26",
-        "05-25",
-        "05-22",
-        "05-21",
-        "05-20",
-        "05-19",
-        "05-18",
-        "05-15",
-        "05-14",
-        "05-13",
-        "05-12",
-        "05-11",
-        "05-08"
-      ],
-      "strengthSeries": [
-        7019,
-        1312,
-        9286,
-        -593,
-        -1354,
-        10457,
-        2461,
-        -483,
-        5606,
-        11835,
-        -1370,
-        555,
-        5221,
-        1164,
-        -111,
-        -185,
-        192,
-        -98,
-        1814,
-        1431
-      ],
-      "volumeSeries": [
-        1865,
-        2120,
-        1912,
-        1758,
-        2075,
-        1728,
-        1721,
-        1667,
-        1750,
-        1002,
-        917,
-        828,
-        780,
-        741,
-        795,
-        829,
-        878,
-        824,
-        950,
-        775
+        10451
       ]
     },
     "801807": {
       "date": [
+        "06-05",
         "06-04",
         "06-03",
         "06-02",
@@ -33738,10 +33769,10 @@
         "05-14",
         "05-13",
         "05-12",
-        "05-11",
-        "05-08"
+        "05-11"
       ],
       "strengthSeries": [
+        3935,
         5162,
         1712,
         6582,
@@ -33760,10 +33791,10 @@
         -3078,
         15740,
         5068,
-        8642,
-        6217
+        8642
       ],
       "volumeSeries": [
+        12024,
         10480,
         12331,
         10480,
@@ -33782,12 +33813,12 @@
         12695,
         12159,
         11426,
-        12436,
-        10752
+        12436
       ]
     },
-    "801080": {
+    "801086": {
       "date": [
+        "06-05",
         "06-04",
         "06-03",
         "06-02",
@@ -33806,56 +33837,250 @@
         "05-14",
         "05-13",
         "05-12",
-        "05-11",
-        "05-08"
+        "05-11"
       ],
       "strengthSeries": [
-        2914,
-        1560,
-        1041,
-        6332,
-        471,
-        999,
-        991,
-        -540,
-        3546,
-        -36,
-        -1166,
-        -123,
-        552,
-        697,
-        -884,
-        -414,
-        515,
-        -104,
-        17,
-        -22
+        2946,
+        575,
+        -111,
+        -103,
+        532,
+        -1551,
+        721,
+        -153,
+        -66,
+        530,
+        182,
+        -98,
+        -90,
+        18,
+        -26,
+        -596,
+        -12,
+        48,
+        76,
+        32
       ],
       "volumeSeries": [
-        579,
-        541,
-        515,
-        528,
-        381,
-        327,
+        223,
+        161,
+        163,
+        159,
+        161,
+        165,
+        175,
+        184,
+        193,
+        189,
+        173,
+        177,
+        96,
+        104,
+        125,
+        163,
+        166,
+        146,
+        165,
+        132
+      ]
+    },
+    "801843": {
+      "date": [
+        "06-05",
+        "06-04",
+        "06-03",
+        "06-02",
+        "06-01",
+        "05-29",
+        "05-28",
+        "05-27",
+        "05-26",
+        "05-25",
+        "05-22",
+        "05-21",
+        "05-20",
+        "05-19",
+        "05-18",
+        "05-15",
+        "05-14",
+        "05-13",
+        "05-12",
+        "05-11"
+      ],
+      "strengthSeries": [
+        2877,
+        169,
+        1240,
+        -340,
+        -4219,
+        -14533,
+        2589,
+        -4132,
+        -4986,
+        660,
+        4905,
+        -5193,
+        -289,
+        159,
+        4016,
+        -4252,
+        -8938,
+        5622,
+        -859,
+        6564
+      ],
+      "volumeSeries": [
+        5735,
+        4608,
+        5487,
+        4553,
+        4447,
+        5547,
+        4806,
+        4933,
+        4928,
+        4863,
+        4457,
+        5484,
+        4702,
+        4614,
+        4654,
+        5209,
+        5606,
+        5242,
+        5498,
+        6026
+      ]
+    },
+    "803029": {
+      "date": [
+        "06-05",
+        "06-04",
+        "06-03",
+        "06-02",
+        "06-01",
+        "05-29",
+        "05-28",
+        "05-27",
+        "05-26",
+        "05-25",
+        "05-22",
+        "05-21",
+        "05-20",
+        "05-19",
+        "05-18",
+        "05-15",
+        "05-14",
+        "05-13",
+        "05-12",
+        "05-11"
+      ],
+      "strengthSeries": [
+        2554,
+        -96,
+        -392,
+        -951,
+        102,
+        -3238,
+        -285,
+        -856,
+        -380,
+        1408,
+        3858,
+        -610,
+        -706,
+        1250,
+        3670
+      ],
+      "volumeSeries": [
+        1211,
+        948,
+        1234,
+        1067,
+        1085,
+        1283,
+        1101,
+        1216,
+        1235,
+        1260,
+        1134,
+        1301,
+        1062,
+        1140,
+        1090
+      ]
+    },
+    "801595": {
+      "date": [
+        "06-05",
+        "06-04",
+        "06-03",
+        "06-02",
+        "06-01",
+        "05-29",
+        "05-28",
+        "05-27",
+        "05-26",
+        "05-25",
+        "05-22",
+        "05-21",
+        "05-20",
+        "05-19",
+        "05-18",
+        "05-15",
+        "05-14",
+        "05-13",
+        "05-12",
+        "05-11"
+      ],
+      "strengthSeries": [
+        2062,
+        -526,
+        -541,
+        590,
+        310,
+        -794,
+        1097,
+        -1505,
+        -1067,
+        -1058,
+        4,
+        -1518,
+        -1008,
+        291,
+        -542,
+        -23,
+        -1084,
+        47,
+        -32,
+        479
+      ],
+      "volumeSeries": [
         319,
-        332,
-        320,
+        217,
+        231,
+        202,
+        195,
+        222,
+        194,
+        217,
+        209,
+        215,
+        216,
+        261,
+        230,
         227,
-        226,
-        219,
-        228,
-        259,
-        283,
-        286,
-        256,
-        252,
-        289,
-        295
+        235,
+        260,
+        262,
+        245,
+        273,
+        268
       ]
     },
-    "801880": {
+    "801676": {
       "date": [
+        "06-05",
         "06-04",
         "06-03",
         "06-02",
@@ -33874,56 +34099,56 @@
         "05-14",
         "05-13",
         "05-12",
-        "05-11",
-        "05-08"
+        "05-11"
       ],
       "strengthSeries": [
-        2714,
-        -33,
-        -401,
-        15,
-        -1549,
-        186,
-        -430,
-        -299,
-        -8,
-        477,
-        -1071,
-        -122,
-        -24,
-        300,
-        -280,
-        -2445,
-        1425,
-        -656,
-        32,
-        -213
+        1977,
+        -4,
+        132,
+        741,
+        1614,
+        3914,
+        2049,
+        -1885,
+        -282,
+        931,
+        9,
+        -6018,
+        -1623,
+        95,
+        289,
+        -747,
+        -2800,
+        -642,
+        596,
+        2354
       ],
       "volumeSeries": [
-        286,
-        250,
-        267,
-        259,
-        317,
-        318,
-        353,
-        293,
-        323,
-        308,
-        385,
-        332,
-        308,
-        367,
-        386,
-        456,
-        499,
-        401,
-        498,
-        418
+        868,
+        791,
+        878,
+        837,
+        906,
+        1018,
+        773,
+        844,
+        931,
+        892,
+        878,
+        1085,
+        923,
+        874,
+        860,
+        1051,
+        1030,
+        1102,
+        1046,
+        1113
       ]
     },
     "801250": {
       "date": [
+        "06-05",
         "06-04",
         "06-03",
         "06-02",
@@ -33942,10 +34167,10 @@
         "05-14",
         "05-13",
         "05-12",
-        "05-11",
-        "05-08"
+        "05-11"
       ],
       "strengthSeries": [
+        1972,
         2150,
         2060,
         2756,
@@ -33964,10 +34189,10 @@
         1769,
         2764,
         1689,
-        1703,
-        1209
+        1703
       ],
       "volumeSeries": [
+        4859,
         4497,
         5351,
         4453,
@@ -33986,172 +34211,35 @@
         4909,
         4979,
         4825,
-        5348,
-        4666
-      ]
-    },
-    "801787": {
-      "date": [
-        "06-04",
-        "06-03",
-        "06-02",
-        "06-01",
-        "05-29",
-        "05-28",
-        "05-27",
-        "05-26",
-        "05-25",
-        "05-22",
-        "05-21",
-        "05-20",
-        "05-19",
-        "05-18",
-        "05-15",
-        "05-14",
-        "05-13",
-        "05-12",
-        "05-11",
-        "05-08"
-      ],
-      "strengthSeries": [
-        1726,
-        -186,
-        896,
-        1396,
-        -1233,
-        965,
-        -1816,
-        -374,
-        -152,
-        446,
-        -1612,
-        322,
-        2317,
-        1266,
-        176,
-        476,
-        910,
-        -264,
-        1877,
-        1312
-      ],
-      "volumeSeries": [
-        647,
-        799,
-        698,
-        704,
-        866,
-        740,
-        908,
-        899,
-        784,
-        737,
-        902,
-        760,
-        705,
-        736,
-        795,
-        826,
-        775,
-        768,
-        781,
-        767
-      ]
-    },
-    "801273": {
-      "date": [
-        "06-04",
-        "06-03",
-        "06-02",
-        "06-01",
-        "05-29",
-        "05-28",
-        "05-27",
-        "05-26",
-        "05-25",
-        "05-22",
-        "05-21",
-        "05-20",
-        "05-19",
-        "05-18",
-        "05-15",
-        "05-14",
-        "05-13",
-        "05-12",
-        "05-11",
-        "05-08"
-      ],
-      "strengthSeries": [
-        1649,
-        417,
-        -133,
-        2413,
-        273,
-        27,
-        294,
-        311,
-        753,
-        423,
-        183,
-        2193,
-        555,
-        1247,
-        681,
-        592,
-        1352,
-        2048,
-        2081,
-        2861
-      ],
-      "volumeSeries": [
-        4629,
-        5327,
-        4700,
-        4682,
-        5369,
-        4985,
-        5284,
-        5431,
-        5270,
-        4808,
-        6038,
-        5067,
-        5006,
-        4778,
-        5720,
-        5893,
-        5773,
-        5931,
-        6389,
-        5708
+        5348
       ]
     }
   },
   "plateRotateLeaders": [
     {
       "rank": "龙一",
-      "name": "*ST皇庭",
-      "code": "000056"
+      "name": "中重科技",
+      "code": "603135"
     },
     {
       "rank": "龙二",
-      "name": "太极实业",
-      "code": "600667"
+      "name": "宇环数控",
+      "code": "002903"
     },
     {
       "rank": "龙三",
-      "name": "中船特气",
-      "code": "688146"
+      "name": "泰坦股份",
+      "code": "003036"
     },
     {
       "rank": "龙四",
-      "name": "华源控股",
-      "code": "002787"
+      "name": "华瑞股份",
+      "code": "300626"
     },
     {
       "rank": "龙五",
-      "name": "力诺药包",
-      "code": "301188"
+      "name": "绿的谐波",
+      "code": "688017"
     }
   ],
   "highPositionRisk": {
@@ -34181,6 +34269,10 @@
       {
         "k": "跌停压强",
         "v": "11 只"
+      },
+      {
+        "k": "高位大单净流",
+        "v": "+0.53 亿"
       }
     ],
     "alerts": [
@@ -34196,9 +34288,13 @@
       }
     ],
     "fund": {
-      "highNetBigOrderFlowYi": null,
+      "highNetBigOrderFlowYi": 0.53,
       "meta": {
-        "precision": "missing"
+        "precision": "strict_sample_top3_high_cje",
+        "sampleSize": 1,
+        "codes": [
+          "600403"
+        ]
       }
     },
     "meta": {
@@ -34258,9 +34354,9 @@
       },
       "overlap": {
         "themes": [
+          "低价",
           "国资改革",
-          "华为概念",
-          "低价"
+          "华为概念"
         ],
         "score": "60%",
         "note": "涨停主线与炸板主杀题材的重叠度（越高越提示主线在分歧/退潮）"
@@ -34288,9 +34384,50 @@
   "plateRankTop10": [
     {
       "rank": 1,
+      "name": "机器人概念",
+      "code": "801159",
+      "strength": 12320.0,
+      "leaders": [
+        {
+          "rank": "龙一",
+          "name": "中重科技",
+          "code": "603135"
+        },
+        {
+          "rank": "龙二",
+          "name": "宇环数控",
+          "code": "002903"
+        },
+        {
+          "rank": "龙三",
+          "name": "泰坦股份",
+          "code": "003036"
+        },
+        {
+          "rank": "龙四",
+          "name": "华瑞股份",
+          "code": "300626"
+        },
+        {
+          "rank": "龙五",
+          "name": "绿的谐波",
+          "code": "688017"
+        }
+      ],
+      "lead": "中重科技",
+      "leadCode": "603135",
+      "volume": 8963,
+      "strengthByDate": 12320,
+      "displayValue": "12320",
+      "displayClass": "red-text",
+      "barPct": 100.0,
+      "sourceNote": ""
+    },
+    {
+      "rank": 2,
       "name": "芯片",
       "code": "801001",
-      "strength": 13970.0,
+      "strength": 5460.0,
       "leaders": [
         {
           "rank": "龙一",
@@ -34299,381 +34436,314 @@
         },
         {
           "rank": "龙二",
-          "name": "太极实业",
-          "code": "600667"
+          "name": "三孚股份",
+          "code": "603938"
         },
         {
           "rank": "龙三",
-          "name": "中船特气",
-          "code": "688146"
+          "name": "莱伯泰科",
+          "code": "688056"
         },
         {
           "rank": "龙四",
-          "name": "华源控股",
-          "code": "002787"
+          "name": "雷曼光电",
+          "code": "300162"
         },
         {
           "rank": "龙五",
-          "name": "力诺药包",
-          "code": "301188"
+          "name": "汇成股份",
+          "code": "688403"
         }
       ],
       "lead": "*ST皇庭",
       "leadCode": "000056",
-      "volume": 13364,
-      "strengthByDate": 13970,
-      "displayValue": "13970",
+      "volume": 15176,
+      "strengthByDate": 5460,
+      "displayValue": "5460",
       "displayClass": "red-text",
-      "barPct": 100.0,
-      "sourceNote": ""
-    },
-    {
-      "rank": 2,
-      "name": "机器人概念",
-      "code": "801159",
-      "strength": 7896.0,
-      "leaders": [
-        {
-          "rank": "龙一",
-          "name": "瑞贝卡",
-          "code": "600439"
-        },
-        {
-          "rank": "龙二",
-          "name": "中重科技",
-          "code": "603135"
-        },
-        {
-          "rank": "龙三",
-          "name": "华源控股",
-          "code": "002787"
-        },
-        {
-          "rank": "龙四",
-          "name": "翔楼新材",
-          "code": "301160"
-        },
-        {
-          "rank": "龙五",
-          "name": "华光新材",
-          "code": "688379"
-        }
-      ],
-      "lead": "瑞贝卡",
-      "leadCode": "600439",
-      "volume": 7759,
-      "strengthByDate": 7896,
-      "displayValue": "7896",
-      "displayClass": "red-text",
-      "barPct": 56.521116678597,
+      "barPct": 44.31818181818182,
       "sourceNote": ""
     },
     {
       "rank": 3,
       "name": "通信",
       "code": "801660",
-      "strength": 7399.0,
+      "strength": 3944.0,
       "leaders": [
         {
           "rank": "龙一",
-          "name": "金时科技",
-          "code": "002951"
+          "name": "三孚股份",
+          "code": "603938"
         },
         {
           "rank": "龙二",
-          "name": "天洋新材",
-          "code": "603330"
+          "name": "泰坦股份",
+          "code": "003036"
         },
         {
           "rank": "龙三",
-          "name": "鑫科材料",
-          "code": "600255"
+          "name": "武汉凡谷",
+          "code": "002194"
         },
         {
           "rank": "龙四",
-          "name": "奕东电子",
-          "code": "301123"
+          "name": "东方通信",
+          "code": "600776"
         },
         {
           "rank": "龙五",
-          "name": "唯特偶",
-          "code": "301319"
+          "name": "泰和新材",
+          "code": "002254"
         }
       ],
-      "lead": "金时科技",
-      "leadCode": "002951",
-      "volume": 10045,
-      "strengthByDate": 7399,
-      "displayValue": "7399",
+      "lead": "三孚股份",
+      "leadCode": "603938",
+      "volume": 11935,
+      "strengthByDate": 3944,
+      "displayValue": "3944",
       "displayClass": "red-text",
-      "barPct": 52.963493199713675,
+      "barPct": 32.01298701298702,
       "sourceNote": ""
     },
     {
       "rank": 4,
-      "name": "元器件",
-      "code": "801445",
-      "strength": 7019.0,
+      "name": "算力",
+      "code": "801807",
+      "strength": 3935.0,
       "leaders": [
         {
           "rank": "龙一",
-          "name": "XD红星发",
-          "code": "600367"
+          "name": "达实智能",
+          "code": "002421"
         },
         {
           "rank": "龙二",
-          "name": "金时科技",
-          "code": "002951"
+          "name": "中青宝",
+          "code": "300052"
         },
         {
           "rank": "龙三",
-          "name": "华锋股份",
-          "code": "002806"
+          "name": "冠龙节能",
+          "code": "301151"
         },
         {
           "rank": "龙四",
-          "name": "宏达电子",
-          "code": "300726"
+          "name": "麦捷科技",
+          "code": "300319"
         },
         {
           "rank": "龙五",
-          "name": "祥和实业",
-          "code": "603500"
+          "name": "江顺科技",
+          "code": "001400"
         }
       ],
-      "lead": "XD红星发",
-      "leadCode": "600367",
-      "volume": 1865,
-      "strengthByDate": 7019,
-      "displayValue": "7019",
+      "lead": "达实智能",
+      "leadCode": "002421",
+      "volume": 12024,
+      "strengthByDate": 3935,
+      "displayValue": "3935",
       "displayClass": "red-text",
-      "barPct": 50.243378668575524,
+      "barPct": 31.939935064935064,
       "sourceNote": ""
     },
     {
       "rank": 5,
-      "name": "算力",
-      "code": "801807",
-      "strength": 5162.0,
+      "name": "玻璃",
+      "code": "801086",
+      "strength": 2946.0,
       "leaders": [
         {
           "rank": "龙一",
-          "name": "鼎通科技",
-          "code": "688668"
+          "name": "三峡新材",
+          "code": "600293"
         },
         {
           "rank": "龙二",
-          "name": "奕东电子",
-          "code": "301123"
+          "name": "北玻股份",
+          "code": "002613"
         },
         {
           "rank": "龙三",
-          "name": "朗科科技",
-          "code": "300042"
+          "name": "安彩高科",
+          "code": "600207"
         },
         {
           "rank": "龙四",
-          "name": "江海股份",
-          "code": "002484"
+          "name": "耀皮玻璃",
+          "code": "600819"
         },
         {
           "rank": "龙五",
-          "name": "中工国际",
-          "code": "002051"
+          "name": "三星新材",
+          "code": "603578"
         }
       ],
-      "lead": "鼎通科技",
-      "leadCode": "688668",
-      "volume": 10480,
-      "strengthByDate": 5162,
-      "displayValue": "5162",
+      "lead": "三峡新材",
+      "leadCode": "600293",
+      "volume": 223,
+      "strengthByDate": 2946,
+      "displayValue": "2946",
       "displayClass": "red-text",
-      "barPct": 36.95060844667144,
+      "barPct": 23.912337662337663,
       "sourceNote": ""
     },
     {
       "rank": 6,
-      "name": "煤炭",
-      "code": "801080",
-      "strength": 2914.0,
+      "name": "商业航天",
+      "code": "801843",
+      "strength": 2877.0,
       "leaders": [
         {
           "rank": "龙一",
-          "name": "大有能源",
-          "code": "600403"
+          "name": "多浦乐",
+          "code": "301528"
         },
         {
           "rank": "龙二",
-          "name": "*ST瑞茂",
-          "code": "600180"
+          "name": "东方通信",
+          "code": "600776"
         },
         {
           "rank": "龙三",
-          "name": "豫能控股",
-          "code": "001896"
+          "name": "神剑股份",
+          "code": "002361"
         },
         {
           "rank": "龙四",
-          "name": "凯瑞德",
-          "code": "002072"
+          "name": "江顺科技",
+          "code": "001400"
         },
         {
           "rank": "龙五",
-          "name": "安泰集团",
-          "code": "600408"
+          "name": "中天火箭",
+          "code": "003009"
         }
       ],
-      "lead": "大有能源",
-      "leadCode": "600403",
-      "volume": 579,
-      "strengthByDate": 2914,
-      "displayValue": "2914",
+      "lead": "多浦乐",
+      "leadCode": "301528",
+      "volume": 5735,
+      "strengthByDate": 2877,
+      "displayValue": "2877",
       "displayClass": "red-text",
-      "barPct": 20.85898353614889,
+      "barPct": 23.352272727272727,
       "sourceNote": ""
     },
     {
       "rank": 7,
-      "name": "燃气轮机",
-      "code": "801880",
-      "strength": 2714.0,
+      "name": "物理AI",
+      "code": "803029",
+      "strength": 2554.0,
       "leaders": [
         {
           "rank": "龙一",
-          "name": "博盈特焊",
-          "code": "301468"
+          "name": "达实智能",
+          "code": "002421"
         },
         {
           "rank": "龙二",
-          "name": "中国动力",
-          "code": "600482"
+          "name": "索辰科技",
+          "code": "688507"
         },
         {
           "rank": "龙三",
-          "name": "杰瑞股份",
-          "code": "002353"
+          "name": "工大高科",
+          "code": "688367"
         },
         {
           "rank": "龙四",
-          "name": "联德股份",
-          "code": "605060"
+          "name": "天娱数科",
+          "code": "002354"
+        },
+        {
+          "rank": "龙五",
+          "name": "能科科技",
+          "code": "603859"
         }
       ],
-      "lead": "博盈特焊",
-      "leadCode": "301468",
-      "volume": 286,
-      "strengthByDate": 2714,
-      "displayValue": "2714",
+      "lead": "达实智能",
+      "leadCode": "002421",
+      "volume": 1211,
+      "strengthByDate": 2554,
+      "displayValue": "2554",
       "displayClass": "red-text",
-      "barPct": 19.427344309234073,
+      "barPct": 20.73051948051948,
       "sourceNote": ""
     },
     {
       "rank": 8,
-      "name": "并购重组",
-      "code": "801250",
-      "strength": 2150.0,
-      "leaders": [
-        {
-          "rank": "龙一",
-          "name": "民爆光电",
-          "code": "301362"
-        },
-        {
-          "rank": "龙二",
-          "name": "杰美特",
-          "code": "300868"
-        },
-        {
-          "rank": "龙三",
-          "name": "*ST纳川",
-          "code": "300198"
-        },
-        {
-          "rank": "龙四",
-          "name": "盈方微",
-          "code": "000670"
-        },
-        {
-          "rank": "龙五",
-          "name": "开勒股份",
-          "code": "301070"
-        }
-      ],
-      "lead": "民爆光电",
-      "leadCode": "301362",
-      "volume": 4497,
-      "strengthByDate": 2150,
-      "displayValue": "2150",
+      "name": "北交所",
+      "code": "801595",
+      "strength": 2062.0,
+      "leaders": [],
+      "lead": "",
+      "leadCode": "",
+      "volume": 319,
+      "strengthByDate": 2062,
+      "displayValue": "2062",
       "displayClass": "red-text",
-      "barPct": 15.390121689334288,
+      "barPct": 16.737012987012985,
       "sourceNote": ""
     },
     {
       "rank": 9,
-      "name": "实控人变更",
-      "code": "801787",
-      "strength": 1726.0,
+      "name": "地产链",
+      "code": "801676",
+      "strength": 1977.0,
       "leaders": [
         {
           "rank": "龙一",
-          "name": "华锋股份",
-          "code": "002806"
+          "name": "荣安地产",
+          "code": "000517"
         },
         {
           "rank": "龙二",
-          "name": "锋龙股份",
-          "code": "002931"
+          "name": "荣丰控股",
+          "code": "000668"
         },
         {
           "rank": "龙三",
-          "name": "中持股份",
-          "code": "603903"
+          "name": "阳光股份",
+          "code": "000608"
         },
         {
           "rank": "龙四",
-          "name": "贝因美",
-          "code": "002570"
+          "name": "德尔未来",
+          "code": "002631"
         }
       ],
-      "lead": "华锋股份",
-      "leadCode": "002806",
-      "volume": 647,
-      "strengthByDate": 1726,
-      "displayValue": "1726",
+      "lead": "荣安地产",
+      "leadCode": "000517",
+      "volume": 868,
+      "strengthByDate": 1977,
+      "displayValue": "1977",
       "displayClass": "red-text",
-      "barPct": 12.355046528274876,
+      "barPct": 16.04707792207792,
       "sourceNote": ""
     },
     {
       "rank": 10,
-      "name": "股权转让",
-      "code": "801273",
-      "strength": 1649.0,
+      "name": "并购重组",
+      "code": "801250",
+      "strength": 1972.0,
       "leaders": [
         {
           "rank": "龙一",
-          "name": "山科智能",
-          "code": "300897"
+          "name": "东土科技",
+          "code": "300353"
         },
         {
           "rank": "龙二",
-          "name": "亨通股份",
-          "code": "600226"
-        },
-        {
-          "rank": "龙三",
-          "name": "凯瑞德",
-          "code": "002072"
+          "name": "爱普股份",
+          "code": "603020"
         }
       ],
-      "lead": "山科智能",
-      "leadCode": "300897",
-      "volume": 4629,
-      "strengthByDate": 1649,
-      "displayValue": "1649",
+      "lead": "东土科技",
+      "leadCode": "300353",
+      "volume": 4859,
+      "strengthByDate": 1972,
+      "displayValue": "1972",
       "displayClass": "red-text",
-      "barPct": 11.80386542591267,
+      "barPct": 16.00649350649351,
       "sourceNote": ""
     }
   ]
