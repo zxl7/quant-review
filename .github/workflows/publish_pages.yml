@@ -138,6 +138,7 @@ jobs:
           cp -f site_prev/cache/concept_fund_flow_cache.json cache/ 2>/dev/null || true
           cp -f site_prev/cache/money_flow_cache.json cache/ 2>/dev/null || true
           cp -f site_prev/cache/trade_days_cache.json cache/ 2>/dev/null || true
+          cp -f site_prev/cache/stock_research_backtest_source.json cache/ 2>/dev/null || true
           cp -f site_prev/cache/stock_research_realtime_quotes-*.json cache/ 2>/dev/null || true
           cp -f site_prev/cache/intraday_slices-*.json cache/ 2>/dev/null || true
           cp -f site_prev/cache/intraday_snapshots-*.json cache/ 2>/dev/null || true
@@ -570,6 +571,7 @@ jobs:
           cp -f cache/concept_fund_flow_cache.json site_prev/cache/ 2>/dev/null || true
           cp -f cache/money_flow_cache.json site_prev/cache/ 2>/dev/null || true
           cp -f cache/trade_days_cache.json site_prev/cache/ 2>/dev/null || true
+          cp -f cache/stock_research_backtest_source.json site_prev/cache/ 2>/dev/null || true
           cp -f cache/stock_research_realtime_quotes-*.json site_prev/cache/ 2>/dev/null || true
           cp -f cache/intraday_slices-*.json site_prev/cache/ 2>/dev/null || true
           cfiles=( $(ls -1 site_prev/cache/market_data-*.json 2>/dev/null | sort || true) )

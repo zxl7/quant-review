@@ -20,6 +20,7 @@
 - `abnormal_event_history-20260602.json`：未知文件，保守保留
 - `abnormal_event_history-20260603.json`：未知文件，保守保留
 - `abnormal_event_history-20260604.json`：未知文件，保守保留
+- `backtest_history.json`：未知文件，保守保留
 - `concept_fund_flow_cache.json`：板块排行兜底数据
 - `dragon_tiger-20260522.json`：未知文件，保守保留
 - `dragon_tiger-20260526.json`：未知文件，保守保留
@@ -28,25 +29,27 @@
 - `dragon_tiger-20260529.json`：未知文件，保守保留
 - `height_trend_cache.json`：高度趋势模块依赖
 - `index_kline_cache.json`：指数K线/量能模块依赖
-- `intraday_slices-20260604.json`：保留最近 2 个盘中切片
+- `intraday_slices-20260605.json`：保留最近 2 个盘中切片
 - `learning_notes_history.json`：学习语录去重历史
-- `market_data-20260527.json`：最近 7 个 market_data 快照
 - `market_data-20260528.json`：最近 7 个 market_data 快照
 - `market_data-20260529.json`：最近 7 个 market_data 快照
 - `market_data-20260601.json`：最近 7 个 market_data 快照
 - `market_data-20260602.json`：最近 7 个 market_data 快照
 - `market_data-20260603.json`：最近 7 个 market_data 快照
+- `market_data-20260604-intraday.json`：最近 7 个 market_data 快照
 - `market_data-20260604.json`：最近 7 个 market_data 快照
 - `money_flow_cache.json`：板块流入聚合依赖
 - `plate_rotate_cache.json`：板块轮动明细必需
 - `pools_cache.json`：离线重建涨停/跌停/炸板池必需
+- `stock_research_backtest_source.json`：未知文件，保守保留
+- `stock_research_realtime_quotes-20260603.json`：未知文件，保守保留
 - `theme_cache.json`：题材映射必需
 - `theme_trend_cache.json`：题材持续性模块依赖
 - `trade_days_cache.json`：交易日缓存（gen_report_v4 兼容）
 
 ## 建议清理
 
-- `market_data-20260526.json`：超出最近 7 个 market_data 快照
+- `market_data-20260527.json`：超出最近 7 个 market_data 快照
 
 ## 线上依赖目录
 

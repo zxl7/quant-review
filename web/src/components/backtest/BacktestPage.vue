@@ -9,6 +9,7 @@ const backtestSource = computed<any>(() => {
 })
 
 const emptyPayload = {
+  schema: "stock_research_backtest_v2",
   meta: {
     title: "个股回测",
     subtitle: "",
@@ -17,6 +18,7 @@ const emptyPayload = {
     generated_at_bj: "",
     generated_from: [],
     latest_recommendation_date: "",
+    active_trade_date: "",
   },
   summary: {
     total_samples: 0,
@@ -47,6 +49,7 @@ const emptyPayload = {
   diagnostics: {},
   realtimeBuy: {
     reference_date: "",
+    trade_date: "",
     entry_window: "09:25-09:30",
     quote_time: "",
     candidate_count: 0,
@@ -65,9 +68,32 @@ const emptyPayload = {
   },
 }
 
+function isEntryWindowTime(text: unknown) {
+  const raw = String(text || "").trim()
+  if (!raw) return false
+  const hhmmss = raw.includes(" ") ? raw.split(" ").pop() || "" : raw
+  const parts = hhmmss.slice(0, 8).split(":")
+  if (parts.length < 3) return false
+  const [hour, minute, second] = parts.map((part) => Number(part))
+  if (![hour, minute, second].every((n) => Number.isInteger(n))) return false
+  const total = hour * 3600 + minute * 60 + second
+  return total >= 9 * 3600 + 25 * 60 && total < 9 * 3600 + 30 * 60
+}
+
+function isCompleteBacktestPayload(raw: any) {
+  if (!raw || typeof raw !== "object") return false
+  if (String(raw.schema || "") !== "stock_research_backtest_v2") return false
+  if (!raw.meta || typeof raw.meta !== "object") return false
+  if (!raw.summary || typeof raw.summary !== "object") return false
+  if (!raw.realtimeBuy || typeof raw.realtimeBuy !== "object") return false
+  if (!Array.isArray(raw.currentPoolRecords)) return false
+  if (!Array.isArray(raw.records)) return false
+  return true
+}
+
 const payload = computed<any>(() => {
   const raw = backtestSource.value?.stockResearchBacktest
-  return raw && typeof raw === "object" ? raw : emptyPayload
+  return isCompleteBacktestPayload(raw) ? raw : emptyPayload
 })
 
 const meta = computed(() => payload.value?.meta || emptyPayload.meta)
@@ -81,6 +107,10 @@ const realtimeBuy = computed<any>(() => {
   const raw = payload.value?.realtimeBuy
   return raw && typeof raw === "object" ? raw : emptyPayload.realtimeBuy
 })
+const hasValidPayload = computed(() => isCompleteBacktestPayload(backtestSource.value?.stockResearchBacktest))
+const activeTradeDate = computed(() => String(meta.value?.active_trade_date || realtimeBuy.value?.trade_date || "").trim())
+const realtimeTitleDate = computed(() => String(activeTradeDate.value || realtimeBuy.value?.reference_date || latestRecommendationDate.value || "").trim())
+const realtimeCardTitle = computed(() => (realtimeTitleDate.value ? `竞价结果 — ${realtimeTitleDate.value} 9:25` : "竞价结果"))
 const backtestUpdatedAt = computed(() => meta.value?.generated_at_bj || backtestSource.value?.meta?.generatedAt || (marketData.value as any)?.meta?.generatedAt || "-")
 const quoteUpdatedAt = computed(() => realtimeBuy.value?.quote_time || "-")
 const allCandidates = computed<any[]>(() => {
@@ -133,6 +163,31 @@ const latestRecommendationDate = computed(() => String(meta.value?.latest_recomm
 const currentRecords = computed<any[]>(() => currentPoolRecords.value)
 const currentEligibleCount = computed(() => currentRecords.value.filter((row) => !!row?.performance?.open_check?.can_enter).length)
 const historicalRecords = computed<any[]>(() => records.value)
+const hasCurrentPlan = computed(() => hasValidPayload.value && currentRecords.value.length > 0)
+const hasHistoricalRecords = computed(() => historicalRecords.value.length > 0)
+const hasRealtimeSnapshot = computed(() => {
+  if (!hasValidPayload.value) return false
+  if (!realtimeBuy.value?.reference_date) return false
+  if (!isEntryWindowTime(realtimeBuy.value?.quote_time)) return false
+  return allCandidates.value.length > 0
+})
+const hasAnyRenderableSection = computed(() => hasCurrentPlan.value || hasHistoricalRecords.value || hasRealtimeSnapshot.value)
+const currentPlanTitleDate = computed(() => String(activeTradeDate.value || latestRecommendationDate.value || "").trim())
+const currentPlanCardTitle = computed(() => (currentPlanTitleDate.value ? `待验证池 — ${currentPlanTitleDate.value}` : "待验证池"))
+const emptyStateText = computed(() => {
+  if (!hasValidPayload.value) return "当前暂无有效回测数据，明天 09:25-09:30 落地后会自动显示对应内容。"
+  if (hasCurrentPlan.value) return "收盘后推送的个股研究样本已经落进回测 JSON，当前先展示明天待验证池；到明天 09:25-09:30 再补真实竞价命中结果。"
+  if (!realtimeBuy.value?.reference_date) return "当前推荐还没到次日 09:25-09:30，明天窗口内会落地实时行情。"
+  if (!isEntryWindowTime(realtimeBuy.value?.quote_time)) return "当前暂无有效竞价快照，等明天 09:25-09:30 落地后再显示命中结果。"
+  return "当前没有可展示的回测结果。"
+})
+const realtimeEmptyText = computed(() => {
+  if (!hasValidPayload.value) return "当前暂无有效回测数据。"
+  if (!hasCurrentPlan.value) return "当前还没有待验证池数据，先执行一次复盘脚本生成个股回测 JSON。"
+  if (!realtimeBuy.value?.reference_date) return "当前是收盘后待验证阶段，明天 09:25-09:30 会补充实时量价和命中结果。"
+  if (!isEntryWindowTime(realtimeBuy.value?.quote_time)) return "当前还没到有效竞价快照时间，明天 09:25-09:30 会自动显示真实命中结果。"
+  return "当前没有命中结果。"
+})
 
 const entryRate = computed(() => {
   const total = toNum(summary.value?.total_samples, 0)
@@ -249,16 +304,74 @@ function strategyReturnClass(performance: any, key: string) {
 
 <template>
   <div class="bt-page">
+    <div class="card" v-if="!hasAnyRenderableSection">
+      <div class="card-header">
+        <div>
+          <div class="card-title">个股回测</div>
+          <div class="bt-subtitle">收盘后先看推送进 JSON 的待验证数据，次日 09:25-09:30 再补真实竞价命中结果。</div>
+        </div>
+      </div>
+      <div class="summary-box">
+        <div class="summary-text">{{ emptyStateText }}</div>
+      </div>
+    </div>
+
+    <template v-else>
+    <div class="card" v-if="hasCurrentPlan">
+      <div class="card-header">
+        <div>
+          <div class="card-title">{{ currentPlanCardTitle }}</div>
+          <div class="bt-subtitle">这里展示收盘后由个股研究推送进回测 JSON 的样本，以及明天 09:25 需要命中的标准。</div>
+        </div>
+      </div>
+
+      <div class="bt-table-wrap">
+        <table class="ladder-table">
+          <thead>
+            <tr>
+              <th>推荐日</th>
+              <th>标的</th>
+              <th>池子</th>
+              <th>主线</th>
+              <th>预期</th>
+              <th>超预期</th>
+              <th>低预期</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="row in currentRecords" :key="'plan-' + row.trade_date10 + '-' + row.code">
+              <td>{{ row.date10 || "-" }}</td>
+              <td class="bt-name-cell">
+                <div class="bt-name-line">
+                  <a v-if="row.code" class="stock-link" :href="xqUrl(row.code)" target="_blank" rel="noopener noreferrer">{{ row.name }}</a>
+                  <span v-else>{{ row.name || "-" }}</span>
+                </div>
+                <div class="bt-name-sub">{{ row.code || "-" }} ｜ {{ row.score ?? "-" }} ｜ {{ row.score_sub_label || row.style_tag || "-" }}</div>
+              </td>
+              <td>{{ row.bucket_label || row.bucket || "-" }}</td>
+              <td class="bt-left-cell">
+                <div>{{ row.main_line || "-" }}</div>
+                <div class="bt-cell-sub">{{ row.hy || row.plate_name || "-" }}</div>
+              </td>
+              <td class="bt-left-cell">{{ row.expectation?.expected_text || "-" }}</td>
+              <td class="bt-left-cell">{{ row.expectation?.super_text || "-" }}</td>
+              <td class="bt-left-cell">{{ row.expectation?.low_text || "-" }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
     <div class="card">
       <div class="card-header">
         <div>
-          <div class="card-title">9:25 竞价结果 — {{ realtimeBuy.reference_date || latestRecommendationDate }}</div>
+          <div class="card-title">{{ realtimeCardTitle }}</div>
           <div class="bt-subtitle">超预期 = 买入，符合预期 = 观察，低预期 = 不入场。</div>
         </div>
       </div>
 
-      <div class="summary-box" v-if="!allCandidates.length">
-        <div class="summary-text">当前没有竞价标的。</div>
+      <div class="summary-box" v-if="!hasRealtimeSnapshot">
+        <div class="summary-text">{{ realtimeEmptyText }}</div>
       </div>
 
       <div class="bt-table-wrap" v-else>
@@ -308,7 +421,7 @@ function strategyReturnClass(performance: any, key: string) {
       </div>
     </div>
 
-    <div class="card">
+    <div class="card" v-if="hasHistoricalRecords">
       <div class="card-header">
         <div>
           <div class="card-title">策略表现</div>
@@ -417,6 +530,7 @@ function strategyReturnClass(performance: any, key: string) {
         </table>
       </div>
     </div>
+    </template>
 
     <ShortReminderFooter />
   </div>

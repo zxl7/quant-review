@@ -116,6 +116,54 @@ def _save_price_cache(payload: dict[str, Any]) -> None:
     _write_json(PRICE_CACHE, payload)
 
 
+def _source_history_path() -> Path:
+    return CACHE_DIR / "stock_research_backtest_source.json"
+
+
+def _trade_days_cache_path_candidates() -> list[Path]:
+    return [
+        CACHE_DIR / "trade_days_cache.json",
+        ROOT / "cache_online" / "trade_days_cache.json",
+    ]
+
+
+def _load_trade_days() -> list[str]:
+    for path in _trade_days_cache_path_candidates():
+        data = _load_json(path, default={})
+        if not isinstance(data, dict):
+            continue
+        days = data.get("days")
+        if not isinstance(days, list):
+            continue
+        cleaned = [str(day).strip() for day in days if isinstance(day, str) and len(str(day).strip()) == 10]
+        if cleaned:
+            return sorted(dict.fromkeys(cleaned))
+    return []
+
+
+def _next_weekday(date10: str) -> str:
+    current = datetime.strptime(date10, "%Y-%m-%d")
+    probe = current + timedelta(days=1)
+    while probe.weekday() >= 5:
+        probe += timedelta(days=1)
+    return probe.strftime("%Y-%m-%d")
+
+
+def _resolve_next_trade_date(date10: str) -> str:
+    days = _load_trade_days()
+    if days:
+        future = [day for day in days if day > date10]
+        if future:
+            return future[0]
+    return _next_weekday(date10)
+
+
+def _is_open_session(now: datetime | None = None) -> bool:
+    current = now or _now_bj()
+    total = current.hour * 3600 + current.minute * 60 + current.second
+    return 9 * 3600 + 30 * 60 <= total < 15 * 3600
+
+
 def _get_price_histories(codes: list[str], *, st8: str, et8: str) -> tuple[dict[str, list[dict[str, Any]]], dict[str, Any]]:
     cache = _load_price_cache()
     code_cache = cache.setdefault("codes", {})
@@ -255,45 +303,102 @@ def _row_from_item(item: dict[str, Any], *, date10: str, bucket: str) -> dict[st
     }
 
 
-def _load_stock_research_rows() -> tuple[list[dict[str, Any]], list[str]]:
-    rows_by_date: dict[str, list[dict[str, Any]]] = {}
-    sources_by_date: dict[str, str] = {}
-    files = sorted(CACHE_DIR.glob("market_data-*.json"))
+def _load_source_history() -> dict[str, Any]:
+    data = _load_json(_source_history_path(), default={})
+    if not isinstance(data, dict):
+        return {"schema": "stock_research_backtest_source_v1", "dates": {}}
+    data.setdefault("schema", "stock_research_backtest_source_v1")
+    data.setdefault("dates", {})
+    return data
 
-    for fp in files:
-        raw = _load_json(fp)
-        meta = raw.get("meta") if isinstance(raw.get("meta"), dict) else {}
-        if str(meta.get("mode") or "").strip() == "intraday":
-            continue
-        date10 = str(raw.get("date") or "")
-        if len(date10) != 10 or date10 in rows_by_date:
-            continue
-        zt = raw.get("ztAnalysis") if isinstance(raw.get("ztAnalysis"), dict) else {}
-        relay = zt.get("relay") if isinstance(zt.get("relay"), list) else []
-        watch = zt.get("watch") if isinstance(zt.get("watch"), list) else []
-        if not relay and not watch:
-            continue
-        rows_by_date[date10] = [_row_from_item(item, date10=date10, bucket="relay") for item in relay if isinstance(item, dict)]
-        rows_by_date[date10].extend(_row_from_item(item, date10=date10, bucket="watch") for item in watch if isinstance(item, dict))
-        sources_by_date[date10] = fp.name
+
+def _save_source_history(payload: dict[str, Any]) -> None:
+    payload["updated_at_bj"] = _now_bj().strftime("%Y-%m-%d %H:%M:%S")
+    _write_json(_source_history_path(), payload)
+
+
+def sync_stock_research_backtest_source(*, market_data: dict[str, Any]) -> bool:
+    if not isinstance(market_data, dict):
+        return False
+    date10 = str(market_data.get("date") or "").strip()
+    if len(date10) != 10:
+        return False
+    meta = market_data.get("meta") if isinstance(market_data.get("meta"), dict) else {}
+    if str(meta.get("mode") or "").strip() == "intraday":
+        return False
+    zt = market_data.get("ztAnalysis") if isinstance(market_data.get("ztAnalysis"), dict) else {}
+    relay = zt.get("relay") if isinstance(zt.get("relay"), list) else []
+    watch = zt.get("watch") if isinstance(zt.get("watch"), list) else []
+    if not relay and not watch:
+        return False
+
+    rows = [_row_from_item(item, date10=date10, bucket="relay") for item in relay if isinstance(item, dict)]
+    rows.extend(_row_from_item(item, date10=date10, bucket="watch") for item in watch if isinstance(item, dict))
+    if not rows:
+        return False
+    trade_date10 = _resolve_next_trade_date(date10)
+    for row in rows:
+        row["trade_date10"] = trade_date10
+
+    history = _load_source_history()
+    dates = history.setdefault("dates", {})
+    dates[trade_date10] = {
+        "date": trade_date10,
+        "recommendation_date": date10,
+        "source": "ztAnalysis.relay/watch.close_push",
+        "generated_at_bj": str(meta.get("generatedAt") or "").strip(),
+        "pushed_at_bj": _now_bj().strftime("%Y-%m-%d %H:%M:%S"),
+        "rows": rows,
+    }
+    _save_source_history(history)
+    return True
+
+
+def _load_stock_research_rows() -> tuple[list[dict[str, Any]], list[str]]:
+    history = _load_source_history()
+    dates = history.get("dates") if isinstance(history.get("dates"), dict) else {}
 
     rows: list[dict[str, Any]] = []
     used_sources: list[str] = []
-    for date10 in sorted(rows_by_date.keys()):
-        day_rows = rows_by_date[date10]
+    for date10 in sorted(dates.keys()):
+        item = dates.get(date10)
+        if not isinstance(item, dict):
+            continue
+        day_rows = item.get("rows") if isinstance(item.get("rows"), list) else []
         if not day_rows:
             continue
-        used_sources.append(sources_by_date.get(date10) or f"market_data:{date10}")
+        used_sources.append(str(item.get("source") or f"stock_research_backtest_source:{date10}"))
         rows.extend(day_rows)
     rows.sort(key=lambda x: (x["date"], -x["score"], x["code"]))
     return rows, used_sources
 
 
+def _pick_active_trade_date(rows: list[dict[str, Any]], *, now: datetime | None = None) -> str:
+    trade_dates = sorted({str(row.get("trade_date10") or "") for row in rows if str(row.get("trade_date10") or "")})
+    if not trade_dates:
+        return ""
+    current = now or _now_bj()
+    today10 = current.strftime("%Y-%m-%d")
+    if _is_open_session(current) and today10 in trade_dates:
+        return today10
+    recommendation_dates = sorted({str(row.get("date10") or "") for row in rows if str(row.get("date10") or "")})
+    latest_recommendation_date = recommendation_dates[-1] if recommendation_dates else ""
+    if latest_recommendation_date:
+        target_trade_date = _resolve_next_trade_date(latest_recommendation_date)
+        if target_trade_date in trade_dates:
+            return target_trade_date
+    future_or_today = [date10 for date10 in trade_dates if date10 >= today10]
+    if future_or_today:
+        return future_or_today[0]
+    return trade_dates[-1]
+
+
 def _empty_backtest_payload(*, generated_from: list[str] | None = None) -> dict[str, Any]:
     return {
+        "schema": "stock_research_backtest_v2",
         "meta": {
             "title": "个股研究开盘回测",
-            "subtitle": "回测数据独立从现有 market_data 缓存即时派生；当前没有可用样本时只展示空结果。",
+            "subtitle": "回测数据只读取收盘后由个股研究推送进单一历史 JSON 的样本；当前没有可用样本时只展示空结果。",
             "dates": [],
             "generated_at_bj": _now_bj().strftime("%Y-%m-%d %H:%M:%S"),
             "generated_from": list(generated_from or []),
@@ -301,6 +406,7 @@ def _empty_backtest_payload(*, generated_from: list[str] | None = None) -> dict[
             "entry_window": "09:25-09:30",
             "source_module": "ztAnalysis.relay/watch",
             "latest_recommendation_date": "",
+            "active_trade_date": "",
             "is_empty": True,
         },
         "summary": {
@@ -323,7 +429,8 @@ def _empty_backtest_payload(*, generated_from: list[str] | None = None) -> dict[
             "realtime_unavailable_count": 0,
         },
         "assumptions": [
-            "回测数据是从当前可用的 cache/market_data-YYYYMMDD.json 即时派生，不再维护独立历史池。",
+            "回测数据只读取收盘后由个股研究推送进专用历史源的样本，不再扫描其他 market_data 缓存。",
+            "所有交易日样本都沉淀在同一个 JSON 内，页面只按时间规则选择当前应读取的交易日分桶。",
             "没有同源研究样本时不补造数据，页面只展示空结果。",
         ],
         "breakdowns": {
@@ -335,6 +442,7 @@ def _empty_backtest_payload(*, generated_from: list[str] | None = None) -> dict[
         "metrics": {},
         "realtimeBuy": {
             "reference_date": "",
+            "trade_date": "",
             "entry_window": "09:25-09:30",
             "quote_time": "",
             "source_module": "ztAnalysis.relay/watch",
@@ -685,6 +793,7 @@ def _build_realtime_buy_payload(
     rows: list[dict[str, Any]],
     *,
     latest_date10: str,
+    trade_date10: str = "",
     current_market_data: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     latest_rows = [dict(row) for row in rows if row.get("date10") == latest_date10]
@@ -749,6 +858,7 @@ def _build_realtime_buy_payload(
 
     return {
         "reference_date": latest_date10,
+        "trade_date": trade_date10,
         "entry_window": "09:25-09:30",
         "quote_time": quote_diag.get("as_of") or _now_bj().strftime("%Y-%m-%d %H:%M:%S"),
         "source_module": "ztAnalysis.relay/watch",
@@ -928,15 +1038,7 @@ def _is_backtest_ready_record(record: dict[str, Any]) -> bool:
 
 def _pick_realtime_reference_date(rows: list[dict[str, Any]], *, current_market_data: dict[str, Any] | None = None) -> str:
     dates = sorted({str(row.get("date10") or "") for row in rows if str(row.get("date10") or "")})
-    if not dates:
-        return ""
-    as_of_date10 = ""
-    if isinstance(current_market_data, dict):
-        as_of_date10 = str(current_market_data.get("date") or "").strip()
-    if len(as_of_date10) != 10:
-        as_of_date10 = _now_bj().strftime("%Y-%m-%d")
-    available = [date10 for date10 in dates if date10 <= as_of_date10]
-    return available[-1] if available else dates[-1]
+    return dates[-1] if dates else ""
 
 
 def _merge_current_pool_with_realtime(rows: list[dict[str, Any]], realtime_buy: dict[str, Any]) -> list[dict[str, Any]]:
@@ -983,12 +1085,15 @@ def _merge_current_pool_with_realtime(rows: list[dict[str, Any]], realtime_buy: 
 
 
 def build_stock_research_backtest_payload(*, current_market_data: dict[str, Any] | None = None) -> dict[str, Any]:
+    if isinstance(current_market_data, dict):
+        sync_stock_research_backtest_source(market_data=current_market_data)
     rows, generated_from = _load_stock_research_rows()
     if not rows:
         return _empty_backtest_payload(generated_from=generated_from)
 
     unique_codes = sorted({r["code"] for r in rows if r["code"]})
     source_date_list = sorted({r["date10"] for r in rows})
+    latest_source_date10 = source_date_list[-1] if source_date_list else ""
     histories, price_diag = _get_price_histories(unique_codes, st8=source_date_list[0].replace("-", ""), et8=_now_bj().strftime("%Y%m%d"))
 
     enriched_rows: list[dict[str, Any]] = []
@@ -997,17 +1102,24 @@ def build_stock_research_backtest_payload(*, current_market_data: dict[str, Any]
         rec["performance"] = _evaluate_one(rec, histories.get(rec["code"], []))
         enriched_rows.append(rec)
 
-    reference_date10 = _pick_realtime_reference_date(enriched_rows, current_market_data=current_market_data)
-    current_pool_rows = [r for r in enriched_rows if str(r.get("date10") or "") == reference_date10]
-    realtime_buy = _build_realtime_buy_payload(current_pool_rows or enriched_rows, latest_date10=reference_date10, current_market_data=current_market_data) if reference_date10 else _empty_backtest_payload()["realtimeBuy"]
+    active_trade_date10 = _pick_active_trade_date(enriched_rows)
+    current_pool_rows = [r for r in enriched_rows if str(r.get("trade_date10") or "") == active_trade_date10]
+    reference_date10 = _pick_realtime_reference_date(current_pool_rows, current_market_data=current_market_data)
+    realtime_buy = _build_realtime_buy_payload(
+        current_pool_rows or enriched_rows,
+        latest_date10=reference_date10,
+        trade_date10=active_trade_date10,
+        current_market_data=current_market_data,
+    ) if reference_date10 else _empty_backtest_payload()["realtimeBuy"]
     current_pool_rows = _merge_current_pool_with_realtime(current_pool_rows, realtime_buy)
 
-    backtest_rows = [r for r in enriched_rows if _is_backtest_ready_record(r) and (r.get("performance") or {}).get("open_check", {}).get("status") == "super"]
+    backtest_rows = [r for r in enriched_rows if _is_backtest_ready_record(r)]
     if not backtest_rows:
         payload = _empty_backtest_payload(generated_from=generated_from)
         payload["summary"]["source_samples"] = len(enriched_rows)
         payload["summary"]["filtered_non_backtest_samples"] = len(enriched_rows)
-        payload["meta"]["latest_recommendation_date"] = reference_date10
+        payload["meta"]["latest_recommendation_date"] = latest_source_date10
+        payload["meta"]["active_trade_date"] = active_trade_date10
         payload["realtimeBuy"] = realtime_buy
         payload["currentPoolRecords"] = current_pool_rows
         payload["assumptions"].append("当天尚未走完次日开盘验证的数据会被清洗掉，不混入回测统计。")
@@ -1041,16 +1153,18 @@ def build_stock_research_backtest_payload(*, current_market_data: dict[str, Any]
     }
 
     return {
+        "schema": "stock_research_backtest_v2",
         "meta": {
             "title": "个股研究开盘回测",
-            "subtitle": "回测结果独立从现有 market_data 缓存即时派生；首屏先看最新推荐在 09:25-09:30 的实时买入列表，历史样本继续用于开盘回测复盘。",
+            "subtitle": "回测结果只读取收盘后由个股研究推送过来的专用历史源；JSON 内沉淀每天数据，页面按时间规则选择当前要读的回测日。",
             "dates": date_list,
             "generated_at_bj": _now_bj().strftime("%Y-%m-%d %H:%M:%S"),
             "generated_from": generated_from,
             "price_source": "biying hsstock/history + 本地 recommendation_price_history 缓存",
             "entry_window": "09:25-09:30",
             "source_module": "ztAnalysis.relay/watch",
-            "latest_recommendation_date": reference_date10 or latest_backtest_date10,
+            "latest_recommendation_date": latest_source_date10 or latest_backtest_date10,
+            "active_trade_date": active_trade_date10,
         },
         "summary": {
             "total_samples": total,
@@ -1074,6 +1188,8 @@ def build_stock_research_backtest_payload(*, current_market_data: dict[str, Any]
         "assumptions": [
             "回测样本只取超预期（super）口径：仅统计次日开盘涨幅≥超预期阈值的个股，符合预期的观察样本不入回测统计。",
             "当天尚未走完次日开盘验证的数据会被清洗掉，不混入回测统计或策略表现。",
+            "样本源只认收盘后的个股研究推送结果；盘中缓存、旧页面快照、其他补充入口都不作为回测样本源。",
+            "这个 JSON 内会按回测交易日沉淀每天数据；开盘前优先读取最新收盘后推出来的下一交易日，开盘后优先读取当天交易日。",
             "最新推荐日的 9:25 买入列表只允许在北京时区 09:25-09:30 请求 biying 批量竞价接口；窗口外只复用已落地结果，不因页面刷新重复取数。",
             "如果当前环境拿不到远端数据，只会展示待补齐/报价缺失，不会伪造买点。",
             "入场窗口限定为次日 09:25-09:30；只有开盘缺口满足“符合预期”或可在开盘窗口确认“超预期”时，才记为买入样本。",

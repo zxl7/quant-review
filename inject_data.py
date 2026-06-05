@@ -124,6 +124,8 @@ def _is_complete_stock_research_backtest(payload: object) -> bool:
     """
     if not isinstance(payload, dict):
         return False
+    if str(payload.get("schema") or "") != "stock_research_backtest_v2":
+        return False
     summary = payload.get("summary")
     realtime_buy = payload.get("realtimeBuy")
     meta = payload.get("meta")
@@ -146,6 +148,10 @@ def _is_complete_stock_research_backtest(payload: object) -> bool:
     if not required_summary_keys.issubset(summary.keys()):
         return False
     if "latest_recommendation_date" not in meta:
+        return False
+    if "active_trade_date" not in meta:
+        return False
+    if "trade_date" not in realtime_buy:
         return False
     return True
 

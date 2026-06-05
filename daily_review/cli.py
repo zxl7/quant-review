@@ -1677,13 +1677,15 @@ def run_rebuild(
     except Exception:
         pass
 
-    # stockResearchBacktest：作为独立衍生物，从当前可用 market_data 缓存即时派生，
-    # 不再维护单独的历史样本池，也不复用 preservedResearch 中的旧成品。
+    # stockResearchBacktest：样本源只认“收盘后的个股研究推送”。
+    # 当前这份 market_data 若是收盘态，会先把 ztAnalysis.relay/watch 推送到专用历史源，
+    # 后续回测只读取这份历史源，不再扫描其他 market_data 缓存作为样本入口。
     try:
-        from scripts.build_stock_research_backtest import build_stock_research_backtest_payload
+        from scripts.build_stock_research_backtest import build_stock_research_backtest_payload, sync_stock_research_backtest_source
 
+        sync_stock_research_backtest_source(market_data=market_data)
         market_data["stockResearchBacktest"] = build_stock_research_backtest_payload(current_market_data=market_data)
-        _log("stockResearchBacktest 已按当前缓存派生")
+        _log("stockResearchBacktest 已按个股研究推送历史源派生")
     except Exception:
         pass
 

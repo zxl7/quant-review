@@ -13,32 +13,24 @@ import scripts.build_stock_research_backtest as backtest
 
 
 class StockResearchBacktestRowsTest(unittest.TestCase):
-    def test_rows_are_built_only_from_market_data_cache(self) -> None:
+    def test_rows_are_built_only_from_pushed_source_history(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             cache_dir = Path(tmp) / "cache"
             cache_dir.mkdir()
-            (cache_dir / "market_data-20260603.json").write_text(
+            (cache_dir / "stock_research_backtest_source.json").write_text(
                 json.dumps(
                     {
-                        "date": "2026-06-03",
-                        "meta": {"mode": "eod"},
-                        "ztAnalysis": {
-                            "relay": [{"code": "000003", "name": "今天接力", "factorScore": 90}],
-                            "watch": [{"code": "000004", "name": "今天观察", "factorScore": 60}],
-                        },
-                    },
-                    ensure_ascii=False,
-                ),
-                encoding="utf-8",
-            )
-            (cache_dir / "market_data-20260604-intraday.json").write_text(
-                json.dumps(
-                    {
-                        "date": "2026-06-04",
-                        "meta": {"mode": "intraday"},
-                        "ztAnalysis": {
-                            "relay": [{"code": "000005", "name": "盘中样本", "factorScore": 99}],
-                            "watch": [],
+                        "schema": "stock_research_backtest_source_v1",
+                        "dates": {
+                            "2026-06-04": {
+                                "date": "2026-06-04",
+                                "recommendation_date": "2026-06-03",
+                                "source": "ztAnalysis.relay/watch.close_push",
+                                "rows": [
+                                    {"date": "20260603", "date10": "2026-06-03", "trade_date10": "2026-06-04", "code": "000003", "name": "今天接力", "bucket": "relay", "score": 90},
+                                    {"date": "20260603", "date10": "2026-06-03", "trade_date10": "2026-06-04", "code": "000004", "name": "今天观察", "bucket": "watch", "score": 60},
+                                ],
+                            }
                         },
                     },
                     ensure_ascii=False,
@@ -51,23 +43,12 @@ class StockResearchBacktestRowsTest(unittest.TestCase):
 
         self.assertEqual({row["date10"] for row in rows}, {"2026-06-03"})
         self.assertEqual([row["name"] for row in rows], ["今天接力", "今天观察"])
-        self.assertEqual(sources, ["market_data-20260603.json"])
+        self.assertEqual(sources, ["ztAnalysis.relay/watch.close_push"])
 
     def test_empty_payload_is_returned_when_no_rows_exist(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             cache_dir = Path(tmp) / "cache"
             cache_dir.mkdir()
-            (cache_dir / "market_data-20260604-intraday.json").write_text(
-                json.dumps(
-                    {
-                        "date": "2026-06-04",
-                        "meta": {"mode": "intraday"},
-                        "ztAnalysis": {"relay": [], "watch": []},
-                    },
-                    ensure_ascii=False,
-                ),
-                encoding="utf-8",
-            )
 
             with patch.object(backtest, "CACHE_DIR", cache_dir):
                 payload = backtest.build_stock_research_backtest_payload()
@@ -81,29 +62,24 @@ class StockResearchBacktestRowsTest(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             cache_dir = Path(tmp) / "cache"
             cache_dir.mkdir()
-            (cache_dir / "market_data-20260603.json").write_text(
-                json.dumps(
-                    {
-                        "date": "2026-06-03",
-                        "meta": {"mode": "eod"},
-                        "ztAnalysis": {
-                            "relay": [
-                                {
-                                    "code": "000003",
-                                    "name": "今天接力",
-                                    "factorScore": 90,
-                                    "reason": "预期 +1% ~ +3%",
-                                }
-                            ],
-                            "watch": [],
-                        },
-                    },
-                    ensure_ascii=False,
-                ),
-                encoding="utf-8",
-            )
+            backtest_payload = {
+                "date": "2026-06-03",
+                "meta": {"mode": "eod"},
+                "ztAnalysis": {
+                    "relay": [
+                        {
+                            "code": "000003",
+                            "name": "今天接力",
+                            "factorScore": 90,
+                            "reason": "预期 +1% ~ +3%",
+                        }
+                    ],
+                    "watch": [],
+                },
+            }
 
             with patch.object(backtest, "CACHE_DIR", cache_dir):
+                backtest.sync_stock_research_backtest_source(market_data=backtest_payload)
                 backtest.save_prefetched_realtime_quotes(
                     date10="2026-06-03",
                     items={
@@ -141,6 +117,7 @@ class StockResearchBacktestRowsTest(unittest.TestCase):
         self.assertEqual(payload["realtimeBuy"]["direct_expected_count"], 1)
         self.assertEqual(payload["realtimeBuy"]["diagnostics"]["source"], "cache.raw.quotes")
         self.assertEqual(payload["realtimeBuy"]["reference_date"], "2026-06-03")
+        self.assertEqual(payload["realtimeBuy"]["trade_date"], "2026-06-04")
 
     def test_preserved_realtime_buy_reads_intraday_snapshot(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
@@ -197,34 +174,22 @@ class StockResearchBacktestRowsTest(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             cache_dir = Path(tmp) / "cache"
             cache_dir.mkdir()
-            (cache_dir / "market_data-20260603.json").write_text(
-                json.dumps(
-                    {
-                        "date": "2026-06-03",
-                        "meta": {"mode": "eod"},
-                        "ztAnalysis": {
-                            "relay": [{"code": "000003", "name": "昨日接力", "factorScore": 90, "reason": "预期 +1% ~ +3%"}],
-                            "watch": [],
-                        },
-                    },
-                    ensure_ascii=False,
-                ),
-                encoding="utf-8",
-            )
-            (cache_dir / "market_data-20260604.json").write_text(
-                json.dumps(
-                    {
-                        "date": "2026-06-04",
-                        "meta": {"mode": "eod"},
-                        "ztAnalysis": {
-                            "relay": [{"code": "000004", "name": "当天接力", "factorScore": 88, "reason": "预期 +1% ~ +3%"}],
-                            "watch": [],
-                        },
-                    },
-                    ensure_ascii=False,
-                ),
-                encoding="utf-8",
-            )
+            md_0603 = {
+                "date": "2026-06-03",
+                "meta": {"mode": "eod"},
+                "ztAnalysis": {
+                    "relay": [{"code": "000003", "name": "昨日接力", "factorScore": 90, "reason": "预期 +1% ~ +3%"}],
+                    "watch": [],
+                },
+            }
+            md_0604 = {
+                "date": "2026-06-04",
+                "meta": {"mode": "eod"},
+                "ztAnalysis": {
+                    "relay": [{"code": "000004", "name": "当天接力", "factorScore": 88, "reason": "预期 +1% ~ +3%"}],
+                    "watch": [],
+                },
+            }
 
             histories = {
                 "000003": [
@@ -245,6 +210,7 @@ class StockResearchBacktestRowsTest(unittest.TestCase):
             ), patch.object(
                 backtest, "_load_preserved_realtime_buy", return_value=None
             ):
+                backtest.sync_stock_research_backtest_source(market_data=md_0603)
                 backtest.save_prefetched_realtime_quotes(
                     date10="2026-06-03",
                     items={
@@ -260,13 +226,15 @@ class StockResearchBacktestRowsTest(unittest.TestCase):
                     as_of="2026-06-04 09:25:03",
                     source="unit_test",
                 )
-                payload = backtest.build_stock_research_backtest_payload()
+                payload = backtest.build_stock_research_backtest_payload(current_market_data=md_0604)
 
         self.assertEqual(payload["summary"]["source_samples"], 2)
         self.assertEqual(payload["summary"]["filtered_non_backtest_samples"], 1)
         self.assertEqual(payload["summary"]["total_samples"], 1)
         self.assertEqual(payload["meta"]["latest_recommendation_date"], "2026-06-04")
+        self.assertEqual(payload["meta"]["active_trade_date"], "2026-06-05")
         self.assertEqual(payload["realtimeBuy"]["reference_date"], "2026-06-04")
+        self.assertEqual(payload["realtimeBuy"]["trade_date"], "2026-06-05")
         self.assertEqual([row["code"] for row in payload["records"]], ["000003"])
         self.assertEqual(payload["diagnostics"]["filtered_non_backtest_codes"], ["000004"])
 
