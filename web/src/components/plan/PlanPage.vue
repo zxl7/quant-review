@@ -1464,10 +1464,10 @@ const sectorPicksMeta = computed(() => {
       </div>
       <div v-if="ztDebugExpanded" class="zt-debug-panel">
         <div class="zt-debug-toolbar">
-          <button class="abnormal-switch" :class="{ active: ztDebugPlacement === 'all' }" type="button" @click="ztDebugPlacement = 'all'">全部</button>
-          <button class="abnormal-switch" :class="{ active: ztDebugPlacement === 'relay' }" type="button" @click="ztDebugPlacement = 'relay'">接力池</button>
-          <button class="abnormal-switch" :class="{ active: ztDebugPlacement === 'watch' }" type="button" @click="ztDebugPlacement = 'watch'">观察池</button>
-          <button class="abnormal-switch" :class="{ active: ztDebugPlacement === 'excluded' }" type="button" @click="ztDebugPlacement = 'excluded'">未入池</button>
+          <button class="abnormal-switch zt-debug-switch" :class="{ active: ztDebugPlacement === 'all' }" type="button" @click="ztDebugPlacement = 'all'">全部</button>
+          <button class="abnormal-switch zt-debug-switch" :class="{ active: ztDebugPlacement === 'relay' }" type="button" @click="ztDebugPlacement = 'relay'">接力池</button>
+          <button class="abnormal-switch zt-debug-switch" :class="{ active: ztDebugPlacement === 'watch' }" type="button" @click="ztDebugPlacement = 'watch'">观察池</button>
+          <button class="abnormal-switch zt-debug-switch" :class="{ active: ztDebugPlacement === 'excluded' }" type="button" @click="ztDebugPlacement = 'excluded'">未入池</button>
         </div>
         <div class="zt-debug-list">
           <div class="zt-debug-item" v-for="row in ztDebugFiltered" :key="'dbg-' + row.code + '-' + row.name">

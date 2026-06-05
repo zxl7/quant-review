@@ -317,51 +317,6 @@ function strategyReturnClass(performance: any, key: string) {
     </div>
 
     <template v-else>
-    <div class="card" v-if="hasCurrentPlan">
-      <div class="card-header">
-        <div>
-          <div class="card-title">{{ currentPlanCardTitle }}</div>
-          <div class="bt-subtitle">这里展示收盘后由个股研究推送进回测 JSON 的样本，以及明天 09:25 需要命中的标准。</div>
-        </div>
-      </div>
-
-      <div class="bt-table-wrap">
-        <table class="ladder-table">
-          <thead>
-            <tr>
-              <th>推荐日</th>
-              <th>标的</th>
-              <th>池子</th>
-              <th>主线</th>
-              <th>预期</th>
-              <th>超预期</th>
-              <th>低预期</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="row in currentRecords" :key="'plan-' + row.trade_date10 + '-' + row.code">
-              <td>{{ row.date10 || "-" }}</td>
-              <td class="bt-name-cell">
-                <div class="bt-name-line">
-                  <a v-if="row.code" class="stock-link" :href="xqUrl(row.code)" target="_blank" rel="noopener noreferrer">{{ row.name }}</a>
-                  <span v-else>{{ row.name || "-" }}</span>
-                </div>
-                <div class="bt-name-sub">{{ row.code || "-" }} ｜ {{ row.score ?? "-" }} ｜ {{ row.score_sub_label || row.style_tag || "-" }}</div>
-              </td>
-              <td>{{ row.bucket_label || row.bucket || "-" }}</td>
-              <td class="bt-left-cell">
-                <div>{{ row.main_line || "-" }}</div>
-                <div class="bt-cell-sub">{{ row.hy || row.plate_name || "-" }}</div>
-              </td>
-              <td class="bt-left-cell">{{ row.expectation?.expected_text || "-" }}</td>
-              <td class="bt-left-cell">{{ row.expectation?.super_text || "-" }}</td>
-              <td class="bt-left-cell">{{ row.expectation?.low_text || "-" }}</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-
     <div class="card">
       <div class="card-header">
         <div>
@@ -415,6 +370,51 @@ function strategyReturnClass(performance: any, key: string) {
                 <span class="bt-pill" :class="openStatusClass(row.signal_status)" style="margin-right:4px">{{ row.signal_label || '-' }}</span>
                 <span class="bt-cell-sub">{{ row.rule_text || "-" }}</span>
               </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="card" v-if="hasCurrentPlan">
+      <div class="card-header">
+        <div>
+          <div class="card-title">{{ currentPlanCardTitle }}</div>
+          <div class="bt-subtitle">这里展示收盘后由个股研究推送进回测 JSON 的样本，以及明天 09:25 需要命中的标准。</div>
+        </div>
+      </div>
+
+      <div class="bt-table-wrap">
+        <table class="ladder-table">
+          <thead>
+            <tr>
+              <th>推荐日</th>
+              <th>标的</th>
+              <th>池子</th>
+              <th>主线</th>
+              <th>预期</th>
+              <th>超预期</th>
+              <th>低预期</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="row in currentRecords" :key="'plan-' + row.trade_date10 + '-' + row.code">
+              <td>{{ row.date10 || "-" }}</td>
+              <td class="bt-name-cell">
+                <div class="bt-name-line">
+                  <a v-if="row.code" class="stock-link" :href="xqUrl(row.code)" target="_blank" rel="noopener noreferrer">{{ row.name }}</a>
+                  <span v-else>{{ row.name || "-" }}</span>
+                </div>
+                <div class="bt-name-sub">{{ row.code || "-" }} ｜ {{ row.score ?? "-" }} ｜ {{ row.score_sub_label || row.style_tag || "-" }}</div>
+              </td>
+              <td>{{ row.bucket_label || row.bucket || "-" }}</td>
+              <td class="bt-left-cell">
+                <div>{{ row.main_line || "-" }}</div>
+                <div class="bt-cell-sub">{{ row.hy || row.plate_name || "-" }}</div>
+              </td>
+              <td class="bt-left-cell">{{ row.expectation?.expected_text || "-" }}</td>
+              <td class="bt-left-cell">{{ row.expectation?.super_text || "-" }}</td>
+              <td class="bt-left-cell">{{ row.expectation?.low_text || "-" }}</td>
             </tr>
           </tbody>
         </table>
