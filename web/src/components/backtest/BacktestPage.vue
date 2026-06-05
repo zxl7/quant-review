@@ -384,8 +384,8 @@ function strategyReturnClass(performance: any, key: string) {
         </div>
       </div>
 
-      <div class="bt-table-wrap">
-        <table class="ladder-table">
+      <div class="bt-table-wrap bt-table-wrap-plan">
+        <table class="ladder-table bt-plan-table">
           <thead>
             <tr>
               <th>推荐日</th>

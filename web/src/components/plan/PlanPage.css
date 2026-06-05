@@ -2015,18 +2015,20 @@
 
 @media (max-width: 760px) {
   .zt-panel {
-    grid-template-columns: none;
-    grid-auto-flow: column;
-    grid-auto-columns: minmax(286px, calc(100vw - 30px));
+    display: flex;
+    gap: 12px;
     overflow-x: auto;
     overflow-y: visible;
     padding: 0 2px 8px;
-    scroll-snap-type: x proximity;
+    width: calc(100% + 4px);
+    scroll-snap-type: x mandatory;
     -webkit-overflow-scrolling: touch;
   }
 
   .zt-col {
+    flex: 0 0 calc(100vw - 30px);
     min-width: 286px;
+    max-width: 360px;
     scroll-snap-align: start;
   }
 
