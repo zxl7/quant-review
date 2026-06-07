@@ -170,6 +170,14 @@ def _calculate_plan_theme_score(sources: list[str], stocks: list[dict], plate_st
         break_risk_raw = zt_evidence.get("minBreakRisk")
         if break_risk_raw not in (None, ""):
             score -= max(0.0, _to_float(break_risk_raw, 0.0) - 68) * 0.18
+    if not stocks:
+        # 纯题材叙事只能作为“跟踪”，不能和已经形成涨停梯队的板块同分竞争。
+        evidence_support = _to_int((zt_evidence or {}).get("relayCount"), 0) + _to_int((zt_evidence or {}).get("watchCount"), 0)
+        score -= 18.0
+        score = min(score, 58.0 if evidence_support > 0 else 48.0)
+    elif len(stocks) == 1 and _to_int((stocks[0] or {}).get("lbc"), 0) <= 1:
+        # 单个首板/首涨更多是试错信号，先别把势能抬太高。
+        score -= 6.0
     return max(0, min(100, round(score)))
 
 
@@ -291,6 +299,27 @@ def _plan_tide_ebb_sort_score(row: dict) -> float:
     return max(0.0, min(100.0, (100 - tide) * 0.45 + (100 - strength) * 0.25 + (100 - core) * 0.2))
 
 
+def _pick_plan_tide_group_phase(bucket: dict[str, object]) -> tuple[str, dict] | None:
+    rising = bucket.get("rising") if isinstance(bucket.get("rising"), dict) else None
+    neutral = bucket.get("neutral") if isinstance(bucket.get("neutral"), dict) else None
+    ebbing = bucket.get("ebbing") if isinstance(bucket.get("ebbing"), dict) else None
+
+    if rising:
+        return "rising", rising
+    if neutral and ebbing:
+        neutral_score = _plan_tide_theme_score(neutral)
+        ebb_score = _plan_tide_ebb_sort_score(ebbing)
+        # 同一大链条里只要还有中性承接，就不要被单个弱分支轻易打成整体退潮。
+        if neutral_score >= 60.0 or neutral_score + 8.0 >= ebb_score:
+            return "neutral", neutral
+        return "ebbing", ebbing
+    if neutral:
+        return "neutral", neutral
+    if ebbing:
+        return "ebbing", ebbing
+    return None
+
+
 def _build_plan_tide_zone_panel(signal: dict) -> dict[str, list[dict]]:
     grouped: dict[str, dict[str, object]] = {}
     for row in signal.get("themes") or []:
@@ -323,12 +352,17 @@ def _build_plan_tide_zone_panel(signal: dict) -> dict[str, list[dict]]:
     ebbing: list[dict] = []
     for group, bucket in grouped.items():
         children = sorted(name for name in (bucket.get("children") or set()) if name and name != group)[:4]
-        if isinstance(bucket.get("rising"), dict):
-            rising.append({**bucket["rising"], "name": group, "children": children})
-        elif isinstance(bucket.get("ebbing"), dict):
-            ebbing.append({**bucket["ebbing"], "name": group, "children": children})
-        elif isinstance(bucket.get("neutral"), dict):
-            neutral.append({**bucket["neutral"], "name": group, "children": children})
+        picked = _pick_plan_tide_group_phase(bucket)
+        if not picked:
+            continue
+        phase, row = picked
+        payload = {**row, "name": group, "children": children}
+        if phase == "rising":
+            rising.append(payload)
+        elif phase == "neutral":
+            neutral.append(payload)
+        else:
+            ebbing.append(payload)
 
     rising.sort(key=_plan_tide_theme_score, reverse=True)
     neutral.sort(key=_plan_tide_theme_score, reverse=True)

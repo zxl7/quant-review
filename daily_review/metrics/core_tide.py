@@ -822,14 +822,33 @@ def _theme_status_action(
     high_risk = float(structure.get("high_risk_score") or 0.0)
     low_ladder = float(structure.get("low_ladder_score") or 0.0)
     low_start = _is_low_start_theme(theme, None, structure)
-    strength_score = _to_float(theme.get("strength_score")) or 0.0
+    # 统一使用算法层的强度解析，避免 tide_signal 原始字段缺失时被误判成 0 分。
+    strength_score = _theme_strength_score(theme)
     today_zt = _to_float(theme.get("today_zt")) or 0.0
     prev_zt = _to_float(theme.get("prev_zt")) or 0.0
     resilience = _to_float(theme.get("resilience"))
+    structure_supportive = (
+        market_status == "repair"
+        and low_ladder >= 70.0
+        and high_risk <= 82.0
+    )
+    confirm_supportive = (
+        market_status in {"attack", "repair"}
+        and low_ladder >= 60.0
+        and high_risk < 80.0
+    )
     self_is_weak = (
         base_status in {"weak", "rebound_warning", "volume_rebound"}
         or core_score < 42
-        or (strength_score < 45.0 and today_zt < max(2.0, prev_zt))
+        or (
+            strength_score < 45.0
+            and today_zt < max(2.0, prev_zt)
+            and not (
+                structure_supportive
+                and core_score >= 52.0
+                and today_zt >= max(1.0, prev_zt)
+            )
+        )
         or (resilience is not None and resilience <= -15.0 and today_zt < prev_zt)
     )
     if base_status == "rebound_warning":
@@ -844,9 +863,24 @@ def _theme_status_action(
         and core_score < 66
         and base_status not in {"confirmed_mainline"}
         and not low_start
+        and not (
+            structure_supportive
+            and core_score >= 54.0
+            and today_zt >= prev_zt
+            and strength_score >= 50.0
+        )
         and (strength_score < 52.0 or today_zt < prev_zt or (resilience is not None and resilience < -8.0))
     ):
         return "avoid_weak", "avoid"
+    if (
+        base_status == "confirmed_mainline"
+        and core_score >= 60
+        and confirm_supportive
+        and strength_score >= 62.0
+        and today_zt >= max(3.0, prev_zt * 0.8 if prev_zt > 0 else 3.0)
+    ):
+        # 已确认过、且当下承接没有走坏的主线，提升到涨潮层而不是继续堆在中性区。
+        return "core_mainline", "confirm"
     if core_score >= 70 and base_status == "confirmed_mainline":
         return "core_mainline", "confirm"
     if core_score >= 64 and base_status in {"confirmed_mainline", "traverse_candidate"}:

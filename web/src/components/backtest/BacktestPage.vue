@@ -392,8 +392,8 @@ function strategyReturnClass(performance: any, key: string) {
               <th>标的</th>
               <th>池子</th>
               <th>主线</th>
-              <th>预期</th>
               <th>超预期</th>
+              <th>预期</th>
               <th>低预期</th>
             </tr>
           </thead>
@@ -412,8 +412,8 @@ function strategyReturnClass(performance: any, key: string) {
                 <div>{{ row.main_line || "-" }}</div>
                 <div class="bt-cell-sub">{{ row.hy || row.plate_name || "-" }}</div>
               </td>
-              <td class="bt-left-cell">{{ row.expectation?.expected_text || "-" }}</td>
               <td class="bt-left-cell">{{ row.expectation?.super_text || "-" }}</td>
+              <td class="bt-left-cell">{{ row.expectation?.expected_text || "-" }}</td>
               <td class="bt-left-cell">{{ row.expectation?.low_text || "-" }}</td>
             </tr>
           </tbody>

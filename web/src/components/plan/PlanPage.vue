@@ -287,7 +287,7 @@ const tideCornerClass = (status?: string) => {
 }
 
 const tideCornerText = (tide?: TideTheme | null) => {
-  if (!tide) return "潮汐不足"
+  if (!tide) return "待验证"
   const label = tideStatusLabel(tide.status) || "潮汐中性"
   if (tide.action === "no_new_position" || tide.status === "rebound_warning" || tide.status === "volume_rebound") {
     return `${label} · 不开新仓`
@@ -399,6 +399,7 @@ type SectorBucket = {
   description: string
   descriptionUrl?: string
   count: number
+  actualCount: number
   maxLbc: number
   highTier: ZtStockPick[]
   midTier: ZtStockPick[]
@@ -413,6 +414,8 @@ type SectorBucket = {
   tide?: TideTheme | null
   ztEvidence?: ZtThemeEvidence | null
   evidenceSummary?: string
+  displayMode?: "full" | "narrative_only"
+  syntheticLeader?: boolean
 }
 
 type ZtThemeEvidence = {
@@ -503,6 +506,15 @@ const calculateThemeScore = (bucket: { sources: string[]; stocks: ZtStockPick[];
     if (Number.isFinite(Number(bucket.ztEvidence.minBreakRisk))) {
       score -= Math.max(0, Number(bucket.ztEvidence.minBreakRisk) - 68) * 0.18
     }
+  }
+  if (!bucket.stocks.length) {
+    // 只有题材热度、没有涨停确认时，只做题材跟踪，不与真实梯队等权竞争。
+    const evidenceSupport = Number(bucket.ztEvidence?.relayCount || 0) + Number(bucket.ztEvidence?.watchCount || 0)
+    score -= 18
+    score = Math.min(score, evidenceSupport > 0 ? 58 : 48)
+  } else if (bucket.stocks.length === 1 && (bucket.stocks[0]?.lbc || 0) <= 1) {
+    // 单个首板更多是起点信号，先保留观察，但压低一点排序分。
+    score -= 6
   }
   return Math.max(0, Math.min(100, Math.round(score)))
 }
@@ -621,6 +633,7 @@ const makeBucket = (
     }
   })
   const mergedStocks = Array.from(mergedMap.values())
+  const actualCount = mergedStocks.length
   const maxLbc = mergedStocks[0]?.lbc || 0
   const context = resolveThemeContext([theme, ...matched])
   const plateStrength = Number(context?.plateStrength || 0)
@@ -646,13 +659,16 @@ const makeBucket = (
   const themeScore = source === "realtime" ? calculateThemeScore({ sources, stocks: scoredStocks, plateStrength, resonanceScore, ztEvidence }) : baseThemeScore || calculateThemeScore({ sources, stocks: scoredStocks, plateStrength, resonanceScore, ztEvidence })
   const themeTags = source === "realtime" ? buildThemeTags(theme, scoredStocks, sources, plateStrength, resonanceScore, ztEvidence) : (baseThemeTags.length ? baseThemeTags : buildThemeTags(theme, scoredStocks, sources, plateStrength, resonanceScore, ztEvidence))
 
+  const displayMode: "full" | "narrative_only" = actualCount > 0 ? "full" : "narrative_only"
+
   return {
     theme,
     source,
     sources,
     description,
     descriptionUrl,
-    count: scoredStocks.length,
+    count: actualCount,
+    actualCount,
     maxLbc,
     highTier: scoredStocks.filter((s) => s.lbc >= 3).slice(0, 3),
     midTier: scoredStocks.filter((s) => s.lbc === 2).slice(0, 3),
@@ -667,6 +683,8 @@ const makeBucket = (
     tide,
     ztEvidence,
     evidenceSummary,
+    displayMode,
+    syntheticLeader: false,
   }
 }
 
@@ -690,7 +708,7 @@ const buildThemePanelFallbackBuckets = (): SectorBucket[] => {
       bucket.plateLead = bucket.plateLead || String(leader?.name || "")
 
       if (!bucket.count && leader?.code && leader?.name) {
-        bucket.count = 1
+        // 题材龙头只用于补充观察，不代表已经形成真实涨停梯队。
         bucket.baseTier = [
           {
             code: String(leader.code),
@@ -704,6 +722,8 @@ const buildThemePanelFallbackBuckets = (): SectorBucket[] => {
             tags: [{ text: "题材龙头", cls: "stp-chip stp-chip-red" }],
           },
         ]
+        bucket.syntheticLeader = true
+        bucket.displayMode = "narrative_only"
       }
 
       bucket.themeTags = [
@@ -792,6 +812,9 @@ const sectorTierPicks = computed<SectorBucket[]>(() => {
 
   // 先按综合势能，再参考涨停分析证据与共振，保证板块卡和涨停分析口径一致。
   buckets.sort((a, b) => {
+    const aFull = a.displayMode === "full" ? 1 : 0
+    const bFull = b.displayMode === "full" ? 1 : 0
+    if (aFull !== bFull) return bFull - aFull
     if (b.themeScore !== a.themeScore) return b.themeScore - a.themeScore
     if (ztEvidenceWeight(b.ztEvidence) !== ztEvidenceWeight(a.ztEvidence)) return ztEvidenceWeight(b.ztEvidence) - ztEvidenceWeight(a.ztEvidence)
     if (b.resonanceScore !== a.resonanceScore) return b.resonanceScore - a.resonanceScore
@@ -939,9 +962,12 @@ const sectorPicksMeta = computed(() => {
             <span v-for="(tag, ti) in bucket.themeTags" :key="'theme-tag-' + bucket.theme + '-' + ti" :class="tag.cls">{{ tag.text }}</span>
           </div>
           <div class="stp-meta">
-            <span class="stp-kv">
+            <span class="stp-kv" v-if="bucket.displayMode !== 'narrative_only'">
               <strong :class="bucket.count >= 3 ? 'red-text' : 'orange-text'">{{ bucket.count }}</strong>
               只涨停
+            </span>
+            <span class="stp-kv" v-else>
+              <strong class="blue-text">题材跟踪</strong>
             </span>
             <span class="stp-sep" v-if="bucket.maxLbc >= 2">·</span>
             <span class="stp-kv" v-if="bucket.maxLbc >= 2">
@@ -1004,8 +1030,8 @@ const sectorPicksMeta = computed(() => {
               </div>
             </div>
           </div>
-          <div class="stp-empty" v-if="!bucket.count">narrative 热但涨停池暂未跟上 · 留意首板异动</div>
-          <div class="stp-tiers" v-else>
+          <div class="stp-empty" v-if="!bucket.count">热点已出现，但涨停梯队暂未成型 · 先跟踪首板和 2 板承接</div>
+          <div class="stp-tiers" v-else-if="bucket.displayMode !== 'narrative_only'">
             <div class="stp-tier-block" v-if="bucket.highTier.length">
               <div class="stp-tier-label tier-high">高位 ≥3连</div>
               <div class="stp-high-rows">
@@ -1036,6 +1062,18 @@ const sectorPicksMeta = computed(() => {
               </div>
               <div class="stp-name-row">
                 <a v-for="(s, bi) in bucket.baseTier" :key="'b-' + bucket.theme + '-' + s.code" class="stp-name-link base" :href="xqUrl(s.code)" target="_blank" rel="noopener noreferrer">
+                  {{ s.name }}
+                  <span class="stp-inline-score" :class="scoreClass(Number(s.score || 0))">{{ s.score }}</span>
+                  <span v-if="bi < bucket.baseTier.length - 1" class="stp-name-sep">·</span>
+                </a>
+              </div>
+            </div>
+          </div>
+          <div class="stp-tiers" v-else-if="bucket.syntheticLeader && bucket.baseTier.length">
+            <div class="stp-tier-block">
+              <div class="stp-tier-label tier-base">题材观察锚点</div>
+              <div class="stp-name-row">
+                <a v-for="(s, bi) in bucket.baseTier" :key="'syn-' + bucket.theme + '-' + s.code" class="stp-name-link base" :href="xqUrl(s.code)" target="_blank" rel="noopener noreferrer">
                   {{ s.name }}
                   <span class="stp-inline-score" :class="scoreClass(Number(s.score || 0))">{{ s.score }}</span>
                   <span v-if="bi < bucket.baseTier.length - 1" class="stp-name-sep">·</span>
