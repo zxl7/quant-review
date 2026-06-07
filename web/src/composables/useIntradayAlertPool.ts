@@ -70,8 +70,8 @@ const savePersistentHistory = (items: IntradayAlertItem[]) => {
 };
 
 const eventMetaMap: Record<number, { label: string; tone: AlertTone }> = {
-  10003: { label: '炸板回落', tone: 'amber' },
-  10004: { label: '开板回升', tone: 'cyan' },
+  10003: { label: '炸板', tone: 'amber' },
+  10004: { label: '打开跌停', tone: 'cyan' },
   10005: { label: '逼近涨停', tone: 'red' },
   10006: { label: '逼近跌停', tone: 'green' },
   10007: { label: '封板跌停', tone: 'green' },
@@ -100,10 +100,10 @@ const eventMeta = (eventType: number, pcp?: number): { label: string; tone: Aler
     return { label: '封板跌停', tone };
   }
   if (isUp) {
-    const label = eventType === 10003 ? '炸板回落' : eventType === 10004 ? '开板回升' : eventType >= 11000 ? base.label : '小幅拉升';
+    const label = eventType === 10003 ? '炸板' : eventType === 10004 ? '打开跌停' : eventType >= 11000 ? base.label : '小幅拉升';
     return { label, tone };
   }
-  const label = eventType === 10003 ? '炸板回落' : eventType === 10004 ? '开板回升' : eventType >= 11000 ? base.label : '小幅回落';
+  const label = eventType === 10003 ? '炸板' : eventType === 10004 ? '打开跌停' : eventType >= 11000 ? base.label : '小幅回落';
   return { label, tone };
 };
 

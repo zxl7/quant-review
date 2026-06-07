@@ -7,7 +7,7 @@ from __future__ import annotations
 
 from typing import Any, Iterable
 
-from daily_review.features.sector_resolver import normalize_sector
+from daily_review.features.sector_resolver import CHAIN_MAP, NOISE_SECTORS, normalize_sector
 
 
 CoreAction = str
@@ -35,15 +35,19 @@ def build_core_tide_signal(
     market_regime = _build_market_regime(md, tide)
     catalyst_map = _build_catalyst_map(catalysts)
     theme_rows = tide.get("themes") if isinstance(tide.get("themes"), list) else []
+    family_contexts = _build_theme_family_contexts(theme_rows)
+    chain_contexts = _build_theme_chain_contexts(theme_rows)
 
     themes = [
         _build_core_theme(
             theme=row,
             market_regime=market_regime,
             catalyst=_match_catalyst(str(row.get("name") or ""), catalyst_map),
+            family_context=family_contexts.get(_canonical_theme_name(row.get("canonical_name") or row.get("name"))),
+            chain_context=chain_contexts.get(_theme_chain_name(row.get("canonical_name") or row.get("name"))),
         )
         for row in theme_rows
-        if isinstance(row, dict) and str(row.get("name") or "").strip()
+        if isinstance(row, dict) and str(row.get("name") or "").strip() and not _should_skip_theme(row)
     ]
     themes.sort(key=_theme_sort_key)
 
@@ -505,6 +509,99 @@ def _canonical_theme_name(name: Any) -> str:
     return str(normalize_sector(raw) or raw).strip()
 
 
+def _should_skip_theme(theme: dict[str, Any]) -> bool:
+    raw = str(theme.get("name") or "").strip()
+    canonical = _canonical_theme_name(theme.get("canonical_name") or raw)
+    return bool(raw in NOISE_SECTORS or canonical in NOISE_SECTORS)
+
+
+def _build_theme_family_contexts(theme_rows: list[Any]) -> dict[str, dict[str, Any]]:
+    out: dict[str, dict[str, Any]] = {}
+    for row in theme_rows:
+        if not isinstance(row, dict):
+            continue
+        canonical = _canonical_theme_name(row.get("canonical_name") or row.get("name"))
+        if not canonical or canonical in NOISE_SECTORS:
+            continue
+        ctx = out.setdefault(
+            canonical,
+            {
+                "has_confirmed_mainline": False,
+                "has_positive_status": False,
+                "max_today_zt": 0.0,
+                "max_prev_zt": 0.0,
+                "max_strength_score": 0.0,
+            },
+        )
+        status = str(row.get("status") or "")
+        ctx["has_confirmed_mainline"] = bool(ctx["has_confirmed_mainline"] or status == "confirmed_mainline")
+        ctx["has_positive_status"] = bool(ctx["has_positive_status"] or status in {"confirmed_mainline", "traverse_candidate", "micro_traverse"})
+        ctx["max_today_zt"] = max(float(ctx.get("max_today_zt") or 0.0), float(_to_float(row.get("today_zt")) or 0.0))
+        ctx["max_prev_zt"] = max(float(ctx.get("max_prev_zt") or 0.0), float(_to_float(row.get("prev_zt")) or 0.0))
+        ctx["max_strength_score"] = max(float(ctx.get("max_strength_score") or 0.0), float(_theme_strength_score(row)))
+    return out
+
+
+def _theme_chain_name(name: Any) -> str:
+    canonical = _canonical_theme_name(name)
+    if not canonical:
+        return ""
+    for chain, members in CHAIN_MAP.items():
+        if canonical == chain or canonical in members:
+            return chain
+    return canonical
+
+
+def _build_theme_chain_contexts(theme_rows: list[Any]) -> dict[str, dict[str, Any]]:
+    out: dict[str, dict[str, Any]] = {}
+    for row in theme_rows:
+        if not isinstance(row, dict):
+            continue
+        raw_name = str(row.get("name") or "").strip()
+        canonical = _canonical_theme_name(row.get("canonical_name") or row.get("name"))
+        if not canonical or canonical in NOISE_SECTORS:
+            continue
+        chain = _theme_chain_name(canonical)
+        if not chain:
+            continue
+        ctx = out.setdefault(
+            chain,
+            {
+                "chain": chain,
+                "best_branch_name": "",
+                "best_branch_score": 0.0,
+                "best_branch_today_zt": 0.0,
+                "positive_branch_count": 0,
+                "branch_names": set(),
+            },
+        )
+        status = str(row.get("status") or "")
+        today_zt = float(_to_float(row.get("today_zt")) or 0.0)
+        prev_zt = float(_to_float(row.get("prev_zt")) or 0.0)
+        strength_score = float(_theme_strength_score(row))
+        is_chain_label = raw_name == chain
+        is_positive_branch = (
+            not is_chain_label
+            and status in {"neutral", "micro_traverse", "traverse_candidate", "confirmed_mainline"}
+            and strength_score >= 50.0
+            and (
+                today_zt >= max(2.0, prev_zt)
+                or (today_zt >= 3.0 and strength_score >= 58.0)
+            )
+        )
+        if is_positive_branch:
+            ctx["positive_branch_count"] = int(ctx.get("positive_branch_count") or 0) + 1
+            branch_names = ctx.get("branch_names")
+            if isinstance(branch_names, set):
+                branch_names.add(raw_name or canonical)
+            candidate_score = today_zt * 8.0 + strength_score
+            if candidate_score >= float(ctx.get("best_branch_score") or 0.0):
+                ctx["best_branch_score"] = candidate_score
+                ctx["best_branch_name"] = raw_name or canonical
+                ctx["best_branch_today_zt"] = today_zt
+    return out
+
+
 def _build_catalyst_map(catalyst_data: dict[str, Any]) -> dict[str, dict[str, Any]]:
     out: dict[str, dict[str, Any]] = {}
     _ingest_surge_plates(catalyst_data.get("surge_plates"), out)
@@ -587,6 +684,8 @@ def _build_core_theme(
     theme: dict[str, Any],
     market_regime: dict[str, Any],
     catalyst: dict[str, Any],
+    family_context: dict[str, Any] | None = None,
+    chain_context: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     name = str(theme.get("name") or "")
     canonical_name = _canonical_theme_name(theme.get("canonical_name") or name)
@@ -605,7 +704,7 @@ def _build_core_theme(
         + volume_score * 0.10
         + structure_score * 0.05
     )
-    status, action = _theme_status_action(core_score, theme, market_regime)
+    status, action = _theme_status_action(core_score, theme, market_regime, family_context, chain_context)
     tide_phase = _theme_tide_phase(
         status=status,
         action=action,
@@ -777,7 +876,8 @@ def _is_low_start_theme(theme: dict[str, Any], catalyst: dict[str, Any] | None =
     today_zt = _to_float(theme.get("today_zt")) or 0.0
     prev_zt = _to_float(theme.get("prev_zt"))
     pre_prev_zt = _to_float(theme.get("pre_prev_zt"))
-    strength_score = _to_float(theme.get("strength_score"))
+    # 低位启动判定也要吃到算法层兜底强度，避免上游 strength_score 缺字段时被误伤。
+    strength_score = _theme_strength_score(theme)
     strength_rank = _to_float(theme.get("strength_rank"))
     catalyst_sources = (catalyst or {}).get("sources") if isinstance(catalyst, dict) else []
     structure = structure if isinstance(structure, dict) else {}
@@ -811,10 +911,35 @@ def _is_low_start_theme(theme: dict[str, Any], catalyst: dict[str, Any] | None =
     )
 
 
+def _is_active_carry_theme(theme: dict[str, Any], structure: dict[str, Any] | None = None) -> bool:
+    """
+    识别“中位仍活跃”的题材。
+
+    这类方向未必已经进入确认主升，但只要今天仍保有一定涨停梯队和板块强度，
+    就不该因为高位负反馈偏强而直接被压成退潮。
+    """
+    structure = structure if isinstance(structure, dict) else {}
+    today_zt = _to_float(theme.get("today_zt")) or 0.0
+    prev_zt = _to_float(theme.get("prev_zt")) or 0.0
+    strength_score = _theme_strength_score(theme)
+    low_ladder = _to_float(structure.get("low_ladder_score")) or 0.0
+    high_risk = _to_float(structure.get("high_risk_score")) or 0.0
+
+    if today_zt < 5.0 or strength_score < 60.0:
+        return False
+    if prev_zt <= 0.0:
+        return True
+    if today_zt >= prev_zt * 0.4:
+        return True
+    return bool(low_ladder >= 85.0 and high_risk <= 82.0 and today_zt >= 6.0)
+
+
 def _theme_status_action(
     core_score: float,
     theme: dict[str, Any],
     market_regime: dict[str, Any],
+    family_context: dict[str, Any] | None = None,
+    chain_context: dict[str, Any] | None = None,
 ) -> tuple[CoreStatus, CoreAction]:
     base_status = str(theme.get("status") or "")
     market_status = str(market_regime.get("status") or "")
@@ -822,11 +947,23 @@ def _theme_status_action(
     high_risk = float(structure.get("high_risk_score") or 0.0)
     low_ladder = float(structure.get("low_ladder_score") or 0.0)
     low_start = _is_low_start_theme(theme, None, structure)
+    active_carry = _is_active_carry_theme(theme, structure)
+    family = family_context if isinstance(family_context, dict) else {}
+    chain = chain_context if isinstance(chain_context, dict) else {}
+    canonical_name = _canonical_theme_name(theme.get("canonical_name") or theme.get("name"))
+    chain_name = _theme_chain_name(canonical_name)
     # 统一使用算法层的强度解析，避免 tide_signal 原始字段缺失时被误判成 0 分。
     strength_score = _theme_strength_score(theme)
     today_zt = _to_float(theme.get("today_zt")) or 0.0
     prev_zt = _to_float(theme.get("prev_zt")) or 0.0
     resilience = _to_float(theme.get("resilience"))
+    family_confirmed = bool(family.get("has_confirmed_mainline"))
+    family_positive = bool(family.get("has_positive_status"))
+    family_today_zt = float(family.get("max_today_zt") or 0.0)
+    family_strength = float(family.get("max_strength_score") or 0.0)
+    chain_positive_branch_count = int(chain.get("positive_branch_count") or 0)
+    chain_best_branch_today_zt = float(chain.get("best_branch_today_zt") or 0.0)
+    chain_best_branch_score = float(chain.get("best_branch_score") or 0.0)
     structure_supportive = (
         market_status == "repair"
         and low_ladder >= 70.0
@@ -837,6 +974,22 @@ def _theme_status_action(
         and low_ladder >= 60.0
         and high_risk < 80.0
     )
+    family_supportive = (
+        family_confirmed
+        and family_today_zt >= max(today_zt, 3.0)
+        and family_strength >= 60.0
+    )
+    chain_supportive = (
+        canonical_name == chain_name
+        and chain_positive_branch_count >= 1
+        and chain_best_branch_today_zt >= 2.0
+        and chain_best_branch_score >= 66.0
+    )
+    trend_drop_hard = bool(
+        prev_zt >= 4.0
+        and (today_zt <= prev_zt * 0.6 or (prev_zt - today_zt) >= 4.0)
+    )
+    mild_fade = bool(prev_zt > 0 and today_zt < prev_zt and not trend_drop_hard and strength_score >= 56.0)
     self_is_weak = (
         base_status in {"weak", "rebound_warning", "volume_rebound"}
         or core_score < 42
@@ -857,19 +1010,48 @@ def _theme_status_action(
         return "shrinking_rebound", "no_new_position"
     if self_is_weak:
         return "avoid_weak", "avoid"
+    if (
+        base_status == "neutral"
+        and family_supportive
+        and core_score >= 52.0
+        and strength_score >= 48.0
+        and today_zt >= 2.0
+    ):
+        # 子题材若已并入确认主线，优先继承主线相位，避免被高位负反馈误伤。
+        return "observe_candidate", "watch"
+    if (
+        base_status == "neutral"
+        and chain_supportive
+        and core_score >= 53.0
+        and strength_score >= 50.0
+        and today_zt >= 2.0
+    ):
+        # 大题材名若链内已有细分分支转强，先降到观察，不和掉队分支一起判退潮。
+        return "observe_candidate", "watch"
+    if (
+        base_status == "neutral"
+        and active_carry
+        and core_score >= 55.0
+    ):
+        # 中位仍有梯队承接的方向，先落观察层，等待次日确认而不是直接退潮。
+        return "observe_candidate", "watch"
     # 高位负反馈过强时，只压“自身也弱/拥挤”的方向，不再一刀切打全市场。
     if (
         high_risk >= 76
         and core_score < 66
         and base_status not in {"confirmed_mainline"}
         and not low_start
+        and not active_carry
+        and not family_supportive
+        and not chain_supportive
         and not (
             structure_supportive
             and core_score >= 54.0
             and today_zt >= prev_zt
             and strength_score >= 50.0
         )
-        and (strength_score < 52.0 or today_zt < prev_zt or (resilience is not None and resilience < -8.0))
+        and not mild_fade
+        and (strength_score < 52.0 or trend_drop_hard or (resilience is not None and resilience < -8.0))
     ):
         return "avoid_weak", "avoid"
     if (
@@ -886,6 +1068,10 @@ def _theme_status_action(
     if core_score >= 64 and base_status in {"confirmed_mainline", "traverse_candidate"}:
         confirm = market_status in {"attack", "repair"} and high_risk < 72 and low_ladder >= 52
         return "resonance_traverse", "confirm" if confirm else "watch"
+    if family_positive and core_score >= 54 and strength_score >= 50.0 and (today_zt >= prev_zt or today_zt >= 2.0):
+        return "observe_candidate", "watch"
+    if chain_supportive and core_score >= 53 and strength_score >= 50.0:
+        return "observe_candidate", "watch"
     if low_start and core_score >= 56:
         # 低位启动先落到观察层，等次日确认，不直接被高位退潮带偏。
         return "observe_candidate", "watch"
@@ -915,7 +1101,7 @@ def _theme_reasons(
     if tide_label:
         (cautions if tide_label in {"潮汐偏弱", "缩量反弹", "回光返照"} else reasons).append(tide_label)
     strength_rank = theme.get("strength_rank")
-    strength_score = theme.get("strength_score")
+    strength_score = _theme_strength_score(theme)
     if isinstance(strength_rank, (int, float)) and strength_rank <= 5:
         reasons.append(f"板块强度第{int(strength_rank)}")
     elif isinstance(strength_score, (int, float)) and strength_score >= 65:
@@ -929,6 +1115,11 @@ def _theme_reasons(
     low_ladder = float(structure.get("low_ladder_score") or 0.0)
     if _is_low_start_theme(theme, catalyst, structure):
         reasons.append("低位新启动")
+    if _is_active_carry_theme(theme, structure):
+        reasons.append("中位承接活跃")
+    if _theme_chain_name(theme.get("canonical_name") or theme.get("name")) == _canonical_theme_name(theme.get("canonical_name") or theme.get("name")):
+        # 泛题材仅在自身是链主名时提示，帮助解释“细分转强、大题材先观察”的口径。
+        pass
     if low_ladder >= 60:
         reasons.append("低位连板承接")
     if market_status in {"ebb", "ice"}:

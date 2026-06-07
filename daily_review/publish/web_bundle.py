@@ -20,7 +20,7 @@ from pathlib import Path
 from typing import Optional
 
 from daily_review.application.mood_history_service import inject_mood_history_and_delta
-from daily_review.features.sector_resolver import normalize_sector
+from daily_review.features.sector_resolver import CHAIN_MAP, normalize_sector
 
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -496,7 +496,347 @@ def _build_theme_alias_map(md: dict, watchlist: Optional[dict] = None) -> dict:
                 if isinstance(sector, dict):
                     push(sector.get("sector"))
 
+    merge_map, diagnostics = _build_data_driven_theme_merges(md, alias_map)
+    if merge_map:
+        alias_map = _apply_theme_merge_map(alias_map, merge_map)
+    md["theme_merge_meta"] = {
+        "mergeMap": dict(sorted(merge_map.items())),
+        "diagnostics": diagnostics,
+    }
     return {key: sorted(values) for key, values in alias_map.items() if key and values}
+
+
+_THEME_PAREN_RE = re.compile(r"[（(][^）)]*[）)]")
+_THEME_SUFFIX_RE = re.compile(r"(概念|题材|板块|行业)$")
+
+
+def _theme_merge_base_name(value: object) -> str:
+    text = str(value or "").strip().replace(" ", "")
+    if not text:
+        return ""
+    text = _THEME_PAREN_RE.sub("", text)
+    text = _THEME_SUFFIX_RE.sub("", text)
+    return text.strip()
+
+
+def _theme_chain_name(name: object) -> str:
+    canonical = str(normalize_sector(str(name or "").strip()) or "").strip()
+    if not canonical:
+        return ""
+    for chain, members in CHAIN_MAP.items():
+        if canonical == chain or canonical in members:
+            return chain
+    return canonical
+
+
+def _theme_name_penalty(name: object) -> tuple[int, int]:
+    text = str(name or "").strip()
+    base = _theme_merge_base_name(text)
+    has_paren = 1 if ("（" in text or "(" in text) else 0
+    extra_len = max(0, len(text) - len(base))
+    return has_paren, extra_len
+
+
+def _jaccard_ratio(left: set[str], right: set[str]) -> float:
+    if not left or not right:
+        return 0.0
+    inter = left & right
+    union = left | right
+    return len(inter) / len(union) if union else 0.0
+
+
+def _apply_theme_merge_map(alias_map: dict[str, set[str]], merge_map: dict[str, str]) -> dict[str, set[str]]:
+    merged = {str(key): set(values) for key, values in alias_map.items() if str(key or "").strip()}
+    for raw_alias, raw_canonical in merge_map.items():
+        alias = str(raw_alias or "").strip()
+        canonical = str(raw_canonical or "").strip()
+        if not alias or not canonical or alias == canonical:
+            continue
+        bucket = merged.setdefault(canonical, set())
+        bucket.add(canonical)
+        bucket.add(alias)
+        source_bucket = merged.pop(alias, set())
+        bucket.update(source_bucket)
+    return merged
+
+
+def _build_data_driven_theme_merges(
+    md: dict,
+    raw_alias_map: Optional[dict[str, set[str] | list[str]]] = None,
+) -> tuple[dict[str, str], list[dict[str, object]]]:
+    """
+    用数据自己归并题材，而不是依赖人工维护映射表。
+
+    只使用高置信度信号：
+    - 名称主干一致（去掉括号/概念/题材等噪音后）
+    - 成分股交集较高
+    - 一方龙头出现在另一方成分股里
+
+    人工 alias 仅作为非常弱的先验，不单独触发合并。
+    """
+
+    evidence: dict[str, dict[str, object]] = {}
+
+    def ensure(name: object) -> dict[str, object] | None:
+        raw = str(name or "").strip()
+        if not raw:
+            return None
+        row = evidence.get(raw)
+        if row is None:
+            row = {
+                "codes": set(),
+                "leader_codes": set(),
+                "support_score": 0.0,
+                "display_rank": 999,
+                "base_name": _theme_merge_base_name(raw),
+                "normalize_hint": str(normalize_sector(raw) or "").strip(),
+                "chain_name": _theme_chain_name(raw),
+                "sources": set(),
+            }
+            evidence[raw] = row
+        return row
+
+    def bump(name: object, *, score: float = 0.0, source: str = "", display_rank: Optional[int] = None) -> None:
+        row = ensure(name)
+        if not isinstance(row, dict):
+            return
+        row["support_score"] = float(row.get("support_score") or 0.0) + score
+        if source:
+            sources = row.get("sources")
+            if isinstance(sources, set):
+                sources.add(source)
+        if display_rank is not None:
+            row["display_rank"] = min(int(row.get("display_rank") or 999), int(display_rank))
+
+    def add_code(name: object, code: object, *, leader: bool = False) -> None:
+        row = ensure(name)
+        if not isinstance(row, dict):
+            return
+        code_text = str(code or "").strip()
+        if not code_text:
+            return
+        codes = row.get("codes")
+        if isinstance(codes, set):
+            codes.add(code_text)
+        if leader:
+            leader_codes = row.get("leader_codes")
+            if isinstance(leader_codes, set):
+                leader_codes.add(code_text)
+
+    if isinstance(raw_alias_map, dict):
+        for key, values in raw_alias_map.items():
+            bump(key, score=0.6, source="alias_key")
+            if isinstance(values, (list, set, tuple)):
+                for value in values:
+                    bump(value, score=0.3, source="alias_value")
+
+    for idx, row in enumerate(md.get("plateRankTop10") or []):
+        if not isinstance(row, dict):
+            continue
+        theme_name = row.get("name")
+        bump(theme_name, score=3.0, source="plate_rank", display_rank=_to_int(row.get("rank"), idx + 1) or (idx + 1))
+        for leader in row.get("leaders") or []:
+            if not isinstance(leader, dict):
+                continue
+            add_code(theme_name, leader.get("code"), leader=True)
+        add_code(theme_name, row.get("leadCode"), leader=True)
+
+    for idx, row in enumerate((((md.get("themePanels") or {}) if isinstance(md.get("themePanels"), dict) else {}).get("strengthRows") or [])):
+        if not isinstance(row, dict):
+            continue
+        bump(row.get("name"), score=2.4, source="strength_panel", display_rank=idx + 1)
+
+    for row in md.get("leaders") or []:
+        if not isinstance(row, dict):
+            continue
+        theme_name = row.get("theme")
+        bump(theme_name, score=1.8, source="leaders")
+        add_code(theme_name, row.get("code"), leader=True)
+
+    ztgc_rows = [row for row in (md.get("ztgc") or []) if isinstance(row, dict)]
+    zt_code_themes = md.get("zt_code_themes") if isinstance(md.get("zt_code_themes"), dict) else {}
+    for row in ztgc_rows:
+        code = str(row.get("dm") or row.get("code") or "").strip()
+        if not code:
+            continue
+        raw_themes = zt_code_themes.get(code) if isinstance(zt_code_themes.get(code), list) else None
+        if not raw_themes:
+            hy = str(row.get("hy") or "").strip()
+            raw_themes = [hy] if hy else []
+        for raw_theme in raw_themes or []:
+            bump(raw_theme, score=0.35, source="ztgc_theme")
+            add_code(raw_theme, code)
+
+    for signal_key in ("tideSignal", "coreTideSignal"):
+        signal = md.get(signal_key) if isinstance(md.get(signal_key), dict) else {}
+        for row in signal.get("themes") or []:
+            if not isinstance(row, dict):
+                continue
+            bump(row.get("name"), score=1.0, source=signal_key)
+            bump(row.get("canonical_name"), score=0.2, source=f"{signal_key}_canonical")
+
+    names = sorted(name for name in evidence.keys() if name)
+    if len(names) < 2:
+        return {}, []
+
+    parent = {name: name for name in names}
+
+    def find(name: str) -> str:
+        while parent[name] != name:
+            parent[name] = parent[parent[name]]
+            name = parent[name]
+        return name
+
+    def union(left: str, right: str) -> None:
+        root_left = find(left)
+        root_right = find(right)
+        if root_left == root_right:
+            return
+        parent[root_right] = root_left
+
+    merged_edges: list[dict[str, object]] = []
+    for idx, left in enumerate(names):
+        left_row = evidence[left]
+        left_codes = left_row.get("codes") if isinstance(left_row.get("codes"), set) else set()
+        left_leaders = left_row.get("leader_codes") if isinstance(left_row.get("leader_codes"), set) else set()
+        left_base = str(left_row.get("base_name") or "")
+        left_hint = str(left_row.get("normalize_hint") or "")
+        for right in names[idx + 1 :]:
+            right_row = evidence[right]
+            right_codes = right_row.get("codes") if isinstance(right_row.get("codes"), set) else set()
+            right_leaders = right_row.get("leader_codes") if isinstance(right_row.get("leader_codes"), set) else set()
+            right_base = str(right_row.get("base_name") or "")
+            right_hint = str(right_row.get("normalize_hint") or "")
+            left_chain = str(left_row.get("chain_name") or "")
+            right_chain = str(right_row.get("chain_name") or "")
+
+            same_base = bool(left_base and left_base == right_base)
+            contains_base = bool(
+                not same_base
+                and left_base
+                and right_base
+                and min(len(left_base), len(right_base)) >= 3
+                and (left_base in right_base or right_base in left_base)
+            )
+            same_chain = bool(left_chain and right_chain and left_chain == right_chain and left != right)
+            overlap = _jaccard_ratio(left_codes, right_codes)
+            leader_cross = bool((left_leaders & (right_codes | right_leaders)) or (right_leaders & (left_codes | left_leaders)))
+            same_hint = bool(left_hint and right_hint and left_hint == right_hint and left != right)
+            name_affine = same_base or contains_base or same_hint or same_chain
+
+            score = 0.0
+            reasons: list[str] = []
+            if same_base:
+                score += 0.95
+                reasons.append("base_match")
+            elif contains_base:
+                score += 0.35
+                reasons.append("base_contains")
+            if same_chain:
+                score += 0.4
+                reasons.append("same_chain")
+            if overlap >= 0.5:
+                score += 1.0
+                reasons.append("stock_overlap_high")
+            elif overlap >= 0.34:
+                score += 0.8
+                reasons.append("stock_overlap_mid")
+            elif overlap >= 0.2:
+                score += 0.55
+                reasons.append("stock_overlap_low")
+            if leader_cross:
+                score += 0.45
+                reasons.append("leader_cross")
+            if same_hint:
+                score += 0.18
+                reasons.append("normalize_hint")
+
+            should_merge = False
+            # 不允许只因为“单只股票重合”就合并，必须至少存在名字/链条亲缘。
+            if same_base and (leader_cross or overlap >= 0.2):
+                should_merge = True
+            elif same_chain and overlap >= 0.34:
+                should_merge = True
+            elif name_affine and score >= 1.25 and (leader_cross or overlap >= 0.2):
+                should_merge = True
+
+            if not should_merge:
+                continue
+            union(left, right)
+            merged_edges.append(
+                {
+                    "left": left,
+                    "right": right,
+                    "score": round(score, 3),
+                    "reasons": reasons,
+                    "sharedCodes": sorted((left_codes & right_codes) | (left_leaders & right_codes) | (right_leaders & left_codes))[:6],
+                }
+            )
+
+    clusters: dict[str, list[str]] = {}
+    for name in names:
+        clusters.setdefault(find(name), []).append(name)
+
+    merge_map: dict[str, str] = {}
+    diagnostics: list[dict[str, object]] = []
+    for members in clusters.values():
+        if len(members) <= 1:
+            continue
+        ranked = sorted(
+            members,
+            key=lambda name: (
+                _theme_name_penalty(name)[0],
+                _theme_name_penalty(name)[1],
+                _to_int(evidence[name].get("display_rank"), 999),
+                -_to_float(evidence[name].get("support_score"), 0.0),
+                -len(evidence[name].get("codes") if isinstance(evidence[name].get("codes"), set) else set()),
+                len(name),
+                name,
+            ),
+        )
+        canonical = ranked[0]
+        for member in members:
+            merge_map[member] = canonical
+        related_edges = [
+            edge
+            for edge in merged_edges
+            if str(edge.get("left") or "") in members and str(edge.get("right") or "") in members
+        ]
+        diagnostics.append(
+            {
+                "canonical": canonical,
+                "members": sorted(members),
+                "confidence": round(
+                    min(
+                        1.0,
+                        (
+                            max((_to_float(edge.get("score"), 0.0) for edge in related_edges), default=0.0) / 2.5
+                            + min(0.15, max(0, len(members) - 1) * 0.05)
+                        ),
+                    ),
+                    3,
+                ),
+                "reasons": sorted(
+                    {
+                        str(reason)
+                        for edge in related_edges
+                        for reason in (edge.get("reasons") or [])
+                        if str(reason).strip()
+                    }
+                ),
+                "sharedCodes": sorted(
+                    {
+                        str(code)
+                        for edge in related_edges
+                        for code in (edge.get("sharedCodes") or [])
+                        if str(code).strip()
+                    }
+                )[:8],
+                "evidence": related_edges[:6],
+            }
+        )
+
+    return merge_map, diagnostics
 
 
 def _normalize_theme_token(value: object) -> str:
@@ -516,6 +856,19 @@ def _build_theme_alias_lookup(md: dict) -> tuple[dict[str, str], list[tuple[str,
                 lookup[token] = canonical
     ordered = sorted(lookup.items(), key=lambda item: len(item[0]), reverse=True)
     return lookup, ordered
+
+
+def _theme_merge_info_by_canonical(md: dict) -> dict[str, dict[str, object]]:
+    meta = md.get("theme_merge_meta") if isinstance(md.get("theme_merge_meta"), dict) else {}
+    rows = meta.get("diagnostics") if isinstance(meta.get("diagnostics"), list) else []
+    out: dict[str, dict[str, object]] = {}
+    for row in rows:
+        if not isinstance(row, dict):
+            continue
+        canonical = str(row.get("canonical") or "").strip()
+        if canonical:
+            out[canonical] = row
+    return out
 
 
 def _canonicalize_theme_name(name: object, *, lookup: dict[str, str], ordered_aliases: list[tuple[str, str]]) -> str:
@@ -1561,6 +1914,7 @@ def _build_ladder_decision(md: dict) -> dict:
 
 def _build_plan_theme_resolver(md: dict) -> dict:
     alias_lookup, ordered_aliases = _build_theme_alias_lookup(md)
+    merge_info_map = _theme_merge_info_by_canonical(md)
     contexts: dict[str, dict] = {}
 
     def ensure_context(name: object) -> dict | None:
@@ -1581,6 +1935,7 @@ def _build_plan_theme_resolver(md: dict) -> dict:
                 "advisor": None,
                 "tide": None,
                 "ztEvidence": None,
+                "mergeInfo": merge_info_map.get(canonical),
                 "fallbackThemeCount": 0,
                 "fallbackPanel": None,
             }
@@ -1845,6 +2200,7 @@ def _build_plan_theme_resolver(md: dict) -> dict:
             "advisor": ctx.get("advisor"),
             "tide": ctx.get("tide"),
             "ztEvidence": zt_evidence,
+            "mergeInfo": ctx.get("mergeInfo"),
             "fallbackThemeCount": _to_int(ctx.get("fallbackThemeCount"), 0),
             "fallbackPanel": fallback_panel,
             "baseSources": local_sources,
@@ -1876,6 +2232,7 @@ def _build_plan_theme_resolver(md: dict) -> dict:
     return {
         "aliasToTheme": alias_to_theme,
         "contexts": serialized_contexts,
+        "themeMergeMeta": md.get("theme_merge_meta") if isinstance(md.get("theme_merge_meta"), dict) else {},
         "fallbackThemes": fallback_themes[:8],
         "tideRiskPanel": _build_plan_tide_risk_panel(md),
     }
