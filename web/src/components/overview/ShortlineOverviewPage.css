@@ -21,8 +21,9 @@
   grid-template-columns: minmax(0, 1.15fr) minmax(260px, 0.85fr);
   gap: 18px;
   background:
-    radial-gradient(circle at top left, rgba(255, 255, 255, 0.24), transparent 34%),
-    linear-gradient(135deg, #0f172a 0%, color-mix(in oklab, var(--hero-mid) 82%, #111827) 52%, color-mix(in oklab, var(--hero-end) 72%, #0f172a) 100%);
+    radial-gradient(circle at top left, rgba(255, 241, 228, 0.22), transparent 32%),
+    radial-gradient(circle at 82% 18%, rgba(255, 214, 170, 0.16), transparent 22%),
+    linear-gradient(135deg, #4a1608 0%, #8a2c0d 46%, #dc5a16 100%);
   color: #fff;
 }
 
@@ -34,19 +35,21 @@
   height: 180px;
   border-radius: 32px;
   transform: rotate(18deg);
-  background: rgba(255, 255, 255, 0.08);
+  background: rgba(255, 244, 231, 0.1);
 }
 
 .overview-hero[data-tone="danger"] {
   background:
-    radial-gradient(circle at top left, rgba(255, 236, 236, 0.2), transparent 34%),
-    linear-gradient(135deg, #3f0d12 0%, #8f1d1d 48%, #d9485f 100%);
+    radial-gradient(circle at top left, rgba(231, 255, 239, 0.22), transparent 32%),
+    radial-gradient(circle at 80% 18%, rgba(166, 240, 194, 0.18), transparent 22%),
+    linear-gradient(135deg, #083b28 0%, #0f766e 44%, #16a34a 100%);
 }
 
 .overview-hero[data-tone="attack"] {
   background:
-    radial-gradient(circle at top left, rgba(255, 245, 225, 0.22), transparent 34%),
-    linear-gradient(135deg, #58280b 0%, #b45309 42%, #f97316 100%);
+    radial-gradient(circle at top left, rgba(255, 247, 225, 0.24), transparent 32%),
+    radial-gradient(circle at 80% 18%, rgba(255, 221, 164, 0.18), transparent 22%),
+    linear-gradient(135deg, #5d2604 0%, #c45a08 42%, #f08a22 100%);
 }
 
 .overview-hero-copy,
@@ -341,6 +344,26 @@
 .candidate-head strong {
   font-size: 15px;
   color: var(--text-primary);
+}
+
+.stock-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  color: inherit;
+  text-decoration: none;
+}
+
+.stock-link:hover strong,
+.stock-link:focus-visible strong {
+  color: #c2410c;
+}
+
+.stock-link:focus-visible {
+  outline: 2px solid color-mix(in oklab, #f97316 62%, white);
+  outline-offset: 3px;
+  border-radius: 8px;
 }
 
 .candidate-score {

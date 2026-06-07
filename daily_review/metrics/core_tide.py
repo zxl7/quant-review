@@ -50,6 +50,9 @@ def build_core_tide_signal(
     confirmed = [t["name"] for t in themes if t["action"] == "confirm"]
     watch = [t["name"] for t in themes if t["action"] == "watch"]
     avoid = [t["name"] for t in themes if t["action"] in {"avoid", "no_new_position"}]
+    rising = [t["name"] for t in themes if t.get("tide_phase") == "rising"]
+    neutral = [t["name"] for t in themes if t.get("tide_phase") == "neutral"]
+    ebbing = [t["name"] for t in themes if t.get("tide_phase") == "ebbing"]
     return {
         "date": date,
         "marketRegime": market_regime,
@@ -58,7 +61,10 @@ def build_core_tide_signal(
             "confirmed": confirmed[:6],
             "watch": watch[:8],
             "avoid": avoid[:8],
-            "action_hint": _summary_action_hint(market_regime, confirmed, watch, avoid),
+            "rising": rising[:6],
+            "neutral": neutral[:8],
+            "ebbing": ebbing[:8],
+            "action_hint": _summary_action_hint(market_regime, rising, neutral, ebbing),
         },
     }
 
@@ -109,18 +115,27 @@ def _build_market_regime(md: dict[str, Any], tide: dict[str, Any]) -> dict[str, 
     volume_score, volume_reasons = _calc_volume_score(md)
     breadth_score, breadth_reasons = _calc_breadth_score(md, tide)
     loss_score, loss_reasons = _calc_loss_score(md, tide)
+    structure = _calc_structure_context(md)
 
     score = (
-        emotion_score * 0.30
-        + breadth_score * 0.22
-        + index_score * 0.18
-        + volume_score * 0.15
-        + (100.0 - loss_score) * 0.15
+        emotion_score * 0.26
+        + breadth_score * 0.20
+        + index_score * 0.16
+        + volume_score * 0.13
+        + (100.0 - loss_score) * 0.13
+        + float(structure.get("score") or 50.0) * 0.12
     )
     ebb = bool(((tide.get("market") or {}) if isinstance(tide, dict) else {}).get("is_ebb_day"))
     status = _market_status(score, ebb, breadth_score, loss_score)
     risk_level = "high" if status in {"ebb", "ice"} else ("mid" if status == "divergence" else "low")
-    reasons = [*emotion_reasons, *loss_reasons, *breadth_reasons, *volume_reasons, *index_reasons]
+    reasons = [
+        *emotion_reasons,
+        *loss_reasons,
+        *[str(x) for x in structure.get("reasons", []) if str(x).strip()],
+        *breadth_reasons,
+        *volume_reasons,
+        *index_reasons,
+    ]
     if ebb and "基础潮汐退潮" not in reasons:
         reasons.insert(0, "基础潮汐退潮")
 
@@ -132,6 +147,10 @@ def _build_market_regime(md: dict[str, Any], tide: dict[str, Any]) -> dict[str, 
         "volume_score": round(volume_score),
         "breadth_score": round(breadth_score),
         "loss_score": round(loss_score),
+        "structure_score": round(float(structure.get("score") or 50.0)),
+        "high_risk_score": round(float(structure.get("high_risk_score") or 0.0)),
+        "low_ladder_score": round(float(structure.get("low_ladder_score") or 0.0)),
+        "structure": structure,
         "risk_level": risk_level,
         "reasons": reasons[:6],
     }
@@ -280,6 +299,181 @@ def _calc_loss_score(md: dict[str, Any], tide: dict[str, Any]) -> tuple[float, l
     return _clamp(float(score if score is not None else 50.0)), [str(x) for x in reasons[:3]]
 
 
+def _calc_structure_context(md: dict[str, Any]) -> dict[str, Any]:
+    """
+    结构分专门回答两个问题：
+    1. 高位负反馈有没有开始主导盘面；
+    2. 低位连板梯队是否在承接、修复，足以支撑新一轮潮汐。
+    """
+    zt_meta = ((md.get("ztAnalysis") or {}).get("meta") or {}) if isinstance(md.get("ztAnalysis"), dict) else {}
+    ladder_rows = md.get("ladder") if isinstance(md.get("ladder"), list) else []
+    height_context = str(zt_meta.get("heightContext") or "")
+    break_risk_base = _to_float(zt_meta.get("breakRiskBase"))
+    tier_engagement = _to_float(((zt_meta.get("tierEngagement") or {}).get("score")))
+    promo_ecology = _to_float(zt_meta.get("promoEcology"))
+
+    badge_rows: list[tuple[int, dict[str, Any]]] = []
+    for row in ladder_rows:
+        if not isinstance(row, dict):
+            continue
+        badge = int(_to_float(row.get("badge")) or 0)
+        if badge <= 0:
+            continue
+        badge_rows.append((badge, row))
+
+    badge_rows.sort(key=lambda item: item[0], reverse=True)
+    top_badge = badge_rows[0][0] if badge_rows else 0
+    second_badge = badge_rows[1][0] if len(badge_rows) > 1 else 0
+    top_gap = max(0, top_badge - second_badge)
+
+    low_ladder_rows = [row for badge, row in badge_rows if badge in {2, 3}]
+    low_ladder_count = len(low_ladder_rows)
+    low_ladder_quality = sum(
+        1
+        for row in low_ladder_rows
+        if str(row.get("status") or "") == "晋级"
+        or any(flag in str(row.get("qualityLabel") or "") for flag in ("强", "稳", "良"))
+    )
+    low_badge_2_rows = [row for badge, row in badge_rows if badge == 2]
+    low_badge_3_rows = [row for badge, row in badge_rows if badge == 3]
+    low_badge_2_count = len(low_badge_2_rows)
+    low_badge_3_count = len(low_badge_3_rows)
+    low_promotion_count = sum(1 for row in low_ladder_rows if str(row.get("status") or "") == "晋级")
+    low_turnover_confirm_count = sum(
+        1
+        for row in low_ladder_rows
+        if any(flag in str(row.get("qualityLabel") or "") for flag in ("温和放量", "高换手承接", "加速确认"))
+    )
+    low_badge_3_quality = sum(
+        1
+        for row in low_badge_3_rows
+        if str(row.get("status") or "") == "晋级"
+        or any(flag in str(row.get("qualityLabel") or "") for flag in ("加速确认", "高换手承接", "温和放量"))
+    )
+
+    high_ladder_rows = [row for badge, row in badge_rows if badge >= 4]
+    high_ladder_count = len(high_ladder_rows)
+    high_break_rows = [row for row in high_ladder_rows if str(row.get("status") or "") != "晋级"]
+    high_repeat_open_rows = [row for row in high_ladder_rows if float(_to_float(row.get("zbc")) or 0.0) >= 2.0]
+    high_rotten_rows = [
+        row
+        for row in high_ladder_rows
+        if any(flag in str(row.get("qualityLabel") or "") for flag in ("分歧烂板", "反复回封"))
+    ]
+    high_break_ratio = (len(high_break_rows) / high_ladder_count * 100.0) if high_ladder_count else 0.0
+    high_repeat_open_ratio = (len(high_repeat_open_rows) / high_ladder_count * 100.0) if high_ladder_count else 0.0
+    high_rotten_ratio = (len(high_rotten_rows) / high_ladder_count * 100.0) if high_ladder_count else 0.0
+
+    high_risk_pressure = 0.0
+    if break_risk_base is not None:
+        high_risk_pressure += break_risk_base * 0.38
+    if height_context == "pressure":
+        high_risk_pressure += 15.0
+    elif height_context == "repair":
+        high_risk_pressure -= 6.0
+    if top_badge >= 6:
+        high_risk_pressure += 8.0 + min(10.0, top_gap * 3.5)
+    elif top_badge >= 5 and top_gap >= 2:
+        high_risk_pressure += 7.0
+
+    high_break_pressure = min(28.0, high_break_ratio * 0.35)
+    high_repeat_open_pressure = min(20.0, high_repeat_open_ratio * 0.28)
+    high_rotten_pressure = min(18.0, high_rotten_ratio * 0.24)
+
+    high_risk_score = (
+        high_risk_pressure
+        + high_break_pressure
+        + high_repeat_open_pressure
+        + high_rotten_pressure
+    )
+
+    low_count_support = min(18.0, low_ladder_count * 5.0)
+    low_badge_2_support = min(14.0, low_badge_2_count * 4.5)
+    low_badge_3_support = min(16.0, low_badge_3_count * 5.5)
+    low_promotion_support = min(16.0, low_promotion_count * 5.5)
+    low_turnover_support = min(12.0, low_turnover_confirm_count * 4.0)
+    low_badge_3_quality_support = min(14.0, low_badge_3_quality * 6.0)
+
+    low_ladder_score = (
+        8.0
+        + low_count_support
+        + low_badge_2_support
+        + low_badge_3_support
+        + low_promotion_support
+        + low_turnover_support
+        + low_badge_3_quality_support
+    )
+    if tier_engagement is not None:
+        low_ladder_score += min(18.0, max(0.0, tier_engagement) * 6.0)
+    if promo_ecology is not None:
+        low_ladder_score += min(12.0, max(0.0, promo_ecology) * 2.0)
+    if height_context == "repair":
+        low_ladder_score += 8.0
+
+    high_risk_score = _clamp(high_risk_score)
+    low_ladder_score = _clamp(low_ladder_score)
+    score = _clamp(50.0 + (low_ladder_score - high_risk_score) * 0.35)
+
+    reasons: list[str] = []
+    if high_risk_score >= 70:
+        reasons.append("高位负反馈偏强")
+    elif high_risk_score >= 55:
+        reasons.append("高位分歧累积")
+    if low_ladder_score >= 68:
+        reasons.append("低位连板承接良好")
+    elif low_ladder_score <= 42:
+        reasons.append("低位梯队承接偏弱")
+    if low_badge_3_quality >= 2:
+        reasons.append("3板晋级质量提升")
+    elif low_turnover_confirm_count >= 2:
+        reasons.append("低位换手确认增加")
+    elif low_badge_2_count >= 3:
+        reasons.append("2板承接扩散")
+    if tier_engagement is not None and tier_engagement >= 2.5:
+        reasons.append("梯队完整")
+    elif tier_engagement is not None and tier_engagement < 1.0:
+        reasons.append("梯队松散")
+    if high_break_ratio >= 45:
+        reasons.append("高位断板偏多")
+    elif high_repeat_open_ratio >= 35:
+        reasons.append("高位炸板回封差")
+    elif high_rotten_ratio >= 35:
+        reasons.append("高位烂板增多")
+
+    return {
+        "score": round(score, 2),
+        "high_risk_score": round(high_risk_score, 2),
+        "low_ladder_score": round(low_ladder_score, 2),
+        "height_context": height_context or "neutral",
+        "top_badge": top_badge,
+        "top_gap": top_gap,
+        "high_ladder_count": high_ladder_count,
+        "high_break_ratio": round(high_break_ratio, 2),
+        "high_repeat_open_ratio": round(high_repeat_open_ratio, 2),
+        "high_rotten_ratio": round(high_rotten_ratio, 2),
+        "high_risk_pressure": round(high_risk_pressure, 2),
+        "high_break_pressure": round(high_break_pressure, 2),
+        "high_repeat_open_pressure": round(high_repeat_open_pressure, 2),
+        "high_rotten_pressure": round(high_rotten_pressure, 2),
+        "low_ladder_count": low_ladder_count,
+        "low_ladder_quality": low_ladder_quality,
+        "low_badge_2_count": low_badge_2_count,
+        "low_badge_3_count": low_badge_3_count,
+        "low_promotion_count": low_promotion_count,
+        "low_turnover_confirm_count": low_turnover_confirm_count,
+        "low_badge_3_quality": low_badge_3_quality,
+        "low_count_support": round(low_count_support, 2),
+        "low_badge_2_support": round(low_badge_2_support, 2),
+        "low_badge_3_support": round(low_badge_3_support, 2),
+        "low_promotion_support": round(low_promotion_support, 2),
+        "low_turnover_support": round(low_turnover_support, 2),
+        "low_badge_3_quality_support": round(low_badge_3_quality_support, 2),
+        "tier_engagement": _round(tier_engagement),
+        "promo_ecology": _round(promo_ecology),
+        "reasons": reasons[:4],
+    }
+
+
 def _market_status(score: float, is_ebb_day: bool, breadth_score: float, loss_score: float) -> str:
     if is_ebb_day and score < 38:
         return "ice"
@@ -401,15 +595,23 @@ def _build_core_theme(
     news_score = float(catalyst.get("score") or 50.0)
     market_score = float(market_regime.get("score") or 50.0)
     volume_score = _theme_volume_score(theme, market_regime)
+    structure_score = _theme_structure_score(theme, market_regime, catalyst)
 
     core_score = (
         tide_score * 0.35
         + strength_score * 0.25
         + news_score * 0.15
-        + market_score * 0.15
+        + market_score * 0.10
         + volume_score * 0.10
+        + structure_score * 0.05
     )
     status, action = _theme_status_action(core_score, theme, market_regime)
+    tide_phase = _theme_tide_phase(
+        status=status,
+        action=action,
+        base_status=str(theme.get("status") or ""),
+        core_score=core_score,
+    )
     ebb_score = _theme_ebb_score(
         core_score=core_score,
         tide_score=tide_score,
@@ -433,6 +635,7 @@ def _build_core_theme(
         "base_tide_status": str(theme.get("status") or ""),
         "action": action,
         "tide_zone": _theme_tide_zone(status, action),
+        "tide_phase": tide_phase,
         "core_score": round(_clamp(core_score)),
         "ebb_score": round(_clamp(ebb_score)),
         "tide_score": round(_clamp(tide_score)),
@@ -441,6 +644,7 @@ def _build_core_theme(
         "volume_score": round(_clamp(volume_score)),
         "news_score": round(_clamp(news_score)),
         "market_score": round(_clamp(market_score)),
+        "structure_score": round(_clamp(structure_score)),
         "confidence": _confidence(confirms, theme, catalyst),
         "confirms": confirms,
         "reasons": reasons,
@@ -487,6 +691,26 @@ def _theme_volume_score(theme: dict[str, Any], market_regime: dict[str, Any]) ->
     return _clamp(base)
 
 
+def _theme_structure_score(theme: dict[str, Any], market_regime: dict[str, Any], catalyst: dict[str, Any]) -> float:
+    structure = market_regime.get("structure") if isinstance(market_regime.get("structure"), dict) else {}
+    high_risk = float(structure.get("high_risk_score") or 0.0)
+    low_ladder = float(structure.get("low_ladder_score") or 0.0)
+    base = 50.0 + (low_ladder - high_risk) * 0.30
+    status = str(theme.get("status") or "")
+    low_start = _is_low_start_theme(theme, catalyst, structure)
+    if low_start:
+        # 低位新启动方向不应该被“全市场高位退潮”一刀切压死；
+        # 它们更多体现为观察/验证，而不是直接判成退潮。
+        base += max(0.0, low_ladder - 50.0) * 0.16
+        base += min(8.0, (_to_float(theme.get("today_zt")) or 0.0) * 2.0)
+        base -= max(0.0, high_risk - 72.0) * 0.06
+    if status in {"confirmed_mainline", "traverse_candidate", "micro_traverse"}:
+        base += max(0.0, low_ladder - 55.0) * 0.15
+    if status in {"weak", "volume_rebound", "rebound_warning"}:
+        base -= max(0.0, high_risk - 45.0) * 0.20
+    return _clamp(base)
+
+
 def _theme_ebb_score(
     *,
     core_score: float,
@@ -497,16 +721,22 @@ def _theme_ebb_score(
     base_status: str,
 ) -> float:
     """退潮强度分：专门用于“谁退潮最猛”的排序，不等同于核心关注分。"""
-    score = (100.0 - tide_score) * 0.45 + (100.0 - strength_score) * 0.25 + (100.0 - core_score) * 0.20
+    # 这里改成“可比较排序分”，避免所有弱势题材都被直接打到 90+。
+    score = (
+        22.0
+        + (100.0 - tide_score) * 0.18
+        + (100.0 - strength_score) * 0.12
+        + (100.0 - core_score) * 0.10
+    )
     if action == "avoid":
-        score += 10.0
+        score += 8.0
     elif action == "no_new_position":
-        score += 14.0
+        score += 11.0
     if status in {"avoid_weak", "afterglow_risk", "shrinking_rebound"}:
-        score += 8.0
+        score += 6.0
     if base_status in {"weak", "rebound_warning", "volume_rebound"}:
-        score += 8.0
-    return _clamp(score)
+        score += 5.0
+    return _clamp(score, 0.0, 100.0)
 
 
 def _theme_tide_zone(status: str, action: str) -> str:
@@ -517,6 +747,70 @@ def _theme_tide_zone(status: str, action: str) -> str:
     return "neutral"
 
 
+def _theme_tide_phase(status: str, action: str, base_status: str, core_score: float) -> str:
+    """
+    给前端提供更稳定的三段式阶段语义：
+    - rising: 进入涨潮区，优先聚焦核心
+    - neutral: 位于中性过渡区，仍需确认持续性
+    - ebbing: 进入退潮/反抽/弱势阶段
+    """
+    if action in {"avoid", "no_new_position"} or status in {"avoid_weak", "afterglow_risk", "shrinking_rebound"}:
+        return "ebbing"
+    if action == "confirm" or status in {"core_mainline", "resonance_traverse"}:
+        return "rising"
+    if base_status in {"confirmed_mainline", "traverse_candidate", "micro_traverse"} or core_score >= 55:
+        return "neutral"
+    return "neutral"
+
+
+def _is_low_start_theme(theme: dict[str, Any], catalyst: dict[str, Any] | None = None, structure: dict[str, Any] | None = None) -> bool:
+    """
+    识别“低位新启动/底部转强”题材。
+
+    这类方向常见特征：
+    - 本身是微穿越/穿越候选，而不是高位反抽
+    - 今日涨停数不弱于昨日，且历史基数不高
+    - 板块强度没有明显掉队
+    - 若有消息催化、2板开始扩散、或结构承接偏好，则进一步确认
+    """
+    status = str(theme.get("status") or "")
+    today_zt = _to_float(theme.get("today_zt")) or 0.0
+    prev_zt = _to_float(theme.get("prev_zt"))
+    pre_prev_zt = _to_float(theme.get("pre_prev_zt"))
+    strength_score = _to_float(theme.get("strength_score"))
+    strength_rank = _to_float(theme.get("strength_rank"))
+    catalyst_sources = (catalyst or {}).get("sources") if isinstance(catalyst, dict) else []
+    structure = structure if isinstance(structure, dict) else {}
+    low_badge_2_count = _to_float(structure.get("low_badge_2_count")) or 0.0
+    low_promotion_count = _to_float(structure.get("low_promotion_count")) or 0.0
+
+    if status not in {"micro_traverse", "traverse_candidate", "neutral"}:
+        return False
+    if today_zt < 2:
+        return False
+
+    prev_low_base = prev_zt is None or prev_zt <= 2.0
+    pre_prev_low_base = pre_prev_zt is None or pre_prev_zt <= 3.0
+    today_not_weaker = prev_zt is None or today_zt >= prev_zt
+    strength_ok = (
+        (strength_score is not None and strength_score >= 50.0)
+        or (strength_rank is not None and strength_rank <= 12.0)
+    )
+    catalyst_ok = isinstance(catalyst_sources, list) and len(catalyst_sources) > 0
+    low_expand_ok = low_badge_2_count >= 3 or low_promotion_count >= 2
+    strong_front_ok = (
+        (strength_score is not None and strength_score >= 58.0)
+        or (strength_rank is not None and strength_rank <= 8.0)
+    )
+    return bool(
+        prev_low_base
+        and pre_prev_low_base
+        and today_not_weaker
+        and strength_ok
+        and (catalyst_ok or low_expand_ok or strong_front_ok)
+    )
+
+
 def _theme_status_action(
     core_score: float,
     theme: dict[str, Any],
@@ -524,16 +818,45 @@ def _theme_status_action(
 ) -> tuple[CoreStatus, CoreAction]:
     base_status = str(theme.get("status") or "")
     market_status = str(market_regime.get("status") or "")
+    structure = market_regime.get("structure") if isinstance(market_regime.get("structure"), dict) else {}
+    high_risk = float(structure.get("high_risk_score") or 0.0)
+    low_ladder = float(structure.get("low_ladder_score") or 0.0)
+    low_start = _is_low_start_theme(theme, None, structure)
+    strength_score = _to_float(theme.get("strength_score")) or 0.0
+    today_zt = _to_float(theme.get("today_zt")) or 0.0
+    prev_zt = _to_float(theme.get("prev_zt")) or 0.0
+    resilience = _to_float(theme.get("resilience"))
+    self_is_weak = (
+        base_status in {"weak", "rebound_warning", "volume_rebound"}
+        or core_score < 42
+        or (strength_score < 45.0 and today_zt < max(2.0, prev_zt))
+        or (resilience is not None and resilience <= -15.0 and today_zt < prev_zt)
+    )
     if base_status == "rebound_warning":
         return "afterglow_risk", "no_new_position"
     if base_status == "volume_rebound":
         return "shrinking_rebound", "no_new_position"
-    if base_status == "weak" or core_score < 42:
+    if self_is_weak:
+        return "avoid_weak", "avoid"
+    # 高位负反馈过强时，只压“自身也弱/拥挤”的方向，不再一刀切打全市场。
+    if (
+        high_risk >= 76
+        and core_score < 66
+        and base_status not in {"confirmed_mainline"}
+        and not low_start
+        and (strength_score < 52.0 or today_zt < prev_zt or (resilience is not None and resilience < -8.0))
+    ):
         return "avoid_weak", "avoid"
     if core_score >= 70 and base_status == "confirmed_mainline":
         return "core_mainline", "confirm"
     if core_score >= 64 and base_status in {"confirmed_mainline", "traverse_candidate"}:
-        return "resonance_traverse", "confirm" if market_status in {"attack", "repair"} else "watch"
+        confirm = market_status in {"attack", "repair"} and high_risk < 72 and low_ladder >= 52
+        return "resonance_traverse", "confirm" if confirm else "watch"
+    if low_start and core_score >= 56:
+        # 低位启动先落到观察层，等次日确认，不直接被高位退潮带偏。
+        return "observe_candidate", "watch"
+    if core_score >= 58 and base_status in {"traverse_candidate", "micro_traverse"} and low_ladder >= 60 and high_risk < 65:
+        return "observe_candidate", "watch"
     if core_score >= 55:
         return "observe_candidate", "watch"
     return "neutral_wait", "watch"
@@ -567,10 +890,19 @@ def _theme_reasons(
     if sources:
         reasons.append("消息催化")
     market_status = str(market_regime.get("status") or "")
+    structure = market_regime.get("structure") if isinstance(market_regime.get("structure"), dict) else {}
+    high_risk = float(structure.get("high_risk_score") or 0.0)
+    low_ladder = float(structure.get("low_ladder_score") or 0.0)
+    if _is_low_start_theme(theme, catalyst, structure):
+        reasons.append("低位新启动")
+    if low_ladder >= 60:
+        reasons.append("低位连板承接")
     if market_status in {"ebb", "ice"}:
         cautions.append("市场退潮")
     elif market_status == "divergence":
         cautions.append("市场分歧")
+    if high_risk >= 65:
+        cautions.append("高位负反馈")
     if status in {"afterglow_risk", "shrinking_rebound"}:
         cautions.append("不开新仓")
     return list(dict.fromkeys(reasons))[:4], list(dict.fromkeys(cautions))[:4]
@@ -606,14 +938,14 @@ def _theme_sort_key(theme: dict[str, Any]) -> tuple[int, int]:
     return (action_rank.get(str(theme.get("action") or ""), 9), -int(theme.get("core_score") or 0))
 
 
-def _summary_action_hint(market: dict[str, Any], confirmed: list[str], watch: list[str], avoid: list[str]) -> str:
+def _summary_action_hint(market: dict[str, Any], rising: list[str], neutral: list[str], ebbing: list[str]) -> str:
     status = str(market.get("status") or "")
-    if confirmed:
-        return f"核心潮汐确认：{', '.join(confirmed[:3])}，优先围绕主线核心做节奏。"
+    if rising:
+        return f"涨潮方向：{', '.join(rising[:3])}，优先围绕最强核心做节奏。"
     if status in {"ebb", "ice"}:
-        return "核心潮汐显示市场退潮，优先防守，只观察穿越候选。"
-    if watch:
-        return f"核心潮汐观察：{', '.join(watch[:3])}，等待情绪/量能/消息共振。"
-    if avoid:
-        return "核心潮汐暂无确认主线，反抽和弱线不开新仓。"
+        return "市场处于退潮阶段，优先防守，只看逆势走强和确认信号。"
+    if neutral:
+        return f"中性方向：{', '.join(neutral[:3])}，等待情绪/量能/消息继续共振。"
+    if ebbing:
+        return f"退潮方向：{', '.join(ebbing[:3])}，反抽不开新仓，优先看兑现。"
     return "核心潮汐数据不足，按原系统判断。"

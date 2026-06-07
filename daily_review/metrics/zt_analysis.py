@@ -2108,7 +2108,7 @@ def build_zt_analysis(*, market_data: Dict[str, Any]) -> Dict[str, Any]:
     ladder_must = []
     for x in ladder:
         if isinstance(x, dict) and _to_num(x.get("badge"), 0) >= 4:
-            nm = str(x.get("name") or "").replace("👑", "").strip()
+            nm = str(x.get("name") or "").replace("🐲", "").strip()
             if nm:
                 ladder_must.append(nm)
     must_set = set(ladder_must)

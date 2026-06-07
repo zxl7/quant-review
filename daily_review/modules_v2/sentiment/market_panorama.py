@@ -106,7 +106,7 @@ def _compute(ctx: Context) -> Dict[str, Any]:
     if not max_lb:
         max_lb = max_lb2
     if not max_name:
-        max_name = str((ctx.market_data.get("ladder") or [{}])[0].get("name") or "").replace("👑", "").strip()
+        max_name = str((ctx.market_data.get("ladder") or [{}])[0].get("name") or "").replace("🐲", "").strip()
 
     # 20cm 近似：300/301/688
     cm20 = 0

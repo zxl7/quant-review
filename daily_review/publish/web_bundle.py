@@ -13,6 +13,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 import shutil
 import sys
 from pathlib import Path
@@ -83,6 +84,300 @@ def _top_labels(rows: list[dict], key_fn, limit: int = 2) -> list[str]:
             continue
         counts[key] = counts.get(key, 0) + 1
     return [name for name, _count in sorted(counts.items(), key=lambda item: (-item[1], item[0]))[:limit]]
+
+
+def _plan_chip(text: str, cls: str) -> dict[str, str]:
+    return {"text": str(text or "").strip(), "cls": str(cls or "").strip()}
+
+
+def _build_plan_stock_tags(stock: dict, plate_name: str = "") -> list[dict[str, str]]:
+    tags: list[dict[str, str]] = []
+    if str(stock.get("source") or "") == "xgb":
+        tags.append(_plan_chip("实时", "stp-chip stp-chip-hot"))
+    limit_up_days = _to_int(stock.get("limitUpDays"), _to_int(stock.get("lbc"), 0))
+    lbc = _to_int(stock.get("lbc"), 0)
+    if limit_up_days >= 2 or lbc >= 2:
+        tags.append(_plan_chip(f"{max(limit_up_days, lbc)}板", "stp-chip stp-chip-red"))
+    else:
+        tags.append(_plan_chip("首板", "stp-chip stp-chip-amber"))
+    change_pct = _to_float(stock.get("changePct"), 0.0)
+    if change_pct >= 8:
+        tags.append(_plan_chip(f"涨幅+{change_pct:.1f}%", "stp-chip stp-chip-red"))
+    elif change_pct >= 3:
+        tags.append(_plan_chip(f"涨幅+{change_pct:.1f}%", "stp-chip stp-chip-amber"))
+    seal_fund = _to_float(stock.get("zjYi"), 0.0)
+    turnover_yi = _to_float(stock.get("cjeYi"), 0.0)
+    if seal_fund >= 1.5:
+        tags.append(_plan_chip(f"封{seal_fund:.1f}亿", "stp-chip stp-chip-blue"))
+    elif turnover_yi >= 20:
+        tags.append(_plan_chip(f"{turnover_yi:.0f}亿", "stp-chip stp-chip-blue"))
+    if plate_name:
+        tags.append(_plan_chip(plate_name, "stp-chip stp-chip-slate"))
+    return tags[:4]
+
+
+def _calculate_plan_stock_score(stock: dict, plate_strength: float = 0.0, *, is_realtime_plate: bool = False) -> int:
+    score = 24.0
+    score += min(_to_int(stock.get("lbc"), 0) * 15, 45)
+    score += min(_to_float(stock.get("zjYi"), 0.0) * 6, 16)
+    score += min(_to_float(stock.get("cjeYi"), 0.0) * 0.5, 12)
+    score += min(_to_float(stock.get("changePct"), 0.0) * 1.4, 12)
+    score += min(plate_strength / 5, 10)
+    if is_realtime_plate:
+        score += 6
+    if str(stock.get("source") or "") == "xgb":
+        score += 8
+    if _to_int(stock.get("limitUpDays"), 0) >= 2:
+        score += 6
+    zbc = _to_int(stock.get("zbc"), 0)
+    if zbc >= 3:
+        score -= 8
+    elif zbc >= 1:
+        score -= 3
+    return max(0, min(100, round(score)))
+
+
+def _calculate_plan_resonance_score(sources: list[str], stocks: list[dict], plate_strength: float = 0.0) -> int:
+    score = len(sources) * 15
+    score += min(len(stocks) * 5, 30)
+    max_lbc = _to_int((stocks[0] or {}).get("lbc") if stocks else 0, 0)
+    score += max_lbc * 8
+    if plate_strength:
+        score += min(plate_strength / 4, 30)
+    if any("热门" in str(source or "") for source in sources):
+        score += 10
+    return min(round(score), 100)
+
+
+def _calculate_plan_theme_score(sources: list[str], stocks: list[dict], plate_strength: float = 0.0, resonance_score: float = 0.0, zt_evidence: Optional[dict] = None) -> int:
+    score = 22.0
+    score += min(resonance_score * 0.42, 42)
+    score += min(plate_strength / 4, 16)
+    score += min(len(stocks) * 4, 16)
+    score += min(_to_int((stocks[0] or {}).get("lbc") if stocks else 0, 0) * 6, 18)
+    if any("选股宝" in str(source or "") for source in sources):
+        score += 6
+    if any("热门" in str(source or "") for source in sources):
+        score += 5
+    if isinstance(zt_evidence, dict):
+        score += min(_to_int(zt_evidence.get("relayCount"), 0) * 6, 16)
+        score += min(_to_int(zt_evidence.get("watchCount"), 0) * 2, 6)
+        score += min(_to_float(zt_evidence.get("maxRelayFactorScore"), 0.0) * 0.08, 8)
+        score += min(_to_float(zt_evidence.get("maxEnvironmentScore"), 0.0) * 0.05, 5)
+        risk_control = _to_float(zt_evidence.get("maxRiskControlScore"), 0.0)
+        score += max(0.0, risk_control - 55) * 0.12
+        score -= max(0.0, 45 - risk_control) * 0.2
+        break_risk_raw = zt_evidence.get("minBreakRisk")
+        if break_risk_raw not in (None, ""):
+            score -= max(0.0, _to_float(break_risk_raw, 0.0) - 68) * 0.18
+    return max(0, min(100, round(score)))
+
+
+def _build_plan_theme_tags(theme: str, stocks: list[dict], sources: list[str], plate_strength: float = 0.0, resonance_score: float = 0.0, zt_evidence: Optional[dict] = None) -> list[dict[str, str]]:
+    tags: list[dict[str, str]] = []
+    if any("选股宝" in str(source or "") for source in sources):
+        tags.append(_plan_chip("实时热点", "stp-chip stp-chip-hot"))
+    if any("热门" in str(source or "") for source in sources):
+        tags.append(_plan_chip("明日热门", "stp-chip stp-chip-red"))
+    top_lbc = _to_int((stocks[0] or {}).get("lbc") if stocks else 0, 0)
+    if top_lbc >= 3:
+        tags.append(_plan_chip(f"{top_lbc}板龙头", "stp-chip stp-chip-red"))
+    elif top_lbc == 2:
+        tags.append(_plan_chip("2板承接", "stp-chip stp-chip-amber"))
+    if plate_strength >= 70:
+        tags.append(_plan_chip("板块强", "stp-chip stp-chip-blue"))
+    elif plate_strength >= 45:
+        tags.append(_plan_chip("板块活跃", "stp-chip stp-chip-blue"))
+    if isinstance(zt_evidence, dict):
+        relay_count = _to_int(zt_evidence.get("relayCount"), 0)
+        watch_count = _to_int(zt_evidence.get("watchCount"), 0)
+        if relay_count:
+            tags.append(_plan_chip(f"接力池{relay_count}", "stp-chip stp-chip-red"))
+        elif watch_count:
+            tags.append(_plan_chip(f"观察池{watch_count}", "stp-chip stp-chip-blue"))
+        if _to_float(zt_evidence.get("maxRiskControlScore"), 0.0) < 40 or _to_float(zt_evidence.get("minBreakRisk"), 0.0) >= 70:
+            tags.append(_plan_chip("风险偏大", "stp-chip stp-chip-amber"))
+    if resonance_score >= 85:
+        tags.append(_plan_chip("强共振", "stp-chip stp-chip-red"))
+    elif resonance_score >= 70:
+        tags.append(_plan_chip("有共振", "stp-chip stp-chip-slate"))
+    if len(stocks) >= 4:
+        tags.append(_plan_chip(f"{len(stocks)}股联动", "stp-chip stp-chip-slate"))
+    return tags[:4]
+
+
+def _build_plan_evidence_summary(zt_evidence: Optional[dict]) -> str:
+    if not isinstance(zt_evidence, dict):
+        return ""
+    bits: list[str] = []
+    relay_count = _to_int(zt_evidence.get("relayCount"), 0)
+    watch_count = _to_int(zt_evidence.get("watchCount"), 0)
+    if relay_count:
+        bits.append(f"接力池{relay_count}")
+    if watch_count:
+        bits.append(f"观察池{watch_count}")
+    sector_trend = _to_float(zt_evidence.get("maxSectorTrendScore"), 0.0)
+    if sector_trend > 0:
+        bits.append(f"板块势{round(sector_trend)}")
+    risk_control = _to_float(zt_evidence.get("maxRiskControlScore"), 0.0)
+    if risk_control > 0:
+        bits.append(f"风控稳{round(risk_control)}" if risk_control >= 60 else f"风控弱{round(risk_control)}")
+    stock_names = [str(name or "").strip() for name in (zt_evidence.get("stockNames") or []) if str(name or "").strip()]
+    if stock_names:
+        bits.append(f"命中{' / '.join(stock_names[:2])}")
+    return " · ".join(bits)
+
+
+def _plan_tide_display_group(name: object) -> str:
+    text = str(name or "").strip()
+    if not text:
+        return ""
+    if re.search(r"半导体|芯片|chiplet|igbt|光刻|封装|存储|soc|oled|mled|pcb", text, re.IGNORECASE):
+        return "半导体链"
+    if re.search(r"电力|风电|风能|核电|特高压|电网|虚拟电厂|水电|绿电|绿色电力", text):
+        return "电力链"
+    if re.search(r"机器人|减速器|机器视觉|丝杠|伺服", text):
+        return "机器人链"
+    if re.search(r"光伏|储能|锂电|电池|新能源", text):
+        return "新能源链"
+    if re.search(r"算力|服务器|数据中心|液冷|cpo|光模块|ai应用|aigc|人工智能", text, re.IGNORECASE):
+        return "AI算力链"
+    return text
+
+
+def _plan_is_tide_risk_theme(row: dict) -> bool:
+    if str(row.get("tide_phase") or "") == "ebbing":
+        return True
+    status = str(row.get("status") or "")
+    return str(row.get("tide_zone") or "") == "ebbing" or str(row.get("action") or "") in ("avoid", "no_new_position") or status in {
+        "avoid_weak",
+        "weak",
+        "afterglow_risk",
+        "shrinking_rebound",
+        "rebound_warning",
+        "volume_rebound",
+    }
+
+
+def _plan_is_tide_rising_theme(row: dict) -> bool:
+    if str(row.get("tide_phase") or "") == "rising":
+        return True
+    status = str(row.get("status") or "")
+    return str(row.get("tide_zone") or "") == "rising" or str(row.get("action") or "") == "confirm" or status in {
+        "core_mainline",
+        "resonance_traverse",
+        "confirmed_mainline",
+        "traverse_candidate",
+    }
+
+
+def _plan_is_tide_neutral_theme(row: dict) -> bool:
+    if str(row.get("tide_phase") or "") == "neutral":
+        return True
+    return not _plan_is_tide_rising_theme(row) and not _plan_is_tide_risk_theme(row)
+
+
+def _plan_tide_theme_score(row: dict) -> float:
+    return _to_float(row.get("core_score"), _to_float(row.get("tide_score"), 0.0))
+
+
+def _plan_tide_ebb_sort_score(row: dict) -> float:
+    ebb = row.get("ebb_score")
+    if ebb not in (None, ""):
+        return _to_float(ebb, 0.0)
+    tide = _to_float(row.get("tide_score"), 50.0)
+    core = _to_float(row.get("core_score"), 50.0)
+    strength = _to_float(row.get("strength_score"), 50.0)
+    return max(0.0, min(100.0, (100 - tide) * 0.45 + (100 - strength) * 0.25 + (100 - core) * 0.2))
+
+
+def _build_plan_tide_zone_panel(signal: dict) -> dict[str, list[dict]]:
+    grouped: dict[str, dict[str, object]] = {}
+    for row in signal.get("themes") or []:
+        if not isinstance(row, dict):
+            continue
+        group = _plan_tide_display_group(row.get("name"))
+        if not group:
+            continue
+        bucket = grouped.setdefault(group, {"children": set(), "rising": None, "neutral": None, "ebbing": None})
+        children = bucket["children"]
+        if isinstance(children, set):
+            raw_name = str(row.get("name") or "").strip()
+            if raw_name:
+                children.add(raw_name)
+        if _plan_is_tide_rising_theme(row):
+            prev = bucket.get("rising")
+            if not isinstance(prev, dict) or _plan_tide_theme_score(row) > _plan_tide_theme_score(prev):
+                bucket["rising"] = row
+        elif _plan_is_tide_risk_theme(row):
+            prev = bucket.get("ebbing")
+            if not isinstance(prev, dict) or _plan_tide_ebb_sort_score(row) > _plan_tide_ebb_sort_score(prev):
+                bucket["ebbing"] = row
+        elif _plan_is_tide_neutral_theme(row):
+            prev = bucket.get("neutral")
+            if not isinstance(prev, dict) or _plan_tide_theme_score(row) > _plan_tide_theme_score(prev):
+                bucket["neutral"] = row
+
+    rising: list[dict] = []
+    neutral: list[dict] = []
+    ebbing: list[dict] = []
+    for group, bucket in grouped.items():
+        children = sorted(name for name in (bucket.get("children") or set()) if name and name != group)[:4]
+        if isinstance(bucket.get("rising"), dict):
+            rising.append({**bucket["rising"], "name": group, "children": children})
+        elif isinstance(bucket.get("ebbing"), dict):
+            ebbing.append({**bucket["ebbing"], "name": group, "children": children})
+        elif isinstance(bucket.get("neutral"), dict):
+            neutral.append({**bucket["neutral"], "name": group, "children": children})
+
+    rising.sort(key=_plan_tide_theme_score, reverse=True)
+    neutral.sort(key=_plan_tide_theme_score, reverse=True)
+    ebbing.sort(key=_plan_tide_ebb_sort_score, reverse=True)
+    return {
+        "rising": rising[:6],
+        "neutral": neutral[:6],
+        "ebbing": ebbing[:8],
+    }
+
+
+def _build_plan_tide_risk_panel(md: dict) -> Optional[dict]:
+    watchlist = md.get("watchlist") if isinstance(md.get("watchlist"), dict) else {}
+    signal = watchlist.get("core_tide_signal") if isinstance(watchlist.get("core_tide_signal"), dict) else {}
+    if not signal:
+        signal = md.get("coreTideSignal") if isinstance(md.get("coreTideSignal"), dict) else {}
+    if not signal:
+        signal = watchlist.get("tide_signal") if isinstance(watchlist.get("tide_signal"), dict) else {}
+    if not signal:
+        signal = md.get("tideSignal") if isinstance(md.get("tideSignal"), dict) else {}
+    if not signal:
+        return None
+
+    market = signal.get("market") if isinstance(signal.get("market"), dict) else {}
+    market_regime = signal.get("marketRegime") if isinstance(signal.get("marketRegime"), dict) else {}
+    market_status = str(market_regime.get("status") or ("ebb" if market.get("is_ebb_day") else "")).strip()
+    loss_score_raw = market_regime.get("loss_score")
+    if loss_score_raw in (None, ""):
+        loss_score_raw = ((market.get("loss_effect") or {}) if isinstance(market.get("loss_effect"), dict) else {}).get("score")
+    loss_score = _to_float(loss_score_raw, float("nan"))
+    triggers = [str(item).strip() for item in (market.get("triggers") or []) if str(item).strip()]
+    reasons = [str(item).strip() for item in (market_regime.get("reasons") or []) if str(item).strip()]
+    if not reasons:
+        reasons = [
+            str(item).strip()
+            for item in ((((market.get("loss_effect") or {}) if isinstance(market.get("loss_effect"), dict) else {}).get("reasons")) or [])
+            if str(item).strip()
+        ]
+    zones = _build_plan_tide_zone_panel(signal)
+    has_risk = market_status in {"ebb", "ice"} or loss_score == loss_score or any(zones[key] for key in ("rising", "neutral", "ebbing"))
+    if not has_risk:
+        return None
+    return {
+        "status": "冰点退潮" if market_status == "ice" else "市场退潮" if market_status == "ebb" else "潮汐分层",
+        "lossScore": round(loss_score) if loss_score == loss_score else None,
+        "triggers": triggers,
+        "reasons": reasons,
+        "zones": zones,
+    }
 
 
 def _build_theme_alias_map(md: dict, watchlist: Optional[dict] = None) -> dict:
@@ -1183,7 +1478,7 @@ def _build_ladder_decision(md: dict) -> dict:
     max_lb = _to_int(mood_inputs.get("max_lb"), 0) or (grouped_ladder[0]["badge"] if grouped_ladder else 0)
 
     def clean_name(name: object) -> str:
-        return str(name or "").lstrip("👑⭐🔥 ").strip()
+        return str(name or "").lstrip("🐲⭐🔥 ").strip()
 
     def total_q_count(label: str) -> int:
         return sum(1 for row in ladder_rows if str(row.get("qualityLabel") or "") == label)
@@ -1227,6 +1522,328 @@ def _build_ladder_decision(md: dict) -> dict:
             "qualityTitle": quality_title,
             "qualitySub": quality_sub,
         },
+    }
+
+
+def _build_plan_theme_resolver(md: dict) -> dict:
+    alias_lookup, ordered_aliases = _build_theme_alias_lookup(md)
+    contexts: dict[str, dict] = {}
+
+    def ensure_context(name: object) -> dict | None:
+        canonical = _canonicalize_theme_name(name, lookup=alias_lookup, ordered_aliases=ordered_aliases)
+        if not canonical:
+            return None
+        ctx = contexts.get(canonical)
+        if ctx is None:
+            ctx = {
+                "canonicalTheme": canonical,
+                "aliases": set([canonical]),
+                "matchedLocalThemes": set(),
+                "stocks": [],
+                "_stockCodes": set(),
+                "plateStrength": None,
+                "plateLead": "",
+                "leader": None,
+                "advisor": None,
+                "tide": None,
+                "ztEvidence": None,
+                "fallbackThemeCount": 0,
+                "fallbackPanel": None,
+            }
+            contexts[canonical] = ctx
+        return ctx
+
+    def add_alias(ctx: dict | None, *names: object) -> None:
+        if not isinstance(ctx, dict):
+            return
+        for name in names:
+            raw = str(name or "").strip()
+            if not raw:
+                continue
+            ctx["aliases"].add(raw)
+            normalized = str(normalize_sector(raw) or raw).strip()
+            if normalized:
+                ctx["aliases"].add(normalized)
+
+    ztgc_rows = [row for row in (md.get("ztgc") or []) if isinstance(row, dict)]
+    zt_code_themes = md.get("zt_code_themes") if isinstance(md.get("zt_code_themes"), dict) else {}
+    for row in ztgc_rows:
+        code = str(row.get("dm") or row.get("code") or "").strip()
+        if not code:
+            continue
+        seen_contexts_for_code: set[str] = set()
+        raw_themes = zt_code_themes.get(code) if isinstance(zt_code_themes.get(code), list) else None
+        if not raw_themes:
+            hy = str(row.get("hy") or "").strip()
+            raw_themes = [hy] if hy else []
+        stock_payload = {
+            "code": code,
+            "name": str(row.get("mc") or row.get("name") or code),
+            "lbc": _to_int(row.get("lbc"), 0),
+            "cjeYi": round(_to_float(row.get("cje"), 0.0) / 1e8, 3),
+            "zjYi": round(_to_float(row.get("zj"), 0.0) / 1e8, 3),
+            "zbc": _to_int(row.get("zbc"), 0),
+        }
+        for raw_theme in raw_themes or []:
+            ctx = ensure_context(raw_theme)
+            if not ctx:
+                continue
+            add_alias(ctx, raw_theme)
+            raw_theme_name = str(raw_theme).strip()
+            ctx["matchedLocalThemes"].add(raw_theme_name)
+            canonical = str(ctx.get("canonicalTheme") or "").strip()
+            if canonical and canonical not in seen_contexts_for_code:
+                seen_contexts_for_code.add(canonical)
+                ctx["fallbackThemeCount"] = _to_int(ctx.get("fallbackThemeCount"), 0) + 1
+            if code not in ctx["_stockCodes"]:
+                ctx["_stockCodes"].add(code)
+                ctx["stocks"].append(stock_payload)
+
+    theme_panels = md.get("themePanels") if isinstance(md.get("themePanels"), dict) else {}
+    for idx, row in enumerate(theme_panels.get("strengthRows") or []):
+        if not isinstance(row, dict):
+            continue
+        ctx = ensure_context(row.get("name"))
+        if not ctx:
+            continue
+        add_alias(ctx, row.get("name"))
+        prev_panel = ctx.get("fallbackPanel")
+        next_panel = {
+            "zt": _to_int(row.get("zt"), 0),
+            "zb": _to_int(row.get("zb"), 0),
+            "dt": _to_int(row.get("dt"), 0),
+            "net": _to_float(row.get("net"), 0.0),
+            "risk": _to_float(row.get("risk"), 0.0),
+            "order": idx,
+        }
+        if not isinstance(prev_panel, dict) or _to_int(prev_panel.get("order"), idx) > idx:
+            ctx["fallbackPanel"] = next_panel
+
+    for row in (md.get("plateRankTop10") or []):
+        if not isinstance(row, dict):
+            continue
+        ctx = ensure_context(row.get("name"))
+        if not ctx:
+            continue
+        add_alias(ctx, row.get("name"))
+        ctx["plateStrength"] = _to_float(row.get("strength"), 0.0)
+        ctx["plateLead"] = str(row.get("lead") or "").strip()
+
+    for row in (md.get("leaders") or []):
+        if not isinstance(row, dict):
+            continue
+        ctx = ensure_context(row.get("theme"))
+        if not ctx:
+            continue
+        add_alias(ctx, row.get("theme"))
+        leader_score = _to_float(row.get("score"), 0.0)
+        prev = ctx.get("leader")
+        if not isinstance(prev, dict) or leader_score > _to_float(prev.get("score"), 0.0):
+            ctx["leader"] = {
+                "name": str(row.get("name") or "").replace("🐲", "").strip(),
+                "code": str(row.get("code") or "").strip(),
+                "score": leader_score,
+            }
+
+    watchlist = md.get("watchlist") if isinstance(md.get("watchlist"), dict) else {}
+    picks_advisor = md.get("picks_advisor") if isinstance(md.get("picks_advisor"), dict) else {}
+    if not picks_advisor:
+        picks_advisor = watchlist.get("picks_advisor") if isinstance(watchlist.get("picks_advisor"), dict) else {}
+    for row in picks_advisor.get("main_line_picks") or []:
+        if not isinstance(row, dict):
+            continue
+        target_names = [row.get("main_line"), *(row.get("constituents") or [])]
+        for raw_name in target_names:
+            ctx = ensure_context(raw_name)
+            if not ctx:
+                continue
+            add_alias(ctx, raw_name, row.get("main_line"), *(row.get("constituents") or []))
+            prev = ctx.get("advisor")
+            prev_conf = _to_float((prev or {}).get("confidence") if isinstance(prev, dict) else 0.0, 0.0)
+            next_conf = _to_float(row.get("confidence"), 0.0)
+            if not isinstance(prev, dict) or next_conf >= prev_conf:
+                ctx["advisor"] = row
+
+    tide_signal = watchlist.get("core_tide_signal") if isinstance(watchlist.get("core_tide_signal"), dict) else {}
+    if not tide_signal:
+        tide_signal = md.get("coreTideSignal") if isinstance(md.get("coreTideSignal"), dict) else {}
+    if not tide_signal:
+        tide_signal = watchlist.get("tide_signal") if isinstance(watchlist.get("tide_signal"), dict) else {}
+    if not tide_signal:
+        tide_signal = md.get("tideSignal") if isinstance(md.get("tideSignal"), dict) else {}
+    for row in tide_signal.get("themes") or []:
+        if not isinstance(row, dict):
+            continue
+        ctx = ensure_context(row.get("canonical_name") or row.get("name"))
+        if not ctx:
+            continue
+        add_alias(ctx, row.get("name"), row.get("canonical_name"))
+        prev = ctx.get("tide")
+        prev_score = _to_float((prev or {}).get("core_score") if isinstance(prev, dict) else 0.0, 0.0)
+        next_score = _to_float(row.get("core_score"), 0.0)
+        if not isinstance(prev, dict) or next_score >= prev_score:
+            ctx["tide"] = row
+
+    zt_analysis = md.get("ztAnalysis") if isinstance(md.get("ztAnalysis"), dict) else {}
+    evidence_rows = [
+        *[{**row, "__placement": "relay"} for row in (zt_analysis.get("relay") or []) if isinstance(row, dict)],
+        *[{**row, "__placement": "watch"} for row in (zt_analysis.get("watch") or []) if isinstance(row, dict)],
+    ]
+    for row in evidence_rows:
+        for raw_name in [row.get("predTheme"), row.get("plateName")]:
+            ctx = ensure_context(raw_name)
+            if not ctx:
+                continue
+            add_alias(ctx, raw_name)
+            evidence = ctx.get("ztEvidence")
+            if not isinstance(evidence, dict):
+                evidence = {
+                    "relayCount": 0,
+                    "watchCount": 0,
+                    "maxRelayFactorScore": 0.0,
+                    "maxRiskControlScore": 0.0,
+                    "maxEnvironmentScore": 0.0,
+                    "maxSectorTrendScore": 0.0,
+                    "minBreakRisk": None,
+                    "watchGroups": [],
+                    "stockNames": [],
+                }
+                ctx["ztEvidence"] = evidence
+            if row.get("__placement") == "relay":
+                evidence["relayCount"] += 1
+            if row.get("__placement") == "watch":
+                evidence["watchCount"] += 1
+            evidence["maxRelayFactorScore"] = max(_to_float(evidence.get("maxRelayFactorScore"), 0.0), _to_float(row.get("relayFactorScore"), 0.0))
+            evidence["maxRiskControlScore"] = max(_to_float(evidence.get("maxRiskControlScore"), 0.0), _to_float(row.get("riskControlScore"), 0.0))
+            evidence["maxEnvironmentScore"] = max(_to_float(evidence.get("maxEnvironmentScore"), 0.0), _to_float(row.get("environmentScore"), 0.0))
+            evidence["maxSectorTrendScore"] = max(_to_float(evidence.get("maxSectorTrendScore"), 0.0), _to_float(row.get("sectorTrendScore"), 0.0))
+            break_risk = row.get("breakRisk")
+            if break_risk not in (None, ""):
+                risk_val = _to_float(break_risk, 0.0)
+                evidence["minBreakRisk"] = risk_val if evidence.get("minBreakRisk") is None else min(_to_float(evidence.get("minBreakRisk"), risk_val), risk_val)
+            watch_group = str(row.get("watchGroup") or "").strip()
+            if watch_group and watch_group not in evidence["watchGroups"]:
+                evidence["watchGroups"].append(watch_group)
+            stock_name = str(row.get("name") or "").strip()
+            if stock_name and stock_name not in evidence["stockNames"]:
+                evidence["stockNames"].append(stock_name)
+
+    alias_to_theme: dict[str, str] = {}
+    serialized_contexts: dict[str, dict] = {}
+    for canonical, ctx in contexts.items():
+        stocks = sorted(
+            list(ctx["stocks"]),
+            key=lambda row: (-_to_float(row.get("lbc"), 0.0), -_to_float(row.get("zjYi"), 0.0), -_to_float(row.get("cjeYi"), 0.0)),
+        )
+        matched_local_themes = sorted(name for name in ctx["matchedLocalThemes"] if name)
+        aliases = sorted(name for name in ctx["aliases"] if name)
+        fallback_panel = None
+        panel = ctx.get("fallbackPanel")
+        leader = ctx.get("leader")
+        plate_strength = _to_float(ctx.get("plateStrength"), 0.0)
+        local_sources: list[str] = []
+        if _to_int(ctx.get("fallbackThemeCount"), 0) > 0:
+            local_sources.append("本地涨停归集")
+        if isinstance(panel, dict):
+            local_sources.append("本地板块推测")
+        if isinstance(ctx.get("advisor"), dict):
+            local_sources.append("推荐线")
+        scored_stocks = []
+        for stock in stocks:
+            stock_with_meta = dict(stock)
+            stock_with_meta["score"] = _calculate_plan_stock_score(stock_with_meta, plate_strength, is_realtime_plate=False)
+            stock_with_meta["tags"] = _build_plan_stock_tags(stock_with_meta, canonical)
+            scored_stocks.append(stock_with_meta)
+        scored_stocks.sort(
+            key=lambda row: (
+                -_to_float(row.get("score"), 0.0),
+                -_to_float(row.get("lbc"), 0.0),
+                -_to_float(row.get("changePct"), 0.0),
+                -_to_float(row.get("zjYi"), 0.0),
+                -_to_float(row.get("cjeYi"), 0.0),
+            )
+        )
+        if isinstance(panel, dict):
+            zt = _to_int(panel.get("zt"), 0)
+            zb = _to_int(panel.get("zb"), 0)
+            dt = _to_int(panel.get("dt"), 0)
+            net = _to_float(panel.get("net"), 0.0)
+            risk = _to_float(panel.get("risk"), 0.0)
+            strength_score = max(0, min(100, round(50 + zt * 5 - zb * 4 - dt * 6 + net * 4 - risk * 3)))
+            desc_bits = [
+                f"{zt}涨停",
+                f"{zb}炸板" if zb > 0 else "",
+                f"{dt}跌停" if dt > 0 else "",
+                f"净强{net:.1f}",
+                f"风险{risk:.1f}",
+                f"龙头{leader.get('name')}" if isinstance(leader, dict) and str(leader.get("name") or "").strip() else "",
+            ]
+            is_risky = risk >= 4.5 or zb >= 3 or dt >= 3
+            fallback_panel = {
+                "zt": zt,
+                "zb": zb,
+                "dt": dt,
+                "net": round(net, 2),
+                "risk": round(risk, 2),
+                "order": _to_int(panel.get("order"), 0),
+                "strengthScore": strength_score,
+                "desc": " · ".join(bit for bit in desc_bits if bit),
+                "tagText": "高分歧" if is_risky else "本地推测",
+                "tagCls": "stp-chip stp-chip-amber" if is_risky else "stp-chip stp-chip-slate",
+            }
+        zt_evidence = ctx.get("ztEvidence") if isinstance(ctx.get("ztEvidence"), dict) else None
+        base_resonance_score = _calculate_plan_resonance_score(local_sources, scored_stocks, plate_strength)
+        base_theme_score = _calculate_plan_theme_score(local_sources, scored_stocks, plate_strength, base_resonance_score, zt_evidence)
+        base_theme_tags = _build_plan_theme_tags(canonical, scored_stocks, local_sources, plate_strength, base_resonance_score, zt_evidence)
+        evidence_summary = _build_plan_evidence_summary(zt_evidence)
+        for alias in aliases:
+            token = _normalize_theme_token(alias)
+            if token and token not in alias_to_theme:
+                alias_to_theme[token] = canonical
+        serialized_contexts[canonical] = {
+            "canonicalTheme": canonical,
+            "aliases": aliases,
+            "matchedLocalThemes": matched_local_themes,
+            "stocks": scored_stocks,
+            "plateStrength": ctx.get("plateStrength"),
+            "plateLead": ctx.get("plateLead") or "",
+            "leader": ctx.get("leader"),
+            "advisor": ctx.get("advisor"),
+            "tide": ctx.get("tide"),
+            "ztEvidence": zt_evidence,
+            "fallbackThemeCount": _to_int(ctx.get("fallbackThemeCount"), 0),
+            "fallbackPanel": fallback_panel,
+            "baseSources": local_sources,
+            "baseResonanceScore": base_resonance_score,
+            "baseThemeScore": base_theme_score,
+            "baseThemeTags": base_theme_tags,
+            "evidenceSummary": evidence_summary,
+        }
+
+    fallback_themes = [
+        {
+            "theme": canonical,
+            "themeCount": _to_int(context.get("fallbackThemeCount"), 0),
+            "panelStrengthScore": _to_int((((context.get("fallbackPanel") or {}) if isinstance(context.get("fallbackPanel"), dict) else {}).get("strengthScore")), 0),
+        }
+        for canonical, context in serialized_contexts.items()
+        if _to_int(context.get("fallbackThemeCount"), 0) > 0 or isinstance(context.get("fallbackPanel"), dict)
+    ]
+    fallback_themes.sort(
+        key=lambda item: (
+            -_to_int(item.get("themeCount"), 0),
+            -_to_int(item.get("panelStrengthScore"), 0),
+            -_to_float(((serialized_contexts.get(str(item.get("theme") or "")) or {}).get("plateStrength")), 0.0),
+            -len((((serialized_contexts.get(str(item.get("theme") or "")) or {}).get("stocks")) or [])),
+            str(item.get("theme") or ""),
+        )
+    )
+
+    return {
+        "aliasToTheme": alias_to_theme,
+        "contexts": serialized_contexts,
+        "fallbackThemes": fallback_themes[:8],
+        "tideRiskPanel": _build_plan_tide_risk_panel(md),
     }
 
 
@@ -1305,12 +1922,14 @@ def _build_publish_payload(date8: str, source: Optional[str] = None, *, warn_con
     md, _data_path = _load_market_data(date8, source)
     _rebuild_web_derivatives(md, date8=date8, warn_context=warn_context)
     _apply_watchlist_enhancements(md, date8=date8, warn_context=warn_context)
+    md["planThemeResolver"] = _build_plan_theme_resolver(md)
     md["ladderDecision"] = _build_ladder_decision(md)
     md["sentimentDecision"] = _build_sentiment_decision(md)
     md["planDecision"] = _build_plan_decision(md)
     md["shortlineDecision"] = _build_shortline_decision(md)
     preserved_market = ((md.get("preservedResearch") or {}) if isinstance(md.get("preservedResearch"), dict) else {}).get("marketData")
     if isinstance(preserved_market, dict):
+        preserved_market["planThemeResolver"] = _build_plan_theme_resolver(preserved_market)
         preserved_market["ladderDecision"] = _build_ladder_decision(preserved_market)
         preserved_market["sentimentDecision"] = _build_sentiment_decision(preserved_market)
         preserved_market["planDecision"] = _build_plan_decision(preserved_market)

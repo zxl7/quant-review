@@ -842,6 +842,21 @@ def _normalize_theme_name(name: Any) -> str:
     return text
 
 
+def _theme_candidate_keys(*names: Any) -> list[str]:
+    """
+    为同一题材生成一组可匹配 key。
+
+    优先依赖后端统一归一化后的 canonical_name，
+    同时保留 name 的兼容 key，避免历史缓存或旧数据结构丢失匹配。
+    """
+    keys: list[str] = []
+    for name in names:
+        key = _normalize_theme_name(name)
+        if key and key not in keys:
+            keys.append(key)
+    return keys
+
+
 def _build_tide_theme_map(tide_signal: dict[str, Any] | None) -> dict[str, dict[str, Any]]:
     if not isinstance(tide_signal, dict):
         return {}
@@ -852,9 +867,10 @@ def _build_tide_theme_map(tide_signal: dict[str, Any] | None) -> dict[str, dict[
     for row in rows:
         if not isinstance(row, dict):
             continue
-        name = str(row.get("name") or "").strip()
-        key = _normalize_theme_name(name)
-        if key:
+        # 潮汐算法已经开始输出 canonical_name，这里优先建立统一索引，
+        # 让推荐线匹配与板块展示共用一套题材口径。
+        keys = _theme_candidate_keys(row.get("canonical_name"), row.get("name"))
+        for key in keys:
             prev = out.get(key)
             if prev is None or _tide_match_priority(row) > _tide_match_priority(prev):
                 out[key] = row
@@ -892,7 +908,7 @@ def _match_tide_theme(ml: MainLine, tide_map: dict[str, dict[str, Any]]) -> dict
     if not tide_map:
         return None
     candidates = [ml.name, *ml.constituents]
-    keys = [_normalize_theme_name(x) for x in candidates if _normalize_theme_name(x)]
+    keys = _theme_candidate_keys(*candidates)
     for key in keys:
         if key in tide_map:
             return tide_map[key]

@@ -970,15 +970,15 @@ def build_summary3(*, market_data: Dict[str, Any]) -> Dict[str, Any]:
         tops = [r for r in ladder if int(_num(r.get("badge", 0), 0)) == maxb]
         def _clean_name(s: str) -> str:
             s = (s or "").strip()
-            # 避免重复冠冕符号：上游可能已带 👑
-            s = s.replace("👑", "").strip()
+            # 避免重复冠冕符号：上游可能已带 🐲
+            s = s.replace("🐲", "").strip()
             return s
 
         names = [_clean_name(str(r.get("name") or "")) for r in tops[:2]]
         names = [n for n in names if n]
         if names:
             leader = "、".join(names)
-        leader = f"👑 {leader}（{maxb}板）"
+        leader = f"🐲 {leader}（{maxb}板）"
     line2 = f"主线：{main_name}；空间锚：{leader}。"
 
     return {"lines": [line1, line2]}

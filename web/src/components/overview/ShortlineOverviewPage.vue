@@ -25,6 +25,24 @@ const scripts = computed<any>(() => decision.value?.scripts || {})
 const backtestCorrection = computed<any>(() => decision.value?.backtestCorrection || {})
 const currentPool = computed<any>(() => decision.value?.currentPool || {})
 const indices = computed<any>(() => decision.value?.indices || {})
+
+const xqUrl = (code?: string | null) => {
+  const raw = String(code || "").trim()
+  if (!raw) return "https://xueqiu.com"
+  const upper = raw.toUpperCase()
+  if (upper.includes(".")) {
+    const [num, suffix] = upper.split(".")
+    const market = suffix === "SH" ? "SH" : suffix === "SZ" ? "SZ" : ""
+    return market ? `https://xueqiu.com/S/${market}${num}` : `https://xueqiu.com/S/${upper}`
+  }
+  const market = raw.startsWith("6") ? "SH" : "SZ"
+  return `https://xueqiu.com/S/${market}${raw}`
+}
+
+const openXq = (code?: string | null) => {
+  if (typeof window === "undefined") return
+  window.open(xqUrl(code), "_blank", "noopener,noreferrer")
+}
 </script>
 
 <template>
@@ -113,8 +131,10 @@ const indices = computed<any>(() => decision.value?.indices || {})
             @click="emit('jump', (tradePlan.jumpTab || 'plan') as ReviewTabId)">
             <div class="candidate-head">
               <div>
-                <strong>{{ row.name }}</strong>
-                <span class="pool-code">{{ row.code }}</span>
+                <span class="stock-link" role="link" tabindex="0" @click.stop="openXq(row.code)" @keydown.enter.stop="openXq(row.code)" @keydown.space.prevent.stop="openXq(row.code)">
+                  <strong>{{ row.name }}</strong>
+                  <span class="pool-code">{{ row.code }}</span>
+                </span>
               </div>
               <span class="candidate-score">{{ row.bucket || "优先跟踪" }} {{ row.score }}</span>
             </div>
@@ -139,8 +159,10 @@ const indices = computed<any>(() => decision.value?.indices || {})
             @click="emit('jump', (tradePlan.jumpTab || 'plan') as ReviewTabId)">
             <div class="candidate-head">
               <div>
-                <strong>{{ row.name }}</strong>
-                <span class="pool-code">{{ row.code }}</span>
+                <span class="stock-link" role="link" tabindex="0" @click.stop="openXq(row.code)" @keydown.enter.stop="openXq(row.code)" @keydown.space.prevent.stop="openXq(row.code)">
+                  <strong>{{ row.name }}</strong>
+                  <span class="pool-code">{{ row.code }}</span>
+                </span>
               </div>
               <span class="candidate-score is-watch">{{ row.bucket || "观察确认" }} {{ row.score }}</span>
             </div>
@@ -159,8 +181,10 @@ const indices = computed<any>(() => decision.value?.indices || {})
         <article v-for="row in scripts.cards || []" :key="`script-${row.code}`" class="script-card" :data-tone="row.tone || 'watch'">
           <div class="script-head">
             <div>
-              <strong>{{ row.name }}</strong>
-              <span class="pool-code">{{ row.code }}</span>
+              <a class="stock-link" :href="xqUrl(row.code)" target="_blank" rel="noopener noreferrer">
+                <strong>{{ row.name }}</strong>
+                <span class="pool-code">{{ row.code }}</span>
+              </a>
             </div>
             <span class="script-step">{{ row.nextStep }}</span>
           </div>
@@ -218,8 +242,10 @@ const indices = computed<any>(() => decision.value?.indices || {})
         <div class="pool-list" v-if="(currentPool.rows || []).length">
           <button v-for="row in currentPool.rows || []" :key="row.code" class="pool-row" type="button" @click="emit('jump', (currentPool.jumpTab || 'backtest') as ReviewTabId)">
             <div>
-              <strong>{{ row.name }}</strong>
-              <span class="pool-code">{{ row.code }}</span>
+              <span class="stock-link" role="link" tabindex="0" @click.stop="openXq(row.code)" @keydown.enter.stop="openXq(row.code)" @keydown.space.prevent.stop="openXq(row.code)">
+                <strong>{{ row.name }}</strong>
+                <span class="pool-code">{{ row.code }}</span>
+              </span>
             </div>
             <div class="pool-meta">{{ row.line || "待归因" }} · {{ row.nextStep || "待验证" }}</div>
           </button>

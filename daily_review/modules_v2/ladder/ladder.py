@@ -253,7 +253,7 @@ def _compute(ctx: Context) -> Dict[str, Any]:
 
     # 最高板标记（保持与 gen_report_v4 一致的体验）
     if ladder_rows:
-        ladder_rows[0]["name"] = f"👑 {ladder_rows[0]['name']}"
+        ladder_rows[0]["name"] = f"🐲 {ladder_rows[0]['name']}"
 
     return {"marketData.ladder": ladder_rows}
 

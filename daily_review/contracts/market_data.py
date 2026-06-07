@@ -59,6 +59,7 @@ class MarketData(TypedDict, total=False):
     leaders: list[dict[str, Any]]
     ztgc: list[dict[str, Any]]
     zt_code_themes: dict[str, Any]
+    planThemeResolver: dict[str, Any]
     ladderDecision: dict[str, Any]
     sentimentDecision: dict[str, Any]
     planDecision: dict[str, Any]

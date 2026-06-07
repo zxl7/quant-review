@@ -151,6 +151,7 @@ type TideTheme = {
   base_tide_status?: string
   action?: "confirm" | "watch" | "avoid" | "no_new_position"
   tide_zone?: "rising" | "neutral" | "ebbing"
+  tide_phase?: "rising" | "neutral" | "ebbing"
   core_score?: number
   ebb_score?: number
   today_zt?: number
@@ -166,19 +167,7 @@ type TideTheme = {
   confidence: "low" | "medium" | "high"
   warning_level?: "none" | "watch" | "risk" | "danger"
   action_hint: string
-}
-
-type TideSignal = {
-  date: string
-  market?: {
-    is_ebb_day?: boolean
-    trigger_count?: number
-    triggers?: string[]
-    loss_effect?: { score?: number; level?: string; reasons?: string[] }
-  }
-  marketRegime?: { status?: string; score?: number; risk_level?: string; reasons?: string[]; loss_score?: number }
-  themes?: TideTheme[]
-  summary?: { action_hint?: string; avoid?: string[]; risk_themes?: string[] }
+  children?: string[]
 }
 
 const picksAdvisor = computed(() => {
@@ -199,61 +188,47 @@ const planUpdatedAt = computed(() => {
   return picksAdvisor.value?.generated_at_bj || md?.watchlist?.generated_at_bj || md?.meta?.generatedAt || "-"
 })
 
-const tideSignal = computed<TideSignal | null>(() => {
-  const md = planSource.value as any
-  const fromWatchlistCore = md?.watchlist?.core_tide_signal
-  if (fromWatchlistCore && typeof fromWatchlistCore === "object") return fromWatchlistCore as TideSignal
-  const fromMarketCore = md?.coreTideSignal
-  if (fromMarketCore && typeof fromMarketCore === "object") return fromMarketCore as TideSignal
-  const fromWatchlist = md?.watchlist?.tide_signal
-  if (fromWatchlist && typeof fromWatchlist === "object") return fromWatchlist as TideSignal
-  const fromMarket = md?.tideSignal
-  if (fromMarket && typeof fromMarket === "object") return fromMarket as TideSignal
+const planThemeResolver = computed<any>(() => {
+  const value = planSource.value?.planThemeResolver
+  return value && typeof value === "object" ? value : null
+})
+const resolverContexts = computed<Record<string, any>>(() => {
+  const value = planThemeResolver.value?.contexts
+  return value && typeof value === "object" ? value : {}
+})
+const resolverAliasToTheme = computed<Record<string, string>>(() => {
+  const value = planThemeResolver.value?.aliasToTheme
+  return value && typeof value === "object" ? value : {}
+})
+const themeResolverToken = (value: unknown) => String(value || "").trim().replace(/\s+/g, "").toLowerCase()
+const resolveThemeContext = (names: Array<string | null | undefined>) => {
+  const aliasToTheme = resolverAliasToTheme.value
+  const contexts = resolverContexts.value
+  for (const rawValue of names) {
+    const raw = String(rawValue || "").trim()
+    if (!raw) continue
+    const candidates = [raw, normalizeThemeName(raw)].filter(Boolean)
+    for (const candidate of candidates) {
+      const canonical = aliasToTheme[themeResolverToken(candidate)]
+      if (canonical && contexts[canonical]) return contexts[canonical]
+    }
+  }
+  const nameTokens = names
+    .map((value) => [String(value || "").trim(), normalizeThemeName(String(value || "").trim())])
+    .flat()
+    .map((value) => themeResolverToken(value))
+    .filter(Boolean)
+  for (const context of Object.values(contexts)) {
+    const aliases = Array.isArray((context as any)?.aliases) ? (context as any).aliases : []
+    const aliasTokens: string[] = aliases.map((alias: string) => themeResolverToken(alias)).filter(Boolean)
+    const hit = nameTokens.some((token) => aliasTokens.some((aliasToken: string) => aliasToken === token || aliasToken.includes(token) || token.includes(aliasToken)))
+    if (hit) return context
+  }
   return null
-})
-
-const tideThemeRows = computed(() => (Array.isArray(tideSignal.value?.themes) ? tideSignal.value!.themes! : []))
-
-const todayHotThemeAliasMap = computed(() => {
-  const raw = planSource.value?.theme_alias_map
-  const map = new Map<string, string[]>()
-  if (!raw || typeof raw !== "object") return map
-  Object.entries(raw).forEach(([key, aliases]) => {
-    const normalized = normalizeThemeName(String(key || ""))
-    if (!normalized) return
-    const values = Array.isArray(aliases) ? aliases.map((x) => String(x || "").trim()).filter(Boolean) : []
-    map.set(normalized, Array.from(new Set([normalized, ...values])))
-  })
-  return map
-})
-
-const expandTodayThemeNames = (names: Array<string | null | undefined>) => {
-  const out = new Set<string>()
-  names.forEach((value) => {
-    const raw = String(value || "").trim()
-    if (!raw) return
-    out.add(raw)
-    const normalized = normalizeThemeName(raw)
-    if (!normalized) return
-    out.add(normalized)
-    const aliases = todayHotThemeAliasMap.value.get(normalized)
-    aliases?.forEach((alias) => out.add(alias))
-  })
-  return Array.from(out)
 }
-
-const tideThemeMatches = (tide: TideTheme, names: string[]) => {
-  const key = normalizeThemeName(tide.name || "")
-  if (!key) return false
-  return expandTodayThemeNames(names).some((raw) => {
-    const name = normalizeThemeName(raw)
-    return !!name && (name === key || name.includes(key) || key.includes(name))
-  })
-}
-
 const tideThemeForBucket = (theme: string, matched: string[] = [], advisor?: MainLinePicks | null) => {
-  const names = expandTodayThemeNames([theme, ...matched, advisor?.main_line || "", ...(advisor?.constituents || [])])
-  return tideThemeRows.value.find((row) => tideThemeMatches(row, names)) || null
+  const context = resolveThemeContext([theme, ...matched, advisor?.main_line || "", ...(advisor?.constituents || [])])
+  return context?.tide || null
 }
 
 const tideStatusLabel = (status?: string) => {
@@ -276,112 +251,15 @@ const tideStatusLabel = (status?: string) => {
   return labels[String(status || "")] || ""
 }
 
-const isTideRiskTheme = (row: TideTheme) => {
-  const status = String(row?.status || "")
-  return row?.tide_zone === "ebbing" || row?.action === "avoid" || row?.action === "no_new_position" || ["avoid_weak", "weak", "afterglow_risk", "shrinking_rebound", "rebound_warning", "volume_rebound"].includes(status)
-}
-
-const isTideRisingTheme = (row: TideTheme) => {
-  const status = String(row?.status || "")
-  return row?.tide_zone === "rising" || row?.action === "confirm" || ["core_mainline", "resonance_traverse", "confirmed_mainline", "traverse_candidate"].includes(status)
-}
-
-const tideEbbSortScore = (row: TideTheme) => {
-  if (Number.isFinite(Number(row.ebb_score))) return Number(row.ebb_score)
-  const tide = Number(row.tide_score ?? 50)
-  const core = Number(row.core_score ?? 50)
-  const strength = Number(row.strength_score ?? 50)
-  return Math.max(0, Math.min(100, (100 - tide) * 0.45 + (100 - strength) * 0.25 + (100 - core) * 0.2))
-}
-
-const tideDisplayGroup = (name: string) => {
-  const text = String(name || "")
-  if (/半导体|芯片|chiplet|igbt|光刻|封装|存储|soc|oled|mled|pcb/i.test(text)) return "半导体链"
-  if (/电力|风电|风能|核电|特高压|电网|虚拟电厂|水电|绿电|绿色电力/.test(text)) return "电力链"
-  if (/机器人|减速器|机器视觉|丝杠|伺服/.test(text)) return "机器人链"
-  if (/光伏|储能|锂电|电池|新能源/.test(text)) return "新能源链"
-  if (/算力|服务器|数据中心|液冷|cpo|光模块|ai应用|aigc|人工智能/i.test(text)) return "AI算力链"
-  return text
-}
-
-const tideDisplayTitle = (theme: TideTheme & { children?: string[] }) => {
+const tideDisplayTitle = (theme: TideTheme) => {
   const parts = [tideCornerTitle(theme)]
   if (theme.children?.length) parts.push(`细分：${theme.children.join(" / ")}`)
   return parts.filter(Boolean).join("｜")
 }
 
-const tideThemeScore = (row: TideTheme) => Number(row.core_score ?? row.tide_score ?? 0)
-
-const tideZonePanel = computed(() => {
-  const grouped = new Map<
-    string,
-    {
-      rising?: TideTheme
-      neutral?: TideTheme
-      ebbing?: TideTheme
-      children: Set<string>
-    }
-  >()
-
-  tideThemeRows.value.forEach((row) => {
-    const group = tideDisplayGroup(row.name)
-    const bucket = grouped.get(group) || { children: new Set<string>() }
-    bucket.children.add(row.name)
-    if (isTideRisingTheme(row)) {
-      if (!bucket.rising || tideThemeScore(row) > tideThemeScore(bucket.rising)) bucket.rising = row
-    } else if (isTideRiskTheme(row)) {
-      if (!bucket.ebbing || tideEbbSortScore(row) > tideEbbSortScore(bucket.ebbing)) bucket.ebbing = row
-    } else if (!bucket.neutral || tideThemeScore(row) > tideThemeScore(bucket.neutral)) {
-      bucket.neutral = row
-    }
-    grouped.set(group, bucket)
-  })
-
-  const rising: Array<TideTheme & { children?: string[] }> = []
-  const neutral: Array<TideTheme & { children?: string[] }> = []
-  const ebbing: Array<TideTheme & { children?: string[] }> = []
-
-  grouped.forEach((bucket, group) => {
-    const children = Array.from(bucket.children).filter((x) => x !== group).slice(0, 4)
-    if (bucket.rising) {
-      rising.push({ ...bucket.rising, name: group, children })
-    } else if (bucket.ebbing) {
-      ebbing.push({ ...bucket.ebbing, name: group, children })
-    } else if (bucket.neutral) {
-      neutral.push({ ...bucket.neutral, name: group, children })
-    }
-  })
-
-  rising.sort((a, b) => tideThemeScore(b) - tideThemeScore(a))
-  neutral.sort((a, b) => tideThemeScore(b) - tideThemeScore(a))
-  ebbing.sort((a, b) => tideEbbSortScore(b) - tideEbbSortScore(a))
-  return {
-    rising: rising.slice(0, 6),
-    neutral: neutral.slice(0, 6),
-    ebbing: ebbing.slice(0, 8),
-  }
-})
-
 const tideRiskPanel = computed(() => {
-  const signal = tideSignal.value
-  if (!signal) return null
-  const marketStatus = String(signal.marketRegime?.status || (signal.market?.is_ebb_day ? "ebb" : ""))
-  const lossScore = Number(signal.marketRegime?.loss_score ?? signal.market?.loss_effect?.score)
-  const triggers = Array.isArray(signal.market?.triggers) ? signal.market!.triggers! : []
-  const reasons = Array.isArray(signal.marketRegime?.reasons)
-    ? signal.marketRegime!.reasons!
-    : Array.isArray(signal.market?.loss_effect?.reasons)
-      ? signal.market!.loss_effect!.reasons!
-      : []
-  const hasRisk = marketStatus === "ebb" || marketStatus === "ice" || Number.isFinite(lossScore) || tideZonePanel.value.ebbing.length > 0
-  if (!hasRisk) return null
-  return {
-    status: marketStatus === "ice" ? "冰点退潮" : marketStatus === "ebb" ? "市场退潮" : "潮汐观察",
-    lossScore: Number.isFinite(lossScore) ? Math.round(lossScore) : null,
-    triggers,
-    reasons,
-    zones: tideZonePanel.value,
-  }
+  const value = planThemeResolver.value?.tideRiskPanel
+  return value && typeof value === "object" ? value : null
 })
 
 const tideHintClass = (level?: string) => {
@@ -462,18 +340,15 @@ const pickPrimaryTag = (s: PickStock) => {
 const pickReasonBrief = (s: PickStock) => (Array.isArray(s.reasons) ? s.reasons.slice(0, 2) : [])
 const pickCautionBrief = (s: PickStock) => (Array.isArray(s.cautions) ? s.cautions.slice(0, 1) : [])
 const advisorMatchesTheme = (ml: MainLinePicks, theme: string, matched: string[] = []) => {
-  const names = expandTodayThemeNames([theme, ...matched]).map((x) => normalizeThemeName(x)).filter(Boolean)
-  const main = normalizeThemeName(ml.main_line)
-  const constituents = (ml.constituents || []).map((x) => normalizeThemeName(x)).filter(Boolean)
-  return names.some((name) => {
-    if (!name) return false
-    if (main && (name === main || name.includes(main) || main.includes(name))) return true
-    return constituents.some((c) => c === name || name.includes(c) || c.includes(name))
-  })
+  const context = resolveThemeContext([theme, ...matched, ml.main_line, ...(ml.constituents || [])])
+  if (!context) return false
+  const canonical = String(context.canonicalTheme || "")
+  const mlNames = [ml.main_line, ...(ml.constituents || [])].map((x) => normalizeThemeName(String(x || ""))).filter(Boolean)
+  return mlNames.some((name) => name === canonical)
 }
 const advisorForBucket = (theme: string, matched: string[] = []) => {
-  const rows = picksAdvisor.value?.main_line_picks || []
-  return rows.find((ml) => advisorMatchesTheme(ml, theme, matched)) || null
+  const context = resolveThemeContext([theme, ...matched])
+  return context?.advisor || null
 }
 const advisorStockToZtPick = (s: PickStock): ZtStockPick => ({
   code: String(s.code || "").trim(),
@@ -537,6 +412,7 @@ type SectorBucket = {
   advisor?: MainLinePicks | null
   tide?: TideTheme | null
   ztEvidence?: ZtThemeEvidence | null
+  evidenceSummary?: string
 }
 
 type ZtThemeEvidence = {
@@ -550,136 +426,17 @@ type ZtThemeEvidence = {
   watchGroups: string[]
   stockNames: string[]
 }
-
-const themePanelRows = computed(() => (Array.isArray(planSource.value?.themePanels?.strengthRows) ? planSource.value.themePanels.strengthRows : []))
-
-const leaderByTheme = computed(() => {
-  const map = new Map<string, { name: string; code: string; score: number }>()
-  ;(Array.isArray(planSource.value?.leaders) ? planSource.value.leaders : []).forEach((row: any) => {
-    const key = normalizeThemeName(String(row?.theme || ""))
-    if (!key) return
-    const next = {
-      name: String(row?.name || "").replace(/^👑\s*/, "").trim(),
-      code: String(row?.code || "").trim(),
-      score: Number(row?.score || 0),
-    }
-    const prev = map.get(key)
-    if (!prev || next.score > prev.score) map.set(key, next)
-  })
-  return map
-})
-
-const plateStrengthByName = computed(() => {
-  const map = new Map<string, { strength: number; lead: string }>()
-  ;(planSource.value?.plateRankTop10 || []).forEach((p: any) => {
-    const name = normalizeThemeName(p?.name || "")
-    if (!name) return
-    map.set(name, { strength: Number(p?.strength || 0), lead: String(p?.lead || "").trim() })
-  })
-  return map
-})
-
-const themeToZtStocks = computed(() => {
-  const out = new Map<string, ZtStockPick[]>()
-  const ztgc = Array.isArray(planSource.value?.ztgc) ? planSource.value.ztgc : []
-  const themesMap = (planSource.value?.zt_code_themes || {}) as Record<string, string[]>
-  ztgc.forEach((s: any) => {
-    const code = String(s?.dm || s?.code || "").trim()
-    if (!code) return
-    const themes = (themesMap[code] && themesMap[code].length ? themesMap[code] : s?.hy ? [String(s.hy)] : []).filter(Boolean)
-    if (!themes.length) return
-    const pick: ZtStockPick = {
-      code,
-      name: String(s?.mc || s?.name || code),
-      lbc: Number(s?.lbc || 0),
-      cjeYi: Number(s?.cje || 0) / 1e8,
-      zjYi: Number(s?.zj || 0) / 1e8,
-      zbc: Number(s?.zbc || 0),
-    }
-    themes.forEach((t) => {
-      const k = String(t).trim()
-      if (!k) return
-      if (!out.has(k)) out.set(k, [])
-      const list = out.get(k)!
-      if (!list.some((x) => x.code === pick.code)) list.push(pick)
-    })
-  })
-  return out
-})
-
-const findMatchingLocalThemes = (hotName: string): string[] => {
-  const expandedNames = expandTodayThemeNames([hotName])
-  if (!expandedNames.length) return []
-  const matches: string[] = []
-  themeToZtStocks.value.forEach((_v, k) => {
-    const kk = normalizeThemeName(k)
-    if (!kk) return
-    const hit = expandedNames.some((candidate) => {
-      const key = normalizeThemeName(candidate)
-      return !!key && (kk === key || kk.includes(key) || (key.length >= 3 && key.includes(kk)))
-    })
-    if (!hit || matches.includes(k)) return
-    matches.push(k)
-  })
-  return matches
-}
-
 const aggregateStocksForTheme = (hotName: string): { stocks: ZtStockPick[]; matched: string[] } => {
-  const matched = findMatchingLocalThemes(hotName)
-  const dedup = new Map<string, ZtStockPick>()
-  matched.forEach((t) => {
-    ;(themeToZtStocks.value.get(t) || []).forEach((s) => {
-      if (!dedup.has(s.code)) dedup.set(s.code, s)
-    })
-  })
-  const stocks = Array.from(dedup.values())
-  stocks.sort((a, b) => b.lbc - a.lbc || b.zjYi - a.zjYi || b.cjeYi - a.cjeYi)
+  const context = resolveThemeContext([hotName])
+  const stocks = Array.isArray(context?.stocks) ? context.stocks : []
+  const matched = Array.isArray(context?.matchedLocalThemes) ? context.matchedLocalThemes : []
   return { stocks, matched }
 }
-
-const ztThemeEvidenceByName = computed(() => {
-  const map = new Map<string, ZtThemeEvidence>()
-  const rows = [
-    ...((planSource.value?.ztAnalysis?.relay || []) as any[]).map((row) => ({ ...row, __placement: "relay" as const })),
-    ...((planSource.value?.ztAnalysis?.watch || []) as any[]).map((row) => ({ ...row, __placement: "watch" as const })),
-  ]
-
-  rows.forEach((row) => {
-    const names = [String(row?.predTheme || "").trim(), String(row?.plateName || "").trim()].filter(Boolean)
-    if (!names.length) return
-    names.forEach((rawName) => {
-      const key = normalizeThemeName(rawName)
-      if (!key) return
-      const prev = map.get(key) || {
-        relayCount: 0,
-        watchCount: 0,
-        maxRelayFactorScore: 0,
-        maxRiskControlScore: 0,
-        maxEnvironmentScore: 0,
-        maxSectorTrendScore: 0,
-        minBreakRisk: null,
-        watchGroups: [],
-        stockNames: [],
-      }
-      if (row.__placement === "relay") prev.relayCount += 1
-      if (row.__placement === "watch") prev.watchCount += 1
-      prev.maxRelayFactorScore = Math.max(prev.maxRelayFactorScore, Number(row?.relayFactorScore || 0))
-      prev.maxRiskControlScore = Math.max(prev.maxRiskControlScore, Number(row?.riskControlScore || 0))
-      prev.maxEnvironmentScore = Math.max(prev.maxEnvironmentScore, Number(row?.environmentScore || 0))
-      prev.maxSectorTrendScore = Math.max(prev.maxSectorTrendScore, Number(row?.sectorTrendScore || 0))
-      const breakRisk = Number(row?.breakRisk)
-      if (Number.isFinite(breakRisk)) {
-        prev.minBreakRisk = prev.minBreakRisk === null ? breakRisk : Math.min(prev.minBreakRisk, breakRisk)
-      }
-      const watchGroup = String(row?.watchGroup || "").trim()
-      if (watchGroup && !prev.watchGroups.includes(watchGroup)) prev.watchGroups.push(watchGroup)
-      const stockName = String(row?.name || "").trim()
-      if (stockName && !prev.stockNames.includes(stockName)) prev.stockNames.push(stockName)
-      map.set(key, prev)
-    })
-  })
-
-  return map
+const fallbackThemeNames = computed<string[]>(() => {
+  const rows = Array.isArray(planThemeResolver.value?.fallbackThemes) ? planThemeResolver.value.fallbackThemes : []
+  return rows
+    .map((row: any) => String(row?.theme || "").trim())
+    .filter(Boolean)
 })
 
 const ztEvidenceWeight = (evidence?: ZtThemeEvidence | null) => {
@@ -689,18 +446,8 @@ const ztEvidenceWeight = (evidence?: ZtThemeEvidence | null) => {
 }
 
 const ztEvidenceForBucket = (theme: string, matched: string[] = [], advisor?: MainLinePicks | null) => {
-  const names = expandTodayThemeNames([theme, ...matched, advisor?.main_line || "", ...(advisor?.constituents || [])])
-  if (!names.length) return null
-  let best: ZtThemeEvidence | null = null
-  ztThemeEvidenceByName.value.forEach((evidence, key) => {
-    const hit = names.some((raw) => {
-      const name = normalizeThemeName(raw)
-      return !!name && (name === key || name.includes(key) || key.includes(name))
-    })
-    if (!hit) return
-    if (!best || ztEvidenceWeight(evidence) > ztEvidenceWeight(best)) best = evidence
-  })
-  return best
+  const context = resolveThemeContext([theme, ...matched, advisor?.main_line || "", ...(advisor?.constituents || [])])
+  return context?.ztEvidence || null
 }
 
 const scoreClassByValue = (s: number) => {
@@ -875,23 +622,29 @@ const makeBucket = (
   })
   const mergedStocks = Array.from(mergedMap.values())
   const maxLbc = mergedStocks[0]?.lbc || 0
-  const plateInfo = plateStrengthByName.value.get(theme) || (matched.length ? plateStrengthByName.value.get(matched[0]) : undefined)
-  const advisor = advisorForBucket(theme, matched)
-  const tide = tideThemeForBucket(theme, matched, advisor)
-  const ztEvidence = ztEvidenceForBucket(theme, matched, advisor)
-  const resonanceScore = calculateResonanceScore(sources, mergedStocks, plateInfo?.strength)
+  const context = resolveThemeContext([theme, ...matched])
+  const plateStrength = Number(context?.plateStrength || 0)
+  const plateLead = String(context?.plateLead || "")
+  const advisor = (context?.advisor as MainLinePicks | null) || advisorForBucket(theme, matched)
+  const tide = (context?.tide as TideTheme | null) || tideThemeForBucket(theme, matched, advisor)
+  const ztEvidence = (context?.ztEvidence as ZtThemeEvidence | null) || ztEvidenceForBucket(theme, matched, advisor)
+  const baseResonanceScore = Number(context?.baseResonanceScore || 0)
+  const baseThemeScore = Number(context?.baseThemeScore || 0)
+  const baseThemeTags = Array.isArray(context?.baseThemeTags) ? context.baseThemeTags : []
+  const evidenceSummary = String(context?.evidenceSummary || "").trim()
   const scoredStocks = mergedStocks
     .map((stock) => {
-      const score = calculateStockScore(stock, plateInfo?.strength || 0, source === "realtime")
+      const score = stock.source === "xgb" ? calculateStockScore(stock, plateStrength, source === "realtime") : Number(stock.score ?? calculateStockScore(stock, plateStrength, false))
       return {
         ...stock,
         score,
-        tags: buildStockTags(stock, theme),
+        tags: Array.isArray(stock.tags) && stock.source !== "xgb" ? stock.tags : buildStockTags(stock, theme),
       }
     })
     .sort((a, b) => Number(b.score || 0) - Number(a.score || 0) || b.lbc - a.lbc || (b.changePct || 0) - (a.changePct || 0) || b.zjYi - a.zjYi || b.cjeYi - a.cjeYi)
-  const themeScore = calculateThemeScore({ sources, stocks: scoredStocks, plateStrength: plateInfo?.strength, resonanceScore, ztEvidence })
-  const themeTags = buildThemeTags(theme, scoredStocks, sources, plateInfo?.strength, resonanceScore, ztEvidence)
+  const resonanceScore = source === "realtime" ? calculateResonanceScore(sources, scoredStocks, plateStrength) : baseResonanceScore || calculateResonanceScore(sources, scoredStocks, plateStrength)
+  const themeScore = source === "realtime" ? calculateThemeScore({ sources, stocks: scoredStocks, plateStrength, resonanceScore, ztEvidence }) : baseThemeScore || calculateThemeScore({ sources, stocks: scoredStocks, plateStrength, resonanceScore, ztEvidence })
+  const themeTags = source === "realtime" ? buildThemeTags(theme, scoredStocks, sources, plateStrength, resonanceScore, ztEvidence) : (baseThemeTags.length ? baseThemeTags : buildThemeTags(theme, scoredStocks, sources, plateStrength, resonanceScore, ztEvidence))
 
   return {
     theme,
@@ -904,8 +657,8 @@ const makeBucket = (
     highTier: scoredStocks.filter((s) => s.lbc >= 3).slice(0, 3),
     midTier: scoredStocks.filter((s) => s.lbc === 2).slice(0, 3),
     baseTier: scoredStocks.filter((s) => s.lbc <= 1).slice(0, 3),
-    plateStrength: plateInfo?.strength,
-    plateLead: plateInfo?.lead,
+    plateStrength: plateStrength || undefined,
+    plateLead,
     matchedLocalThemes: matched,
     resonanceScore,
     themeScore,
@@ -913,45 +666,41 @@ const makeBucket = (
     advisor,
     tide,
     ztEvidence,
+    evidenceSummary,
   }
 }
 
 const buildThemePanelFallbackBuckets = (): SectorBucket[] => {
-  return themePanelRows.value
+  const rows = Array.isArray(planSource.value?.themePanels?.strengthRows) ? planSource.value.themePanels.strengthRows : []
+  return rows
     .map((row: any) => {
       const theme = String(row?.name || "").trim()
       if (!theme) return null
       const { stocks, matched } = aggregateStocksForTheme(theme)
-      const leader = leaderByTheme.value.get(normalizeThemeName(theme))
-      const zt = Number(row?.zt || 0)
-      const zb = Number(row?.zb || 0)
-      const dt = Number(row?.dt || 0)
-      const net = Number(row?.net || 0)
-      const risk = Number(row?.risk || 0)
-      const descBits = [
-        `${zt}涨停`,
-        zb > 0 ? `${zb}炸板` : "",
-        dt > 0 ? `${dt}跌停` : "",
-        Number.isFinite(net) ? `净强${net.toFixed(1)}` : "",
-        Number.isFinite(risk) ? `风险${risk.toFixed(1)}` : "",
-        leader?.name ? `龙头${leader.name}` : "",
-      ].filter(Boolean)
-      const bucket = makeBucket("", theme, "fallback", ["本地板块推测"], descBits.join(" · "), stocks, matched)
-      bucket.plateStrength = Math.max(0, Math.min(100, Math.round(50 + zt * 5 - zb * 4 - dt * 6 + net * 4 - risk * 3)))
-      bucket.plateLead = bucket.plateLead || leader?.name || ""
+      const context = resolveThemeContext([theme])
+      const leader = context?.leader
+      const fallbackPanel = context?.fallbackPanel && typeof context.fallbackPanel === "object" ? context.fallbackPanel : null
+      const zt = Number(fallbackPanel?.zt ?? row?.zt ?? 0)
+      const zb = Number(fallbackPanel?.zb ?? row?.zb ?? 0)
+      const dt = Number(fallbackPanel?.dt ?? row?.dt ?? 0)
+      const risk = Number(fallbackPanel?.risk ?? row?.risk ?? 0)
+      const fallbackDesc = String(fallbackPanel?.desc || "").trim()
+      const bucket = makeBucket("", theme, "fallback", ["本地板块推测"], fallbackDesc, stocks, matched)
+      bucket.plateStrength = Number(fallbackPanel?.strengthScore ?? 0) || bucket.plateStrength
+      bucket.plateLead = bucket.plateLead || String(leader?.name || "")
 
       if (!bucket.count && leader?.code && leader?.name) {
         bucket.count = 1
         bucket.baseTier = [
           {
-            code: leader.code,
-            name: leader.name,
+            code: String(leader.code),
+            name: String(leader.name),
             lbc: 0,
             cjeYi: 0,
             zjYi: 0,
             zbc: 0,
             source: "local",
-            score: Math.max(55, Math.round(leader.score || 0)),
+            score: Math.max(55, Math.round(Number(leader.score || 0))),
             tags: [{ text: "题材龙头", cls: "stp-chip stp-chip-red" }],
           },
         ]
@@ -959,9 +708,7 @@ const buildThemePanelFallbackBuckets = (): SectorBucket[] => {
 
       bucket.themeTags = [
         ...bucket.themeTags,
-        ...(risk >= 4.5 || zb >= 3 || dt >= 3
-          ? [{ text: "高分歧", cls: "stp-chip stp-chip-amber" }]
-          : [{ text: "本地推测", cls: "stp-chip stp-chip-slate" }]),
+        ...(fallbackPanel?.tagText ? [{ text: String(fallbackPanel.tagText), cls: String(fallbackPanel.tagCls || "stp-chip stp-chip-slate") }] : []),
       ].slice(0, 4)
       return bucket
     })
@@ -1017,20 +764,7 @@ const sectorTierPicks = computed<SectorBucket[]>(() => {
 
   // 实时数据完全为空 → 本地兜底:按 ztgc theme 命中数最高的前 N 个 theme
   if (!xgb.length && !tmr.length) {
-    const themeCount = new Map<string, number>()
-    const themesMap = (planSource.value?.zt_code_themes || {}) as Record<string, string[]>
-    Object.values(themesMap).forEach((arr: any) => {
-      ;(Array.isArray(arr) ? arr : []).forEach((t: any) => {
-        const k = String(t || "").trim()
-        if (!k) return
-        themeCount.set(k, (themeCount.get(k) || 0) + 1)
-      })
-    })
-    const sortedThemes = Array.from(themeCount.entries())
-      .sort((a, b) => b[1] - a[1])
-      .map(([t]) => t)
-      .slice(0, 8)
-    sortedThemes.forEach((t) => {
+    fallbackThemeNames.value.forEach((t) => {
       const { stocks, matched } = aggregateStocksForTheme(t)
       buckets.push(makeBucket("", t, "fallback", ["本地涨停归集"], "", stocks, matched))
     })
