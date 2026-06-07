@@ -36,49 +36,29 @@ const formatPosition = (v: unknown) => {
 }
 
 const planGuide = computed(() => planSource.value?.planGuide || null)
-const planGuidePills = computed(() => {
-  const g = planGuide.value
-  if (!g) return []
-  return [
-    { text: `右侧：${g.rightsideText || "-"}`, primary: true },
-    ...(g.mainline ? [{ text: `主线：${g.mainline}`, primary: false }] : []),
-    ...(g.nature ? [{ text: `性质：${g.nature}`, primary: false }] : []),
-    ...(g.resonance ? [{ text: `共振：${g.resonance}`, primary: false }] : []),
-  ]
+const planDecision = computed(() => {
+  const value = planSource.value?.planDecision
+  return value && typeof value === "object" ? value : null
 })
-const planGuideWarnings = computed(() => (Array.isArray(planGuide.value?.warnings) ? planGuide.value?.warnings : []))
-
+const planGuidePills = computed(() => (Array.isArray(planDecision.value?.guidePills) ? planDecision.value.guidePills : []))
+const planGuideWarnings = computed(() => (Array.isArray(planDecision.value?.guideWarnings) ? planDecision.value.guideWarnings : []))
 const positionAdvice = computed(() => {
+  const value = planDecision.value?.positionAdvice
+  if (value && typeof value === "object") {
+    return {
+      stance: String(value.stance || "均衡"),
+      range: String(value.range || "-"),
+      cls: String(value.cls || "pos-balance"),
+      pillCls: String(value.pillCls || "balance"),
+    }
+  }
   const finalPosition = formatPosition(planSource.value?.planGuide?.position)
-  if (finalPosition && finalPosition !== "-") {
-    const rightside = String(planSource.value?.planGuide?.rightsideText || "")
-    const stance = rightside === "禁止" ? "防守" : rightside === "允许" ? "进攻" : "均衡"
-    const cls = stance === "进攻" ? "pos-attack" : stance === "防守" ? "pos-def" : "pos-balance"
-    const pillCls = stance === "进攻" ? "attack" : stance === "防守" ? "def" : "balance"
-    return { stance, range: finalPosition, note: "", cls, pillCls }
+  return {
+    stance: "均衡",
+    range: finalPosition && finalPosition !== "-" ? finalPosition : "-",
+    cls: "pos-balance",
+    pillCls: "balance",
   }
-  const heat = Number(planSource.value?.mood?.heat ?? marketData.value?.mood?.heat ?? 0)
-  const risk = Number(planSource.value?.mood?.risk ?? marketData.value?.mood?.risk ?? 0)
-  const stage = String(planSource.value?.moodStage?.type || marketData.value?.moodStage?.type || "")
-  let stance = "均衡"
-  let range = "35–50%"
-  let note = "围绕主线核心，低位试错为主；不追高位一致。"
-  if (stage === "fire") {
-    stance = "防守"
-    range = "15–30%"
-    note = "退潮/冰点：只做低位试错，回避高位接力；优先看修复信号。"
-  } else if (risk >= heat + 10) {
-    stance = "防守"
-    range = "20–35%"
-    note = "风险压过热度：轻仓、分散、快进快出；等确定性再加仓。"
-  } else if (heat >= risk + 10) {
-    stance = "进攻"
-    range = "50–70%"
-    note = "热度占优：围绕主线核心与确认节点加仓；不做无辨识度扩散。"
-  }
-  const cls = stance === "进攻" ? "pos-attack" : stance === "防守" ? "pos-def" : "pos-balance"
-  const pillCls = stance === "进攻" ? "attack" : stance === "防守" ? "def" : "balance"
-  return { stance, range, note, cls, pillCls }
 })
 
 const ztRelaySorted = computed(() => (planSource.value?.ztAnalysis?.relay || []).slice())

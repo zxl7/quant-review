@@ -2,6 +2,7 @@
 import { computed, onMounted, ref, watchEffect } from "vue"
 import HeroSection from "./components/layout/HeroSection.vue"
 import TabBar from "./components/layout/TabBar.vue"
+import ShortlineOverviewPage from "./components/overview/ShortlineOverviewPage.vue"
 import SentimentPage from "./components/sentiment/SentimentPage.vue"
 import ThemesPage from "./components/themes/ThemesPage.vue"
 import LadderPage from "./components/ladder/LadderPage.vue"
@@ -37,6 +38,7 @@ const marketThemeTone = computed(() => {
 const defaultMode = isTradingSessionNow() || marketData.value?.meta?.mode === "intraday" ? "intraday" : "review"
 const modeView = ref<"review" | "intraday">(defaultMode)
 const reviewTabs = [
+  { id: "overview", name: "短线总览" },
   { id: "sentiment", name: "情绪分析" },
   { id: "hotAnswer", name: "今日热点" },
   { id: "tomorrow", name: "今日题材" },
@@ -213,7 +215,8 @@ watchEffect(() => {
       <TabBar :tabs="visibleTabs" :current-tab="currentTab" @select="currentTab = $event as TabId" />
 
       <main class="page-main">
-        <SentimentPage v-if="currentTab === 'sentiment'" />
+        <ShortlineOverviewPage v-if="currentTab === 'overview'" @jump="currentTab = $event as TabId" />
+        <SentimentPage v-else-if="currentTab === 'sentiment'" />
         <ThemesPage v-else-if="currentTab === 'themes'" />
         <LadderPage v-else-if="currentTab === 'ladder'" />
         <PlanPage v-else-if="currentTab === 'plan'" />

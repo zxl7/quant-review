@@ -4,7 +4,6 @@ import { echarts } from '../../echarts-setup';
 import { useMarketData } from '../../composables/useMarketData';
 import { useECharts } from '../../composables/useECharts';
 import ShortReminderFooter from '../common/ShortReminderFooter.vue';
-import { normalizeThemeName } from '../../utils/themeUtils';
 
 const { marketData } = useMarketData();
 
@@ -86,8 +85,9 @@ const timeClass = (hhmm?: string | null) => {
 };
 
 const ladderRows = computed(() => Array.isArray(marketData.value?.ladder) ? [...marketData.value.ladder] : []);
+const ladderDecision = computed<any>(() => marketData.value?.ladderDecision || {});
 
-const mainTheme = computed(() => String(marketData.value?.themePanels?.ztTop?.[0]?.name || ''));
+const mainTheme = computed(() => String(ladderDecision.value?.mainTheme || marketData.value?.themePanels?.ztTop?.[0]?.name || ''));
 
 const themesFor = (code: unknown): string[] => {
   const key = String(code || '').trim();
@@ -99,120 +99,24 @@ const themesFor = (code: unknown): string[] => {
 
 const isMainThemeChip = (theme: string) => Boolean(mainTheme.value) && theme === mainTheme.value;
 
-const groupedLadder = computed(() => {
-  const groups = new Map<number, any[]>();
-  ladderRows.value.forEach((row) => {
-    const badge = Number(row?.badge || 0);
-    if (!badge) return;
-    if (!groups.has(badge)) groups.set(badge, []);
-    groups.get(badge)?.push(row);
-  });
-  
-  return Array.from(groups.entries())
-    .sort((a, b) => b[0] - a[0])
-    .map(([badge, rows]) => {
-      // 1. 板块统计：找出该梯队的主流板块
-      const sectorCounts = new Map<string, number>();
-      rows.forEach(r => {
-        const themes = themesFor(r.code);
-        themes.forEach(t => {
-          const normalized = normalizeThemeName(t);
-          sectorCounts.set(normalized, (sectorCounts.get(normalized) || 0) + 1);
-        });
-      });
-      const topSectors = Array.from(sectorCounts.entries())
-        .sort((a, b) => b[1] - a[1])
-        .slice(0, 2)
-        .map(([name, count]) => ({ name, count }));
-
-      // 2. 接力情绪分析
-      const qCount = (label: string) => rows.filter((r) => String(r.qualityLabel || '') === label).length;
-      const accel = qCount('加速确认');
-      const relay = qCount('温和放量') + qCount('高换手承接');
-      const weak = qCount('分歧烂板') + qCount('反复回封');
-      
-      let relaySentiment = '均衡';
-      let relayCls = 'kpi-orange';
-      if (accel > rows.length * 0.5) { relaySentiment = '加速'; relayCls = 'kpi-red'; }
-      else if (relay > rows.length * 0.4) { relaySentiment = '接力'; relayCls = 'kpi-orange'; }
-      else if (weak > rows.length * 0.3) { relaySentiment = '分歧'; relayCls = 'kpi-blue'; }
-
-      const zbcArr = rows.map((r) => Number(r?.zbc ?? 0));
-      const resealCnt = zbcArr.filter((v) => v >= 1).length;
-      const multiOpenCnt = zbcArr.filter((v) => v >= 2).length;
-      const resealRate = rows.length ? Math.round((resealCnt / rows.length) * 100) : 0;
-      const multiOpenRate = rows.length ? Math.round((multiOpenCnt / rows.length) * 100) : 0;
-      
-      const sealYiArr = rows.map((r) => Number(r?.zj ?? 0) / 1e8).filter((v) => v > 0);
-      const sealMed = median(sealYiArr);
-      const sealMax = sealYiArr.length ? Math.max(...sealYiArr) : 0;
-
-      return {
-        badge,
-        rows,
-        count: rows.length,
-        badgeClass: badge >= 6 ? 'badge-6' : badge === 5 ? 'badge-5' : `badge-${badge}`,
-        resealRate,
-        multiOpenRate,
-        resealCls: resealRate >= 55 ? 'kpi-red' : resealRate >= 35 ? 'kpi-orange' : 'kpi-blue',
-        multiCls: multiOpenRate >= 35 ? 'kpi-red' : multiOpenRate >= 18 ? 'kpi-orange' : 'kpi-blue',
-        sealMed,
-        sealMax,
-        topSectors,
-        relaySentiment,
-        relayCls,
-        resonanceScore: Math.min(topSectors.length * 20 + rows.length * 2 + badge * 5, 100), // 梯队共振分
-      };
-    });
-});
+const groupedLadder = computed(() => (Array.isArray(ladderDecision.value?.groupedLadder) ? ladderDecision.value.groupedLadder : []));
 
 const ladderSummary = computed(() => {
+  const value = ladderDecision.value?.summary;
+  if (value && typeof value === 'object') return value;
   const data = ladderRows.value;
   const mi = marketData.value?.features?.mood_inputs || {};
-  const yest = Number(mi.yest_lb_count ?? 0);
-  const promote = data.filter((r) => r.status === '晋级').length;
-  const jj = mi.jj_rate !== undefined ? `${Number(mi.jj_rate).toFixed(1)}%` : '-';
-  const zt = Number(marketData.value?.panorama?.limitUp ?? 0);
-  const maxLb = Number(mi.max_lb ?? groupedLadder.value?.[0]?.badge ?? 0);
-  const zbRate = mi.zb_rate !== undefined ? `${Number(mi.zb_rate).toFixed(1)}%` : '-';
-  const total = data.length || 0;
-  const cleanName = (name: string) => String(name || '').replace(/^[^\u4e00-\u9fa5A-Za-z0-9]+/, '').trim();
-  const qCount = (label: string) => data.filter((r) => String(r.qualityLabel || '') === label).length;
-  const accelCnt = qCount('加速确认');
-  const warmCnt = qCount('温和放量');
-  const rottenCnt = qCount('分歧烂板');
-  const resealCnt = qCount('反复回封');
-  const highTurnCnt = qCount('高换手承接');
-  const topRows = [...data].sort((a, b) => Number(b.badge || 0) - Number(a.badge || 0) || Number(b.zj || 0) - Number(a.zj || 0));
-  const topRow = topRows[0] || {};
-  const secondBadge = Number(topRows[1]?.badge || 0);
-  const topBadge = Number(topRow.badge || maxLb || 0);
-  const topName = cleanName(topRow.name || '');
-  const hasSpaceLeader = topName && topBadge >= 5 && topBadge > secondBadge;
-  const tierSpan = groupedLadder.value.length;
-  let qualityTitle = hasSpaceLeader ? `${topName}打开${topBadge}板高度` : '梯队承接';
-  let qualitySub = hasSpaceLeader ? '市场空间核心，先看它对高标与同题材的带动。' : `连板覆盖 ${tierSpan} 个梯队，先看前排能否继续晋级。`;
-  if (!hasSpaceLeader && accelCnt + warmCnt >= Math.max(3, Math.ceil(total * 0.55))) {
-    qualityTitle = '确认型占优';
-    qualitySub = `加速/温和放量 ${accelCnt + warmCnt} 只，前排承接偏稳。`;
-  } else if (!hasSpaceLeader && rottenCnt + resealCnt >= Math.max(2, Math.ceil(total * 0.35))) {
-    qualityTitle = '分歧板偏多';
-    qualitySub = `烂板/反复回封 ${rottenCnt + resealCnt} 只，次日更看去弱留强。`;
-  } else if (!hasSpaceLeader && highTurnCnt >= Math.max(2, Math.ceil(total * 0.25))) {
-    qualityTitle = '换手承接';
-    qualitySub = `高换手承接 ${highTurnCnt} 只，资金偏向换手确认。`;
-  }
   return {
-    total,
-    promote,
-    yest,
-    jj,
-    zt,
-    maxLb,
-    zbRate,
-    qualityTitle,
-    qualitySub,
-  };
+    total: data.length || 0,
+    promote: data.filter((r) => r.status === '晋级').length,
+    yest: Number(mi.yest_lb_count ?? 0),
+    jj: mi.jj_rate !== undefined ? `${Number(mi.jj_rate).toFixed(1)}%` : '-',
+    zt: Number(marketData.value?.panorama?.limitUp ?? 0),
+    maxLb: Number(mi.max_lb ?? groupedLadder.value?.[0]?.badge ?? 0),
+    zbRate: mi.zb_rate !== undefined ? `${Number(mi.zb_rate).toFixed(1)}%` : '-',
+    qualityTitle: '梯队承接',
+    qualitySub: '优先以后端梯队结构判断为准。',
+  }
 });
 
 const firstBoards = computed(() => {

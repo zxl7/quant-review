@@ -3,11 +3,9 @@ import { computed, ref } from 'vue';
 import { echarts } from '../../echarts-setup';
 import { useMarketData } from '../../composables/useMarketData';
 import { useECharts } from '../../composables/useECharts';
-import { useThemeHotStore } from '../../composables/useThemeHotStore';
 import ShortReminderFooter from '../common/ShortReminderFooter.vue';
 
 const { marketData, marketToneClass } = useMarketData();
-const { narrativeHitForTheme, xgbPlates, tmrThemes, xgbUpdatedAt, tmrUpdatedAt, xgbHotPlateNames } = useThemeHotStore();
 
 const heatColor = (v: number) => {
   const n = Number(v || 0);
@@ -81,82 +79,20 @@ const concRatioLabel = computed(() => {
 const topPlate = computed<any>(() => (marketData.value?.plateRankTop10 || [])[0] || null);
 
 const rotationInfo = computed<any>(() => marketData.value?.rotation || null);
-
+const sentimentDecision = computed<any>(() => marketData.value?.sentimentDecision || {});
 const resonanceVerdict = computed(() => {
-  void xgbUpdatedAt.value;
-  void tmrUpdatedAt.value;
-  const conc = topZtConcRatio.value;
-  const style = String(rotationInfo.value?.style || '');
-  const highRatio = Number(rotationInfo.value?.highLevelRatio || 0);
-  const overlapScoreRaw = String(marketData.value?.structureV2?.evidence?.overlap?.score || '').replace('%', '');
-  const overlap = Number(overlapScoreRaw);
-  const narrative = narrativeHitForTheme(topZtTheme.value?.name);
-  if (!conc) return { text: '-', cls: '' };
-  if (Number.isFinite(overlap) && overlap >= 50) return { text: '主线与炸板高度重叠,主线在分歧/退潮,情绪面承压', cls: 'orange-text' };
-  if (conc >= 35 && narrative.hit) return { text: `主线抱团 + ${narrative.sources.join('/')}narrative 双重确认,情绪偏强`, cls: 'red-text' };
-  if (conc >= 35 && /高位|加速|主升/.test(style)) return { text: '主线抱团 + 高位接力,情绪偏热,警惕兑现', cls: 'orange-text' };
-  if (conc >= 35) return { text: '主线抱团明显,接力链条值得追踪', cls: 'red-text' };
-  if (conc >= 20 && narrative.hit) return { text: `主线初现 + ${narrative.sources.join('/')}narrative 加持,题材有发酵潜力`, cls: 'red-text' };
-  if (conc >= 20 && /低位|试错/.test(style)) return { text: '主线初现 + 低位试错,题材有发酵潜力', cls: 'red-text' };
-  if (conc < 20 && highRatio >= 30) return { text: '题材分散 + 高位拥挤,易出现高位接力风险', cls: 'orange-text' };
-  if (conc < 20 && !narrative.hit) return { text: '资金分散且 narrative 未共振,主线尚未形成', cls: 'green-text' };
-  if (conc < 20) return { text: '资金分散,主线尚未形成', cls: 'green-text' };
-  return { text: '主线一般,关注后续切换', cls: 'orange-text' };
+  const value = sentimentDecision.value?.resonanceVerdict;
+  return value && typeof value === 'object' ? value : { text: '-', cls: '' };
 });
-
 const narrativeOverview = computed(() => {
-  void xgbUpdatedAt.value;
-  void tmrUpdatedAt.value;
-  const xgbCnt = xgbPlates.value.length;
-  const tmrHot = tmrThemes.value.filter((t) => t.isHot).length;
-  const tmrAll = tmrThemes.value.length;
-  if (!xgbCnt && !tmrAll) return null;
-  const topZtName = String(topZtTheme.value?.name || '');
-  const hit = topZtName ? narrativeHitForTheme(topZtName) : { hit: false, sources: [] };
-  return {
-    xgbCnt,
-    tmrHot,
-    tmrAll,
-    topZtName,
-    hit: hit.hit,
-    sources: hit.sources,
-  };
+  const value = sentimentDecision.value?.narrativeOverview;
+  return value && typeof value === 'object' ? value : null;
 });
-
 const narrativeCoverage = computed(() => {
-  void xgbUpdatedAt.value;
-  void tmrUpdatedAt.value;
-  const themesMap = (marketData.value?.zt_code_themes || {}) as Record<string, string[]>;
-  const codes = Object.keys(themesMap);
-  if (!codes.length) return null;
-  const hotSet = xgbHotPlateNames.value;
-  if (!hotSet.size) return null;
-  let hit = 0;
-  const hitCodes: string[] = [];
-  codes.forEach((code) => {
-    const themes = Array.isArray(themesMap[code]) ? themesMap[code] : [];
-    if (themes.some((t) => hotSet.has(String(t || '').trim().replace(/\s+/g, '')))) {
-      hit += 1;
-      if (hitCodes.length < 6) hitCodes.push(code);
-    }
-  });
-  const ratio = codes.length ? Math.round((hit / codes.length) * 100) : 0;
-  let verdict = '';
-  let cls = '';
-  if (ratio >= 40) { verdict = 'narrative 驱动 — 涨停股大面积命中 narrative 主线'; cls = 'red-text'; }
-  else if (ratio >= 20) { verdict = '部分共振 — 主线在但未全面发酵'; cls = 'orange-text'; }
-  else { verdict = 'narrative 脱节 — 涨停与今日叙事相关度低'; cls = 'green-text'; }
-  return { total: codes.length, hit, ratio, hitCodes, verdict, cls };
+  const value = sentimentDecision.value?.narrativeCoverage;
+  return value && typeof value === 'object' ? value : null;
 });
-
-const narrativeHitNames = computed(() => {
-  if (!narrativeCoverage.value) return '';
-  const codes = narrativeCoverage.value.hitCodes;
-  const zt = Array.isArray(marketData.value?.ztgc) ? marketData.value.ztgc : [];
-  const codeToName = new Map<string, string>();
-  zt.forEach((s: any) => { const k = String(s?.dm || s?.code || '').trim(); if (k) codeToName.set(k, String(s?.mc || s?.name || k)); });
-  return codes.map((c) => codeToName.get(c) || c).join(' / ');
-});
+const narrativeHitNames = computed(() => String(narrativeCoverage.value?.hitNames || ''));
 
 const moodCardValueClass = (group: string, card: any) => {
   const v = toNum(String(card?.value || '').replace('分', '').replace('%', '').replace('亿', ''), Number.NaN);
