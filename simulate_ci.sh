@@ -159,23 +159,12 @@ echo -e "${YELLOW}[5/6]${NC} 准备 Pages 站点目录"
 mkdir -p site
 rm -rf site/*.html site/*.json site/*.js 2>/dev/null || true
 
-# HTML 来源：优先 web/dist/index.html（新 web 路径），兜底 ./html/ 旧产物
-report_html=""
-if [ -f "./web/dist/index.html" ]; then
-    report_html="./web/dist/index.html"
-elif [ -d "./html" ]; then
-    if [ "${MODE}" = "intraday" ]; then
-        report_html="$(ls -t ./html/*-intra.html ./html/*-intraday-tab-v1.html ./html/*intraday*.html 2>/dev/null | head -n 1 || true)"
-        [ -z "${report_html}" ] && report_html="$(ls -t ./html/*tab-v1.html 2>/dev/null | head -n 1 || true)"
-    else
-        report_html="$(ls -t ./html/*tab-v1.html 2>/dev/null | head -n 1 || true)"
-    fi
-fi
+# HTML 来源：只认 web/dist/index.html（web 主路线）
+report_html="./web/dist/index.html"
 
-if [ -z "${report_html}" ]; then
+if [ ! -f "${report_html}" ]; then
     echo -e "  ${RED}⚠️  未找到 HTML 报告${NC}"
     ls -la ./web/dist 2>/dev/null || echo "  web/dist/ 不存在"
-    ls -la ./html 2>/dev/null || echo "  html/ 不存在"
 else
     cp -f "${report_html}" ./site/
     cp -f "${report_html}" ./site/index.html

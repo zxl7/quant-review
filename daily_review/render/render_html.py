@@ -2,16 +2,14 @@
 # -*- coding: utf-8 -*-
 
 """
-模板渲染器（A方案的第一步）
+展示字段构造 helpers。
 
-职责：
-1) 读取 HTML 模板文件（report_template.html）
-2) 注入 marketData JSON（替换模板中的 /*__MARKET_DATA_JSON__*/ null）
-3) 替换 __REPORT_DATE__ / __DATE_NOTE__ 等占位符
+当前主路线已经切到 web：
+- 页面入口来自 web/dist/index.html
+- 运行时数据由 inject_data.py 写入 web/dist / web/public
 
-说明：
-- 该脚本只负责「渲染」，不负责任何数据抓取与指标计算。
-- 这样可以保证原始 HTML/CSS/JS 结构不变，只替换数据，从而 1:1 保持视觉效果。
+本模块现在只保留可复用的纯计算/衍生字段函数，
+供 cli / inject_data / 其他脚本复用，不再承担 HTML 模板渲染职责。
 """
 
 from __future__ import annotations
@@ -388,41 +386,6 @@ def build_plate_rank_top10(market_data: Dict[str, Any]) -> list[Dict[str, Any]]:
         item["barPct"] = _to_num(chg, 0) * 10
         out.append(item)
     return out
-
-
-def render_html_template(
-    *,
-    template_path: Path,
-    output_path: Path,
-    market_data: Dict[str, Any],
-    report_date: str,
-    date_note: str = "",
-) -> None:
-    tpl = template_path.read_text(encoding="utf-8")
-
-    # 清理历史示例数据大注释块：仅用于开发回溯，保留在模板里会显著放大最终 HTML。
-    tpl = re.sub(
-        r"\n\s*// 核心数据对象\s*\n\s*/\*[\s\S]*?\n\s*// 默认值：模板单独打开时不展示任何“写死行情”",
-        "\n      // 默认值：模板单独打开时不展示任何“写死行情”",
-        tpl,
-        count=1,
-    )
-
-    market_data = _with_render_meta(market_data)
-    market_data_js = json.dumps(market_data, ensure_ascii=False)
-
-    # 1) 注入 marketData
-    tpl = tpl.replace("/*__MARKET_DATA_JSON__*/ null", market_data_js)
-
-    # 2) 注入日期类占位符
-    tpl = tpl.replace("__REPORT_DATE__", report_date)
-    tpl = tpl.replace("__DATE_NOTE__", date_note or "")
-    m = re.match(r"^(\d{4})-(\d{2})-(\d{2})$", report_date)
-    report_date_cn = f"{m.group(1)}年{m.group(2)}月{m.group(3)}日" if m else report_date
-    tpl = tpl.replace("__REPORT_DATE_CN__", report_date_cn)
-
-    output_path.parent.mkdir(parents=True, exist_ok=True)
-    output_path.write_text(tpl, encoding="utf-8")
 
 
 def build_action_guide_v2(market_data: Dict[str, Any]) -> Dict[str, Any]:
@@ -1225,185 +1188,3 @@ def build_learning_notes(*, market_data: Dict[str, Any], cache_dir: Path) -> Dic
 
     return _impl(market_data=market_data, cache_dir=cache_dir)
 
-
-if __name__ == "__main__":
-    import argparse
-
-    ap = argparse.ArgumentParser()
-    ap.add_argument("--template", required=True, help="HTML 模板路径")
-    ap.add_argument("--market-data-json", required=True, help="marketData 的 JSON 文件路径")
-    ap.add_argument("--out", required=True, help="输出 HTML 路径")
-    ap.add_argument("--date", required=True, help="报告日期 YYYY-MM-DD")
-    ap.add_argument("--note", default="", help="日期备注（非交易日回退提示等）")
-    args = ap.parse_args()
-
-    template_path = Path(args.template)
-    market_json_path = Path(args.market_data_json)
-    output_path = Path(args.out)
-
-    market_data = json.loads(market_json_path.read_text(encoding="utf-8"))
-
-    # 离线增强：补齐「情绪周期趋势（近5/7日）」数据
-    # 说明：
-    # - 新版 gen_report_v4 会写入 features.mood_inputs.hist_* 与 trend_*
-    # - 但如果你只离线 render（且缓存来自旧版本），这里会自动用本地 cache/market_data-*.json 补齐
-    try:
-        features = market_data.setdefault("features", {})
-        mood_inputs = features.setdefault("mood_inputs", {})
-
-        hist_days = mood_inputs.get("hist_days")
-        if not (isinstance(hist_days, list) and len(hist_days) >= 2):
-            # 历史窗口：默认 5 天，可用环境变量覆盖（和 gen_report_v4 对齐）
-            try:
-                hist_n = int(os.getenv("MOOD_HIST_DAYS", "5") or "5")
-            except Exception:
-                hist_n = 5
-            hist_n = max(3, min(hist_n, 10))
-
-            cache_dir = market_json_path.parent
-            items = []
-            for fp in cache_dir.glob("market_data-*.json"):
-                m = re.search(r"market_data-(\d{8})$", fp.stem)
-                if not m:
-                    continue
-                d8 = m.group(1)
-                d10 = f"{d8[0:4]}-{d8[4:6]}-{d8[6:8]}"
-                if d10 <= args.date:
-                    items.append((d10, fp))
-            items.sort(key=lambda x: x[0])
-            items = items[-hist_n:]
-
-            rows = []
-            for d10, fp in items:
-                try:
-                    snap = json.loads(fp.read_text(encoding="utf-8"))
-                    fin = snap.get("features") or {}
-                    mi = fin.get("mood_inputs") or {}
-                    si = fin.get("style_inputs") or {}
-                    rows.append(
-                        {
-                            "date": str(snap.get("date") or d10),
-                            "max_lb": int(si.get("max_lb", 0) or 0),
-                            "fb_rate": float(mi.get("fb_rate", 0) or 0),
-                            "jj_rate": float(mi.get("jj_rate_adj", mi.get("jj_rate", 0)) or 0),
-                            "broken_lb_rate": float(mi.get("broken_lb_rate_adj", mi.get("broken_lb_rate", 0)) or 0),
-                            "zb_rate": float(mi.get("zb_rate", 0) or 0),
-                            "zt_early_ratio": float(mi.get("zt_early_ratio", 0) or 0),
-                            "loss": float(mi.get("loss", (float(mi.get("bf_count", 0) or 0) + float(mi.get("dt_count", 0) or 0))) or 0),
-                        }
-                    )
-                except Exception:
-                    continue
-
-            if len(rows) >= 2:
-                first, last = rows[0], rows[-1]
-                mood_inputs["hist_days"] = [r["date"] for r in rows]
-                mood_inputs["hist_max_lb"] = [r["max_lb"] for r in rows]
-                mood_inputs["hist_fb_rate"] = [round(r["fb_rate"], 1) for r in rows]
-                mood_inputs["hist_jj_rate"] = [round(r["jj_rate"], 1) for r in rows]
-                mood_inputs["hist_broken_lb_rate"] = [round(r["broken_lb_rate"], 1) for r in rows]
-                mood_inputs["hist_zb_rate"] = [round(r["zb_rate"], 1) for r in rows]
-                mood_inputs["hist_zt_early_ratio"] = [round(r["zt_early_ratio"], 1) for r in rows]
-                mood_inputs["hist_loss"] = [round(r["loss"], 1) for r in rows]
-                mood_inputs["trend_max_lb"] = round(float(last["max_lb"]) - float(first["max_lb"]), 2)
-                mood_inputs["trend_fb_rate"] = round(float(last["fb_rate"]) - float(first["fb_rate"]), 2)
-                mood_inputs["trend_jj_rate"] = round(float(last["jj_rate"]) - float(first["jj_rate"]), 2)
-                mood_inputs["trend_broken_lb_rate"] = round(float(last["broken_lb_rate"]) - float(first["broken_lb_rate"]), 2)
-                mood_inputs["trend_zb_rate"] = round(float(last["zb_rate"]) - float(first["zb_rate"]), 2)
-                mood_inputs["trend_zt_early_ratio"] = round(float(last["zt_early_ratio"]) - float(first["zt_early_ratio"]), 2)
-                mood_inputs["trend_loss"] = round(float(last["loss"]) - float(first["loss"]), 2)
-    except Exception:
-        pass
-
-    # 离线增强：把 pools_cache.json 中的当日涨停池注入到 market_data，供 HTML 做「涨停个股分析」
-    # 注意：此处不做任何网络请求，只读取本地缓存文件
-    try:
-        pools_cache_path = market_json_path.parent / "pools_cache.json"
-        if pools_cache_path.exists():
-            pools_cache = json.loads(pools_cache_path.read_text(encoding="utf-8"))
-            ztgc = (((pools_cache.get("pools") or {}).get("ztgc") or {}).get(args.date)) or []
-            # 为避免与其他字段冲突，使用 ztgc 作为当日涨停池明细
-            market_data["ztgc"] = ztgc
-            # 同步注入题材映射（theme_cache.json）：为涨停个股分析提供「更细粒度题材」
-            theme_cache_path = market_json_path.parent / "theme_cache.json"
-            if theme_cache_path.exists():
-                theme_cache = json.loads(theme_cache_path.read_text(encoding="utf-8"))
-                code2themes = theme_cache.get("codes") or {}
-                # 只注入当日涨停池涉及的代码，避免把整个题材库塞进 HTML
-                zt_code_themes = {}
-                for s in ztgc:
-                    code = str(s.get("dm") or s.get("code") or "")
-                    if code and code in code2themes:
-                        zt_code_themes[code] = code2themes.get(code) or []
-                market_data["zt_code_themes"] = zt_code_themes
-    except Exception:
-        # 缓存缺失或格式异常时忽略，不影响主页面渲染
-        pass
-
-    # 离线增强：龙头识别（如果 marketData 中还没有 leaders，则补齐）
-    try:
-        if not market_data.get("leaders"):
-            from daily_review.modules.leader import rebuild_leaders
-
-            market_data.update(rebuild_leaders(market_data))
-    except Exception:
-        market_data.setdefault("leaders", [])
-
-    # 离线增强：市场全景 · 7日对比（量能 / 涨停 / 炸板 / 高度统一看）
-    try:
-        market_data.setdefault("marketOverview7d", build_market_overview_7d(market_data=market_data))
-    except Exception:
-        market_data.setdefault("marketOverview7d", {"window": 7, "dates": [], "series": [], "highlights": []})
-
-    # 前四个 tab：统一下沉到后端，前端尽量只展示
-    try:
-        market_data.setdefault("heatmap", build_heatmap(market_data))
-    except Exception:
-        market_data.setdefault("heatmap", {"score": "-", "summary": "", "trend": {"icon": "→→", "text": "稳定"}, "cells": []})
-
-    try:
-        if not market_data.get("hm2Compare"):
-            from daily_review.metrics.mood_signals import build_hm2_compare
-
-            market_data["hm2Compare"] = build_hm2_compare(market_data)
-    except Exception:
-        market_data.setdefault("hm2Compare", {"score": 0, "hint": "", "pointerLeft": "0%", "cells": []})
-
-    try:
-        if not market_data.get("sectorHeatmap"):
-            from daily_review.metrics.sector_heatmap import build_sector_heatmap
-
-            market_data["sectorHeatmap"] = build_sector_heatmap(market_data)
-    except Exception:
-        market_data.setdefault("sectorHeatmap", {"globalScore": 0, "rows": [], "alpha": "", "hint": ""})
-
-    try:
-        market_data.setdefault("moodTriCards", build_mood_tri_cards(market_data))
-    except Exception:
-        market_data.setdefault("moodTriCards", [])
-
-    try:
-        market_data.setdefault("sentimentExplainDims", build_sentiment_explain_dims(market_data))
-    except Exception:
-        market_data.setdefault("sentimentExplainDims", [])
-
-    try:
-        market_data.setdefault("plateRankTop10", build_plate_rank_top10(market_data))
-    except Exception:
-        market_data.setdefault("plateRankTop10", [])
-
-    # 离线增强：学习短线提醒 + 语录（随情绪阶段动态切换）
-    try:
-        ln = market_data.get("learningNotes") or {}
-        if not ln.get("tips"):
-            market_data["learningNotes"] = build_learning_notes(market_data=market_data, cache_dir=market_json_path.parent)
-    except Exception:
-        market_data.setdefault("learningNotes", {"tips": [], "quotes": []})
-
-    render_html_template(
-        template_path=template_path,
-        output_path=output_path,
-        market_data=market_data,
-        report_date=args.date,
-        date_note=args.note,
-    )

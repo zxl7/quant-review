@@ -1,16 +1,16 @@
-## daily_review 模块化（A方案：模板外置）
+## daily_review 模块化（历史方案记录）
 
-### 当前进度（已完成）
-- `templates/report_template.html`：作为外置模板，保留原有 DOM/CSS/JS，仅新增占位符：
-  - `__REPORT_DATE__`
-  - `__DATE_NOTE__`
-  - `/*__MARKET_DATA_JSON__*/ null`
-- `daily_review/render/render_html.py`：渲染器脚本，负责把 marketData JSON 注入模板并输出 HTML。
+这份文档描述的是早期“模板外置 + HTML 渲染”的迁移设想。
 
-### 下一步（待做）
-1. 把 `gen_report_v4.py` 中 “marketData 组装” 提取成 Python `dict`（例如 `market_data = {...}`）
-2. `gen_report_v4.py` 最终不再拼接大段 HTML，而是调用 `render_html_template()` 输出报告
-3. 增量把抓取/缓存/题材/指标拆成独立模块
+当前主路线已经切到 `web/`：
+- 页面入口是 `web/dist/index.html`
+- 运行时数据由 `daily_review.publish.web_bundle` 构建，并通过 `inject_data.py` 兼容入口写入 `web/dist/market_data.json` / `market_data.js`
+- `daily_review/render/render_html.py` 现阶段主要保留字段衍生 helper，供 web 注入复用
+
+### 备注
+历史模板链已下线；当前若继续收口，重点应放在：
+1. `daily_review/render/render_html.py` 中是否还有只服务历史 HTML 的 helper
+2. `daily_review/cli.py` / `README` 中与旧 HTML 输出相关的残余描述
 
 ### 开发阶段：部分更新（只重算某个模块）
 前置：先跑一次全量更新，使得 `cache/market_data-YYYYMMDD.json` 存在。

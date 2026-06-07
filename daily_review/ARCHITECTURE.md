@@ -1,6 +1,13 @@
 ## 目标
 
-把 `gen_report_v4.py` 从“单文件巨石”升级为 **可拆分、可拼装、可部分更新、可单测** 的模块化架构，同时 **保持 HTML 结构稳定**（模板外置，数据注入）。
+这份文档记录的是早期从单文件脚本迁移出来时的设计草案。
+
+当前仓库主路线已经切到 `web/`：
+- 页面构建走 `web/src -> web/dist/index.html`
+- Python 侧负责产出 `market_data`
+- `daily_review.publish.web_bundle` 负责构建运行时 bundle，`inject_data.py` 仅保留兼容入口
+
+下面关于“模板外置 + HTML 注入”的部分，属于历史设计背景；对应文件已下线，不再代表当前主发布链路。
 
 你的使用背景（收盘全量 + 开发阶段局部迭代）对应两种运行模式：
 - **FULL（全量）**：抓取 + 计算全部模块 + 输出报告 + 落盘 `marketData` 与中间特征
@@ -53,14 +60,19 @@
 - `modules/mood` 覆盖 `marketData.mood + marketData.moodStage + marketData.moodCards`
 
 ### 6) 渲染层（render）
-职责：模板外置 + 注入 marketData，保证 HTML 结构稳定。
-- `templates/report_template.html`（尽量不变）
-- `render_html.py`：注入 JSON 输出 HTML
+职责：为前端准备稳定的展示衍生字段。
+- `daily_review.publish.web_bundle`：把运行时数据写入 `web/dist` / `web/public`
+- `render_html.py`：保留可复用的展示 helper
 
 ### 7) CLI 层（cli）
 职责：模式选择、参数解析、执行 pipeline、输出文件。
 - FULL：抓取 + 全模块计算 + 输出 + 落盘
 - PARTIAL：读缓存 + 指定模块计算 + 输出
+
+当前收口状态：
+- `daily_review/cli.py` 仍是唯一命令入口
+- 离线重建所需的缓存装配 / `Context` 准备，已开始下沉到 `daily_review/application/rebuild_service.py`
+- 在线取数后的缓存落盘 / 初始 `market_data` 骨架构建，已开始下沉到 `daily_review/application/fetch_service.py`
 
 ---
 
@@ -124,7 +136,7 @@ patch 合并策略：
 
 1) 先把每个“大块”拆成独立模块文件（即使内部仍调用旧函数）
 2) 模块间通过 ctx.features/ctx.raw 传递，逐步去除 cross-call
-3) 最后把 gen_report_v4.py 瘦身成：参数解析 → pipeline → render
+3) 最后把旧脚本职责收敛为：参数解析 → pipeline → web 数据注入
 
 ---
 

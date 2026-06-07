@@ -79,7 +79,7 @@ date10_to_date8() {
 
 refresh_watchlist_cache() {
   # 拉异动/板块/明日主题接口 + 跑 M3/M4/M5 推票
-  # 产出 cache_online/watchlist_cache-YYYYMMDD.json，由 inject_data.py 注入前端 picks_advisor
+  # 产出 cache_online/watchlist_cache-YYYYMMDD.json，由 publish web bundle 注入前端 picks_advisor
   # 调用约束：必须在 sync_online_cache_dir 之后（因 fetch_watchlist 从 cache_online/ 读 pools/market_data，
   #          且 sync_online_cache_dir 会先清空 cache_online/）
   local date10="$1"
@@ -215,7 +215,7 @@ cmd_fetch() {
 }
 
 cmd_gen() {
-  # 仅在线取数：走 daily_review.cli --fetch，避免再调用 gen_report_v4.py
+  # 仅在线取数：走 daily_review.cli --fetch
   load_dotenv_if_needed
   ensure_token
 
@@ -381,6 +381,7 @@ EOF
 main() {
   local cmd="${1:-}"
   case "${cmd}" in
+    "")     cmd_fetch ;;
     fetch)  cmd_fetch ;;
     gen)    cmd_gen ;;
     render) cmd_render ;;
@@ -388,7 +389,7 @@ main() {
     sync-cache) cmd_sync_cache ;;
     watch-slice) cmd_watch_slice ;;
     deploy) cmd_deploy ;;
-    -h|--help|help|"") usage ;;
+    -h|--help|help) usage ;;
     *) die "未知命令：${cmd}（用 ./qr.sh help 查看用法）" ;;
   esac
 }

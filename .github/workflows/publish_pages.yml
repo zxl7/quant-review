@@ -456,35 +456,21 @@ jobs:
           fi
           python3 inject_data.py "${d8}" --source "${source_path}"
 
-      - name: Prepare Pages site (html/ as site root)
+      - name: Prepare Pages site
         if: ${{ (github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true') && (github.event_name != 'schedule' || steps.tradeday.outputs.is_trade_today == 'true') }}
         run: |
           set -euo pipefail
-          report_html=""
-          if [ -f "./web/dist/index.html" ]; then
-            report_html="./web/dist/index.html"
-          else
-            mode="${{ steps.pushmode.outputs.mode }}"
-            if [ -d "./html" ]; then
-              if [ "${mode}" = "intraday" ]; then
-                # intraday 输出文件名历史上存在两种：
-                # - 复盘日记-YYYYMMDD-intra.html
-                # - 复盘日记-YYYYMMDD-intraday-tab-v1.html
-                report_html="$(ls -t ./html/*-intra.html ./html/*-intraday-tab-v1.html ./html/*intraday*.html 2>/dev/null | head -n 1 || true)"
-                if [ -z "${report_html}" ]; then
-                  report_html="$(ls -t ./html/*tab-v1.html 2>/dev/null | head -n 1 || true)"
-                fi
-              else
-                report_html="$(ls -t ./html/*tab-v1.html 2>/dev/null | head -n 1 || true)"
-              fi
-            fi
-          fi
+          report_html="./web/dist/index.html"
           if [ -z "${report_html}" ]; then
             echo "No publishable html found."
             ls -la ./web/dist || true
-            ls -la ./html || true
             exit 2
           fi
+          [ -f "${report_html}" ] || {
+            echo "Missing publishable html: ${report_html}"
+            ls -la ./web/dist || true
+            exit 2
+          }
           run_date="${{ steps.pushmode.outputs.date10 }}"
           d8="$(echo "${run_date}" | tr -d '-')"
           source_path="cache/market_data-${d8}.json"
@@ -537,9 +523,6 @@ jobs:
         if: ${{ (github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true') && (github.event_name != 'schedule' || steps.tradeday.outputs.is_trade_today == 'true') }}
         run: |
           set -euo pipefail
-          # 站点策略：只保留最新一份报告 HTML（历史可通过重新拉取数据再渲染）
-          rm -f site_prev/复盘日记-*.html 2>/dev/null || true
-
           # 将构建产物覆盖写入 gh-pages 根目录（Deploy from branch: /）
           cp -f ./site/.nojekyll site_prev/.nojekyll
           cp -f ./site/index.html site_prev/index.html

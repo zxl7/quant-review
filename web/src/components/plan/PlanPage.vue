@@ -507,7 +507,7 @@ const advisorStockToZtPick = (s: PickStock): ZtStockPick => ({
 })
 
 // watchlist 反向索引：code → { primary_sector, primary_confidence, main_line, main_line_confidence }
-// 数据来自 inject_data.py 的 _build_watchlist_stock_index（M3/M4 多源融合结果）。
+// 数据来自 publish web bundle 的 _build_watchlist_stock_index（M3/M4 多源融合结果）。
 const mainLineOf = (code: unknown) => {
   const k = String(code || "").trim()
   if (!k) return null

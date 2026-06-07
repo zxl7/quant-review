@@ -1,0 +1,531 @@
+"""
+Web runtime bundle publish service.
+
+Canonical responsibilities:
+- load cache/market_data-YYYYMMDD.json
+- prepare publish-safe web payloads
+- sync runtime artifacts into web/dist and web/public
+
+`inject_data.py` is kept only as a compatibility CLI/import wrapper.
+"""
+
+from __future__ import annotations
+
+import argparse
+import json
+import shutil
+import sys
+from pathlib import Path
+from typing import Optional
+
+from daily_review.application.mood_history_service import inject_mood_history_and_delta
+
+
+ROOT = Path(__file__).resolve().parents[2]
+
+
+def _build_theme_alias_map(md: dict, watchlist: Optional[dict] = None) -> dict:
+    """
+    汇总今日题材别名映射：canonical_name -> 出现过的原始名集合。
+
+    归一化责任已经下沉到后端算法层（tide / core_tide / zt_analysis），
+    本函数只做“收集 + 分组”：
+    - 后端已带 canonical 字段的来源（tide/core_tide/zt_analysis）：
+      用算法层吐出来的 canonical 作为分组 key，把同行的 raw name 一并塞进桶里。
+    - 上游没带 canonical 的来源（plateRankTop10/sectors/leaders/zt_code_themes/watchlist）：
+      用 raw name 自身作为分组 key，等同于“透传”。
+
+    这样前端拿到的 alias_map 直接反映后端的判定结果，不需要在 publish 层
+    再跑一遍 normalize_sector。
+    """
+    alias_map: dict[str, set[str]] = {}
+
+    def push(name: object, canonical: object = None) -> None:
+        raw = str(name or "").strip()
+        canon = str(canonical or "").strip()
+        key = canon or raw
+        if not key:
+            return
+        bucket = alias_map.setdefault(key, set())
+        bucket.add(key)
+        if raw:
+            bucket.add(raw)
+
+    for row in md.get("plateRankTop10") or []:
+        if isinstance(row, dict):
+            push(row.get("name"))
+    for row in md.get("sectors") or []:
+        if isinstance(row, dict):
+            push(row.get("name"))
+    theme_panels = md.get("themePanels") if isinstance(md.get("themePanels"), dict) else {}
+    for key in ("strengthRows", "ztTop", "zbTop", "dtTop"):
+        for row in theme_panels.get(key) or []:
+            if isinstance(row, dict):
+                push(row.get("name"))
+    for row in md.get("leaders") or []:
+        if isinstance(row, dict):
+            push(row.get("theme"))
+    code_themes = md.get("zt_code_themes") if isinstance(md.get("zt_code_themes"), dict) else {}
+    for themes in code_themes.values():
+        for theme in themes or []:
+            push(theme)
+
+    for signal_key in ("tideSignal", "coreTideSignal"):
+        signal = md.get(signal_key) if isinstance(md.get(signal_key), dict) else {}
+        for row in signal.get("themes") or []:
+            if isinstance(row, dict):
+                push(row.get("name"), row.get("canonical_name"))
+    zt_analysis = md.get("ztAnalysis") if isinstance(md.get("ztAnalysis"), dict) else {}
+    for bucket_key in ("relay", "watch"):
+        for row in zt_analysis.get(bucket_key) or []:
+            if not isinstance(row, dict):
+                continue
+            push(row.get("predTheme"), row.get("predThemeCanonical"))
+            push(row.get("plateName"), row.get("plateNameCanonical"))
+
+    if isinstance(watchlist, dict):
+        ladder = watchlist.get("ladder") if isinstance(watchlist.get("ladder"), dict) else {}
+        for row in ladder.get("main_lines") or []:
+            if not isinstance(row, dict):
+                continue
+            push(row.get("name"))
+            for theme in row.get("constituents") or []:
+                push(theme)
+        picks = watchlist.get("picks_advisor") if isinstance(watchlist.get("picks_advisor"), dict) else {}
+        for row in picks.get("main_line_picks") or []:
+            if not isinstance(row, dict):
+                continue
+            push(row.get("main_line"))
+            for theme in row.get("constituents") or []:
+                push(theme)
+        sector_resolution = watchlist.get("sector_resolution") if isinstance(watchlist.get("sector_resolution"), dict) else {}
+        stock_to_sectors = sector_resolution.get("stock_to_sectors") if isinstance(sector_resolution.get("stock_to_sectors"), dict) else {}
+        for info in stock_to_sectors.values():
+            sectors = info.get("sectors") if isinstance(info, dict) else []
+            for sector in sectors or []:
+                if isinstance(sector, dict):
+                    push(sector.get("sector"))
+
+    return {key: sorted(values) for key, values in alias_map.items() if key and values}
+
+
+def _prune_plan_text_fields(md: dict) -> None:
+    """移除明日行动指南已下线的聚焦/底部文案字段。"""
+    if not isinstance(md, dict):
+        return
+    md.pop("actionGuideV2", None)
+    md.pop("summary3", None)
+
+
+def _is_complete_stock_research_backtest(payload: object) -> bool:
+    """
+    判断个股回测对象是否为当前前端可直接消费的完整 schema。
+
+    说明：
+    - 早期缓存里可能带着旧版 stockResearchBacktest，对象存在但字段不全；
+    - 这类旧对象若直接透传到线上，会让“当前研究池/历史回测”表现为空或不完整；
+    - 因此这里只要关键字段缺失，就在 publish 阶段强制重算。
+    """
+    if not isinstance(payload, dict):
+        return False
+    if str(payload.get("schema") or "") != "stock_research_backtest_v2":
+        return False
+    summary = payload.get("summary")
+    realtime_buy = payload.get("realtimeBuy")
+    meta = payload.get("meta")
+    current_pool_records = payload.get("currentPoolRecords")
+    records = payload.get("records")
+    if not isinstance(summary, dict) or not isinstance(realtime_buy, dict) or not isinstance(meta, dict):
+        return False
+    if not isinstance(current_pool_records, list) or not isinstance(records, list):
+        return False
+    required_summary_keys = {
+        "total_samples",
+        "source_samples",
+        "filtered_non_backtest_samples",
+        "eligible_samples",
+        "realtime_candidate_count",
+        "realtime_buy_count",
+        "realtime_pending_count",
+        "realtime_unavailable_count",
+    }
+    if not required_summary_keys.issubset(summary.keys()):
+        return False
+    if "latest_recommendation_date" not in meta:
+        return False
+    if "active_trade_date" not in meta:
+        return False
+    if "trade_date" not in realtime_buy:
+        return False
+    return True
+
+
+def _ensure_stock_research_backtest(md: dict) -> None:
+    """
+    为 web 数据补齐个股回测。
+
+    说明：
+    - 优先保留 cache/market_data 已经写入的 stockResearchBacktest；
+    - 若旧缓存里还没有，则在 publish 阶段现场补算，保证 web 新 tab 有数据可读；
+    - 失败时静默跳过，前端会展示空态说明。
+    """
+    if not isinstance(md, dict):
+        return
+    existing = md.get("stockResearchBacktest")
+    if _is_complete_stock_research_backtest(existing):
+        return
+    preserved = ((md.get("preservedResearch") or {}) if isinstance(md.get("preservedResearch"), dict) else {}).get("marketData")
+    preserved_backtest = preserved.get("stockResearchBacktest") if isinstance(preserved, dict) else None
+    if _is_complete_stock_research_backtest(preserved_backtest):
+        md["stockResearchBacktest"] = preserved_backtest
+        return
+    try:
+        from scripts.build_stock_research_backtest import build_stock_research_backtest_payload
+
+        md["stockResearchBacktest"] = build_stock_research_backtest_payload(current_market_data=md)
+    except Exception:
+        return
+
+
+def _resolve_data_path(date8: str, source: Optional[str] = None) -> Path:
+    """解析数据源路径；优先使用显式 source，其次回退到标准收盘缓存。"""
+    if source:
+        data_path = Path(source)
+        if not data_path.is_absolute():
+            data_path = ROOT / data_path
+        return data_path
+    return ROOT / "cache" / f"market_data-{date8}.json"
+
+
+def _resolve_eastmoney_tomorrow_path() -> Path:
+    path = ROOT / "web" / "public" / "eastmoney_tomorrow.json"
+    fallback = ROOT / "web" / "dist" / "eastmoney_tomorrow.json"
+    if path.exists():
+        return path
+    return fallback
+
+
+def _resolve_intraday_resonance_path(date8: str) -> Path:
+    """盘中共振数据，从 cache_online 读取（由 cli intraday 模式产出）"""
+    path = ROOT / "cache_online" / f"intraday_resonance-{date8}.json"
+    if path.exists():
+        return path
+    return ROOT / "web" / "public" / "intraday_resonance.json"
+
+
+def _resolve_watchlist_path(date8: str) -> Path:
+    """
+    watchlist_cache 由 tools/fetch_watchlist.py 产出，保存在 cache_online/。
+
+    注意：watchlist 的"数据日期"通常是接口当天（YYYY-MM-DD），可能与涨停池
+    数据日期（pools_date）不一致。这里先按 date8 找；若不存在，回退到最新一份。
+    """
+    direct = ROOT / "cache_online" / f"watchlist_cache-{date8}.json"
+    if direct.exists():
+        return direct
+    files = sorted((ROOT / "cache_online").glob("watchlist_cache-*.json"))
+    return files[-1] if files else direct
+
+
+def _build_watchlist_stock_index(watchlist: dict) -> dict:
+    """
+    反向索引：code -> {primary_sector, primary_confidence, all_sectors,
+                      main_line, main_line_confidence}
+
+    前端可 O(1) 查询，避免每个 zt-item 都遍历 stock_to_sectors。
+    """
+    out: dict = {}
+    sec = watchlist.get("sector_resolution") or {}
+    sts = sec.get("stock_to_sectors") or {}
+    if not isinstance(sts, dict):
+        return out
+
+    main_lines = (watchlist.get("ladder") or {}).get("main_lines") or []
+    sector_to_main: dict[str, tuple[str, float]] = {}
+    for ml in main_lines:
+        if not isinstance(ml, dict):
+            continue
+        ml_name = str(ml.get("name") or "")
+        ml_conf = float(ml.get("confidence") or 0.0)
+        if not ml_name:
+            continue
+        for sector in ml.get("constituents") or []:
+            if isinstance(sector, str) and sector:
+                prev = sector_to_main.get(sector)
+                if prev is None or ml_conf > prev[1]:
+                    sector_to_main[sector] = (ml_name, ml_conf)
+
+    for code, info in sts.items():
+        if not isinstance(info, dict):
+            continue
+        sectors = info.get("sectors") or []
+        if not isinstance(sectors, list) or not sectors:
+            continue
+        sorted_sectors = sorted(
+            (
+                (str(sector.get("sector") or ""), float(sector.get("confidence") or 0.0))
+                for sector in sectors
+                if isinstance(sector, dict) and sector.get("sector")
+            ),
+            key=lambda kv: kv[1],
+            reverse=True,
+        )
+        if not sorted_sectors:
+            continue
+        primary_sector, primary_conf = sorted_sectors[0]
+        best_main: tuple[str, float] | None = None
+        for sec_name, _confidence in sorted_sectors:
+            cand = sector_to_main.get(sec_name)
+            if cand and (best_main is None or cand[1] > best_main[1]):
+                best_main = cand
+        out[str(code)] = {
+            "primary_sector": primary_sector,
+            "primary_confidence": round(primary_conf, 3),
+            "all_sectors": [[name, round(conf, 3)] for name, conf in sorted_sectors[:5]],
+            "main_line": best_main[0] if best_main else "",
+            "main_line_confidence": round(best_main[1], 3) if best_main else 0.0,
+        }
+    return out
+
+
+def _enhance_with_watchlist(md: dict, watchlist: dict) -> None:
+    """
+    用 watchlist 多源融合结果就地增强 md：
+    1. 重写 zt_code_themes（watchlist 在前，原列表兜底）
+    2. 让 watchlist 最强主线占据 themePanels.ztTop[0]
+    3. 透传 watchlist 整包 + 反向索引
+
+    所有改动都是 idempotent + graceful：watchlist 为空时直接返回。
+    """
+    if not isinstance(watchlist, dict) or not watchlist:
+        return
+
+    sec = watchlist.get("sector_resolution") or {}
+    sts = sec.get("stock_to_sectors") or {}
+
+    if isinstance(sts, dict) and sts:
+        old_map = dict(md.get("zt_code_themes") or {})
+        new_map: dict = {}
+        for code, info in sts.items():
+            sectors = info.get("sectors") if isinstance(info, dict) else None
+            if not isinstance(sectors, list):
+                continue
+            themes = [
+                str(sector.get("sector") or "").strip()
+                for sector in sectors
+                if isinstance(sector, dict) and sector.get("sector")
+            ]
+            themes = [theme for theme in themes if theme]
+            origin = old_map.get(str(code)) or []
+            for theme in origin:
+                theme_text = str(theme or "").strip()
+                if theme_text and theme_text not in themes:
+                    themes.append(theme_text)
+            if themes:
+                new_map[str(code)] = themes
+        for code, themes in old_map.items():
+            if str(code) not in new_map:
+                new_map[str(code)] = themes
+        md["zt_code_themes"] = new_map
+
+    main_lines = (watchlist.get("ladder") or {}).get("main_lines") or []
+    if main_lines and isinstance(main_lines[0], dict):
+        top_name = str(main_lines[0].get("name") or "").strip()
+        if top_name and isinstance(md.get("themePanels"), dict):
+            zt_top = list(md["themePanels"].get("ztTop") or [])
+            existing_idx = next(
+                (
+                    idx
+                    for idx, row in enumerate(zt_top)
+                    if isinstance(row, dict) and str(row.get("name") or "") == top_name
+                ),
+                -1,
+            )
+            if existing_idx > 0:
+                zt_top.insert(0, zt_top.pop(existing_idx))
+            elif existing_idx < 0:
+                zt_top.insert(0, {"name": top_name, "source": "watchlist"})
+            md["themePanels"]["ztTop"] = zt_top
+
+    md["watchlist"] = watchlist
+    md["watchlist_stock_index"] = _build_watchlist_stock_index(watchlist)
+
+    picks = watchlist.get("picks_advisor")
+    if isinstance(picks, dict) and picks.get("main_line_picks"):
+        md["picks_advisor"] = picks
+
+    tide = watchlist.get("tide_signal")
+    if isinstance(tide, dict):
+        md["tideSignal"] = tide
+
+    core_tide = watchlist.get("core_tide_signal")
+    if isinstance(core_tide, dict):
+        md["coreTideSignal"] = core_tide
+
+    md["theme_alias_map"] = _build_theme_alias_map(md, watchlist)
+
+
+def _ensure_mood_history(md: dict, *, date8: str) -> None:
+    """
+    对齐 daily_review.cli 的历史回填逻辑：
+    publish service 直接从 cache/market_data-YYYYMMDD.json 生成 web 产物时，
+    原始缓存未必已经带上 features.mood_inputs.hist_*。
+    这里显式补一遍，避免 dist/public 里的更多维度和 moodTrend7d 仍然读到空历史。
+    """
+    try:
+        date10 = f"{date8[0:4]}-{date8[4:6]}-{date8[6:8]}"
+        inject_mood_history_and_delta(root=ROOT, date=date10, market_data=md)
+    except Exception as exc:
+        print(f"⚠ 情绪历史回填失败（跳过）: {exc}", file=sys.stderr)
+
+
+def _load_market_data(date8: str, source: Optional[str] = None) -> tuple[dict, Path]:
+    data_path = _resolve_data_path(date8, source)
+    if not data_path.exists():
+        raise FileNotFoundError(f"数据缓存不存在: {data_path}")
+    return json.loads(data_path.read_text(encoding="utf-8")), data_path
+
+
+def _rebuild_web_derivatives(md: dict, *, date8: str, warn_context: str = "") -> None:
+    md.pop("raw", None)
+    _prune_plan_text_fields(md)
+    _ensure_stock_research_backtest(md)
+    _ensure_mood_history(md, date8=date8)
+    try:
+        from daily_review.render.render_html import (
+            build_market_overview_7d,
+            build_mood_trend_7d,
+            build_sentiment_explain_dims,
+        )
+
+        md["marketOverview7d"] = build_market_overview_7d(market_data=md)
+        md["moodTrend7d"] = build_mood_trend_7d(market_data=md)
+        md["sentimentExplainDims"] = build_sentiment_explain_dims(market_data=md)
+    except Exception as exc:
+        label = f"{warn_context}跳过" if warn_context else "跳过"
+        print(f"⚠ 7日情绪衍生字段重算失败（{label}）: {exc}", file=sys.stderr)
+
+
+def _apply_watchlist_enhancements(md: dict, *, date8: str, warn_context: str = "") -> None:
+    wl_path = _resolve_watchlist_path(date8)
+    if wl_path.exists():
+        try:
+            watchlist = json.loads(wl_path.read_text(encoding="utf-8"))
+            _enhance_with_watchlist(md, watchlist)
+        except Exception as exc:
+            label = f"{warn_context}跳过" if warn_context else "跳过"
+            print(f"⚠ watchlist 增强失败（{label}）: {exc}", file=sys.stderr)
+    if "theme_alias_map" not in md:
+        md["theme_alias_map"] = _build_theme_alias_map(md)
+
+
+def _build_publish_payload(date8: str, source: Optional[str] = None, *, warn_context: str = "") -> str:
+    md, _data_path = _load_market_data(date8, source)
+    _rebuild_web_derivatives(md, date8=date8, warn_context=warn_context)
+    _apply_watchlist_enhancements(md, date8=date8, warn_context=warn_context)
+    return json.dumps(md, ensure_ascii=False)
+
+
+def _read_optional_payload(*, path: Path, fallback: Optional[Path] = None, default: str) -> str:
+    if path.exists():
+        return path.read_text(encoding="utf-8")
+    if fallback is not None and fallback.exists():
+        return fallback.read_text(encoding="utf-8")
+    return default
+
+
+def _latest_cache_date8() -> Optional[str]:
+    files = sorted((ROOT / "cache").glob("market_data-*.json"))
+    for path in reversed(files):
+        name = path.name.replace("market_data-", "").replace(".json", "")
+        if len(name) == 8 and name.isdigit():
+            return name
+    return None
+
+
+def build_web_data(date8: str, source: Optional[str] = None) -> Path:
+    """生成 web/dist 旁路数据文件并返回 dist 目录。"""
+    payload = _build_publish_payload(date8, source)
+
+    tp_payload = _read_optional_payload(
+        path=ROOT / "web" / "public" / "tomorrow_picks.json",
+        fallback=ROOT / "web" / "dist" / "tomorrow_picks.json",
+        default="{}",
+    )
+    em_payload = _read_optional_payload(path=_resolve_eastmoney_tomorrow_path(), default="{}")
+    resonance_payload = _read_optional_payload(path=_resolve_intraday_resonance_path(date8), default="[]")
+
+    dist_dir = ROOT / "web" / "dist"
+    if not (dist_dir / "index.html").exists():
+        raise FileNotFoundError(f"Vite 构建产物不存在: {dist_dir / 'index.html'}\n请先执行: cd web && npm run build")
+
+    (dist_dir / "market_data.json").write_text(payload, encoding="utf-8")
+    (dist_dir / "market_data.js").write_text(f"window.__MARKET_DATA__={payload};", encoding="utf-8")
+    if tp_payload != "{}":
+        (dist_dir / "tomorrow_picks.json").write_text(tp_payload, encoding="utf-8")
+    if em_payload != "{}":
+        (dist_dir / "eastmoney_tomorrow.json").write_text(em_payload, encoding="utf-8")
+    if resonance_payload != "[]":
+        (dist_dir / "intraday_resonance.json").write_text(resonance_payload, encoding="utf-8")
+
+    return dist_dir
+
+
+def inject(date8: str, source: Optional[str] = None) -> Path:
+    """兼容旧调用名：只生成 web 运行时数据。"""
+    return build_web_data(date8, source)
+
+
+def refresh_dev_data(date8: str, source: Optional[str] = None) -> None:
+    """刷新 web/public 数据文件（供 Vite dev 和 dist 直开使用）"""
+    payload = _build_publish_payload(date8, source, warn_context="dev ")
+
+    dev_file = ROOT / "web" / "public" / "market_data.json"
+    dev_script = ROOT / "web" / "public" / "market_data.js"
+    dev_file.parent.mkdir(parents=True, exist_ok=True)
+    dev_file.write_text(payload, encoding="utf-8")
+    dev_script.write_text(f"window.__MARKET_DATA__={payload};", encoding="utf-8")
+
+    res_file = _resolve_intraday_resonance_path(date8)
+    if res_file.exists():
+        target_res_file = ROOT / "web" / "public" / "intraday_resonance.json"
+        if res_file.resolve() != target_res_file.resolve():
+            shutil.copy2(res_file, target_res_file)
+            print("  盘中共振 dev 数据已同步")
+    print(f"  dev 数据已刷新: {dev_file}")
+    print(f"  dev 脚本已刷新: {dev_script}")
+
+
+def main(argv: Optional[list[str]] = None) -> int:
+    ap = argparse.ArgumentParser(description="将 market_data 写入 web/public 与 web/dist 数据文件")
+    ap.add_argument("date8", nargs="?", help="交易日，格式 YYYYMMDD；不传则自动取最新缓存")
+    ap.add_argument("--dev-only", action="store_true", help="仅刷新 web/public 下的数据文件")
+    ap.add_argument("--source", help="显式指定数据源 JSON 路径，可用于 intraday 缓存")
+    args = ap.parse_args(argv)
+
+    if args.dev_only:
+        date8 = args.date8 or _latest_cache_date8()
+        if not date8:
+            print("错误: cache/ 中没有 market_data-*.json", file=sys.stderr)
+            return 1
+        refresh_dev_data(date8, args.source)
+        return 0
+
+    date8 = args.date8 or _latest_cache_date8()
+    if not date8:
+        print("错误: cache/ 中没有 market_data-*.json", file=sys.stderr)
+        return 1
+
+    out = inject(date8, args.source)
+    print(f"✅ web 数据已生成: {out}")
+    source_path = _resolve_data_path(date8, args.source)
+    source_text = source_path.relative_to(ROOT) if source_path.is_relative_to(ROOT) else source_path
+    print(f"   数据来源: {source_text}")
+    print("   Web 入口: web/dist/index.html")
+
+    refresh_dev_data(date8, args.source)
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

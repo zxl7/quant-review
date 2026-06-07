@@ -5,14 +5,14 @@
 leader 模块（v2）：遵循 pipeline.Module 协议
 
 说明：
-- 复用 v1 的 leader 模块实现（market_data -> patch）
+- 复用 metrics 层的 leader 重建实现（market_data -> patch）
 """
 
 from __future__ import annotations
 
 from typing import Any, Dict
 
-from daily_review.modules.leader import rebuild_leaders
+from daily_review.metrics.leader import rebuild_leaders
 from daily_review.pipeline.context import Context
 from daily_review.pipeline.module import Module
 
@@ -28,4 +28,3 @@ LEADER_MODULE = Module(
     provides=["marketData.leaders"],
     compute=_compute,
 )
-

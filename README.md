@@ -65,7 +65,8 @@ cd web && npm run build       # 产出 dist/index.html（单文件）
 
 输出：
 - `cache/market_data-YYYYMMDD.json` — 结构化数据
-- `html/复盘日记-YYYYMMDD-tab-v1.html` — 渲染后的报告
+- `web/dist/index.html` — 渲染后的前端入口
+- `web/dist/market_data.json` / `web/dist/market_data.js` — 前端运行时数据
 
 ---
 
@@ -75,7 +76,7 @@ cd web && npm run build       # 产出 dist/index.html（单文件）
 
 1. `./qr.sh fetch` — 从必盈 API 取数
 2. pipeline 重建 market_data JSON
-3. 注入到 HTML 模板并渲染
+3. 注入运行时数据并生成 `web/dist`
 4. push 到 `gh-pages` 分支 → GitHub Pages 自动发布
 
 **一次性配置**：
@@ -112,8 +113,7 @@ cd web && npm run build       # 产出 dist/index.html（单文件）
 | `daily_review/cli.py` | fetch / rebuild / intraday 调度 |
 | `daily_review/data/biying.py` | 必盈 API 数据源 |
 | `daily_review/modules_v2/` | pipeline 模块（15+） |
-| `daily_review/render/render_html.py` | HTML 渲染器（Python 模板注入） |
-| `templates/report_template.html` | 旧版模板备份（不再作为主发布链路） |
+| `daily_review/render/render_html.py` | 衍生展示字段构造（供 web 数据注入复用） |
 | `web/` | **Vue3 新版前端**（Vite + ECharts + singlefile） |
 | `web/src/composables/useMarketData.ts` | 数据接口层 |
 | `.github/workflows/publish_pages.yml` | 自动部署 |

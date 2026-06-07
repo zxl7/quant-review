@@ -2,17 +2,17 @@
 # -*- coding: utf-8 -*-
 
 """
-CLI 入口（后续会逐步替代 gen_report_v4.py 的脚本式入口）
+CLI 入口。
 
-当前阶段策略：
-- 先提供一个稳定入口，后续把 monolith 逻辑逐步迁移到 daily_review/* 模块。
+当前职责：
+- 提供稳定的数据生产 / 重建 / 盘中快照入口
+- 编排 daily_review/* 模块与 web 数据注入前置步骤
 """
 
 from __future__ import annotations
 
 import argparse
 import json
-import math
 import os
 import time
 import urllib.error
@@ -20,14 +20,44 @@ import urllib.request
 from pathlib import Path
 from typing import Any
 
-from daily_review.modules_v2 import ALL_MODULES
-from daily_review.metrics.scoring import blend_sentiment_score
-from daily_review.pipeline.context import Context
-from daily_review.pipeline.runner import Runner
-from daily_review.render.render_html import build_plate_rank_top10
+from daily_review.application.fetch_service import (
+    attach_quotes_and_features,
+    build_base_market_data,
+    build_height_trend_cache,
+    build_intraday_market_data,
+    build_raw_pools,
+    build_report_indices,
+    build_theme_trend_cache,
+    update_index_kline_cache,
+    update_theme_cache,
+    write_market_data,
+)
+from daily_review.application.index_formatters import (
+    display_float as _display_float,
+    format_index_pct as _fmt_index_pct,
+    format_index_val as _fmt_index_val,
+)
+from daily_review.application.mood_history_service import inject_mood_history_and_delta
+from daily_review.application.rebuild_service import (
+    build_rebuild_context,
+    load_theme_cache as app_load_theme_cache,
+    load_ztgc_by_day_window as app_load_ztgc_by_day_window,
+)
+from daily_review.application.stock_research_service import (
+    apply_preserved_research_snapshot,
+    apply_zt_analysis,
+    attach_stock_research_backtest,
+    collect_research_codes_from_snapshot,
+    load_latest_valid_research_snapshot,
+)
+from daily_review.application.watch_snapshot_service import (
+    append_intraday_snapshot,
+    append_watch_runtime_slice,
+    inject_intraday_snapshots,
+)
 from daily_review.cache_io import read_json, write_json
-from daily_review.config import load_config_from_env
 from daily_review.config import DEFAULT_CONFIG
+from daily_review.config import load_config_from_env
 from daily_review.data.biying import (
     extract_money_flow_day_map,
     fetch_indices_realtime,
@@ -40,9 +70,13 @@ from daily_review.data.biying import (
     resolve_trade_date,
     resolve_trade_date_intraday,
 )
-from daily_review.features.build_features import build_mood_inputs, default_chart_palette
 from daily_review.data.plate_rotate_fetcher import PlateRotateFetcher
 from daily_review.data.xuangubao import fetch_stock_labels_batch
+from daily_review.features.build_features import build_mood_inputs, default_chart_palette
+from daily_review.modules_v2 import ALL_MODULES
+from daily_review.pipeline.context import Context
+from daily_review.pipeline.runner import Runner
+from daily_review.render.render_html import build_plate_rank_top10
 
 
 def _workspace_root() -> Path:
@@ -140,47 +174,6 @@ def _save_abnormal_event_history_sample(*, root: Path, date: str, mode: str, not
     }
     write_json(path, payload)
     return path
-
-
-def _display_float(v, default: float = 0.0) -> float:
-    try:
-        if v is None or v == "":
-            return default
-        if isinstance(v, str):
-            return float(v.replace("%", "").replace("亿", "").replace(",", "").strip())
-        return float(v)
-    except Exception:
-        return default
-
-
-def _fmt_index_pct(v) -> str:
-    if v is None or v == "":
-        return ""
-    if isinstance(v, str):
-        s = v.strip()
-        if not s:
-            return ""
-        if s.endswith("%"):
-            return f"{_display_float(s):+.2f}%"
-        try:
-            return f"{float(s):+.2f}%"
-        except Exception:
-            return s
-    return f"{_display_float(v):+.2f}%"
-
-
-def _fmt_index_val(v) -> str:
-    if v is None or v == "":
-        return ""
-    if isinstance(v, str):
-        s = v.strip()
-        if not s:
-            return ""
-        try:
-            return f"{float(s):.2f}"
-        except Exception:
-            return s
-    return f"{_display_float(v):.2f}"
 
 
 def _normalize_indices_display(market_data: dict) -> None:
@@ -299,127 +292,6 @@ def _apply_intraday_volume_from_realtime_indices(market_data: dict) -> None:
         "dates": dates,
         "values": values,
     }
-
-
-def _load_latest_valid_zt_analysis(*, root: Path, current_date: str) -> dict | None:
-    cache_dir = root / "cache"
-    current_d8 = str(current_date or "").replace("-", "")
-    candidates = []
-    for fp in cache_dir.glob("market_data-*.json"):
-        stem = fp.stem
-        if not stem.startswith("market_data-"):
-            continue
-        d8 = stem.replace("market_data-", "")
-        if not (len(d8) == 8 and d8.isdigit()):
-            continue
-        if current_d8 and d8 >= current_d8:
-            continue
-        candidates.append((d8, fp))
-
-    for _, fp in sorted(candidates, reverse=True):
-        try:
-            data = json.loads(fp.read_text(encoding="utf-8"))
-        except Exception:
-            continue
-        za = data.get("ztAnalysis") if isinstance(data, dict) else None
-        if not isinstance(za, dict):
-            continue
-        relay = za.get("relay") if isinstance(za.get("relay"), list) else []
-        watch = za.get("watch") if isinstance(za.get("watch"), list) else []
-        if relay or watch:
-            out = dict(za)
-            meta = out.get("meta") if isinstance(out.get("meta"), dict) else {}
-            out["meta"] = {
-                **meta,
-                "preservedFromDate": data.get("date") or fp.stem.replace("market_data-", ""),
-                "preserveReason": "盘中仅更新实时情绪，明日接力/观察沿用上一份收盘推演",
-            }
-            return out
-    return None
-
-
-def _load_latest_valid_research_snapshot(*, root: Path, current_date: str) -> dict | None:
-    """
-    盘中模式下给「个股研究」页提供上一份有效收盘快照。
-
-    只保留研究页真正依赖的字段，避免把整份 market_data 再复制一遍。
-    """
-    cache_dir = root / "cache"
-    current_d8 = str(current_date or "").replace("-", "")
-    candidates = []
-    for fp in cache_dir.glob("market_data-*.json"):
-        stem = fp.stem
-        if not stem.startswith("market_data-"):
-            continue
-        d8 = stem.replace("market_data-", "")
-        if not (len(d8) == 8 and d8.isdigit()):
-            continue
-        if current_d8 and d8 >= current_d8:
-            continue
-        candidates.append((d8, fp))
-
-    keep_keys = (
-        "date",
-        "meta",
-        "mood",
-        "moodStage",
-        "planGuide",
-        "themePanels",
-        "leaders",
-        "plateRankTop10",
-        "ztgc",
-        "zt_code_themes",
-        "ztAnalysis",
-        "watchlist",
-        "watchlist_stock_index",
-        "picks_advisor",
-        "tideSignal",
-        "coreTideSignal",
-        "theme_alias_map",
-    )
-
-    for _, fp in sorted(candidates, reverse=True):
-        try:
-            data = json.loads(fp.read_text(encoding="utf-8"))
-        except Exception:
-            continue
-        if not isinstance(data, dict):
-            continue
-
-        zt = data.get("ztAnalysis") if isinstance(data.get("ztAnalysis"), dict) else {}
-        relay = zt.get("relay") if isinstance(zt.get("relay"), list) else []
-        watch = zt.get("watch") if isinstance(zt.get("watch"), list) else []
-        if not (relay or watch):
-            continue
-
-        snapshot = {key: data.get(key) for key in keep_keys if key in data}
-        meta = snapshot.get("meta") if isinstance(snapshot.get("meta"), dict) else {}
-        snapshot["meta"] = {
-            **meta,
-            "preservedFromDate": data.get("date") or fp.stem.replace("market_data-", ""),
-            "preserveReason": "盘中不重算个股研究，沿用上一份收盘结果",
-        }
-        return {
-            "marketData": snapshot,
-            "preservedFromDate": snapshot["meta"]["preservedFromDate"],
-            "preserveReason": snapshot["meta"]["preserveReason"],
-        }
-    return None
-
-
-def _collect_research_codes_from_snapshot(snapshot: dict | None) -> list[str]:
-    market_data = snapshot.get("marketData") if isinstance(snapshot, dict) and isinstance(snapshot.get("marketData"), dict) else {}
-    zt = market_data.get("ztAnalysis") if isinstance(market_data.get("ztAnalysis"), dict) else {}
-    codes: list[str] = []
-    for bucket in ("relay", "watch"):
-        rows = zt.get(bucket) if isinstance(zt.get(bucket), list) else []
-        for row in rows:
-            if not isinstance(row, dict):
-                continue
-            code6 = normalize_stock_code(str(row.get("code") or row.get("dm") or ""))
-            if code6:
-                codes.append(code6)
-    return codes
 
 
 def _fetch_realtime_quotes_map(client: HttpClient, codes: list[str], *, limit: int = 220, batch_size: int = 20) -> dict[str, Any]:
@@ -776,69 +648,23 @@ def run_fetch_and_rebuild(date: str | None) -> int:
     _log("涨停池/跌停池/炸板池/强势池 已获取并落盘")
 
     # theme_cache.json：只补齐"当日出现的 code6"，避免无限增长
-    themes_path = cache_dir / "theme_cache.json"
-    theme_cache_disk = read_json(themes_path, default={})
-    codes_map = (theme_cache_disk.get("codes") or {}) if isinstance(theme_cache_disk, dict) else {}
-    if not isinstance(codes_map, dict):
-        codes_map = {}
-    today_zt = pools["ztgc"].get(actual_date) or []
-    today_zb = pools["zbgc"].get(actual_date) or []
-    today_dt = pools["dtgc"].get(actual_date) or []
-    all_today = []
-    for arr in (today_zt, today_zb, today_dt):
-        if isinstance(arr, list):
-            all_today.extend(arr)
-    # 收集今日未缓存的 code6
-    new_codes: list[str] = []
-    for s in all_today:
-        code6 = normalize_stock_code(str(s.get("dm") or s.get("code") or ""))
-        if code6 and code6 not in codes_map and code6 not in new_codes:
-            new_codes.append(code6)
-    if new_codes:
-        # 用选股宝批量接口替代 biying hszg/zg 逐只请求
-        labels_batch = fetch_stock_labels_batch(new_codes)
-        for code6 in new_codes:
-            raw_names = labels_batch.get(code6) or []
-            names = _clean_theme_names(raw_names)
-            if names:
-                codes_map[code6] = names
-    write_json(themes_path, {"version": 1, "codes": codes_map})
+    codes_map = update_theme_cache(
+        root=root,
+        pools=pools,
+        actual_date=actual_date,
+        clean_theme_names=_clean_theme_names,
+        fetch_stock_labels_batch_fn=fetch_stock_labels_batch,
+    )
     _log(f"题材缓存已更新 (共 {len(codes_map)} 只股票)")
 
     # theme_trend_cache.json：主线题材近 5 日持续性（只用已缓存的 code2themes，不额外请求）
-    theme_trend_path = cache_dir / "theme_trend_cache.json"
-    trend_disk = read_json(theme_trend_path, default={})
-    by_day = (trend_disk.get("by_day") or {}) if isinstance(trend_disk, dict) else {}
-    if not isinstance(by_day, dict):
-        by_day = {}
-
-    def count_day_themes(day_rows: list[dict[str, Any]]) -> dict[str, int]:
-        cnt: dict[str, int] = {}
-        for s in day_rows or []:
-            code6 = normalize_stock_code(str(s.get("dm") or s.get("code") or ""))
-            if not code6:
-                continue
-            ths = codes_map.get(code6) or []
-            if not isinstance(ths, list):
-                continue
-            for t in ths:
-                name = str(t or "").strip()
-                if not name:
-                    continue
-                cnt[name] = cnt.get(name, 0) + 1
-        return cnt
-
-    # 仅更新最近 5 个交易日（含当天），避免文件无限增长
-    last5 = trade_days[-5:] if len(trade_days) >= 5 else trade_days
-    for d in last5:
-        rows = pools.get("ztgc", {}).get(d) or []
-        rows = rows if isinstance(rows, list) else []
-        by_day[d] = count_day_themes([x for x in rows if isinstance(x, dict)])
-
-    # 裁剪：只保留近 7 个交易日
-    by_day = {k: v for k, v in by_day.items() if k in keep}
-
-    write_json(theme_trend_path, {"version": 1, "as_of": actual_date, "by_day": by_day})
+    by_day = build_theme_trend_cache(
+        root=root,
+        pools=pools,
+        trade_days=trade_days,
+        actual_date=actual_date,
+        codes_map=codes_map,
+    )
     _log("主线趋势已计算 (近5日)")
 
     try:
@@ -856,72 +682,11 @@ def run_fetch_and_rebuild(date: str | None) -> int:
     # index_kline_cache.json：缓存指数日K
     # - 用 history 拉更长序列（便于 MA5/MA20 等技术指标在 v3 右侧交易中使用）
     # - 仍保留占位过滤（sf=1 / a<=0 / v<=0）
-    index_k_path = cache_dir / "index_kline_cache.json"
-    idx_disk = read_json(index_k_path, default={})
-    codes_entry = (idx_disk.get("codes") or {}) if isinstance(idx_disk, dict) else {}
-    if not isinstance(codes_entry, dict):
-        codes_entry = {}
-    for code in ("000001.SH", "399001.SZ", "399006.SZ"):
-        et = actual_date.replace("-", "")
-        import datetime as _dt
-        st_dt = (_dt.datetime.strptime(actual_date, "%Y-%m-%d") - _dt.timedelta(days=120)).strftime("%Y%m%d")
-        items = fetch_index_history_k(client, code=code, st=st_dt, et=et)
-        if not isinstance(items, list):
-            items = []
-        # 过滤占位
-        cleaned = []
-        for it in items:
-            if not isinstance(it, dict):
-                continue
-            if int(it.get("sf", 0) or 0) == 1:
-                continue
-            if float(it.get("a", 0) or 0) <= 0 or float(it.get("v", 0) or 0) <= 0:
-                continue
-            cleaned.append(it)
-        codes_entry[code] = {"as_of": actual_date, "items": cleaned[-80:]}
-    write_json(index_k_path, {"version": 1, "codes": codes_entry})
+    codes_entry = update_index_kline_cache(root=root, client=client, actual_date=actual_date)
     _log("指数日K已缓存 (近120日)")
 
     # height_trend_cache.json：近 7 日高度趋势（只缓存历史日，不缓存当天）
-    # 口径对齐 gen_report_v4：main=最高板、sub=次高、gem=创业板最高（300*）
-    def calc_height_trend_row(day: str, day_data: list[dict[str, Any]]) -> dict:
-        data = day_data or []
-        lbs = [int((s.get("lbc", 1) or 1)) for s in data if isinstance(s, dict)]
-        main_max = max(lbs) if lbs else 0
-        gem_data = [s for s in data if str(s.get("dm", "")).startswith("300")]
-        gem_max = max((int((s.get("lbc", 1) or 1)) for s in gem_data), default=0)
-        sorted_lb = sorted(set(lbs), reverse=True)
-        sub_max = sorted_lb[1] if len(sorted_lb) > 1 else 0
-        top_stock = max(data, key=lambda x: int((x.get("lbc", 0) or 0)), default={})
-        top_name = (str(top_stock.get("mc", "") or "")[:4]).strip()
-        sub_stock = next((s for s in data if int((s.get("lbc", 0) or 0)) == sub_max), {})
-        sub_name = (str(sub_stock.get("mc", "") or "")[:4]).strip()
-        gem_stock = max(gem_data, key=lambda x: int((x.get("lbc", 0) or 0)), default={}) if gem_data else {}
-        gem_name = (str(gem_stock.get("mc", "") or "")[:4]).strip()
-        return {
-            "day": day,
-            "main": main_max,
-            "sub": sub_max,
-            "gem": gem_max,
-            "label_main": top_name if main_max >= 3 else "",
-            "label_sub": sub_name if sub_max >= 2 else "",
-            "label_gem": gem_name if gem_max >= 1 else "",
-        }
-
-    ht_path = cache_dir / "height_trend_cache.json"
-    ht_disk = read_json(ht_path, default={})
-    ht_days = (ht_disk.get("days") or {}) if isinstance(ht_disk, dict) else {}
-    if not isinstance(ht_days, dict):
-        ht_days = {}
-    for d in trade_days:
-        if d == actual_date:
-            continue
-        day_data = pools.get("ztgc", {}).get(d) or []
-        if isinstance(day_data, list):
-            ht_days[d] = calc_height_trend_row(d, [x for x in day_data if isinstance(x, dict)])
-    # 裁剪：只保留近 7 个交易日
-    ht_days = {d: v for d, v in ht_days.items() if d in keep}
-    write_json(ht_path, {"version": 1, "days": ht_days})
+    build_height_trend_cache(root=root, pools=pools, trade_days=trade_days, actual_date=actual_date)
     _log("高度趋势已计算 (近7日)")
 
     # indices（实时）：仅用于 asOf 展示（HH:MM:SS）
@@ -930,130 +695,31 @@ def run_fetch_and_rebuild(date: str | None) -> int:
         codes=[("000001.SH", "上证指数"), ("399001.SZ", "深证成指"), ("399006.SZ", "创业板指")],
     )
     # indices（报告口径）：用指数日K按“收盘价 vs 前收”计算，确保与 actual_date 一致
-    def _norm_k_date(t: str) -> str:
-        t = (t or "").strip()
-        if len(t) >= 10:
-            return t[:10]
-        if len(t) == 8 and t.isdigit():
-            return f"{t[:4]}-{t[4:6]}-{t[6:8]}"
-        return t
-
-    def _kline_index(code: str) -> tuple[float, float] | None:
-        items = (codes_entry.get(code) or {}).get("items") or []
-        if not isinstance(items, list):
-            return None
-        for it in items:
-            if not isinstance(it, dict):
-                continue
-            t = _norm_k_date(str(it.get("t") or ""))
-            if t == actual_date and int(it.get("sf", 0) or 0) != 1:
-                c = float(it.get("c", 0) or 0)
-                pc = float(it.get("pc", 0) or 0)
-                return (c, pc)
-        return None
-
-    def _calc_ma(code: str, *, n: int) -> float | None:
-        items = (codes_entry.get(code) or {}).get("items") or []
-        if not isinstance(items, list):
-            return None
-        closes = []
-        for it in items:
-            if not isinstance(it, dict):
-                continue
-            t = _norm_k_date(str(it.get("t") or ""))
-            if t and t <= actual_date and int(it.get("sf", 0) or 0) != 1:
-                closes.append(float(it.get("c", 0) or 0))
-        closes = [c for c in closes if c > 0]
-        if len(closes) < n:
-            return None
-        seg = closes[-n:]
-        return sum(seg) / float(n) if seg else None
-
-    indices_for_report = []
-    for code, name in [("000001.SH", "上证指数"), ("399001.SZ", "深证成指"), ("399006.SZ", "创业板指")]:
-        r = _kline_index(code)
-        if not r:
-            continue
-        c, pc = r
-        chg = ((c - pc) / pc * 100.0) if pc else 0.0
-        indices_for_report.append(
-            {
-                "name": name,
-                "code": code,
-                "val": f"{c:.2f}",
-                "chg": f"{chg:+.2f}%",
-                # v3 右侧交易用（技术信号）
-                "price": c,
-                "ma5": _calc_ma(code, n=5),
-                "ma20": _calc_ma(code, n=20),
-            }
-        )
+    indices_for_report = build_report_indices(actual_date=actual_date, codes_entry=codes_entry)
 
     # 构造 raw.pools（给 pipeline 使用）
     yest = trade_days[-2] if len(trade_days) >= 2 else ""
-    raw_pools = {
-        "ztgc": pools["ztgc"].get(actual_date) or [],
-        "dtgc": pools["dtgc"].get(actual_date) or [],
-        "zbgc": pools["zbgc"].get(actual_date) or [],
-        "qsgc": pools["qsgc"].get(actual_date) or [],
-        "yest_ztgc": pools["ztgc"].get(yest) or [],
-        "yest_dtgc": pools["dtgc"].get(yest) or [],
-        "yest_zbgc": pools["zbgc"].get(yest) or [],
-        "yest_date": yest,
-    }
+    raw_pools = build_raw_pools(pools=pools, actual_date=actual_date, yest=yest)
 
     # market_data 初始化骨架（保证模板字段存在）
     import datetime as _dt
     gen_time = _dt.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
-    market_data: dict = {
-        "date": actual_date,
-        "dateNote": date_note,
-        "meta": {
-            "asOf": {"indices": indices_asof, "pools": gen_time[11:19], "themes": gen_time[11:19]},
-            "version": "1.0",
-            "generatedAt": gen_time,
-        },
-        "indices": indices_for_report or [
-            {
-                "name": i.get("name", ""),
-                "code": i.get("code", ""),
-                "val": _fmt_index_val(i.get("val", "")),
-                "chg": _fmt_index_pct(i.get("chg", "")),
-                "cje": i.get("cje", 0),
-            }
-            for i in (indices_rt or [])
-            if isinstance(i, dict) and i.get("name")
-        ],
-        "panorama": {},
-        "volume": {},
-        "sectors": [],
-        "themePanels": {},
-        "themeTrend": {"dates": [], "series": [], "palette": default_chart_palette()},
-        "heightTrend": {},
-        "ladder": [],
-        "top10": [],
-        "top10Summary": {},
-        "mood": {},
-        "moodStage": {},
-        "moodCards": [],
-        "learningNotes": {},
-        "leaders": [],
-        "ztgc": [],
-        "zt_code_themes": {},
-        "features": {},
-        "raw": {},
-    }
-
-    market_data["raw"] = {
-        "pools": raw_pools,
-        "themes": {"code2themes": codes_map},
-        "index_klines": {"codes": codes_entry},
-        "indices_realtime": {"as_of": indices_asof, "items": indices_rt or []},
-        "theme_trend_cache": {"as_of": actual_date, "by_day": by_day},
-    }
+    market_data = build_base_market_data(
+        actual_date=actual_date,
+        date_note=date_note,
+        indices_asof=indices_asof,
+        generated_at=gen_time,
+        indices_for_report=indices_for_report,
+        indices_rt=indices_rt,
+        raw_pools=raw_pools,
+        codes_map=codes_map,
+        codes_entry=codes_entry,
+        theme_trend_by_day=by_day,
+    )
 
     # === v3 增强：批量个股实时行情（让 v3 输出更“厚”） ===
+    quotes_map: dict[str, Any] = {}
     try:
         codes = []
         for arr in (raw_pools.get("ztgc") or [], raw_pools.get("qsgc") or [], raw_pools.get("zbgc") or [], raw_pools.get("dtgc") or []):
@@ -1065,31 +731,27 @@ def run_fetch_and_rebuild(date: str | None) -> int:
                 code6 = normalize_stock_code(str(s.get("dm") or s.get("code") or ""))
                 if code6:
                     codes.append(code6)
-        preserved_research = _load_latest_valid_research_snapshot(root=root, current_date=actual_date)
-        codes.extend(_collect_research_codes_from_snapshot(preserved_research))
+        preserved_research = load_latest_valid_research_snapshot(root=root, current_date=actual_date)
+        codes.extend(collect_research_codes_from_snapshot(preserved_research))
         quotes_map = _fetch_realtime_quotes_map(client, codes, limit=220, batch_size=20)
-        market_data["raw"]["quotes"] = {"as_of": indices_asof, "items": quotes_map, "count": len(quotes_map)}
-        # meta 标记：有实时行情增强
-        meta = market_data.get("meta") if isinstance(market_data.get("meta"), dict) else {}
-        if not isinstance(meta, dict):
-            meta = {}
-        meta.setdefault("asOf", {})
-        if isinstance(meta.get("asOf"), dict):
-            meta["asOf"]["quotes"] = indices_asof
-        market_data["meta"] = meta
+        attach_quotes_and_features(
+            market_data=market_data,
+            raw_pools=raw_pools,
+            quotes_asof=indices_asof,
+            quotes_map=quotes_map,
+        )
         _log(f"个股实时行情已获取 ({len(quotes_map)} 只)")
     except Exception:
         pass
 
     # features：最小可用版
-    mood_inputs = build_mood_inputs(pools=raw_pools, quotes=quotes_map)
-    market_data["features"]["mood_inputs"] = mood_inputs
-    market_data["features"]["chart_palette"] = default_chart_palette()
+    mood_inputs = (market_data.get("features") or {}).get("mood_inputs") or build_mood_inputs(pools=raw_pools, quotes=quotes_map)
+    if not (market_data.get("features") or {}).get("mood_inputs"):
+        market_data["features"]["mood_inputs"] = mood_inputs
+        market_data["features"]["chart_palette"] = default_chart_palette()
 
     # 写 market_data 缓存（供 rebuild/partial 使用）
-    date_compact = actual_date.replace("-", "")
-    market_path = cache_dir / f"market_data-{date_compact}.json"
-    write_json(market_path, market_data)
+    market_path = write_market_data(root=root, market_data=market_data, actual_date=actual_date)
     _log(f"market_data 缓存已写入: {market_path.name}")
 
     # 离线重建（pipeline）并渲染 tab-v1
@@ -1100,63 +762,13 @@ def run_fetch_and_rebuild(date: str | None) -> int:
     # 注意：run_rebuild 会将完整 market_data（含 volume/plateRankTop10/mood_inputs）写回缓存文件
     # 快照构建需从缓存文件重新读取，确保拿到 rebuild 后的完整数据
     try:
-        import datetime as _dt
-        from daily_review.watch_runtime import (
-            _purge_previous_day_slices,
-            append_intraday_slice,
+        append_watch_runtime_slice(
+            root=root,
+            market_path=market_path,
+            fallback_market_data=market_data,
+            fallback_mood_inputs=mood_inputs,
+            log_fn=_log,
         )
-        # 从 rebuild 后的缓存重新读取完整 market_data
-        rebuilt_data = json.loads(market_path.read_text(encoding="utf-8")) if market_path.exists() else market_data
-        rebuilt_mi = (rebuilt_data.get("features") or {}).get("mood_inputs") or mood_inputs
-        rebuilt_pan = rebuilt_data.get("panorama") if isinstance(rebuilt_data.get("panorama"), dict) else {}
-        # 跨日清理：确保只保留当日数据（用当前北京时间日期，而非数据日期）
-        now_bj_date = _dt.datetime.now(
-            _dt.timezone(_dt.timedelta(hours=8))
-        ).strftime("%Y-%m-%d")
-        _purge_previous_day_slices(root=root, keep_date10=now_bj_date)
-        now_bj = _dt.datetime.now(
-            _dt.timezone(_dt.timedelta(hours=8))
-        ).strftime("%Y-%m-%d %H:%M:%S")
-        # lianban_count：优先用 rebuild 注入值，兜底从 lb_2+lb_3+lb_4p+lb_5p 计算
-        lb_cnt = int(rebuilt_mi.get("lianban_count", 0) or 0)
-        if not lb_cnt:
-            lb_cnt = (
-                int(rebuilt_mi.get("lb_2", 0) or 0)
-                + int(rebuilt_mi.get("lb_3", 0) or 0)
-                + int(rebuilt_mi.get("lb_4p", 0) or 0)
-                + int(rebuilt_mi.get("lb_5p", 0) or 0)
-            )
-        max_lb = int(rebuilt_mi.get("max_lb", 0) or 0)
-        # volume/amount：从 rebuild 后的 market_data 获取
-        vol_total = rebuilt_data.get("volume", {}).get("total", "") or ""
-        # concepts：优先 plateRankTop10，其次 conceptFundFlowTop
-        concepts_src = (
-            rebuilt_data.get("plateRankTop10")
-            or rebuilt_data.get("conceptFundFlowTop")
-            or []
-        )
-        watch_snap = {
-            "source": market_data.get("meta", {}).get("source", {}).get("indices", "fetch"),
-            "ts_bj": now_bj,
-            "date": now_bj_date,
-            "market": {
-                "zt": int(rebuilt_mi.get("zt_count", rebuilt_pan.get("limitUp", 0)) or 0),
-                "dt": int(rebuilt_mi.get("dt_count", rebuilt_pan.get("limitDown", 0)) or 0),
-                "zab": int(rebuilt_mi.get("zb_count", 0) or 0),
-                "zab_rate": float(rebuilt_mi.get("zb_rate", 0) or 0.0),
-                "lianban": lb_cnt,
-                "max_lianban": max_lb,
-                "amount": str(vol_total),
-            },
-            "concepts": [
-                {"name": c.get("name"), "lead": c.get("lead"), "chg_pct": c.get("chg_pct")}
-                for c in concepts_src[:5]
-                if isinstance(c, dict) and c.get("name")
-            ],
-            "alerts": [],
-        }
-        append_intraday_slice(root=root, snapshot=watch_snap)
-        print("✅ 盯盘快照已追加")
     except Exception as e:
         print(f"⚠️ 盯盘快照生成失败（不影响主流程）: {e}")
 
@@ -1261,29 +873,13 @@ def run_intraday_snapshot(date: str | None) -> int:
     _log("盘中数据池已获取")
 
     # theme_cache：只处理当日涨停股
-    themes_path = cache_dir / "theme_cache.json"
-    theme_cache_disk = read_json(themes_path, default={})
-    codes_map = (theme_cache_disk.get("codes") or {}) if isinstance(theme_cache_disk, dict) else {}
-    today_zt = pools["ztgc"].get(actual_date) or []
-    today_zb = pools["zbgc"].get(actual_date) or []
-    today_dt = pools["dtgc"].get(actual_date) or []
-    all_today = []
-    for arr in (today_zt, today_zb, today_dt):
-        if isinstance(arr, list):
-            all_today.extend(arr)
-    new_codes: list[str] = []
-    for s in all_today:
-        code6 = normalize_stock_code(str(s.get("dm") or s.get("code") or ""))
-        if code6 and code6 not in codes_map and code6 not in new_codes:
-            new_codes.append(code6)
-    if new_codes:
-        labels_batch = fetch_stock_labels_batch(new_codes)
-        for code6 in new_codes:
-            raw_names = labels_batch.get(code6) or []
-            names = _clean_theme_names(raw_names)
-            if names:
-                codes_map[code6] = names
-    write_json(themes_path, {"version": 1, "codes": codes_map})
+    codes_map = update_theme_cache(
+        root=root,
+        pools=pools,
+        actual_date=actual_date,
+        clean_theme_names=_clean_theme_names,
+        fetch_stock_labels_batch_fn=fetch_stock_labels_batch,
+    )
 
     try:
         sample_path = _save_abnormal_event_history_sample(
@@ -1300,55 +896,17 @@ def run_intraday_snapshot(date: str | None) -> int:
     # 构造 market_data 骨架（标记为 intraday 模式）
     gen_time = now.strftime("%Y-%m-%d %H:%M:%S")
 
-    raw_pools = {
-        "ztgc": pools["ztgc"].get(actual_date) or [],
-        "dtgc": pools["dtgc"].get(actual_date) or [],
-        "zbgc": pools["zbgc"].get(actual_date) or [],
-        "qsgc": pools["qsgc"].get(actual_date) or [],
-        "yest_ztgc": [],
-        "yest_dtgc": [],
-        "yest_zbgc": [],
-        "yest_date": "",
-    }
+    raw_pools = build_raw_pools(pools=pools, actual_date=actual_date, yest="")
+    market_data = build_intraday_market_data(
+        actual_date=actual_date,
+        date_note=date_note,
+        now_str=now_str,
+        generated_at=gen_time,
+        raw_pools=raw_pools,
+        codes_map=codes_map,
+    )
 
-    market_data: dict = {
-        "date": actual_date,
-        "dateNote": f"{date_note or ''} 【盘中快照 {now_str}】",
-        "meta": {
-            "asOf": {"indices": now_str, "pools": now_str, "themes": now_str},
-            "version": "1.0-intraday",
-            "mode": "intraday",
-            "generatedAt": gen_time,
-            "snapshotTime": now_str,
-        },
-        "indices": [],
-        "panorama": {},
-        "volume": {},
-        "sectors": [],
-        "themePanels": {},
-        "themeTrend": {"dates": [], "series": [], "palette": default_chart_palette()},
-        "heightTrend": {},
-        "ladder": [],
-        "top10": [],
-        "top10Summary": {},
-        "mood": {},
-        "moodStage": {},
-        "moodCards": [],
-        "learningNotes": {},
-        "leaders": [],
-        "ztgc": [],
-        "zt_code_themes": {},
-        "features": {},
-        "raw": {},
-    }
-
-    market_data["raw"] = {
-        "pools": raw_pools,
-        "themes": {"code2themes": codes_map},
-        "index_klines": {"codes": {}},
-        "theme_trend_cache": {"as_of": actual_date, "by_day": {}},
-    }
-
+    quotes_map: dict[str, Any] = {}
     try:
         codes = []
         for arr in (raw_pools.get("ztgc") or [], raw_pools.get("qsgc") or [], raw_pools.get("zbgc") or [], raw_pools.get("dtgc") or []):
@@ -1360,29 +918,26 @@ def run_intraday_snapshot(date: str | None) -> int:
                 code6 = normalize_stock_code(str(s.get("dm") or s.get("code") or ""))
                 if code6:
                     codes.append(code6)
-        preserved_research = _load_latest_valid_research_snapshot(root=root, current_date=actual_date)
-        codes.extend(_collect_research_codes_from_snapshot(preserved_research))
+        preserved_research = load_latest_valid_research_snapshot(root=root, current_date=actual_date)
+        codes.extend(collect_research_codes_from_snapshot(preserved_research))
         quotes_map = _fetch_realtime_quotes_map(client, codes, limit=220, batch_size=20)
-        market_data["raw"]["quotes"] = {"as_of": now_str, "items": quotes_map, "count": len(quotes_map)}
-        meta = market_data.get("meta") if isinstance(market_data.get("meta"), dict) else {}
-        if not isinstance(meta, dict):
-            meta = {}
-        meta.setdefault("asOf", {})
-        if isinstance(meta.get("asOf"), dict):
-            meta["asOf"]["quotes"] = now_str
-        market_data["meta"] = meta
+        attach_quotes_and_features(
+            market_data=market_data,
+            raw_pools=raw_pools,
+            quotes_asof=now_str,
+            quotes_map=quotes_map,
+        )
         _log(f"盘中个股实时行情已获取 ({len(quotes_map)} 只)")
     except Exception:
         pass
 
-    mood_inputs = build_mood_inputs(pools=raw_pools, quotes=((market_data.get("raw") or {}).get("quotes") or {}).get("items") or {})
-    market_data["features"]["mood_inputs"] = mood_inputs
-    market_data["features"]["chart_palette"] = default_chart_palette()
+    if not (market_data.get("features") or {}).get("mood_inputs"):
+        mood_inputs = build_mood_inputs(pools=raw_pools, quotes=((market_data.get("raw") or {}).get("quotes") or {}).get("items") or {})
+        market_data["features"]["mood_inputs"] = mood_inputs
+        market_data["features"]["chart_palette"] = default_chart_palette()
 
     # 写缓存
-    date_compact = actual_date.replace("-", "")
-    market_path = cache_dir / f"market_data-{date_compact}-intraday.json"
-    write_json(market_path, market_data)
+    market_path = write_market_data(root=root, market_data=market_data, actual_date=actual_date, suffix="intraday")
     _log(f"盘中缓存已写入: {market_path.name}")
 
     # 跑 pipeline + 渲染（复用 rebuild 的大部分逻辑）
@@ -1395,26 +950,14 @@ def run_intraday_snapshot(date: str | None) -> int:
         import datetime as _dt3
         _now10_snap = _dt3.datetime.now(_dt3.timezone(_dt3.timedelta(hours=8))).strftime("%Y-%m-%d")
         snap_md = json.loads(market_path.read_text(encoding="utf-8"))
-        _append_intraday_snapshot(root=root, date=_now10_snap, market_data=snap_md)
+        append_intraday_snapshot(root=root, date=_now10_snap, market_data=snap_md)
         _log("快照记录已追加")
     except Exception:
         pass
 
-    # 第二次：把"半小时快照列表"注入页面后再渲染一次（离线，成本很低）
+    # 第二次：把"半小时快照列表"注入页面后再重建一次（离线，成本很低）
     _log("pipeline 二次重建（含快照注入）...")
     run_rebuild(actual_date, suffix="intraday", source_market_path=market_path, allow_network=True)
-
-    # 在输出 HTML 中注入盘中快照标记
-    out_dir = root / "html"
-    out_path = out_dir / f"复盘日记-{date_compact}-intra.html"
-    if out_path.exists():
-        content = out_path.read_text(encoding="utf-8")
-        content = content.replace(
-            "</title>",
-            f"</title><!-- INTRADAY_SNAPSHOT:{now_str} -->",
-        )
-        out_path.write_text(content, encoding="utf-8")
-        print(f"✅ 盘中快照输出: {out_path}")
 
     return 0
 
@@ -1425,6 +968,208 @@ def _normalize_date(date: str) -> str:
     if len(d) == 8 and d.isdigit():
         return f"{d[:4]}-{d[4:6]}-{d[6:8]}"
     return d
+
+
+def _prepare_indices_from_cache(ctx: Context, *, date: str, full_fields: bool) -> None:
+    """用指数日K缓存修正报告日指数显示。"""
+    try:
+        codes = ((ctx.raw.get("index_klines") or {}).get("codes") or {}) if isinstance(ctx.raw, dict) else {}
+        if not isinstance(codes, dict) or not date:
+            return
+
+        def _norm_k_date(t: str) -> str:
+            t = (t or "").strip()
+            if len(t) >= 10:
+                return t[:10]
+            if len(t) == 8 and t.isdigit():
+                return f"{t[:4]}-{t[4:6]}-{t[6:8]}"
+            return t
+
+        def _pick_exact(code: str) -> tuple[float, float] | None:
+            items = (codes.get(code) or {}).get("items") or []
+            if not isinstance(items, list):
+                return None
+            for it in items:
+                if not isinstance(it, dict):
+                    continue
+                t = _norm_k_date(str(it.get("t") or ""))
+                if t == date and int(it.get("sf", 0) or 0) != 1:
+                    c = float(it.get("c", 0) or 0)
+                    pc = float(it.get("pc", 0) or 0)
+                    return (c, pc)
+            return None
+
+        def _calc_ma(code: str, *, n: int) -> float | None:
+            items = (codes.get(code) or {}).get("items") or []
+            if not isinstance(items, list):
+                return None
+            closes = []
+            for it in items:
+                if not isinstance(it, dict):
+                    continue
+                t = _norm_k_date(str(it.get("t") or ""))
+                if t and t <= date and int(it.get("sf", 0) or 0) != 1:
+                    closes.append(float(it.get("c", 0) or 0))
+            closes = [c for c in closes if c > 0]
+            if len(closes) < n:
+                return None
+            seg = closes[-n:]
+            return sum(seg) / float(n) if seg else None
+
+        mapping = [("000001.SH", "上证指数"), ("399001.SZ", "深证成指"), ("399006.SZ", "创业板指")]
+        inds = []
+        for code, name in mapping:
+            result = _pick_exact(code)
+            if not result:
+                continue
+            close, prev_close = result
+            chg = ((close - prev_close) / prev_close * 100.0) if prev_close else 0.0
+            if abs(chg) < 0.005:
+                chg = 0.0
+            row = {
+                "name": name,
+                "code": code,
+                "val": f"{close:.2f}",
+                "chg": f"{chg:+.2f}%",
+            }
+            if full_fields:
+                row["price"] = close
+                row["ma5"] = _calc_ma(code, n=5)
+                row["ma20"] = _calc_ma(code, n=20)
+            inds.append(row)
+        if inds:
+            ctx.market_data["indices"] = inds
+            if full_fields:
+                meta = ctx.market_data.get("meta") if isinstance(ctx.market_data.get("meta"), dict) else {}
+                if isinstance(meta, dict):
+                    asof = meta.get("asOf") if isinstance(meta.get("asOf"), dict) else {}
+                    if isinstance(asof, dict):
+                        asof["indices"] = "收盘"
+                        meta["asOf"] = asof
+                        ctx.market_data["meta"] = meta
+    except Exception:
+        return
+
+
+def _postprocess_market_data(
+    *,
+    root: Path,
+    date: str,
+    market_data: dict,
+    allow_network: bool,
+    include_intraday_snapshots: bool,
+    preserve_zt_analysis: bool,
+    apply_runtime_display: bool,
+    normalize_meta: bool,
+    sync_stock_research_source: bool,
+    include_prd_v2: bool,
+    log_prefix: str = "",
+) -> None:
+    if apply_runtime_display:
+        try:
+            _apply_realtime_indices_display(market_data)
+            _normalize_indices_display(market_data)
+            _apply_intraday_volume_from_realtime_indices(market_data)
+        except Exception:
+            pass
+
+    if include_intraday_snapshots:
+        try:
+            inject_intraday_snapshots(root=root, date=date, market_data=market_data)
+            _log(f"{log_prefix}盘中快照已注入 ({len(market_data.get('intradaySnapshots', {}).get('snapshots', []))} 条)")
+        except Exception:
+            pass
+
+    if normalize_meta:
+        try:
+            import datetime as _dt
+
+            meta = market_data.get("meta") if isinstance(market_data.get("meta"), dict) else {}
+            if not isinstance(meta, dict):
+                meta = {}
+            asof = meta.get("asOf") if isinstance(meta.get("asOf"), dict) else {}
+            if not isinstance(asof, dict):
+                asof = {}
+            gen_time = _dt.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            meta.setdefault("generatedAt", gen_time)
+            idx = str(asof.get("indices") or "").strip()
+            if not idx or idx == "00:00:00":
+                asof["indices"] = "收盘"
+            if not str(asof.get("pools") or "").strip():
+                asof["pools"] = "收盘"
+            if not str(asof.get("themes") or "").strip():
+                asof["themes"] = "收盘"
+            meta["asOf"] = asof
+            market_data["meta"] = meta
+        except Exception:
+            pass
+
+    try:
+        inject_mood_history_and_delta(root=root, date=date, market_data=market_data)
+        _log(f"{log_prefix}情绪历史趋势/昨日对比 已注入")
+    except Exception:
+        pass
+
+    try:
+        from daily_review.metrics.action_advisor import build_action_advisor
+
+        market_data["actionAdvisor"] = build_action_advisor(market_data=market_data)
+        _log(f"{log_prefix}actionAdvisor 已生成")
+    except Exception:
+        pass
+
+    if preserve_zt_analysis:
+        try:
+            apply_preserved_research_snapshot(
+                root=root,
+                current_date=date,
+                market_data=market_data,
+                log_fn=lambda msg: _log(f"{log_prefix}{msg}"),
+            )
+        except Exception:
+            pass
+
+    try:
+        apply_zt_analysis(
+            root=root,
+            current_date=date,
+            market_data=market_data,
+            preserve_zt_analysis=preserve_zt_analysis,
+            log_fn=lambda msg: _log(f"{log_prefix}{msg}"),
+        )
+    except Exception:
+        pass
+
+    try:
+        attach_stock_research_backtest(
+            market_data=market_data,
+            sync_source=sync_stock_research_source,
+            log_fn=lambda msg: _log(f"{log_prefix}{msg}"),
+        )
+    except Exception:
+        pass
+
+    try:
+        from daily_review.render.render_html import build_market_overview_7d, build_sentiment_explain_dims
+
+        market_data["marketOverview7d"] = build_market_overview_7d(market_data=market_data)
+        market_data["sentimentExplainDims"] = build_sentiment_explain_dims(market_data=market_data)
+        _log(f"{log_prefix}marketOverview7d / sentimentExplainDims 已生成")
+    except Exception:
+        pass
+
+    if include_prd_v2:
+        try:
+            _inject_prd_v2_metrics(root=root, date=date, market_data=market_data, allow_network=allow_network)
+            _log(f"{log_prefix}PRD v2 指标已注入 (sectorHeatmap/threeQuadrants)")
+        except Exception:
+            pass
+
+    try:
+        _prune_frontend_unused_fields(market_data)
+        _log(f"{log_prefix}前端冗余字段已清理")
+    except Exception:
+        pass
 
 
 def run_rebuild(
@@ -1439,281 +1184,35 @@ def run_rebuild(
     - 从 cache/market_data-YYYYMMDD.json 读取
     - 注入 raw（pools/theme/index_kline/height_trend 等缓存）
     - 跑 v2 pipeline（modules=None 表示全量重建）
-    - 写回 market_data 缓存 + 渲染 tab-v1 HTML
+    - 写回 market_data 缓存
     """
     root = _workspace_root()
-    cache_dir = root / "cache"
-    date_compact = date.replace("-", "")
-
-    # 如果指定了 source_market_path（盘中快照模式），直接用它
-    if source_market_path and source_market_path.exists():
-        market_path = source_market_path
-    else:
-        market_path = cache_dir / f"market_data-{date_compact}.json"
-
-    if not market_path.exists():
-        raise FileNotFoundError(f"找不到缓存 marketData：{market_path}（请先跑一次 ./qr.sh fetch {date}）")
-
-    market_data = json.loads(market_path.read_text(encoding="utf-8"))
+    bundle = build_rebuild_context(root=root, date=date, source_market_path=source_market_path)
+    ctx = bundle.ctx
+    market_data = bundle.market_data
+    market_path = bundle.market_path
     _log(f"缓存已加载: {market_path.name}")
-
-    ctx = Context.from_market_data(market_data)
-
-    # 注入 raw：复用 partial 的离线缓存注入逻辑
-    pools_today = _load_pools_for_date(root, date)
-    yest = _prev_trade_date(pools_today.get("all_dates") or [], date)
-    pools_yest = _load_pools_for_date(root, yest) if yest else {"ztgc": [], "dtgc": [], "zbgc": []}
-    ctx.raw.setdefault("pools", {})
-    ctx.raw["pools"].update(
-        {
-            "ztgc": pools_today.get("ztgc") or [],
-            "dtgc": pools_today.get("dtgc") or [],
-            "zbgc": pools_today.get("zbgc") or [],
-            "qsgc": pools_today.get("qsgc") or [],
-            "yest_ztgc": pools_yest.get("ztgc") or [],
-            "yest_dtgc": pools_yest.get("dtgc") or [],
-            "yest_zbgc": pools_yest.get("zbgc") or [],
-            "yest_date": yest or "",
-        }
-    )
-    # 注入近7天涨停池（离线）：供“近7天2连板题材聚合”等跨日模块使用
-    ctx.raw["pools"]["ztgc_by_day"] = _load_ztgc_by_day_window(root=root, date=date, n=7)
-    ctx.raw.setdefault("themes", {})
-    ctx.raw["themes"]["code2themes"] = _load_theme_cache(root)
-    ctx.raw["index_klines"] = _load_index_klines_cache(root)
-    ctx.raw["height_trend_cache"] = _load_height_trend_cache(root)
-    ctx.raw["theme_trend_cache"] = _load_theme_trend_cache(root)
-    ctx.raw["catalyst_cache"] = _load_catalyst_cache(root, date)
     _log("离线数据已注入 (pools/themes/klines/height_trend/theme_trend/catalyst)")
-
-    # 修复：三大指数涨幅在离线重建中可能残留为 +0.00%
-    # 这里用指数日K缓存按“报告日收盘价 vs 前收”重算，确保与报告日期一致。
-    try:
-        codes = ((ctx.raw.get("index_klines") or {}).get("codes") or {}) if isinstance(ctx.raw, dict) else {}
-        if isinstance(codes, dict) and date:
-            def _norm_k_date(t: str) -> str:
-                t = (t or "").strip()
-                if len(t) >= 10:
-                    return t[:10]
-                if len(t) == 8 and t.isdigit():
-                    return f"{t[:4]}-{t[4:6]}-{t[6:8]}"
-                return t
-
-            def _pick_exact(code: str) -> tuple[float, float] | None:
-                items = (codes.get(code) or {}).get("items") or []
-                if not isinstance(items, list):
-                    return None
-                for it in items:
-                    if not isinstance(it, dict):
-                        continue
-                    t = _norm_k_date(str(it.get("t") or ""))
-                    if t == date and int(it.get("sf", 0) or 0) != 1:
-                        c = float(it.get("c", 0) or 0)
-                        pc = float(it.get("pc", 0) or 0)  # 前收
-                        return (c, pc)
-                return None
-
-            def _calc_ma(code: str, *, n: int) -> float | None:
-                items = (codes.get(code) or {}).get("items") or []
-                if not isinstance(items, list):
-                    return None
-                closes = []
-                for it in items:
-                    if not isinstance(it, dict):
-                        continue
-                    t = _norm_k_date(str(it.get("t") or ""))
-                    if t and t <= date and int(it.get("sf", 0) or 0) != 1:
-                        closes.append(float(it.get("c", 0) or 0))
-                closes = [c for c in closes if c > 0]
-                if len(closes) < n:
-                    return None
-                seg = closes[-n:]
-                return sum(seg) / float(n) if seg else None
-
-            mapping = [("000001.SH", "上证指数"), ("399001.SZ", "深证成指"), ("399006.SZ", "创业板指")]
-            inds = []
-            for code, name in mapping:
-                r = _pick_exact(code)
-                if not r:
-                    continue
-                c, pc = r
-                chg = ((c - pc) / pc * 100.0) if pc else 0.0
-                if abs(chg) < 0.005:
-                    chg = 0.0
-                inds.append(
-                    {
-                        "name": name,
-                        "code": code,
-                        "val": f"{c:.2f}",
-                        "chg": f"{chg:+.2f}%",
-                        "price": c,
-                        "ma5": _calc_ma(code, n=5),
-                        "ma20": _calc_ma(code, n=20),
-                    }
-                )
-            if inds:
-                ctx.market_data["indices"] = inds
-                meta = ctx.market_data.get("meta") if isinstance(ctx.market_data.get("meta"), dict) else {}
-                if isinstance(meta, dict):
-                    asof = meta.get("asOf") if isinstance(meta.get("asOf"), dict) else {}
-                    if isinstance(asof, dict):
-                        asof["indices"] = "收盘"
-                        meta["asOf"] = asof
-                        ctx.market_data["meta"] = meta
-    except Exception:
-        pass
-
-    # === 关键：离线重建时同步重算 features（避免缓存字段缺失导致页面“—/0”）===
-    # features 应由 raw 推导，不能长期依赖旧 cache/market_data 里残留的 features。
-    try:
-        pools_for_feat = ctx.raw.get("pools") or {}
-        quotes_items = (((ctx.raw.get("quotes") or {}) if isinstance(ctx.raw, dict) else {}).get("items") or {})
-        mood_inputs = build_mood_inputs(pools=pools_for_feat, quotes=quotes_items)
-        feats = ctx.market_data.get("features") if isinstance(ctx.market_data.get("features"), dict) else {}
-        if not isinstance(feats, dict):
-            feats = {}
-        feats["mood_inputs"] = mood_inputs
-        feats.setdefault("chart_palette", default_chart_palette())
-        ctx.market_data["features"] = feats
-        ctx.features = feats  # runner 使用 ctx.features 读取 features.*
-    except Exception:
-        pass
-
+    _prepare_indices_from_cache(ctx, date=date, full_fields=True)
     _log("features 已重算")
 
     runner = Runner(ALL_MODULES)
     runner.run(ctx, targets=(modules or None))
     market_data = ctx.market_data
     _log("pipeline 已执行")
-
-    try:
-        _apply_realtime_indices_display(market_data)
-        _normalize_indices_display(market_data)
-        _apply_intraday_volume_from_realtime_indices(market_data)
-    except Exception:
-        pass
-
-    # === 注入盘中快照列表（供"实时盯盘"页面展示）===
-    try:
-        import datetime as _dt2
-        _now10 = _dt2.datetime.now(_dt2.timezone(_dt2.timedelta(hours=8))).strftime("%Y-%m-%d")
-        _inject_intraday_snapshots(root=root, date=date, market_data=market_data, now_date10=_now10)
-        _log(f"盘中快照已注入 ({len(market_data.get('intradaySnapshots', {}).get('snapshots', []))} 条)")
-    except Exception:
-        pass
-
-    # 补齐元信息：避免页面“数据更新时间”显示为 00:00:00 / 空
-    try:
-        import datetime as _dt
-
-        meta = market_data.get("meta") if isinstance(market_data.get("meta"), dict) else {}
-        if not isinstance(meta, dict):
-            meta = {}
-        asof = meta.get("asOf") if isinstance(meta.get("asOf"), dict) else {}
-        if not isinstance(asof, dict):
-            asof = {}
-
-        # 生成时间：离线重建默认用当前时间（避免 '-'）
-        gen_time = _dt.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        meta.setdefault("generatedAt", gen_time)
-
-        # indices 的 asOf 若是日K占位“00:00:00”，更符合用户直觉的是“收盘”
-        idx = str(asof.get("indices") or "").strip()
-        if not idx or idx == "00:00:00":
-            asof["indices"] = "收盘"
-        # pools/themes 若缺失，用“收盘/缓存”占位，避免显示空
-        if not str(asof.get("pools") or "").strip():
-            asof["pools"] = "收盘"
-        if not str(asof.get("themes") or "").strip():
-            asof["themes"] = "收盘"
-        meta["asOf"] = asof
-        market_data["meta"] = meta
-    except Exception:
-        pass
-
-    # 补齐“情绪周期趋势/昨日对比”所需数据（用于前端 sparkline、Δ、K线增强等）
-    # - 不请求网络；只读取本地 cache/market_data-*.json
-    # - 仅在字段缺失/为空时注入，避免覆盖后端已算出的更准口径
-    try:
-        _inject_mood_history_and_delta(root=root, date=date, market_data=market_data)
-        _log("情绪历史趋势/昨日对比 已注入")
-    except Exception:
-        pass
-
-    # actionAdvisor：依赖“历史趋势/昨日对比”等注入字段，故在注入后再计算，保证口径一致
-    try:
-        from daily_review.metrics.action_advisor import build_action_advisor
-
-        market_data["actionAdvisor"] = build_action_advisor(market_data=market_data)
-        _log("actionAdvisor 已生成")
-    except Exception:
-        pass
-
-    # ztAnalysis：明日接力/观察是收盘后推演；盘中只刷新实时情绪时，沿用上一份有效收盘推演。
     preserve_zt = str(os.environ.get("PRESERVE_ZT_ANALYSIS") or "").strip().lower() in {"1", "true", "yes", "on"}
-    if preserve_zt:
-        preserved_research = _load_latest_valid_research_snapshot(root=root, current_date=date)
-        if preserved_research:
-            market_data["preservedResearch"] = preserved_research
-            _log(f"个股研究已保留上一份收盘快照 ({preserved_research.get('preservedFromDate')})")
-        else:
-            market_data.pop("preservedResearch", None)
-    try:
-        if preserve_zt:
-            preserved = _load_latest_valid_zt_analysis(root=root, current_date=date)
-            if preserved:
-                market_data["ztAnalysis"] = preserved
-                _log(f"ztAnalysis 已保留上一份收盘推演 ({preserved.get('meta', {}).get('preservedFromDate')})")
-            else:
-                from daily_review.metrics.zt_analysis import build_zt_analysis
-
-                market_data["ztAnalysis"] = build_zt_analysis(market_data=market_data)
-                _log("未找到可沿用 ztAnalysis，已按当前数据重算")
-        else:
-            from daily_review.metrics.zt_analysis import build_zt_analysis
-
-            market_data["ztAnalysis"] = build_zt_analysis(market_data=market_data)
-            _log("ztAnalysis 已按最新环境姿态重算")
-    except Exception:
-        pass
-
-    # stockResearchBacktest：样本源只认“收盘后的个股研究推送”。
-    # 当前这份 market_data 若是收盘态，会先把 ztAnalysis.relay/watch 推送到专用历史源，
-    # 后续回测只读取这份历史源，不再扫描其他 market_data 缓存作为样本入口。
-    try:
-        from scripts.build_stock_research_backtest import build_stock_research_backtest_payload, sync_stock_research_backtest_source
-
-        sync_stock_research_backtest_source(market_data=market_data)
-        market_data["stockResearchBacktest"] = build_stock_research_backtest_payload(current_market_data=market_data)
-        _log("stockResearchBacktest 已按个股研究推送历史源派生")
-    except Exception:
-        pass
-
-    # 历史趋势/昨日对比说明维度：保留结构化数据，不再生成行动指南底部文案。
-    try:
-        from daily_review.render.render_html import build_market_overview_7d, build_sentiment_explain_dims
-
-        market_data["marketOverview7d"] = build_market_overview_7d(market_data=market_data)
-        market_data["sentimentExplainDims"] = build_sentiment_explain_dims(market_data=market_data)
-        _log("marketOverview7d / sentimentExplainDims 已生成")
-    except Exception:
-        pass
-
-    # PRD v2：核心派生字段（必须可复算）
-    # - sectorHeatmap（多板块情绪热力图）
-    # - threeQuadrants（盘面三象限）
-    try:
-        _inject_prd_v2_metrics(root=root, date=date, market_data=market_data, allow_network=allow_network)
-        _log("PRD v2 指标已注入 (sectorHeatmap/threeQuadrants)")
-    except Exception:
-        pass
-
-    # 清理前端已不用的大字段：统一视图/compat 兼容层已下线，同时下沉 planGuide
-    try:
-        _prune_frontend_unused_fields(market_data)
-        _log("前端冗余字段已清理")
-    except Exception:
-        pass
+    _postprocess_market_data(
+        root=root,
+        date=date,
+        market_data=market_data,
+        allow_network=allow_network,
+        include_intraday_snapshots=True,
+        preserve_zt_analysis=preserve_zt,
+        apply_runtime_display=True,
+        normalize_meta=True,
+        sync_stock_research_source=True,
+        include_prd_v2=True,
+    )
 
     # 回写 market_data 缓存（Layer 2 → Layer 3 的数据接口）
     # HTML 渲染由 qr.sh 调用 npm run build + inject_data.py 完成
@@ -1721,412 +1220,6 @@ def run_rebuild(
     _log(f"market_data 已回写: {market_path.name}")
     print(f"✅ rebuild 输出: {market_path}")
     return 0
-
-
-def _intraday_slices_path(root: Path, date: str) -> Path:
-    cache_dir = root / "cache"
-    d8 = date.replace("-", "")
-    return cache_dir / f"intraday_slices-{d8}.json"
-
-
-def _intraday_snapshots_path(root: Path, date: str) -> Path:
-    cache_dir = root / "cache"
-    d8 = date.replace("-", "")
-    return cache_dir / f"intraday_snapshots-{d8}.json"
-
-
-def _to_num(v, default: float = 0.0) -> float:
-    try:
-        if v is None or v == "":
-            return default
-        if isinstance(v, str):
-            return float(v.replace("%", "").strip())
-        return float(v)
-    except Exception:
-        return default
-
-
-def _intraday_shift_label(score: float) -> str:
-    if score >= 72:
-        return "走强"
-    if score >= 60:
-        return "修复"
-    if score >= 48:
-        return "分歧"
-    if score >= 36:
-        return "走弱"
-    return "退潮"
-
-
-def _normalize_intraday_snapshot(row: dict) -> dict:
-    rec = dict(row or {})
-    heat = _to_num(rec.get("heat"), None)
-    risk = _to_num(rec.get("risk"), None)
-    if heat is not None and risk is not None:
-        score = int(blend_sentiment_score(heat=heat, risk=risk))
-        rec["shift_score"] = score
-        label = str(rec.get("shift_label") or "").strip()
-        if not label or label.replace(".", "", 1).isdigit():
-            rec["shift_label"] = _intraday_shift_label(score)
-    return rec
-
-
-def _load_intraday_snapshots(*, root: Path, date: str, now_date10: str | None = None) -> list[dict]:
-    """加载盘中切片：严格按报告日期读取，避免历史页混入其他交易日快照。"""
-    dates_to_try = [date]
-    for d in dates_to_try:
-        for p in (_intraday_slices_path(root, d), _intraday_snapshots_path(root, d)):
-            if not p.exists():
-                continue
-            try:
-                data = json.loads(p.read_text(encoding="utf-8"))
-                if isinstance(data, list):
-                    return [_normalize_intraday_snapshot(x) for x in data if isinstance(x, dict)]
-                if isinstance(data, dict) and isinstance(data.get("snapshots"), list):
-                    return [_normalize_intraday_snapshot(x) for x in (data.get("snapshots") or []) if isinstance(x, dict)]
-            except Exception:
-                continue
-    return []
-
-
-def _write_intraday_snapshots(*, root: Path, date: str, snapshots: list[dict], simulated: bool = False) -> None:
-    """与 watch_runtime 一致：落盘为 envelope，便于线上/本地共用同一时间轴 JSON。"""
-    p = _intraday_slices_path(root, date)
-    env = {
-        "date": date,
-        "count": len(snapshots),
-        "snapshots": snapshots,
-        "simulated": simulated,
-        "interval_min": None,
-        "latest": snapshots[-1] if snapshots else None,
-    }
-    p.write_text(json.dumps(env, ensure_ascii=False, indent=2), encoding="utf-8")
-
-
-def _append_intraday_snapshot(*, root: Path, date: str, market_data: dict) -> None:
-    """
-    追加一条盘中快照（半小时级）。
-    只保存“盯盘所需最小信息”，避免文件膨胀。
-    """
-    meta = market_data.get("meta") or {}
-    gen_at = str(meta.get("generatedAt") or "").strip()
-    snap_t = str(meta.get("snapshotTime") or meta.get("asOf", {}).get("pools") or "").strip()
-    ts_bj = gen_at if len(gen_at) >= 19 else (f"{date} {snap_t}" if snap_t else "")
-    if not ts_bj:
-        return
-    t_label = ts_bj[11:19] if len(ts_bj) >= 19 else (ts_bj[11:16] if len(ts_bj) >= 16 else snap_t[:8] if snap_t else "")
-
-    mi = (market_data.get("features") or {}).get("mood_inputs") or {}
-    mood = market_data.get("mood") or {}
-    ms = market_data.get("moodSignals") or {}
-    hm2 = market_data.get("hm2Compare") or {}
-    panorama = market_data.get("panorama") or {}
-    volume = market_data.get("volume") if isinstance(market_data.get("volume"), dict) else {}
-    lianban_count = int(_to_num(mi.get("lianban_count"), 0))
-    if not lianban_count:
-        lianban_count = (
-            int(_to_num(mi.get("lb_2"), 0))
-            + int(_to_num(mi.get("lb_3"), 0))
-            + int(_to_num(mi.get("lb_4p"), 0))
-            + int(_to_num(mi.get("lb_5p"), 0))
-        )
-
-    rec = {
-        "time": t_label,
-        "ts_bj": ts_bj,
-        "date": date,
-        "source": "intraday_live",
-        "headline": ms.get("headline") or "",
-        "heat": mood.get("heat"),
-        "risk": mood.get("risk"),
-        "fb": mi.get("fb_rate"),
-        "jj": mi.get("jj_rate"),
-        "zt": int(_to_num(mi.get("zt_count"), _to_num(panorama.get("limitUp"), 0))),
-        "lianban": lianban_count,
-        "zab": int(_to_num(mi.get("zb_count"), 0)),
-        "zb": mi.get("zb_rate"),
-        "dt": panorama.get("limitDown"),
-        "bf": mi.get("bf_count"),
-        "max_lb": mi.get("max_lb"),
-        "amount": volume.get("total") or "",
-        "loss": mi.get("loss"),
-        "hm2": hm2.get("score"),
-        "pos": ms.get("pos") or [],
-        "riskSignals": ms.get("risk") or [],
-    }
-    shift_score = int(_to_num(mood.get("score"), 0))
-    rec["shift_score"] = shift_score
-    rec["shift_label"] = _intraday_shift_label(shift_score)
-
-    snaps = _load_intraday_snapshots(root=root, date=date)
-    # 去重：同一 ts_bj 只保留最新一条（与 watch_runtime 节点键一致）
-    snaps = [s for s in snaps if str(s.get("ts_bj") or "") != ts_bj]
-    snaps.append(rec)
-    snaps.sort(key=lambda x: str(x.get("ts_bj") or f"{date} {x.get('time') or '00:00:00'}"))
-    snaps = snaps[-96:]
-    _write_intraday_snapshots(root=root, date=date, snapshots=snaps, simulated=False)
-
-
-
-def _inject_intraday_snapshots(*, root: Path, date: str, market_data: dict, now_date10: str | None = None) -> None:
-    market_data.pop("intradaySnapshots", None)
-    snaps = _load_intraday_snapshots(root=root, date=date, now_date10=now_date10)
-    if not snaps:
-        return
-    # 过滤掉残留的模拟数据
-    snaps = [s for s in snaps if isinstance(s, dict) and str(s.get("source") or "") != "simulated_close"]
-    if not snaps:
-        return
-    market_data["intradaySnapshots"] = {
-        "date": snaps[0].get("date") or date,
-        "count": len(snaps),
-        "snapshots": snaps,
-        "simulated": False,
-        "interval_min": None,
-        "latest": snaps[-1] if snaps else None,
-    }
-
-
-def _inject_mood_history_and_delta(*, root: Path, date: str, market_data: dict) -> None:
-    """
-    离线增强（UI/图表需要）：
-    1) features.mood_inputs.hist_* / trend_*：用于 sparkline 与情绪K线
-    2) prev / delta：用于“vs昨日”对比箭头与 Δ badge
-    """
-
-    cache_dir = root / "cache"
-    date8 = date.replace("-", "")
-    if len(date8) != 8:
-        return
-
-    # 收集 <= date 的缓存文件（按日期排序）
-    items: list[tuple[str, Path]] = []
-    for fp in cache_dir.glob("market_data-*.json"):
-        stem = fp.stem  # market_data-YYYYMMDD
-        if not stem.startswith("market_data-"):
-            continue
-        d8 = stem.replace("market_data-", "")
-        if len(d8) != 8 or not d8.isdigit():
-            continue
-        if d8 <= date8:
-            items.append((d8, fp))
-    items.sort(key=lambda x: x[0])
-    if not items:
-        return
-
-    # ===== 1) hist_* / trend_* =====
-    feats = market_data.setdefault("features", {})
-    mi = feats.setdefault("mood_inputs", {})
-    hist_days = mi.get("hist_days")
-
-    # 先注入当天可直接计算的指标，供后续 delta / 维度解释使用
-    try:
-        mp = market_data.get("marketPanorama") or {}
-        kpis = mp.get("kpis") or {}
-        mi.setdefault("lianban_count", int(kpis.get("link_board", 0) or 0))
-    except Exception:
-        pass
-    try:
-        raw = market_data.get("raw") or {}
-        quotes = raw.get("quotes") or {}
-        items0 = quotes.get("items") or {}
-        if isinstance(items0, dict):
-            up0 = 0
-            down0 = 0
-            for _, it in items0.items():
-                if not isinstance(it, dict):
-                    continue
-                pc = it.get("pc")
-                try:
-                    pc = float(pc)
-                except Exception:
-                    continue
-                if pc > 0:
-                    up0 += 1
-                elif pc < 0:
-                    down0 += 1
-            mi.setdefault("up_count", up0)
-            mi.setdefault("down_count", down0)
-    except Exception:
-        pass
-
-    need_hist = not (isinstance(hist_days, list) and len(hist_days) >= 2)
-    if need_hist:
-        try:
-            # 默认近 7 日：用于“情绪温度（解释版）”五线趋势（涨停/连板/跌停/封板率/晋级率）
-            hist_n = int(os.getenv("MOOD_HIST_DAYS", "7") or "7")
-        except Exception:
-            hist_n = 5
-        hist_n = max(3, min(hist_n, 10))
-        slice_items = items[-hist_n:]
-
-        rows = []
-        for d8, fp in slice_items:
-            try:
-                snap = json.loads(fp.read_text(encoding="utf-8"))
-                s_feats = snap.get("features") or {}
-                s_mi = s_feats.get("mood_inputs") or {}
-                # 兜底：max_lb 优先用 mood_inputs，其次用 ladder 最高 badge 数字
-                max_lb = int(s_mi.get("max_lb", 0) or 0)
-                if not max_lb:
-                    lbs = []
-                    for it in (snap.get("ladder") or []):
-                        try:
-                            lbs.append(int(str(it.get("badge", "")).replace("板", "").replace("板+", "")[:2] or 0))
-                        except Exception:
-                            pass
-                    max_lb = max(lbs) if lbs else 0
-
-                def _to_num(v, d=0.0):
-                    try:
-                        if v is None:
-                            return d
-                        if isinstance(v, str):
-                            v = v.replace("%", "").strip()
-                        return float(v)
-                    except Exception:
-                        return d
-
-                def _breadth_from_snap(snap_dict: dict) -> tuple[int, int]:
-                    """
-                    纯函数：从 raw.quotes.items 计算上涨/下跌家数。
-                    """
-                    raw = snap_dict.get("raw") or {}
-                    quotes = raw.get("quotes") or {}
-                    items = quotes.get("items") or {}
-                    if not isinstance(items, dict):
-                        return 0, 0
-                    up = 0
-                    down = 0
-                    for _, it in items.items():
-                        if not isinstance(it, dict):
-                            continue
-                        pc = it.get("pc")
-                        try:
-                            pc = float(pc)
-                        except Exception:
-                            continue
-                        if pc > 0:
-                            up += 1
-                        elif pc < 0:
-                            down += 1
-                    return up, down
-
-                up_cnt, down_cnt = _breadth_from_snap(snap)
-                # 连板家数：优先用 marketPanorama.kpis.link_board，其次用 lb_2/lb_3/lb_4p/lb_5p 兜底
-                mp = snap.get("marketPanorama") or {}
-                kpis = mp.get("kpis") or {}
-                lianban = int(_to_num(kpis.get("link_board", 0), 0))
-                if not lianban:
-                    lianban = int(
-                        _to_num(s_mi.get("lb_2", 0), 0)
-                        + _to_num(s_mi.get("lb_3", 0), 0)
-                        + _to_num(s_mi.get("lb_4p", 0), 0)
-                        + _to_num(s_mi.get("lb_5p", 0), 0)
-                    )
-
-                rows.append(
-                    {
-                        "date": f"{d8[0:4]}-{d8[4:6]}-{d8[6:8]}",
-                        "max_lb": max_lb,
-                        "fb_rate": _to_num(s_mi.get("fb_rate", 0), 0),
-                        "jj_rate": _to_num(s_mi.get("jj_rate_adj", s_mi.get("jj_rate", 0)), 0),
-                        "broken_lb_rate": _to_num(s_mi.get("broken_lb_rate_adj", s_mi.get("broken_lb_rate", 0)), 0),
-                        "zb_rate": _to_num(s_mi.get("zb_rate", 0), 0),
-                        "zt_early_ratio": _to_num(s_mi.get("zt_early_ratio", 0), 0),
-                        "loss": _to_num(s_mi.get("loss", _to_num(s_mi.get("bf_count", 0), 0) + _to_num(s_mi.get("dt_count", 0), 0)), 0),
-                        "zt": int(_to_num((snap.get("panorama") or {}).get("limitUp", 0), 0)),
-                        "dt": int(_to_num((snap.get("panorama") or {}).get("limitDown", 0), 0)),
-                        "lianban": lianban,
-                        "up": up_cnt,
-                        "down": down_cnt,
-                    }
-                )
-            except Exception:
-                continue
-
-        if len(rows) >= 2:
-            first, last = rows[0], rows[-1]
-            mi["hist_days"] = [r["date"] for r in rows]
-            mi["hist_max_lb"] = [r["max_lb"] for r in rows]
-            mi["hist_fb_rate"] = [round(r["fb_rate"], 1) for r in rows]
-            mi["hist_jj_rate"] = [round(r["jj_rate"], 1) for r in rows]
-            mi["hist_broken_lb_rate"] = [round(r["broken_lb_rate"], 1) for r in rows]
-            mi["hist_zb_rate"] = [round(r["zb_rate"], 1) for r in rows]
-            mi["hist_zt_early_ratio"] = [round(r["zt_early_ratio"], 1) for r in rows]
-            mi["hist_loss"] = [round(r["loss"], 1) for r in rows]
-            mi["hist_zt"] = [int(r.get("zt", 0)) for r in rows]
-            mi["hist_dt"] = [int(r.get("dt", 0)) for r in rows]
-            mi["hist_lianban"] = [int(r.get("lianban", 0)) for r in rows]
-            mi["hist_up"] = [int(r.get("up", 0)) for r in rows]
-            mi["hist_down"] = [int(r.get("down", 0)) for r in rows]
-            mi["hist_zt_dt_spread"] = [int(r.get("zt", 0)) - int(r.get("dt", 0)) for r in rows]
-            mi["trend_max_lb"] = round(float(last["max_lb"]) - float(first["max_lb"]), 2)
-            mi["trend_fb_rate"] = round(float(last["fb_rate"]) - float(first["fb_rate"]), 2)
-            mi["trend_jj_rate"] = round(float(last["jj_rate"]) - float(first["jj_rate"]), 2)
-            mi["trend_broken_lb_rate"] = round(float(last["broken_lb_rate"]) - float(first["broken_lb_rate"]), 2)
-            mi["trend_zb_rate"] = round(float(last["zb_rate"]) - float(first["zb_rate"]), 2)
-            mi["trend_zt_early_ratio"] = round(float(last["zt_early_ratio"]) - float(first["zt_early_ratio"]), 2)
-            mi["trend_loss"] = round(float(last["loss"]) - float(first["loss"]), 2)
-            mi["trend_zt"] = int(last.get("zt", 0)) - int(first.get("zt", 0))
-            mi["trend_dt"] = int(last.get("dt", 0)) - int(first.get("dt", 0))
-            mi["trend_lianban"] = int(last.get("lianban", 0)) - int(first.get("lianban", 0))
-            mi["trend_up"] = int(last.get("up", 0)) - int(first.get("up", 0))
-            mi["trend_down"] = int(last.get("down", 0)) - int(first.get("down", 0))
-
-    # ===== 2) prev / delta =====
-    if len(items) < 2:
-        return
-
-    prev_fp = items[-2][1]
-    try:
-        prev_data = json.loads(prev_fp.read_text(encoding="utf-8"))
-    except Exception:
-        return
-
-    market_data["prev"] = {
-        "date": prev_data.get("date", ""),
-        "panorama": prev_data.get("panorama") or {},
-        "mood": prev_data.get("mood") or {},
-        "moodStage": prev_data.get("moodStage") or {},
-        "volume": prev_data.get("volume") or {},
-        "features": (prev_data.get("features") or {}),
-    }
-
-    def _num(v, d=0.0):
-        try:
-            if v is None:
-                return d
-            if isinstance(v, str):
-                v = v.replace("%", "").replace("亿", "").strip()
-            return float(v)
-        except Exception:
-            return d
-
-    cur_pan = market_data.get("panorama") or {}
-    prv_pan = (prev_data.get("panorama") or {}) if isinstance(prev_data, dict) else {}
-
-    cur_feats = market_data.get("features") or {}
-    cur_mi = cur_feats.get("mood_inputs") or {}
-    prv_feats = (prev_data.get("features") or {}) if isinstance(prev_data, dict) else {}
-    prv_mi = (prv_feats.get("mood_inputs") or {}) if isinstance(prv_feats, dict) else {}
-
-    # 用于 UI 的 Δ（单位由前端决定：pp/只）
-    market_data["delta"] = {
-        "zt": int(_num(cur_pan.get("limitUp"), 0) - _num(prv_pan.get("limitUp"), 0)),
-        "zb": int(_num(cur_pan.get("broken"), 0) - _num(prv_pan.get("broken"), 0)),
-        "dt": int(_num(cur_pan.get("limitDown"), 0) - _num(prv_pan.get("limitDown"), 0)),
-        "fb_rate": round(_num(cur_mi.get("fb_rate"), 0) - _num(prv_mi.get("fb_rate"), 0), 2),
-        "jj_rate": round(_num(cur_mi.get("jj_rate_adj", cur_mi.get("jj_rate")), 0) - _num(prv_mi.get("jj_rate_adj", prv_mi.get("jj_rate")), 0), 2),
-        "zb_rate": round(_num(cur_mi.get("zb_rate"), 0) - _num(prv_mi.get("zb_rate"), 0), 2),
-        "max_lb": round(_num(cur_mi.get("max_lb"), 0) - _num(prv_mi.get("max_lb"), 0), 2),
-        "bf_count": round(_num(cur_mi.get("bf_count"), 0) - _num(prv_mi.get("bf_count"), 0), 2),
-        "lianban": int(_num(cur_mi.get("lianban_count"), 0) - _num(prv_mi.get("lianban_count"), 0)),
-        "up": int(_num(cur_mi.get("up_count"), 0) - _num(prv_mi.get("up_count"), 0)),
-        "down": int(_num(cur_mi.get("down_count"), 0) - _num(prv_mi.get("down_count"), 0)),
-        "heat": round(_num((market_data.get("mood") or {}).get("heat"), 0) - _num((prev_data.get("mood") or {}).get("heat"), 0), 2),
-        "risk": round(_num((market_data.get("mood") or {}).get("risk"), 0) - _num((prev_data.get("mood") or {}).get("risk"), 0), 2),
-    }
 
 
 def _inject_prd_v2_metrics(*, root: Path, date: str, market_data: dict, allow_network: bool = False) -> None:
@@ -2400,10 +1493,10 @@ def _inject_prd_v2_metrics(*, root: Path, date: str, market_data: dict, allow_ne
             return
         target_set = set(target_themes)
 
-        zt_by_day = _load_ztgc_by_day_window(root=root, date=date, n=7)
+        zt_by_day = app_load_ztgc_by_day_window(root=root, date=date, n=7)
         if not zt_by_day:
             return
-        code2themes = _load_theme_cache(root)
+        code2themes = app_load_theme_cache(root)
         if not isinstance(code2themes, dict) or not code2themes:
             return
 
@@ -2714,287 +1807,39 @@ def _inject_prd_v2_metrics(*, root: Path, date: str, market_data: dict, allow_ne
     # 7) actionSheet（操作单：具体买卖条件，替代泛泛的行动指南）
     if not isinstance(market_data.get("actionSheet"), dict):
         market_data["actionSheet"] = build_action_sheet(market_data)
-
-
-def _load_pools_for_date(root: Path, date: str) -> dict:
-    """
-    读取本地 cache/pools_cache.json，返回 {ztgc, dtgc, zbgc}。
-    """
-    cache_path = root / "cache" / "pools_cache.json"
-    if not cache_path.exists():
-        return {"ztgc": [], "dtgc": [], "zbgc": []}
-    data = json.loads(cache_path.read_text(encoding="utf-8"))
-    pools = data.get("pools") or {}
-    return {
-        "ztgc": ((pools.get("ztgc") or {}).get(date)) or [],
-        "dtgc": ((pools.get("dtgc") or {}).get(date)) or [],
-        "zbgc": ((pools.get("zbgc") or {}).get(date)) or [],
-        "qsgc": ((pools.get("qsgc") or {}).get(date)) or [],
-        "all_dates": sorted(set((pools.get("ztgc") or {}).keys()) | set((pools.get("dtgc") or {}).keys()) | set((pools.get("zbgc") or {}).keys())),
-    }
-
-
-def _load_ztgc_by_day_window(*, root: Path, date: str, n: int = 7) -> dict[str, list[dict]]:
-    """
-    读取本地 cache/pools_cache.json，提取「<= date 的最近 n 个交易日」涨停池（ztgc）明细。
-
-    设计目的：
-    - 支持“近7天 2连板去重汇总/按题材聚合”等需要跨日统计的模块
-    - 不做任何网络请求（完全离线）
-
-    返回：
-    - { "YYYY-MM-DD": [ {dm, mc, lbc, ...}, ... ], ... }
-    """
-    try:
-        cache_path = root / "cache" / "pools_cache.json"
-        if not cache_path.exists():
-            return {}
-        data = json.loads(cache_path.read_text(encoding="utf-8"))
-        pools = data.get("pools") or {}
-        zt_by_day = pools.get("ztgc") or {}
-        if not isinstance(zt_by_day, dict):
-            return {}
-
-        # 仅取 <= date 的最近 n 天（日期字符串本身可字典序排序）
-        days = sorted([d for d in zt_by_day.keys() if isinstance(d, str) and d <= date])
-        days = days[-max(1, int(n or 7)) :]
-        out: dict[str, list[dict]] = {}
-        for d in days:
-            rows = zt_by_day.get(d) or []
-            out[d] = [x for x in rows if isinstance(x, dict)] if isinstance(rows, list) else []
-        return out
-    except Exception:
-        return {}
-
-def _load_theme_cache(root: Path) -> dict:
-    """
-    读取本地 cache/theme_cache.json，返回 {code6 -> [themes]} 映射。
-    """
-    p = root / "cache" / "theme_cache.json"
-    if not p.exists():
-        return {}
-    try:
-        data = json.loads(p.read_text(encoding="utf-8"))
-        return (data.get("codes") or {}) if isinstance(data, dict) else {}
-    except Exception:
-        return {}
-
-def _load_index_klines_cache(root: Path) -> dict:
-    """
-    读取本地 cache/index_kline_cache.json（指数日K缓存）。
-    """
-    p = root / "cache" / "index_kline_cache.json"
-    if not p.exists():
-        return {}
-    try:
-        return json.loads(p.read_text(encoding="utf-8"))
-    except Exception:
-        return {}
-
-
-def _load_height_trend_cache(root: Path) -> dict:
-    """
-    读取本地 cache/height_trend_cache.json（高度趋势缓存）。
-    """
-    p = root / "cache" / "height_trend_cache.json"
-    if not p.exists():
-        return {}
-    try:
-        return json.loads(p.read_text(encoding="utf-8"))
-    except Exception:
-        return {}
-
-def _load_theme_trend_cache(root: Path) -> dict:
-    """
-    读取本地 cache/theme_trend_cache.json（主线题材近5日持续性缓存）。
-    """
-    p = root / "cache" / "theme_trend_cache.json"
-    if not p.exists():
-        return {}
-    try:
-        return json.loads(p.read_text(encoding="utf-8"))
-    except Exception:
-        return {}
-
-
-def _load_catalyst_cache(root: Path, date: str) -> dict:
-    """
-    读取本地消息面缓存，供 core_tide 模块作为可选输入。
-
-    注意：这里只是编排层 I/O，核心潮汐算法仍保持纯函数。
-    """
-    d8 = str(date or "").replace("-", "")
-    cache_dir = root / "cache_online"
-    return {
-        "abnormal": read_json(cache_dir / f"xuangubao_abnormal-{d8}.json", default={}),
-        "surge_plates": read_json(cache_dir / f"xuangubao_surge_plates-{d8}.json", default={}),
-        "tomorrow_themes": read_json(cache_dir / f"eastmoney_tomorrow_themes-{d8}.json", default={}),
-    }
-
-
-def _prev_trade_date(all_dates: list[str], date: str) -> str | None:
-    """
-    用缓存里已有日期序列推断上一交易日。
-    """
-    ds = sorted([d for d in (all_dates or []) if isinstance(d, str)])
-    if date in ds:
-        i = ds.index(date)
-        return ds[i - 1] if i > 0 else None
-    past = [d for d in ds if d < date]
-    return past[-1] if past else None
-
-
 def run_partial(date: str, modules: list[str]) -> int:
     """
     部分更新：读取缓存的 market_data，然后只重算指定模块，并用模板重新渲染。
     """
     root = _workspace_root()
-    cache_dir = root / "cache"
-    date_compact = date.replace("-", "")
-    market_path = cache_dir / f"market_data-{date_compact}.json"
-    if not market_path.exists():
-        raise FileNotFoundError(f"找不到缓存 marketData：{market_path}（请先跑一次全量更新）")
-
-    market_data = json.loads(market_path.read_text(encoding="utf-8"))
+    bundle = build_rebuild_context(root=root, date=date)
+    ctx = bundle.ctx
+    market_data = bundle.market_data
+    market_path = bundle.market_path
     _log(f"partial 缓存已加载: {market_path.name}  modules={modules}")
-
-    # 构造 Context（兼容旧缓存：features 已在 market_data 里）
-    ctx = Context.from_market_data(market_data)
-
-    # 注入 raw.pools（支持 panorama/ladder 等模块从原始池子重算）
-    pools_today = _load_pools_for_date(root, date)
-    yest = _prev_trade_date(pools_today.get("all_dates") or [], date)
-    pools_yest = _load_pools_for_date(root, yest) if yest else {"ztgc": [], "dtgc": [], "zbgc": []}
-    ctx.raw.setdefault("pools", {})
-    ctx.raw["pools"].update(
-        {
-            "ztgc": pools_today.get("ztgc") or [],
-            "dtgc": pools_today.get("dtgc") or [],
-            "zbgc": pools_today.get("zbgc") or [],
-            "qsgc": pools_today.get("qsgc") or [],
-            "yest_ztgc": pools_yest.get("ztgc") or [],
-            "yest_dtgc": pools_yest.get("dtgc") or [],
-            "yest_zbgc": pools_yest.get("zbgc") or [],
-            "yest_date": yest or "",
-        }
-    )
-    # 注入近7天涨停池（离线）：供“近7天2连板题材聚合”等跨日模块使用
-    ctx.raw["pools"]["ztgc_by_day"] = _load_ztgc_by_day_window(root=root, date=date, n=7)
-
-    # 注入题材缓存：供 theme_panels 模块统计（不做任何网络请求）
-    ctx.raw.setdefault("themes", {})
-    ctx.raw["themes"]["code2themes"] = _load_theme_cache(root)
-
-    # 注入指数日K缓存：供 volume 模块离线重算
-    ctx.raw["index_klines"] = _load_index_klines_cache(root)
-
-    # 注入高度趋势缓存：供 height_trend 模块离线重算
-    ctx.raw["height_trend_cache"] = _load_height_trend_cache(root)
-
-    # 注入题材持续性缓存：供 theme_trend 模块离线重算
-    ctx.raw["theme_trend_cache"] = _load_theme_trend_cache(root)
-
-    # 注入消息面缓存：供 core_tide 模块离线重算
-    ctx.raw["catalyst_cache"] = _load_catalyst_cache(root, date)
-
-    # partial 同样用指数日K修正三大指数涨幅（与报告日一致）
-    try:
-        codes = ((ctx.raw.get("index_klines") or {}).get("codes") or {}) if isinstance(ctx.raw, dict) else {}
-        if isinstance(codes, dict) and date:
-            def _pick_exact(code: str) -> tuple[float, float] | None:
-                items = (codes.get(code) or {}).get("items") or []
-                if not isinstance(items, list):
-                    return None
-                for it in items:
-                    if not isinstance(it, dict):
-                        continue
-                    t = str(it.get("t") or "")
-                    if len(t) >= 10 and t[:10] == date and int(it.get("sf", 0) or 0) != 1:
-                        c = float(it.get("c", 0) or 0)
-                        pc = float(it.get("pc", 0) or 0)
-                        return (c, pc)
-                return None
-
-            mapping = [("000001.SH", "上证指数"), ("399001.SZ", "深证成指"), ("399006.SZ", "创业板指")]
-            inds = []
-            for code, name in mapping:
-                r = _pick_exact(code)
-                if not r:
-                    continue
-                c, pc = r
-                chg = ((c - pc) / pc * 100.0) if pc else 0.0
-                if abs(chg) < 0.005:
-                    chg = 0.0
-                inds.append({"name": name, "val": f"{c:.2f}", "chg": f"{chg:+.2f}%"})
-            if inds:
-                ctx.market_data["indices"] = inds
-    except Exception:
-        pass
-
-    # partial 同样重算 features（至少 mood_inputs），避免局部更新时 UI 读到旧/缺字段
-    try:
-        pools_for_feat = ctx.raw.get("pools") or {}
-        quotes_items = (((ctx.raw.get("quotes") or {}) if isinstance(ctx.raw, dict) else {}).get("items") or {})
-        mood_inputs = build_mood_inputs(pools=pools_for_feat, quotes=quotes_items)
-        feats = ctx.market_data.get("features") if isinstance(ctx.market_data.get("features"), dict) else {}
-        if not isinstance(feats, dict):
-            feats = {}
-        feats["mood_inputs"] = mood_inputs
-        feats.setdefault("chart_palette", default_chart_palette())
-        ctx.market_data["features"] = feats
-        ctx.features = feats
-    except Exception:
-        pass
+    _prepare_indices_from_cache(ctx, date=date, full_fields=False)
 
     runner = Runner(ALL_MODULES)
     runner.run(ctx, targets=modules)
     market_data = ctx.market_data
-
-    # partial 也补齐趋势/昨日对比，并重算展示层摘要，避免局部调参后页面保留旧文案
-    try:
-        _inject_mood_history_and_delta(root=root, date=date, market_data=market_data)
-    except Exception:
-        pass
-
-    try:
-        from daily_review.metrics.action_advisor import build_action_advisor
-
-        market_data["actionAdvisor"] = build_action_advisor(market_data=market_data)
-    except Exception:
-        pass
-
-    try:
-        from daily_review.metrics.zt_analysis import build_zt_analysis
-
-        market_data["ztAnalysis"] = build_zt_analysis(market_data=market_data)
-    except Exception:
-        pass
-
-    try:
-        from scripts.build_stock_research_backtest import build_stock_research_backtest_payload
-
-        market_data["stockResearchBacktest"] = build_stock_research_backtest_payload(current_market_data=market_data)
-    except Exception:
-        pass
-
-    try:
-        from daily_review.render.render_html import build_market_overview_7d, build_sentiment_explain_dims
-
-        market_data["marketOverview7d"] = build_market_overview_7d(market_data=market_data)
-        market_data["sentimentExplainDims"] = build_sentiment_explain_dims(market_data=market_data)
-    except Exception:
-        pass
-
-    # 清理前端已不用的大字段：避免 partial 更新时把旧 compat/default_page 等写回
-    try:
-        _prune_frontend_unused_fields(market_data)
-    except Exception:
-        pass
+    _postprocess_market_data(
+        root=root,
+        date=date,
+        market_data=market_data,
+        allow_network=False,
+        include_intraday_snapshots=False,
+        preserve_zt_analysis=False,
+        apply_runtime_display=False,
+        normalize_meta=False,
+        sync_stock_research_source=False,
+        include_prd_v2=False,
+        log_prefix="partial ",
+    )
 
     # 回写 market_data 缓存
     market_path.write_text(json.dumps(market_data, ensure_ascii=False, indent=2), encoding="utf-8")
 
-    print(f"✅ partial 输出: {out_path}")
+    print(f"✅ partial 输出: {market_path}")
     return 0
 
 
@@ -3003,8 +1848,8 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--date", help="报告日期 YYYY-MM-DD（缺省则走全量模式的默认逻辑）")
     ap.add_argument("--require-python", default="", help="强制要求使用指定 Python 解释器路径（例如 /usr/local/bin/python3）")
     ap.add_argument("--require-py", default="", help="强制要求 Python 版本前缀（例如 3.14）")
-    ap.add_argument("--rebuild", action="store_true", help="离线重建（不请求接口）：重算并输出 tab-v1 HTML")
-    ap.add_argument("--fetch", action="store_true", help="在线取数并生成缓存，然后离线重建输出 tab-v1（有成本）")
+    ap.add_argument("--rebuild", action="store_true", help="离线重建（不请求接口）：重算并回写 market_data")
+    ap.add_argument("--fetch", action="store_true", help="在线取数并生成缓存，然后离线重建 market_data（有成本）")
     ap.add_argument("--allow-network", action="store_true", help="允许 rebuild 在缺失缓存时在线补齐部分数据源")
     ap.add_argument(
         "--only",

@@ -451,6 +451,40 @@ class LeaderPick:
     reason: dict[str, Any]
 
 
+def rebuild_leaders(market_data: Mapping[str, Any]) -> dict[str, Any]:
+    """
+    兼容层：基于现有 market_data 重建 leaders patch。
+
+    web 主链已经不再依赖旧 modules 目录，这里直接提供同名能力，
+    让 pipeline / inject / 历史兼容入口都统一依赖 metrics 层。
+    """
+    ztgc = market_data.get("ztgc") or []
+    code2themes = market_data.get("zt_code_themes") or {}
+    hot_sectors = market_data.get("sectors") or []
+    ohlc_by_code = ((market_data.get("features") or {}).get("leader_inputs") or {}).get("ohlc_by_code") or {}
+
+    picks = pick_leaders(
+        ztgc=ztgc,
+        code2themes=code2themes,
+        hot_sectors=hot_sectors,
+        ohlc_by_code=ohlc_by_code,
+        topk=5,
+    )
+    leaders = [
+        {
+            "rank": i + 1,
+            "code": p.code,
+            "name": p.name,
+            "theme": p.theme,
+            "score": p.score,
+            "tags": (p.reason.get("tags") or []),
+            "reason": p.reason,
+        }
+        for i, p in enumerate(picks)
+    ]
+    return {"leaders": leaders}
+
+
 def pick_leaders(
     *,
     ztgc: Iterable[Mapping[str, Any]],

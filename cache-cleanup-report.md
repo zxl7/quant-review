@@ -30,7 +30,7 @@
 - `dragon_tiger-20260529.json`：未知文件，保守保留
 - `height_trend_cache.json`：高度趋势模块依赖
 - `index_kline_cache.json`：指数K线/量能模块依赖
-- `intraday_slices-20260605.json`：保留最近 2 个盘中切片
+- `intraday_slices-20260607.json`：保留最近 2 个盘中切片
 - `learning_notes_history.json`：学习语录去重历史
 - `market_data-20260529.json`：最近 7 个 market_data 快照
 - `market_data-20260601.json`：最近 7 个 market_data 快照
@@ -50,7 +50,7 @@
 
 ## 建议清理
 
-- `market_data-20260528.json`：超出最近 7 个 market_data 快照
+- 无
 
 ## 线上依赖目录
 
