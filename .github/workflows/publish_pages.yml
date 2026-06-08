@@ -20,6 +20,7 @@ on:
         default: ""
         type: string
   # 工作日北京时间 09:25-15:55 期间每 5 分钟心跳一次，由 timecheck 决定是否真正执行
+  # 其中 09:25-09:34 仅给独立 prefetch workflow 抓个股研究报价，主页面发布需等到 09:35 之后。
   schedule:
     - cron: "*/5 1-7 * * 1-5"
   # 提交代码后触发（除 gh-pages 外的所有分支）
@@ -64,9 +65,10 @@ jobs:
           echo "DEBUG: event_name=${{ github.event_name }}"
           echo "DEBUG: beijing_now=${now_bj}"
           now_min=$((10#$(date +%H)*60 + 10#$(date +%M)))
-          # 盘中：上午 09:25-11:30，下午 13:00-14:59。每 5 分钟心跳命中即抓一次。
+          # 主页面发布：上午 09:35-11:30，下午 13:00-14:59。
+          # 09:25-09:34 仍属于早盘预热区，行情/题材/接力池经常不完整，不能把半成品推上 Pages。
           hit_intraday=false
-          if [ $(( now_min >= 9*60+25 && now_min <= 11*60+30 )) -eq 1 ]; then
+          if [ $(( now_min >= 9*60+35 && now_min <= 11*60+30 )) -eq 1 ]; then
             hit_intraday=true
           fi
           if [ $(( now_min >= 13*60 && now_min < 15*60 )) -eq 1 ]; then
@@ -303,9 +305,39 @@ jobs:
           print(f"DEBUG: today={today}, remote_dates_count={len(remote_dates)}, rt_date={rt_date}")
           PY
 
+      - name: Guard early publish warmup window
+        id: warmup
+        if: ${{ github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true' }}
+        run: |
+          set -euo pipefail
+          now_min=$((10#$(date +%H)*60 + 10#$(date +%M)))
+          input_mode="${{ github.event.inputs.mode || '' }}"
+          event_name="${{ github.event_name }}"
+          is_trade_today="${{ steps.tradeday.outputs.is_trade_today }}"
+
+          # 09:25-09:34 只保留个股研究报价预取，不发布主页面。
+          # workflow_dispatch 且显式指定模式时允许人工强制执行。
+          warmup_hit=false
+          if [ "${is_trade_today}" = "true" ] && [ $(( now_min >= 9*60+25 && now_min < 9*60+35 )) -eq 1 ]; then
+            warmup_hit=true
+          fi
+
+          explicit_manual=false
+          if [ "${event_name}" = "workflow_dispatch" ] && [ -n "${input_mode}" ] && [ "${input_mode}" != "auto" ]; then
+            explicit_manual=true
+          fi
+
+          if [ "${warmup_hit}" = "true" ] && [ "${explicit_manual}" != "true" ]; then
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+            echo "Early publish warmup window hit (09:25-09:34 Beijing) -> skip main publish"
+          else
+            echo "skip=false" >> "$GITHUB_OUTPUT"
+            echo "Warmup guard passed"
+          fi
+
       - name: Decide run mode/date
         id: pushmode
-        if: ${{ github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true' }}
+        if: ${{ (github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true') && steps.warmup.outputs.skip != 'true' }}
         env:
           BIYING_TOKEN: ${{ secrets.BIYING_TOKEN }}
           BIYING_BASE_URL: ${{ secrets.BIYING_BASE_URL }}
@@ -339,7 +371,7 @@ jobs:
           mode="fetch"
           if [ "${input_mode}" = "fetch" ] || [ "${input_mode}" = "intraday" ] || [ "${input_mode}" = "eod" ]; then
             mode="${input_mode}"
-          elif [ "${{ github.event_name }}" = "schedule" ] && { [ $(( now_min >= 9*60+25 && now_min <= 11*60+30 )) -eq 1 ] || [ $(( now_min >= 13*60 && now_min < 15*60 )) -eq 1 ]; }; then
+          elif [ "${{ github.event_name }}" = "schedule" ] && { [ $(( now_min >= 9*60+35 && now_min <= 11*60+30 )) -eq 1 ] || [ $(( now_min >= 13*60 && now_min < 15*60 )) -eq 1 ]; }; then
             mode="fetch"
           fi
           if [ "${input_mode}" = "auto" ] || [ -z "${input_mode}" ]; then
@@ -361,7 +393,7 @@ jobs:
           chmod +x ./qr.sh || true
 
       - name: Generate latest report (online fetch -> offline pipeline rebuild)
-        if: ${{ (github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true') && (github.event_name != 'schedule' || steps.tradeday.outputs.is_trade_today == 'true') }}
+        if: ${{ (github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true') && steps.warmup.outputs.skip != 'true' && (github.event_name != 'schedule' || steps.tradeday.outputs.is_trade_today == 'true') }}
         timeout-minutes: 12
         env:
           BIYING_TOKEN: ${{ secrets.BIYING_TOKEN }}
@@ -434,17 +466,17 @@ jobs:
           PY
 
       - name: Pre-fetch external data (明日策略池 + 东方财富今日题材)
-        if: ${{ steps.pushmode.outputs.mode != 'intraday' }}
+        if: ${{ steps.warmup.outputs.skip != 'true' && steps.pushmode.outputs.mode != 'intraday' }}
         run: |
           python3 tools/fetch_tomorrow_picks.py web/public/tomorrow_picks.json || echo "⚠ tomorrow picks fetch failed, using cache"
           python3 tools/fetch_eastmoney_tomorrow.py web/public/eastmoney_tomorrow.json || echo "⚠ eastmoney tomorrow fetch failed, using cache"
 
       - name: Build Vue3 web (Vite -> single HTML)
-        if: ${{ (github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true') && (github.event_name != 'schedule' || steps.tradeday.outputs.is_trade_today == 'true') }}
+        if: ${{ (github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true') && steps.warmup.outputs.skip != 'true' && (github.event_name != 'schedule' || steps.tradeday.outputs.is_trade_today == 'true') }}
         run: cd web && npm run build
 
       - name: Inject market data into Vue3 HTML
-        if: ${{ (github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true') && (github.event_name != 'schedule' || steps.tradeday.outputs.is_trade_today == 'true') }}
+        if: ${{ (github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true') && steps.warmup.outputs.skip != 'true' && (github.event_name != 'schedule' || steps.tradeday.outputs.is_trade_today == 'true') }}
         env:
           RUN_DATE: ${{ steps.pushmode.outputs.date10 }}
         run: |
@@ -457,7 +489,7 @@ jobs:
           python3 inject_data.py "${d8}" --source "${source_path}"
 
       - name: Prepare Pages site
-        if: ${{ (github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true') && (github.event_name != 'schedule' || steps.tradeday.outputs.is_trade_today == 'true') }}
+        if: ${{ (github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true') && steps.warmup.outputs.skip != 'true' && (github.event_name != 'schedule' || steps.tradeday.outputs.is_trade_today == 'true') }}
         run: |
           set -euo pipefail
           report_html="./web/dist/index.html"
@@ -520,7 +552,7 @@ jobs:
           ls -la ./site/ | grep -E '\.(json|js|html)$' || true
 
       - name: Commit & push to gh-pages
-        if: ${{ (github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true') && (github.event_name != 'schedule' || steps.tradeday.outputs.is_trade_today == 'true') }}
+        if: ${{ (github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true') && steps.warmup.outputs.skip != 'true' && (github.event_name != 'schedule' || steps.tradeday.outputs.is_trade_today == 'true') }}
         run: |
           set -euo pipefail
           # 将构建产物覆盖写入 gh-pages 根目录（Deploy from branch: /）
