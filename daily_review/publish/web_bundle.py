@@ -1942,6 +1942,40 @@ def _build_plan_theme_resolver(md: dict) -> dict:
             contexts[canonical] = ctx
         return ctx
 
+    def merge_contexts(primary: dict, incoming: dict) -> None:
+        if not isinstance(primary, dict) or not isinstance(incoming, dict) or primary is incoming:
+            return
+        for field in ("aliases", "matchedLocalThemes", "_stockCodes"):
+            left = primary.get(field)
+            right = incoming.get(field)
+            if isinstance(left, set) and isinstance(right, set):
+                left.update(right)
+        if isinstance(primary.get("stocks"), list) and isinstance(incoming.get("stocks"), list):
+            existing = {str(row.get("code") or "") for row in primary["stocks"] if isinstance(row, dict)}
+            for row in incoming["stocks"]:
+                if not isinstance(row, dict):
+                    continue
+                code = str(row.get("code") or "")
+                if code and code in existing:
+                    continue
+                primary["stocks"].append(row)
+                if code:
+                    existing.add(code)
+        if (primary.get("plateStrength") in (None, "", 0)) and incoming.get("plateStrength") not in (None, "", 0):
+            primary["plateStrength"] = incoming.get("plateStrength")
+        if not primary.get("plateLead") and incoming.get("plateLead"):
+            primary["plateLead"] = incoming.get("plateLead")
+        for field in ("leader", "advisor", "tide", "ztEvidence", "mergeInfo", "fallbackPanel"):
+            prev = primary.get(field)
+            nxt = incoming.get(field)
+            prev_score = _to_float((prev or {}).get("score") if isinstance(prev, dict) else (prev or {}).get("core_score") if isinstance(prev, dict) else 0.0, 0.0)
+            nxt_score = _to_float((nxt or {}).get("score") if isinstance(nxt, dict) else (nxt or {}).get("core_score") if isinstance(nxt, dict) else 0.0, 0.0)
+            if prev is None or (nxt is not None and nxt_score >= prev_score):
+                primary[field] = nxt
+        if isinstance(primary.get("tideByAlias"), dict) and isinstance(incoming.get("tideByAlias"), dict):
+            primary["tideByAlias"].update(incoming["tideByAlias"])
+        primary["fallbackThemeCount"] = _to_int(primary.get("fallbackThemeCount"), 0) + _to_int(incoming.get("fallbackThemeCount"), 0)
+
     def add_alias(ctx: dict | None, *names: object) -> None:
         if not isinstance(ctx, dict):
             return
@@ -2017,6 +2051,55 @@ def _build_plan_theme_resolver(md: dict) -> dict:
         add_alias(ctx, row.get("name"))
         ctx["plateStrength"] = _to_float(row.get("strength"), 0.0)
         ctx["plateLead"] = str(row.get("lead") or "").strip()
+        lead_name = str(row.get("lead") or "").strip()
+        lead_code = str(row.get("leadCode") or "").strip()
+        if lead_name and lead_code:
+            prev = ctx.get("leader")
+            lead_score = max(_to_float(row.get("strength"), 0.0), 60.0)
+            if not isinstance(prev, dict) or lead_score > _to_float(prev.get("score"), 0.0):
+                ctx["leader"] = {
+                    "name": lead_name,
+                    "code": lead_code,
+                    "score": lead_score,
+                }
+        for leader_row in row.get("leaders") or []:
+            if not isinstance(leader_row, dict):
+                continue
+            leader_name = str(leader_row.get("name") or "").strip()
+            leader_code = str(leader_row.get("code") or "").strip()
+            if not leader_name or not leader_code:
+                continue
+            prev = ctx.get("leader")
+            leader_score = max(_to_float(row.get("strength"), 0.0), 58.0)
+            if not isinstance(prev, dict) or leader_score > _to_float(prev.get("score"), 0.0):
+                ctx["leader"] = {
+                    "name": leader_name,
+                    "code": leader_code,
+                    "score": leader_score,
+                }
+
+    for row in (md.get("plateRotateTop") or []):
+        if not isinstance(row, dict):
+            continue
+        ctx = ensure_context(row.get("name"))
+        if not ctx:
+            continue
+        add_alias(ctx, row.get("name"))
+        if not ctx.get("plateLead"):
+            ctx["plateLead"] = str(row.get("lead") or "").strip()
+        if ctx.get("plateStrength") in (None, "", 0):
+            ctx["plateStrength"] = _to_float(row.get("strength"), 0.0)
+        lead_name = str(row.get("lead") or "").strip()
+        lead_code = str(row.get("leadCode") or "").strip()
+        if lead_name and lead_code:
+            prev = ctx.get("leader")
+            lead_score = max(_to_float(row.get("strength"), 0.0), 60.0)
+            if not isinstance(prev, dict) or lead_score > _to_float(prev.get("score"), 0.0):
+                ctx["leader"] = {
+                    "name": lead_name,
+                    "code": lead_code,
+                    "score": lead_score,
+                }
 
     for row in (md.get("leaders") or []):
         if not isinstance(row, dict):
@@ -2033,6 +2116,19 @@ def _build_plan_theme_resolver(md: dict) -> dict:
                 "code": str(row.get("code") or "").strip(),
                 "score": leader_score,
             }
+        canonical_theme = str(ctx.get("canonicalTheme") or "").strip()
+        raw_theme = str(row.get("theme") or "").strip()
+        if canonical_theme and raw_theme and canonical_theme != raw_theme:
+            canonical_ctx = ensure_context(canonical_theme)
+            if canonical_ctx:
+                add_alias(canonical_ctx, raw_theme, canonical_theme)
+                canonical_prev = canonical_ctx.get("leader")
+                if not isinstance(canonical_prev, dict) or leader_score > _to_float(canonical_prev.get("score"), 0.0):
+                    canonical_ctx["leader"] = {
+                        "name": str(row.get("name") or "").replace("🐲", "").strip(),
+                        "code": str(row.get("code") or "").strip(),
+                        "score": leader_score,
+                    }
 
     watchlist = md.get("watchlist") if isinstance(md.get("watchlist"), dict) else {}
     picks_advisor = md.get("picks_advisor") if isinstance(md.get("picks_advisor"), dict) else {}
@@ -2067,6 +2163,14 @@ def _build_plan_theme_resolver(md: dict) -> dict:
         if not ctx:
             continue
         add_alias(ctx, row.get("name"), row.get("canonical_name"))
+        tide_by_alias = ctx.get("tideByAlias")
+        if not isinstance(tide_by_alias, dict):
+            tide_by_alias = {}
+            ctx["tideByAlias"] = tide_by_alias
+        for alias_name in [row.get("name"), row.get("canonical_name")]:
+            alias_text = str(alias_name or "").strip()
+            if alias_text:
+                tide_by_alias[alias_text] = row
         prev = ctx.get("tide")
         prev_score = _to_float((prev or {}).get("core_score") if isinstance(prev, dict) else 0.0, 0.0)
         next_score = _to_float(row.get("core_score"), 0.0)
@@ -2116,6 +2220,26 @@ def _build_plan_theme_resolver(md: dict) -> dict:
             stock_name = str(row.get("name") or "").strip()
             if stock_name and stock_name not in evidence["stockNames"]:
                 evidence["stockNames"].append(stock_name)
+
+    canonical_groups: dict[str, list[str]] = {}
+    for key in list(contexts.keys()):
+        normalized_canonical = str(normalize_sector(key) or key).strip()
+        canonical_groups.setdefault(normalized_canonical, []).append(key)
+    for normalized_canonical, keys in canonical_groups.items():
+        if len(keys) <= 1:
+            continue
+        primary_key = normalized_canonical if normalized_canonical in contexts else keys[0]
+        primary_ctx = contexts.get(primary_key)
+        if not isinstance(primary_ctx, dict):
+            continue
+        for key in keys:
+            if key == primary_key:
+                continue
+            incoming_ctx = contexts.get(key)
+            if not isinstance(incoming_ctx, dict):
+                continue
+            merge_contexts(primary_ctx, incoming_ctx)
+            contexts.pop(key, None)
 
     alias_to_theme: dict[str, str] = {}
     serialized_contexts: dict[str, dict] = {}
@@ -2199,6 +2323,7 @@ def _build_plan_theme_resolver(md: dict) -> dict:
             "leader": ctx.get("leader"),
             "advisor": ctx.get("advisor"),
             "tide": ctx.get("tide"),
+            "tideByAlias": ctx.get("tideByAlias") if isinstance(ctx.get("tideByAlias"), dict) else {},
             "ztEvidence": zt_evidence,
             "mergeInfo": ctx.get("mergeInfo"),
             "fallbackThemeCount": _to_int(ctx.get("fallbackThemeCount"), 0),

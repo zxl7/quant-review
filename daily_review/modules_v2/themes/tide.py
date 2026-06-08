@@ -14,8 +14,13 @@ from daily_review.pipeline.module import Module
 
 def _compute(ctx: Context) -> Dict[str, Any]:
     cache = (ctx.raw.get("theme_trend_cache") or {}) if isinstance(ctx.raw, dict) else {}
+    plate_rotate_cache = (ctx.raw.get("plate_rotate_cache") or {}) if isinstance(ctx.raw, dict) else {}
     market_data = ctx.market_data if isinstance(ctx.market_data, dict) else {}
-    signal = build_tide_signal(market_data=market_data, theme_trend_cache=cache)
+    signal = build_tide_signal(
+        market_data=market_data,
+        theme_trend_cache=cache,
+        plate_rotate_cache=plate_rotate_cache,
+    )
     return {"marketData.tideSignal": signal}
 
 
@@ -23,6 +28,7 @@ TIDE_MODULE = Module(
     name="tide_signal",
     requires=[
         "raw.theme_trend_cache",
+        "raw.plate_rotate_cache",
         "marketData.prev",
         "marketData.panorama",
         "marketData.volume",
@@ -32,4 +38,3 @@ TIDE_MODULE = Module(
     provides=["marketData.tideSignal"],
     compute=_compute,
 )
-

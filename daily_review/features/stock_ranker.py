@@ -593,6 +593,7 @@ def build_picks_advisor(
     """
     # 1. 环境准备 (Environment Preparation)
     ls_map = _build_leaders_score_map(market_data) if market_data else {}
+    leader_rows = _build_leaders_row_map(market_data) if market_data else {}
     zt_map = _build_zt_analysis_map(market_data) if market_data else {}
     env_ctx = _build_market_env_context(market_data) if market_data else {}
     # 推荐线只消费统一潮汐产物：优先核心潮汐，缺失时兜底基础 tideSignal。
@@ -721,6 +722,15 @@ def build_picks_advisor(
             limit=watch_n,
             style_caps={"龙头博弈": 1, "接力": 2, "容量": 2, "低位试错": 2, "跟随观察": 2},
         )
+        watch = _ensure_theme_leader_present(
+            ml=ml,
+            ml_members=ml_members,
+            buy=buy,
+            watch=watch,
+            watch_n=watch_n,
+            leader_rows=leader_rows,
+        )
+        watch = _ensure_leading_stocks_present(ml=ml, ml_members=ml_members, buy=buy, watch=watch, watch_n=watch_n)
         
         for s in buy: s.action = "buy"
         for s in watch: s.action = "watch"
@@ -782,6 +792,22 @@ def _build_leaders_score_map(market_data: dict[str, Any]) -> dict[str, float]:
         digits = "".join(c for c in code if c.isdigit())[-6:]
         if digits:
             out[digits] = float(it.get("score") or 0.0)
+    return out
+
+
+def _build_leaders_row_map(market_data: dict[str, Any]) -> dict[str, dict[str, Any]]:
+    out: dict[str, dict[str, Any]] = {}
+    leaders = market_data.get("leaders", [])
+    if not isinstance(leaders, list):
+        return out
+    for row in leaders:
+        if not isinstance(row, dict):
+            continue
+        code = str(row.get("code") or row.get("dm") or "").strip()
+        digits = "".join(c for c in code if c.isdigit())[-6:]
+        if not digits:
+            continue
+        out[digits] = row
     return out
 
 
@@ -919,6 +945,93 @@ def _match_tide_theme(ml: MainLine, tide_map: dict[str, dict[str, Any]]) -> dict
             if key in tide_key or tide_key in key:
                 return theme
     return None
+
+
+def _ensure_leading_stocks_present(
+    *,
+    ml: MainLine,
+    ml_members: list[StockScore],
+    buy: list[StockScore],
+    watch: list[StockScore],
+    watch_n: int,
+) -> list[StockScore]:
+    """
+    把主线领涨股纳入推荐池。
+
+    原则：
+    - 已经进 buy/watch 的不重复加。
+    - 优先把主线龙一/龙二补进观察池，避免“主线存在但领涨股没展示”。
+    - 若观察位已满，则只在领涨股得分不弱于当前最末位时替换。
+    """
+    if not ml.leading_stocks:
+        return watch
+    member_map = {row.code: row for row in ml_members if row.code}
+    selected_codes = {row.code for row in [*buy, *watch] if row.code}
+    merged = list(watch)
+    for code in ml.leading_stocks[:2]:
+        leader = member_map.get(code)
+        if leader is None or leader.code in selected_codes:
+            continue
+        selected_codes.add(leader.code)
+        leader.action = "watch"
+        leader.reasons = list(dict.fromkeys([*leader.reasons, "主线领涨"]))
+        if len(merged) < watch_n:
+            merged.append(leader)
+            continue
+        weakest = merged[-1] if merged else None
+        if weakest is not None and _selection_sort_key(leader) > _selection_sort_key(weakest):
+            merged[-1] = leader
+            merged.sort(key=_selection_sort_key, reverse=True)
+    return merged
+
+
+def _ensure_theme_leader_present(
+    *,
+    ml: MainLine,
+    ml_members: list[StockScore],
+    buy: list[StockScore],
+    watch: list[StockScore],
+    watch_n: int,
+    leader_rows: dict[str, dict[str, Any]],
+) -> list[StockScore]:
+    """
+    如果 leaders 明确给出了当前主线题材龙头，但常规 sector 归属没挂进去，
+    也要把它补回推荐池。
+    """
+    selected_codes = {row.code for row in [*buy, *watch] if row.code}
+    member_map = {row.code: row for row in ml_members if row.code}
+    target_keys = set(_theme_candidate_keys(ml.name, *ml.constituents))
+    if not target_keys:
+        return watch
+    best_row: dict[str, Any] | None = None
+    best_code = ""
+    best_score = -1.0
+    for code, row in leader_rows.items():
+        theme_key = _normalize_theme_name(row.get("theme"))
+        if theme_key not in target_keys or code in selected_codes:
+            continue
+        score = float(row.get("score") or 0.0)
+        if score > best_score:
+            best_row = row
+            best_code = code
+            best_score = score
+    if not best_row or not best_code:
+        return watch
+    candidate = member_map.get(best_code)
+    if candidate is None:
+        return watch
+    candidate.action = "watch"
+    candidate.reasons = list(dict.fromkeys([*candidate.reasons, "题材龙头"]))
+    candidate.style_tag = candidate.style_tag or "龙头博弈"
+    candidate.style_confidence = max(int(candidate.style_confidence or 0), 80)
+    if len(watch) < watch_n:
+        return [*watch, candidate]
+    merged = list(watch)
+    weakest = merged[-1] if merged else None
+    if weakest is not None and _selection_sort_key(candidate) > _selection_sort_key(weakest):
+        merged[-1] = candidate
+        merged.sort(key=_selection_sort_key, reverse=True)
+    return merged
 
 
 def _tide_adjust(theme: dict[str, Any] | None) -> int:

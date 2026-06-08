@@ -17,6 +17,7 @@ def build_tide_signal(
     *,
     market_data: dict[str, Any] | None,
     theme_trend_cache: dict[str, Any] | None = None,
+    plate_rotate_cache: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     """构建统一 tideSignal。
 
@@ -25,6 +26,7 @@ def build_tide_signal(
     """
     md = market_data if isinstance(market_data, dict) else {}
     cache = theme_trend_cache if isinstance(theme_trend_cache, dict) else {}
+    plate_cache = plate_rotate_cache if isinstance(plate_rotate_cache, dict) else {}
     date = str(md.get("date") or "")
 
     signal = _empty_signal(date)
@@ -51,18 +53,28 @@ def build_tide_signal(
     prev_map = _theme_day_map(by_day.get(prev_day))
     pre_prev_map = _theme_day_map(by_day.get(pre_prev_day)) if pre_prev_day else {}
 
-    names = sorted(set(today_map) | set(prev_map) | set(pre_prev_map))
+    names = _collect_theme_candidates(
+        market_data=md,
+        strength_map=strength_map,
+        today_map=today_map,
+        prev_map=prev_map,
+        pre_prev_map=pre_prev_map,
+        plate_rotate_cache=plate_cache,
+        as_of_date=signal["date"],
+    )
     themes = []
     for name in names:
-        today_zt = today_map.get(name, 0)
-        prev_zt = prev_map.get(name)
-        pre_prev_zt = pre_prev_map.get(name)
-        if today_zt <= 0 and (prev_zt or 0) <= 0 and (pre_prev_zt or 0) <= 0:
-            continue
+        today_zt = _resolve_theme_day_value(name=name, day_map=today_map)
+        prev_zt = _resolve_theme_day_value(name=name, day_map=prev_map)
+        pre_prev_zt = _resolve_theme_day_value(name=name, day_map=pre_prev_map)
+        today_zt_value = _to_int(today_zt, 0)
+        if today_zt_value <= 0 and (prev_zt or 0) <= 0 and (pre_prev_zt or 0) <= 0:
+            if not _should_keep_strength_theme(name=name, strength_info=_match_strength_info(name, strength_map)):
+                continue
         themes.append(
             _build_theme_tide(
                 name=name,
-                today_zt=today_zt,
+                today_zt=today_zt_value,
                 prev_zt=prev_zt,
                 pre_prev_zt=pre_prev_zt,
                 market=market,
@@ -347,6 +359,91 @@ def _resolve_theme_days(cache: dict[str, Any], date: str) -> list[str]:
     return days[-3:]
 
 
+def _collect_theme_candidates(
+    *,
+    market_data: dict[str, Any],
+    strength_map: dict[str, dict[str, Any]],
+    today_map: dict[str, int],
+    prev_map: dict[str, int],
+    pre_prev_map: dict[str, int],
+    plate_rotate_cache: dict[str, Any],
+    as_of_date: str,
+) -> list[str]:
+    names: dict[str, str] = {}
+
+    def add(name: Any) -> None:
+        raw = str(name or "").strip()
+        if not raw:
+            return
+        key = _theme_key(raw)
+        if not key:
+            return
+        if key not in names:
+            names[key] = raw
+
+    for mapping in (today_map, prev_map, pre_prev_map):
+        for raw_name in mapping.keys():
+            add(raw_name)
+    for raw_name in _extract_strength_theme_names(market_data, strength_map):
+        add(raw_name)
+    for raw_name in _extract_plate_rotate_history_names(plate_rotate_cache, as_of_date):
+        add(raw_name)
+    return sorted(names.values())
+
+
+def _resolve_theme_day_value(*, name: str, day_map: dict[str, int]) -> int | None:
+    if not isinstance(day_map, dict) or not day_map:
+        return None
+    if name in day_map:
+        return day_map[name]
+    target_key = _theme_key(name)
+    if not target_key:
+        return None
+    for raw_name, value in day_map.items():
+        if _theme_key(raw_name) == target_key:
+            return _to_int(value, 0)
+    return None
+
+
+def _extract_strength_theme_names(market_data: dict[str, Any], strength_map: dict[str, dict[str, Any]]) -> list[str]:
+    rows: list[dict[str, Any]] = []
+    for key in ("plateRankTop10", "plateRotateTop"):
+        value = market_data.get(key)
+        if isinstance(value, list):
+            rows.extend([row for row in value if isinstance(row, dict)])
+    out: list[str] = []
+    for row in rows:
+        name = str(row.get("name") or "").strip()
+        if not name:
+            continue
+        if _should_keep_strength_theme(name=name, strength_info=_match_strength_info(name, strength_map)):
+            out.append(name)
+    return out
+
+
+def _extract_plate_rotate_history_names(plate_rotate_cache: dict[str, Any], as_of_date: str) -> list[str]:
+    by_day = plate_rotate_cache.get("by_day") if isinstance(plate_rotate_cache, dict) else {}
+    if not isinstance(by_day, dict) or not by_day:
+        return []
+    days = sorted([str(day) for day in by_day.keys() if isinstance(day, str) and day])
+    if as_of_date:
+        days = [day for day in days if day <= as_of_date]
+    out: list[str] = []
+    for day in days[-5:]:
+        day_obj = by_day.get(day) or {}
+        rows = day_obj.get("rows") if isinstance(day_obj, dict) else None
+        if not isinstance(rows, list):
+            continue
+        for row in rows:
+            if not isinstance(row, dict):
+                continue
+            rank = _to_int(row.get("rank"), 999)
+            name = str(row.get("name") or "").strip()
+            if name and rank <= 8:
+                out.append(name)
+    return out
+
+
 def _theme_day_map(day: Any) -> dict[str, int]:
     if not isinstance(day, dict):
         return {}
@@ -480,6 +577,16 @@ def _is_strength_weak(info: dict[str, Any]) -> bool:
     if isinstance(rank, (int, float)) and rank <= 10:
         return False
     return isinstance(score, (int, float)) and score < 45
+
+
+def _should_keep_strength_theme(*, name: str, strength_info: dict[str, Any]) -> bool:
+    rank = strength_info.get("strength_rank")
+    score = strength_info.get("strength_score")
+    if isinstance(rank, (int, float)) and rank <= 8:
+        return True
+    if isinstance(score, (int, float)) and score >= 60:
+        return True
+    return False
 
 
 def _build_theme_tide(

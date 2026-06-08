@@ -113,6 +113,16 @@ def load_theme_trend_cache(root: Path) -> dict:
         return {}
 
 
+def load_plate_rotate_cache(root: Path) -> dict:
+    path = root / "cache_online" / "plate_rotate_cache.json"
+    if not path.exists():
+        return {}
+    try:
+        return json.loads(path.read_text(encoding="utf-8"))
+    except Exception:
+        return {}
+
+
 def load_catalyst_cache(root: Path, date: str) -> dict:
     date8 = str(date or "").replace("-", "")
     cache_dir = root / "cache_online"
@@ -146,6 +156,7 @@ def inject_offline_raw_context(*, ctx: Context, root: Path, date: str) -> None:
     ctx.raw["index_klines"] = load_index_klines_cache(root)
     ctx.raw["height_trend_cache"] = load_height_trend_cache(root)
     ctx.raw["theme_trend_cache"] = load_theme_trend_cache(root)
+    ctx.raw["plate_rotate_cache"] = load_plate_rotate_cache(root)
     ctx.raw["catalyst_cache"] = load_catalyst_cache(root, date)
 
 

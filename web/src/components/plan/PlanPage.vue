@@ -228,6 +228,14 @@ const resolveThemeContext = (names: Array<string | null | undefined>) => {
 }
 const tideThemeForBucket = (theme: string, matched: string[] = [], advisor?: MainLinePicks | null) => {
   const context = resolveThemeContext([theme, ...matched, advisor?.main_line || "", ...(advisor?.constituents || [])])
+  const tideByAlias = context?.tideByAlias && typeof context.tideByAlias === "object" ? context.tideByAlias : {}
+  for (const raw of [theme, ...matched, advisor?.main_line || "", ...(advisor?.constituents || [])]) {
+    const text = String(raw || "").trim()
+    if (!text) continue
+    if (tideByAlias[text]) return tideByAlias[text]
+    const normalized = normalizeThemeName(text)
+    if (normalized && tideByAlias[normalized]) return tideByAlias[normalized]
+  }
   return context?.tide || null
 }
 

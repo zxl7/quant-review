@@ -98,6 +98,7 @@ def _build_payload(
     theme_trend_cache = read_json(root / "cache_online" / "theme_trend_cache.json", default=None)
     if not isinstance(theme_trend_cache, dict) or not isinstance(theme_trend_cache.get("by_day"), dict):
         theme_trend_cache = read_json(root / "cache" / "theme_trend_cache.json", default={})
+    plate_rotate_cache = read_json(root / "cache_online" / "plate_rotate_cache.json", default={})
 
     # market_data 必须锚定 pools_date，避免历史重算时误读 cache_online 最新交易日。
     market_data = _load_market_data_for_date(root=root, pools_date=pools_date)
@@ -112,6 +113,7 @@ def _build_payload(
     tide_signal = build_tide_signal(
         market_data=market_data,
         theme_trend_cache=theme_trend_cache if isinstance(theme_trend_cache, dict) else {},
+        plate_rotate_cache=plate_rotate_cache if isinstance(plate_rotate_cache, dict) else {},
     )
     catalyst_data = _load_catalyst_data(root=root, date=date)
     core_tide_signal = build_core_tide_signal(
