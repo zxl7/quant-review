@@ -29,8 +29,8 @@ TZ_BJ = timezone(timedelta(hours=8))
 
 STRATEGIES = (
     ("next_day", "隔日收益", 1),
+    ("hold_2d", "2日收益", 2),
     ("hold_3d", "3日收益", 3),
-    ("hold_5d", "5日收益", 5),
 )
 
 
@@ -926,8 +926,8 @@ def _evaluate_one(record: dict[str, Any], bars: list[dict[str, Any]]) -> dict[st
         return {
             "open_check": missing,
             "next_day": {"status": "missing", "label": "隔日收益", "note": "推荐日后没有可用交易日价格"},
+            "hold_2d": {"status": "missing", "label": "2日收益", "note": "推荐日后没有可用交易日价格"},
             "hold_3d": {"status": "missing", "label": "3日收益", "note": "推荐日后没有可用交易日价格"},
-            "hold_5d": {"status": "missing", "label": "5日收益", "note": "推荐日后没有可用交易日价格"},
         }
 
     entry = future[0]
@@ -955,8 +955,8 @@ def _evaluate_one(record: dict[str, Any], bars: list[dict[str, Any]]) -> dict[st
         return {
             "open_check": open_check,
             "next_day": skipped,
+            "hold_2d": skipped,
             "hold_3d": skipped,
-            "hold_5d": skipped,
         }
 
     perf: dict[str, Any] = {"open_check": open_check}
@@ -1152,8 +1152,8 @@ def build_stock_research_backtest_payload(*, current_market_data: dict[str, Any]
 
     metrics = {
         "next_day": _summarize_strategy(backtest_rows, "next_day", "隔日收益"),
+        "hold_2d": _summarize_strategy(backtest_rows, "hold_2d", "2日收益"),
         "hold_3d": _summarize_strategy(backtest_rows, "hold_3d", "3日收益"),
-        "hold_5d": _summarize_strategy(backtest_rows, "hold_5d", "5日收益"),
     }
 
     return {

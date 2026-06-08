@@ -133,8 +133,8 @@ const metrics = computed(() => {
   const data = payload.value?.metrics || {}
   return [
     { key: "next_day", label: "隔日收益", data: data.next_day || {} },
+    { key: "hold_2d", label: "2日收益", data: data.hold_2d || {} },
     { key: "hold_3d", label: "3日收益", data: data.hold_3d || {} },
-    { key: "hold_5d", label: "5日收益", data: data.hold_5d || {} },
   ]
 })
 
@@ -425,7 +425,7 @@ function strategyReturnClass(performance: any, key: string) {
       <div class="card-header">
         <div>
           <div class="card-title">策略表现</div>
-          <div class="bt-subtitle">收益口径：次日开盘买入，分别统计 T+1 / T+3 / T+5 收盘卖出；不含手续费、滑点和一字板无法成交约束。</div>
+          <div class="bt-subtitle">收益口径：次日开盘买入，分别统计 T+1 / T+2 / T+3 收盘卖出；不含手续费、滑点和一字板无法成交约束。</div>
         </div>
       </div>
 
@@ -489,8 +489,8 @@ function strategyReturnClass(performance: any, key: string) {
               <th>开盘判断</th>
               <th>涨幅</th>
               <th>T+1</th>
+              <th>T+2</th>
               <th>T+3</th>
-              <th>T+5</th>
             </tr>
           </thead>
           <tbody>
@@ -517,13 +517,13 @@ function strategyReturnClass(performance: any, key: string) {
                 {{ strategyReturnText(row.performance, "next_day") }}
                 <div class="bt-cell-sub">{{ strategyReturnNote(row.performance, "next_day") }}</div>
               </td>
+              <td :class="strategyReturnClass(row.performance, 'hold_2d')">
+                {{ strategyReturnText(row.performance, "hold_2d") }}
+                <div class="bt-cell-sub">{{ strategyReturnNote(row.performance, "hold_2d") }}</div>
+              </td>
               <td :class="strategyReturnClass(row.performance, 'hold_3d')">
                 {{ strategyReturnText(row.performance, "hold_3d") }}
                 <div class="bt-cell-sub">{{ strategyReturnNote(row.performance, "hold_3d") }}</div>
-              </td>
-              <td :class="strategyReturnClass(row.performance, 'hold_5d')">
-                {{ strategyReturnText(row.performance, "hold_5d") }}
-                <div class="bt-cell-sub">{{ strategyReturnNote(row.performance, "hold_5d") }}</div>
               </td>
             </tr>
           </tbody>
