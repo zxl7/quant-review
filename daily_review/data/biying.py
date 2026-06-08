@@ -187,9 +187,13 @@ def fetch_indices_realtime(client: HttpClient, codes: Sequence[tuple[str, str]])
     """
     out: list[dict[str, Any]] = []
     as_of = ""
+    fallback_as_of = _dt.datetime.now().strftime("%H:%M:%S")
     for code, name in codes:
         url = f"{client.base_url}/hsindex/real/time/{code}/{client.token}"
-        rt = client.get_json(url) or {}
+        try:
+            rt = client.get_json(url) or {}
+        except Exception:
+            rt = {}
         t = str(rt.get("t", "") or "")
         if t:
             as_of = t
@@ -220,7 +224,7 @@ def fetch_indices_realtime(client: HttpClient, codes: Sequence[tuple[str, str]])
         )
     # as_of 只展示 HH:MM:SS
     as_of_short = as_of[11:19] if len(as_of) >= 19 else as_of
-    return out, (as_of_short or _dt.datetime.now().strftime("%H:%M:%S"))
+    return out, (as_of_short or fallback_as_of)
 
 
 def fetch_pool(client: HttpClient, *, pool_name: str, date: str) -> list[dict[str, Any]]:

@@ -71,6 +71,7 @@ from daily_review.data.biying import (
     resolve_trade_date_intraday,
 )
 from daily_review.data.plate_rotate_fetcher import PlateRotateFetcher
+from daily_review.data.ths_newhigh import save_newhigh_snapshot
 from daily_review.data.xuangubao import fetch_stock_labels_batch
 from daily_review.features.build_features import build_mood_inputs, default_chart_palette
 from daily_review.modules_v2 import ALL_MODULES
@@ -696,6 +697,17 @@ def run_fetch_and_rebuild(date: str | None) -> int:
     # height_trend_cache.json：近 7 日高度趋势（只缓存历史日，不缓存当天）
     build_height_trend_cache(root=root, pools=pools, trade_days=trade_days, actual_date=actual_date)
     _log("高度趋势已计算 (近7日)")
+
+    try:
+        ths_newhigh_path = save_newhigh_snapshot(
+            root=root,
+            date=actual_date,
+            mode="fetch",
+            note="收盘/全量流程自动抓取同花顺创新高榜单，供个股强度确认使用",
+        )
+        _log(f"同花顺创新高榜单已缓存: {ths_newhigh_path.name}")
+    except Exception as e:
+        _log(f"同花顺创新高榜单抓取失败（不影响主流程）: {e}")
 
     # indices（实时）：仅用于 asOf 展示（HH:MM:SS）
     indices_rt, indices_asof = fetch_indices_realtime(

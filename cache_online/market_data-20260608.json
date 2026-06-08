@@ -4,13 +4,13 @@
   "meta": {
     "asOf": {
       "indices": "收盘",
-      "pools": "22:12:07",
-      "themes": "22:12:07",
+      "pools": "23:01:43",
+      "themes": "23:01:43",
       "quotes": "15:00:03",
       "plate_rotate": "2026-06-08"
     },
     "version": "1.0",
-    "generatedAt": "2026-06-08 22:12:07"
+    "generatedAt": "2026-06-08 23:01:43"
   },
   "indices": [
     {
@@ -273,6 +273,16 @@
         "riskClass": "green-text"
       },
       {
+        "name": "香港股市-A+H",
+        "zt": 3,
+        "zb": 0,
+        "dt": 0,
+        "net": 3.0,
+        "risk": 0.0,
+        "netClass": "red-text",
+        "riskClass": "green-text"
+      },
+      {
         "name": "水电概念",
         "zt": 3,
         "zb": 0,
@@ -283,7 +293,17 @@
         "riskClass": "green-text"
       },
       {
-        "name": "海绵城市",
+        "name": "绿色建筑",
+        "zt": 3,
+        "zb": 0,
+        "dt": 0,
+        "net": 3.0,
+        "risk": 0.0,
+        "netClass": "red-text",
+        "riskClass": "green-text"
+      },
+      {
+        "name": "H股",
         "zt": 3,
         "zb": 0,
         "dt": 0,
@@ -313,27 +333,7 @@
         "riskClass": "green-text"
       },
       {
-        "name": "香港股市-A+H",
-        "zt": 3,
-        "zb": 0,
-        "dt": 0,
-        "net": 3.0,
-        "risk": 0.0,
-        "netClass": "red-text",
-        "riskClass": "green-text"
-      },
-      {
-        "name": "H股",
-        "zt": 3,
-        "zb": 0,
-        "dt": 0,
-        "net": 3.0,
-        "risk": 0.0,
-        "netClass": "red-text",
-        "riskClass": "green-text"
-      },
-      {
-        "name": "绿色建筑",
+        "name": "海绵城市",
         "zt": 3,
         "zb": 0,
         "dt": 0,
@@ -23444,7 +23444,7 @@
     }
   ],
   "moodSignals": {
-    "updatedAt": "2026-06-08 22:12:07",
+    "updatedAt": "2026-06-08 23:01:43",
     "headline": "分歧/扩散偏大，优先防守",
     "pos": [
       {
@@ -23627,7 +23627,20 @@
         "openBlocked": 1,
         "stepWeak": 0,
         "yiziBlocked": 0,
-        "shrinkBlocked": 7
+        "shrinkBlocked": 7,
+        "tideBlocked": 1
+      },
+      "tide": {
+        "source": "coreTideSignal",
+        "marketRegime": {
+          "status": "divergence",
+          "risk_level": "mid",
+          "high_risk_score": 53.0,
+          "low_ladder_score": 80.0,
+          "is_ebb_day": false,
+          "trigger_count": 0
+        },
+        "matchedThemes": 417
       },
       "marketGate": {
         "score": 51,
@@ -23674,7 +23687,7 @@
             "code": "603500",
             "placement": "relay",
             "placementLabel": "接力池",
-            "score": 62.0,
+            "score": 64.0,
             "scoreBand": "条件触发",
             "lbc": 3.0,
             "nextStep": "3进4",
@@ -23683,9 +23696,9 @@
             "qualityScore": 78.0,
             "environmentScore": 51.0,
             "leaderFactorScore": 85.0,
-            "relayFactorScore": 85.0,
+            "relayFactorScore": 86.0,
             "capacityFactorScore": 50.0,
-            "riskControlScore": 44.0,
+            "riskControlScore": 40.0,
             "leaderPhilosophyScore": 64.0,
             "stepContextScore": 100.0,
             "breakRisk": 93.0,
@@ -23693,7 +23706,16 @@
             "themeLadderLabel": "梯队完整",
             "themeLadderGapCount": 0.0,
             "open": 2.0,
-            "factorHint": "环境51(防守观察) / 板块49 / 龙头85 / 接力85 / 容量50 / 风险44 / 梯队61 / 条件触发",
+            "factorHint": "环境51(防守观察) / 板块48 / 龙头85 / 接力86 / 容量50 / 风险40 / 潮汐+2 / 梯队61 / 条件触发",
+            "tideStatus": "neutral_wait",
+            "tideAction": "watch",
+            "tidePhase": "neutral",
+            "tideCoreScore": 51.0,
+            "tideEbbScore": 42.0,
+            "tideAdjust": 2.0,
+            "tideRelayGate": 3.0,
+            "tideHint": "轨道交通核心潮汐中性，按梯队和个股辨识度处理。",
+            "tideCaution": "",
             "hitRules": [
               "兜底候选",
               "应急兜底"
@@ -23714,8 +23736,8 @@
             "code": "002354",
             "placement": "watch",
             "placementLabel": "观察池",
-            "score": 58.0,
-            "scoreBand": "只观察",
+            "score": 60.0,
+            "scoreBand": "条件触发",
             "lbc": 2.0,
             "nextStep": "2进3",
             "predTheme": "乡村振兴",
@@ -23723,9 +23745,9 @@
             "qualityScore": 84.0,
             "environmentScore": 51.0,
             "leaderFactorScore": 77.0,
-            "relayFactorScore": 79.0,
+            "relayFactorScore": 80.0,
             "capacityFactorScore": 63.0,
-            "riskControlScore": 33.0,
+            "riskControlScore": 29.0,
             "leaderPhilosophyScore": 61.0,
             "stepContextScore": 73.0,
             "breakRisk": 97.0,
@@ -23733,7 +23755,16 @@
             "themeLadderLabel": "中位承接",
             "themeLadderGapCount": 0.0,
             "open": 0.0,
-            "factorHint": "环境51(防守观察) / 板块47 / 龙头77 / 接力79 / 容量63 / 风险33 / 梯队45 / 只观察",
+            "factorHint": "环境51(防守观察) / 板块47 / 龙头77 / 接力80 / 容量63 / 风险29 / 潮汐+2 / 梯队45 / 条件触发",
+            "tideStatus": "neutral_wait",
+            "tideAction": "watch",
+            "tidePhase": "neutral",
+            "tideCoreScore": 54.0,
+            "tideEbbScore": 41.0,
+            "tideAdjust": 2.0,
+            "tideRelayGate": 3.0,
+            "tideHint": "乡村振兴核心潮汐中性，按梯队和个股辨识度处理。",
+            "tideCaution": "",
             "hitRules": [
               "应急兜底"
             ],
@@ -23752,18 +23783,18 @@
             "code": "002613",
             "placement": "watch",
             "placementLabel": "观察池",
-            "score": 55.0,
-            "scoreBand": "只观察",
+            "score": 60.0,
+            "scoreBand": "条件触发",
             "lbc": 2.0,
             "nextStep": "2进3",
             "predTheme": "绿色建筑",
             "marketGateLabel": "防守观察",
             "qualityScore": 84.0,
             "environmentScore": 51.0,
-            "leaderFactorScore": 77.0,
-            "relayFactorScore": 75.0,
+            "leaderFactorScore": 80.0,
+            "relayFactorScore": 78.0,
             "capacityFactorScore": 53.0,
-            "riskControlScore": 37.0,
+            "riskControlScore": 33.0,
             "leaderPhilosophyScore": 61.0,
             "stepContextScore": 73.0,
             "breakRisk": 97.0,
@@ -23771,7 +23802,16 @@
             "themeLadderLabel": "中位承接",
             "themeLadderGapCount": 0.0,
             "open": 0.0,
-            "factorHint": "环境51(防守观察) / 板块42 / 龙头77 / 接力75 / 容量53 / 风险37 / 梯队31 / 只观察",
+            "factorHint": "环境51(防守观察) / 板块43 / 龙头80 / 接力78 / 容量53 / 风险33 / 潮汐+2 / 梯队31 / 条件触发",
+            "tideStatus": "neutral_wait",
+            "tideAction": "watch",
+            "tidePhase": "neutral",
+            "tideCoreScore": 51.0,
+            "tideEbbScore": 42.0,
+            "tideAdjust": 2.0,
+            "tideRelayGate": 3.0,
+            "tideHint": "绿色建筑核心潮汐中性，按梯队和个股辨识度处理。",
+            "tideCaution": "",
             "hitRules": [
               "应急兜底"
             ],
@@ -23787,49 +23827,11 @@
             "isShrinkSeal": false
           },
           {
-            "name": "大有能源",
-            "code": "600403",
-            "placement": "watch",
-            "placementLabel": "观察池",
-            "score": 53.0,
-            "scoreBand": "只观察",
-            "lbc": 6.0,
-            "nextStep": "6进7",
-            "predTheme": "国资改革",
-            "marketGateLabel": "防守观察",
-            "qualityScore": 54.0,
-            "environmentScore": 51.0,
-            "leaderFactorScore": 88.0,
-            "relayFactorScore": 71.0,
-            "capacityFactorScore": 89.0,
-            "riskControlScore": 24.0,
-            "leaderPhilosophyScore": 65.0,
-            "stepContextScore": 100.0,
-            "breakRisk": 100.0,
-            "themeLadderScore": 38.0,
-            "themeLadderLabel": "中位承接",
-            "themeLadderGapCount": 3.0,
-            "open": 3.0,
-            "factorHint": "环境51(防守观察) / 板块11 / 龙头88 / 接力71 / 容量89 / 风险24 / 梯队38 / 只观察",
-            "hitRules": [],
-            "blockReasons": [
-              "分歧偏大",
-              "断板风险高",
-              "梯队断层",
-              "环境不支持"
-            ],
-            "isThemeLeader": true,
-            "isNewHigh": true,
-            "isMain": false,
-            "isYizi": false,
-            "isShrinkSeal": false
-          },
-          {
             "name": "中重科技",
             "code": "603135",
             "placement": "watch",
             "placementLabel": "观察池",
-            "score": 53.0,
+            "score": 59.0,
             "scoreBand": "只观察",
             "lbc": 4.0,
             "nextStep": "4进5",
@@ -23837,10 +23839,10 @@
             "marketGateLabel": "防守观察",
             "qualityScore": 54.0,
             "environmentScore": 51.0,
-            "leaderFactorScore": 75.0,
-            "relayFactorScore": 67.0,
+            "leaderFactorScore": 78.0,
+            "relayFactorScore": 70.0,
             "capacityFactorScore": 89.0,
-            "riskControlScore": 19.0,
+            "riskControlScore": 15.0,
             "leaderPhilosophyScore": 29.0,
             "stepContextScore": 100.0,
             "breakRisk": 100.0,
@@ -23848,7 +23850,16 @@
             "themeLadderLabel": "梯队断层",
             "themeLadderGapCount": 2.0,
             "open": 3.0,
-            "factorHint": "环境51(防守观察) / 板块36 / 龙头75 / 接力67 / 容量89 / 风险19 / 梯队11 / 只观察",
+            "factorHint": "环境51(防守观察) / 板块36 / 龙头78 / 接力70 / 容量89 / 风险15 / 潮汐+4 / 梯队11 / 只观察",
+            "tideStatus": "observe_candidate",
+            "tideAction": "watch",
+            "tidePhase": "neutral",
+            "tideCoreScore": 55.0,
+            "tideEbbScore": 40.0,
+            "tideAdjust": 4.0,
+            "tideRelayGate": 3.0,
+            "tideHint": "机械有观察价值，等待情绪/量能/消息继续共振。",
+            "tideCaution": "",
             "hitRules": [],
             "blockReasons": [
               "分歧偏大",
@@ -23864,11 +23875,58 @@
             "isShrinkSeal": false
           },
           {
+            "name": "大有能源",
+            "code": "600403",
+            "placement": "watch",
+            "placementLabel": "观察池",
+            "score": 58.0,
+            "scoreBand": "只观察",
+            "lbc": 6.0,
+            "nextStep": "6进7",
+            "predTheme": "国资改革",
+            "marketGateLabel": "防守观察",
+            "qualityScore": 54.0,
+            "environmentScore": 51.0,
+            "leaderFactorScore": 90.0,
+            "relayFactorScore": 74.0,
+            "capacityFactorScore": 89.0,
+            "riskControlScore": 20.0,
+            "leaderPhilosophyScore": 65.0,
+            "stepContextScore": 100.0,
+            "breakRisk": 100.0,
+            "themeLadderScore": 38.0,
+            "themeLadderLabel": "中位承接",
+            "themeLadderGapCount": 3.0,
+            "open": 3.0,
+            "factorHint": "环境51(防守观察) / 板块11 / 龙头90 / 接力74 / 容量89 / 风险20 / 潮汐+2 / 梯队38 / 只观察",
+            "tideStatus": "neutral_wait",
+            "tideAction": "watch",
+            "tidePhase": "neutral",
+            "tideCoreScore": 54.0,
+            "tideEbbScore": 39.0,
+            "tideAdjust": 2.0,
+            "tideRelayGate": 3.0,
+            "tideHint": "国资改革核心潮汐中性，按梯队和个股辨识度处理。",
+            "tideCaution": "",
+            "hitRules": [],
+            "blockReasons": [
+              "分歧偏大",
+              "断板风险高",
+              "梯队断层",
+              "环境不支持"
+            ],
+            "isThemeLeader": true,
+            "isNewHigh": true,
+            "isMain": false,
+            "isYizi": false,
+            "isShrinkSeal": false
+          },
+          {
             "name": "泰和新材",
             "code": "002254",
             "placement": "watch",
             "placementLabel": "观察池",
-            "score": 50.0,
+            "score": 52.0,
             "scoreBand": "只观察",
             "lbc": 2.0,
             "nextStep": "2进3",
@@ -23876,10 +23934,10 @@
             "marketGateLabel": "防守观察",
             "qualityScore": 84.0,
             "environmentScore": 51.0,
-            "leaderFactorScore": 59.0,
-            "relayFactorScore": 74.0,
+            "leaderFactorScore": 61.0,
+            "relayFactorScore": 76.0,
             "capacityFactorScore": 95.0,
-            "riskControlScore": 24.0,
+            "riskControlScore": 20.0,
             "leaderPhilosophyScore": 23.0,
             "stepContextScore": 73.0,
             "breakRisk": 97.0,
@@ -23887,7 +23945,16 @@
             "themeLadderLabel": "",
             "themeLadderGapCount": 0.0,
             "open": 1.0,
-            "factorHint": "环境51(防守观察) / 板块33 / 龙头59 / 接力74 / 容量95 / 风险24 / 梯队0 / 只观察",
+            "factorHint": "环境51(防守观察) / 板块33 / 龙头61 / 接力76 / 容量95 / 风险20 / 潮汐+0 / 梯队0 / 只观察",
+            "tideStatus": "",
+            "tideAction": "",
+            "tidePhase": "",
+            "tideCoreScore": 0.0,
+            "tideEbbScore": 0.0,
+            "tideAdjust": 0.0,
+            "tideRelayGate": 0.0,
+            "tideHint": "",
+            "tideCaution": "",
             "hitRules": [
               "应急兜底"
             ],
@@ -23907,7 +23974,7 @@
             "code": "002361",
             "placement": "watch",
             "placementLabel": "观察池",
-            "score": 47.0,
+            "score": 49.0,
             "scoreBand": "只观察",
             "lbc": 2.0,
             "nextStep": "2进3",
@@ -23916,9 +23983,9 @@
             "qualityScore": 54.0,
             "environmentScore": 51.0,
             "leaderFactorScore": 51.0,
-            "relayFactorScore": 73.0,
+            "relayFactorScore": 74.0,
             "capacityFactorScore": 68.0,
-            "riskControlScore": 26.0,
+            "riskControlScore": 22.0,
             "leaderPhilosophyScore": 11.0,
             "stepContextScore": 73.0,
             "breakRisk": 100.0,
@@ -23926,7 +23993,16 @@
             "themeLadderLabel": "梯队完整",
             "themeLadderGapCount": 0.0,
             "open": 4.0,
-            "factorHint": "环境51(防守观察) / 板块49 / 龙头51 / 接力73 / 容量68 / 风险26 / 梯队61 / 只观察",
+            "factorHint": "环境51(防守观察) / 板块49 / 龙头51 / 接力74 / 容量68 / 风险22 / 潮汐+2 / 梯队61 / 只观察",
+            "tideStatus": "neutral_wait",
+            "tideAction": "watch",
+            "tidePhase": "neutral",
+            "tideCoreScore": 51.0,
+            "tideEbbScore": 42.0,
+            "tideAdjust": 2.0,
+            "tideRelayGate": 3.0,
+            "tideHint": "轨道交通核心潮汐中性，按梯队和个股辨识度处理。",
+            "tideCaution": "",
             "hitRules": [],
             "blockReasons": [
               "分歧偏大",
@@ -23940,35 +24016,42 @@
             "isShrinkSeal": false
           },
           {
-            "name": "能科科技",
-            "code": "603859",
+            "name": "达实智能",
+            "code": "002421",
             "placement": "watch",
             "placementLabel": "观察池",
-            "score": 47.0,
+            "score": 48.0,
             "scoreBand": "只观察",
             "lbc": 2.0,
             "nextStep": "2进3",
-            "predTheme": "",
+            "predTheme": "绿色建筑",
             "marketGateLabel": "防守观察",
-            "qualityScore": 68.0,
+            "qualityScore": 54.0,
             "environmentScore": 51.0,
-            "leaderFactorScore": 54.0,
-            "relayFactorScore": 66.0,
-            "capacityFactorScore": 85.0,
-            "riskControlScore": 22.0,
-            "leaderPhilosophyScore": 5.0,
+            "leaderFactorScore": 53.0,
+            "relayFactorScore": 68.0,
+            "capacityFactorScore": 74.0,
+            "riskControlScore": 19.0,
+            "leaderPhilosophyScore": 9.0,
             "stepContextScore": 73.0,
-            "breakRisk": 97.0,
-            "themeLadderScore": 0.0,
-            "themeLadderLabel": "",
+            "breakRisk": 100.0,
+            "themeLadderScore": 31.0,
+            "themeLadderLabel": "中位承接",
             "themeLadderGapCount": 0.0,
-            "open": 2.0,
-            "factorHint": "环境51(防守观察) / 板块42 / 龙头54 / 接力66 / 容量85 / 风险22 / 梯队0 / 只观察",
-            "hitRules": [
-              "应急兜底"
-            ],
+            "open": 4.0,
+            "factorHint": "环境51(防守观察) / 板块44 / 龙头53 / 接力68 / 容量74 / 风险19 / 潮汐+2 / 梯队31 / 只观察",
+            "tideStatus": "neutral_wait",
+            "tideAction": "watch",
+            "tidePhase": "neutral",
+            "tideCoreScore": 51.0,
+            "tideEbbScore": 42.0,
+            "tideAdjust": 2.0,
+            "tideRelayGate": 3.0,
+            "tideHint": "绿色建筑核心潮汐中性，按梯队和个股辨识度处理。",
+            "tideCaution": "",
+            "hitRules": [],
             "blockReasons": [
-              "无主线题材",
+              "分歧偏大",
               "断板风险高",
               "环境不支持"
             ],
@@ -23983,7 +24066,7 @@
             "code": "603929",
             "placement": "watch",
             "placementLabel": "观察池",
-            "score": 46.0,
+            "score": 48.0,
             "scoreBand": "只观察",
             "lbc": 1.0,
             "nextStep": "1进2",
@@ -23992,9 +24075,9 @@
             "qualityScore": 72.83482557041714,
             "environmentScore": 51.0,
             "leaderFactorScore": 54.0,
-            "relayFactorScore": 66.0,
+            "relayFactorScore": 67.0,
             "capacityFactorScore": 75.0,
-            "riskControlScore": 27.0,
+            "riskControlScore": 23.0,
             "leaderPhilosophyScore": 25.0,
             "stepContextScore": 66.0,
             "breakRisk": 98.0,
@@ -24002,7 +24085,16 @@
             "themeLadderLabel": "梯队松散",
             "themeLadderGapCount": 0.0,
             "open": 2.0,
-            "factorHint": "环境51(防守观察) / 板块41 / 龙头54 / 接力66 / 容量75 / 风险27 / 梯队28 / 只观察",
+            "factorHint": "环境51(防守观察) / 板块41 / 龙头54 / 接力67 / 容量75 / 风险23 / 潮汐+2 / 梯队28 / 只观察",
+            "tideStatus": "neutral_wait",
+            "tideAction": "watch",
+            "tidePhase": "neutral",
+            "tideCoreScore": 51.0,
+            "tideEbbScore": 41.0,
+            "tideAdjust": 2.0,
+            "tideRelayGate": 3.0,
+            "tideHint": "中芯国际概念核心潮汐中性，按梯队和个股辨识度处理。",
+            "tideCaution": "",
             "hitRules": [],
             "blockReasons": [
               "断板风险高",
@@ -24019,7 +24111,7 @@
             "code": "002636",
             "placement": "excluded",
             "placementLabel": "未入池",
-            "score": 45.0,
+            "score": 48.0,
             "scoreBand": "只观察",
             "lbc": 1.0,
             "nextStep": "1进2",
@@ -24027,10 +24119,10 @@
             "marketGateLabel": "防守观察",
             "qualityScore": 80.98363584470792,
             "environmentScore": 51.0,
-            "leaderFactorScore": 53.0,
-            "relayFactorScore": 71.0,
+            "leaderFactorScore": 56.0,
+            "relayFactorScore": 74.0,
             "capacityFactorScore": 78.0,
-            "riskControlScore": 22.0,
+            "riskControlScore": 18.0,
             "leaderPhilosophyScore": 23.0,
             "stepContextScore": 66.0,
             "breakRisk": 98.0,
@@ -24038,7 +24130,16 @@
             "themeLadderLabel": "",
             "themeLadderGapCount": 0.0,
             "open": 1.0,
-            "factorHint": "环境51(防守观察) / 板块38 / 龙头53 / 接力71 / 容量78 / 风险22 / 梯队0 / 只观察",
+            "factorHint": "环境51(防守观察) / 板块38 / 龙头56 / 接力74 / 容量78 / 风险18 / 潮汐+0 / 梯队0 / 只观察",
+            "tideStatus": "",
+            "tideAction": "",
+            "tidePhase": "",
+            "tideCoreScore": 0.0,
+            "tideEbbScore": 0.0,
+            "tideAdjust": 0.0,
+            "tideRelayGate": 0.0,
+            "tideHint": "",
+            "tideCaution": "",
             "hitRules": [],
             "blockReasons": [
               "无主线题材",
@@ -24052,35 +24153,273 @@
             "isShrinkSeal": false
           },
           {
-            "name": "宗申动力",
-            "code": "001696",
+            "name": "粤桂股份",
+            "code": "000833",
             "placement": "excluded",
             "placementLabel": "未入池",
-            "score": 45.0,
+            "score": 46.0,
             "scoreBand": "只观察",
             "lbc": 1.0,
             "nextStep": "1进2",
-            "predTheme": "",
+            "predTheme": "乡村振兴",
             "marketGateLabel": "防守观察",
-            "qualityScore": 75.10228288293169,
+            "qualityScore": 82.01741549469529,
             "environmentScore": 51.0,
-            "leaderFactorScore": 53.0,
-            "relayFactorScore": 67.0,
+            "leaderFactorScore": 52.0,
+            "relayFactorScore": 74.0,
             "capacityFactorScore": 53.0,
-            "riskControlScore": 22.0,
-            "leaderPhilosophyScore": 23.0,
+            "riskControlScore": 23.0,
+            "leaderPhilosophyScore": 27.0,
             "stepContextScore": 66.0,
             "breakRisk": 98.0,
+            "themeLadderScore": 45.0,
+            "themeLadderLabel": "中位承接",
+            "themeLadderGapCount": 0.0,
+            "open": 0.0,
+            "factorHint": "环境51(防守观察) / 板块46 / 龙头52 / 接力74 / 容量53 / 风险23 / 潮汐+2 / 梯队45 / 只观察",
+            "tideStatus": "neutral_wait",
+            "tideAction": "watch",
+            "tidePhase": "neutral",
+            "tideCoreScore": 54.0,
+            "tideEbbScore": 41.0,
+            "tideAdjust": 2.0,
+            "tideRelayGate": 3.0,
+            "tideHint": "乡村振兴核心潮汐中性，按梯队和个股辨识度处理。",
+            "tideCaution": "",
+            "hitRules": [],
+            "blockReasons": [
+              "断板风险高",
+              "容量承接偏弱",
+              "环境不支持"
+            ],
+            "isThemeLeader": false,
+            "isNewHigh": false,
+            "isMain": false,
+            "isYizi": false,
+            "isShrinkSeal": false
+          },
+          {
+            "name": "DR快克智",
+            "code": "603203",
+            "placement": "excluded",
+            "placementLabel": "未入池",
+            "score": 46.0,
+            "scoreBand": "只观察",
+            "lbc": 1.0,
+            "nextStep": "1进2",
+            "predTheme": "中芯国际概念",
+            "marketGateLabel": "防守观察",
+            "qualityScore": 75.59062946815462,
+            "environmentScore": 51.0,
+            "leaderFactorScore": 55.0,
+            "relayFactorScore": 69.0,
+            "capacityFactorScore": 60.0,
+            "riskControlScore": 26.0,
+            "leaderPhilosophyScore": 25.0,
+            "stepContextScore": 66.0,
+            "breakRisk": 98.0,
+            "themeLadderScore": 28.0,
+            "themeLadderLabel": "梯队松散",
+            "themeLadderGapCount": 0.0,
+            "open": 0.0,
+            "factorHint": "环境51(防守观察) / 板块41 / 龙头55 / 接力69 / 容量60 / 风险26 / 潮汐+2 / 梯队28 / 只观察",
+            "tideStatus": "neutral_wait",
+            "tideAction": "watch",
+            "tidePhase": "neutral",
+            "tideCoreScore": 51.0,
+            "tideEbbScore": 41.0,
+            "tideAdjust": 2.0,
+            "tideRelayGate": 3.0,
+            "tideHint": "中芯国际概念核心潮汐中性，按梯队和个股辨识度处理。",
+            "tideCaution": "",
+            "hitRules": [],
+            "blockReasons": [
+              "断板风险高",
+              "环境不支持"
+            ],
+            "isThemeLeader": false,
+            "isNewHigh": false,
+            "isMain": false,
+            "isYizi": false,
+            "isShrinkSeal": false
+          },
+          {
+            "name": "国晟科技",
+            "code": "603778",
+            "placement": "excluded",
+            "placementLabel": "未入池",
+            "score": 46.0,
+            "scoreBand": "只观察",
+            "lbc": 1.0,
+            "nextStep": "1进2",
+            "predTheme": "海绵城市",
+            "marketGateLabel": "防守观察",
+            "qualityScore": 75.68974466912448,
+            "environmentScore": 51.0,
+            "leaderFactorScore": 55.0,
+            "relayFactorScore": 68.0,
+            "capacityFactorScore": 61.0,
+            "riskControlScore": 28.0,
+            "leaderPhilosophyScore": 25.0,
+            "stepContextScore": 66.0,
+            "breakRisk": 98.0,
+            "themeLadderScore": 25.0,
+            "themeLadderLabel": "梯队松散",
+            "themeLadderGapCount": 0.0,
+            "open": 0.0,
+            "factorHint": "环境51(防守观察) / 板块38 / 龙头55 / 接力68 / 容量61 / 风险28 / 潮汐+2 / 梯队25 / 只观察",
+            "tideStatus": "neutral_wait",
+            "tideAction": "watch",
+            "tidePhase": "neutral",
+            "tideCoreScore": 51.0,
+            "tideEbbScore": 42.0,
+            "tideAdjust": 2.0,
+            "tideRelayGate": 3.0,
+            "tideHint": "海绵城市核心潮汐中性，按梯队和个股辨识度处理。",
+            "tideCaution": "",
+            "hitRules": [],
+            "blockReasons": [
+              "断板风险高",
+              "环境不支持"
+            ],
+            "isThemeLeader": false,
+            "isNewHigh": false,
+            "isMain": false,
+            "isYizi": false,
+            "isShrinkSeal": false
+          },
+          {
+            "name": "北辰实业",
+            "code": "601588",
+            "placement": "excluded",
+            "placementLabel": "未入池",
+            "score": 46.0,
+            "scoreBand": "只观察",
+            "lbc": 1.0,
+            "nextStep": "1进2",
+            "predTheme": "H股",
+            "marketGateLabel": "防守观察",
+            "qualityScore": 68.30622423453657,
+            "environmentScore": 51.0,
+            "leaderFactorScore": 54.0,
+            "relayFactorScore": 67.0,
+            "capacityFactorScore": 47.0,
+            "riskControlScore": 28.0,
+            "leaderPhilosophyScore": 7.0,
+            "stepContextScore": 66.0,
+            "breakRisk": 98.0,
+            "themeLadderScore": 25.0,
+            "themeLadderLabel": "梯队松散",
+            "themeLadderGapCount": 0.0,
+            "open": 0.0,
+            "factorHint": "环境51(防守观察) / 板块42 / 龙头54 / 接力67 / 容量47 / 风险28 / 潮汐+2 / 梯队25 / 只观察",
+            "tideStatus": "neutral_wait",
+            "tideAction": "watch",
+            "tidePhase": "neutral",
+            "tideCoreScore": 51.0,
+            "tideEbbScore": 42.0,
+            "tideAdjust": 2.0,
+            "tideRelayGate": 3.0,
+            "tideHint": "H股核心潮汐中性，按梯队和个股辨识度处理。",
+            "tideCaution": "",
+            "hitRules": [],
+            "blockReasons": [
+              "断板风险高",
+              "容量承接偏弱",
+              "环境不支持"
+            ],
+            "isThemeLeader": false,
+            "isNewHigh": false,
+            "isMain": false,
+            "isYizi": false,
+            "isShrinkSeal": false
+          },
+          {
+            "name": "西昌电力",
+            "code": "600505",
+            "placement": "excluded",
+            "placementLabel": "未入池",
+            "score": 46.0,
+            "scoreBand": "只观察",
+            "lbc": 1.0,
+            "nextStep": "1进2",
+            "predTheme": "水电概念",
+            "marketGateLabel": "防守观察",
+            "qualityScore": 70.9806900399691,
+            "environmentScore": 51.0,
+            "leaderFactorScore": 52.0,
+            "relayFactorScore": 65.0,
+            "capacityFactorScore": 54.0,
+            "riskControlScore": 28.0,
+            "leaderPhilosophyScore": 7.0,
+            "stepContextScore": 66.0,
+            "breakRisk": 98.0,
+            "themeLadderScore": 24.0,
+            "themeLadderLabel": "梯队松散",
+            "themeLadderGapCount": 0.0,
+            "open": 0.0,
+            "factorHint": "环境51(防守观察) / 板块40 / 龙头52 / 接力65 / 容量54 / 风险28 / 潮汐+4 / 梯队24 / 只观察",
+            "tideStatus": "observe_candidate",
+            "tideAction": "watch",
+            "tidePhase": "neutral",
+            "tideCoreScore": 55.0,
+            "tideEbbScore": 40.0,
+            "tideAdjust": 4.0,
+            "tideRelayGate": 3.0,
+            "tideHint": "风能有观察价值，等待情绪/量能/消息继续共振。",
+            "tideCaution": "",
+            "hitRules": [],
+            "blockReasons": [
+              "断板风险高",
+              "容量承接偏弱",
+              "环境不支持"
+            ],
+            "isThemeLeader": false,
+            "isNewHigh": false,
+            "isMain": false,
+            "isYizi": false,
+            "isShrinkSeal": false
+          },
+          {
+            "name": "能科科技",
+            "code": "603859",
+            "placement": "excluded",
+            "placementLabel": "未入池",
+            "score": 46.0,
+            "scoreBand": "只观察",
+            "lbc": 2.0,
+            "nextStep": "2进3",
+            "predTheme": "",
+            "marketGateLabel": "防守观察",
+            "qualityScore": 68.0,
+            "environmentScore": 51.0,
+            "leaderFactorScore": 54.0,
+            "relayFactorScore": 66.0,
+            "capacityFactorScore": 85.0,
+            "riskControlScore": 18.0,
+            "leaderPhilosophyScore": 5.0,
+            "stepContextScore": 73.0,
+            "breakRisk": 97.0,
             "themeLadderScore": 0.0,
             "themeLadderLabel": "",
             "themeLadderGapCount": 0.0,
-            "open": 0.0,
-            "factorHint": "环境51(防守观察) / 板块55 / 龙头53 / 接力67 / 容量53 / 风险22 / 梯队0 / 只观察",
-            "hitRules": [],
+            "open": 2.0,
+            "factorHint": "环境51(防守观察) / 板块42 / 龙头54 / 接力66 / 容量85 / 风险18 / 潮汐+0 / 梯队0 / 只观察",
+            "tideStatus": "",
+            "tideAction": "",
+            "tidePhase": "",
+            "tideCoreScore": 0.0,
+            "tideEbbScore": 0.0,
+            "tideAdjust": 0.0,
+            "tideRelayGate": 0.0,
+            "tideHint": "",
+            "tideCaution": "",
+            "hitRules": [
+              "应急兜底"
+            ],
             "blockReasons": [
               "无主线题材",
               "断板风险高",
-              "容量承接偏弱",
               "环境不支持"
             ],
             "isThemeLeader": false,
@@ -24105,7 +24444,7 @@
             "leaderFactorScore": 47.0,
             "relayFactorScore": 60.0,
             "capacityFactorScore": 92.0,
-            "riskControlScore": 20.0,
+            "riskControlScore": 16.0,
             "leaderPhilosophyScore": 5.0,
             "stepContextScore": 66.0,
             "breakRisk": 98.0,
@@ -24113,7 +24452,16 @@
             "themeLadderLabel": "",
             "themeLadderGapCount": 0.0,
             "open": 2.0,
-            "factorHint": "环境51(防守观察) / 板块42 / 龙头47 / 接力60 / 容量92 / 风险20 / 梯队0 / 只观察",
+            "factorHint": "环境51(防守观察) / 板块42 / 龙头47 / 接力60 / 容量92 / 风险16 / 潮汐+0 / 梯队0 / 只观察",
+            "tideStatus": "",
+            "tideAction": "",
+            "tidePhase": "",
+            "tideCoreScore": 0.0,
+            "tideEbbScore": 0.0,
+            "tideAdjust": 0.0,
+            "tideRelayGate": 0.0,
+            "tideHint": "",
+            "tideCaution": "",
             "hitRules": [],
             "blockReasons": [
               "无主线题材",
@@ -24127,8 +24475,8 @@
             "isShrinkSeal": false
           },
           {
-            "name": "粤桂股份",
-            "code": "000833",
+            "name": "节能铁汉",
+            "code": "300197",
             "placement": "excluded",
             "placementLabel": "未入池",
             "score": 44.0,
@@ -24137,22 +24485,77 @@
             "nextStep": "1进2",
             "predTheme": "乡村振兴",
             "marketGateLabel": "防守观察",
-            "qualityScore": 82.01741549469529,
+            "qualityScore": 59.679637732142936,
             "environmentScore": 51.0,
-            "leaderFactorScore": 52.0,
-            "relayFactorScore": 73.0,
-            "capacityFactorScore": 53.0,
-            "riskControlScore": 27.0,
-            "leaderPhilosophyScore": 27.0,
+            "leaderFactorScore": 46.0,
+            "relayFactorScore": 62.0,
+            "capacityFactorScore": 74.0,
+            "riskControlScore": 17.0,
+            "leaderPhilosophyScore": 9.0,
             "stepContextScore": 66.0,
-            "breakRisk": 98.0,
+            "breakRisk": 100.0,
             "themeLadderScore": 45.0,
             "themeLadderLabel": "中位承接",
             "themeLadderGapCount": 0.0,
-            "open": 0.0,
-            "factorHint": "环境51(防守观察) / 板块46 / 龙头52 / 接力73 / 容量53 / 风险27 / 梯队45 / 只观察",
+            "open": 3.0,
+            "factorHint": "环境51(防守观察) / 板块46 / 龙头46 / 接力62 / 容量74 / 风险17 / 潮汐+2 / 梯队45 / 只观察",
+            "tideStatus": "neutral_wait",
+            "tideAction": "watch",
+            "tidePhase": "neutral",
+            "tideCoreScore": 54.0,
+            "tideEbbScore": 41.0,
+            "tideAdjust": 2.0,
+            "tideRelayGate": 3.0,
+            "tideHint": "乡村振兴核心潮汐中性，按梯队和个股辨识度处理。",
+            "tideCaution": "",
             "hitRules": [],
             "blockReasons": [
+              "断板风险高",
+              "环境不支持"
+            ],
+            "isThemeLeader": false,
+            "isNewHigh": false,
+            "isMain": false,
+            "isYizi": false,
+            "isShrinkSeal": false
+          },
+          {
+            "name": "荣安地产",
+            "code": "000517",
+            "placement": "excluded",
+            "placementLabel": "未入池",
+            "score": 44.0,
+            "scoreBand": "只观察",
+            "lbc": 2.0,
+            "nextStep": "2进3",
+            "predTheme": "绿色建筑",
+            "marketGateLabel": "防守观察",
+            "qualityScore": 90.0,
+            "environmentScore": 51.0,
+            "leaderFactorScore": 55.0,
+            "relayFactorScore": 76.0,
+            "capacityFactorScore": 42.0,
+            "riskControlScore": 14.0,
+            "leaderPhilosophyScore": 9.0,
+            "stepContextScore": 73.0,
+            "breakRisk": 100.0,
+            "themeLadderScore": 31.0,
+            "themeLadderLabel": "中位承接",
+            "themeLadderGapCount": 0.0,
+            "open": 0.0,
+            "factorHint": "环境51(防守观察) / 板块42 / 龙头55 / 接力76 / 容量42 / 风险14 / 潮汐+2 / 梯队31 / 只观察",
+            "tideStatus": "neutral_wait",
+            "tideAction": "watch",
+            "tidePhase": "neutral",
+            "tideCoreScore": 51.0,
+            "tideEbbScore": 42.0,
+            "tideAdjust": 2.0,
+            "tideRelayGate": 3.0,
+            "tideHint": "绿色建筑核心潮汐中性，按梯队和个股辨识度处理。",
+            "tideCaution": "",
+            "hitRules": [],
+            "blockReasons": [
+              "缩量参与难",
               "断板风险高",
               "容量承接偏弱",
               "环境不支持"
@@ -24161,11 +24564,11 @@
             "isNewHigh": false,
             "isMain": false,
             "isYizi": false,
-            "isShrinkSeal": false
+            "isShrinkSeal": true
           },
           {
-            "name": "DR快克智",
-            "code": "603203",
+            "name": "中巨芯-U",
+            "code": "688549",
             "placement": "excluded",
             "placementLabel": "未入池",
             "score": 44.0,
@@ -24174,20 +24577,29 @@
             "nextStep": "1进2",
             "predTheme": "中芯国际概念",
             "marketGateLabel": "防守观察",
-            "qualityScore": 75.59062946815462,
+            "qualityScore": 50.84413484666499,
             "environmentScore": 51.0,
-            "leaderFactorScore": 55.0,
-            "relayFactorScore": 68.0,
-            "capacityFactorScore": 60.0,
-            "riskControlScore": 30.0,
-            "leaderPhilosophyScore": 25.0,
+            "leaderFactorScore": 49.0,
+            "relayFactorScore": 63.0,
+            "capacityFactorScore": 61.0,
+            "riskControlScore": 26.0,
+            "leaderPhilosophyScore": 7.0,
             "stepContextScore": 66.0,
             "breakRisk": 98.0,
             "themeLadderScore": 28.0,
             "themeLadderLabel": "梯队松散",
             "themeLadderGapCount": 0.0,
             "open": 0.0,
-            "factorHint": "环境51(防守观察) / 板块41 / 龙头55 / 接力68 / 容量60 / 风险30 / 梯队28 / 只观察",
+            "factorHint": "环境51(防守观察) / 板块41 / 龙头49 / 接力63 / 容量61 / 风险26 / 潮汐+2 / 梯队28 / 只观察",
+            "tideStatus": "neutral_wait",
+            "tideAction": "watch",
+            "tidePhase": "neutral",
+            "tideCoreScore": 51.0,
+            "tideEbbScore": 41.0,
+            "tideAdjust": 2.0,
+            "tideRelayGate": 3.0,
+            "tideHint": "中芯国际概念核心潮汐中性，按梯队和个股辨识度处理。",
+            "tideCaution": "",
             "hitRules": [],
             "blockReasons": [
               "断板风险高",
@@ -24200,70 +24612,43 @@
             "isShrinkSeal": false
           },
           {
-            "name": "国晟科技",
-            "code": "603778",
+            "name": "锋龙股份",
+            "code": "002931",
             "placement": "excluded",
             "placementLabel": "未入池",
             "score": 44.0,
             "scoreBand": "只观察",
             "lbc": 1.0,
             "nextStep": "1进2",
-            "predTheme": "海绵城市",
+            "predTheme": "机械",
             "marketGateLabel": "防守观察",
-            "qualityScore": 75.68974466912448,
+            "qualityScore": 72.53025641824537,
             "environmentScore": 51.0,
-            "leaderFactorScore": 55.0,
-            "relayFactorScore": 67.0,
-            "capacityFactorScore": 61.0,
-            "riskControlScore": 32.0,
-            "leaderPhilosophyScore": 25.0,
+            "leaderFactorScore": 48.0,
+            "relayFactorScore": 62.0,
+            "capacityFactorScore": 93.0,
+            "riskControlScore": 11.0,
+            "leaderPhilosophyScore": 21.0,
             "stepContextScore": 66.0,
             "breakRisk": 98.0,
-            "themeLadderScore": 25.0,
-            "themeLadderLabel": "梯队松散",
-            "themeLadderGapCount": 0.0,
+            "themeLadderScore": 11.0,
+            "themeLadderLabel": "梯队断层",
+            "themeLadderGapCount": 2.0,
             "open": 0.0,
-            "factorHint": "环境51(防守观察) / 板块40 / 龙头55 / 接力67 / 容量61 / 风险32 / 梯队25 / 只观察",
+            "factorHint": "环境51(防守观察) / 板块34 / 龙头48 / 接力62 / 容量93 / 风险11 / 潮汐+4 / 梯队11 / 只观察",
+            "tideStatus": "observe_candidate",
+            "tideAction": "watch",
+            "tidePhase": "neutral",
+            "tideCoreScore": 55.0,
+            "tideEbbScore": 40.0,
+            "tideAdjust": 4.0,
+            "tideRelayGate": 3.0,
+            "tideHint": "机械有观察价值，等待情绪/量能/消息继续共振。",
+            "tideCaution": "",
             "hitRules": [],
             "blockReasons": [
               "断板风险高",
-              "环境不支持"
-            ],
-            "isThemeLeader": false,
-            "isNewHigh": false,
-            "isMain": false,
-            "isYizi": false,
-            "isShrinkSeal": false
-          },
-          {
-            "name": "中天火箭",
-            "code": "003009",
-            "placement": "excluded",
-            "placementLabel": "未入池",
-            "score": 44.0,
-            "scoreBand": "只观察",
-            "lbc": 2.0,
-            "nextStep": "2进3",
-            "predTheme": "",
-            "marketGateLabel": "防守观察",
-            "qualityScore": 84.0,
-            "environmentScore": 51.0,
-            "leaderFactorScore": 59.0,
-            "relayFactorScore": 72.0,
-            "capacityFactorScore": 64.0,
-            "riskControlScore": 24.0,
-            "leaderPhilosophyScore": 23.0,
-            "stepContextScore": 73.0,
-            "breakRisk": 97.0,
-            "themeLadderScore": 0.0,
-            "themeLadderLabel": "",
-            "themeLadderGapCount": 0.0,
-            "open": 0.0,
-            "factorHint": "环境51(防守观察) / 板块33 / 龙头59 / 接力72 / 容量64 / 风险24 / 梯队0 / 只观察",
-            "hitRules": [],
-            "blockReasons": [
-              "无主线题材",
-              "断板风险高",
+              "梯队断层",
               "环境不支持"
             ],
             "isThemeLeader": false,
@@ -24288,7 +24673,7 @@
             "leaderFactorScore": 58.0,
             "relayFactorScore": 69.0,
             "capacityFactorScore": 39.0,
-            "riskControlScore": 24.0,
+            "riskControlScore": 20.0,
             "leaderPhilosophyScore": 23.0,
             "stepContextScore": 73.0,
             "breakRisk": 97.0,
@@ -24296,7 +24681,16 @@
             "themeLadderLabel": "",
             "themeLadderGapCount": 0.0,
             "open": 0.0,
-            "factorHint": "环境51(防守观察) / 板块55 / 龙头58 / 接力69 / 容量39 / 风险24 / 梯队0 / 只观察",
+            "factorHint": "环境51(防守观察) / 板块55 / 龙头58 / 接力69 / 容量39 / 风险20 / 潮汐+0 / 梯队0 / 只观察",
+            "tideStatus": "",
+            "tideAction": "",
+            "tidePhase": "",
+            "tideCoreScore": 0.0,
+            "tideEbbScore": 0.0,
+            "tideAdjust": 0.0,
+            "tideRelayGate": 0.0,
+            "tideHint": "",
+            "tideCaution": "",
             "hitRules": [],
             "blockReasons": [
               "无主线题材",
@@ -24311,59 +24705,22 @@
             "isShrinkSeal": false
           },
           {
-            "name": "达实智能",
-            "code": "002421",
+            "name": "宗申动力",
+            "code": "001696",
             "placement": "excluded",
             "placementLabel": "未入池",
-            "score": 43.0,
-            "scoreBand": "只观察",
-            "lbc": 2.0,
-            "nextStep": "2进3",
-            "predTheme": "绿色建筑",
-            "marketGateLabel": "防守观察",
-            "qualityScore": 54.0,
-            "environmentScore": 51.0,
-            "leaderFactorScore": 50.0,
-            "relayFactorScore": 65.0,
-            "capacityFactorScore": 74.0,
-            "riskControlScore": 23.0,
-            "leaderPhilosophyScore": 9.0,
-            "stepContextScore": 73.0,
-            "breakRisk": 100.0,
-            "themeLadderScore": 31.0,
-            "themeLadderLabel": "中位承接",
-            "themeLadderGapCount": 0.0,
-            "open": 4.0,
-            "factorHint": "环境51(防守观察) / 板块42 / 龙头50 / 接力65 / 容量74 / 风险23 / 梯队31 / 只观察",
-            "hitRules": [],
-            "blockReasons": [
-              "分歧偏大",
-              "断板风险高",
-              "环境不支持"
-            ],
-            "isThemeLeader": false,
-            "isNewHigh": false,
-            "isMain": false,
-            "isYizi": false,
-            "isShrinkSeal": false
-          },
-          {
-            "name": "中科三环",
-            "code": "000970",
-            "placement": "excluded",
-            "placementLabel": "未入池",
-            "score": 43.0,
+            "score": 44.0,
             "scoreBand": "只观察",
             "lbc": 1.0,
             "nextStep": "1进2",
             "predTheme": "",
             "marketGateLabel": "防守观察",
-            "qualityScore": 99.4632587859425,
+            "qualityScore": 75.10228288293169,
             "environmentScore": 51.0,
-            "leaderFactorScore": 56.0,
-            "relayFactorScore": 80.0,
-            "capacityFactorScore": 52.0,
-            "riskControlScore": 22.0,
+            "leaderFactorScore": 53.0,
+            "relayFactorScore": 67.0,
+            "capacityFactorScore": 53.0,
+            "riskControlScore": 18.0,
             "leaderPhilosophyScore": 23.0,
             "stepContextScore": 66.0,
             "breakRisk": 98.0,
@@ -24371,193 +24728,19 @@
             "themeLadderLabel": "",
             "themeLadderGapCount": 0.0,
             "open": 0.0,
-            "factorHint": "环境51(防守观察) / 板块33 / 龙头56 / 接力80 / 容量52 / 风险22 / 梯队0 / 只观察",
+            "factorHint": "环境51(防守观察) / 板块55 / 龙头53 / 接力67 / 容量53 / 风险18 / 潮汐+0 / 梯队0 / 只观察",
+            "tideStatus": "",
+            "tideAction": "",
+            "tidePhase": "",
+            "tideCoreScore": 0.0,
+            "tideEbbScore": 0.0,
+            "tideAdjust": 0.0,
+            "tideRelayGate": 0.0,
+            "tideHint": "",
+            "tideCaution": "",
             "hitRules": [],
             "blockReasons": [
               "无主线题材",
-              "断板风险高",
-              "容量承接偏弱",
-              "环境不支持"
-            ],
-            "isThemeLeader": false,
-            "isNewHigh": false,
-            "isMain": false,
-            "isYizi": false,
-            "isShrinkSeal": false
-          },
-          {
-            "name": "节能铁汉",
-            "code": "300197",
-            "placement": "excluded",
-            "placementLabel": "未入池",
-            "score": 42.0,
-            "scoreBand": "只观察",
-            "lbc": 1.0,
-            "nextStep": "1进2",
-            "predTheme": "乡村振兴",
-            "marketGateLabel": "防守观察",
-            "qualityScore": 59.679637732142936,
-            "environmentScore": 51.0,
-            "leaderFactorScore": 46.0,
-            "relayFactorScore": 61.0,
-            "capacityFactorScore": 74.0,
-            "riskControlScore": 21.0,
-            "leaderPhilosophyScore": 9.0,
-            "stepContextScore": 66.0,
-            "breakRisk": 100.0,
-            "themeLadderScore": 45.0,
-            "themeLadderLabel": "中位承接",
-            "themeLadderGapCount": 0.0,
-            "open": 3.0,
-            "factorHint": "环境51(防守观察) / 板块46 / 龙头46 / 接力61 / 容量74 / 风险21 / 梯队45 / 只观察",
-            "hitRules": [],
-            "blockReasons": [
-              "断板风险高",
-              "环境不支持"
-            ],
-            "isThemeLeader": false,
-            "isNewHigh": false,
-            "isMain": false,
-            "isYizi": false,
-            "isShrinkSeal": false
-          },
-          {
-            "name": "中央商场",
-            "code": "600280",
-            "placement": "excluded",
-            "placementLabel": "未入池",
-            "score": 42.0,
-            "scoreBand": "只观察",
-            "lbc": 1.0,
-            "nextStep": "1进2",
-            "predTheme": "新零售",
-            "marketGateLabel": "防守观察",
-            "qualityScore": 72.76748168818776,
-            "environmentScore": 51.0,
-            "leaderFactorScore": 50.0,
-            "relayFactorScore": 68.0,
-            "capacityFactorScore": 50.0,
-            "riskControlScore": 30.0,
-            "leaderPhilosophyScore": 27.0,
-            "stepContextScore": 66.0,
-            "breakRisk": 98.0,
-            "themeLadderScore": 35.0,
-            "themeLadderLabel": "中位承接",
-            "themeLadderGapCount": 0.0,
-            "open": 0.0,
-            "factorHint": "环境51(防守观察) / 板块42 / 龙头50 / 接力68 / 容量50 / 风险30 / 梯队35 / 只观察",
-            "hitRules": [],
-            "blockReasons": [
-              "断板风险高",
-              "容量承接偏弱",
-              "环境不支持"
-            ],
-            "isThemeLeader": false,
-            "isNewHigh": false,
-            "isMain": false,
-            "isYizi": false,
-            "isShrinkSeal": false
-          },
-          {
-            "name": "中巨芯-U",
-            "code": "688549",
-            "placement": "excluded",
-            "placementLabel": "未入池",
-            "score": 42.0,
-            "scoreBand": "只观察",
-            "lbc": 1.0,
-            "nextStep": "1进2",
-            "predTheme": "中芯国际概念",
-            "marketGateLabel": "防守观察",
-            "qualityScore": 50.84413484666499,
-            "environmentScore": 51.0,
-            "leaderFactorScore": 49.0,
-            "relayFactorScore": 62.0,
-            "capacityFactorScore": 61.0,
-            "riskControlScore": 30.0,
-            "leaderPhilosophyScore": 7.0,
-            "stepContextScore": 66.0,
-            "breakRisk": 98.0,
-            "themeLadderScore": 28.0,
-            "themeLadderLabel": "梯队松散",
-            "themeLadderGapCount": 0.0,
-            "open": 0.0,
-            "factorHint": "环境51(防守观察) / 板块41 / 龙头49 / 接力62 / 容量61 / 风险30 / 梯队28 / 只观察",
-            "hitRules": [],
-            "blockReasons": [
-              "断板风险高",
-              "环境不支持"
-            ],
-            "isThemeLeader": false,
-            "isNewHigh": false,
-            "isMain": false,
-            "isYizi": false,
-            "isShrinkSeal": false
-          },
-          {
-            "name": "华控赛格",
-            "code": "000068",
-            "placement": "excluded",
-            "placementLabel": "未入池",
-            "score": 42.0,
-            "scoreBand": "只观察",
-            "lbc": 1.0,
-            "nextStep": "1进2",
-            "predTheme": "海绵城市",
-            "marketGateLabel": "防守观察",
-            "qualityScore": 72.17275290887198,
-            "environmentScore": 51.0,
-            "leaderFactorScore": 54.0,
-            "relayFactorScore": 65.0,
-            "capacityFactorScore": 48.0,
-            "riskControlScore": 32.0,
-            "leaderPhilosophyScore": 25.0,
-            "stepContextScore": 66.0,
-            "breakRisk": 98.0,
-            "themeLadderScore": 25.0,
-            "themeLadderLabel": "梯队松散",
-            "themeLadderGapCount": 0.0,
-            "open": 0.0,
-            "factorHint": "环境51(防守观察) / 板块40 / 龙头54 / 接力65 / 容量48 / 风险32 / 梯队25 / 只观察",
-            "hitRules": [],
-            "blockReasons": [
-              "断板风险高",
-              "容量承接偏弱",
-              "环境不支持"
-            ],
-            "isThemeLeader": false,
-            "isNewHigh": false,
-            "isMain": false,
-            "isYizi": false,
-            "isShrinkSeal": false
-          },
-          {
-            "name": "西昌电力",
-            "code": "600505",
-            "placement": "excluded",
-            "placementLabel": "未入池",
-            "score": 42.0,
-            "scoreBand": "只观察",
-            "lbc": 1.0,
-            "nextStep": "1进2",
-            "predTheme": "水电概念",
-            "marketGateLabel": "防守观察",
-            "qualityScore": 70.9806900399691,
-            "environmentScore": 51.0,
-            "leaderFactorScore": 52.0,
-            "relayFactorScore": 64.0,
-            "capacityFactorScore": 54.0,
-            "riskControlScore": 32.0,
-            "leaderPhilosophyScore": 7.0,
-            "stepContextScore": 66.0,
-            "breakRisk": 98.0,
-            "themeLadderScore": 24.0,
-            "themeLadderLabel": "梯队松散",
-            "themeLadderGapCount": 0.0,
-            "open": 0.0,
-            "factorHint": "环境51(防守观察) / 板块41 / 龙头52 / 接力64 / 容量54 / 风险32 / 梯队24 / 只观察",
-            "hitRules": [],
-            "blockReasons": [
               "断板风险高",
               "容量承接偏弱",
               "环境不支持"
@@ -24573,7 +24756,7 @@
             "code": "000620",
             "placement": "excluded",
             "placementLabel": "未入池",
-            "score": 41.0,
+            "score": 43.0,
             "scoreBand": "只观察",
             "lbc": 1.0,
             "nextStep": "1进2",
@@ -24582,9 +24765,9 @@
             "qualityScore": 65.17888367915306,
             "environmentScore": 51.0,
             "leaderFactorScore": 47.0,
-            "relayFactorScore": 64.0,
+            "relayFactorScore": 65.0,
             "capacityFactorScore": 88.0,
-            "riskControlScore": 15.0,
+            "riskControlScore": 11.0,
             "leaderPhilosophyScore": 5.0,
             "stepContextScore": 66.0,
             "breakRisk": 100.0,
@@ -24592,7 +24775,16 @@
             "themeLadderLabel": "中位承接",
             "themeLadderGapCount": 3.0,
             "open": 3.0,
-            "factorHint": "环境51(防守观察) / 板块32 / 龙头47 / 接力64 / 容量88 / 风险15 / 梯队39 / 只观察",
+            "factorHint": "环境51(防守观察) / 板块32 / 龙头47 / 接力65 / 容量88 / 风险11 / 潮汐+2 / 梯队39 / 只观察",
+            "tideStatus": "neutral_wait",
+            "tideAction": "watch",
+            "tidePhase": "neutral",
+            "tideCoreScore": 54.0,
+            "tideEbbScore": 39.0,
+            "tideAdjust": 2.0,
+            "tideRelayGate": 3.0,
+            "tideHint": "低价核心潮汐中性，按梯队和个股辨识度处理。",
+            "tideCaution": "",
             "hitRules": [],
             "blockReasons": [
               "无主线题材",
@@ -24608,34 +24800,413 @@
             "isShrinkSeal": false
           },
           {
-            "name": "北辰实业",
-            "code": "601588",
+            "name": "中央商场",
+            "code": "600280",
             "placement": "excluded",
             "placementLabel": "未入池",
-            "score": 41.0,
+            "score": 43.0,
             "scoreBand": "只观察",
             "lbc": 1.0,
             "nextStep": "1进2",
-            "predTheme": "H股",
+            "predTheme": "新零售",
             "marketGateLabel": "防守观察",
-            "qualityScore": 68.30622423453657,
+            "qualityScore": 72.76748168818776,
             "environmentScore": 51.0,
-            "leaderFactorScore": 52.0,
-            "relayFactorScore": 63.0,
-            "capacityFactorScore": 47.0,
-            "riskControlScore": 32.0,
-            "leaderPhilosophyScore": 7.0,
+            "leaderFactorScore": 50.0,
+            "relayFactorScore": 69.0,
+            "capacityFactorScore": 50.0,
+            "riskControlScore": 26.0,
+            "leaderPhilosophyScore": 27.0,
+            "stepContextScore": 66.0,
+            "breakRisk": 98.0,
+            "themeLadderScore": 35.0,
+            "themeLadderLabel": "中位承接",
+            "themeLadderGapCount": 0.0,
+            "open": 0.0,
+            "factorHint": "环境51(防守观察) / 板块41 / 龙头50 / 接力69 / 容量50 / 风险26 / 潮汐+2 / 梯队35 / 只观察",
+            "tideStatus": "neutral_wait",
+            "tideAction": "watch",
+            "tidePhase": "neutral",
+            "tideCoreScore": 51.0,
+            "tideEbbScore": 42.0,
+            "tideAdjust": 2.0,
+            "tideRelayGate": 3.0,
+            "tideHint": "新零售核心潮汐中性，按梯队和个股辨识度处理。",
+            "tideCaution": "",
+            "hitRules": [],
+            "blockReasons": [
+              "断板风险高",
+              "容量承接偏弱",
+              "环境不支持"
+            ],
+            "isThemeLeader": false,
+            "isNewHigh": false,
+            "isMain": false,
+            "isYizi": false,
+            "isShrinkSeal": false
+          },
+          {
+            "name": "华控赛格",
+            "code": "000068",
+            "placement": "excluded",
+            "placementLabel": "未入池",
+            "score": 43.0,
+            "scoreBand": "只观察",
+            "lbc": 1.0,
+            "nextStep": "1进2",
+            "predTheme": "海绵城市",
+            "marketGateLabel": "防守观察",
+            "qualityScore": 72.17275290887198,
+            "environmentScore": 51.0,
+            "leaderFactorScore": 54.0,
+            "relayFactorScore": 66.0,
+            "capacityFactorScore": 48.0,
+            "riskControlScore": 28.0,
+            "leaderPhilosophyScore": 25.0,
             "stepContextScore": 66.0,
             "breakRisk": 98.0,
             "themeLadderScore": 25.0,
             "themeLadderLabel": "梯队松散",
             "themeLadderGapCount": 0.0,
             "open": 0.0,
-            "factorHint": "环境51(防守观察) / 板块41 / 龙头52 / 接力63 / 容量47 / 风险32 / 梯队25 / 只观察",
+            "factorHint": "环境51(防守观察) / 板块38 / 龙头54 / 接力66 / 容量48 / 风险28 / 潮汐+2 / 梯队25 / 只观察",
+            "tideStatus": "neutral_wait",
+            "tideAction": "watch",
+            "tidePhase": "neutral",
+            "tideCoreScore": 51.0,
+            "tideEbbScore": 42.0,
+            "tideAdjust": 2.0,
+            "tideRelayGate": 3.0,
+            "tideHint": "海绵城市核心潮汐中性，按梯队和个股辨识度处理。",
+            "tideCaution": "",
             "hitRules": [],
             "blockReasons": [
               "断板风险高",
               "容量承接偏弱",
+              "环境不支持"
+            ],
+            "isThemeLeader": false,
+            "isNewHigh": false,
+            "isMain": false,
+            "isYizi": false,
+            "isShrinkSeal": false
+          },
+          {
+            "name": "中天火箭",
+            "code": "003009",
+            "placement": "excluded",
+            "placementLabel": "未入池",
+            "score": 43.0,
+            "scoreBand": "只观察",
+            "lbc": 2.0,
+            "nextStep": "2进3",
+            "predTheme": "",
+            "marketGateLabel": "防守观察",
+            "qualityScore": 84.0,
+            "environmentScore": 51.0,
+            "leaderFactorScore": 59.0,
+            "relayFactorScore": 72.0,
+            "capacityFactorScore": 64.0,
+            "riskControlScore": 20.0,
+            "leaderPhilosophyScore": 23.0,
+            "stepContextScore": 73.0,
+            "breakRisk": 97.0,
+            "themeLadderScore": 0.0,
+            "themeLadderLabel": "",
+            "themeLadderGapCount": 0.0,
+            "open": 0.0,
+            "factorHint": "环境51(防守观察) / 板块33 / 龙头59 / 接力72 / 容量64 / 风险20 / 潮汐+0 / 梯队0 / 只观察",
+            "tideStatus": "",
+            "tideAction": "",
+            "tidePhase": "",
+            "tideCoreScore": 0.0,
+            "tideEbbScore": 0.0,
+            "tideAdjust": 0.0,
+            "tideRelayGate": 0.0,
+            "tideHint": "",
+            "tideCaution": "",
+            "hitRules": [],
+            "blockReasons": [
+              "无主线题材",
+              "断板风险高",
+              "环境不支持"
+            ],
+            "isThemeLeader": false,
+            "isNewHigh": false,
+            "isMain": false,
+            "isYizi": false,
+            "isShrinkSeal": false
+          },
+          {
+            "name": "湘佳股份",
+            "code": "002982",
+            "placement": "excluded",
+            "placementLabel": "未入池",
+            "score": 42.0,
+            "scoreBand": "只观察",
+            "lbc": 1.0,
+            "nextStep": "1进2",
+            "predTheme": "乡村振兴",
+            "marketGateLabel": "防守观察",
+            "qualityScore": 70.23315070696162,
+            "environmentScore": 51.0,
+            "leaderFactorScore": 48.0,
+            "relayFactorScore": 68.0,
+            "capacityFactorScore": 48.0,
+            "riskControlScore": 23.0,
+            "leaderPhilosophyScore": 9.0,
+            "stepContextScore": 66.0,
+            "breakRisk": 98.0,
+            "themeLadderScore": 45.0,
+            "themeLadderLabel": "中位承接",
+            "themeLadderGapCount": 0.0,
+            "open": 0.0,
+            "factorHint": "环境51(防守观察) / 板块44 / 龙头48 / 接力68 / 容量48 / 风险23 / 潮汐+2 / 梯队45 / 只观察",
+            "tideStatus": "neutral_wait",
+            "tideAction": "watch",
+            "tidePhase": "neutral",
+            "tideCoreScore": 54.0,
+            "tideEbbScore": 41.0,
+            "tideAdjust": 2.0,
+            "tideRelayGate": 3.0,
+            "tideHint": "乡村振兴核心潮汐中性，按梯队和个股辨识度处理。",
+            "tideCaution": "",
+            "hitRules": [],
+            "blockReasons": [
+              "断板风险高",
+              "容量承接偏弱",
+              "环境不支持"
+            ],
+            "isThemeLeader": false,
+            "isNewHigh": false,
+            "isMain": false,
+            "isYizi": false,
+            "isShrinkSeal": false
+          },
+          {
+            "name": "埃斯顿",
+            "code": "002747",
+            "placement": "excluded",
+            "placementLabel": "未入池",
+            "score": 42.0,
+            "scoreBand": "只观察",
+            "lbc": 1.0,
+            "nextStep": "1进2",
+            "predTheme": "机械",
+            "marketGateLabel": "防守观察",
+            "qualityScore": 75.4000323745197,
+            "environmentScore": 51.0,
+            "leaderFactorScore": 48.0,
+            "relayFactorScore": 65.0,
+            "capacityFactorScore": 72.0,
+            "riskControlScore": 5.0,
+            "leaderPhilosophyScore": 3.0,
+            "stepContextScore": 66.0,
+            "breakRisk": 100.0,
+            "themeLadderScore": 11.0,
+            "themeLadderLabel": "梯队断层",
+            "themeLadderGapCount": 2.0,
+            "open": 3.0,
+            "factorHint": "环境51(防守观察) / 板块36 / 龙头48 / 接力65 / 容量72 / 风险5 / 潮汐+4 / 梯队11 / 只观察",
+            "tideStatus": "observe_candidate",
+            "tideAction": "watch",
+            "tidePhase": "neutral",
+            "tideCoreScore": 55.0,
+            "tideEbbScore": 40.0,
+            "tideAdjust": 4.0,
+            "tideRelayGate": 3.0,
+            "tideHint": "机械有观察价值，等待情绪/量能/消息继续共振。",
+            "tideCaution": "",
+            "hitRules": [],
+            "blockReasons": [
+              "断板风险高",
+              "梯队断层",
+              "环境不支持"
+            ],
+            "isThemeLeader": false,
+            "isNewHigh": false,
+            "isMain": false,
+            "isYizi": false,
+            "isShrinkSeal": false
+          },
+          {
+            "name": "中科三环",
+            "code": "000970",
+            "placement": "excluded",
+            "placementLabel": "未入池",
+            "score": 42.0,
+            "scoreBand": "只观察",
+            "lbc": 1.0,
+            "nextStep": "1进2",
+            "predTheme": "",
+            "marketGateLabel": "防守观察",
+            "qualityScore": 99.4632587859425,
+            "environmentScore": 51.0,
+            "leaderFactorScore": 56.0,
+            "relayFactorScore": 80.0,
+            "capacityFactorScore": 52.0,
+            "riskControlScore": 18.0,
+            "leaderPhilosophyScore": 23.0,
+            "stepContextScore": 66.0,
+            "breakRisk": 98.0,
+            "themeLadderScore": 0.0,
+            "themeLadderLabel": "",
+            "themeLadderGapCount": 0.0,
+            "open": 0.0,
+            "factorHint": "环境51(防守观察) / 板块33 / 龙头56 / 接力80 / 容量52 / 风险18 / 潮汐+0 / 梯队0 / 只观察",
+            "tideStatus": "",
+            "tideAction": "",
+            "tidePhase": "",
+            "tideCoreScore": 0.0,
+            "tideEbbScore": 0.0,
+            "tideAdjust": 0.0,
+            "tideRelayGate": 0.0,
+            "tideHint": "",
+            "tideCaution": "",
+            "hitRules": [],
+            "blockReasons": [
+              "无主线题材",
+              "断板风险高",
+              "容量承接偏弱",
+              "环境不支持"
+            ],
+            "isThemeLeader": false,
+            "isNewHigh": false,
+            "isMain": false,
+            "isYizi": false,
+            "isShrinkSeal": false
+          },
+          {
+            "name": "华正新材",
+            "code": "603186",
+            "placement": "excluded",
+            "placementLabel": "未入池",
+            "score": 42.0,
+            "scoreBand": "只观察",
+            "lbc": 1.0,
+            "nextStep": "1进2",
+            "predTheme": "",
+            "marketGateLabel": "防守观察",
+            "qualityScore": 50.35436433722351,
+            "environmentScore": 51.0,
+            "leaderFactorScore": 50.0,
+            "relayFactorScore": 57.0,
+            "capacityFactorScore": 81.0,
+            "riskControlScore": 5.0,
+            "leaderPhilosophyScore": 5.0,
+            "stepContextScore": 66.0,
+            "breakRisk": 100.0,
+            "themeLadderScore": 0.0,
+            "themeLadderLabel": "",
+            "themeLadderGapCount": 0.0,
+            "open": 6.0,
+            "factorHint": "环境51(防守观察) / 板块38 / 龙头50 / 接力57 / 容量81 / 风险5 / 潮汐+0 / 梯队0 / 只观察",
+            "tideStatus": "",
+            "tideAction": "",
+            "tidePhase": "",
+            "tideCoreScore": 0.0,
+            "tideEbbScore": 0.0,
+            "tideAdjust": 0.0,
+            "tideRelayGate": 0.0,
+            "tideHint": "",
+            "tideCaution": "",
+            "hitRules": [],
+            "blockReasons": [
+              "无主线题材",
+              "断板风险高",
+              "环境不支持"
+            ],
+            "isThemeLeader": false,
+            "isNewHigh": false,
+            "isMain": false,
+            "isYizi": false,
+            "isShrinkSeal": false
+          },
+          {
+            "name": "国机精工",
+            "code": "002046",
+            "placement": "excluded",
+            "placementLabel": "未入池",
+            "score": 41.0,
+            "scoreBand": "只观察",
+            "lbc": 1.0,
+            "nextStep": "1进2",
+            "predTheme": "机械",
+            "marketGateLabel": "防守观察",
+            "qualityScore": 64.50621967799066,
+            "environmentScore": 51.0,
+            "leaderFactorScore": 44.0,
+            "relayFactorScore": 59.0,
+            "capacityFactorScore": 82.0,
+            "riskControlScore": 11.0,
+            "leaderPhilosophyScore": 3.0,
+            "stepContextScore": 66.0,
+            "breakRisk": 98.0,
+            "themeLadderScore": 11.0,
+            "themeLadderLabel": "梯队断层",
+            "themeLadderGapCount": 2.0,
+            "open": 1.0,
+            "factorHint": "环境51(防守观察) / 板块36 / 龙头44 / 接力59 / 容量82 / 风险11 / 潮汐+4 / 梯队11 / 只观察",
+            "tideStatus": "observe_candidate",
+            "tideAction": "watch",
+            "tidePhase": "neutral",
+            "tideCoreScore": 55.0,
+            "tideEbbScore": 40.0,
+            "tideAdjust": 4.0,
+            "tideRelayGate": 3.0,
+            "tideHint": "机械有观察价值，等待情绪/量能/消息继续共振。",
+            "tideCaution": "",
+            "hitRules": [],
+            "blockReasons": [
+              "断板风险高",
+              "梯队断层",
+              "环境不支持"
+            ],
+            "isThemeLeader": false,
+            "isNewHigh": false,
+            "isMain": false,
+            "isYizi": false,
+            "isShrinkSeal": false
+          },
+          {
+            "name": "百合花",
+            "code": "603823",
+            "placement": "excluded",
+            "placementLabel": "未入池",
+            "score": 41.0,
+            "scoreBand": "只观察",
+            "lbc": 2.0,
+            "nextStep": "2进3",
+            "predTheme": "",
+            "marketGateLabel": "防守观察",
+            "qualityScore": 54.0,
+            "environmentScore": 51.0,
+            "leaderFactorScore": 55.0,
+            "relayFactorScore": 62.0,
+            "capacityFactorScore": 62.0,
+            "riskControlScore": 11.0,
+            "leaderPhilosophyScore": 5.0,
+            "stepContextScore": 73.0,
+            "breakRisk": 100.0,
+            "themeLadderScore": 0.0,
+            "themeLadderLabel": "",
+            "themeLadderGapCount": 0.0,
+            "open": 4.0,
+            "factorHint": "环境51(防守观察) / 板块33 / 龙头55 / 接力62 / 容量62 / 风险11 / 潮汐+0 / 梯队0 / 只观察",
+            "tideStatus": "",
+            "tideAction": "",
+            "tidePhase": "",
+            "tideCoreScore": 0.0,
+            "tideEbbScore": 0.0,
+            "tideAdjust": 0.0,
+            "tideRelayGate": 0.0,
+            "tideHint": "",
+            "tideCaution": "",
+            "hitRules": [],
+            "blockReasons": [
+              "无主线题材",
+              "分歧偏大",
+              "断板风险高",
               "环境不支持"
             ],
             "isThemeLeader": false,
@@ -24660,7 +25231,7 @@
             "leaderFactorScore": 47.0,
             "relayFactorScore": 60.0,
             "capacityFactorScore": 50.0,
-            "riskControlScore": 22.0,
+            "riskControlScore": 18.0,
             "leaderPhilosophyScore": 5.0,
             "stepContextScore": 66.0,
             "breakRisk": 98.0,
@@ -24668,7 +25239,16 @@
             "themeLadderLabel": "",
             "themeLadderGapCount": 0.0,
             "open": 1.0,
-            "factorHint": "环境51(防守观察) / 板块55 / 龙头47 / 接力60 / 容量50 / 风险22 / 梯队0 / 只观察",
+            "factorHint": "环境51(防守观察) / 板块55 / 龙头47 / 接力60 / 容量50 / 风险18 / 潮汐+0 / 梯队0 / 只观察",
+            "tideStatus": "",
+            "tideAction": "",
+            "tidePhase": "",
+            "tideCoreScore": 0.0,
+            "tideEbbScore": 0.0,
+            "tideAdjust": 0.0,
+            "tideRelayGate": 0.0,
+            "tideHint": "",
+            "tideCaution": "",
             "hitRules": [],
             "blockReasons": [
               "无主线题材",
@@ -24683,71 +25263,44 @@
             "isShrinkSeal": false
           },
           {
-            "name": "湘佳股份",
-            "code": "002982",
+            "name": "中百集团",
+            "code": "000759",
             "placement": "excluded",
             "placementLabel": "未入池",
             "score": 40.0,
             "scoreBand": "只观察",
-            "lbc": 1.0,
-            "nextStep": "1进2",
+            "lbc": 2.0,
+            "nextStep": "2进3",
             "predTheme": "乡村振兴",
             "marketGateLabel": "防守观察",
-            "qualityScore": 70.23315070696162,
+            "qualityScore": 36.0,
             "environmentScore": 51.0,
-            "leaderFactorScore": 48.0,
-            "relayFactorScore": 67.0,
-            "capacityFactorScore": 48.0,
-            "riskControlScore": 27.0,
+            "leaderFactorScore": 49.0,
+            "relayFactorScore": 59.0,
+            "capacityFactorScore": 49.0,
+            "riskControlScore": 13.0,
             "leaderPhilosophyScore": 9.0,
-            "stepContextScore": 66.0,
-            "breakRisk": 98.0,
+            "stepContextScore": 73.0,
+            "breakRisk": 100.0,
             "themeLadderScore": 45.0,
             "themeLadderLabel": "中位承接",
             "themeLadderGapCount": 0.0,
-            "open": 0.0,
-            "factorHint": "环境51(防守观察) / 板块44 / 龙头48 / 接力67 / 容量48 / 风险27 / 梯队45 / 只观察",
+            "open": 5.0,
+            "factorHint": "环境51(防守观察) / 板块46 / 龙头49 / 接力59 / 容量49 / 风险13 / 潮汐+2 / 梯队45 / 只观察",
+            "tideStatus": "neutral_wait",
+            "tideAction": "watch",
+            "tidePhase": "neutral",
+            "tideCoreScore": 54.0,
+            "tideEbbScore": 41.0,
+            "tideAdjust": 2.0,
+            "tideRelayGate": 3.0,
+            "tideHint": "乡村振兴核心潮汐中性，按梯队和个股辨识度处理。",
+            "tideCaution": "",
             "hitRules": [],
             "blockReasons": [
+              "分歧偏大",
               "断板风险高",
               "容量承接偏弱",
-              "环境不支持"
-            ],
-            "isThemeLeader": false,
-            "isNewHigh": false,
-            "isMain": false,
-            "isYizi": false,
-            "isShrinkSeal": false
-          },
-          {
-            "name": "锋龙股份",
-            "code": "002931",
-            "placement": "excluded",
-            "placementLabel": "未入池",
-            "score": 40.0,
-            "scoreBand": "只观察",
-            "lbc": 1.0,
-            "nextStep": "1进2",
-            "predTheme": "机械",
-            "marketGateLabel": "防守观察",
-            "qualityScore": 72.53025641824537,
-            "environmentScore": 51.0,
-            "leaderFactorScore": 48.0,
-            "relayFactorScore": 61.0,
-            "capacityFactorScore": 93.0,
-            "riskControlScore": 15.0,
-            "leaderPhilosophyScore": 21.0,
-            "stepContextScore": 66.0,
-            "breakRisk": 98.0,
-            "themeLadderScore": 11.0,
-            "themeLadderLabel": "梯队断层",
-            "themeLadderGapCount": 2.0,
-            "open": 0.0,
-            "factorHint": "环境51(防守观察) / 板块34 / 龙头48 / 接力61 / 容量93 / 风险15 / 梯队11 / 只观察",
-            "hitRules": [],
-            "blockReasons": [
-              "断板风险高",
-              "梯队断层",
               "环境不支持"
             ],
             "isThemeLeader": false,
@@ -24769,10 +25322,10 @@
             "marketGateLabel": "防守观察",
             "qualityScore": 76.38527926196076,
             "environmentScore": 51.0,
-            "leaderFactorScore": 53.0,
+            "leaderFactorScore": 54.0,
             "relayFactorScore": 68.0,
             "capacityFactorScore": 46.0,
-            "riskControlScore": 22.0,
+            "riskControlScore": 18.0,
             "leaderPhilosophyScore": 23.0,
             "stepContextScore": 66.0,
             "breakRisk": 98.0,
@@ -24780,7 +25333,16 @@
             "themeLadderLabel": "",
             "themeLadderGapCount": 0.0,
             "open": 0.0,
-            "factorHint": "环境51(防守观察) / 板块38 / 龙头53 / 接力68 / 容量46 / 风险22 / 梯队0 / 只观察",
+            "factorHint": "环境51(防守观察) / 板块38 / 龙头54 / 接力68 / 容量46 / 风险18 / 潮汐+0 / 梯队0 / 只观察",
+            "tideStatus": "",
+            "tideAction": "",
+            "tidePhase": "",
+            "tideCoreScore": 0.0,
+            "tideEbbScore": 0.0,
+            "tideAdjust": 0.0,
+            "tideRelayGate": 0.0,
+            "tideHint": "",
+            "tideCaution": "",
             "hitRules": [],
             "blockReasons": [
               "无主线题材",
@@ -24810,7 +25372,7 @@
             "leaderFactorScore": 49.0,
             "relayFactorScore": 64.0,
             "capacityFactorScore": 53.0,
-            "riskControlScore": 22.0,
+            "riskControlScore": 18.0,
             "leaderPhilosophyScore": 5.0,
             "stepContextScore": 66.0,
             "breakRisk": 98.0,
@@ -24818,7 +25380,16 @@
             "themeLadderLabel": "",
             "themeLadderGapCount": 0.0,
             "open": 0.0,
-            "factorHint": "环境51(防守观察) / 板块42 / 龙头49 / 接力64 / 容量53 / 风险22 / 梯队0 / 只观察",
+            "factorHint": "环境51(防守观察) / 板块42 / 龙头49 / 接力64 / 容量53 / 风险18 / 潮汐+0 / 梯队0 / 只观察",
+            "tideStatus": "",
+            "tideAction": "",
+            "tidePhase": "",
+            "tideCoreScore": 0.0,
+            "tideEbbScore": 0.0,
+            "tideAdjust": 0.0,
+            "tideRelayGate": 0.0,
+            "tideHint": "",
+            "tideCaution": "",
             "hitRules": [],
             "blockReasons": [
               "无主线题材",
@@ -24848,7 +25419,7 @@
             "leaderFactorScore": 49.0,
             "relayFactorScore": 64.0,
             "capacityFactorScore": 50.0,
-            "riskControlScore": 22.0,
+            "riskControlScore": 18.0,
             "leaderPhilosophyScore": 5.0,
             "stepContextScore": 66.0,
             "breakRisk": 98.0,
@@ -24856,7 +25427,16 @@
             "themeLadderLabel": "",
             "themeLadderGapCount": 0.0,
             "open": 1.0,
-            "factorHint": "环境51(防守观察) / 板块42 / 龙头49 / 接力64 / 容量50 / 风险22 / 梯队0 / 只观察",
+            "factorHint": "环境51(防守观察) / 板块42 / 龙头49 / 接力64 / 容量50 / 风险18 / 潮汐+0 / 梯队0 / 只观察",
+            "tideStatus": "",
+            "tideAction": "",
+            "tidePhase": "",
+            "tideCoreScore": 0.0,
+            "tideEbbScore": 0.0,
+            "tideAdjust": 0.0,
+            "tideRelayGate": 0.0,
+            "tideHint": "",
+            "tideCaution": "",
             "hitRules": [],
             "blockReasons": [
               "无主线题材",
@@ -24869,81 +25449,6 @@
             "isMain": false,
             "isYizi": false,
             "isShrinkSeal": false
-          },
-          {
-            "name": "华正新材",
-            "code": "603186",
-            "placement": "excluded",
-            "placementLabel": "未入池",
-            "score": 40.0,
-            "scoreBand": "只观察",
-            "lbc": 1.0,
-            "nextStep": "1进2",
-            "predTheme": "",
-            "marketGateLabel": "防守观察",
-            "qualityScore": 50.35436433722351,
-            "environmentScore": 51.0,
-            "leaderFactorScore": 47.0,
-            "relayFactorScore": 55.0,
-            "capacityFactorScore": 81.0,
-            "riskControlScore": 9.0,
-            "leaderPhilosophyScore": 5.0,
-            "stepContextScore": 66.0,
-            "breakRisk": 100.0,
-            "themeLadderScore": 0.0,
-            "themeLadderLabel": "",
-            "themeLadderGapCount": 0.0,
-            "open": 6.0,
-            "factorHint": "环境51(防守观察) / 板块38 / 龙头47 / 接力55 / 容量81 / 风险9 / 梯队0 / 只观察",
-            "hitRules": [],
-            "blockReasons": [
-              "无主线题材",
-              "断板风险高",
-              "环境不支持"
-            ],
-            "isThemeLeader": false,
-            "isNewHigh": false,
-            "isMain": false,
-            "isYizi": false,
-            "isShrinkSeal": false
-          },
-          {
-            "name": "荣安地产",
-            "code": "000517",
-            "placement": "excluded",
-            "placementLabel": "未入池",
-            "score": 39.0,
-            "scoreBand": "只观察",
-            "lbc": 2.0,
-            "nextStep": "2进3",
-            "predTheme": "绿色建筑",
-            "marketGateLabel": "防守观察",
-            "qualityScore": 90.0,
-            "environmentScore": 51.0,
-            "leaderFactorScore": 52.0,
-            "relayFactorScore": 72.0,
-            "capacityFactorScore": 42.0,
-            "riskControlScore": 18.0,
-            "leaderPhilosophyScore": 9.0,
-            "stepContextScore": 73.0,
-            "breakRisk": 100.0,
-            "themeLadderScore": 31.0,
-            "themeLadderLabel": "中位承接",
-            "themeLadderGapCount": 0.0,
-            "open": 0.0,
-            "factorHint": "环境51(防守观察) / 板块40 / 龙头52 / 接力72 / 容量42 / 风险18 / 梯队31 / 只观察",
-            "hitRules": [],
-            "blockReasons": [
-              "缩量参与难",
-              "断板风险高",
-              "容量承接偏弱",
-              "环境不支持"
-            ],
-            "isThemeLeader": false,
-            "isNewHigh": false,
-            "isMain": false,
-            "isYizi": false,
-            "isShrinkSeal": true
           },
           {
             "name": "三羊马",
@@ -24961,7 +25466,7 @@
             "leaderFactorScore": 52.0,
             "relayFactorScore": 67.0,
             "capacityFactorScore": 50.0,
-            "riskControlScore": 22.0,
+            "riskControlScore": 18.0,
             "leaderPhilosophyScore": 23.0,
             "stepContextScore": 66.0,
             "breakRisk": 98.0,
@@ -24969,7 +25474,16 @@
             "themeLadderLabel": "",
             "themeLadderGapCount": 0.0,
             "open": 0.0,
-            "factorHint": "环境51(防守观察) / 板块33 / 龙头52 / 接力67 / 容量50 / 风险22 / 梯队0 / 只观察",
+            "factorHint": "环境51(防守观察) / 板块33 / 龙头52 / 接力67 / 容量50 / 风险18 / 潮汐+0 / 梯队0 / 只观察",
+            "tideStatus": "",
+            "tideAction": "",
+            "tidePhase": "",
+            "tideCoreScore": 0.0,
+            "tideEbbScore": 0.0,
+            "tideAdjust": 0.0,
+            "tideRelayGate": 0.0,
+            "tideHint": "",
+            "tideCaution": "",
             "hitRules": [],
             "blockReasons": [
               "无主线题材",
@@ -24999,7 +25513,7 @@
             "leaderFactorScore": 49.0,
             "relayFactorScore": 63.0,
             "capacityFactorScore": 46.0,
-            "riskControlScore": 22.0,
+            "riskControlScore": 18.0,
             "leaderPhilosophyScore": 5.0,
             "stepContextScore": 66.0,
             "breakRisk": 98.0,
@@ -25007,159 +25521,16 @@
             "themeLadderLabel": "",
             "themeLadderGapCount": 0.0,
             "open": 0.0,
-            "factorHint": "环境51(防守观察) / 板块42 / 龙头49 / 接力63 / 容量46 / 风险22 / 梯队0 / 只观察",
-            "hitRules": [],
-            "blockReasons": [
-              "无主线题材",
-              "断板风险高",
-              "容量承接偏弱",
-              "环境不支持"
-            ],
-            "isThemeLeader": false,
-            "isNewHigh": false,
-            "isMain": false,
-            "isYizi": false,
-            "isShrinkSeal": false
-          },
-          {
-            "name": "中百集团",
-            "code": "000759",
-            "placement": "excluded",
-            "placementLabel": "未入池",
-            "score": 38.0,
-            "scoreBand": "只观察",
-            "lbc": 2.0,
-            "nextStep": "2进3",
-            "predTheme": "乡村振兴",
-            "marketGateLabel": "防守观察",
-            "qualityScore": 36.0,
-            "environmentScore": 51.0,
-            "leaderFactorScore": 48.0,
-            "relayFactorScore": 57.0,
-            "capacityFactorScore": 49.0,
-            "riskControlScore": 17.0,
-            "leaderPhilosophyScore": 9.0,
-            "stepContextScore": 73.0,
-            "breakRisk": 100.0,
-            "themeLadderScore": 45.0,
-            "themeLadderLabel": "中位承接",
-            "themeLadderGapCount": 0.0,
-            "open": 5.0,
-            "factorHint": "环境51(防守观察) / 板块46 / 龙头48 / 接力57 / 容量49 / 风险17 / 梯队45 / 只观察",
-            "hitRules": [],
-            "blockReasons": [
-              "分歧偏大",
-              "断板风险高",
-              "容量承接偏弱",
-              "环境不支持"
-            ],
-            "isThemeLeader": false,
-            "isNewHigh": false,
-            "isMain": false,
-            "isYizi": false,
-            "isShrinkSeal": false
-          },
-          {
-            "name": "巨能股份",
-            "code": "920578",
-            "placement": "excluded",
-            "placementLabel": "未入池",
-            "score": 38.0,
-            "scoreBand": "只观察",
-            "lbc": 1.0,
-            "nextStep": "1进2",
-            "predTheme": "",
-            "marketGateLabel": "防守观察",
-            "qualityScore": 68.89768776644296,
-            "environmentScore": 51.0,
-            "leaderFactorScore": 50.0,
-            "relayFactorScore": 64.0,
-            "capacityFactorScore": 37.0,
-            "riskControlScore": 22.0,
-            "leaderPhilosophyScore": 5.0,
-            "stepContextScore": 66.0,
-            "breakRisk": 98.0,
-            "themeLadderScore": 0.0,
-            "themeLadderLabel": "",
-            "themeLadderGapCount": 0.0,
-            "open": 0.0,
-            "factorHint": "环境51(防守观察) / 板块42 / 龙头50 / 接力64 / 容量37 / 风险22 / 梯队0 / 只观察",
-            "hitRules": [],
-            "blockReasons": [
-              "无主线题材",
-              "断板风险高",
-              "容量承接偏弱",
-              "环境不支持"
-            ],
-            "isThemeLeader": false,
-            "isNewHigh": false,
-            "isMain": false,
-            "isYizi": false,
-            "isShrinkSeal": false
-          },
-          {
-            "name": "华如科技",
-            "code": "301302",
-            "placement": "excluded",
-            "placementLabel": "未入池",
-            "score": 38.0,
-            "scoreBand": "只观察",
-            "lbc": 1.0,
-            "nextStep": "1进2",
-            "predTheme": "",
-            "marketGateLabel": "防守观察",
-            "qualityScore": 67.4914169362699,
-            "environmentScore": 51.0,
-            "leaderFactorScore": 49.0,
-            "relayFactorScore": 64.0,
-            "capacityFactorScore": 50.0,
-            "riskControlScore": 22.0,
-            "leaderPhilosophyScore": 5.0,
-            "stepContextScore": 66.0,
-            "breakRisk": 98.0,
-            "themeLadderScore": 0.0,
-            "themeLadderLabel": "",
-            "themeLadderGapCount": 0.0,
-            "open": 0.0,
-            "factorHint": "环境51(防守观察) / 板块33 / 龙头49 / 接力64 / 容量50 / 风险22 / 梯队0 / 只观察",
-            "hitRules": [],
-            "blockReasons": [
-              "无主线题材",
-              "断板风险高",
-              "容量承接偏弱",
-              "环境不支持"
-            ],
-            "isThemeLeader": false,
-            "isNewHigh": false,
-            "isMain": false,
-            "isYizi": false,
-            "isShrinkSeal": false
-          },
-          {
-            "name": "狮头股份",
-            "code": "600539",
-            "placement": "excluded",
-            "placementLabel": "未入池",
-            "score": 38.0,
-            "scoreBand": "只观察",
-            "lbc": 1.0,
-            "nextStep": "1进2",
-            "predTheme": "",
-            "marketGateLabel": "防守观察",
-            "qualityScore": 66.08296915004547,
-            "environmentScore": 51.0,
-            "leaderFactorScore": 49.0,
-            "relayFactorScore": 64.0,
-            "capacityFactorScore": 49.0,
-            "riskControlScore": 22.0,
-            "leaderPhilosophyScore": 5.0,
-            "stepContextScore": 66.0,
-            "breakRisk": 98.0,
-            "themeLadderScore": 0.0,
-            "themeLadderLabel": "",
-            "themeLadderGapCount": 0.0,
-            "open": 0.0,
-            "factorHint": "环境51(防守观察) / 板块33 / 龙头49 / 接力64 / 容量49 / 风险22 / 梯队0 / 只观察",
+            "factorHint": "环境51(防守观察) / 板块42 / 龙头49 / 接力63 / 容量46 / 风险18 / 潮汐+0 / 梯队0 / 只观察",
+            "tideStatus": "",
+            "tideAction": "",
+            "tidePhase": "",
+            "tideCoreScore": 0.0,
+            "tideEbbScore": 0.0,
+            "tideAdjust": 0.0,
+            "tideRelayGate": 0.0,
+            "tideHint": "",
+            "tideCaution": "",
             "hitRules": [],
             "blockReasons": [
               "无主线题材",
@@ -25178,14 +25549,14 @@
           "祥和实业"
         ],
         "watchNames": [
-          "天娱数科",
           "北玻股份",
-          "大有能源",
+          "天娱数科",
           "中重科技",
+          "大有能源",
           "泰和新材",
-          "能科科技",
           "神剑股份",
-          "亚翔集成"
+          "亚翔集成",
+          "达实智能"
         ]
       },
       "promoEcology": 100,
@@ -25217,12 +25588,17 @@
         "heightContextScore": 86,
         "environmentScore": 51,
         "leaderFactorScore": 85,
-        "relayFactorScore": 85,
+        "relayFactorScore": 86,
         "capacityFactorScore": 50,
-        "riskControlScore": 44,
+        "riskControlScore": 40,
         "breakRisk": 93,
         "themePersistScore": 50,
         "leaderPhilosophyScore": 64,
+        "recentHighSignal": {
+          "available": false,
+          "window": 7
+        },
+        "thsNewhigh": {},
         "themeLadderProfile": {
           "score": 61,
           "label": "梯队完整",
@@ -25236,23 +25612,26 @@
           "hasCarry": true,
           "leaderName": "祥和实业"
         },
-        "score": 62,
-        "factorScore": 62,
+        "_isRecentHigh7d": false,
+        "_breakoutDoubleConfirm": false,
+        "score": 64,
+        "factorScore": 64,
         "factorBreakdown": {
           "environment": 51,
           "market": 36,
           "themeEnv": 66,
           "marketGate": -8,
-          "sector": 49,
+          "sector": 48,
           "leader": 85,
-          "relay": 85,
+          "relay": 86,
           "capacity": 50,
-          "risk": 44,
+          "risk": 40,
           "opportunity": 80,
           "edge": 7,
-          "heightBreakout": 0
+          "heightBreakout": 0,
+          "tide": 2
         },
-        "factorHint": "环境51(防守观察) / 板块49 / 龙头85 / 接力85 / 容量50 / 风险44 / 梯队61 / 条件触发",
+        "factorHint": "环境51(防守观察) / 板块48 / 龙头85 / 接力86 / 容量50 / 风险40 / 潮汐+2 / 梯队61 / 条件触发",
         "scoreBand": "条件触发",
         "scoreBandTone": "watch",
         "superLeaderTone": "",
@@ -25262,11 +25641,23 @@
           "label": "防守观察",
           "action": "只看回封确认"
         },
-        "sectorTrendScore": 60,
-        "sectorRankScore": 70,
+        "sectorTrendScore": 58,
+        "sectorRankScore": 61,
         "plateRank": 0,
         "plateName": "",
         "plateNameCanonical": "",
+        "tideStatus": "neutral_wait",
+        "tideAction": "watch",
+        "tidePhase": "neutral",
+        "tideCoreScore": 51.0,
+        "tideEbbScore": 42.0,
+        "tideAdjust": 2.0,
+        "tideRelayAdjust": 1.0,
+        "tideRiskAdjust": -4.0,
+        "tideWatchAdjust": 8.0,
+        "tideRelayGate": 3.0,
+        "tideHint": "轨道交通核心潮汐中性，按梯队和个股辨识度处理。",
+        "tideCaution": "",
         "factorLabels": {
           "environment": "偏弱",
           "sector": "偏弱",
@@ -25433,6 +25824,273 @@
     ],
     "watch": [
       {
+        "name": "北玻股份",
+        "code": "002613",
+        "lbc": 2,
+        "hy": "玻璃玻纤",
+        "fundYi": 1.36041032,
+        "open": 0,
+        "predTheme": "绿色建筑",
+        "predThemeCanonical": "绿色建筑",
+        "hasTier": true,
+        "cjeYi": 3.241493,
+        "qualityLabel": "温和放量",
+        "qualityScore": 84.0,
+        "nextStep": "2进3",
+        "stepRate": 25.0,
+        "stepContextScore": 73,
+        "promoEcology": 100,
+        "heightContextScore": 86,
+        "environmentScore": 51,
+        "leaderFactorScore": 80,
+        "relayFactorScore": 78,
+        "capacityFactorScore": 53,
+        "riskControlScore": 33,
+        "breakRisk": 97,
+        "themePersistScore": 50,
+        "leaderPhilosophyScore": 61,
+        "recentHighSignal": {
+          "available": false,
+          "window": 7
+        },
+        "thsNewhigh": {
+          "board": 3,
+          "boardLabel": "一年新高",
+          "preHigh": "7.82%",
+          "preHighDate": "5.46",
+          "intervalDays": "4.96"
+        },
+        "themeLadderProfile": {
+          "score": 31,
+          "label": "中位承接",
+          "leaderBoards": 2,
+          "coreCount": 3,
+          "midCarryCount": 0,
+          "followerCount": 0,
+          "frontCount": 3,
+          "gapCount": 0,
+          "isComplete": false,
+          "hasCarry": true,
+          "leaderName": "北玻股份"
+        },
+        "_isRecentHigh7d": false,
+        "_breakoutDoubleConfirm": false,
+        "score": 60,
+        "factorScore": 60,
+        "factorBreakdown": {
+          "environment": 51,
+          "market": 36,
+          "themeEnv": 66,
+          "marketGate": -8,
+          "sector": 43,
+          "leader": 80,
+          "relay": 78,
+          "capacity": 53,
+          "risk": 33,
+          "opportunity": 81,
+          "edge": 7,
+          "heightBreakout": 0,
+          "tide": 2
+        },
+        "factorHint": "环境51(防守观察) / 板块43 / 龙头80 / 接力78 / 容量53 / 风险33 / 潮汐+2 / 梯队31 / 条件触发",
+        "scoreBand": "条件触发",
+        "scoreBandTone": "watch",
+        "superLeaderTone": "",
+        "scoreAction": "需要超预期",
+        "marketGate": {
+          "score": 51,
+          "label": "防守观察",
+          "action": "只看回封确认"
+        },
+        "sectorTrendScore": 54,
+        "sectorRankScore": 70,
+        "plateRank": 0,
+        "plateName": "",
+        "plateNameCanonical": "",
+        "tideStatus": "neutral_wait",
+        "tideAction": "watch",
+        "tidePhase": "neutral",
+        "tideCoreScore": 51.0,
+        "tideEbbScore": 42.0,
+        "tideAdjust": 2.0,
+        "tideRelayAdjust": 1.0,
+        "tideRiskAdjust": -4.0,
+        "tideWatchAdjust": 8.0,
+        "tideRelayGate": 3.0,
+        "tideHint": "绿色建筑核心潮汐中性，按梯队和个股辨识度处理。",
+        "tideCaution": "",
+        "factorLabels": {
+          "environment": "偏弱",
+          "sector": "偏弱",
+          "leader": "偏强",
+          "relay": "偏强",
+          "capacity": "偏弱",
+          "risk": "偏弱"
+        },
+        "tags": [
+          {
+            "text": "2进3",
+            "cls": "ladder-chip-strong red-text"
+          },
+          {
+            "text": "2板",
+            "cls": "ladder-chip-cool muted-text"
+          },
+          {
+            "text": "带动荣安地产、达实智能",
+            "cls": "ladder-chip-strong red-text"
+          },
+          {
+            "text": "断板风险高",
+            "cls": "ladder-chip-warn orange-text"
+          },
+          {
+            "text": "温和放量",
+            "cls": "ladder-chip-cool muted-text"
+          },
+          {
+            "text": "未开",
+            "cls": "ladder-chip-cool muted-text"
+          },
+          {
+            "text": "首封09:30",
+            "cls": "ladder-chip-cool muted-text"
+          },
+          {
+            "text": "晋级生态强",
+            "cls": "ladder-chip-strong red-text"
+          },
+          {
+            "text": "高度修复",
+            "cls": "ladder-chip-strong red-text"
+          },
+          {
+            "text": "封单1.36亿",
+            "cls": "ladder-chip-cool muted-text"
+          },
+          {
+            "text": "7.8%换手",
+            "cls": "ladder-chip-cool muted-text"
+          },
+          {
+            "text": "成交额3.24亿",
+            "cls": "ladder-chip-cool muted-text"
+          },
+          {
+            "text": "市值60亿",
+            "cls": "ladder-chip-cool muted-text"
+          },
+          {
+            "text": "中位承接",
+            "cls": "ladder-chip-cool muted-text"
+          },
+          {
+            "text": "一年新高",
+            "cls": "ladder-chip-cool muted-text"
+          },
+          {
+            "text": "绿色建筑",
+            "cls": "ladder-chip-cool muted-text"
+          },
+          {
+            "text": "低价",
+            "cls": "ladder-chip-cool muted-text"
+          }
+        ],
+        "tagRows": [
+          {
+            "tone": "red",
+            "tags": [
+              {
+                "text": "2进3",
+                "cls": "ladder-chip-strong red-text"
+              },
+              {
+                "text": "带动荣安地产、达实智能",
+                "cls": "ladder-chip-strong red-text"
+              },
+              {
+                "text": "晋级生态强",
+                "cls": "ladder-chip-strong red-text"
+              },
+              {
+                "text": "高度修复",
+                "cls": "ladder-chip-strong red-text"
+              }
+            ]
+          },
+          {
+            "tone": "orange",
+            "tags": [
+              {
+                "text": "断板风险高",
+                "cls": "ladder-chip-warn orange-text"
+              }
+            ]
+          },
+          {
+            "tone": "muted",
+            "tags": [
+              {
+                "text": "2板",
+                "cls": "ladder-chip-cool muted-text"
+              },
+              {
+                "text": "温和放量",
+                "cls": "ladder-chip-cool muted-text"
+              },
+              {
+                "text": "未开",
+                "cls": "ladder-chip-cool muted-text"
+              },
+              {
+                "text": "首封09:30",
+                "cls": "ladder-chip-cool muted-text"
+              },
+              {
+                "text": "封单1.36亿",
+                "cls": "ladder-chip-cool muted-text"
+              },
+              {
+                "text": "7.8%换手",
+                "cls": "ladder-chip-cool muted-text"
+              },
+              {
+                "text": "成交额3.24亿",
+                "cls": "ladder-chip-cool muted-text"
+              },
+              {
+                "text": "市值60亿",
+                "cls": "ladder-chip-cool muted-text"
+              },
+              {
+                "text": "中位承接",
+                "cls": "ladder-chip-cool muted-text"
+              },
+              {
+                "text": "一年新高",
+                "cls": "ladder-chip-cool muted-text"
+              },
+              {
+                "text": "绿色建筑",
+                "cls": "ladder-chip-cool muted-text"
+              },
+              {
+                "text": "低价",
+                "cls": "ladder-chip-cool muted-text"
+              }
+            ]
+          }
+        ],
+        "capacityLabel": "弹性票",
+        "reason": "<span class=\"reason-bits\">绿色建筑龙头带动 · 梯队带动荣安地产、达实智能 · 一年新高 · 高度修复 · 温和放量 · 封板稳 · 早封 · 断板风险高</span><div class=\"exp-wrap\"><div class=\"exp-row\"><span class=\"exp-pill pill-pre\">预期</span>高开（+1%~+3%%）+ 竞价量能≥0.19亿</div><div class=\"exp-row\"><span class=\"exp-pill pill-hi\">超预期</span>高开≥+3%% + 竞价量能≥0.19亿</div><div class=\"exp-row\"><span class=\"exp-pill pill-lo\">低预期</span>低于+1%% 或 竞价量能<0.14亿</div></div>",
+        "factorRank": 3,
+        "watchRank": 1,
+        "watchGroup": "高标/题材核心",
+        "scoreLabel": "观察因子",
+        "scoreSubLabel": "高标/题材核心 · 条件触发"
+      },
+      {
         "name": "天娱数科",
         "code": "002354",
         "lbc": 2,
@@ -25452,12 +26110,17 @@
         "heightContextScore": 86,
         "environmentScore": 51,
         "leaderFactorScore": 77,
-        "relayFactorScore": 79,
+        "relayFactorScore": 80,
         "capacityFactorScore": 63,
-        "riskControlScore": 33,
+        "riskControlScore": 29,
         "breakRisk": 97,
         "themePersistScore": 48,
         "leaderPhilosophyScore": 61,
+        "recentHighSignal": {
+          "available": false,
+          "window": 7
+        },
+        "thsNewhigh": {},
         "themeLadderProfile": {
           "score": 45,
           "label": "中位承接",
@@ -25471,8 +26134,10 @@
           "hasCarry": true,
           "leaderName": "天娱数科"
         },
-        "score": 58,
-        "factorScore": 58,
+        "_isRecentHigh7d": false,
+        "_breakoutDoubleConfirm": false,
+        "score": 60,
+        "factorScore": 60,
         "factorBreakdown": {
           "environment": 51,
           "market": 36,
@@ -25480,18 +26145,19 @@
           "marketGate": -8,
           "sector": 47,
           "leader": 77,
-          "relay": 79,
+          "relay": 80,
           "capacity": 63,
-          "risk": 33,
+          "risk": 29,
           "opportunity": 81,
           "edge": 5,
-          "heightBreakout": 0
+          "heightBreakout": 0,
+          "tide": 2
         },
-        "factorHint": "环境51(防守观察) / 板块47 / 龙头77 / 接力79 / 容量63 / 风险33 / 梯队45 / 只观察",
-        "scoreBand": "只观察",
-        "scoreBandTone": "cool",
+        "factorHint": "环境51(防守观察) / 板块47 / 龙头77 / 接力80 / 容量63 / 风险29 / 潮汐+2 / 梯队45 / 条件触发",
+        "scoreBand": "条件触发",
+        "scoreBandTone": "watch",
         "superLeaderTone": "",
-        "scoreAction": "不主动接力",
+        "scoreAction": "需要超预期",
         "marketGate": {
           "score": 51,
           "label": "防守观察",
@@ -25502,6 +26168,18 @@
         "plateRank": 0,
         "plateName": "",
         "plateNameCanonical": "",
+        "tideStatus": "neutral_wait",
+        "tideAction": "watch",
+        "tidePhase": "neutral",
+        "tideCoreScore": 54.0,
+        "tideEbbScore": 41.0,
+        "tideAdjust": 2.0,
+        "tideRelayAdjust": 1.0,
+        "tideRiskAdjust": -4.0,
+        "tideWatchAdjust": 8.0,
+        "tideRelayGate": 3.0,
+        "tideHint": "乡村振兴核心潮汐中性，按梯队和个股辨识度处理。",
+        "tideCaution": "",
         "factorLabels": {
           "environment": "偏弱",
           "sector": "偏弱",
@@ -25668,67 +26346,81 @@
         "capacityLabel": "弹性票",
         "reason": "<span class=\"reason-bits\">乡村振兴龙头带动 · 梯队带动中百集团 · 题材联动 · 高度修复 · 温和放量 · 封单偏强 · 封板稳 · 断板风险高</span><div class=\"exp-wrap\"><div class=\"exp-row\"><span class=\"exp-pill pill-pre\">预期</span>高开（+1%~+3%%）+ 竞价量能≥0.48亿</div><div class=\"exp-row\"><span class=\"exp-pill pill-hi\">超预期</span>高开≥+3%% + 竞价量能≥0.48亿</div><div class=\"exp-row\"><span class=\"exp-pill pill-lo\">低预期</span>低于+1%% 或 竞价量能<0.34亿</div></div>",
         "factorRank": 2,
-        "watchRank": 1,
+        "watchRank": 2,
         "watchGroup": "高标/题材核心",
         "scoreLabel": "观察因子",
-        "scoreSubLabel": "高标/题材核心 · 只观察"
+        "scoreSubLabel": "高标/题材核心 · 条件触发"
       },
       {
-        "name": "北玻股份",
-        "code": "002613",
-        "lbc": 2,
-        "hy": "玻璃玻纤",
-        "fundYi": 1.36041032,
-        "open": 0,
-        "predTheme": "绿色建筑",
-        "predThemeCanonical": "绿色建筑",
+        "name": "中重科技",
+        "code": "603135",
+        "lbc": 4,
+        "hy": "专用设备",
+        "fundYi": 0.42036411,
+        "open": 3,
+        "predTheme": "机械",
+        "predThemeCanonical": "机械",
         "hasTier": true,
-        "cjeYi": 3.241493,
-        "qualityLabel": "温和放量",
-        "qualityScore": 84.0,
-        "nextStep": "2进3",
-        "stepRate": 25.0,
-        "stepContextScore": 73,
+        "cjeYi": 11.199157,
+        "qualityLabel": "反复回封",
+        "qualityScore": 54.0,
+        "nextStep": "4进5",
+        "stepRate": 50.0,
+        "stepContextScore": 100,
         "promoEcology": 100,
         "heightContextScore": 86,
         "environmentScore": 51,
-        "leaderFactorScore": 77,
-        "relayFactorScore": 75,
-        "capacityFactorScore": 53,
-        "riskControlScore": 37,
-        "breakRisk": 97,
-        "themePersistScore": 50,
-        "leaderPhilosophyScore": 61,
-        "themeLadderProfile": {
-          "score": 31,
-          "label": "中位承接",
-          "leaderBoards": 2,
-          "coreCount": 3,
-          "midCarryCount": 0,
-          "followerCount": 0,
-          "frontCount": 3,
-          "gapCount": 0,
-          "isComplete": false,
-          "hasCarry": true,
-          "leaderName": "北玻股份"
+        "leaderFactorScore": 78,
+        "relayFactorScore": 70,
+        "capacityFactorScore": 89,
+        "riskControlScore": 15,
+        "breakRisk": 100,
+        "themePersistScore": 59,
+        "leaderPhilosophyScore": 29,
+        "recentHighSignal": {
+          "available": false,
+          "window": 7
         },
-        "score": 55,
-        "factorScore": 55,
+        "thsNewhigh": {
+          "board": 3,
+          "boardLabel": "一年新高",
+          "preHigh": "11.98%",
+          "preHighDate": "15.43",
+          "intervalDays": "14.03"
+        },
+        "themeLadderProfile": {
+          "score": 11,
+          "label": "梯队断层",
+          "leaderBoards": 4,
+          "coreCount": 1,
+          "midCarryCount": 0,
+          "followerCount": 5,
+          "frontCount": 1,
+          "gapCount": 2,
+          "isComplete": false,
+          "hasCarry": false,
+          "leaderName": "中重科技"
+        },
+        "_isRecentHigh7d": false,
+        "_breakoutDoubleConfirm": false,
+        "score": 59,
+        "factorScore": 59,
         "factorBreakdown": {
           "environment": 51,
           "market": 36,
           "themeEnv": 66,
           "marketGate": -8,
-          "sector": 42,
-          "leader": 77,
-          "relay": 75,
-          "capacity": 53,
-          "risk": 37,
+          "sector": 36,
+          "leader": 78,
+          "relay": 70,
+          "capacity": 89,
+          "risk": 15,
           "opportunity": 81,
-          "edge": 5,
-          "heightBreakout": 0
+          "edge": 4,
+          "heightBreakout": 0,
+          "tide": 4
         },
-        "factorHint": "环境51(防守观察) / 板块42 / 龙头77 / 接力75 / 容量53 / 风险37 / 梯队31 / 只观察",
+        "factorHint": "环境51(防守观察) / 板块36 / 龙头78 / 接力70 / 容量89 / 风险15 / 潮汐+4 / 梯队11 / 只观察",
         "scoreBand": "只观察",
         "scoreBandTone": "cool",
         "superLeaderTone": "",
@@ -25738,34 +26430,58 @@
           "label": "防守观察",
           "action": "只看回封确认"
         },
-        "sectorTrendScore": 49,
-        "sectorRankScore": 52,
+        "sectorTrendScore": 47,
+        "sectorRankScore": 92,
         "plateRank": 0,
         "plateName": "",
         "plateNameCanonical": "",
+        "tideStatus": "observe_candidate",
+        "tideAction": "watch",
+        "tidePhase": "neutral",
+        "tideCoreScore": 55.0,
+        "tideEbbScore": 40.0,
+        "tideAdjust": 4.0,
+        "tideRelayAdjust": 1.0,
+        "tideRiskAdjust": -4.0,
+        "tideWatchAdjust": 12.0,
+        "tideRelayGate": 3.0,
+        "tideHint": "机械有观察价值，等待情绪/量能/消息继续共振。",
+        "tideCaution": "",
         "factorLabels": {
           "environment": "偏弱",
           "sector": "偏弱",
           "leader": "偏强",
-          "relay": "偏强",
-          "capacity": "偏弱",
+          "relay": "中性",
+          "capacity": "强",
           "risk": "偏弱"
         },
         "tags": [
           {
-            "text": "2进3",
-            "cls": "ladder-chip-strong red-text"
+            "text": "4进5",
+            "cls": "ladder-chip-warn orange-text"
           },
           {
-            "text": "2板",
+            "text": "4板",
             "cls": "ladder-chip-cool muted-text"
           },
           {
-            "text": "带动荣安地产、达实智能",
-            "cls": "ladder-chip-strong red-text"
+            "text": "中等主线",
+            "cls": "ladder-chip-warn orange-text"
+          },
+          {
+            "text": "有梯队",
+            "cls": "ladder-chip-cool muted-text"
+          },
+          {
+            "text": "反复回封",
+            "cls": "ladder-chip-warn orange-text"
           },
           {
             "text": "断板风险高",
+            "cls": "ladder-chip-warn orange-text"
+          },
+          {
+            "text": "3次开板",
             "cls": "ladder-chip-warn orange-text"
           },
           {
@@ -25773,11 +26489,11 @@
             "cls": "ladder-chip-cool muted-text"
           },
           {
-            "text": "未开",
+            "text": "首封09:48",
             "cls": "ladder-chip-cool muted-text"
           },
           {
-            "text": "首封09:30",
+            "text": "无跟风",
             "cls": "ladder-chip-cool muted-text"
           },
           {
@@ -25789,46 +26505,58 @@
             "cls": "ladder-chip-strong red-text"
           },
           {
-            "text": "封单1.36亿",
+            "text": "放量+板块",
             "cls": "ladder-chip-cool muted-text"
           },
           {
-            "text": "7.8%换手",
+            "text": "题材发散",
             "cls": "ladder-chip-cool muted-text"
           },
           {
-            "text": "成交额3.24亿",
+            "text": "封单0.42亿",
             "cls": "ladder-chip-cool muted-text"
           },
           {
-            "text": "市值60亿",
+            "text": "12.0%换手",
             "cls": "ladder-chip-cool muted-text"
           },
           {
-            "text": "中位承接",
+            "text": "成交额11.20亿",
             "cls": "ladder-chip-cool muted-text"
           },
           {
-            "text": "绿色建筑",
+            "text": "市值98亿",
             "cls": "ladder-chip-cool muted-text"
           },
           {
-            "text": "低价",
+            "text": "梯队断层",
             "cls": "ladder-chip-cool muted-text"
+          },
+          {
+            "text": "微型穿越",
+            "cls": "ladder-chip-cool muted-text"
+          },
+          {
+            "text": "一年新高",
+            "cls": "ladder-chip-cool muted-text"
+          },
+          {
+            "text": "机械",
+            "cls": "ladder-chip-cool muted-text"
+          },
+          {
+            "text": "数字经济",
+            "cls": "ladder-chip-cool muted-text"
+          },
+          {
+            "text": "容量核",
+            "cls": "ladder-chip-warn orange-text"
           }
         ],
         "tagRows": [
           {
             "tone": "red",
             "tags": [
-              {
-                "text": "2进3",
-                "cls": "ladder-chip-strong red-text"
-              },
-              {
-                "text": "带动荣安地产、达实智能",
-                "cls": "ladder-chip-strong red-text"
-              },
               {
                 "text": "晋级生态强",
                 "cls": "ladder-chip-strong red-text"
@@ -25843,7 +26571,27 @@
             "tone": "orange",
             "tags": [
               {
+                "text": "4进5",
+                "cls": "ladder-chip-warn orange-text"
+              },
+              {
+                "text": "中等主线",
+                "cls": "ladder-chip-warn orange-text"
+              },
+              {
+                "text": "反复回封",
+                "cls": "ladder-chip-warn orange-text"
+              },
+              {
                 "text": "断板风险高",
+                "cls": "ladder-chip-warn orange-text"
+              },
+              {
+                "text": "3次开板",
+                "cls": "ladder-chip-warn orange-text"
+              },
+              {
+                "text": "容量核",
                 "cls": "ladder-chip-warn orange-text"
               }
             ]
@@ -25852,7 +26600,11 @@
             "tone": "muted",
             "tags": [
               {
-                "text": "2板",
+                "text": "4板",
+                "cls": "ladder-chip-cool muted-text"
+              },
+              {
+                "text": "有梯队",
                 "cls": "ladder-chip-cool muted-text"
               },
               {
@@ -25860,51 +26612,67 @@
                 "cls": "ladder-chip-cool muted-text"
               },
               {
-                "text": "未开",
+                "text": "首封09:48",
                 "cls": "ladder-chip-cool muted-text"
               },
               {
-                "text": "首封09:30",
+                "text": "无跟风",
                 "cls": "ladder-chip-cool muted-text"
               },
               {
-                "text": "封单1.36亿",
+                "text": "放量+板块",
                 "cls": "ladder-chip-cool muted-text"
               },
               {
-                "text": "7.8%换手",
+                "text": "题材发散",
                 "cls": "ladder-chip-cool muted-text"
               },
               {
-                "text": "成交额3.24亿",
+                "text": "封单0.42亿",
                 "cls": "ladder-chip-cool muted-text"
               },
               {
-                "text": "市值60亿",
+                "text": "12.0%换手",
                 "cls": "ladder-chip-cool muted-text"
               },
               {
-                "text": "中位承接",
+                "text": "成交额11.20亿",
                 "cls": "ladder-chip-cool muted-text"
               },
               {
-                "text": "绿色建筑",
+                "text": "市值98亿",
                 "cls": "ladder-chip-cool muted-text"
               },
               {
-                "text": "低价",
+                "text": "梯队断层",
+                "cls": "ladder-chip-cool muted-text"
+              },
+              {
+                "text": "微型穿越",
+                "cls": "ladder-chip-cool muted-text"
+              },
+              {
+                "text": "一年新高",
+                "cls": "ladder-chip-cool muted-text"
+              },
+              {
+                "text": "机械",
+                "cls": "ladder-chip-cool muted-text"
+              },
+              {
+                "text": "数字经济",
                 "cls": "ladder-chip-cool muted-text"
               }
             ]
           }
         ],
-        "capacityLabel": "弹性票",
-        "reason": "<span class=\"reason-bits\">绿色建筑龙头带动 · 梯队带动荣安地产、达实智能 · 高度修复 · 温和放量 · 封板稳 · 早封 · 断板风险高</span><div class=\"exp-wrap\"><div class=\"exp-row\"><span class=\"exp-pill pill-pre\">预期</span>高开（+0%~+2%%）+ 竞价量能≥0.15亿</div><div class=\"exp-row\"><span class=\"exp-pill pill-hi\">超预期</span>高开≥+2%% + 竞价量能≥0.15亿</div><div class=\"exp-row\"><span class=\"exp-pill pill-lo\">低预期</span>低于+0%% 或 竞价量能<0.10亿</div></div>",
-        "factorRank": 3,
-        "watchRank": 2,
-        "watchGroup": "高标/题材核心",
+        "capacityLabel": "容量核",
+        "reason": "<span class=\"reason-bits\">有梯队 · 一年新高 · 高度修复 · 温和放量 · 早封 · 容量够 · 梯队断层 · 断板风险高</span><div class=\"exp-wrap\"><div class=\"exp-row\"><span class=\"exp-pill pill-pre\">预期</span>高开（+1%~+3%%）+ 竞价量能≥0.67亿</div><div class=\"exp-row\"><span class=\"exp-pill pill-hi\">超预期</span>高开≥+3%% + 竞价量能≥0.67亿</div><div class=\"exp-row\"><span class=\"exp-pill pill-lo\">低预期</span>低于+1%% 或 竞价量能<0.47亿</div></div>",
+        "factorRank": 4,
+        "watchRank": 3,
+        "watchGroup": "容量核心",
         "scoreLabel": "观察因子",
-        "scoreSubLabel": "高标/题材核心 · 只观察"
+        "scoreSubLabel": "容量核心 · 只观察"
       },
       {
         "name": "大有能源",
@@ -25925,13 +26693,24 @@
         "promoEcology": 100,
         "heightContextScore": 86,
         "environmentScore": 51,
-        "leaderFactorScore": 88,
-        "relayFactorScore": 71,
+        "leaderFactorScore": 90,
+        "relayFactorScore": 74,
         "capacityFactorScore": 89,
-        "riskControlScore": 24,
+        "riskControlScore": 20,
         "breakRisk": 100,
         "themePersistScore": 42,
         "leaderPhilosophyScore": 65,
+        "recentHighSignal": {
+          "available": false,
+          "window": 7
+        },
+        "thsNewhigh": {
+          "board": 3,
+          "boardLabel": "一年新高",
+          "preHigh": "9.02%",
+          "preHighDate": "8.95",
+          "intervalDays": "8.37"
+        },
         "themeLadderProfile": {
           "score": 38,
           "label": "中位承接",
@@ -25945,23 +26724,26 @@
           "hasCarry": true,
           "leaderName": "大有能源"
         },
-        "score": 53,
-        "factorScore": 53,
+        "_isRecentHigh7d": false,
+        "_breakoutDoubleConfirm": false,
+        "score": 58,
+        "factorScore": 58,
         "factorBreakdown": {
           "environment": 51,
           "market": 36,
           "themeEnv": 66,
           "marketGate": -8,
           "sector": 11,
-          "leader": 88,
-          "relay": 71,
+          "leader": 90,
+          "relay": 74,
           "capacity": 89,
-          "risk": 24,
+          "risk": 20,
           "opportunity": 81,
-          "edge": 4,
-          "heightBreakout": 0
+          "edge": 6,
+          "heightBreakout": 0,
+          "tide": 2
         },
-        "factorHint": "环境51(防守观察) / 板块11 / 龙头88 / 接力71 / 容量89 / 风险24 / 梯队38 / 只观察",
+        "factorHint": "环境51(防守观察) / 板块11 / 龙头90 / 接力74 / 容量89 / 风险20 / 潮汐+2 / 梯队38 / 只观察",
         "scoreBand": "只观察",
         "scoreBandTone": "cool",
         "superLeaderTone": "leader-red",
@@ -25976,6 +26758,18 @@
         "plateRank": 0,
         "plateName": "",
         "plateNameCanonical": "",
+        "tideStatus": "neutral_wait",
+        "tideAction": "watch",
+        "tidePhase": "neutral",
+        "tideCoreScore": 54.0,
+        "tideEbbScore": 39.0,
+        "tideAdjust": 2.0,
+        "tideRelayAdjust": 1.0,
+        "tideRiskAdjust": -4.0,
+        "tideWatchAdjust": 8.0,
+        "tideRelayGate": 3.0,
+        "tideHint": "国资改革核心潮汐中性，按梯队和个股辨识度处理。",
+        "tideCaution": "",
         "factorLabels": {
           "environment": "偏弱",
           "sector": "偏弱",
@@ -26063,6 +26857,10 @@
           },
           {
             "text": "中位承接",
+            "cls": "ladder-chip-cool muted-text"
+          },
+          {
+            "text": "一年新高",
             "cls": "ladder-chip-cool muted-text"
           },
           {
@@ -26177,6 +26975,10 @@
                 "cls": "ladder-chip-cool muted-text"
               },
               {
+                "text": "一年新高",
+                "cls": "ladder-chip-cool muted-text"
+              },
+              {
                 "text": "国资改革",
                 "cls": "ladder-chip-cool muted-text"
               },
@@ -26188,288 +26990,7 @@
           }
         ],
         "capacityLabel": "容量核",
-        "reason": "<span class=\"reason-bits\">市场唯一高度核心 · 板块归属：国资改革、低价 · 突破新高(6板) · 高度修复 · 温和放量 · 早封 · 容量够 · 题材转弱 · 梯队断层</span><div class=\"exp-wrap\"><div class=\"exp-row\"><span class=\"exp-pill pill-pre\">预期</span>高开（+0%~+2%%）+ 竞价量能≥0.85亿</div><div class=\"exp-row\"><span class=\"exp-pill pill-hi\">超预期</span>高开≥+2%% + 竞价量能≥0.85亿</div><div class=\"exp-row\"><span class=\"exp-pill pill-lo\">低预期</span>低于+0%% 或 竞价量能<0.59亿</div></div>",
-        "factorRank": 4,
-        "watchRank": 3,
-        "watchGroup": "高标/题材核心",
-        "scoreLabel": "观察因子",
-        "scoreSubLabel": "高标/题材核心 · 只观察"
-      },
-      {
-        "name": "中重科技",
-        "code": "603135",
-        "lbc": 4,
-        "hy": "专用设备",
-        "fundYi": 0.42036411,
-        "open": 3,
-        "predTheme": "机械",
-        "predThemeCanonical": "机械",
-        "hasTier": true,
-        "cjeYi": 11.199157,
-        "qualityLabel": "反复回封",
-        "qualityScore": 54.0,
-        "nextStep": "4进5",
-        "stepRate": 50.0,
-        "stepContextScore": 100,
-        "promoEcology": 100,
-        "heightContextScore": 86,
-        "environmentScore": 51,
-        "leaderFactorScore": 75,
-        "relayFactorScore": 67,
-        "capacityFactorScore": 89,
-        "riskControlScore": 19,
-        "breakRisk": 100,
-        "themePersistScore": 59,
-        "leaderPhilosophyScore": 29,
-        "themeLadderProfile": {
-          "score": 11,
-          "label": "梯队断层",
-          "leaderBoards": 4,
-          "coreCount": 1,
-          "midCarryCount": 0,
-          "followerCount": 5,
-          "frontCount": 1,
-          "gapCount": 2,
-          "isComplete": false,
-          "hasCarry": false,
-          "leaderName": "中重科技"
-        },
-        "score": 53,
-        "factorScore": 53,
-        "factorBreakdown": {
-          "environment": 51,
-          "market": 36,
-          "themeEnv": 66,
-          "marketGate": -8,
-          "sector": 36,
-          "leader": 75,
-          "relay": 67,
-          "capacity": 89,
-          "risk": 19,
-          "opportunity": 81,
-          "edge": 2,
-          "heightBreakout": 0
-        },
-        "factorHint": "环境51(防守观察) / 板块36 / 龙头75 / 接力67 / 容量89 / 风险19 / 梯队11 / 只观察",
-        "scoreBand": "只观察",
-        "scoreBandTone": "cool",
-        "superLeaderTone": "",
-        "scoreAction": "不主动接力",
-        "marketGate": {
-          "score": 51,
-          "label": "防守观察",
-          "action": "只看回封确认"
-        },
-        "sectorTrendScore": 47,
-        "sectorRankScore": 92,
-        "plateRank": 0,
-        "plateName": "",
-        "plateNameCanonical": "",
-        "factorLabels": {
-          "environment": "偏弱",
-          "sector": "偏弱",
-          "leader": "偏强",
-          "relay": "中性",
-          "capacity": "强",
-          "risk": "偏弱"
-        },
-        "tags": [
-          {
-            "text": "4进5",
-            "cls": "ladder-chip-warn orange-text"
-          },
-          {
-            "text": "4板",
-            "cls": "ladder-chip-cool muted-text"
-          },
-          {
-            "text": "中等主线",
-            "cls": "ladder-chip-warn orange-text"
-          },
-          {
-            "text": "有梯队",
-            "cls": "ladder-chip-cool muted-text"
-          },
-          {
-            "text": "反复回封",
-            "cls": "ladder-chip-warn orange-text"
-          },
-          {
-            "text": "断板风险高",
-            "cls": "ladder-chip-warn orange-text"
-          },
-          {
-            "text": "3次开板",
-            "cls": "ladder-chip-warn orange-text"
-          },
-          {
-            "text": "温和放量",
-            "cls": "ladder-chip-cool muted-text"
-          },
-          {
-            "text": "首封09:48",
-            "cls": "ladder-chip-cool muted-text"
-          },
-          {
-            "text": "无跟风",
-            "cls": "ladder-chip-cool muted-text"
-          },
-          {
-            "text": "晋级生态强",
-            "cls": "ladder-chip-strong red-text"
-          },
-          {
-            "text": "高度修复",
-            "cls": "ladder-chip-strong red-text"
-          },
-          {
-            "text": "放量+板块",
-            "cls": "ladder-chip-cool muted-text"
-          },
-          {
-            "text": "题材发散",
-            "cls": "ladder-chip-cool muted-text"
-          },
-          {
-            "text": "封单0.42亿",
-            "cls": "ladder-chip-cool muted-text"
-          },
-          {
-            "text": "12.0%换手",
-            "cls": "ladder-chip-cool muted-text"
-          },
-          {
-            "text": "成交额11.20亿",
-            "cls": "ladder-chip-cool muted-text"
-          },
-          {
-            "text": "市值98亿",
-            "cls": "ladder-chip-cool muted-text"
-          },
-          {
-            "text": "梯队断层",
-            "cls": "ladder-chip-cool muted-text"
-          },
-          {
-            "text": "机械",
-            "cls": "ladder-chip-cool muted-text"
-          },
-          {
-            "text": "数字经济",
-            "cls": "ladder-chip-cool muted-text"
-          },
-          {
-            "text": "容量核",
-            "cls": "ladder-chip-warn orange-text"
-          }
-        ],
-        "tagRows": [
-          {
-            "tone": "red",
-            "tags": [
-              {
-                "text": "晋级生态强",
-                "cls": "ladder-chip-strong red-text"
-              },
-              {
-                "text": "高度修复",
-                "cls": "ladder-chip-strong red-text"
-              }
-            ]
-          },
-          {
-            "tone": "orange",
-            "tags": [
-              {
-                "text": "4进5",
-                "cls": "ladder-chip-warn orange-text"
-              },
-              {
-                "text": "中等主线",
-                "cls": "ladder-chip-warn orange-text"
-              },
-              {
-                "text": "反复回封",
-                "cls": "ladder-chip-warn orange-text"
-              },
-              {
-                "text": "断板风险高",
-                "cls": "ladder-chip-warn orange-text"
-              },
-              {
-                "text": "3次开板",
-                "cls": "ladder-chip-warn orange-text"
-              },
-              {
-                "text": "容量核",
-                "cls": "ladder-chip-warn orange-text"
-              }
-            ]
-          },
-          {
-            "tone": "muted",
-            "tags": [
-              {
-                "text": "4板",
-                "cls": "ladder-chip-cool muted-text"
-              },
-              {
-                "text": "有梯队",
-                "cls": "ladder-chip-cool muted-text"
-              },
-              {
-                "text": "温和放量",
-                "cls": "ladder-chip-cool muted-text"
-              },
-              {
-                "text": "首封09:48",
-                "cls": "ladder-chip-cool muted-text"
-              },
-              {
-                "text": "无跟风",
-                "cls": "ladder-chip-cool muted-text"
-              },
-              {
-                "text": "放量+板块",
-                "cls": "ladder-chip-cool muted-text"
-              },
-              {
-                "text": "题材发散",
-                "cls": "ladder-chip-cool muted-text"
-              },
-              {
-                "text": "封单0.42亿",
-                "cls": "ladder-chip-cool muted-text"
-              },
-              {
-                "text": "12.0%换手",
-                "cls": "ladder-chip-cool muted-text"
-              },
-              {
-                "text": "成交额11.20亿",
-                "cls": "ladder-chip-cool muted-text"
-              },
-              {
-                "text": "市值98亿",
-                "cls": "ladder-chip-cool muted-text"
-              },
-              {
-                "text": "梯队断层",
-                "cls": "ladder-chip-cool muted-text"
-              },
-              {
-                "text": "机械",
-                "cls": "ladder-chip-cool muted-text"
-              },
-              {
-                "text": "数字经济",
-                "cls": "ladder-chip-cool muted-text"
-              }
-            ]
-          }
-        ],
-        "capacityLabel": "容量核",
-        "reason": "<span class=\"reason-bits\">有梯队 · 高度修复 · 温和放量 · 早封 · 容量够 · 梯队断层 · 断板风险高</span><div class=\"exp-wrap\"><div class=\"exp-row\"><span class=\"exp-pill pill-pre\">预期</span>高开（+0%~+2%%）+ 竞价量能≥0.50亿</div><div class=\"exp-row\"><span class=\"exp-pill pill-hi\">超预期</span>高开≥+2%% + 竞价量能≥0.50亿</div><div class=\"exp-row\"><span class=\"exp-pill pill-lo\">低预期</span>低于+0%% 或 竞价量能<0.35亿</div></div>",
+        "reason": "<span class=\"reason-bits\">市场唯一高度核心 · 板块归属：国资改革、低价 · 突破新高(6板) · 一年新高 · 温和放量 · 早封 · 容量够 · 题材转弱 · 梯队断层</span><div class=\"exp-wrap\"><div class=\"exp-row\"><span class=\"exp-pill pill-pre\">预期</span>高开（+0%~+2%%）+ 竞价量能≥0.85亿</div><div class=\"exp-row\"><span class=\"exp-pill pill-hi\">超预期</span>高开≥+2%% + 竞价量能≥0.85亿</div><div class=\"exp-row\"><span class=\"exp-pill pill-lo\">低预期</span>低于+0%% 或 竞价量能<0.59亿</div></div>",
         "factorRank": 5,
         "watchRank": 4,
         "watchGroup": "高标/题材核心",
@@ -26495,13 +27016,24 @@
         "promoEcology": 100,
         "heightContextScore": 86,
         "environmentScore": 51,
-        "leaderFactorScore": 59,
-        "relayFactorScore": 74,
+        "leaderFactorScore": 61,
+        "relayFactorScore": 76,
         "capacityFactorScore": 95,
-        "riskControlScore": 24,
+        "riskControlScore": 20,
         "breakRisk": 97,
         "themePersistScore": 0,
         "leaderPhilosophyScore": 23,
+        "recentHighSignal": {
+          "available": false,
+          "window": 7
+        },
+        "thsNewhigh": {
+          "board": 3,
+          "boardLabel": "一年新高",
+          "preHigh": "8.11%",
+          "preHighDate": "17.08",
+          "intervalDays": "15.93"
+        },
         "themeLadderProfile": {
           "score": 0,
           "label": "",
@@ -26515,23 +27047,26 @@
           "hasCarry": false,
           "leaderName": ""
         },
-        "score": 50,
-        "factorScore": 50,
+        "_isRecentHigh7d": false,
+        "_breakoutDoubleConfirm": false,
+        "score": 52,
+        "factorScore": 52,
         "factorBreakdown": {
           "environment": 51,
           "market": 36,
           "themeEnv": 66,
           "marketGate": -8,
           "sector": 33,
-          "leader": 59,
-          "relay": 74,
+          "leader": 61,
+          "relay": 76,
           "capacity": 95,
-          "risk": 24,
+          "risk": 20,
           "opportunity": 81,
-          "edge": 0,
-          "heightBreakout": 0
+          "edge": 2,
+          "heightBreakout": 0,
+          "tide": 0
         },
-        "factorHint": "环境51(防守观察) / 板块33 / 龙头59 / 接力74 / 容量95 / 风险24 / 梯队0 / 只观察",
+        "factorHint": "环境51(防守观察) / 板块33 / 龙头61 / 接力76 / 容量95 / 风险20 / 潮汐+0 / 梯队0 / 只观察",
         "scoreBand": "只观察",
         "scoreBandTone": "cool",
         "superLeaderTone": "",
@@ -26546,6 +27081,18 @@
         "plateRank": 0,
         "plateName": "",
         "plateNameCanonical": "",
+        "tideStatus": "",
+        "tideAction": "",
+        "tidePhase": "",
+        "tideCoreScore": 0.0,
+        "tideEbbScore": 0.0,
+        "tideAdjust": 0.0,
+        "tideRelayAdjust": 0.0,
+        "tideRiskAdjust": -4.0,
+        "tideWatchAdjust": 0.0,
+        "tideRelayGate": 0.0,
+        "tideHint": "",
+        "tideCaution": "",
         "factorLabels": {
           "environment": "偏弱",
           "sector": "偏弱",
@@ -26605,6 +27152,10 @@
           },
           {
             "text": "市值146亿",
+            "cls": "ladder-chip-cool muted-text"
+          },
+          {
+            "text": "一年新高",
             "cls": "ladder-chip-cool muted-text"
           },
           {
@@ -26687,6 +27238,10 @@
                 "cls": "ladder-chip-cool muted-text"
               },
               {
+                "text": "一年新高",
+                "cls": "ladder-chip-cool muted-text"
+              },
+              {
                 "text": "化学纤维×1",
                 "cls": "ladder-chip-cool muted-text"
               }
@@ -26694,234 +27249,9 @@
           }
         ],
         "capacityLabel": "容量核",
-        "reason": "<span class=\"reason-bits\">高度修复 · 温和放量 · 封板稳 · 早封 · 断板风险高</span><div class=\"exp-wrap\"><div class=\"exp-row\"><span class=\"exp-pill pill-pre\">预期</span>高开（+0%~+2%%）+ 竞价量能≥0.51亿</div><div class=\"exp-row\"><span class=\"exp-pill pill-hi\">超预期</span>高开≥+2%% + 竞价量能≥0.51亿</div><div class=\"exp-row\"><span class=\"exp-pill pill-lo\">低预期</span>低于+0%% 或 竞价量能<0.36亿</div></div>",
+        "reason": "<span class=\"reason-bits\">一年新高 · 高度修复 · 温和放量 · 封板稳 · 早封 · 断板风险高</span><div class=\"exp-wrap\"><div class=\"exp-row\"><span class=\"exp-pill pill-pre\">预期</span>高开（+0%~+2%%）+ 竞价量能≥0.51亿</div><div class=\"exp-row\"><span class=\"exp-pill pill-hi\">超预期</span>高开≥+2%% + 竞价量能≥0.51亿</div><div class=\"exp-row\"><span class=\"exp-pill pill-lo\">低预期</span>低于+0%% 或 竞价量能<0.36亿</div></div>",
         "factorRank": 6,
         "watchRank": 5,
-        "watchGroup": "风险观察",
-        "scoreLabel": "观察因子",
-        "scoreSubLabel": "风险观察 · 只观察"
-      },
-      {
-        "name": "能科科技",
-        "code": "603859",
-        "lbc": 2,
-        "hy": "IT服务Ⅱ",
-        "fundYi": 0.58008784,
-        "open": 2,
-        "predTheme": "",
-        "predThemeCanonical": "",
-        "hasTier": false,
-        "cjeYi": 19.171137,
-        "qualityLabel": "常规封板",
-        "qualityScore": 68.0,
-        "nextStep": "2进3",
-        "stepRate": 25.0,
-        "stepContextScore": 73,
-        "promoEcology": 100,
-        "heightContextScore": 86,
-        "environmentScore": 51,
-        "leaderFactorScore": 54,
-        "relayFactorScore": 66,
-        "capacityFactorScore": 85,
-        "riskControlScore": 22,
-        "breakRisk": 97,
-        "themePersistScore": 0,
-        "leaderPhilosophyScore": 5,
-        "themeLadderProfile": {
-          "score": 0,
-          "label": "",
-          "leaderBoards": 0,
-          "coreCount": 0,
-          "midCarryCount": 0,
-          "followerCount": 0,
-          "frontCount": 0,
-          "gapCount": 0,
-          "isComplete": false,
-          "hasCarry": false,
-          "leaderName": ""
-        },
-        "score": 47,
-        "factorScore": 47,
-        "factorBreakdown": {
-          "environment": 51,
-          "market": 36,
-          "themeEnv": 66,
-          "marketGate": -8,
-          "sector": 42,
-          "leader": 54,
-          "relay": 66,
-          "capacity": 85,
-          "risk": 22,
-          "opportunity": 60,
-          "edge": 0,
-          "heightBreakout": 0
-        },
-        "factorHint": "环境51(防守观察) / 板块42 / 龙头54 / 接力66 / 容量85 / 风险22 / 梯队0 / 只观察",
-        "scoreBand": "只观察",
-        "scoreBandTone": "cool",
-        "superLeaderTone": "",
-        "scoreAction": "不主动接力",
-        "marketGate": {
-          "score": 51,
-          "label": "防守观察",
-          "action": "只看回封确认"
-        },
-        "sectorTrendScore": 21,
-        "sectorRankScore": 42,
-        "plateRank": 0,
-        "plateName": "",
-        "plateNameCanonical": "",
-        "factorLabels": {
-          "environment": "偏弱",
-          "sector": "偏弱",
-          "leader": "偏弱",
-          "relay": "中性",
-          "capacity": "强",
-          "risk": "偏弱"
-        },
-        "tags": [
-          {
-            "text": "2进3",
-            "cls": "ladder-chip-strong red-text"
-          },
-          {
-            "text": "2板",
-            "cls": "ladder-chip-cool muted-text"
-          },
-          {
-            "text": "题材待确认",
-            "cls": "ladder-chip-warn orange-text"
-          },
-          {
-            "text": "断板风险高",
-            "cls": "ladder-chip-warn orange-text"
-          },
-          {
-            "text": "2次开板",
-            "cls": "ladder-chip-warn orange-text"
-          },
-          {
-            "text": "常规封板",
-            "cls": "ladder-chip-cool muted-text"
-          },
-          {
-            "text": "首封10:08",
-            "cls": "ladder-chip-cool muted-text"
-          },
-          {
-            "text": "晋级生态强",
-            "cls": "ladder-chip-strong red-text"
-          },
-          {
-            "text": "高度修复",
-            "cls": "ladder-chip-strong red-text"
-          },
-          {
-            "text": "封单0.58亿",
-            "cls": "ladder-chip-cool muted-text"
-          },
-          {
-            "text": "16.0%换手",
-            "cls": "ladder-chip-cool muted-text"
-          },
-          {
-            "text": "成交额19.17亿",
-            "cls": "ladder-chip-cool muted-text"
-          },
-          {
-            "text": "市值122亿",
-            "cls": "ladder-chip-cool muted-text"
-          },
-          {
-            "text": "IT服务Ⅱ×3",
-            "cls": "ladder-chip-cool muted-text"
-          },
-          {
-            "text": "题材共振",
-            "cls": "ladder-chip-strong red-text"
-          }
-        ],
-        "tagRows": [
-          {
-            "tone": "red",
-            "tags": [
-              {
-                "text": "2进3",
-                "cls": "ladder-chip-strong red-text"
-              },
-              {
-                "text": "晋级生态强",
-                "cls": "ladder-chip-strong red-text"
-              },
-              {
-                "text": "高度修复",
-                "cls": "ladder-chip-strong red-text"
-              },
-              {
-                "text": "题材共振",
-                "cls": "ladder-chip-strong red-text"
-              }
-            ]
-          },
-          {
-            "tone": "orange",
-            "tags": [
-              {
-                "text": "题材待确认",
-                "cls": "ladder-chip-warn orange-text"
-              },
-              {
-                "text": "断板风险高",
-                "cls": "ladder-chip-warn orange-text"
-              },
-              {
-                "text": "2次开板",
-                "cls": "ladder-chip-warn orange-text"
-              }
-            ]
-          },
-          {
-            "tone": "muted",
-            "tags": [
-              {
-                "text": "2板",
-                "cls": "ladder-chip-cool muted-text"
-              },
-              {
-                "text": "常规封板",
-                "cls": "ladder-chip-cool muted-text"
-              },
-              {
-                "text": "首封10:08",
-                "cls": "ladder-chip-cool muted-text"
-              },
-              {
-                "text": "封单0.58亿",
-                "cls": "ladder-chip-cool muted-text"
-              },
-              {
-                "text": "16.0%换手",
-                "cls": "ladder-chip-cool muted-text"
-              },
-              {
-                "text": "成交额19.17亿",
-                "cls": "ladder-chip-cool muted-text"
-              },
-              {
-                "text": "市值122亿",
-                "cls": "ladder-chip-cool muted-text"
-              },
-              {
-                "text": "IT服务Ⅱ×3",
-                "cls": "ladder-chip-cool muted-text"
-              }
-            ]
-          }
-        ],
-        "capacityLabel": "弹性票",
-        "reason": "<span class=\"reason-bits\">高度修复 · 早封 · 容量够 · 晋级生态强(50%/50%) · 断板风险高</span><div class=\"exp-wrap\"><div class=\"exp-row\"><span class=\"exp-pill pill-pre\">预期</span>高开（+0%~+2%%）+ 竞价量能≥0.86亿</div><div class=\"exp-row\"><span class=\"exp-pill pill-hi\">超预期</span>高开≥+2%% + 竞价量能≥0.86亿</div><div class=\"exp-row\"><span class=\"exp-pill pill-lo\">低预期</span>低于+0%% 或 竞价量能<0.60亿</div></div>",
-        "factorRank": 8,
-        "watchRank": 6,
         "watchGroup": "风险观察",
         "scoreLabel": "观察因子",
         "scoreSubLabel": "风险观察 · 只观察"
@@ -26946,12 +27276,17 @@
         "heightContextScore": 86,
         "environmentScore": 51,
         "leaderFactorScore": 51,
-        "relayFactorScore": 73,
+        "relayFactorScore": 74,
         "capacityFactorScore": 68,
-        "riskControlScore": 26,
+        "riskControlScore": 22,
         "breakRisk": 100,
         "themePersistScore": 50,
         "leaderPhilosophyScore": 11,
+        "recentHighSignal": {
+          "available": false,
+          "window": 7
+        },
+        "thsNewhigh": {},
         "themeLadderProfile": {
           "score": 61,
           "label": "梯队完整",
@@ -26965,8 +27300,10 @@
           "hasCarry": true,
           "leaderName": "祥和实业"
         },
-        "score": 47,
-        "factorScore": 47,
+        "_isRecentHigh7d": false,
+        "_breakoutDoubleConfirm": false,
+        "score": 49,
+        "factorScore": 49,
         "factorBreakdown": {
           "environment": 51,
           "market": 36,
@@ -26974,14 +27311,15 @@
           "marketGate": -8,
           "sector": 49,
           "leader": 51,
-          "relay": 73,
+          "relay": 74,
           "capacity": 68,
-          "risk": 26,
+          "risk": 22,
           "opportunity": 64,
           "edge": 0,
-          "heightBreakout": 0
+          "heightBreakout": 0,
+          "tide": 2
         },
-        "factorHint": "环境51(防守观察) / 板块49 / 龙头51 / 接力73 / 容量68 / 风险26 / 梯队61 / 只观察",
+        "factorHint": "环境51(防守观察) / 板块49 / 龙头51 / 接力74 / 容量68 / 风险22 / 潮汐+2 / 梯队61 / 只观察",
         "scoreBand": "只观察",
         "scoreBandTone": "cool",
         "superLeaderTone": "",
@@ -26991,11 +27329,23 @@
           "label": "防守观察",
           "action": "只看回封确认"
         },
-        "sectorTrendScore": 56,
-        "sectorRankScore": 70,
+        "sectorTrendScore": 54,
+        "sectorRankScore": 61,
         "plateRank": 0,
         "plateName": "",
         "plateNameCanonical": "",
+        "tideStatus": "neutral_wait",
+        "tideAction": "watch",
+        "tidePhase": "neutral",
+        "tideCoreScore": 51.0,
+        "tideEbbScore": 42.0,
+        "tideAdjust": 2.0,
+        "tideRelayAdjust": 1.0,
+        "tideRiskAdjust": -4.0,
+        "tideWatchAdjust": 8.0,
+        "tideRelayGate": 3.0,
+        "tideHint": "轨道交通核心潮汐中性，按梯队和个股辨识度处理。",
+        "tideCaution": "",
         "factorLabels": {
           "environment": "偏弱",
           "sector": "偏弱",
@@ -27162,7 +27512,7 @@
         "capacityLabel": "弹性票",
         "reason": "<span class=\"reason-bits\">梯队跟随 · 题材联动 · 高度修复 · 反复回封 · 封单偏强 · 早封 · 断板风险高 · 分歧偏大</span><div class=\"exp-wrap\"><div class=\"exp-row\"><span class=\"exp-pill pill-pre\">预期</span>高开（+0%~+2%%）+ 竞价量能≥2.17亿</div><div class=\"exp-row\"><span class=\"exp-pill pill-hi\">超预期</span>高开≥+2%% + 竞价量能≥2.17亿</div><div class=\"exp-row\"><span class=\"exp-pill pill-lo\">低预期</span>低于+0%% 或 竞价量能<1.52亿</div></div>",
         "factorRank": 7,
-        "watchRank": 7,
+        "watchRank": 6,
         "watchGroup": "风险观察",
         "scoreLabel": "观察因子",
         "scoreSubLabel": "风险观察 · 只观察"
@@ -27187,12 +27537,17 @@
         "heightContextScore": 86,
         "environmentScore": 51,
         "leaderFactorScore": 54,
-        "relayFactorScore": 66,
+        "relayFactorScore": 67,
         "capacityFactorScore": 75,
-        "riskControlScore": 27,
+        "riskControlScore": 23,
         "breakRisk": 98,
         "themePersistScore": 50,
         "leaderPhilosophyScore": 25,
+        "recentHighSignal": {
+          "available": false,
+          "window": 7
+        },
+        "thsNewhigh": {},
         "themeLadderProfile": {
           "score": 28,
           "label": "梯队松散",
@@ -27206,8 +27561,10 @@
           "hasCarry": false,
           "leaderName": "DR快克智"
         },
-        "score": 46,
-        "factorScore": 46,
+        "_isRecentHigh7d": false,
+        "_breakoutDoubleConfirm": false,
+        "score": 48,
+        "factorScore": 48,
         "factorBreakdown": {
           "environment": 51,
           "market": 36,
@@ -27215,14 +27572,15 @@
           "marketGate": -8,
           "sector": 41,
           "leader": 54,
-          "relay": 66,
+          "relay": 67,
           "capacity": 75,
-          "risk": 27,
+          "risk": 23,
           "opportunity": 74,
           "edge": 0,
-          "heightBreakout": 0
+          "heightBreakout": 0,
+          "tide": 2
         },
-        "factorHint": "环境51(防守观察) / 板块41 / 龙头54 / 接力66 / 容量75 / 风险27 / 梯队28 / 只观察",
+        "factorHint": "环境51(防守观察) / 板块41 / 龙头54 / 接力67 / 容量75 / 风险23 / 潮汐+2 / 梯队28 / 只观察",
         "scoreBand": "只观察",
         "scoreBandTone": "cool",
         "superLeaderTone": "",
@@ -27237,6 +27595,18 @@
         "plateRank": 0,
         "plateName": "",
         "plateNameCanonical": "",
+        "tideStatus": "neutral_wait",
+        "tideAction": "watch",
+        "tidePhase": "neutral",
+        "tideCoreScore": 51.0,
+        "tideEbbScore": 41.0,
+        "tideAdjust": 2.0,
+        "tideRelayAdjust": 1.0,
+        "tideRiskAdjust": -4.0,
+        "tideWatchAdjust": 8.0,
+        "tideRelayGate": 3.0,
+        "tideHint": "中芯国际概念核心潮汐中性，按梯队和个股辨识度处理。",
+        "tideCaution": "",
         "factorLabels": {
           "environment": "偏弱",
           "sector": "偏弱",
@@ -27395,6 +27765,281 @@
         "capacityLabel": "容量核",
         "reason": "<span class=\"reason-bits\">有梯队 · 高度修复 · 温和放量 · 早封 · 容量够 · 断板风险高</span><div class=\"exp-wrap\"><div class=\"exp-row\"><span class=\"exp-pill pill-pre\">预期</span>低开（-2%~+0%%）+ 竞价量能≥0.84亿</div><div class=\"exp-row\"><span class=\"exp-pill pill-hi\">超预期</span>高开≥+0%% + 竞价量能≥0.84亿</div><div class=\"exp-row\"><span class=\"exp-pill pill-lo\">低预期</span>低于-2%% 或 竞价量能<0.59亿</div></div>",
         "factorRank": 9,
+        "watchRank": 7,
+        "watchGroup": "风险观察",
+        "scoreLabel": "观察因子",
+        "scoreSubLabel": "风险观察 · 只观察"
+      },
+      {
+        "name": "达实智能",
+        "code": "002421",
+        "lbc": 2,
+        "hy": "IT服务Ⅱ",
+        "fundYi": 1.35352283,
+        "open": 4,
+        "predTheme": "绿色建筑",
+        "predThemeCanonical": "绿色建筑",
+        "hasTier": true,
+        "cjeYi": 27.044398,
+        "qualityLabel": "反复回封",
+        "qualityScore": 54.0,
+        "nextStep": "2进3",
+        "stepRate": 25.0,
+        "stepContextScore": 73,
+        "promoEcology": 100,
+        "heightContextScore": 86,
+        "environmentScore": 51,
+        "leaderFactorScore": 53,
+        "relayFactorScore": 68,
+        "capacityFactorScore": 74,
+        "riskControlScore": 19,
+        "breakRisk": 100,
+        "themePersistScore": 50,
+        "leaderPhilosophyScore": 9,
+        "recentHighSignal": {
+          "available": false,
+          "window": 7
+        },
+        "thsNewhigh": {
+          "board": 3,
+          "boardLabel": "一年新高",
+          "preHigh": "24.34%",
+          "preHighDate": "5.73",
+          "intervalDays": "5.21"
+        },
+        "themeLadderProfile": {
+          "score": 31,
+          "label": "中位承接",
+          "leaderBoards": 2,
+          "coreCount": 3,
+          "midCarryCount": 0,
+          "followerCount": 0,
+          "frontCount": 3,
+          "gapCount": 0,
+          "isComplete": false,
+          "hasCarry": true,
+          "leaderName": "北玻股份"
+        },
+        "_isRecentHigh7d": false,
+        "_breakoutDoubleConfirm": false,
+        "score": 48,
+        "factorScore": 48,
+        "factorBreakdown": {
+          "environment": 51,
+          "market": 36,
+          "themeEnv": 66,
+          "marketGate": -8,
+          "sector": 44,
+          "leader": 53,
+          "relay": 68,
+          "capacity": 74,
+          "risk": 19,
+          "opportunity": 65,
+          "edge": 0,
+          "heightBreakout": 0,
+          "tide": 2
+        },
+        "factorHint": "环境51(防守观察) / 板块44 / 龙头53 / 接力68 / 容量74 / 风险19 / 潮汐+2 / 梯队31 / 只观察",
+        "scoreBand": "只观察",
+        "scoreBandTone": "cool",
+        "superLeaderTone": "",
+        "scoreAction": "不主动接力",
+        "marketGate": {
+          "score": 51,
+          "label": "防守观察",
+          "action": "只看回封确认"
+        },
+        "sectorTrendScore": 50,
+        "sectorRankScore": 70,
+        "plateRank": 0,
+        "plateName": "",
+        "plateNameCanonical": "",
+        "tideStatus": "neutral_wait",
+        "tideAction": "watch",
+        "tidePhase": "neutral",
+        "tideCoreScore": 51.0,
+        "tideEbbScore": 42.0,
+        "tideAdjust": 2.0,
+        "tideRelayAdjust": 1.0,
+        "tideRiskAdjust": -4.0,
+        "tideWatchAdjust": 8.0,
+        "tideRelayGate": 3.0,
+        "tideHint": "绿色建筑核心潮汐中性，按梯队和个股辨识度处理。",
+        "tideCaution": "",
+        "factorLabels": {
+          "environment": "偏弱",
+          "sector": "偏弱",
+          "leader": "偏弱",
+          "relay": "中性",
+          "capacity": "偏强",
+          "risk": "偏弱"
+        },
+        "tags": [
+          {
+            "text": "2进3",
+            "cls": "ladder-chip-strong red-text"
+          },
+          {
+            "text": "2板",
+            "cls": "ladder-chip-cool muted-text"
+          },
+          {
+            "text": "跟风北玻股份",
+            "cls": "ladder-chip-warn orange-text"
+          },
+          {
+            "text": "反复回封",
+            "cls": "ladder-chip-warn orange-text"
+          },
+          {
+            "text": "断板风险高",
+            "cls": "ladder-chip-warn orange-text"
+          },
+          {
+            "text": "4次开板",
+            "cls": "ladder-chip-warn orange-text"
+          },
+          {
+            "text": "首封09:35",
+            "cls": "ladder-chip-cool muted-text"
+          },
+          {
+            "text": "晋级生态强",
+            "cls": "ladder-chip-strong red-text"
+          },
+          {
+            "text": "高度修复",
+            "cls": "ladder-chip-strong red-text"
+          },
+          {
+            "text": "题材发散",
+            "cls": "ladder-chip-cool muted-text"
+          },
+          {
+            "text": "封单1.35亿",
+            "cls": "ladder-chip-cool muted-text"
+          },
+          {
+            "text": "24.3%换手",
+            "cls": "ladder-chip-cool muted-text"
+          },
+          {
+            "text": "成交额27.04亿",
+            "cls": "ladder-chip-cool muted-text"
+          },
+          {
+            "text": "市值122亿",
+            "cls": "ladder-chip-cool muted-text"
+          },
+          {
+            "text": "中位承接",
+            "cls": "ladder-chip-cool muted-text"
+          },
+          {
+            "text": "一年新高",
+            "cls": "ladder-chip-cool muted-text"
+          },
+          {
+            "text": "绿色建筑",
+            "cls": "ladder-chip-cool muted-text"
+          },
+          {
+            "text": "轨道交通",
+            "cls": "ladder-chip-cool muted-text"
+          }
+        ],
+        "tagRows": [
+          {
+            "tone": "red",
+            "tags": [
+              {
+                "text": "2进3",
+                "cls": "ladder-chip-strong red-text"
+              },
+              {
+                "text": "晋级生态强",
+                "cls": "ladder-chip-strong red-text"
+              },
+              {
+                "text": "高度修复",
+                "cls": "ladder-chip-strong red-text"
+              }
+            ]
+          },
+          {
+            "tone": "orange",
+            "tags": [
+              {
+                "text": "跟风北玻股份",
+                "cls": "ladder-chip-warn orange-text"
+              },
+              {
+                "text": "反复回封",
+                "cls": "ladder-chip-warn orange-text"
+              },
+              {
+                "text": "断板风险高",
+                "cls": "ladder-chip-warn orange-text"
+              },
+              {
+                "text": "4次开板",
+                "cls": "ladder-chip-warn orange-text"
+              }
+            ]
+          },
+          {
+            "tone": "muted",
+            "tags": [
+              {
+                "text": "2板",
+                "cls": "ladder-chip-cool muted-text"
+              },
+              {
+                "text": "首封09:35",
+                "cls": "ladder-chip-cool muted-text"
+              },
+              {
+                "text": "题材发散",
+                "cls": "ladder-chip-cool muted-text"
+              },
+              {
+                "text": "封单1.35亿",
+                "cls": "ladder-chip-cool muted-text"
+              },
+              {
+                "text": "24.3%换手",
+                "cls": "ladder-chip-cool muted-text"
+              },
+              {
+                "text": "成交额27.04亿",
+                "cls": "ladder-chip-cool muted-text"
+              },
+              {
+                "text": "市值122亿",
+                "cls": "ladder-chip-cool muted-text"
+              },
+              {
+                "text": "中位承接",
+                "cls": "ladder-chip-cool muted-text"
+              },
+              {
+                "text": "一年新高",
+                "cls": "ladder-chip-cool muted-text"
+              },
+              {
+                "text": "绿色建筑",
+                "cls": "ladder-chip-cool muted-text"
+              },
+              {
+                "text": "轨道交通",
+                "cls": "ladder-chip-cool muted-text"
+              }
+            ]
+          }
+        ],
+        "capacityLabel": "弹性票",
+        "reason": "<span class=\"reason-bits\">梯队跟随 · 一年新高 · 题材联动 · 高度修复 · 反复回封 · 早封 · 容量够 · 断板风险高 · 分歧偏大</span><div class=\"exp-wrap\"><div class=\"exp-row\"><span class=\"exp-pill pill-pre\">预期</span>高开（+0%~+2%%）+ 竞价量能≥1.22亿</div><div class=\"exp-row\"><span class=\"exp-pill pill-hi\">超预期</span>高开≥+2%% + 竞价量能≥1.22亿</div><div class=\"exp-row\"><span class=\"exp-pill pill-lo\">低预期</span>低于+0%% 或 竞价量能<0.85亿</div></div>",
+        "factorRank": 8,
         "watchRank": 8,
         "watchGroup": "风险观察",
         "scoreLabel": "观察因子",
@@ -27448,7 +28093,7 @@
   },
   "intradaySnapshots": {
     "date": "2026-06-08",
-    "count": 7,
+    "count": 9,
     "snapshots": [
       {
         "time": "09:26:54",
@@ -27780,13 +28425,115 @@
         "shift_score": 61,
         "shift_label": "修复",
         "note": "情绪整体平稳，维持当前节奏。"
+      },
+      {
+        "time": "22:12:29",
+        "ts_bj": "2026-06-08 22:12:29",
+        "date": "2026-06-08",
+        "source": "intraday_live",
+        "provider": "fetch",
+        "zt": 57,
+        "dt": 35,
+        "zab": 10,
+        "zb": 14.9,
+        "fb": 85.1,
+        "jj": 26.3,
+        "lianban": 15,
+        "max_lb": 6,
+        "amount": "27927.38亿",
+        "bf": 0,
+        "heat": 64,
+        "risk": 43,
+        "headline": "修复",
+        "concepts": [
+          {
+            "name": "物理AI",
+            "lead": "达实智能",
+            "chg_pct": null
+          },
+          {
+            "name": "机器人概念",
+            "lead": "中重科技",
+            "chg_pct": null
+          },
+          {
+            "name": "并购重组",
+            "lead": "节能铁汉",
+            "chg_pct": null
+          },
+          {
+            "name": "北交所",
+            "lead": "",
+            "chg_pct": null
+          },
+          {
+            "name": "减速器",
+            "lead": "*ST纳川",
+            "chg_pct": null
+          }
+        ],
+        "alerts": [],
+        "shift_score": 61,
+        "shift_label": "修复",
+        "note": "情绪整体平稳，维持当前节奏。"
+      },
+      {
+        "time": "22:56:25",
+        "ts_bj": "2026-06-08 22:56:25",
+        "date": "2026-06-08",
+        "source": "intraday_live",
+        "provider": "fetch",
+        "zt": 57,
+        "dt": 35,
+        "zab": 10,
+        "zb": 14.9,
+        "fb": 85.1,
+        "jj": 26.3,
+        "lianban": 15,
+        "max_lb": 6,
+        "amount": "27927.38亿",
+        "bf": 0,
+        "heat": 64,
+        "risk": 43,
+        "headline": "修复",
+        "concepts": [
+          {
+            "name": "物理AI",
+            "lead": "达实智能",
+            "chg_pct": null
+          },
+          {
+            "name": "机器人概念",
+            "lead": "中重科技",
+            "chg_pct": null
+          },
+          {
+            "name": "并购重组",
+            "lead": "节能铁汉",
+            "chg_pct": null
+          },
+          {
+            "name": "北交所",
+            "lead": "",
+            "chg_pct": null
+          },
+          {
+            "name": "减速器",
+            "lead": "*ST纳川",
+            "chg_pct": null
+          }
+        ],
+        "alerts": [],
+        "shift_score": 61,
+        "shift_label": "修复",
+        "note": "情绪整体平稳，维持当前节奏。"
       }
     ],
     "simulated": false,
     "interval_min": null,
     "latest": {
-      "time": "22:06:23",
-      "ts_bj": "2026-06-08 22:06:23",
+      "time": "22:56:25",
+      "ts_bj": "2026-06-08 22:56:25",
       "date": "2026-06-08",
       "source": "intraday_live",
       "provider": "fetch",
@@ -27983,7 +28730,7 @@
         "2026-06-04",
         "2026-06-05"
       ],
-      "generated_at_bj": "2026-06-08 22:12:16",
+      "generated_at_bj": "2026-06-08 23:01:52",
       "generated_from": [
         "ztAnalysis.relay/watch.close_push",
         "ztAnalysis.relay/watch.close_push",
@@ -28217,7 +28964,7 @@
       "reference_date": "2026-06-08",
       "trade_date": "2026-06-09",
       "entry_window": "09:25-09:30",
-      "quote_time": "2026-06-08 22:12:16",
+      "quote_time": "2026-06-08 23:01:52",
       "source_module": "ztAnalysis.relay/watch",
       "quote_source": "biying hsrl/ssjy_more 实时行情（失败时回退 raw.quotes）",
       "candidate_count": 9,
@@ -28238,7 +28985,7 @@
           "name": "祥和实业",
           "bucket": "relay",
           "bucket_label": "接力候选",
-          "score": 62,
+          "score": 64,
           "main_line": "轨道交通",
           "reason_text": "轨道交通龙头带动 · 梯队带动神剑股份、达实智能 · 高度修复 · 换手承接 · 早封 · 晋级生态强(50%/50%) · 断板风险高 预期 高开（+1%~+3%%）+ 竞价量能≥0.45亿 超预期 高开≥+3%% + 竞价量能≥0.45亿 低预期 低于+1%% 或 竞价量能",
           "expected_text": "高开（+1%~+3%%）+ 竞价量能≥0.45亿",
@@ -28258,7 +29005,7 @@
           "name": "天娱数科",
           "bucket": "watch",
           "bucket_label": "观察池",
-          "score": 58,
+          "score": 60,
           "main_line": "乡村振兴",
           "reason_text": "乡村振兴龙头带动 · 梯队带动中百集团 · 题材联动 · 高度修复 · 温和放量 · 封单偏强 · 封板稳 · 断板风险高 预期 高开（+1%~+3%%）+ 竞价量能≥0.48亿 超预期 高开≥+3%% + 竞价量能≥0.48亿 低预期 低于+1%% 或 竞价量能",
           "expected_text": "高开（+1%~+3%%）+ 竞价量能≥0.48亿",
@@ -28278,32 +29025,12 @@
           "name": "北玻股份",
           "bucket": "watch",
           "bucket_label": "观察池",
-          "score": 55,
+          "score": 60,
           "main_line": "绿色建筑",
-          "reason_text": "绿色建筑龙头带动 · 梯队带动荣安地产、达实智能 · 高度修复 · 温和放量 · 封板稳 · 早封 · 断板风险高 预期 高开（+0%~+2%%）+ 竞价量能≥0.15亿 超预期 高开≥+2%% + 竞价量能≥0.15亿 低预期 低于+0%% 或 竞价量能",
-          "expected_text": "高开（+0%~+2%%）+ 竞价量能≥0.15亿",
-          "super_text": "高开≥+2%% + 竞价量能≥0.15亿",
-          "low_text": "低于+0%% 或 竞价量能",
-          "quote_time": "",
-          "auction_amount_need_yi": 0.0,
-          "decision_status": "unavailable",
-          "decision_label": "报价缺失",
-          "signal_status": "unavailable",
-          "signal_label": "无法判断",
-          "note": "未拿到 9:25 实时报价，当前不生成买入信号。"
-        },
-        {
-          "date10": "2026-06-08",
-          "code": "600403",
-          "name": "大有能源",
-          "bucket": "watch",
-          "bucket_label": "观察池",
-          "score": 53,
-          "main_line": "国资改革",
-          "reason_text": "市场唯一高度核心 · 板块归属：国资改革、低价 · 突破新高(6板) · 高度修复 · 温和放量 · 早封 · 容量够 · 题材转弱 · 梯队断层 预期 高开（+0%~+2%%）+ 竞价量能≥0.85亿 超预期 高开≥+2%% + 竞价量能≥0.85亿 低预期 低于+0%% 或 竞价量能",
-          "expected_text": "高开（+0%~+2%%）+ 竞价量能≥0.85亿",
-          "super_text": "高开≥+2%% + 竞价量能≥0.85亿",
-          "low_text": "低于+0%% 或 竞价量能",
+          "reason_text": "绿色建筑龙头带动 · 梯队带动荣安地产、达实智能 · 一年新高 · 高度修复 · 温和放量 · 封板稳 · 早封 · 断板风险高 预期 高开（+1%~+3%%）+ 竞价量能≥0.19亿 超预期 高开≥+3%% + 竞价量能≥0.19亿 低预期 低于+1%% 或 竞价量能",
+          "expected_text": "高开（+1%~+3%%）+ 竞价量能≥0.19亿",
+          "super_text": "高开≥+3%% + 竞价量能≥0.19亿",
+          "low_text": "低于+1%% 或 竞价量能",
           "quote_time": "",
           "auction_amount_need_yi": 0.0,
           "decision_status": "unavailable",
@@ -28318,11 +29045,31 @@
           "name": "中重科技",
           "bucket": "watch",
           "bucket_label": "观察池",
-          "score": 53,
+          "score": 59,
           "main_line": "机械",
-          "reason_text": "有梯队 · 高度修复 · 温和放量 · 早封 · 容量够 · 梯队断层 · 断板风险高 预期 高开（+0%~+2%%）+ 竞价量能≥0.50亿 超预期 高开≥+2%% + 竞价量能≥0.50亿 低预期 低于+0%% 或 竞价量能",
-          "expected_text": "高开（+0%~+2%%）+ 竞价量能≥0.50亿",
-          "super_text": "高开≥+2%% + 竞价量能≥0.50亿",
+          "reason_text": "有梯队 · 一年新高 · 高度修复 · 温和放量 · 早封 · 容量够 · 梯队断层 · 断板风险高 预期 高开（+1%~+3%%）+ 竞价量能≥0.67亿 超预期 高开≥+3%% + 竞价量能≥0.67亿 低预期 低于+1%% 或 竞价量能",
+          "expected_text": "高开（+1%~+3%%）+ 竞价量能≥0.67亿",
+          "super_text": "高开≥+3%% + 竞价量能≥0.67亿",
+          "low_text": "低于+1%% 或 竞价量能",
+          "quote_time": "",
+          "auction_amount_need_yi": 0.0,
+          "decision_status": "unavailable",
+          "decision_label": "报价缺失",
+          "signal_status": "unavailable",
+          "signal_label": "无法判断",
+          "note": "未拿到 9:25 实时报价，当前不生成买入信号。"
+        },
+        {
+          "date10": "2026-06-08",
+          "code": "600403",
+          "name": "大有能源",
+          "bucket": "watch",
+          "bucket_label": "观察池",
+          "score": 58,
+          "main_line": "国资改革",
+          "reason_text": "市场唯一高度核心 · 板块归属：国资改革、低价 · 突破新高(6板) · 一年新高 · 温和放量 · 早封 · 容量够 · 题材转弱 · 梯队断层 预期 高开（+0%~+2%%）+ 竞价量能≥0.85亿 超预期 高开≥+2%% + 竞价量能≥0.85亿 低预期 低于+0%% 或 竞价量能",
+          "expected_text": "高开（+0%~+2%%）+ 竞价量能≥0.85亿",
+          "super_text": "高开≥+2%% + 竞价量能≥0.85亿",
           "low_text": "低于+0%% 或 竞价量能",
           "quote_time": "",
           "auction_amount_need_yi": 0.0,
@@ -28338,9 +29085,9 @@
           "name": "泰和新材",
           "bucket": "watch",
           "bucket_label": "观察池",
-          "score": 50,
+          "score": 52,
           "main_line": "",
-          "reason_text": "高度修复 · 温和放量 · 封板稳 · 早封 · 断板风险高 预期 高开（+0%~+2%%）+ 竞价量能≥0.51亿 超预期 高开≥+2%% + 竞价量能≥0.51亿 低预期 低于+0%% 或 竞价量能",
+          "reason_text": "一年新高 · 高度修复 · 温和放量 · 封板稳 · 早封 · 断板风险高 预期 高开（+0%~+2%%）+ 竞价量能≥0.51亿 超预期 高开≥+2%% + 竞价量能≥0.51亿 低预期 低于+0%% 或 竞价量能",
           "expected_text": "高开（+0%~+2%%）+ 竞价量能≥0.51亿",
           "super_text": "高开≥+2%% + 竞价量能≥0.51亿",
           "low_text": "低于+0%% 或 竞价量能",
@@ -28358,7 +29105,7 @@
           "name": "神剑股份",
           "bucket": "watch",
           "bucket_label": "观察池",
-          "score": 47,
+          "score": 49,
           "main_line": "轨道交通",
           "reason_text": "梯队跟随 · 题材联动 · 高度修复 · 反复回封 · 封单偏强 · 早封 · 断板风险高 · 分歧偏大 预期 高开（+0%~+2%%）+ 竞价量能≥2.17亿 超预期 高开≥+2%% + 竞价量能≥2.17亿 低预期 低于+0%% 或 竞价量能",
           "expected_text": "高开（+0%~+2%%）+ 竞价量能≥2.17亿",
@@ -28374,15 +29121,15 @@
         },
         {
           "date10": "2026-06-08",
-          "code": "603859",
-          "name": "能科科技",
+          "code": "002421",
+          "name": "达实智能",
           "bucket": "watch",
           "bucket_label": "观察池",
-          "score": 47,
-          "main_line": "",
-          "reason_text": "高度修复 · 早封 · 容量够 · 晋级生态强(50%/50%) · 断板风险高 预期 高开（+0%~+2%%）+ 竞价量能≥0.86亿 超预期 高开≥+2%% + 竞价量能≥0.86亿 低预期 低于+0%% 或 竞价量能",
-          "expected_text": "高开（+0%~+2%%）+ 竞价量能≥0.86亿",
-          "super_text": "高开≥+2%% + 竞价量能≥0.86亿",
+          "score": 48,
+          "main_line": "绿色建筑",
+          "reason_text": "梯队跟随 · 一年新高 · 题材联动 · 高度修复 · 反复回封 · 早封 · 容量够 · 断板风险高 · 分歧偏大 预期 高开（+0%~+2%%）+ 竞价量能≥1.22亿 超预期 高开≥+2%% + 竞价量能≥1.22亿 低预期 低于+0%% 或 竞价量能",
+          "expected_text": "高开（+0%~+2%%）+ 竞价量能≥1.22亿",
+          "super_text": "高开≥+2%% + 竞价量能≥1.22亿",
           "low_text": "低于+0%% 或 竞价量能",
           "quote_time": "",
           "auction_amount_need_yi": 0.0,
@@ -28398,7 +29145,7 @@
           "name": "亚翔集成",
           "bucket": "watch",
           "bucket_label": "观察池",
-          "score": 46,
+          "score": 48,
           "main_line": "中芯国际概念",
           "reason_text": "有梯队 · 高度修复 · 温和放量 · 早封 · 容量够 · 断板风险高 预期 低开（-2%~+0%%）+ 竞价量能≥0.84亿 超预期 高开≥+0%% + 竞价量能≥0.84亿 低预期 低于-2%% 或 竞价量能",
           "expected_text": "低开（-2%~+0%%）+ 竞价量能≥0.84亿",
@@ -28422,11 +29169,11 @@
           "603500",
           "002354",
           "002613",
-          "600403",
           "603135",
+          "600403",
           "002254",
           "002361",
-          "603859",
+          "002421",
           "603929"
         ],
         "source": "unavailable",
@@ -28443,7 +29190,7 @@
         "name": "祥和实业",
         "bucket": "relay",
         "bucket_label": "接力候选",
-        "score": 62,
+        "score": 64,
         "score_band": "条件触发",
         "score_sub_label": "兜底候选 · 仅超预期",
         "main_line": "轨道交通",
@@ -28455,7 +29202,7 @@
         "next_step": "3进4",
         "plate_name": "",
         "hy": "轨交设备",
-        "factor_hint": "环境51(防守观察) / 板块49 / 龙头85 / 接力85 / 容量50 / 风险44 / 梯队61 / 条件触发",
+        "factor_hint": "环境51(防守观察) / 板块48 / 龙头85 / 接力86 / 容量50 / 风险40 / 潮汐+2 / 梯队61 / 条件触发",
         "reason_html": "<span class=\"reason-bits\">轨道交通龙头带动 · 梯队带动神剑股份、达实智能 · 高度修复 · 换手承接 · 早封 · 晋级生态强(50%/50%) · 断板风险高</span><div class=\"exp-wrap\"><div class=\"exp-row\"><span class=\"exp-pill pill-pre\">预期</span>高开（+1%~+3%%）+ 竞价量能≥0.45亿</div><div class=\"exp-row\"><span class=\"exp-pill pill-hi\">超预期</span>高开≥+3%% + 竞价量能≥0.45亿</div><div class=\"exp-row\"><span class=\"exp-pill pill-lo\">低预期</span>低于+1%% 或 竞价量能<0.32亿</div></div>",
         "reason_text": "轨道交通龙头带动 · 梯队带动神剑股份、达实智能 · 高度修复 · 换手承接 · 早封 · 晋级生态强(50%/50%) · 断板风险高 预期 高开（+1%~+3%%）+ 竞价量能≥0.45亿 超预期 高开≥+3%% + 竞价量能≥0.45亿 低预期 低于+1%% 或 竞价量能",
         "expectation": {
@@ -28508,9 +29255,9 @@
         "name": "天娱数科",
         "bucket": "watch",
         "bucket_label": "观察池",
-        "score": 58,
-        "score_band": "只观察",
-        "score_sub_label": "高标/题材核心 · 只观察",
+        "score": 60,
+        "score_band": "条件触发",
+        "score_sub_label": "高标/题材核心 · 条件触发",
         "main_line": "乡村振兴",
         "style_tag": "温和放量",
         "lbc": 2,
@@ -28520,7 +29267,7 @@
         "next_step": "2进3",
         "plate_name": "",
         "hy": "广告营销",
-        "factor_hint": "环境51(防守观察) / 板块47 / 龙头77 / 接力79 / 容量63 / 风险33 / 梯队45 / 只观察",
+        "factor_hint": "环境51(防守观察) / 板块47 / 龙头77 / 接力80 / 容量63 / 风险29 / 潮汐+2 / 梯队45 / 条件触发",
         "reason_html": "<span class=\"reason-bits\">乡村振兴龙头带动 · 梯队带动中百集团 · 题材联动 · 高度修复 · 温和放量 · 封单偏强 · 封板稳 · 断板风险高</span><div class=\"exp-wrap\"><div class=\"exp-row\"><span class=\"exp-pill pill-pre\">预期</span>高开（+1%~+3%%）+ 竞价量能≥0.48亿</div><div class=\"exp-row\"><span class=\"exp-pill pill-hi\">超预期</span>高开≥+3%% + 竞价量能≥0.48亿</div><div class=\"exp-row\"><span class=\"exp-pill pill-lo\">低预期</span>低于+1%% 或 竞价量能<0.34亿</div></div>",
         "reason_text": "乡村振兴龙头带动 · 梯队带动中百集团 · 题材联动 · 高度修复 · 温和放量 · 封单偏强 · 封板稳 · 断板风险高 预期 高开（+1%~+3%%）+ 竞价量能≥0.48亿 超预期 高开≥+3%% + 竞价量能≥0.48亿 低预期 低于+1%% 或 竞价量能",
         "expectation": {
@@ -28573,9 +29320,9 @@
         "name": "北玻股份",
         "bucket": "watch",
         "bucket_label": "观察池",
-        "score": 55,
-        "score_band": "只观察",
-        "score_sub_label": "高标/题材核心 · 只观察",
+        "score": 60,
+        "score_band": "条件触发",
+        "score_sub_label": "高标/题材核心 · 条件触发",
         "main_line": "绿色建筑",
         "style_tag": "温和放量",
         "lbc": 2,
@@ -28585,90 +29332,25 @@
         "next_step": "2进3",
         "plate_name": "",
         "hy": "玻璃玻纤",
-        "factor_hint": "环境51(防守观察) / 板块42 / 龙头77 / 接力75 / 容量53 / 风险37 / 梯队31 / 只观察",
-        "reason_html": "<span class=\"reason-bits\">绿色建筑龙头带动 · 梯队带动荣安地产、达实智能 · 高度修复 · 温和放量 · 封板稳 · 早封 · 断板风险高</span><div class=\"exp-wrap\"><div class=\"exp-row\"><span class=\"exp-pill pill-pre\">预期</span>高开（+0%~+2%%）+ 竞价量能≥0.15亿</div><div class=\"exp-row\"><span class=\"exp-pill pill-hi\">超预期</span>高开≥+2%% + 竞价量能≥0.15亿</div><div class=\"exp-row\"><span class=\"exp-pill pill-lo\">低预期</span>低于+0%% 或 竞价量能<0.10亿</div></div>",
-        "reason_text": "绿色建筑龙头带动 · 梯队带动荣安地产、达实智能 · 高度修复 · 温和放量 · 封板稳 · 早封 · 断板风险高 预期 高开（+0%~+2%%）+ 竞价量能≥0.15亿 超预期 高开≥+2%% + 竞价量能≥0.15亿 低预期 低于+0%% 或 竞价量能",
+        "factor_hint": "环境51(防守观察) / 板块43 / 龙头80 / 接力78 / 容量53 / 风险33 / 潮汐+2 / 梯队31 / 条件触发",
+        "reason_html": "<span class=\"reason-bits\">绿色建筑龙头带动 · 梯队带动荣安地产、达实智能 · 一年新高 · 高度修复 · 温和放量 · 封板稳 · 早封 · 断板风险高</span><div class=\"exp-wrap\"><div class=\"exp-row\"><span class=\"exp-pill pill-pre\">预期</span>高开（+1%~+3%%）+ 竞价量能≥0.19亿</div><div class=\"exp-row\"><span class=\"exp-pill pill-hi\">超预期</span>高开≥+3%% + 竞价量能≥0.19亿</div><div class=\"exp-row\"><span class=\"exp-pill pill-lo\">低预期</span>低于+1%% 或 竞价量能<0.14亿</div></div>",
+        "reason_text": "绿色建筑龙头带动 · 梯队带动荣安地产、达实智能 · 一年新高 · 高度修复 · 温和放量 · 封板稳 · 早封 · 断板风险高 预期 高开（+1%~+3%%）+ 竞价量能≥0.19亿 超预期 高开≥+3%% + 竞价量能≥0.19亿 低预期 低于+1%% 或 竞价量能",
         "expectation": {
-          "expected_text": "高开（+0%~+2%%）+ 竞价量能≥0.15亿",
-          "super_text": "高开≥+2%% + 竞价量能≥0.15亿",
-          "low_text": "低于+0%% 或 竞价量能",
+          "expected_text": "高开（+1%~+3%%）+ 竞价量能≥0.19亿",
+          "super_text": "高开≥+3%% + 竞价量能≥0.19亿",
+          "low_text": "低于+1%% 或 竞价量能",
           "expected_range": [
-            0.0,
-            2.0
+            1.0,
+            3.0
           ],
-          "super_gap_min": 2.0,
+          "super_gap_min": 3.0,
           "auction_amount_min_yi": null,
           "surge_pct_min": null,
           "volume_expand_ratio": null,
           "super_requires_reseal": false,
           "super_requires_open_board_limit": null,
           "seal_amount_min_yi": null,
-          "raw_text": "绿色建筑龙头带动 · 梯队带动荣安地产、达实智能 · 高度修复 · 温和放量 · 封板稳 · 早封 · 断板风险高 预期 高开（+0%~+2%%）+ 竞价量能≥0.15亿 超预期 高开≥+2%% + 竞价量能≥0.15亿 低预期 低于+0%% 或 竞价量能"
-        },
-        "trade_date10": "2026-06-09",
-        "performance": {
-          "open_check": {
-            "status": "unavailable",
-            "label": "无法判断",
-            "gap_pct": null,
-            "note": "未拿到 9:25 实时报价，当前不生成买入信号。",
-            "can_enter": false
-          },
-          "next_day": {
-            "status": "pending",
-            "label": "隔日收益",
-            "note": "已拿到 9:25 开盘判断，待收盘后补齐收益表现。"
-          },
-          "hold_2d": {
-            "status": "pending",
-            "label": "2日收益",
-            "note": "已拿到 9:25 开盘判断，待收盘后补齐收益表现。"
-          },
-          "hold_3d": {
-            "status": "pending",
-            "label": "3日收益",
-            "note": "已拿到 9:25 开盘判断，待收盘后补齐收益表现。"
-          }
-        }
-      },
-      {
-        "date": "20260608",
-        "date10": "2026-06-08",
-        "code": "600403",
-        "name": "大有能源",
-        "bucket": "watch",
-        "bucket_label": "观察池",
-        "score": 53,
-        "score_band": "只观察",
-        "score_sub_label": "高标/题材核心 · 只观察",
-        "main_line": "国资改革",
-        "style_tag": "反复回封",
-        "lbc": 6,
-        "cje_yi": 18.87,
-        "turnover": 89.0,
-        "tide_status": "防守观察",
-        "next_step": "6进7",
-        "plate_name": "",
-        "hy": "煤炭开采",
-        "factor_hint": "环境51(防守观察) / 板块11 / 龙头88 / 接力71 / 容量89 / 风险24 / 梯队38 / 只观察",
-        "reason_html": "<span class=\"reason-bits\">市场唯一高度核心 · 板块归属：国资改革、低价 · 突破新高(6板) · 高度修复 · 温和放量 · 早封 · 容量够 · 题材转弱 · 梯队断层</span><div class=\"exp-wrap\"><div class=\"exp-row\"><span class=\"exp-pill pill-pre\">预期</span>高开（+0%~+2%%）+ 竞价量能≥0.85亿</div><div class=\"exp-row\"><span class=\"exp-pill pill-hi\">超预期</span>高开≥+2%% + 竞价量能≥0.85亿</div><div class=\"exp-row\"><span class=\"exp-pill pill-lo\">低预期</span>低于+0%% 或 竞价量能<0.59亿</div></div>",
-        "reason_text": "市场唯一高度核心 · 板块归属：国资改革、低价 · 突破新高(6板) · 高度修复 · 温和放量 · 早封 · 容量够 · 题材转弱 · 梯队断层 预期 高开（+0%~+2%%）+ 竞价量能≥0.85亿 超预期 高开≥+2%% + 竞价量能≥0.85亿 低预期 低于+0%% 或 竞价量能",
-        "expectation": {
-          "expected_text": "高开（+0%~+2%%）+ 竞价量能≥0.85亿",
-          "super_text": "高开≥+2%% + 竞价量能≥0.85亿",
-          "low_text": "低于+0%% 或 竞价量能",
-          "expected_range": [
-            0.0,
-            2.0
-          ],
-          "super_gap_min": 2.0,
-          "auction_amount_min_yi": null,
-          "surge_pct_min": null,
-          "volume_expand_ratio": null,
-          "super_requires_reseal": false,
-          "super_requires_open_board_limit": null,
-          "seal_amount_min_yi": null,
-          "raw_text": "市场唯一高度核心 · 板块归属：国资改革、低价 · 突破新高(6板) · 高度修复 · 温和放量 · 早封 · 容量够 · 题材转弱 · 梯队断层 预期 高开（+0%~+2%%）+ 竞价量能≥0.85亿 超预期 高开≥+2%% + 竞价量能≥0.85亿 低预期 低于+0%% 或 竞价量能"
+          "raw_text": "绿色建筑龙头带动 · 梯队带动荣安地产、达实智能 · 一年新高 · 高度修复 · 温和放量 · 封板稳 · 早封 · 断板风险高 预期 高开（+1%~+3%%）+ 竞价量能≥0.19亿 超预期 高开≥+3%% + 竞价量能≥0.19亿 低预期 低于+1%% 或 竞价量能"
         },
         "trade_date10": "2026-06-09",
         "performance": {
@@ -28703,9 +29385,9 @@
         "name": "中重科技",
         "bucket": "watch",
         "bucket_label": "观察池",
-        "score": 53,
+        "score": 59,
         "score_band": "只观察",
-        "score_sub_label": "高标/题材核心 · 只观察",
+        "score_sub_label": "容量核心 · 只观察",
         "main_line": "机械",
         "style_tag": "反复回封",
         "lbc": 4,
@@ -28715,12 +29397,77 @@
         "next_step": "4进5",
         "plate_name": "",
         "hy": "专用设备",
-        "factor_hint": "环境51(防守观察) / 板块36 / 龙头75 / 接力67 / 容量89 / 风险19 / 梯队11 / 只观察",
-        "reason_html": "<span class=\"reason-bits\">有梯队 · 高度修复 · 温和放量 · 早封 · 容量够 · 梯队断层 · 断板风险高</span><div class=\"exp-wrap\"><div class=\"exp-row\"><span class=\"exp-pill pill-pre\">预期</span>高开（+0%~+2%%）+ 竞价量能≥0.50亿</div><div class=\"exp-row\"><span class=\"exp-pill pill-hi\">超预期</span>高开≥+2%% + 竞价量能≥0.50亿</div><div class=\"exp-row\"><span class=\"exp-pill pill-lo\">低预期</span>低于+0%% 或 竞价量能<0.35亿</div></div>",
-        "reason_text": "有梯队 · 高度修复 · 温和放量 · 早封 · 容量够 · 梯队断层 · 断板风险高 预期 高开（+0%~+2%%）+ 竞价量能≥0.50亿 超预期 高开≥+2%% + 竞价量能≥0.50亿 低预期 低于+0%% 或 竞价量能",
+        "factor_hint": "环境51(防守观察) / 板块36 / 龙头78 / 接力70 / 容量89 / 风险15 / 潮汐+4 / 梯队11 / 只观察",
+        "reason_html": "<span class=\"reason-bits\">有梯队 · 一年新高 · 高度修复 · 温和放量 · 早封 · 容量够 · 梯队断层 · 断板风险高</span><div class=\"exp-wrap\"><div class=\"exp-row\"><span class=\"exp-pill pill-pre\">预期</span>高开（+1%~+3%%）+ 竞价量能≥0.67亿</div><div class=\"exp-row\"><span class=\"exp-pill pill-hi\">超预期</span>高开≥+3%% + 竞价量能≥0.67亿</div><div class=\"exp-row\"><span class=\"exp-pill pill-lo\">低预期</span>低于+1%% 或 竞价量能<0.47亿</div></div>",
+        "reason_text": "有梯队 · 一年新高 · 高度修复 · 温和放量 · 早封 · 容量够 · 梯队断层 · 断板风险高 预期 高开（+1%~+3%%）+ 竞价量能≥0.67亿 超预期 高开≥+3%% + 竞价量能≥0.67亿 低预期 低于+1%% 或 竞价量能",
         "expectation": {
-          "expected_text": "高开（+0%~+2%%）+ 竞价量能≥0.50亿",
-          "super_text": "高开≥+2%% + 竞价量能≥0.50亿",
+          "expected_text": "高开（+1%~+3%%）+ 竞价量能≥0.67亿",
+          "super_text": "高开≥+3%% + 竞价量能≥0.67亿",
+          "low_text": "低于+1%% 或 竞价量能",
+          "expected_range": [
+            1.0,
+            3.0
+          ],
+          "super_gap_min": 3.0,
+          "auction_amount_min_yi": null,
+          "surge_pct_min": null,
+          "volume_expand_ratio": null,
+          "super_requires_reseal": false,
+          "super_requires_open_board_limit": null,
+          "seal_amount_min_yi": null,
+          "raw_text": "有梯队 · 一年新高 · 高度修复 · 温和放量 · 早封 · 容量够 · 梯队断层 · 断板风险高 预期 高开（+1%~+3%%）+ 竞价量能≥0.67亿 超预期 高开≥+3%% + 竞价量能≥0.67亿 低预期 低于+1%% 或 竞价量能"
+        },
+        "trade_date10": "2026-06-09",
+        "performance": {
+          "open_check": {
+            "status": "unavailable",
+            "label": "无法判断",
+            "gap_pct": null,
+            "note": "未拿到 9:25 实时报价，当前不生成买入信号。",
+            "can_enter": false
+          },
+          "next_day": {
+            "status": "pending",
+            "label": "隔日收益",
+            "note": "已拿到 9:25 开盘判断，待收盘后补齐收益表现。"
+          },
+          "hold_2d": {
+            "status": "pending",
+            "label": "2日收益",
+            "note": "已拿到 9:25 开盘判断，待收盘后补齐收益表现。"
+          },
+          "hold_3d": {
+            "status": "pending",
+            "label": "3日收益",
+            "note": "已拿到 9:25 开盘判断，待收盘后补齐收益表现。"
+          }
+        }
+      },
+      {
+        "date": "20260608",
+        "date10": "2026-06-08",
+        "code": "600403",
+        "name": "大有能源",
+        "bucket": "watch",
+        "bucket_label": "观察池",
+        "score": 58,
+        "score_band": "只观察",
+        "score_sub_label": "高标/题材核心 · 只观察",
+        "main_line": "国资改革",
+        "style_tag": "反复回封",
+        "lbc": 6,
+        "cje_yi": 18.87,
+        "turnover": 89.0,
+        "tide_status": "防守观察",
+        "next_step": "6进7",
+        "plate_name": "",
+        "hy": "煤炭开采",
+        "factor_hint": "环境51(防守观察) / 板块11 / 龙头90 / 接力74 / 容量89 / 风险20 / 潮汐+2 / 梯队38 / 只观察",
+        "reason_html": "<span class=\"reason-bits\">市场唯一高度核心 · 板块归属：国资改革、低价 · 突破新高(6板) · 一年新高 · 温和放量 · 早封 · 容量够 · 题材转弱 · 梯队断层</span><div class=\"exp-wrap\"><div class=\"exp-row\"><span class=\"exp-pill pill-pre\">预期</span>高开（+0%~+2%%）+ 竞价量能≥0.85亿</div><div class=\"exp-row\"><span class=\"exp-pill pill-hi\">超预期</span>高开≥+2%% + 竞价量能≥0.85亿</div><div class=\"exp-row\"><span class=\"exp-pill pill-lo\">低预期</span>低于+0%% 或 竞价量能<0.59亿</div></div>",
+        "reason_text": "市场唯一高度核心 · 板块归属：国资改革、低价 · 突破新高(6板) · 一年新高 · 温和放量 · 早封 · 容量够 · 题材转弱 · 梯队断层 预期 高开（+0%~+2%%）+ 竞价量能≥0.85亿 超预期 高开≥+2%% + 竞价量能≥0.85亿 低预期 低于+0%% 或 竞价量能",
+        "expectation": {
+          "expected_text": "高开（+0%~+2%%）+ 竞价量能≥0.85亿",
+          "super_text": "高开≥+2%% + 竞价量能≥0.85亿",
           "low_text": "低于+0%% 或 竞价量能",
           "expected_range": [
             0.0,
@@ -28733,7 +29480,7 @@
           "super_requires_reseal": false,
           "super_requires_open_board_limit": null,
           "seal_amount_min_yi": null,
-          "raw_text": "有梯队 · 高度修复 · 温和放量 · 早封 · 容量够 · 梯队断层 · 断板风险高 预期 高开（+0%~+2%%）+ 竞价量能≥0.50亿 超预期 高开≥+2%% + 竞价量能≥0.50亿 低预期 低于+0%% 或 竞价量能"
+          "raw_text": "市场唯一高度核心 · 板块归属：国资改革、低价 · 突破新高(6板) · 一年新高 · 温和放量 · 早封 · 容量够 · 题材转弱 · 梯队断层 预期 高开（+0%~+2%%）+ 竞价量能≥0.85亿 超预期 高开≥+2%% + 竞价量能≥0.85亿 低预期 低于+0%% 或 竞价量能"
         },
         "trade_date10": "2026-06-09",
         "performance": {
@@ -28768,7 +29515,7 @@
         "name": "泰和新材",
         "bucket": "watch",
         "bucket_label": "观察池",
-        "score": 50,
+        "score": 52,
         "score_band": "只观察",
         "score_sub_label": "风险观察 · 只观察",
         "main_line": "",
@@ -28780,9 +29527,9 @@
         "next_step": "2进3",
         "plate_name": "",
         "hy": "化学纤维",
-        "factor_hint": "环境51(防守观察) / 板块33 / 龙头59 / 接力74 / 容量95 / 风险24 / 梯队0 / 只观察",
-        "reason_html": "<span class=\"reason-bits\">高度修复 · 温和放量 · 封板稳 · 早封 · 断板风险高</span><div class=\"exp-wrap\"><div class=\"exp-row\"><span class=\"exp-pill pill-pre\">预期</span>高开（+0%~+2%%）+ 竞价量能≥0.51亿</div><div class=\"exp-row\"><span class=\"exp-pill pill-hi\">超预期</span>高开≥+2%% + 竞价量能≥0.51亿</div><div class=\"exp-row\"><span class=\"exp-pill pill-lo\">低预期</span>低于+0%% 或 竞价量能<0.36亿</div></div>",
-        "reason_text": "高度修复 · 温和放量 · 封板稳 · 早封 · 断板风险高 预期 高开（+0%~+2%%）+ 竞价量能≥0.51亿 超预期 高开≥+2%% + 竞价量能≥0.51亿 低预期 低于+0%% 或 竞价量能",
+        "factor_hint": "环境51(防守观察) / 板块33 / 龙头61 / 接力76 / 容量95 / 风险20 / 潮汐+0 / 梯队0 / 只观察",
+        "reason_html": "<span class=\"reason-bits\">一年新高 · 高度修复 · 温和放量 · 封板稳 · 早封 · 断板风险高</span><div class=\"exp-wrap\"><div class=\"exp-row\"><span class=\"exp-pill pill-pre\">预期</span>高开（+0%~+2%%）+ 竞价量能≥0.51亿</div><div class=\"exp-row\"><span class=\"exp-pill pill-hi\">超预期</span>高开≥+2%% + 竞价量能≥0.51亿</div><div class=\"exp-row\"><span class=\"exp-pill pill-lo\">低预期</span>低于+0%% 或 竞价量能<0.36亿</div></div>",
+        "reason_text": "一年新高 · 高度修复 · 温和放量 · 封板稳 · 早封 · 断板风险高 预期 高开（+0%~+2%%）+ 竞价量能≥0.51亿 超预期 高开≥+2%% + 竞价量能≥0.51亿 低预期 低于+0%% 或 竞价量能",
         "expectation": {
           "expected_text": "高开（+0%~+2%%）+ 竞价量能≥0.51亿",
           "super_text": "高开≥+2%% + 竞价量能≥0.51亿",
@@ -28798,7 +29545,7 @@
           "super_requires_reseal": false,
           "super_requires_open_board_limit": null,
           "seal_amount_min_yi": null,
-          "raw_text": "高度修复 · 温和放量 · 封板稳 · 早封 · 断板风险高 预期 高开（+0%~+2%%）+ 竞价量能≥0.51亿 超预期 高开≥+2%% + 竞价量能≥0.51亿 低预期 低于+0%% 或 竞价量能"
+          "raw_text": "一年新高 · 高度修复 · 温和放量 · 封板稳 · 早封 · 断板风险高 预期 高开（+0%~+2%%）+ 竞价量能≥0.51亿 超预期 高开≥+2%% + 竞价量能≥0.51亿 低预期 低于+0%% 或 竞价量能"
         },
         "trade_date10": "2026-06-09",
         "performance": {
@@ -28833,7 +29580,7 @@
         "name": "神剑股份",
         "bucket": "watch",
         "bucket_label": "观察池",
-        "score": 47,
+        "score": 49,
         "score_band": "只观察",
         "score_sub_label": "风险观察 · 只观察",
         "main_line": "轨道交通",
@@ -28845,7 +29592,7 @@
         "next_step": "2进3",
         "plate_name": "",
         "hy": "塑料",
-        "factor_hint": "环境51(防守观察) / 板块49 / 龙头51 / 接力73 / 容量68 / 风险26 / 梯队61 / 只观察",
+        "factor_hint": "环境51(防守观察) / 板块49 / 龙头51 / 接力74 / 容量68 / 风险22 / 潮汐+2 / 梯队61 / 只观察",
         "reason_html": "<span class=\"reason-bits\">梯队跟随 · 题材联动 · 高度修复 · 反复回封 · 封单偏强 · 早封 · 断板风险高 · 分歧偏大</span><div class=\"exp-wrap\"><div class=\"exp-row\"><span class=\"exp-pill pill-pre\">预期</span>高开（+0%~+2%%）+ 竞价量能≥2.17亿</div><div class=\"exp-row\"><span class=\"exp-pill pill-hi\">超预期</span>高开≥+2%% + 竞价量能≥2.17亿</div><div class=\"exp-row\"><span class=\"exp-pill pill-lo\">低预期</span>低于+0%% 或 竞价量能<1.52亿</div></div>",
         "reason_text": "梯队跟随 · 题材联动 · 高度修复 · 反复回封 · 封单偏强 · 早封 · 断板风险高 · 分歧偏大 预期 高开（+0%~+2%%）+ 竞价量能≥2.17亿 超预期 高开≥+2%% + 竞价量能≥2.17亿 低预期 低于+0%% 或 竞价量能",
         "expectation": {
@@ -28894,28 +29641,28 @@
       {
         "date": "20260608",
         "date10": "2026-06-08",
-        "code": "603859",
-        "name": "能科科技",
+        "code": "002421",
+        "name": "达实智能",
         "bucket": "watch",
         "bucket_label": "观察池",
-        "score": 47,
+        "score": 48,
         "score_band": "只观察",
         "score_sub_label": "风险观察 · 只观察",
-        "main_line": "",
-        "style_tag": "常规封板",
+        "main_line": "绿色建筑",
+        "style_tag": "反复回封",
         "lbc": 2,
-        "cje_yi": 19.17,
-        "turnover": 85.0,
+        "cje_yi": 27.04,
+        "turnover": 74.0,
         "tide_status": "防守观察",
         "next_step": "2进3",
         "plate_name": "",
         "hy": "IT服务Ⅱ",
-        "factor_hint": "环境51(防守观察) / 板块42 / 龙头54 / 接力66 / 容量85 / 风险22 / 梯队0 / 只观察",
-        "reason_html": "<span class=\"reason-bits\">高度修复 · 早封 · 容量够 · 晋级生态强(50%/50%) · 断板风险高</span><div class=\"exp-wrap\"><div class=\"exp-row\"><span class=\"exp-pill pill-pre\">预期</span>高开（+0%~+2%%）+ 竞价量能≥0.86亿</div><div class=\"exp-row\"><span class=\"exp-pill pill-hi\">超预期</span>高开≥+2%% + 竞价量能≥0.86亿</div><div class=\"exp-row\"><span class=\"exp-pill pill-lo\">低预期</span>低于+0%% 或 竞价量能<0.60亿</div></div>",
-        "reason_text": "高度修复 · 早封 · 容量够 · 晋级生态强(50%/50%) · 断板风险高 预期 高开（+0%~+2%%）+ 竞价量能≥0.86亿 超预期 高开≥+2%% + 竞价量能≥0.86亿 低预期 低于+0%% 或 竞价量能",
+        "factor_hint": "环境51(防守观察) / 板块44 / 龙头53 / 接力68 / 容量74 / 风险19 / 潮汐+2 / 梯队31 / 只观察",
+        "reason_html": "<span class=\"reason-bits\">梯队跟随 · 一年新高 · 题材联动 · 高度修复 · 反复回封 · 早封 · 容量够 · 断板风险高 · 分歧偏大</span><div class=\"exp-wrap\"><div class=\"exp-row\"><span class=\"exp-pill pill-pre\">预期</span>高开（+0%~+2%%）+ 竞价量能≥1.22亿</div><div class=\"exp-row\"><span class=\"exp-pill pill-hi\">超预期</span>高开≥+2%% + 竞价量能≥1.22亿</div><div class=\"exp-row\"><span class=\"exp-pill pill-lo\">低预期</span>低于+0%% 或 竞价量能<0.85亿</div></div>",
+        "reason_text": "梯队跟随 · 一年新高 · 题材联动 · 高度修复 · 反复回封 · 早封 · 容量够 · 断板风险高 · 分歧偏大 预期 高开（+0%~+2%%）+ 竞价量能≥1.22亿 超预期 高开≥+2%% + 竞价量能≥1.22亿 低预期 低于+0%% 或 竞价量能",
         "expectation": {
-          "expected_text": "高开（+0%~+2%%）+ 竞价量能≥0.86亿",
-          "super_text": "高开≥+2%% + 竞价量能≥0.86亿",
+          "expected_text": "高开（+0%~+2%%）+ 竞价量能≥1.22亿",
+          "super_text": "高开≥+2%% + 竞价量能≥1.22亿",
           "low_text": "低于+0%% 或 竞价量能",
           "expected_range": [
             0.0,
@@ -28928,7 +29675,7 @@
           "super_requires_reseal": false,
           "super_requires_open_board_limit": null,
           "seal_amount_min_yi": null,
-          "raw_text": "高度修复 · 早封 · 容量够 · 晋级生态强(50%/50%) · 断板风险高 预期 高开（+0%~+2%%）+ 竞价量能≥0.86亿 超预期 高开≥+2%% + 竞价量能≥0.86亿 低预期 低于+0%% 或 竞价量能"
+          "raw_text": "梯队跟随 · 一年新高 · 题材联动 · 高度修复 · 反复回封 · 早封 · 容量够 · 断板风险高 · 分歧偏大 预期 高开（+0%~+2%%）+ 竞价量能≥1.22亿 超预期 高开≥+2%% + 竞价量能≥1.22亿 低预期 低于+0%% 或 竞价量能"
         },
         "trade_date10": "2026-06-09",
         "performance": {
@@ -28963,7 +29710,7 @@
         "name": "亚翔集成",
         "bucket": "watch",
         "bucket_label": "观察池",
-        "score": 46,
+        "score": 48,
         "score_band": "只观察",
         "score_sub_label": "风险观察 · 只观察",
         "main_line": "中芯国际概念",
@@ -28975,7 +29722,7 @@
         "next_step": "1进2",
         "plate_name": "",
         "hy": "专业工程",
-        "factor_hint": "环境51(防守观察) / 板块41 / 龙头54 / 接力66 / 容量75 / 风险27 / 梯队28 / 只观察",
+        "factor_hint": "环境51(防守观察) / 板块41 / 龙头54 / 接力67 / 容量75 / 风险23 / 潮汐+2 / 梯队28 / 只观察",
         "reason_html": "<span class=\"reason-bits\">有梯队 · 高度修复 · 温和放量 · 早封 · 容量够 · 断板风险高</span><div class=\"exp-wrap\"><div class=\"exp-row\"><span class=\"exp-pill pill-pre\">预期</span>低开（-2%~+0%%）+ 竞价量能≥0.84亿</div><div class=\"exp-row\"><span class=\"exp-pill pill-hi\">超预期</span>高开≥+0%% + 竞价量能≥0.84亿</div><div class=\"exp-row\"><span class=\"exp-pill pill-lo\">低预期</span>低于-2%% 或 竞价量能<0.59亿</div></div>",
         "reason_text": "有梯队 · 高度修复 · 温和放量 · 早封 · 容量够 · 断板风险高 预期 低开（-2%~+0%%）+ 竞价量能≥0.84亿 超预期 高开≥+0%% + 竞价量能≥0.84亿 低预期 低于-2%% 或 竞价量能",
         "expectation": {
@@ -30555,11 +31302,11 @@
           "603500",
           "002354",
           "002613",
-          "600403",
           "603135",
+          "600403",
           "002254",
           "002361",
-          "603859",
+          "002421",
           "603929"
         ],
         "source": "unavailable",
@@ -30573,11 +31320,11 @@
         "603500",
         "002354",
         "002613",
-        "600403",
         "603135",
+        "600403",
         "002254",
         "002361",
-        "603859",
+        "002421",
         "603929"
       ]
     }

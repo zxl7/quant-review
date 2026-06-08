@@ -4,8 +4,9 @@
 from __future__ import annotations
 
 import unittest
+from unittest.mock import patch
 
-from daily_review.data.biying import extract_money_flow_day_map
+from daily_review.data.biying import extract_money_flow_day_map, fetch_indices_realtime
 
 
 class MoneyFlowMapTest(unittest.TestCase):
@@ -34,6 +35,43 @@ class MoneyFlowMapTest(unittest.TestCase):
                 "20260603": 0.6,
             },
         )
+
+
+class FetchIndicesRealtimeTest(unittest.TestCase):
+    def test_fetch_indices_realtime_degrades_when_one_index_request_fails(self) -> None:
+        class FakeClient:
+            base_url = "https://example.test"
+            token = "token"
+
+            def __init__(self) -> None:
+                self.calls = 0
+
+            def get_json(self, url: str) -> dict:
+                self.calls += 1
+                if self.calls == 1:
+                    raise RuntimeError("network down")
+                return {
+                    "t": "2026-06-08 14:30:01",
+                    "p": 3500.0,
+                    "yc": 3450.0,
+                    "cje": 123456789,
+                }
+
+        with patch("daily_review.data.biying._dt.datetime") as mock_datetime:
+            mock_datetime.now.return_value.strftime.return_value = "09:30:00"
+            client = FakeClient()
+            rows, as_of = fetch_indices_realtime(
+                client,
+                codes=[("000001.SH", "上证指数"), ("399001.SZ", "深证成指")],
+            )
+
+        self.assertEqual(len(rows), 2)
+        self.assertEqual(rows[0]["name"], "上证指数")
+        self.assertEqual(rows[0]["val"], 0.0)
+        self.assertEqual(rows[0]["chg"], 0.0)
+        self.assertEqual(rows[1]["name"], "深证成指")
+        self.assertEqual(rows[1]["val"], 3500.0)
+        self.assertEqual(as_of, "14:30:01")
 
 
 if __name__ == "__main__":

@@ -467,6 +467,12 @@ const scoreClassByValue = (s: number) => {
   return "score-weak"
 }
 
+const normalizePlateStrength = (raw: unknown) => {
+  const n = Number(raw)
+  if (!Number.isFinite(n) || n <= 0) return 0
+  return Math.max(0, Math.min(100, n))
+}
+
 const buildStockTags = (stock: ZtStockPick, plateName?: string): Array<{ text: string; cls: string }> => {
   const tags: Array<{ text: string; cls: string }> = []
   if (stock.source === "xgb") tags.push({ text: "实时", cls: "stp-chip stp-chip-hot" })
@@ -482,11 +488,12 @@ const buildStockTags = (stock: ZtStockPick, plateName?: string): Array<{ text: s
 
 const calculateStockScore = (stock: ZtStockPick, plateStrength = 0, isRealtimePlate = false) => {
   let score = 24
+  const normalizedStrength = normalizePlateStrength(plateStrength)
   score += Math.min(stock.lbc * 15, 45)
   score += Math.min(stock.zjYi * 6, 16)
   score += Math.min(stock.cjeYi * 0.5, 12)
   score += Math.min((stock.changePct || 0) * 1.4, 12)
-  score += Math.min(plateStrength / 5, 10)
+  score += Math.min(normalizedStrength * 0.11, 10)
   if (isRealtimePlate) score += 6
   if (stock.source === "xgb") score += 8
   if ((stock.limitUpDays || 0) >= 2) score += 6
@@ -497,8 +504,9 @@ const calculateStockScore = (stock: ZtStockPick, plateStrength = 0, isRealtimePl
 
 const calculateThemeScore = (bucket: { sources: string[]; stocks: ZtStockPick[]; plateStrength?: number; resonanceScore: number; ztEvidence?: ZtThemeEvidence | null }) => {
   let score = 22
+  const normalizedStrength = normalizePlateStrength(bucket.plateStrength)
   score += Math.min(bucket.resonanceScore * 0.42, 42)
-  score += Math.min((bucket.plateStrength || 0) / 4, 16)
+  score += Math.min(normalizedStrength * 0.16, 13)
   score += Math.min(bucket.stocks.length * 4, 16)
   score += Math.min((bucket.stocks[0]?.lbc || 0) * 6, 18)
   if (bucket.sources.some((x) => x.includes("选股宝"))) score += 6
@@ -529,12 +537,13 @@ const calculateThemeScore = (bucket: { sources: string[]; stocks: ZtStockPick[];
 
 const buildThemeTags = (theme: string, stocks: ZtStockPick[], sources: string[], plateStrength?: number, resonanceScore = 0, ztEvidence?: ZtThemeEvidence | null) => {
   const tags: Array<{ text: string; cls: string }> = []
+  const normalizedStrength = normalizePlateStrength(plateStrength)
   if (sources.some((x) => x.includes("选股宝"))) tags.push({ text: "实时热点", cls: "stp-chip stp-chip-hot" })
   if (sources.some((x) => x.includes("热门"))) tags.push({ text: "明日热门", cls: "stp-chip stp-chip-red" })
   if ((stocks[0]?.lbc || 0) >= 3) tags.push({ text: `${stocks[0].lbc}板龙头`, cls: "stp-chip stp-chip-red" })
   else if ((stocks[0]?.lbc || 0) === 2) tags.push({ text: "2板承接", cls: "stp-chip stp-chip-amber" })
-  if ((plateStrength || 0) >= 70) tags.push({ text: "板块强", cls: "stp-chip stp-chip-blue" })
-  else if ((plateStrength || 0) >= 45) tags.push({ text: "板块活跃", cls: "stp-chip stp-chip-blue" })
+  if (normalizedStrength >= 72) tags.push({ text: "板块强", cls: "stp-chip stp-chip-blue" })
+  else if (normalizedStrength >= 52) tags.push({ text: "板块活跃", cls: "stp-chip stp-chip-blue" })
   if (ztEvidence?.relayCount) tags.push({ text: `接力池${ztEvidence.relayCount}`, cls: "stp-chip stp-chip-red" })
   else if (ztEvidence?.watchCount) tags.push({ text: `观察池${ztEvidence.watchCount}`, cls: "stp-chip stp-chip-blue" })
   if (ztEvidence && (ztEvidence.maxRiskControlScore < 40 || Number(ztEvidence.minBreakRisk ?? 0) >= 70)) {
@@ -605,8 +614,9 @@ const calculateResonanceScore = (sources: string[], stocks: ZtStockPick[], plate
   const maxLbc = stocks[0]?.lbc || 0
   score += maxLbc * 8 // 连板高度加分
 
-  if (plateStrength) {
-    score += Math.min(plateStrength / 4, 30) // 板块强度加分，封顶 30
+  const normalizedStrength = normalizePlateStrength(plateStrength)
+  if (normalizedStrength) {
+    score += Math.min(normalizedStrength * 0.22, 20)
   }
 
   if (sources.some((s) => s.includes("热门"))) score += 10 // 热门题材额外加分

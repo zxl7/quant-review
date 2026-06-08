@@ -13,6 +13,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import math
 import re
 import shutil
 import sys
@@ -89,6 +90,76 @@ def _median_numbers(values: list[float]) -> float:
     return (float(nums[mid - 1]) + float(nums[mid])) / 2.0
 
 
+def _clamp_score(value: object, lo: float = 0.0, hi: float = 100.0) -> float:
+    return max(lo, min(hi, _to_float(value, lo)))
+
+
+def _normalize_plan_plate_strength(raw_strength: object, *, rank: object = None, total: int = 10) -> float:
+    """
+    将短线侠/板块排行的原始 strength 统一压到 0-100。
+
+    说明：
+    - 上游原始值可能是 8227/6661 这类累计热度，不能直接当百分制。
+    - 优先使用 rank 生成可比较的分位强度，再用 log 压缩后的原始值做微调。
+    - 这样既保留“前排更强”，又避免头部几名全部被顶到 100。
+    """
+    raw = max(0.0, _to_float(raw_strength, 0.0))
+    rank_val = _to_int(rank, 0)
+    base = 0.0
+    if rank_val > 0 and total > 0:
+        base = max(20.0, 72.0 - (rank_val - 1) * 8.0)
+    if raw <= 0:
+        return round(_clamp_score(base))
+    raw_log = math.log10(raw + 1.0)
+    raw_component = min(12.0, max(0.0, (raw_log - 1.0) * 4.2))
+    return round(_clamp_score(base + raw_component, 0.0, 88.0))
+
+
+def _compress_plan_theme_score(raw_score: object) -> int:
+    """
+    势能展示分压缩：
+    - 保留排序差异；
+    - 但避免头部长期打满 100、腰部密集堆在 70+。
+    """
+    score = _clamp_score(raw_score)
+    if score <= 40.0:
+        return int(round(score))
+    compressed = 40.0 + (score - 40.0) * 0.75
+    return int(round(_clamp_score(compressed, 0.0, 92.0)))
+
+
+def _generic_theme_penalty(theme: object, *, stock_count: int = 0, max_lbc: int = 0) -> int:
+    """
+    泛题材降权：
+    - 结构标签类题材可以保留，但默认不和真实主线板块同权竞争；
+    - 如果已经形成明显梯队，仅部分降权，避免误杀真实共振。
+    """
+    canonical = str(normalize_sector(str(theme or "").strip()) or str(theme or "").strip()).strip()
+    if not _is_plan_generic_theme(canonical):
+        return 0
+    if max_lbc >= 5 and stock_count >= 8:
+        return 14
+    if max_lbc >= 3 and stock_count >= 4:
+        return 18
+    if max_lbc >= 2 and stock_count >= 3:
+        return 22
+    return 28
+
+
+def _generic_theme_score_cap(theme: object, *, stock_count: int = 0, max_lbc: int = 0, plate_strength: float = 0.0) -> int | None:
+    canonical = str(normalize_sector(str(theme or "").strip()) or str(theme or "").strip()).strip()
+    if not _is_plan_generic_theme(canonical):
+        return None
+    normalized_strength = _clamp_score(plate_strength)
+    if normalized_strength >= 72 and max_lbc >= 4 and stock_count >= 6:
+        return 66
+    if max_lbc >= 5 and stock_count >= 8:
+        return 64
+    if max_lbc >= 3 and stock_count >= 4:
+        return 58
+    return 52
+
+
 def _top_labels(rows: list[dict], key_fn, limit: int = 2) -> list[str]:
     counts: dict[str, int] = {}
     for row in rows:
@@ -135,7 +206,8 @@ def _calculate_plan_stock_score(stock: dict, plate_strength: float = 0.0, *, is_
     score += min(_to_float(stock.get("zjYi"), 0.0) * 6, 16)
     score += min(_to_float(stock.get("cjeYi"), 0.0) * 0.5, 12)
     score += min(_to_float(stock.get("changePct"), 0.0) * 1.4, 12)
-    score += min(plate_strength / 5, 10)
+    normalized_strength = _clamp_score(plate_strength)
+    score += min(normalized_strength * 0.11, 10)
     if is_realtime_plate:
         score += 6
     if str(stock.get("source") or "") == "xgb":
@@ -155,8 +227,9 @@ def _calculate_plan_resonance_score(sources: list[str], stocks: list[dict], plat
     score += min(len(stocks) * 5, 30)
     max_lbc = _to_int((stocks[0] or {}).get("lbc") if stocks else 0, 0)
     score += max_lbc * 8
-    if plate_strength:
-        score += min(plate_strength / 4, 30)
+    normalized_strength = _clamp_score(plate_strength)
+    if normalized_strength:
+        score += min(normalized_strength * 0.22, 20)
     if any("热门" in str(source or "") for source in sources):
         score += 10
     return min(round(score), 100)
@@ -164,8 +237,9 @@ def _calculate_plan_resonance_score(sources: list[str], stocks: list[dict], plat
 
 def _calculate_plan_theme_score(sources: list[str], stocks: list[dict], plate_strength: float = 0.0, resonance_score: float = 0.0, zt_evidence: Optional[dict] = None) -> int:
     score = 22.0
+    normalized_strength = _clamp_score(plate_strength)
     score += min(resonance_score * 0.42, 42)
-    score += min(plate_strength / 4, 16)
+    score += min(normalized_strength * 0.16, 13)
     score += min(len(stocks) * 4, 16)
     score += min(_to_int((stocks[0] or {}).get("lbc") if stocks else 0, 0) * 6, 18)
     if any("选股宝" in str(source or "") for source in sources):
@@ -205,9 +279,10 @@ def _build_plan_theme_tags(theme: str, stocks: list[dict], sources: list[str], p
         tags.append(_plan_chip(f"{top_lbc}板龙头", "stp-chip stp-chip-red"))
     elif top_lbc == 2:
         tags.append(_plan_chip("2板承接", "stp-chip stp-chip-amber"))
-    if plate_strength >= 70:
+    normalized_strength = _clamp_score(plate_strength)
+    if normalized_strength >= 72:
         tags.append(_plan_chip("板块强", "stp-chip stp-chip-blue"))
-    elif plate_strength >= 45:
+    elif normalized_strength >= 52:
         tags.append(_plan_chip("板块活跃", "stp-chip stp-chip-blue"))
     if isinstance(zt_evidence, dict):
         relay_count = _to_int(zt_evidence.get("relayCount"), 0)
@@ -2100,13 +2175,18 @@ def _build_plan_theme_resolver(md: dict) -> dict:
         if not ctx:
             continue
         add_alias(ctx, row.get("name"))
-        ctx["plateStrength"] = _to_float(row.get("strength"), 0.0)
+        normalized_strength = _normalize_plan_plate_strength(
+            row.get("strength"),
+            rank=row.get("rank"),
+            total=max(len(md.get("plateRankTop10") or []), 10),
+        )
+        ctx["plateStrength"] = normalized_strength
         ctx["plateLead"] = str(row.get("lead") or "").strip()
         lead_name = str(row.get("lead") or "").strip()
         lead_code = str(row.get("leadCode") or "").strip()
         if lead_name and lead_code:
             prev = ctx.get("leader")
-            lead_score = max(_to_float(row.get("strength"), 0.0), 60.0)
+            lead_score = max(normalized_strength, 60.0)
             if not isinstance(prev, dict) or lead_score > _to_float(prev.get("score"), 0.0):
                 ctx["leader"] = {
                     "name": lead_name,
@@ -2121,7 +2201,7 @@ def _build_plan_theme_resolver(md: dict) -> dict:
             if not leader_name or not leader_code:
                 continue
             prev = ctx.get("leader")
-            leader_score = max(_to_float(row.get("strength"), 0.0), 58.0)
+            leader_score = max(normalized_strength, 58.0)
             if not isinstance(prev, dict) or leader_score > _to_float(prev.get("score"), 0.0):
                 ctx["leader"] = {
                     "name": leader_name,
@@ -2136,15 +2216,20 @@ def _build_plan_theme_resolver(md: dict) -> dict:
         if not ctx:
             continue
         add_alias(ctx, row.get("name"))
+        normalized_strength = _normalize_plan_plate_strength(
+            row.get("strength"),
+            rank=row.get("rank"),
+            total=max(len(md.get("plateRotateTop") or []), 10),
+        )
         if not ctx.get("plateLead"):
             ctx["plateLead"] = str(row.get("lead") or "").strip()
         if ctx.get("plateStrength") in (None, "", 0):
-            ctx["plateStrength"] = _to_float(row.get("strength"), 0.0)
+            ctx["plateStrength"] = normalized_strength
         lead_name = str(row.get("lead") or "").strip()
         lead_code = str(row.get("leadCode") or "").strip()
         if lead_name and lead_code:
             prev = ctx.get("leader")
-            lead_score = max(_to_float(row.get("strength"), 0.0), 60.0)
+            lead_score = max(normalized_strength, 60.0)
             if not isinstance(prev, dict) or lead_score > _to_float(prev.get("score"), 0.0):
                 ctx["leader"] = {
                     "name": lead_name,
@@ -2377,8 +2462,23 @@ def _build_plan_theme_resolver(md: dict) -> dict:
                 "tagCls": "stp-chip stp-chip-amber" if is_risky else "stp-chip stp-chip-slate",
             }
         zt_evidence = ctx.get("ztEvidence") if isinstance(ctx.get("ztEvidence"), dict) else None
+        max_lbc = max((_to_int((stock or {}).get("lbc"), 0) for stock in scored_stocks), default=0)
+        generic_penalty = _generic_theme_penalty(canonical, stock_count=len(scored_stocks), max_lbc=max_lbc)
+        generic_cap = _generic_theme_score_cap(
+            canonical,
+            stock_count=len(scored_stocks),
+            max_lbc=max_lbc,
+            plate_strength=plate_strength,
+        )
         base_resonance_score = _calculate_plan_resonance_score(local_sources, scored_stocks, plate_strength)
-        base_theme_score = _calculate_plan_theme_score(local_sources, scored_stocks, plate_strength, base_resonance_score, zt_evidence)
+        if generic_penalty:
+            base_resonance_score = max(0, base_resonance_score - max(8, generic_penalty // 2))
+        raw_theme_score = _calculate_plan_theme_score(local_sources, scored_stocks, plate_strength, base_resonance_score, zt_evidence)
+        if generic_penalty:
+            raw_theme_score = max(0, raw_theme_score - generic_penalty)
+        base_theme_score = _compress_plan_theme_score(raw_theme_score)
+        if generic_cap is not None:
+            base_theme_score = min(base_theme_score, generic_cap)
         base_theme_tags = _build_plan_theme_tags(canonical, scored_stocks, local_sources, plate_strength, base_resonance_score, zt_evidence)
         evidence_summary = _build_plan_evidence_summary(zt_evidence)
         for alias in aliases:
@@ -2403,6 +2503,9 @@ def _build_plan_theme_resolver(md: dict) -> dict:
             "baseSources": local_sources,
             "baseResonanceScore": base_resonance_score,
             "baseThemeScore": base_theme_score,
+            "rawThemeScore": raw_theme_score,
+            "genericPenalty": generic_penalty,
+            "genericCap": generic_cap,
             "baseThemeTags": base_theme_tags,
             "evidenceSummary": evidence_summary,
         }

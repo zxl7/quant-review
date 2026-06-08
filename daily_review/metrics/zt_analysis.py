@@ -416,6 +416,237 @@ def _load_price_history_cache() -> Dict[str, List[Dict[str, Any]]]:
     return out
 
 
+def _normalize_theme_name(name: Any) -> str:
+    """统一题材名，确保涨停分析与潮汐算法共用同一口径。"""
+    text = str(name or "").strip()
+    if not text:
+        return ""
+    return str(normalize_sector(text) or text).strip()
+
+
+def _theme_candidate_keys(*names: Any) -> List[str]:
+    """为一个题材生成多组兼容 key，兼容 canonical/name 历史字段。"""
+    keys: list[str] = []
+    for name in names:
+        key = _normalize_theme_name(name)
+        if key and key not in keys:
+            keys.append(key)
+    return keys
+
+
+def _build_tide_theme_map(tide_signal: dict[str, Any] | None) -> dict[str, dict[str, Any]]:
+    if not isinstance(tide_signal, dict):
+        return {}
+    rows = tide_signal.get("themes")
+    if not isinstance(rows, list):
+        return {}
+    out: dict[str, dict[str, Any]] = {}
+    for row in rows:
+        if not isinstance(row, dict):
+            continue
+        keys = _theme_candidate_keys(row.get("canonical_name"), row.get("name"))
+        for key in keys:
+            prev = out.get(key)
+            if prev is None or _tide_match_priority(row) > _tide_match_priority(prev):
+                out[key] = row
+    return out
+
+
+def _tide_match_priority(theme: dict[str, Any]) -> tuple[int, int, int, float, float]:
+    status = str(theme.get("status") or theme.get("base_tide_status") or "")
+    priority = {
+        "core_mainline": 90,
+        "resonance_traverse": 82,
+        "observe_candidate": 62,
+        "confirmed_mainline": 76,
+        "traverse_candidate": 70,
+        "micro_traverse": 58,
+        "neutral_wait": 38,
+        "neutral": 36,
+        "avoid_weak": 18,
+        "weak": 16,
+        "shrinking_rebound": 10,
+        "volume_rebound": 8,
+        "afterglow_risk": 6,
+        "rebound_warning": 4,
+    }.get(status, 0)
+    return (
+        priority,
+        int(theme.get("core_score") or theme.get("tide_score") or 0),
+        int(theme.get("today_zt") or 0),
+        int(theme.get("strength_score") or 0),
+        float(theme.get("resilience") or -999),
+    )
+
+
+def _match_tide_theme(
+    *,
+    tide_map: dict[str, dict[str, Any]],
+    pred_theme: Any = "",
+    pred_theme_canonical: Any = "",
+    plate_name: Any = "",
+    plate_name_canonical: Any = "",
+    hy: Any = "",
+) -> dict[str, Any] | None:
+    if not tide_map:
+        return None
+    keys = _theme_candidate_keys(pred_theme_canonical, pred_theme, plate_name_canonical, plate_name)
+    for key in keys:
+        if key in tide_map:
+            return tide_map[key]
+    for key in keys:
+        for tide_key, theme in tide_map.items():
+            if tide_key and (key in tide_key or tide_key in key):
+                return theme
+    hy_key = _normalize_theme_name(hy)
+    if hy_key and hy_key in tide_map:
+        return tide_map[hy_key]
+    return None
+
+
+def _tide_market_regime(market_data: Dict[str, Any]) -> dict[str, Any]:
+    core = market_data.get("coreTideSignal") if isinstance(market_data.get("coreTideSignal"), dict) else {}
+    regime = core.get("marketRegime") if isinstance(core.get("marketRegime"), dict) else {}
+    tide_signal = market_data.get("tideSignal") if isinstance(market_data.get("tideSignal"), dict) else {}
+    tide_market = tide_signal.get("market") if isinstance(tide_signal.get("market"), dict) else {}
+    return {
+        "status": str(regime.get("status") or ""),
+        "risk_level": str(regime.get("risk_level") or ""),
+        "high_risk_score": _to_num(regime.get("high_risk_score"), 0.0),
+        "low_ladder_score": _to_num(regime.get("low_ladder_score"), 0.0),
+        "is_ebb_day": bool(tide_market.get("is_ebb_day")),
+        "trigger_count": int(_to_num(tide_market.get("trigger_count"), 0.0)),
+    }
+
+
+def _tide_adjustments(
+    *,
+    theme: dict[str, Any] | None,
+    regime: dict[str, Any] | None,
+) -> dict[str, Any]:
+    row = theme if isinstance(theme, dict) else {}
+    market_regime = regime if isinstance(regime, dict) else {}
+    status = str(row.get("status") or row.get("base_tide_status") or "")
+    action = str(row.get("action") or "")
+    phase = str(row.get("tide_phase") or "")
+    core_score = _to_num(row.get("core_score") or row.get("tide_score"), 0.0)
+    ebb_score = _to_num(row.get("ebb_score"), 0.0)
+    strength_score = _to_num(row.get("strength_score"), 0.0)
+    resilience = _to_num(row.get("resilience"), 0.0)
+    market_status = str(market_regime.get("status") or "")
+    market_ebb = bool(market_regime.get("is_ebb_day"))
+
+    raw_delta = 0.0
+    relay_delta = 0.0
+    risk_delta = 0.0
+    watch_delta = 0.0
+    relay_gate = 0.0
+    caution = ""
+
+    if action == "confirm":
+        raw_delta += 7.0
+        relay_delta += 8.0
+        risk_delta += 5.0
+        watch_delta += 14.0
+        relay_gate += 10.0
+    elif action == "watch":
+        raw_delta += 2.0
+        relay_delta += 1.0
+        watch_delta += 8.0
+        relay_gate += 3.0
+    elif action == "avoid":
+        raw_delta -= 9.0
+        relay_delta -= 12.0
+        risk_delta -= 10.0
+        watch_delta -= 6.0
+        relay_gate -= 16.0
+    elif action == "no_new_position":
+        raw_delta -= 13.0
+        relay_delta -= 16.0
+        risk_delta -= 14.0
+        watch_delta -= 10.0
+        relay_gate -= 22.0
+
+    if status in {"core_mainline", "confirmed_mainline"}:
+        raw_delta += 4.0
+        relay_delta += 5.0
+        watch_delta += 10.0
+    elif status in {"resonance_traverse", "traverse_candidate"}:
+        raw_delta += 3.0
+        relay_delta += 4.0
+        watch_delta += 6.0
+    elif status in {"observe_candidate", "micro_traverse"}:
+        raw_delta += 1.5
+        watch_delta += 4.0
+    elif status in {"avoid_weak", "weak"}:
+        raw_delta -= 5.0
+        relay_delta -= 7.0
+        risk_delta -= 8.0
+        relay_gate -= 9.0
+        caution = "潮汐偏弱"
+    elif status in {"afterglow_risk", "rebound_warning"}:
+        raw_delta -= 10.0
+        relay_delta -= 12.0
+        risk_delta -= 12.0
+        watch_delta -= 4.0
+        relay_gate -= 15.0
+        caution = "回光返照"
+    elif status in {"shrinking_rebound", "volume_rebound"}:
+        raw_delta -= 7.0
+        relay_delta -= 9.0
+        risk_delta -= 8.0
+        watch_delta -= 2.0
+        relay_gate -= 10.0
+        caution = "缩量反弹"
+
+    if phase == "rising":
+        raw_delta += 2.0
+        relay_delta += 2.0
+        watch_delta += 3.0
+    elif phase == "ebbing":
+        raw_delta -= 4.0
+        relay_delta -= 5.0
+        risk_delta -= 5.0
+        relay_gate -= 6.0
+
+    raw_delta += max(0.0, core_score - 70.0) * 0.04
+    raw_delta -= max(0.0, ebb_score - 65.0) * 0.05
+    relay_delta += max(0.0, strength_score - 65.0) * 0.05
+    risk_delta += max(-6.0, min(6.0, (resilience - 55.0) * 0.08))
+
+    if market_status in {"ebb", "ice"} or market_ebb:
+        relay_delta -= 3.0
+        watch_delta -= 1.5
+        if action in {"avoid", "no_new_position"} or status in {"afterglow_risk", "rebound_warning", "shrinking_rebound", "volume_rebound", "avoid_weak", "weak"}:
+            raw_delta -= 4.0
+            risk_delta -= 4.0
+            relay_gate -= 8.0
+        elif action == "confirm" and phase == "rising":
+            raw_delta += 1.0
+            watch_delta += 2.0
+    elif market_status in {"attack", "repair", "divergence"} and action == "confirm":
+        relay_gate += 4.0
+
+    hint = str(row.get("action_hint") or "")
+    if not caution:
+        caution = "不开新仓" if action == "no_new_position" else ("弱修复" if status in {"shrinking_rebound", "volume_rebound"} else "")
+
+    return {
+        "status": status,
+        "action": action,
+        "phase": phase,
+        "core_score": _round(core_score),
+        "ebb_score": _round(ebb_score),
+        "raw_delta": _round(raw_delta),
+        "relay_delta": _round(relay_delta),
+        "risk_delta": _round(risk_delta),
+        "watch_delta": _round(watch_delta),
+        "relay_gate": _round(relay_gate),
+        "hint": hint,
+        "caution": caution,
+    }
+
+
 def _recent_high_signal(
     price_history_map: Dict[str, List[Dict[str, Any]]],
     *,
@@ -523,6 +754,11 @@ def build_zt_analysis(*, market_data: Dict[str, Any]) -> Dict[str, Any]:
         if isinstance(r, dict) and str(r.get("name") or "") and _num_list(r.get("values"))
     }
     trend_names = list(trend_series.keys())
+    core_tide_signal = market_data.get("coreTideSignal") if isinstance(market_data.get("coreTideSignal"), dict) else {}
+    tide_signal = market_data.get("tideSignal") if isinstance(market_data.get("tideSignal"), dict) else {}
+    tide_source = core_tide_signal if isinstance(core_tide_signal.get("themes"), list) and core_tide_signal.get("themes") else tide_signal
+    tide_map = _build_tide_theme_map(tide_source)
+    tide_market_regime = _tide_market_regime(market_data)
 
     # ============================================================
     # 跨源数据加载（东方财富 + 选股宝 + watchlist）
@@ -669,6 +905,40 @@ def build_zt_analysis(*, market_data: Dict[str, Any]) -> Dict[str, Any]:
                             if tag not in arr:
                                 arr.append(tag)
             return code_index
+        except Exception:
+            return {}
+
+    def _load_ths_newhigh_data(md: Dict[str, Any]) -> Dict[str, Dict[str, Any]]:
+        try:
+            date_str = (md.get("date") or "").replace("-", "")
+            if not date_str or len(date_str) != 8:
+                return {}
+            path = ROOT / "cache_online" / f"ths_newhigh-{date_str}.json"
+            if not path.exists():
+                return {}
+            data = json.loads(path.read_text(encoding="utf-8"))
+            rows = data.get("rows") if isinstance(data, dict) else None
+            if not isinstance(rows, list):
+                return {}
+            out: Dict[str, Dict[str, Any]] = {}
+            board_rank = {"创月新高": 1, "半年新高": 2, "一年新高": 3, "历史新高": 4}
+            for row in rows:
+                if not isinstance(row, dict):
+                    continue
+                code6 = _normalize_code(row.get("code"))
+                if len(code6) != 6:
+                    continue
+                label = str(row.get("boardLabel") or "")
+                cur = out.get(code6)
+                if not cur or board_rank.get(label, 0) > board_rank.get(str(cur.get("boardLabel") or ""), 0):
+                    out[code6] = {
+                        "board": int(_to_num(row.get("board"), 0.0)),
+                        "boardLabel": label,
+                        "preHigh": str(row.get("preHigh") or ""),
+                        "preHighDate": str(row.get("preHighDate") or ""),
+                        "intervalDays": str(row.get("intervalDays") or ""),
+                    }
+            return out
         except Exception:
             return {}
 
@@ -1199,6 +1469,8 @@ def build_zt_analysis(*, market_data: Dict[str, Any]) -> Dict[str, Any]:
     # ============================================================
     em_code_index, hot_theme_set, em_theme_list = _load_eastmoney_data(market_data)
     xgb_code_index = _load_xuangubao_data(market_data)
+    ths_newhigh_map = _load_ths_newhigh_data(market_data)
+    price_history_map = _load_price_history_cache()
 
     def _calc_tier_engagement(zt_list: list[dict]) -> float:
         """算梯队咬合度：各连板层分布是否连贯，返回值越大越好"""
@@ -1351,6 +1623,20 @@ def build_zt_analysis(*, market_data: Dict[str, Any]) -> Dict[str, Any]:
         base = fund_score * 0.34 + open_score * 0.24 + time_score * 0.16 + (theme_score if has_trade_theme else hy_score) * 0.14 + board_score * 0.12
 
         is_new_high = lbc >= max_lbc and max_lbc >= 3
+        recent_high_signal = _recent_high_signal(price_history_map, code=code, date10=str(market_data.get("date") or ""))
+        is_recent_high_7d = bool(recent_high_signal.get("isRecentHigh"))
+        recent_high_boost = 6.0 if is_recent_high_7d else 0.0
+        ths_newhigh = ths_newhigh_map.get(_norm_code6(code)) or {}
+        ths_newhigh_label = str(ths_newhigh.get("boardLabel") or "")
+        strong_ths_newhigh = ths_newhigh_label in {"一年新高", "历史新高"}
+        ths_newhigh_boost = (
+            8.0 if ths_newhigh_label == "历史新高"
+            else 6.0 if ths_newhigh_label == "一年新高"
+            else 4.0 if ths_newhigh_label == "半年新高"
+            else 2.0 if ths_newhigh_label == "创月新高"
+            else 0.0
+        )
+        breakout_double_confirm = bool(is_recent_high_7d and ths_newhigh_label in {"一年新高", "历史新高"})
 
         if lbc <= 1:
             next_step = "1进2"
@@ -1430,7 +1716,9 @@ def build_zt_analysis(*, market_data: Dict[str, Any]) -> Dict[str, Any]:
         is_moderate_volume = bool(hs_pct >= 3 and hs_pct <= seal_vol_cap)
         mild_vol_extra = (14.0 if cje_yi > cje_threshold else 8.0) if is_moderate_volume else 0.0
 
-        new_high_bonus = 12.0 if is_new_high and max_lbc >= 6 else 8.0 if is_new_high and max_lbc >= 4 else 5.0 if is_new_high else 0.0
+        new_high_bonus = (
+            12.0 if is_new_high and max_lbc >= 6 else 8.0 if is_new_high and max_lbc >= 4 else 5.0 if is_new_high else 0.0
+        ) + recent_high_boost + ths_newhigh_boost + (3.0 if breakout_double_confirm else 0.0)
         has_spread = len(theme_groups["tradeable"]) >= 2
         theme_action_bonus = (
             (6.0 if has_tier else 0.0)
@@ -1477,6 +1765,15 @@ def build_zt_analysis(*, market_data: Dict[str, Any]) -> Dict[str, Any]:
         plate_rank = _to_num(plate_ctx.get("rank"), 99.0)
         plate_name = str(plate_ctx.get("name") or "")
         plate_name_canonical = canonical_theme_name(plate_name)
+        tide_theme = _match_tide_theme(
+            tide_map=tide_map,
+            pred_theme=pred_theme,
+            pred_theme_canonical=pred_theme_canonical,
+            plate_name=plate_name,
+            plate_name_canonical=plate_name_canonical,
+            hy=hy,
+        )
+        tide_adjust = _tide_adjustments(theme=tide_theme, regime=tide_market_regime)
         plate_lead = str(plate_ctx.get("lead") or "")
         is_plate_leader = bool(plate_lead and plate_lead == name)
         plate_is_strong = bool(1 <= plate_rank <= 5 and plate_score >= 62)
@@ -1648,6 +1945,7 @@ def build_zt_analysis(*, market_data: Dict[str, Any]) -> Dict[str, Any]:
             + step_context_score * 0.18
             + leader_signal_score * 0.11
             + (6.0 if is_new_high else 0.0)
+            + recent_high_boost * 0.9
             - multi_penalty * 0.32
             - yizi_penalty * 0.45
             - follower_penalty * 0.55
@@ -1659,6 +1957,8 @@ def build_zt_analysis(*, market_data: Dict[str, Any]) -> Dict[str, Any]:
             + step_context_score * 0.12
             + (86.0 if is_main else 62.0 if has_trade_theme else 38.0) * 0.08
             + (82.0 if is_new_high else 46.0) * 0.08
+            + recent_high_boost * 0.65
+            + ths_newhigh_boost * 0.45
             + (76.0 if has_follow else 44.0) * 0.06
             + leader_philosophy_score * 0.12
             - follower_penalty * 1.05
@@ -1707,6 +2007,8 @@ def build_zt_analysis(*, market_data: Dict[str, Any]) -> Dict[str, Any]:
             + max(0.0, 100.0 - individual_break_risk) * 0.05
             + theme_ladder_bonus * 0.25
             + (4.0 if theme_ladder_is_complete else 2.0 if theme_ladder_has_carry else 0.0)
+            + recent_high_boost * 0.45
+            + ths_newhigh_boost * 0.35
             - theme_ladder_penalty * 0.35
         )
         risk_pressure = _clamp(
@@ -1722,7 +2024,8 @@ def build_zt_analysis(*, market_data: Dict[str, Any]) -> Dict[str, Any]:
             - max(0.0, step_context_score - 62.0) * 0.18
             - (6.0 if theme_ladder_is_complete else 3.0 if theme_ladder_has_carry else 0.0)
         )
-        risk_control_score = _clamp(100.0 - risk_pressure)
+        relay_factor_score = _clamp(relay_factor_score + _to_num(tide_adjust.get("relay_delta"), 0.0))
+        risk_control_score = _clamp(100.0 - risk_pressure + _to_num(tide_adjust.get("risk_delta"), 0.0))
         identity_edge = (
             (3.5 if is_theme_leader else 0.0)
             + (1.5 if leader_bonus > 0 else 0.0)
@@ -1733,6 +2036,8 @@ def build_zt_analysis(*, market_data: Dict[str, Any]) -> Dict[str, Any]:
             + max(0.0, leader_factor_score - 66.0) * 0.04
             + (theme_quality_bonus * 0.12)  # 题材质量对最终分值的直接加成
             + (2.2 if theme_ladder_is_complete and has_follow else 1.0 if theme_ladder_has_carry else 0.0)
+            + (1.4 if is_recent_high_7d else 0.0)
+            + (2.0 if ths_newhigh_label == "历史新高" else 1.5 if ths_newhigh_label == "一年新高" else 0.0)
             - (1.8 if follow_leader else 0.0)
             - min(2.4, theme_ladder_gap_count * 0.8)
             - max(0.0, risk_pressure - 58.0) * 0.04
@@ -1749,6 +2054,7 @@ def build_zt_analysis(*, market_data: Dict[str, Any]) -> Dict[str, Any]:
             + height_breakout_bonus
             + _to_num(market_gate.get("adjust"), 0.0)
         )
+        raw_score = _clamp(raw_score + _to_num(tide_adjust.get("raw_delta"), 0.0))
         score_band = _factor_band(_round(raw_score))
         factor_breakdown = {
             "environment": _round(env_score),
@@ -1763,12 +2069,13 @@ def build_zt_analysis(*, market_data: Dict[str, Any]) -> Dict[str, Any]:
             "opportunity": _round(opportunity_score),
             "edge": _round(identity_edge),
             "heightBreakout": _round(height_breakout_bonus),
+            "tide": _round(_to_num(tide_adjust.get("raw_delta"), 0.0)),
         }
         factor_hint = (
             f"环境{factor_breakdown['environment']}({market_gate.get('label')}) / "
             f"板块{factor_breakdown['sector']} / 龙头{factor_breakdown['leader']} / "
             f"接力{factor_breakdown['relay']} / 容量{factor_breakdown['capacity']} / "
-            f"风险{factor_breakdown['risk']} / 梯队{_round(theme_ladder_score)} / {score_band['label']}"
+            f"风险{factor_breakdown['risk']} / 潮汐{factor_breakdown['tide']:+d} / 梯队{_round(theme_ladder_score)} / {score_band['label']}"
         )
 
         tags: List[Dict[str, str]] = []
@@ -1811,6 +2118,23 @@ def build_zt_analysis(*, market_data: Dict[str, Any]) -> Dict[str, Any]:
             tags.append(_tag("题材持续", "ladder-chip-strong red-text"))
         elif theme_is_fading:
             tags.append(_tag("题材转弱", "ladder-chip-warn orange-text"))
+        tide_status = str(tide_adjust.get("status") or "")
+        tide_action = str(tide_adjust.get("action") or "")
+        tide_phase = str(tide_adjust.get("phase") or "")
+        if tide_status == "core_mainline":
+            tags.append(_tag("确认主线", "ladder-chip-strong red-text"))
+        elif tide_status in {"resonance_traverse", "traverse_candidate"}:
+            tags.append(_tag("退潮穿越", "ladder-chip-strong red-text"))
+        elif tide_status in {"observe_candidate", "micro_traverse"}:
+            tags.append(_tag("微型穿越", "ladder-chip-warn orange-text"))
+        elif tide_status in {"afterglow_risk", "rebound_warning"}:
+            tags.append(_tag("回光返照", "ladder-chip-warn orange-text"))
+        elif tide_status in {"shrinking_rebound", "volume_rebound"}:
+            tags.append(_tag("缩量反弹", "ladder-chip-warn orange-text"))
+        elif tide_action == "no_new_position":
+            tags.append(_tag("不开新仓", "ladder-chip-warn orange-text"))
+        elif tide_status in {"avoid_weak", "weak"}:
+            tags.append(_tag("潮汐偏弱", "ladder-chip-warn orange-text"))
         if individual_break_risk >= 68:
             tags.append(_tag("断板风险高", "ladder-chip-warn orange-text"))
         tags.extend(
@@ -1832,6 +2156,10 @@ def build_zt_analysis(*, market_data: Dict[str, Any]) -> Dict[str, Any]:
             tags.append(_tag("温和放量", "ladder-chip-strong red-text"))
         if is_new_high:
             tags.append(_tag("突破新高", "ladder-chip-strong red-text"))
+        if is_recent_high_7d:
+            tags.append(_tag("近7日新高", "ladder-chip-strong red-text"))
+        if strong_ths_newhigh:
+            tags.append(_tag(ths_newhigh_label, "ladder-chip-strong red-text"))
         if has_trade_theme and theme_net >= 12:
             tags.append(_tag("极强主线", "ladder-chip-strong red-text"))
         elif has_trade_theme and theme_net >= 8:
@@ -1906,6 +2234,10 @@ def build_zt_analysis(*, market_data: Dict[str, Any]) -> Dict[str, Any]:
             _push_reason(core_bits, "主线加成")
         if is_new_high and not market_total_leader:
             _push_reason(core_bits, f"突破新高({int(max_lbc)}板)")
+        if is_recent_high_7d:
+            _push_reason(core_bits, "近7日新高")
+        if strong_ths_newhigh:
+            _push_reason(core_bits, ths_newhigh_label)
         if theme_is_continuing:
             _push_reason(core_bits, "题材持续")
         if has_tier and has_follow and (has_spread or theme_net >= 10):
@@ -2025,6 +2357,8 @@ def build_zt_analysis(*, market_data: Dict[str, Any]) -> Dict[str, Any]:
                 "breakRisk": _round(individual_break_risk),
                 "themePersistScore": _round(theme_persist_score),
                 "leaderPhilosophyScore": _round(leader_philosophy_score),
+                "recentHighSignal": recent_high_signal,
+                "thsNewhigh": ths_newhigh,
                 "themeLadderProfile": {
                     "score": _round(theme_ladder_score),
                     "label": theme_ladder_label,
@@ -2043,6 +2377,8 @@ def build_zt_analysis(*, market_data: Dict[str, Any]) -> Dict[str, Any]:
                 "_leaderBonus": leader_bonus,
                 "_isThemeLeader": is_theme_leader,
                 "_isNewHigh": is_new_high,
+                "_isRecentHigh7d": is_recent_high_7d,
+                "_breakoutDoubleConfirm": breakout_double_confirm,
                 "_heightBreakoutLeader": height_breakout_leader,
                 "_uniqueMarketLeader": unique_market_leader,
                 "_superLeaderCandidate": super_leader_candidate,
@@ -2067,6 +2403,18 @@ def build_zt_analysis(*, market_data: Dict[str, Any]) -> Dict[str, Any]:
                 "plateRank": plate_ctx.get("rank"),
                 "plateName": plate_ctx.get("name"),
                 "plateNameCanonical": plate_name_canonical,
+                "tideStatus": tide_status,
+                "tideAction": tide_action,
+                "tidePhase": tide_phase,
+                "tideCoreScore": _to_num(tide_adjust.get("core_score"), 0),
+                "tideEbbScore": _to_num(tide_adjust.get("ebb_score"), 0),
+                "tideAdjust": _to_num(tide_adjust.get("raw_delta"), 0),
+                "tideRelayAdjust": _to_num(tide_adjust.get("relay_delta"), 0),
+                "tideRiskAdjust": _to_num(tide_adjust.get("risk_delta"), 0),
+                "tideWatchAdjust": _to_num(tide_adjust.get("watch_delta"), 0),
+                "tideRelayGate": _to_num(tide_adjust.get("relay_gate"), 0),
+                "tideHint": str(tide_adjust.get("hint") or ""),
+                "tideCaution": str(tide_adjust.get("caution") or ""),
                 "factorLabels": {
                     "environment": _factor_label(env_score),
                     "sector": _factor_label(sector_sentiment_score),
@@ -2096,10 +2444,11 @@ def build_zt_analysis(*, market_data: Dict[str, Any]) -> Dict[str, Any]:
     for idx, r in enumerate(ranked):
         r["factorRank"] = idx + 1
 
-    def relay_sort(r: Dict[str, Any]) -> Tuple[float, float, float, float, float, float, float]:
+    def relay_sort(r: Dict[str, Any]) -> Tuple[float, float, float, float, float, float, float, float, float]:
         return (
             1.0 if r.get("_superLeaderCandidate") else 0.0,
             1.0 if r.get("_heightBreakoutLeader") else 0.0,
+            _to_num(r.get("tideRelayGate"), 0),
             _to_num(r.get("_raw"), 0),
             _to_num(((r.get("themeLadderProfile") or {}).get("score")), 0),
             _to_num(r.get("leaderFactorScore"), 0),
@@ -2109,7 +2458,24 @@ def build_zt_analysis(*, market_data: Dict[str, Any]) -> Dict[str, Any]:
             -_to_num(r.get("breakRisk"), 0),
         )
 
+    def tide_relay_blocked(r: Dict[str, Any]) -> bool:
+        action = str(r.get("tideAction") or "")
+        status = str(r.get("tideStatus") or "")
+        phase = str(r.get("tidePhase") or "")
+        regime_status = str(tide_market_regime.get("status") or "")
+        if action == "no_new_position":
+            return True
+        if status in {"afterglow_risk", "rebound_warning"}:
+            return True
+        if status in {"shrinking_rebound", "volume_rebound"} and phase == "ebbing":
+            return True
+        if action == "avoid" and regime_status in {"ebb", "ice", "divergence"}:
+            return True
+        return False
+
     def relay_height_breakout_ok(r: Dict[str, Any]) -> bool:
+        if tide_relay_blocked(r):
+            return False
         return bool(
             (r.get("_heightBreakoutLeader") or r.get("_superLeaderCandidate"))
             and _to_num(r.get("lbc"), 0) >= 6
@@ -2119,9 +2485,12 @@ def build_zt_analysis(*, market_data: Dict[str, Any]) -> Dict[str, Any]:
             and _to_num(r.get("breakRisk"), 0) < 68
             and _to_num(r.get("stepContextScore"), 0) >= 70
             and _to_num(r.get("open"), 0) <= 2
+            and _to_num(r.get("tideRelayGate"), 0) >= -4
         )
 
     def relay_core_ok(r: Dict[str, Any]) -> bool:
+        if tide_relay_blocked(r):
+            return False
         return bool(
             r.get("hasTradeTheme")
             and not r.get("isYizi")
@@ -2131,9 +2500,12 @@ def build_zt_analysis(*, market_data: Dict[str, Any]) -> Dict[str, Any]:
             and _to_num(r.get("open"), 0) < 8
             and _to_num(r.get("breakRisk"), 0) < 76
             and _to_num(r.get("stepContextScore"), 0) >= 38
+            and _to_num(r.get("tideRelayGate"), 0) >= 0
         )
 
     def relay_high_mark_ok(r: Dict[str, Any]) -> bool:
+        if tide_relay_blocked(r):
+            return False
         lbc = _to_num(r.get("lbc"), 0)
         return bool(
             r.get("hasTradeTheme")
@@ -2151,9 +2523,12 @@ def build_zt_analysis(*, market_data: Dict[str, Any]) -> Dict[str, Any]:
                 or r.get("_isNewHigh")
                 or _to_num(r.get("_leaderBonus"), 0) >= 10
             )
+            and _to_num(r.get("tideRelayGate"), 0) >= 0
         )
 
     def relay_one_to_two_ok(r: Dict[str, Any]) -> bool:
+        if tide_relay_blocked(r):
+            return False
         return bool(
             r.get("hasTradeTheme")
             and not r.get("isYizi")
@@ -2163,9 +2538,12 @@ def build_zt_analysis(*, market_data: Dict[str, Any]) -> Dict[str, Any]:
             and _to_num(r.get("_raw"), 0) >= 72
             and _to_num(r.get("stepContextScore"), 0) >= 55
             and _to_num(r.get("breakRisk"), 0) < 68
+            and _to_num(r.get("tideRelayGate"), 0) >= 3
         )
 
     def relay_relaxed_ok(r: Dict[str, Any]) -> bool:
+        if tide_relay_blocked(r):
+            return False
         return bool(
             r.get("hasTradeTheme")
             and not r.get("isYizi")
@@ -2177,12 +2555,14 @@ def build_zt_analysis(*, market_data: Dict[str, Any]) -> Dict[str, Any]:
             and _to_num(r.get("leaderFactorScore"), 0) >= 58
             and _to_num((r.get("factorBreakdown") or {}).get("sector"), 0) >= 70
             and _to_num(r.get("capacityFactorScore"), 0) >= 55
+            and _to_num(r.get("tideRelayGate"), 0) >= -6
         )
 
     def relay_broad_ok(r: Dict[str, Any]) -> bool:
         # 线上字段不完整时，避免接力池直接空白；但仍排除明显不可参与/高风险品种。
         return bool(
-            not r.get("isYizi")
+            (not tide_relay_blocked(r))
+            and not r.get("isYizi")
             and 1 <= _to_num(r.get("lbc"), 0) <= 6
             and _to_num(r.get("open"), 0) < 12
             and _to_num(r.get("breakRisk"), 0) < 95
@@ -2192,6 +2572,8 @@ def build_zt_analysis(*, market_data: Dict[str, Any]) -> Dict[str, Any]:
     def relay_emergency_ok(r: Dict[str, Any]) -> bool:
         # 极致兜底：只要不是极致风险（一字板、跌停风险等），且有一定强度，就展示出来供参考
         return bool(
+            str(r.get("tideAction") or "") != "no_new_position"
+            and
             1 <= _to_num(r.get("lbc"), 0) <= 7
             and _to_num(r.get("open"), 0) < 15
             and _to_num(r.get("breakRisk"), 0) < 98
@@ -2250,6 +2632,10 @@ def build_zt_analysis(*, market_data: Dict[str, Any]) -> Dict[str, Any]:
             labels.append("容量承接偏弱")
         if _to_num(r.get("environmentScore"), 0) < 58:
             labels.append("环境不支持")
+        if tide_relay_blocked(r):
+            labels.append("潮汐不支持接力")
+        elif _to_num(r.get("tideRelayGate"), 0) < 0:
+            labels.append("潮汐偏弱")
         return labels
 
     relay_diagnostics = {
@@ -2267,6 +2653,7 @@ def build_zt_analysis(*, market_data: Dict[str, Any]) -> Dict[str, Any]:
         "stepWeak": sum(1 for r in scored if _to_num(r.get("stepContextScore"), 0) < 38),
         "yiziBlocked": sum(1 for r in scored if r.get("isYizi")),
         "shrinkBlocked": sum(1 for r in scored if r.get("isShrinkSeal")),
+        "tideBlocked": sum(1 for r in scored if tide_relay_blocked(r)),
     }
 
     relay_breakout = sorted(
@@ -2339,6 +2726,17 @@ def build_zt_analysis(*, market_data: Dict[str, Any]) -> Dict[str, Any]:
         lbc = _to_num(r.get("lbc"), 0.0)
         break_risk = _to_num(r.get("breakRisk"), 0.0)
         leader_bonus = _to_num(r.get("_leaderBonus"), 0.0)
+        tide_status = str(r.get("tideStatus") or "")
+        tide_action = str(r.get("tideAction") or "")
+        tide_phase = str(r.get("tidePhase") or "")
+        if tide_action == "no_new_position" or tide_status in {"afterglow_risk", "rebound_warning"}:
+            return 3
+        if tide_status in {"core_mainline", "confirmed_mainline"} and tide_phase != "ebbing":
+            return 0
+        if tide_status in {"resonance_traverse", "traverse_candidate"}:
+            return 1 if lbc >= 3 else 2
+        if tide_status in {"observe_candidate", "micro_traverse"}:
+            return 2
         if lbc >= max(4.0, max_lbc) or leader_bonus >= 10 or r.get("_isThemeLeader") or r.get("_isNewHigh"):
             return 0
         if lbc >= 3:
@@ -2375,16 +2773,21 @@ def build_zt_analysis(*, market_data: Dict[str, Any]) -> Dict[str, Any]:
         ladder_gap = _to_num(theme_ladder.get("gapCount"), 0.0) * 16.0
         weak_step = max(0.0, 48.0 - _to_num(r.get("stepContextScore"), 0.0)) * 0.45
         core = _to_num(r.get("_raw"), 0.0) * 0.26 + _to_num(r.get("leaderFactorScore"), 0.0) * 0.18 + _to_num(r.get("relayFactorScore"), 0.0) * 0.14 + _to_num(r.get("qualityScore"), 0.0) * 0.10
+        tide_bias = (
+            _to_num(r.get("tideWatchAdjust"), 0.0) * 2.4
+            + _to_num(r.get("tideCoreScore"), 0.0) * 0.18
+            - _to_num(r.get("tideEbbScore"), 0.0) * 0.14
+        )
         bucket_base = {0: 240.0, 1: 200.0, 2: 165.0, 3: 130.0, 4: 95.0}.get(bucket, 70.0)
         if bucket == 0:
-            return bucket_base + height + theme_core * 0.55 + ladder_core * 0.22 + capacity * 0.22 + core * 0.22 - divergence * 0.15 - ladder_gap * 0.10
+            return bucket_base + height + theme_core * 0.55 + ladder_core * 0.22 + capacity * 0.22 + core * 0.22 + tide_bias - divergence * 0.15 - ladder_gap * 0.10
         if bucket == 1:
-            return bucket_base + height * 0.65 + divergence * 0.78 + capacity * 0.42 + theme_core * 0.25 + ladder_core * 0.12 - ladder_gap * 0.18
+            return bucket_base + height * 0.65 + divergence * 0.78 + capacity * 0.42 + theme_core * 0.25 + ladder_core * 0.12 + tide_bias * 0.75 - ladder_gap * 0.18
         if bucket == 2:
-            return bucket_base + capacity + theme_core * 0.72 + ladder_core * 0.16 + core * 0.22 - divergence * 0.22 - ladder_gap * 0.12
+            return bucket_base + capacity + theme_core * 0.72 + ladder_core * 0.16 + core * 0.22 + tide_bias * 0.92 - divergence * 0.22 - ladder_gap * 0.12
         if bucket == 3:
-            return bucket_base + capacity * 0.78 + divergence * 0.82 + theme_core * 0.22 + theme_gap * 0.25 - ladder_gap * 0.18
-        return bucket_base + core * 0.45 + capacity * 0.45 + height * 0.35 + ladder_core * 0.12 + theme_gap + weak_step - ladder_gap * 0.12
+            return bucket_base + capacity * 0.78 + divergence * 0.82 + theme_core * 0.22 + theme_gap * 0.25 + tide_bias * 0.35 - ladder_gap * 0.18
+        return bucket_base + core * 0.45 + capacity * 0.45 + height * 0.35 + ladder_core * 0.12 + theme_gap + weak_step + tide_bias * 0.55 - ladder_gap * 0.12
 
     watch_pool = [
         r
@@ -2400,9 +2803,10 @@ def build_zt_analysis(*, market_data: Dict[str, Any]) -> Dict[str, Any]:
             or not r.get("hasTradeTheme")
         )
     ]
-    def watch_sort_key(r: Dict[str, Any]) -> Tuple[float, float, float, float, float, float, float]:
+    def watch_sort_key(r: Dict[str, Any]) -> Tuple[float, float, float, float, float, float, float, float]:
         return (
             _to_num(r.get("_raw"), 0),
+            _to_num(r.get("tideWatchAdjust"), 0),
             _to_num(r.get("leaderFactorScore"), 0),
             _to_num(r.get("relayFactorScore"), 0),
             _to_num(r.get("capacityFactorScore"), 0),
@@ -2474,6 +2878,15 @@ def build_zt_analysis(*, market_data: Dict[str, Any]) -> Dict[str, Any]:
                 "themeLadderGapCount": _to_num(((r.get("themeLadderProfile") or {}).get("gapCount")), 0),
                 "open": _to_num(r.get("open"), 0),
                 "factorHint": str(r.get("factorHint") or ""),
+                "tideStatus": str(r.get("tideStatus") or ""),
+                "tideAction": str(r.get("tideAction") or ""),
+                "tidePhase": str(r.get("tidePhase") or ""),
+                "tideCoreScore": _to_num(r.get("tideCoreScore"), 0),
+                "tideEbbScore": _to_num(r.get("tideEbbScore"), 0),
+                "tideAdjust": _to_num(r.get("tideAdjust"), 0),
+                "tideRelayGate": _to_num(r.get("tideRelayGate"), 0),
+                "tideHint": str(r.get("tideHint") or ""),
+                "tideCaution": str(r.get("tideCaution") or ""),
                 "hitRules": relay_hit_labels(r),
                 "blockReasons": relay_block_labels(r),
                 "isThemeLeader": bool(r.get("_isThemeLeader")),
@@ -2501,6 +2914,11 @@ def build_zt_analysis(*, market_data: Dict[str, Any]) -> Dict[str, Any]:
             "model": "zt_analysis_factor_v5",
             "relaySelectionMode": relay_selection_mode,
             "relayDiagnostics": relay_diagnostics,
+            "tide": {
+                "source": "coreTideSignal" if tide_source is core_tide_signal and tide_source else ("tideSignal" if tide_source else ""),
+                "marketRegime": tide_market_regime,
+                "matchedThemes": len(tide_map),
+            },
             "marketGate": market_gate,
             "environment": {
                 "score": _round(env_score),
