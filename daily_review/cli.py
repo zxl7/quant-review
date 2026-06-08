@@ -132,9 +132,17 @@ def _fetch_abnormal_event_history_sample(*, count: int = 100, types: list[int] |
         query.append("types=" + ",".join(str(int(x)) for x in types))
     query.append(f"_ts={int(time.time() * 1000)}")
     url = "https://flash-api.xuangubao.cn/api/event/history?" + "&".join(query)
-    with urllib.request.urlopen(url, timeout=timeout) as resp:
-        body = resp.read().decode("utf-8", errors="ignore")
-    data = json.loads(body) if body else {}
+    try:
+        with urllib.request.urlopen(url, timeout=timeout) as resp:
+            body = resp.read().decode("utf-8", errors="ignore")
+        data = json.loads(body) if body else {}
+    except (urllib.error.HTTPError, urllib.error.URLError, TimeoutError, OSError) as e:
+        return {
+            "url": url,
+            "count": 0,
+            "data": {},
+            "error": str(e),
+        }
     rows = data.get("data") if isinstance(data, dict) and isinstance(data.get("data"), list) else []
     return {
         "url": url,
