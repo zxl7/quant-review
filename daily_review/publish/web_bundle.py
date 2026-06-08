@@ -20,10 +20,23 @@ from pathlib import Path
 from typing import Optional
 
 from daily_review.application.mood_history_service import inject_mood_history_and_delta
-from daily_review.features.sector_resolver import CHAIN_MAP, normalize_sector
+from daily_review.features.sector_resolver import CHAIN_MAP, NOISE_SECTORS, normalize_sector
 
 
 ROOT = Path(__file__).resolve().parents[2]
+_PLAN_GENERIC_THEMES = frozenset(
+    {
+        "低价",
+        "小盘",
+        "中盘",
+        "大盘",
+        "融资融券",
+        "基金重仓",
+        "qfii持股",
+        "增持回购",
+        "并购重组",
+    }
+)
 
 
 def _to_float(value: object, default: float = 0.0) -> float:
@@ -433,6 +446,10 @@ def _build_theme_alias_map(md: dict, watchlist: Optional[dict] = None) -> dict:
     def push(name: object, canonical: object = None) -> None:
         raw = str(name or "").strip()
         canon = str(canonical or "").strip()
+        if canon:
+            canon = str(normalize_sector(canon) or canon).strip()
+        elif raw:
+            canon = str(normalize_sector(raw) or raw).strip()
         key = canon or raw
         if not key:
             return
@@ -840,7 +857,10 @@ def _build_data_driven_theme_merges(
 
 
 def _normalize_theme_token(value: object) -> str:
-    return "".join(str(value or "").strip().split()).lower()
+    text = "".join(str(value or "").strip().split()).lower()
+    text = re.sub(r"[（(][^）)]*[）)]", "", text)
+    text = re.sub(r"(概念|题材|板块|行业)$", "", text)
+    return text
 
 
 def _build_theme_alias_lookup(md: dict) -> tuple[dict[str, str], list[tuple[str, str]]]:
@@ -885,6 +905,32 @@ def _canonicalize_theme_name(name: object, *, lookup: dict[str, str], ordered_al
         if alias_token and (alias_token in raw_token or raw_token in alias_token):
             return canonical
     return normalized or raw
+
+
+def _is_plan_generic_theme(name: object) -> bool:
+    raw = str(name or "").strip()
+    normalized = str(normalize_sector(raw) or raw).strip()
+    raw_token = _normalize_theme_token(raw)
+    normalized_token = _normalize_theme_token(normalized)
+    if raw in NOISE_SECTORS or normalized in NOISE_SECTORS:
+        return True
+    if raw in _PLAN_GENERIC_THEMES or normalized in _PLAN_GENERIC_THEMES:
+        return True
+    return raw_token in _PLAN_GENERIC_THEMES or normalized_token in _PLAN_GENERIC_THEMES
+
+
+def _build_plan_stock_payload_from_ztgc(row: dict, plate_name: str = "") -> dict[str, object]:
+    payload = {
+        "code": str(row.get("dm") or row.get("code") or "").strip(),
+        "name": str(row.get("mc") or row.get("name") or "").strip(),
+        "lbc": _to_int(row.get("lbc"), 0),
+        "cjeYi": round(_to_float(row.get("cje"), 0.0) / 1e8, 3),
+        "zjYi": round(_to_float(row.get("zj"), 0.0) / 1e8, 3),
+        "zbc": _to_int(row.get("zbc"), 0),
+    }
+    payload["score"] = _calculate_plan_stock_score(payload, 0.0, is_realtime_plate=False)
+    payload["tags"] = _build_plan_stock_tags(payload, plate_name)
+    return payload
 
 
 def _load_cached_xgb_surge_plates(date8: str) -> list[dict]:
@@ -1989,6 +2035,11 @@ def _build_plan_theme_resolver(md: dict) -> dict:
                 ctx["aliases"].add(normalized)
 
     ztgc_rows = [row for row in (md.get("ztgc") or []) if isinstance(row, dict)]
+    ztgc_by_code = {
+        str(row.get("dm") or row.get("code") or "").strip(): row
+        for row in ztgc_rows
+        if isinstance(row, dict) and str(row.get("dm") or row.get("code") or "").strip()
+    }
     zt_code_themes = md.get("zt_code_themes") if isinstance(md.get("zt_code_themes"), dict) else {}
     for row in ztgc_rows:
         code = str(row.get("dm") or row.get("code") or "").strip()
@@ -2129,6 +2180,27 @@ def _build_plan_theme_resolver(md: dict) -> dict:
                         "code": str(row.get("code") or "").strip(),
                         "score": leader_score,
                     }
+
+    # 题材龙头已经被后端识别出来时，尽量把对应的涨停实体补回上下文 stocks。
+    # 这样卡片梯队与推荐线共用同一份“龙头事实”，避免出现“识别到龙头但页面不显示”的断层。
+    for ctx in contexts.values():
+        if not isinstance(ctx, dict):
+            continue
+        leader = ctx.get("leader")
+        if not isinstance(leader, dict):
+            continue
+        leader_code = str(leader.get("code") or "").strip()
+        if not leader_code or leader_code in ctx.get("_stockCodes", set()):
+            continue
+        zt_row = ztgc_by_code.get(leader_code)
+        if not isinstance(zt_row, dict):
+            continue
+        plate_name = str(ctx.get("canonicalTheme") or "").strip()
+        stock_payload = _build_plan_stock_payload_from_ztgc(zt_row, plate_name)
+        if not str(stock_payload.get("code") or "").strip():
+            continue
+        ctx["_stockCodes"].add(leader_code)
+        ctx["stocks"].append(stock_payload)
 
     watchlist = md.get("watchlist") if isinstance(md.get("watchlist"), dict) else {}
     picks_advisor = md.get("picks_advisor") if isinstance(md.get("picks_advisor"), dict) else {}
@@ -2340,14 +2412,38 @@ def _build_plan_theme_resolver(md: dict) -> dict:
             "theme": canonical,
             "themeCount": _to_int(context.get("fallbackThemeCount"), 0),
             "panelStrengthScore": _to_int((((context.get("fallbackPanel") or {}) if isinstance(context.get("fallbackPanel"), dict) else {}).get("strengthScore")), 0),
+            "baseThemeScore": _to_int(context.get("baseThemeScore"), 0),
+            "baseResonanceScore": _to_int(context.get("baseResonanceScore"), 0),
+            "leaderScore": _to_float((((context.get("leader") or {}) if isinstance(context.get("leader"), dict) else {}).get("score")), 0.0),
+            "maxLbc": max((_to_int((stock or {}).get("lbc"), 0) for stock in (context.get("stocks") or [])), default=0),
+            "stockCount": len(context.get("stocks") or []),
+            "isGenericTheme": _is_plan_generic_theme(canonical),
+            "displayBoost": (
+                12
+                if (not _is_plan_generic_theme(canonical))
+                and max((_to_int((stock or {}).get("lbc"), 0) for stock in (context.get("stocks") or [])), default=0) >= 2
+                and _to_float((((context.get("leader") or {}) if isinstance(context.get("leader"), dict) else {}).get("score")), 0.0) >= 80
+                else 4
+                if (not _is_plan_generic_theme(canonical))
+                and max((_to_int((stock or {}).get("lbc"), 0) for stock in (context.get("stocks") or [])), default=0) >= 2
+                and len(context.get("stocks") or []) >= 3
+                else 0
+            ),
         }
         for canonical, context in serialized_contexts.items()
         if _to_int(context.get("fallbackThemeCount"), 0) > 0 or isinstance(context.get("fallbackPanel"), dict)
     ]
     fallback_themes.sort(
         key=lambda item: (
-            -_to_int(item.get("themeCount"), 0),
+            1 if item.get("isGenericTheme") else 0,
+            -_to_int(item.get("displayBoost"), 0),
+            -_to_int(item.get("baseThemeScore"), 0),
+            -_to_int(item.get("baseResonanceScore"), 0),
+            -_to_int(item.get("maxLbc"), 0),
+            -_to_float(item.get("leaderScore"), 0.0),
+            -_to_int(item.get("stockCount"), 0),
             -_to_int(item.get("panelStrengthScore"), 0),
+            -_to_int(item.get("themeCount"), 0),
             -_to_float(((serialized_contexts.get(str(item.get("theme") or "")) or {}).get("plateStrength")), 0.0),
             -len((((serialized_contexts.get(str(item.get("theme") or "")) or {}).get("stocks")) or [])),
             str(item.get("theme") or ""),

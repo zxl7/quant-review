@@ -11,9 +11,14 @@ from __future__ import annotations
 import json
 import math
 import re
+from pathlib import Path
 from typing import Any, Dict, Iterable, List, Tuple
 
 from daily_review.features.sector_resolver import normalize_sector
+
+
+ROOT = Path(__file__).resolve().parent.parent.parent
+PRICE_HISTORY_CACHE = ROOT / "cache_online" / "recommendation_price_history.json"
 
 
 def _to_num(v: Any, d: float = 0.0) -> float:
@@ -376,6 +381,75 @@ def _recent_delta(values: List[float], window: int = 3) -> float:
         return 0.0
     seg = values[-window:] if len(values) >= window else values
     return seg[-1] - seg[0] if len(seg) >= 2 else 0.0
+
+
+def _load_price_history_cache() -> Dict[str, List[Dict[str, Any]]]:
+    try:
+        if not PRICE_HISTORY_CACHE.exists():
+            return {}
+        data = json.loads(PRICE_HISTORY_CACHE.read_text(encoding="utf-8"))
+    except Exception:
+        return {}
+    codes = data.get("codes") if isinstance(data, dict) else {}
+    if not isinstance(codes, dict):
+        return {}
+    out: Dict[str, List[Dict[str, Any]]] = {}
+    for raw_code, payload in codes.items():
+        code = _norm_code6(raw_code)
+        if not code:
+            continue
+        bars = payload.get("bars") if isinstance(payload, dict) else None
+        if not isinstance(bars, list):
+            continue
+        norm_bars: List[Dict[str, Any]] = []
+        for bar in bars:
+            if not isinstance(bar, dict):
+                continue
+            date10 = str(bar.get("date") or "")[:10]
+            high = _to_num(bar.get("high"), 0.0)
+            if len(date10) != 10 or high <= 0:
+                continue
+            norm_bars.append({"date": date10, "high": high})
+        if norm_bars:
+            norm_bars.sort(key=lambda x: str(x.get("date") or ""))
+            out[code] = norm_bars
+    return out
+
+
+def _recent_high_signal(
+    price_history_map: Dict[str, List[Dict[str, Any]]],
+    *,
+    code: Any,
+    date10: str,
+    window: int = 7,
+) -> Dict[str, Any]:
+    code6 = _norm_code6(code)
+    if not code6 or len(date10) != 10:
+        return {"available": False, "window": window}
+    bars = price_history_map.get(code6) or []
+    if not bars:
+        return {"available": False, "window": window}
+    scoped = [bar for bar in bars if str(bar.get("date") or "") <= date10]
+    if len(scoped) < 2:
+        return {"available": False, "window": window}
+    current = scoped[-1]
+    current_date = str(current.get("date") or "")
+    current_high = _to_num(current.get("high"), 0.0)
+    prev_bars = scoped[:-1]
+    prev_window = prev_bars[-window:]
+    prev_high = max((_to_num(bar.get("high"), 0.0) for bar in prev_window), default=0.0)
+    is_recent_high = bool(current_date == date10 and len(prev_window) >= 3 and current_high > 0 and prev_high > 0 and current_high >= prev_high)
+    breakout_pct = round((current_high / prev_high - 1.0) * 100.0, 2) if prev_high > 0 and current_high > 0 else None
+    return {
+        "available": bool(current_date == date10 and len(prev_window) >= 3 and current_high > 0 and prev_high > 0),
+        "window": window,
+        "currentDate": current_date,
+        "currentHigh": round(current_high, 2) if current_high > 0 else 0.0,
+        "prevHigh": round(prev_high, 2) if prev_high > 0 else 0.0,
+        "sampleSize": len(prev_window),
+        "isRecentHigh": is_recent_high,
+        "breakoutPct": breakout_pct,
+    }
 
 
 def build_zt_analysis(*, market_data: Dict[str, Any]) -> Dict[str, Any]:
@@ -884,6 +958,150 @@ def build_zt_analysis(*, market_data: Dict[str, Any]) -> Dict[str, Any]:
             if better:
                 theme_leader[tn] = {"name": name, "lbc": lbc, "fundYi": fund_yi, "t": t}
 
+    theme_stock_rows: Dict[str, List[Dict[str, Any]]] = {}
+    theme_stock_seen: Dict[str, set[str]] = {}
+    for s in zt:
+        if not isinstance(s, dict):
+            continue
+        code = str(s.get("dm") or s.get("code") or "")
+        name = str(s.get("mc") or s.get("name") or "")
+        if not name:
+            continue
+        lbc = max(1, int(_to_num(s.get("lbc"), 1.0)))
+        fund_yi = _yi(s.get("zj"))
+        open_cnt = _to_num(s.get("zbc"), 0.0)
+        quality_score = _clamp(52.0 + min(fund_yi, 8.0) * 3.5 + lbc * 5.0 - open_cnt * 2.5, 40.0, 95.0)
+        theme_names = list(
+            dict.fromkeys(
+                [
+                    x
+                    for x in (
+                        [canonical_theme_name(tn) for tn in _code_theme_list(code_themes, code)]
+                        + [e.get("name") for e in get_theme_entries(code, name)]
+                    )
+                    if str(x or "").strip()
+                ]
+            )
+        )
+        stock_key = code or name
+        for tn in theme_names:
+            seen = theme_stock_seen.setdefault(tn, set())
+            if stock_key in seen:
+                continue
+            seen.add(stock_key)
+            theme_stock_rows.setdefault(tn, []).append(
+                {
+                    "code": code,
+                    "name": name,
+                    "lbc": lbc,
+                    "fundYi": fund_yi,
+                    "open": open_cnt,
+                    "quality": quality_score,
+                }
+            )
+
+    def _calc_theme_ladder_profile(rows: List[Dict[str, Any]]) -> Dict[str, Any]:
+        if not rows:
+            return {
+                "score": 0.0,
+                "label": "梯队松散",
+                "leaderBoards": 0,
+                "leaderName": "",
+                "gapCount": 0,
+                "missingTiers": [],
+                "activeTierCount": 0,
+                "coreCount": 0,
+                "midCarryCount": 0,
+                "followerCount": 0,
+                "frontCount": 0,
+                "totalCount": 0,
+                "isComplete": False,
+                "hasCarry": False,
+            }
+
+        sorted_rows = sorted(
+            rows,
+            key=lambda r: (
+                _to_num(r.get("lbc"), 0.0),
+                _to_num(r.get("quality"), 0.0),
+                _to_num(r.get("fundYi"), 0.0),
+                -_to_num(r.get("open"), 0.0),
+            ),
+            reverse=True,
+        )
+        leader = sorted_rows[0]
+        leader_boards = max(1, int(_to_num(leader.get("lbc"), 1.0)))
+        tier_counts: Dict[int, int] = {}
+        for row in sorted_rows:
+            lb = max(1, int(_to_num(row.get("lbc"), 1.0)))
+            tier_counts[lb] = tier_counts.get(lb, 0) + 1
+
+        active_tiers = sorted(lb for lb in tier_counts if lb >= 2)
+        missing_tiers = [lb for lb in range(2, leader_boards + 1) if lb not in tier_counts] if leader_boards >= 2 else []
+        core_count = sum(cnt for lb, cnt in tier_counts.items() if lb >= 2)
+        mid_carry_count = sum(cnt for lb, cnt in tier_counts.items() if 2 <= lb < leader_boards)
+        follower_count = sum(cnt for lb, cnt in tier_counts.items() if lb == 1)
+        front_count = sum(cnt for lb, cnt in tier_counts.items() if lb >= max(2, leader_boards - 1))
+        total_count = len(sorted_rows)
+
+        leader_score = 20.0 if leader_boards >= 5 else 17.0 if leader_boards >= 4 else 14.0 if leader_boards >= 3 else 10.0 if leader_boards >= 2 else 6.0
+        continuity_score = 0.0
+        if leader_boards >= 3 and not missing_tiers and len(active_tiers) >= 2:
+            continuity_score = 24.0
+        elif len(active_tiers) >= 2 and len(missing_tiers) <= 1:
+            continuity_score = 16.0
+        elif core_count >= 2:
+            continuity_score = 10.0
+        elif core_count >= 1:
+            continuity_score = 6.0
+        carry_score = 12.0 if mid_carry_count >= 2 else 7.0 if mid_carry_count >= 1 else 0.0
+        follower_score = 10.0 if follower_count >= 2 else 6.0 if follower_count >= 1 else 2.0 if total_count >= 3 else 0.0
+        breadth_score = 14.0 if total_count >= 5 else 11.0 if total_count >= 4 else 8.0 if total_count >= 3 else 5.0 if total_count >= 2 else 2.0
+        quality_avg = _avg((_to_num(r.get("quality"), 60.0) for r in sorted_rows[:3]), 60.0)
+        quality_bonus = max(0.0, quality_avg - 50.0) * 0.12
+        gap_penalty = len(missing_tiers) * 10.0
+        if leader_boards >= 4 and mid_carry_count == 0:
+            gap_penalty += 10.0
+        if leader_boards >= 3 and core_count <= 1:
+            gap_penalty += 8.0
+
+        is_complete = bool(leader_boards >= 3 and not missing_tiers and core_count >= 2 and mid_carry_count >= 1)
+        has_carry = bool(mid_carry_count >= 1 or (leader_boards <= 2 and core_count >= 1))
+        score = _clamp(leader_score + continuity_score + carry_score + follower_score + breadth_score + quality_bonus - gap_penalty)
+        if is_complete:
+            label = "梯队完整"
+        elif has_carry and score >= 62:
+            label = "梯队良好"
+        elif has_carry:
+            label = "中位承接"
+        elif gap_penalty >= 10.0 or (leader_boards >= 3 and not has_carry):
+            label = "梯队断层"
+        else:
+            label = "梯队松散"
+
+        return {
+            "score": score,
+            "label": label,
+            "leaderBoards": leader_boards,
+            "leaderName": str(leader.get("name") or ""),
+            "gapCount": len(missing_tiers),
+            "missingTiers": missing_tiers,
+            "activeTierCount": len(active_tiers),
+            "coreCount": core_count,
+            "midCarryCount": mid_carry_count,
+            "followerCount": follower_count,
+            "frontCount": front_count,
+            "totalCount": total_count,
+            "isComplete": is_complete,
+            "hasCarry": has_carry,
+        }
+
+    theme_ladder_profiles: Dict[str, Dict[str, Any]] = {
+        theme_name: _calc_theme_ladder_profile(rows)
+        for theme_name, rows in theme_stock_rows.items()
+        if theme_name
+    }
+
     hy_cnt: Dict[str, int] = {}
     for s in zt:
         if isinstance(s, dict):
@@ -1093,6 +1311,22 @@ def build_zt_analysis(*, market_data: Dict[str, Any]) -> Dict[str, Any]:
 
         has_tier = bool(has_trade_theme and pred_theme and (pred_theme in tier_theme_set or any(_fuzzy_match(pred_theme, tn) for tn in tier_theme_set)))
         matched_strength_name = matched_strength_name_of(pred_theme)
+        theme_profile = theme_ladder_profiles.get(pred_theme) or (theme_ladder_profiles.get(matched_strength_name) if matched_strength_name else None) or {}
+        theme_ladder_score = _to_num(theme_profile.get("score"), 0.0)
+        theme_ladder_label = str(theme_profile.get("label") or "")
+        theme_ladder_gap_count = int(_to_num(theme_profile.get("gapCount"), 0.0))
+        theme_ladder_leader_boards = _to_num(theme_profile.get("leaderBoards"), 0.0)
+        theme_ladder_core_count = _to_num(theme_profile.get("coreCount"), 0.0)
+        theme_ladder_front_count = _to_num(theme_profile.get("frontCount"), 0.0)
+        theme_ladder_mid_carry = _to_num(theme_profile.get("midCarryCount"), 0.0)
+        theme_ladder_follower_count = _to_num(theme_profile.get("followerCount"), 0.0)
+        theme_ladder_has_carry = bool(theme_profile.get("hasCarry"))
+        theme_ladder_is_complete = bool(theme_profile.get("isComplete"))
+        theme_ladder_bonus = ((theme_ladder_score - 50.0) * 0.22) if has_trade_theme else 0.0
+        theme_ladder_penalty = (
+            theme_ladder_gap_count * 4.2
+            + (6.0 if has_trade_theme and theme_ladder_leader_boards >= 3 and not theme_ladder_has_carry else 0.0)
+        ) if has_trade_theme else 0.0
         lb_list = theme_lb_names.get(pred_theme) or (theme_lb_names.get(matched_strength_name) if matched_strength_name else []) or []
         leader_name = ""
         if has_trade_theme and pred_theme:
@@ -1198,7 +1432,14 @@ def build_zt_analysis(*, market_data: Dict[str, Any]) -> Dict[str, Any]:
 
         new_high_bonus = 12.0 if is_new_high and max_lbc >= 6 else 8.0 if is_new_high and max_lbc >= 4 else 5.0 if is_new_high else 0.0
         has_spread = len(theme_groups["tradeable"]) >= 2
-        theme_action_bonus = (6.0 if has_tier else 0.0) + (7.0 if is_theme_leader and has_follow else 4.0 if has_follow else 0.0) + (4.0 if has_spread else 0.0)
+        theme_action_bonus = (
+            (6.0 if has_tier else 0.0)
+            + (7.0 if is_theme_leader and has_follow else 4.0 if has_follow else 0.0)
+            + (4.0 if has_spread else 0.0)
+            + (6.0 if theme_ladder_is_complete else 3.0 if theme_ladder_has_carry else 0.0)
+            + max(0.0, theme_ladder_front_count - 1.0) * 1.2
+            - theme_ladder_gap_count * 2.4
+        )
         theme_net_bonus = 16.0 if has_trade_theme and theme_net >= 12 else 10.0 if has_trade_theme and theme_net >= 8 else 5.0 if has_trade_theme and theme_net >= 5 else 0.0
         warm_vol_theme_combo = 16.0 if is_moderate_volume and has_trade_theme and theme_net >= 8 else 8.0 if is_moderate_volume and has_trade_theme and theme_net >= 5 else 0.0
 
@@ -1297,8 +1538,10 @@ def build_zt_analysis(*, market_data: Dict[str, Any]) -> Dict[str, Any]:
             + (5.0 if has_tier else 0.0)
             + (4.0 if is_theme_leader else 0.0)
             + (2.0 if has_follow else 0.0)
+            + theme_ladder_bonus * 0.9
             - (8.0 if theme_is_fading else 0.0)
             - (6.0 if is_broad_only else 0.0)
+            - theme_ladder_penalty * 0.7
         )
         if has_trade_theme:
             sector_panel_score = _clamp(
@@ -1309,10 +1552,12 @@ def build_zt_analysis(*, market_data: Dict[str, Any]) -> Dict[str, Any]:
                 + (6.0 if has_tier else 0.0)
                 + (5.0 if is_main else 0.0)
                 + (3.0 if has_spread else 0.0)
+                + theme_ladder_bonus * 0.8
                 - theme_risk * 1.80
                 - theme_zb * 0.70
                 - theme_dt * 3.00
                 - (8.0 if theme_is_fading else 0.0)
+                - theme_ladder_penalty
             )
             sector_sentiment_score = _clamp(sector_panel_score * 0.64 + sector_trend_score * 0.36)
         elif is_broad_only:
@@ -1328,12 +1573,20 @@ def build_zt_analysis(*, market_data: Dict[str, Any]) -> Dict[str, Any]:
             theme_quality_bonus += max(0.0, theme_env_score - 50.0) * 0.15
             # 2. 个体题材情绪加成 (0-12分)
             theme_quality_bonus += max(0.0, sector_sentiment_score - 50.0) * 0.25
+            # 2.5. 题材梯队结构加成
+            theme_quality_bonus += max(0.0, theme_ladder_score - 55.0) * 0.10
             # 3. 题材持续性额外加成 (0-5分)
             if theme_is_continuing:
                 theme_quality_bonus += 5.0
+            if theme_ladder_is_complete:
+                theme_quality_bonus += 3.0
+            elif theme_ladder_has_carry:
+                theme_quality_bonus += 1.5
             # 4. 题材分化/退潮惩罚
             if theme_is_fading:
                 theme_quality_bonus -= 10.0
+            if theme_ladder_gap_count >= 1:
+                theme_quality_bonus -= min(6.0, theme_ladder_gap_count * 2.0)
 
         leader_philosophy_score = _clamp(
             (94.0 if unique_market_leader else 82.0 if is_market_top else 74.0 if is_theme_leader else 62.0 if leader_bonus >= 10 else 48.0)
@@ -1380,7 +1633,12 @@ def build_zt_analysis(*, market_data: Dict[str, Any]) -> Dict[str, Any]:
                 + (2.0 if theme_net >= 12 or plate_score >= 70 else 0.0)
             )
 
-        leader_signal_score = 78.0 if is_theme_leader else 70.0 if leader_bonus >= 10 else 62.0 if leader_bonus > 0 else 46.0 if follow_leader else 54.0
+        leader_signal_score = _clamp(
+            (78.0 if is_theme_leader else 70.0 if leader_bonus >= 10 else 62.0 if leader_bonus > 0 else 46.0 if follow_leader else 54.0)
+            + (6.0 if is_theme_leader and theme_ladder_is_complete else 3.0 if is_theme_leader and theme_ladder_has_carry else 0.0)
+            + (2.0 if has_follow and theme_ladder_has_carry else 0.0)
+            - min(6.0, theme_ladder_gap_count * 2.0)
+        )
         stock_strength_score = _clamp(
             quality_score * 0.24
             + fund_score * 0.16
@@ -1447,17 +1705,22 @@ def build_zt_analysis(*, market_data: Dict[str, Any]) -> Dict[str, Any]:
             + promo_ecology * 0.10
             + opportunity_score * 0.07
             + max(0.0, 100.0 - individual_break_risk) * 0.05
+            + theme_ladder_bonus * 0.25
+            + (4.0 if theme_ladder_is_complete else 2.0 if theme_ladder_has_carry else 0.0)
+            - theme_ladder_penalty * 0.35
         )
         risk_pressure = _clamp(
             individual_break_risk * 0.52
             + break_risk_base * 0.18
             + theme_clarity_penalty * 1.15
             + theme_penalty * 1.35
+            + theme_ladder_penalty * 0.85
             + high_penalty * 1.45
             + yizi_penalty * 1.05
             + follower_penalty * 1.15
             + max(0.0, open_cnt - 1.0) * 2.60
             - max(0.0, step_context_score - 62.0) * 0.18
+            - (6.0 if theme_ladder_is_complete else 3.0 if theme_ladder_has_carry else 0.0)
         )
         risk_control_score = _clamp(100.0 - risk_pressure)
         identity_edge = (
@@ -1469,7 +1732,9 @@ def build_zt_analysis(*, market_data: Dict[str, Any]) -> Dict[str, Any]:
             + max(0.0, capacity_score - 72.0) * 0.05
             + max(0.0, leader_factor_score - 66.0) * 0.04
             + (theme_quality_bonus * 0.12)  # 题材质量对最终分值的直接加成
+            + (2.2 if theme_ladder_is_complete and has_follow else 1.0 if theme_ladder_has_carry else 0.0)
             - (1.8 if follow_leader else 0.0)
+            - min(2.4, theme_ladder_gap_count * 0.8)
             - max(0.0, risk_pressure - 58.0) * 0.04
         )
         raw_score = _clamp(
@@ -1503,7 +1768,7 @@ def build_zt_analysis(*, market_data: Dict[str, Any]) -> Dict[str, Any]:
             f"环境{factor_breakdown['environment']}({market_gate.get('label')}) / "
             f"板块{factor_breakdown['sector']} / 龙头{factor_breakdown['leader']} / "
             f"接力{factor_breakdown['relay']} / 容量{factor_breakdown['capacity']} / "
-            f"风险{factor_breakdown['risk']} / {score_band['label']}"
+            f"风险{factor_breakdown['risk']} / 梯队{_round(theme_ladder_score)} / {score_band['label']}"
         )
 
         tags: List[Dict[str, str]] = []
@@ -1524,6 +1789,12 @@ def build_zt_analysis(*, market_data: Dict[str, Any]) -> Dict[str, Any]:
             tags.append(_tag("超红龙头", "ladder-chip-strong red-text"))
         elif unique_market_leader and lbc >= 5:
             tags.append(_tag("唯一高度龙", "ladder-chip-strong red-text"))
+        if theme_ladder_is_complete:
+            tags.append(_tag("梯队完整", "ladder-chip-strong red-text"))
+        elif theme_ladder_has_carry:
+            tags.append(_tag("中位承接", "ladder-chip-warn orange-text"))
+        elif has_trade_theme and theme_ladder_leader_boards >= 3:
+            tags.append(_tag("梯队断层", "ladder-chip-warn orange-text"))
         tags.append(_tag("有梯队" if has_tier else "无梯队" if has_trade_theme else "属性标签" if is_broad_only else "题材待确认", "ladder-chip-warn orange-text" if has_tier else "ladder-chip-cool blue-text"))
         if has_trade_theme:
             tags.append(_tag(f"带动{'、'.join(followers) or '—'}" if is_theme_leader and has_follow else f"跟风{follow_leader}" if has_follow else "无跟风", "ladder-chip-cool blue-text"))
@@ -1616,8 +1887,12 @@ def build_zt_analysis(*, market_data: Dict[str, Any]) -> Dict[str, Any]:
 
         if has_tier and has_follow:
             _push_reason(core_bits, f"梯队带动{follower_text}" if is_theme_leader and follower_text else "梯队带动" if is_theme_leader else "梯队跟随")
-        elif has_tier:
+        elif theme_ladder_is_complete:
             _push_reason(core_bits, "梯队完整")
+        elif has_tier and theme_ladder_has_carry:
+            _push_reason(support_bits, "中位承接")
+        elif has_tier:
+            _push_reason(core_bits, "有梯队")
         elif top_themes:
             _push_reason(core_bits, f"{'板块归属' if has_trade_theme else '属性标签'}：" + "、".join(str(x.get("name") or "") for x in top_themes[:2]))
         elif hy_score >= 60:
@@ -1667,6 +1942,10 @@ def build_zt_analysis(*, market_data: Dict[str, Any]) -> Dict[str, Any]:
             _push_reason(risk_bits, "高度压制")
         if theme_is_fading:
             _push_reason(risk_bits, "题材转弱")
+        if has_trade_theme and theme_ladder_gap_count >= 1 and theme_ladder_leader_boards >= 3:
+            _push_reason(risk_bits, "梯队断层")
+        elif has_trade_theme and theme_ladder_leader_boards >= 3 and not theme_ladder_has_carry:
+            _push_reason(risk_bits, "中位承接不足")
         if individual_break_risk >= 68:
             _push_reason(risk_bits, "断板风险高")
         if promo_ecology <= 42:
@@ -1746,6 +2025,19 @@ def build_zt_analysis(*, market_data: Dict[str, Any]) -> Dict[str, Any]:
                 "breakRisk": _round(individual_break_risk),
                 "themePersistScore": _round(theme_persist_score),
                 "leaderPhilosophyScore": _round(leader_philosophy_score),
+                "themeLadderProfile": {
+                    "score": _round(theme_ladder_score),
+                    "label": theme_ladder_label,
+                    "leaderBoards": int(theme_ladder_leader_boards) if float(theme_ladder_leader_boards).is_integer() else theme_ladder_leader_boards,
+                    "coreCount": int(theme_ladder_core_count) if float(theme_ladder_core_count).is_integer() else theme_ladder_core_count,
+                    "midCarryCount": int(theme_ladder_mid_carry) if float(theme_ladder_mid_carry).is_integer() else theme_ladder_mid_carry,
+                    "followerCount": int(theme_ladder_follower_count) if float(theme_ladder_follower_count).is_integer() else theme_ladder_follower_count,
+                    "frontCount": int(theme_ladder_front_count) if float(theme_ladder_front_count).is_integer() else theme_ladder_front_count,
+                    "gapCount": theme_ladder_gap_count,
+                    "isComplete": theme_ladder_is_complete,
+                    "hasCarry": theme_ladder_has_carry,
+                    "leaderName": str(theme_profile.get("leaderName") or ""),
+                },
                 "isYizi": is_yizi,
                 "isShrinkSeal": is_shrink_seal,
                 "_leaderBonus": leader_bonus,
@@ -1790,7 +2082,17 @@ def build_zt_analysis(*, market_data: Dict[str, Any]) -> Dict[str, Any]:
             }
         )
 
-    ranked = sorted(scored, key=lambda r: (_to_num(r.get("_raw"), 0), _to_num(r.get("qualityScore"), 0), _to_num(r.get("fundYi"), 0), _to_num(r.get("lbc"), 0)), reverse=True)
+    ranked = sorted(
+        scored,
+        key=lambda r: (
+            _to_num(r.get("_raw"), 0),
+            _to_num(((r.get("themeLadderProfile") or {}).get("score")), 0),
+            _to_num(r.get("qualityScore"), 0),
+            _to_num(r.get("fundYi"), 0),
+            _to_num(r.get("lbc"), 0),
+        ),
+        reverse=True,
+    )
     for idx, r in enumerate(ranked):
         r["factorRank"] = idx + 1
 
@@ -1799,6 +2101,7 @@ def build_zt_analysis(*, market_data: Dict[str, Any]) -> Dict[str, Any]:
             1.0 if r.get("_superLeaderCandidate") else 0.0,
             1.0 if r.get("_heightBreakoutLeader") else 0.0,
             _to_num(r.get("_raw"), 0),
+            _to_num(((r.get("themeLadderProfile") or {}).get("score")), 0),
             _to_num(r.get("leaderFactorScore"), 0),
             _to_num(r.get("relayFactorScore"), 0),
             _to_num(r.get("environmentScore"), 0),
@@ -1938,6 +2241,11 @@ def build_zt_analysis(*, market_data: Dict[str, Any]) -> Dict[str, Any]:
             labels.append("龙头辨识度不足")
         if 3 <= lbc <= 5 and _to_num(r.get("leaderFactorScore"), 0) < 72:
             labels.append("龙头因子不够")
+        theme_ladder = r.get("themeLadderProfile") if isinstance(r.get("themeLadderProfile"), dict) else {}
+        if _to_num(theme_ladder.get("gapCount"), 0) >= 1 and _to_num(theme_ladder.get("leaderBoards"), 0) >= 3:
+            labels.append("梯队断层")
+        elif _to_num(theme_ladder.get("leaderBoards"), 0) >= 3 and not theme_ladder.get("hasCarry"):
+            labels.append("中位承接不足")
         if _to_num(r.get("capacityFactorScore"), 0) < 55 and lbc <= 2:
             labels.append("容量承接偏弱")
         if _to_num(r.get("environmentScore"), 0) < 58:
@@ -2062,18 +2370,21 @@ def build_zt_analysis(*, market_data: Dict[str, Any]) -> Dict[str, Any]:
         height = lbc * 18.0 + _to_num(r.get("_leaderBonus"), 0.0) * 1.7 + _to_num(r.get("leaderFactorScore"), 0.0) * 0.48 + (12.0 if r.get("_isThemeLeader") else 0.0) + (8.0 if r.get("_isNewHigh") else 0.0)
         theme_gap = 0.0 if r.get("hasTradeTheme") else 22.0 if r.get("isBroadOnly") else 16.0
         theme_core = _to_num(r.get("_themeNet"), 0.0) * 1.8 + _to_num(r.get("sectorTrendScore"), 0.0) * 0.18 + _to_num(r.get("environmentScore"), 0.0) * 0.14
+        theme_ladder = r.get("themeLadderProfile") if isinstance(r.get("themeLadderProfile"), dict) else {}
+        ladder_core = _to_num(theme_ladder.get("score"), 0.0) * 0.55 + _to_num(theme_ladder.get("frontCount"), 0.0) * 6.0
+        ladder_gap = _to_num(theme_ladder.get("gapCount"), 0.0) * 16.0
         weak_step = max(0.0, 48.0 - _to_num(r.get("stepContextScore"), 0.0)) * 0.45
         core = _to_num(r.get("_raw"), 0.0) * 0.26 + _to_num(r.get("leaderFactorScore"), 0.0) * 0.18 + _to_num(r.get("relayFactorScore"), 0.0) * 0.14 + _to_num(r.get("qualityScore"), 0.0) * 0.10
         bucket_base = {0: 240.0, 1: 200.0, 2: 165.0, 3: 130.0, 4: 95.0}.get(bucket, 70.0)
         if bucket == 0:
-            return bucket_base + height + theme_core * 0.55 + capacity * 0.22 + core * 0.22 - divergence * 0.15
+            return bucket_base + height + theme_core * 0.55 + ladder_core * 0.22 + capacity * 0.22 + core * 0.22 - divergence * 0.15 - ladder_gap * 0.10
         if bucket == 1:
-            return bucket_base + height * 0.65 + divergence * 0.78 + capacity * 0.42 + theme_core * 0.25
+            return bucket_base + height * 0.65 + divergence * 0.78 + capacity * 0.42 + theme_core * 0.25 + ladder_core * 0.12 - ladder_gap * 0.18
         if bucket == 2:
-            return bucket_base + capacity + theme_core * 0.72 + core * 0.22 - divergence * 0.22
+            return bucket_base + capacity + theme_core * 0.72 + ladder_core * 0.16 + core * 0.22 - divergence * 0.22 - ladder_gap * 0.12
         if bucket == 3:
-            return bucket_base + capacity * 0.78 + divergence * 0.82 + theme_core * 0.22 + theme_gap * 0.25
-        return bucket_base + core * 0.45 + capacity * 0.45 + height * 0.35 + theme_gap + weak_step
+            return bucket_base + capacity * 0.78 + divergence * 0.82 + theme_core * 0.22 + theme_gap * 0.25 - ladder_gap * 0.18
+        return bucket_base + core * 0.45 + capacity * 0.45 + height * 0.35 + ladder_core * 0.12 + theme_gap + weak_step - ladder_gap * 0.12
 
     watch_pool = [
         r
@@ -2158,6 +2469,9 @@ def build_zt_analysis(*, market_data: Dict[str, Any]) -> Dict[str, Any]:
                 "leaderPhilosophyScore": _to_num(r.get("leaderPhilosophyScore"), 0),
                 "stepContextScore": _to_num(r.get("stepContextScore"), 0),
                 "breakRisk": _to_num(r.get("breakRisk"), 0),
+                "themeLadderScore": _to_num(((r.get("themeLadderProfile") or {}).get("score")), 0),
+                "themeLadderLabel": str(((r.get("themeLadderProfile") or {}).get("label") or "")),
+                "themeLadderGapCount": _to_num(((r.get("themeLadderProfile") or {}).get("gapCount")), 0),
                 "open": _to_num(r.get("open"), 0),
                 "factorHint": str(r.get("factorHint") or ""),
                 "hitRules": relay_hit_labels(r),

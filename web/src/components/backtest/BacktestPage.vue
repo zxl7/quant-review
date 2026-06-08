@@ -290,7 +290,7 @@ function strategyReturnText(performance: any, key: string) {
 function strategyReturnNote(performance: any, key: string) {
   const item = performance && typeof performance === "object" ? performance[key] || {} : {}
   const status = String(item?.status || "")
-  if (status === "covered") return `${item?.entry_date || "-"} 开盘买入 -> ${item?.exit_date || "-"} 收盘卖出`
+  if (status === "covered") return `${item?.entry_date || "-"} 开盘买入 -> ${item?.exit_date || "-"} 收盘`
   return String(item?.note || item?.label || "-")
 }
 

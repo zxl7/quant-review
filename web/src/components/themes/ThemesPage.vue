@@ -147,166 +147,128 @@ const selectPlateTheme = (row: any) => {
       <div class="card-title">板块题材</div>
 
       <div class="tier-card" v-if="conceptTop10ByChg.length">
-        <div class="theme-board-shell">
-          <div class="theme-board-head">
-            <div class="theme-board-copy">
-              <div class="tier-title theme-board-title">板块题材排行 TOP10（{{ (marketData.plateRotateTop || []).length ? '按强度' : '按涨幅' }}）</div>
-              <div class="tier-desc theme-board-desc">
-                {{ (marketData.plateRotateTop || []).length ? '口径：短线侠板块轮动；数字为当日板块强度。' : '口径：概念/题材级资金流向（AkShare）；排序：按涨跌幅从高到低（净流仅作参考）。' }}
+        <div class="tier-title">板块题材排行 TOP10（{{ (marketData.plateRotateTop || []).length ? '按强度' : '按涨幅' }}）</div>
+        <div class="tier-desc" style="margin-top: 4px">
+          {{ (marketData.plateRotateTop || []).length ? '口径：短线侠板块轮动；数字为当日板块强度。' : '口径：概念/题材级资金流向（AkShare）；排序：按涨跌幅从高到低（净流仅作参考）。' }}
+        </div>
+        <div class="theme-tools">
+          <a class="theme-open-btn" :href="'https://www.duanxianxia.com/web/platerotat'" target="_blank" rel="noopener noreferrer">打开短线侠板块轮动</a>
+        </div>
+        <div class="theme-rank-list">
+          <div
+            class="theme-rank-item"
+            v-for="(c, i) in conceptTop10ByChg"
+            :key="'cff-top10-'+c.name+'-'+i"
+            :class="{ 'is-active': selectedPlateTheme && (selectedPlateTheme.code || selectedPlateTheme.name) === (c.code || c.name) }"
+            @click="selectPlateTheme(c)">
+            <div class="theme-rank-mid">
+              <div class="theme-rank-name">{{ c.name }}</div>
+              <div class="theme-rank-sub" v-if="c.lead || c.companies !== undefined || c.volume !== undefined || c.net !== undefined || c.sourceNote">
+                <template v-if="c.lead">领涨 {{ c.lead }}</template>
+                <template v-if="c.lead_chg_pct !== undefined && c.lead_chg_pct !== null">
+                  <span class="sep">|</span>
+                  <span :class="signedClass(c.lead_chg_pct)">{{ formatSigned(c.lead_chg_pct) }}%</span>
+                </template>
+                <template v-if="c.companies !== undefined && c.companies !== null">
+                  <span class="sep">|</span>
+                  成分 {{ c.companies }}
+                </template>
+                <template v-if="c.volume !== undefined && c.volume !== null && c.volume !== ''">
+                  <span class="sep">|</span>
+                  量能 {{ c.volume }}亿
+                </template>
+                <template v-if="c.net !== undefined && c.net !== null && !(marketData.plateRotateTop || []).length">
+                  <span class="sep">|</span>
+                  净额
+                  <span :class="signedClass(c.net)">{{ formatSigned(c.net) }}</span>
+                </template>
+                <template v-if="c.sourceNote">
+                  <span v-if="c.lead || c.companies !== undefined || c.volume !== undefined || c.net !== undefined" class="sep">|</span>
+                  {{ c.sourceNote }}
+                </template>
               </div>
             </div>
-            <div class="theme-tools">
-              <a class="theme-open-btn" :href="'https://www.duanxianxia.com/web/platerotat'" target="_blank" rel="noopener noreferrer">打开短线侠板块轮动</a>
+              <div class="theme-rank-right">
+              <div class="theme-rank-chg" :class="c.displayClass || signedClass(c.chg_pct)">{{ c.displayValue }}</div>
+              <div class="theme-rank-microbar" aria-hidden="true">
+                <i :style="{ width: clamp100(toNum(c.barPct, 0)) + '%' }"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="theme-detail-card" v-if="(marketData.plateRotateTop || []).length && selectedPlateTheme">
+          <div class="theme-detail-head">
+            <div>
+              <div class="theme-detail-title">{{ selectedPlateTheme.name }}</div>
+              <div class="theme-detail-sub">当前查看：板块轮动明细。点击上方排行可切换领涨龙头与近20日强度/量能。</div>
+            </div>
+            <div class="theme-detail-kpis">
+              <div class="theme-detail-kpi">
+                <div class="k">当日强度</div>
+                <div class="v">{{ selectedPlateTheme.displayValue || '-' }}</div>
+              </div>
+              <div class="theme-detail-kpi">
+                <div class="k">当日领涨</div>
+                <div class="v" style="font-size: 14px">{{ selectedPlateTheme.lead || '-' }}</div>
+              </div>
+              <div class="theme-detail-kpi">
+                <div class="k">当日量能</div>
+                <div class="v">{{ selectedPlateTheme.volume !== undefined && selectedPlateTheme.volume !== null ? (selectedPlateTheme.volume + '亿') : '-' }}</div>
+              </div>
             </div>
           </div>
 
-          <div class="theme-board-layout">
-            <div class="theme-rank-card">
-              <div class="theme-section-head">
-                <div>
-                  <div class="theme-section-eyebrow">榜单入口</div>
-                  <div class="theme-section-title">强势板块列表</div>
-                </div>
-                <div class="theme-section-meta">点击左侧切换详情</div>
-              </div>
-              <div class="theme-rank-list">
-                <div
-                  class="theme-rank-item"
-                  v-for="(c, i) in conceptTop10ByChg"
-                  :key="'cff-top10-'+c.name+'-'+i"
-                  :class="{ 'is-active': selectedPlateTheme && (selectedPlateTheme.code || selectedPlateTheme.name) === (c.code || c.name) }"
-                  @click="selectPlateTheme(c)">
-                  <div class="theme-rank-no">{{ String(i + 1).padStart(2, '0') }}</div>
-                  <div class="theme-rank-mid">
-                    <div class="theme-rank-name-row">
-                      <div class="theme-rank-name">{{ c.name }}</div>
-                      <div class="theme-rank-tag" v-if="selectedPlateTheme && (selectedPlateTheme.code || selectedPlateTheme.name) === (c.code || c.name)">当前查看</div>
-                    </div>
-                    <div class="theme-rank-sub" v-if="c.lead || c.companies !== undefined || c.volume !== undefined || c.net !== undefined || c.sourceNote">
-                      <template v-if="c.lead">领涨 {{ c.lead }}</template>
-                      <template v-if="c.lead_chg_pct !== undefined && c.lead_chg_pct !== null">
-                        <span class="sep">|</span>
-                        <span :class="signedClass(c.lead_chg_pct)">{{ formatSigned(c.lead_chg_pct) }}%</span>
-                      </template>
-                      <template v-if="c.companies !== undefined && c.companies !== null">
-                        <span class="sep">|</span>
-                        成分 {{ c.companies }}
-                      </template>
-                      <template v-if="c.volume !== undefined && c.volume !== null && c.volume !== ''">
-                        <span class="sep">|</span>
-                        量能 {{ c.volume }}亿
-                      </template>
-                      <template v-if="c.net !== undefined && c.net !== null && !(marketData.plateRotateTop || []).length">
-                        <span class="sep">|</span>
-                        净额
-                        <span :class="signedClass(c.net)">{{ formatSigned(c.net) }}</span>
-                      </template>
-                      <template v-if="c.sourceNote">
-                        <span v-if="c.lead || c.companies !== undefined || c.volume !== undefined || c.net !== undefined" class="sep">|</span>
-                        {{ c.sourceNote }}
-                      </template>
-                    </div>
-                  </div>
-                  <div class="theme-rank-right">
-                    <div class="theme-rank-chg" :class="c.displayClass || signedClass(c.chg_pct)">{{ c.displayValue }}</div>
-                    <div class="theme-rank-microbar" aria-hidden="true">
-                      <i :style="{ width: clamp100(toNum(c.barPct, 0)) + '%' }"></i>
-                    </div>
-                  </div>
+          <div class="theme-detail-grid">
+            <div class="theme-detail-panel">
+              <div class="hd">当日领涨龙头</div>
+              <div class="theme-leader-list">
+                <a
+                  class="theme-leader-chip"
+                  v-for="(x, idx) in selectedPlateLeaders"
+                  :key="'plate-leader-'+(x.code||x.name||idx)+'-'+idx"
+                  :href="xqUrl(x.code)"
+                  target="_blank"
+                  rel="noopener noreferrer">
+                  <span class="rk">{{ x.rank || `龙${idx + 1}` }}</span>
+                  <span class="nm">{{ x.name || '-' }}</span>
+                </a>
+                <div class="theme-leader-chip" v-if="!selectedPlateLeaders.length">
+                  <span class="nm">当日无领涨</span>
                 </div>
               </div>
             </div>
 
-            <div
-              class="theme-detail-card theme-focus-card"
-              v-if="(marketData.plateRotateTop || []).length && selectedPlateTheme">
-              <div class="theme-section-head theme-focus-head">
-                <div>
-                  <div class="theme-section-eyebrow">当前焦点</div>
-                  <div class="theme-detail-title">{{ selectedPlateTheme.name }}</div>
-                  <div class="theme-detail-sub">点击左侧排行可切换领涨龙头与近20日强度、量能。</div>
+            <div class="theme-detail-panel">
+              <div class="hd">近20日强度</div>
+              <div class="theme-mini-chart">
+                <div class="theme-mini-line" v-if="selectedPlateStrengthSeries.length">
+                  <svg viewBox="0 0 300 80" preserveAspectRatio="none" aria-hidden="true">
+                    <line class="theme-mini-axis" x1="0" y1="72" x2="300" y2="72"></line>
+                    <path class="theme-mini-area strength" :d="selectedPlateStrengthLine.area"></path>
+                    <path class="theme-mini-path strength" :d="selectedPlateStrengthLine.line"></path>
+                  </svg>
                 </div>
-                <div class="theme-focus-score">
-                  <span class="theme-focus-score-label">当日强度</span>
-                  <strong>{{ selectedPlateTheme.displayValue || '-' }}</strong>
-                </div>
-              </div>
-
-              <div class="theme-detail-kpis">
-                <div class="theme-detail-kpi">
-                  <div class="k">当日领涨</div>
-                  <div class="v theme-kpi-stock">{{ selectedPlateTheme.lead || '-' }}</div>
-                </div>
-                <div class="theme-detail-kpi">
-                  <div class="k">领涨涨幅</div>
-                  <div class="v" :class="signedClass(selectedPlateTheme.lead_chg_pct)">
-                    {{ selectedPlateTheme.lead_chg_pct !== undefined && selectedPlateTheme.lead_chg_pct !== null ? `${formatSigned(selectedPlateTheme.lead_chg_pct)}%` : '-' }}
-                  </div>
-                </div>
-                <div class="theme-detail-kpi">
-                  <div class="k">当日量能</div>
-                  <div class="v">{{ selectedPlateTheme.volume !== undefined && selectedPlateTheme.volume !== null ? (selectedPlateTheme.volume + '亿') : '-' }}</div>
-                </div>
-                <div class="theme-detail-kpi">
-                  <div class="k">成分数量</div>
-                  <div class="v">{{ selectedPlateTheme.companies !== undefined && selectedPlateTheme.companies !== null ? selectedPlateTheme.companies : '-' }}</div>
+                <div class="theme-mini-meta">
+                  <span>最新 <strong>{{ selectedPlateTheme.strengthByDate ?? selectedPlateTheme.strength ?? '-' }}</strong></span>
+                  <span>峰值 <strong>{{ selectedPlateStrengthPeak }}</strong></span>
                 </div>
               </div>
+            </div>
 
-              <div class="theme-detail-grid theme-focus-grid">
-                <div class="theme-detail-panel theme-detail-panel-leaders">
-                  <div class="hd">当日领涨龙头</div>
-                  <div class="theme-leader-list">
-                    <a
-                      class="theme-leader-chip"
-                      v-for="(x, idx) in selectedPlateLeaders"
-                      :key="'plate-leader-'+(x.code||x.name||idx)+'-'+idx"
-                      :href="xqUrl(x.code)"
-                      target="_blank"
-                      rel="noopener noreferrer">
-                      <span class="rk">{{ x.rank || `龙${idx + 1}` }}</span>
-                      <span class="nm">{{ x.name || '-' }}</span>
-                    </a>
-                    <div class="theme-leader-chip" v-if="!selectedPlateLeaders.length">
-                      <span class="nm">当日无领涨</span>
-                    </div>
-                  </div>
+            <div class="theme-detail-panel">
+              <div class="hd">近20日量能</div>
+              <div class="theme-mini-chart">
+                <div class="theme-mini-line" v-if="selectedPlateVolumeSeries.length">
+                  <svg viewBox="0 0 300 80" preserveAspectRatio="none" aria-hidden="true">
+                    <line class="theme-mini-axis" x1="0" y1="72" x2="300" y2="72"></line>
+                    <path class="theme-mini-area volume" :d="selectedPlateVolumeLine.area"></path>
+                    <path class="theme-mini-path volume" :d="selectedPlateVolumeLine.line"></path>
+                  </svg>
                 </div>
-
-                <div class="theme-detail-panel">
-                  <div class="hd">近20日强度</div>
-                  <div class="theme-mini-chart">
-                    <div class="theme-mini-line" v-if="selectedPlateStrengthSeries.length">
-                      <svg viewBox="0 0 300 80" preserveAspectRatio="none" aria-hidden="true">
-                        <line class="theme-mini-axis" x1="0" y1="72" x2="300" y2="72"></line>
-                        <path class="theme-mini-area strength" :d="selectedPlateStrengthLine.area"></path>
-                        <path class="theme-mini-path strength" :d="selectedPlateStrengthLine.line"></path>
-                      </svg>
-                    </div>
-                    <div class="theme-mini-empty" v-else>暂无近20日强度曲线</div>
-                    <div class="theme-mini-meta">
-                      <span>最新 <strong>{{ selectedPlateTheme.strengthByDate ?? selectedPlateTheme.strength ?? '-' }}</strong></span>
-                      <span>峰值 <strong>{{ selectedPlateStrengthPeak }}</strong></span>
-                    </div>
-                  </div>
-                </div>
-
-                <div class="theme-detail-panel">
-                  <div class="hd">近20日量能</div>
-                  <div class="theme-mini-chart">
-                    <div class="theme-mini-line" v-if="selectedPlateVolumeSeries.length">
-                      <svg viewBox="0 0 300 80" preserveAspectRatio="none" aria-hidden="true">
-                        <line class="theme-mini-axis" x1="0" y1="72" x2="300" y2="72"></line>
-                        <path class="theme-mini-area volume" :d="selectedPlateVolumeLine.area"></path>
-                        <path class="theme-mini-path volume" :d="selectedPlateVolumeLine.line"></path>
-                      </svg>
-                    </div>
-                    <div class="theme-mini-empty" v-else>暂无近20日量能曲线</div>
-                    <div class="theme-mini-meta">
-                      <span>最新 <strong>{{ selectedPlateTheme.volume !== undefined && selectedPlateTheme.volume !== null ? (selectedPlateTheme.volume + '亿') : '-' }}</strong></span>
-                      <span>峰值 <strong>{{ selectedPlateVolumePeak }}</strong></span>
-                    </div>
-                  </div>
+                <div class="theme-mini-meta">
+                  <span>最新 <strong>{{ selectedPlateTheme.volume !== undefined && selectedPlateTheme.volume !== null ? (selectedPlateTheme.volume + '亿') : '-' }}</strong></span>
+                  <span>峰值 <strong>{{ selectedPlateVolumePeak }}</strong></span>
                 </div>
               </div>
             </div>

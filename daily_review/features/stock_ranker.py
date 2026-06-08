@@ -654,6 +654,17 @@ def build_picks_advisor(
             )
             ml_members.append(score_stock(metrics))
 
+        ml_members = _append_theme_leader_candidate(
+            ml=ml,
+            ml_members=ml_members,
+            all_cells=all_cells,
+            sec_counts=sec_counts,
+            ls_map=ls_map,
+            leader_rows=leader_rows,
+            zt_map=zt_map,
+            env_ctx=env_ctx,
+        )
+
         if not ml_members:
             continue
 
@@ -798,16 +809,79 @@ def _build_leaders_score_map(market_data: dict[str, Any]) -> dict[str, float]:
 def _build_leaders_row_map(market_data: dict[str, Any]) -> dict[str, dict[str, Any]]:
     out: dict[str, dict[str, Any]] = {}
     leaders = market_data.get("leaders", [])
-    if not isinstance(leaders, list):
-        return out
-    for row in leaders:
-        if not isinstance(row, dict):
-            continue
+
+    def leader_rank_score(rank: Any) -> float:
+        text = str(rank or "").strip()
+        if "龙一" in text:
+            return 90.0
+        if "龙二" in text:
+            return 86.0
+        if "龙三" in text:
+            return 82.0
+        if "龙四" in text:
+            return 78.0
+        if "龙五" in text:
+            return 74.0
+        return 70.0
+
+    def store(row: dict[str, Any]) -> None:
         code = str(row.get("code") or row.get("dm") or "").strip()
         digits = "".join(c for c in code if c.isdigit())[-6:]
         if not digits:
+            return
+        prev = out.get(digits)
+        prev_score = float((prev or {}).get("score") or 0.0)
+        next_score = float(row.get("score") or 0.0)
+        if prev is None or next_score >= prev_score:
+            out[digits] = row
+
+    if isinstance(leaders, list):
+        for row in leaders:
+            if not isinstance(row, dict):
+                continue
+            store(row)
+
+    # 板块强度/轮动榜已经显式给出题材龙头，但这些票不一定能通过旧的 sector 归属挂回主线。
+    # 这里统一沉淀成 leaders_row_map，后续推荐线与卡片都消费同一份题材龙头事实。
+    for bucket in ("plateRankTop10", "plateRotateTop"):
+        rows = market_data.get(bucket)
+        if not isinstance(rows, list):
             continue
-        out[digits] = row
+        for row in rows:
+            if not isinstance(row, dict):
+                continue
+            theme_name = str(row.get("name") or "").strip()
+            lead_name = str(row.get("lead") or "").strip()
+            lead_code = str(row.get("leadCode") or "").strip()
+            if theme_name and lead_name and lead_code:
+                store(
+                    {
+                        "code": lead_code,
+                        "name": lead_name,
+                        "theme": theme_name,
+                        "score": leader_rank_score("龙一"),
+                        "rank": "龙一",
+                        "source": bucket,
+                    }
+                )
+            for idx, leader in enumerate(row.get("leaders") or []):
+                if not isinstance(leader, dict):
+                    continue
+                leader_name = str(leader.get("name") or "").strip()
+                leader_code = str(leader.get("code") or "").strip()
+                if not theme_name or not leader_name or not leader_code:
+                    continue
+                rank_label = str(leader.get("rank") or f"龙{idx + 1}").strip()
+                store(
+                    {
+                        "code": leader_code,
+                        "name": leader_name,
+                        "theme": theme_name,
+                        "score": leader_rank_score(rank_label),
+                        "rank": rank_label,
+                        "source": bucket,
+                    }
+                )
     return out
 
 
@@ -1032,6 +1106,86 @@ def _ensure_theme_leader_present(
         merged[-1] = candidate
         merged.sort(key=_selection_sort_key, reverse=True)
     return merged
+
+
+def _append_theme_leader_candidate(
+    *,
+    ml: MainLine,
+    ml_members: list[StockScore],
+    all_cells: dict[str, TierCell],
+    sec_counts: dict[str, int],
+    ls_map: dict[str, float],
+    leader_rows: dict[str, dict[str, Any]],
+    zt_map: dict[str, dict[str, Any]],
+    env_ctx: dict[str, Any],
+) -> list[StockScore]:
+    """
+    题材龙头候选补全：
+    - 先信任后端已经识别出的题材龙头事实；
+    - 再从当日涨停实体里补出标准 StockScore；
+    - 不要求它先挂进旧的 sector_resolution 映射，避免“龙头识别到了，但推荐线缺席”。
+    """
+    target_keys = set(_theme_candidate_keys(ml.name, *ml.constituents))
+    if not target_keys:
+        return ml_members
+    selected_codes = {row.code for row in ml_members if row.code}
+    best_candidate: StockScore | None = None
+    best_priority: tuple[float, int, float, float] | None = None
+
+    for code, row in leader_rows.items():
+        if code in selected_codes:
+            continue
+        theme_key = _normalize_theme_name(row.get("theme"))
+        if theme_key not in target_keys:
+            continue
+        cell = all_cells.get(code)
+        if cell is None:
+            continue
+        inferred_sector = str(normalize_sector(str(row.get("theme") or ml.name).strip()) or ml.name).strip() or ml.name
+        leader_score = max(float(ls_map.get(code) or 0.0), float(row.get("score") or 0.0))
+        leader_confidence = 0.72 if "龙一" in str(row.get("rank") or "") else 0.64
+        metrics = ScoringMetrics(
+            cell=cell,
+            main_line=ml,
+            sector_zt_count=max(sec_counts.get(inferred_sector, 0), 1),
+            leaders_score=leader_score,
+            in_ml_top_sector=inferred_sector,
+            in_ml_top_conf=leader_confidence,
+            market_gate=str(env_ctx.get("gate") or ""),
+            market_cycle=str(env_ctx.get("cycle") or ""),
+            market_day_state=str(env_ctx.get("day_state") or ""),
+            market_posture=str(env_ctx.get("posture") or ""),
+            market_score=float(env_ctx.get("score") or 0.0),
+            zt_placement=str((zt_map.get(code) or {}).get("placement") or ""),
+            zt_factor_score=float((zt_map.get(code) or {}).get("factor_score") or 0.0),
+            zt_leader_factor=float((zt_map.get(code) or {}).get("leader_factor") or 0.0),
+            zt_relay_factor=float((zt_map.get(code) or {}).get("relay_factor") or 0.0),
+            zt_capacity_factor=float((zt_map.get(code) or {}).get("capacity_factor") or 0.0),
+            zt_risk_control=float((zt_map.get(code) or {}).get("risk_control") or 0.0),
+            zt_leader_philosophy=float((zt_map.get(code) or {}).get("leader_philosophy") or 0.0),
+            zt_break_risk=float((zt_map.get(code) or {}).get("break_risk") or 0.0),
+            zt_score_band=str((zt_map.get(code) or {}).get("score_band") or ""),
+        )
+        candidate = score_stock(metrics)
+        candidate.primary_sector = inferred_sector
+        candidate.primary_confidence = max(candidate.primary_confidence, leader_confidence)
+        candidate.leaders_score = max(candidate.leaders_score, leader_score)
+        candidate.reasons = list(dict.fromkeys([*candidate.reasons, "题材龙头补全"]))
+        candidate.style_tag = "龙头博弈" if candidate.lbc >= 2 else (candidate.style_tag or "低位试错")
+        candidate.style_confidence = max(int(candidate.style_confidence or 0), 84 if candidate.lbc >= 2 else 76)
+        priority = (
+            float(row.get("score") or 0.0),
+            int(cell.lbc or 0),
+            float(cell.seal_fund_yi or 0.0),
+            float(cell.cje_yi or 0.0),
+        )
+        if best_priority is None or priority > best_priority:
+            best_priority = priority
+            best_candidate = candidate
+
+    if best_candidate is None:
+        return ml_members
+    return [*ml_members, best_candidate]
 
 
 def _tide_adjust(theme: dict[str, Any] | None) -> int:
