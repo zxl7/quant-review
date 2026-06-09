@@ -9,6 +9,7 @@ import unittest
 from pathlib import Path
 from unittest.mock import patch
 
+import daily_review.publish.web_bundle as web_bundle
 import scripts.build_stock_research_backtest as backtest
 
 
@@ -239,6 +240,63 @@ class StockResearchBacktestRowsTest(unittest.TestCase):
         self.assertEqual(payload["realtimeBuy"]["trade_date"], "2026-06-05")
         self.assertEqual([row["code"] for row in payload["records"]], ["000003"])
         self.assertEqual(payload["diagnostics"]["filtered_non_backtest_codes"], ["000004"])
+
+
+class StockResearchBacktestPublishFreshnessTest(unittest.TestCase):
+    def test_publish_rebuilds_when_source_history_is_newer_than_payload(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            cache_dir = root / "cache"
+            cache_dir.mkdir()
+            (cache_dir / "stock_research_backtest_source.json").write_text(
+                json.dumps(
+                    {
+                        "schema": "stock_research_backtest_source_v1",
+                        "dates": {
+                            "2026-06-10": {
+                                "date": "2026-06-10",
+                                "recommendation_date": "2026-06-09",
+                                "pushed_at_bj": "2026-06-09 15:50:02",
+                                "rows": [
+                                    {"code": "000001"},
+                                    {"code": "000002"},
+                                    {"code": "000003"},
+                                ],
+                            }
+                        },
+                    },
+                    ensure_ascii=False,
+                ),
+                encoding="utf-8",
+            )
+            stale_payload = {
+                "schema": "stock_research_backtest_v2",
+                "meta": {
+                    "latest_recommendation_date": "2026-06-08",
+                    "active_trade_date": "2026-06-09",
+                },
+                "summary": {
+                    "total_samples": 19,
+                    "source_samples": 19,
+                    "filtered_non_backtest_samples": 0,
+                    "eligible_samples": 16,
+                    "realtime_candidate_count": 9,
+                    "realtime_buy_count": 5,
+                    "realtime_pending_count": 0,
+                    "realtime_unavailable_count": 0,
+                },
+                "lifecycle": {
+                    "stage": "post_close_wait_auction",
+                    "quote_state": "waiting_trade_day",
+                },
+                "realtimeBuy": {"trade_date": "2026-06-09"},
+                "currentPoolRecords": [{"code": "000001"}],
+                "records": [{"code": "000001"}],
+            }
+
+            with patch.object(web_bundle, "ROOT", root):
+                self.assertTrue(web_bundle._is_complete_stock_research_backtest(stale_payload))
+                self.assertFalse(web_bundle._is_fresh_stock_research_backtest(stale_payload))
 
 
 if __name__ == "__main__":

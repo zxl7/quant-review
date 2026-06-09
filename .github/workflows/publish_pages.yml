@@ -76,8 +76,11 @@ jobs:
           fi
 
           t_close=$((15*60+12))
+          t_close_end=$((15*60+55))
           hit_close=false
-          if [ $(( now_min >= t_close && now_min < t_close + 20 )) -eq 1 ]; then
+          # 收盘版回测/个股研究推送经常晚于 15:12 才完全落地，
+          # 这里把窗口放宽到 15:55，避免一次调度抖动就整晚停留在旧版回测。
+          if [ $(( now_min >= t_close && now_min <= t_close_end )) -eq 1 ]; then
             hit_close=true
           fi
 

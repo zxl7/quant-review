@@ -1061,11 +1061,12 @@ def _is_complete_stock_research_backtest(payload: object) -> bool:
     if str(payload.get("schema") or "") != "stock_research_backtest_v2":
         return False
     summary = payload.get("summary")
+    lifecycle = payload.get("lifecycle")
     realtime_buy = payload.get("realtimeBuy")
     meta = payload.get("meta")
     current_pool_records = payload.get("currentPoolRecords")
     records = payload.get("records")
-    if not isinstance(summary, dict) or not isinstance(realtime_buy, dict) or not isinstance(meta, dict):
+    if not isinstance(summary, dict) or not isinstance(lifecycle, dict) or not isinstance(realtime_buy, dict) or not isinstance(meta, dict):
         return False
     if not isinstance(current_pool_records, list) or not isinstance(records, list):
         return False
@@ -1085,7 +1086,69 @@ def _is_complete_stock_research_backtest(payload: object) -> bool:
         return False
     if "active_trade_date" not in meta:
         return False
+    if "stage" not in lifecycle:
+        return False
+    if "quote_state" not in lifecycle:
+        return False
     if "trade_date" not in realtime_buy:
+        return False
+    return True
+
+
+def _latest_stock_research_source_snapshot() -> dict[str, object]:
+    path = ROOT / "cache" / "stock_research_backtest_source.json"
+    if not path.exists():
+        return {}
+    try:
+        data = json.loads(path.read_text(encoding="utf-8"))
+    except Exception:
+        return {}
+    dates = data.get("dates") if isinstance(data, dict) else {}
+    if not isinstance(dates, dict):
+        return {}
+
+    valid_dates = [str(date10).strip() for date10 in dates.keys() if re.match(r"^\d{4}-\d{2}-\d{2}$", str(date10 or "").strip())]
+    if not valid_dates:
+        return {}
+    latest_trade_date = sorted(valid_dates)[-1]
+    latest_item = dates.get(latest_trade_date)
+    if not isinstance(latest_item, dict):
+        return {}
+    rows = latest_item.get("rows") if isinstance(latest_item.get("rows"), list) else []
+    return {
+        "trade_date": latest_trade_date,
+        "recommendation_date": str(latest_item.get("recommendation_date") or "").strip(),
+        "rows_count": len(rows),
+        "pushed_at_bj": str(latest_item.get("pushed_at_bj") or "").strip(),
+    }
+
+
+def _is_fresh_stock_research_backtest(
+    payload: object,
+    *,
+    latest_source_snapshot: Optional[dict[str, object]] = None,
+) -> bool:
+    if not _is_complete_stock_research_backtest(payload):
+        return False
+    latest_source_snapshot = latest_source_snapshot or _latest_stock_research_source_snapshot()
+    if not latest_source_snapshot:
+        return True
+    if not isinstance(payload, dict):
+        return False
+
+    meta = payload.get("meta") if isinstance(payload.get("meta"), dict) else {}
+    current_pool_records = payload.get("currentPoolRecords") if isinstance(payload.get("currentPoolRecords"), list) else []
+    active_trade_date = str(meta.get("active_trade_date") or "").strip()
+    latest_recommendation_date = str(meta.get("latest_recommendation_date") or "").strip()
+    source_trade_date = str(latest_source_snapshot.get("trade_date") or "").strip()
+    source_recommendation_date = str(latest_source_snapshot.get("recommendation_date") or "").strip()
+    source_rows_count = _to_int(latest_source_snapshot.get("rows_count"), 0)
+
+    if source_trade_date and active_trade_date != source_trade_date:
+        return False
+    if source_recommendation_date and latest_recommendation_date != source_recommendation_date:
+        return False
+    if source_rows_count > 0 and len(current_pool_records) < source_rows_count:
         return False
     return True
 
@@ -1101,14 +1164,30 @@ def _ensure_stock_research_backtest(md: dict) -> None:
     """
     if not isinstance(md, dict):
         return
+    latest_source_snapshot = _latest_stock_research_source_snapshot()
     existing = md.get("stockResearchBacktest")
-    if _is_complete_stock_research_backtest(existing):
+    try:
+        from scripts.build_stock_research_backtest import upgrade_stock_research_backtest_payload
+    except Exception:
+        upgrade_stock_research_backtest_payload = None  # type: ignore[assignment]
+
+    if _is_fresh_stock_research_backtest(existing, latest_source_snapshot=latest_source_snapshot):
         return
+    if callable(upgrade_stock_research_backtest_payload) and isinstance(existing, dict):
+        upgraded_existing = upgrade_stock_research_backtest_payload(existing)
+        if _is_fresh_stock_research_backtest(upgraded_existing, latest_source_snapshot=latest_source_snapshot):
+            md["stockResearchBacktest"] = upgraded_existing
+            return
     preserved = ((md.get("preservedResearch") or {}) if isinstance(md.get("preservedResearch"), dict) else {}).get("marketData")
     preserved_backtest = preserved.get("stockResearchBacktest") if isinstance(preserved, dict) else None
-    if _is_complete_stock_research_backtest(preserved_backtest):
+    if _is_fresh_stock_research_backtest(preserved_backtest, latest_source_snapshot=latest_source_snapshot):
         md["stockResearchBacktest"] = preserved_backtest
         return
+    if callable(upgrade_stock_research_backtest_payload) and isinstance(preserved_backtest, dict):
+        upgraded_preserved = upgrade_stock_research_backtest_payload(preserved_backtest)
+        if _is_fresh_stock_research_backtest(upgraded_preserved, latest_source_snapshot=latest_source_snapshot):
+            md["stockResearchBacktest"] = upgraded_preserved
+            return
     try:
         from scripts.build_stock_research_backtest import build_stock_research_backtest_payload
 

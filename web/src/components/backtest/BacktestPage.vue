@@ -44,6 +44,22 @@ const emptyPayload = {
     by_open_status: [],
   },
   metrics: {},
+  lifecycle: {
+    stage: "empty",
+    stage_label: "暂无数据",
+    stage_note: "",
+    quote_state: "pending_source",
+    quote_state_label: "等待推送",
+    quote_state_note: "",
+    has_current_plan: false,
+    has_historical_records: false,
+    has_realtime_snapshot: false,
+    latest_recommendation_date: "",
+    active_trade_date: "",
+    latest_historical_recommendation_date: "",
+    realtime_reference_date: "",
+    quote_time: "",
+  },
   currentPoolRecords: [],
   records: [],
   diagnostics: {},
@@ -85,6 +101,7 @@ function isCompleteBacktestPayload(raw: any) {
   if (String(raw.schema || "") !== "stock_research_backtest_v2") return false
   if (!raw.meta || typeof raw.meta !== "object") return false
   if (!raw.summary || typeof raw.summary !== "object") return false
+  if (!raw.lifecycle || typeof raw.lifecycle !== "object") return false
   if (!raw.realtimeBuy || typeof raw.realtimeBuy !== "object") return false
   if (!Array.isArray(raw.currentPoolRecords)) return false
   if (!Array.isArray(raw.records)) return false
@@ -98,6 +115,7 @@ const payload = computed<any>(() => {
 
 const meta = computed(() => payload.value?.meta || emptyPayload.meta)
 const summary = computed(() => payload.value?.summary || emptyPayload.summary)
+const lifecycle = computed<any>(() => (payload.value?.lifecycle && typeof payload.value.lifecycle === "object" ? payload.value.lifecycle : emptyPayload.lifecycle))
 const assumptions = computed<string[]>(() => (Array.isArray(payload.value?.assumptions) ? payload.value.assumptions : []))
 const mainlineBreakdown = computed<any[]>(() => (Array.isArray(payload.value?.breakdowns?.by_mainline) ? payload.value.breakdowns.by_mainline.slice(0, 8) : []))
 const statusBreakdown = computed<any[]>(() => (Array.isArray(payload.value?.breakdowns?.by_open_status) ? payload.value.breakdowns.by_open_status : []))
@@ -138,6 +156,12 @@ const metrics = computed(() => {
   ]
 })
 
+function metricScope(item: any, scope: "all" | "tradable") {
+  const scopes = item?.data?.scopes
+  if (scopes && typeof scopes === "object" && scopes[scope] && typeof scopes[scope] === "object") return scopes[scope]
+  return item?.data || {}
+}
+
 const currentPoolRecords = computed<any[]>(() => {
   const rows = Array.isArray(payload.value?.currentPoolRecords) ? [...payload.value.currentPoolRecords] : []
   rows.sort((a, b) => {
@@ -148,11 +172,23 @@ const currentPoolRecords = computed<any[]>(() => {
   return rows
 })
 
+function historicalStatusRank(status?: string) {
+  const key = String(status || "")
+  if (key === "super") return 0
+  if (key === "expected") return 1
+  if (key === "pending" || key === "wait_reseal") return 2
+  if (key === "reject") return 3
+  return 9
+}
+
 const records = computed<any[]>(() => {
   const rows = Array.isArray(payload.value?.records) ? [...payload.value.records] : []
   rows.sort((a, b) => {
     const dateDiff = String(b?.date10 || "").localeCompare(String(a?.date10 || ""))
     if (dateDiff) return dateDiff
+    const statusDiff =
+      historicalStatusRank(a?.performance?.open_check?.status) - historicalStatusRank(b?.performance?.open_check?.status)
+    if (statusDiff) return statusDiff
     const scoreDiff = toNum(b?.score, 0) - toNum(a?.score, 0)
     if (scoreDiff) return scoreDiff
     return String(a?.code || "").localeCompare(String(b?.code || ""))
@@ -162,7 +198,9 @@ const records = computed<any[]>(() => {
 const latestRecommendationDate = computed(() => String(meta.value?.latest_recommendation_date || realtimeBuy.value?.reference_date || "").trim())
 const currentRecords = computed<any[]>(() => currentPoolRecords.value)
 const currentEligibleCount = computed(() => currentRecords.value.filter((row) => !!row?.performance?.open_check?.can_enter).length)
-const historicalRecords = computed<any[]>(() => records.value)
+const historicalRecords = computed<any[]>(() =>
+  records.value.filter((row) => String(row?.performance?.open_check?.status || "") !== "reject")
+)
 const hasCurrentPlan = computed(() => hasValidPayload.value && currentRecords.value.length > 0)
 const hasHistoricalRecords = computed(() => historicalRecords.value.length > 0)
 const hasRealtimeSnapshot = computed(() => {
@@ -172,8 +210,68 @@ const hasRealtimeSnapshot = computed(() => {
   return allCandidates.value.length > 0
 })
 const hasAnyRenderableSection = computed(() => hasCurrentPlan.value || hasHistoricalRecords.value || hasRealtimeSnapshot.value)
+const lifecycleStage = computed(() => String(lifecycle.value?.stage || "empty"))
+const lifecycleStageLabel = computed(() => String(lifecycle.value?.stage_label || "暂无数据"))
+const lifecycleStageNote = computed(() => String(lifecycle.value?.stage_note || "").trim())
+const lifecycleQuoteLabel = computed(() => String(lifecycle.value?.quote_state_label || "等待推送"))
+const lifecycleQuoteNote = computed(() => String(lifecycle.value?.quote_state_note || "").trim())
 const currentPlanTitleDate = computed(() => String(activeTradeDate.value || latestRecommendationDate.value || "").trim())
 const currentPlanCardTitle = computed(() => (currentPlanTitleDate.value ? `待验证池 — ${currentPlanTitleDate.value}` : "待验证池"))
+const realtimeSubtitle = computed(() => {
+  if (hasRealtimeSnapshot.value && quoteUpdatedAt.value && quoteUpdatedAt.value !== "-") {
+    return `竞价快照：${quoteUpdatedAt.value}｜超预期 = 买入，符合预期 = 观察，低预期 = 不入场。`
+  }
+  if (hasCurrentPlan.value && latestRecommendationDate.value) {
+    return `盘后样本已更新到 ${latestRecommendationDate.value}，明日 09:25-09:30 再补真实竞价命中结果。`
+  }
+  return "超预期 = 买入，符合预期 = 观察，低预期 = 不入场。"
+})
+const strategySubtitle = computed(() => {
+  const updatedAt = String(backtestUpdatedAt.value || "").trim()
+  return updatedAt && updatedAt !== "-"
+    ? `收益口径：次日开盘买入，分别统计 T+1 / T+2 / T+3 收盘卖出；不含手续费、滑点和一字板无法成交约束。最新刷新：${updatedAt}`
+    : "收益口径：次日开盘买入，分别统计 T+1 / T+2 / T+3 收盘卖出；不含手续费、滑点和一字板无法成交约束。"
+})
+const stageClass = computed(() => {
+  const stage = lifecycleStage.value
+  if (stage === "auction_snapshot_ready") return "is-super"
+  if (stage === "post_close_wait_auction") return "is-expected"
+  if (stage === "auction_snapshot_missing") return "is-reject"
+  return "is-neutral"
+})
+const quoteClass = computed(() => {
+  const state = String(lifecycle.value?.quote_state || "")
+  if (state === "ready") return "is-super"
+  if (state === "window_live" || state === "waiting_trade_day" || state === "waiting_window") return "is-expected"
+  if (state === "missing") return "is-reject"
+  return "is-neutral"
+})
+const summaryCards = computed(() => [
+  {
+    key: "recommendation",
+    label: "最新推荐日",
+    value: latestRecommendationDate.value || "-",
+    note: activeTradeDate.value ? `待验证交易日 ${activeTradeDate.value}` : "当前暂无待验证交易日",
+  },
+  {
+    key: "history",
+    label: "历史统计刷新",
+    value: String(lifecycle.value?.latest_historical_recommendation_date || latestRecommendationDate.value || "-"),
+    note: hasHistoricalRecords.value ? `历史样本 ${historicalRecords.value.length} 条` : "当前还没有历史回测样本",
+  },
+  {
+    key: "pool",
+    label: "待验证池",
+    value: `${currentRecords.value.length}`,
+    note: currentEligibleCount.value > 0 ? `可入场候选 ${currentEligibleCount.value} 条` : "当前以盘后样本展示为主",
+  },
+  {
+    key: "snapshot",
+    label: "9:25 快照",
+    value: hasRealtimeSnapshot.value ? `${allCandidates.value.length}` : "-",
+    note: hasRealtimeSnapshot.value ? `快照时间 ${quoteUpdatedAt.value}` : lifecycleQuoteLabel.value,
+  },
+])
 const emptyStateText = computed(() => {
   if (!hasValidPayload.value) return "当前暂无有效回测数据，明天 09:25-09:30 落地后会自动显示对应内容。"
   if (hasCurrentPlan.value) return "收盘后推送的个股研究样本已经落进回测 JSON，当前先展示明天待验证池；到明天 09:25-09:30 再补真实竞价命中结果。"
@@ -325,11 +423,37 @@ function strategyReturnClass(performance: any, key: string) {
     </div>
 
     <template v-else>
+    <div class="card bt-summary-card">
+      <div class="card-header">
+        <div>
+          <div class="card-title">个股回测状态</div>
+          <div class="bt-subtitle">{{ lifecycleStageNote || strategySubtitle }}</div>
+        </div>
+      </div>
+
+      <div class="bt-pill-row">
+        <span class="bt-pill" :class="stageClass">{{ lifecycleStageLabel }}</span>
+        <span class="bt-pill" :class="quoteClass">{{ lifecycleQuoteLabel }}</span>
+      </div>
+
+      <div class="bt-kpi-grid">
+        <div class="bt-kpi-card" v-for="item in summaryCards" :key="item.key">
+          <div class="bt-kpi-label">{{ item.label }}</div>
+          <div class="bt-kpi-value">{{ item.value }}</div>
+          <div class="bt-kpi-note">{{ item.note }}</div>
+        </div>
+      </div>
+
+      <div class="summary-box" v-if="lifecycleQuoteNote">
+        <div class="summary-text">{{ lifecycleQuoteNote }}</div>
+      </div>
+    </div>
+
     <div class="card">
       <div class="card-header">
         <div>
           <div class="card-title">{{ realtimeCardTitle }}</div>
-          <div class="bt-subtitle">超预期 = 买入，符合预期 = 观察，低预期 = 不入场。</div>
+          <div class="bt-subtitle">{{ realtimeSubtitle }}</div>
         </div>
       </div>
 
@@ -433,40 +557,54 @@ function strategyReturnClass(performance: any, key: string) {
       <div class="card-header">
         <div>
           <div class="card-title">策略表现</div>
-          <div class="bt-subtitle">收益口径：次日开盘买入，分别统计 T+1 / T+2 / T+3 收盘卖出；不含手续费、滑点和一字板无法成交约束。</div>
+          <div class="bt-subtitle">{{ strategySubtitle }}</div>
         </div>
       </div>
 
       <div class="bt-metrics-grid">
         <div class="bt-metric-card" v-for="item in metrics" :key="item.key">
           <div class="section-header">{{ item.label }}</div>
+          <div class="bt-pill-row" style="margin-top:8px">
+            <span class="bt-pill is-super">可交易样本</span>
+            <span class="bt-pill is-neutral">全样本</span>
+          </div>
           <div class="bt-metric-rows" style="border:none">
             <div class="bt-metric-row">
               <div>
                 <div class="bt-metric-k">覆盖样本</div>
-                <div class="bt-metric-note">可执行 {{ item.data?.eligible ?? 0 }} 笔，已覆盖 {{ item.data?.covered ?? 0 }} 笔</div>
+                <div class="bt-metric-note">
+                  可交易 {{ metricScope(item, 'tradable')?.eligible ?? 0 }} / 已覆盖 {{ metricScope(item, 'tradable')?.covered ?? 0 }}
+                  ｜ 全样本 {{ metricScope(item, 'all')?.eligible ?? 0 }} / 已覆盖 {{ metricScope(item, 'all')?.covered ?? 0 }}
+                </div>
               </div>
-              <div class="bt-metric-v">{{ item.data?.coverage ?? 0 }}%</div>
+              <div class="bt-metric-v">{{ metricScope(item, "tradable")?.coverage ?? 0 }}%</div>
             </div>
             <div class="bt-metric-row">
               <div>
                 <div class="bt-metric-k">胜率</div>
-                <div class="bt-metric-note">上涨 {{ item.data?.win_count ?? 0 }} ｜ 平 {{ item.data?.flat_count ?? 0 }} ｜ 下跌 {{ item.data?.loss_count ?? 0 }}</div>
+                <div class="bt-metric-note">
+                  可交易：涨 {{ metricScope(item, 'tradable')?.win_count ?? 0 }} ｜ 平 {{ metricScope(item, 'tradable')?.flat_count ?? 0 }} ｜ 跌 {{ metricScope(item, 'tradable')?.loss_count ?? 0 }}
+                  ｜ 全样本胜率 {{ metricScope(item, 'all')?.win_rate ?? 0 }}%
+                </div>
               </div>
-              <div class="bt-metric-v">{{ item.data?.win_rate ?? 0 }}%</div>
+              <div class="bt-metric-v">{{ metricScope(item, "tradable")?.win_rate ?? 0 }}%</div>
             </div>
             <div class="bt-metric-row">
               <div>
                 <div class="bt-metric-k">平均收益</div>
-                <div class="bt-metric-note">平均盈利 {{ item.data?.avg_win_return ?? 0 }}% ｜ 平均回撤 {{ item.data?.avg_loss_return ?? 0 }}%</div>
+                <div class="bt-metric-note">
+                  可交易：盈利 {{ metricScope(item, 'tradable')?.avg_win_return ?? 0 }}% ｜ 回撤 {{ metricScope(item, 'tradable')?.avg_loss_return ?? 0 }}%
+                  ｜ 全样本均值 {{ metricScope(item, 'all')?.avg_return ?? 0 }}%
+                </div>
               </div>
-              <div class="bt-metric-v" :class="signedClass(item.data?.avg_return)">{{ formatSigned(item.data?.avg_return, 2) }}%</div>
+              <div class="bt-metric-v" :class="signedClass(metricScope(item, 'tradable')?.avg_return)">{{ formatSigned(metricScope(item, "tradable")?.avg_return, 2) }}%</div>
             </div>
           </div>
 
           <div class="bt-split-row" style="border:none;background:none;padding:0">
             <div style="font-size:11px;color:var(--text-muted);padding:4px 8px">
-              均值 <span class="red-text">{{ formatSigned(item.data?.by_open_status?.super?.avg_return, 2) }}%</span> ｜ 胜率 {{ item.data?.by_open_status?.super?.win_rate ?? 0 }}%
+              超预期均值 <span class="red-text">{{ formatSigned(metricScope(item, 'tradable')?.by_open_status?.super?.avg_return, 2) }}%</span>
+              ｜ 超预期胜率 {{ metricScope(item, 'tradable')?.by_open_status?.super?.win_rate ?? 0 }}%
             </div>
           </div>
         </div>

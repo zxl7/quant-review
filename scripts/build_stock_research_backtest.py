@@ -393,6 +393,149 @@ def _pick_active_trade_date(rows: list[dict[str, Any]], *, now: datetime | None 
     return trade_dates[-1]
 
 
+def _seconds_since_midnight(current: datetime) -> int:
+    return current.hour * 3600 + current.minute * 60 + current.second
+
+
+def _build_lifecycle(
+    *,
+    latest_recommendation_date10: str,
+    active_trade_date10: str,
+    latest_backtest_date10: str,
+    current_pool_rows: list[dict[str, Any]],
+    backtest_rows: list[dict[str, Any]],
+    realtime_buy: dict[str, Any],
+    now: datetime | None = None,
+) -> dict[str, Any]:
+    current = now or _now_bj()
+    today10 = current.strftime("%Y-%m-%d")
+    now_seconds = _seconds_since_midnight(current)
+    quote_time = str(realtime_buy.get("quote_time") or "").strip()
+    quoted_count = int(realtime_buy.get("quoted_count") or 0)
+    candidate_count = int(realtime_buy.get("candidate_count") or 0)
+    has_current_plan = bool(current_pool_rows)
+    has_historical_records = bool(backtest_rows)
+    has_realtime_snapshot = bool(realtime_buy.get("reference_date")) and quoted_count > 0 and _is_entry_window_time(quote_time)
+
+    quote_state = "pending_source"
+    quote_state_label = "等待推送"
+    quote_state_note = "当前还没有落地到可读的竞价引用日。"
+
+    if has_realtime_snapshot:
+        quote_state = "ready"
+        quote_state_label = "快照已落地"
+        quote_state_note = f"9:25 竞价快照已生成，时间 {quote_time or '-'}。"
+    elif has_current_plan:
+        if active_trade_date10 and active_trade_date10 > today10:
+            quote_state = "waiting_trade_day"
+            quote_state_label = "等待明日竞价"
+            quote_state_note = f"盘后样本已经推到推荐日 {latest_recommendation_date10 or '-'}，等待 {active_trade_date10} 的 09:25-09:30 竞价快照。"
+        elif active_trade_date10 and active_trade_date10 == today10:
+            if now_seconds < 9 * 3600 + 25 * 60:
+                quote_state = "waiting_window"
+                quote_state_label = "等待开盘窗口"
+                quote_state_note = f"今天要验证 {active_trade_date10}，需等 09:25-09:30 才能落地真实竞价结果。"
+            elif _should_request_realtime_quotes(current):
+                quote_state = "window_live"
+                quote_state_label = "窗口进行中"
+                quote_state_note = "当前正处于 09:25-09:30，可直接抓取实时竞价结果。"
+            else:
+                quote_state = "missing"
+                quote_state_label = "快照缺失"
+                quote_state_note = f"{active_trade_date10} 的 09:25 竞价窗口已过，但没有拿到有效快照，当前只保留待验证池。"
+        else:
+            quote_state = "missing" if candidate_count > 0 else "pending_source"
+            quote_state_label = "快照缺失" if candidate_count > 0 else "等待推送"
+            quote_state_note = "当前待验证池存在，但缺少可用的 9:25 竞价快照。"
+    elif has_historical_records:
+        quote_state = "historical_only"
+        quote_state_label = "仅历史统计"
+        quote_state_note = "当前没有待验证池，仅保留历史胜率和样本明细。"
+
+    stage = "empty"
+    stage_label = "暂无数据"
+    stage_note = "当前还没有可展示的个股回测样本。"
+    if has_current_plan and has_realtime_snapshot:
+        stage = "auction_snapshot_ready"
+        stage_label = "竞价结果已落地"
+        stage_note = f"推荐日 {latest_recommendation_date10 or '-'} 的待验证池已匹配到 {active_trade_date10 or '-'} 9:25 竞价结果，历史统计与当前快照都可同时查看。"
+    elif has_current_plan:
+        if quote_state in {"waiting_trade_day", "waiting_window", "window_live"}:
+            stage = "post_close_wait_auction"
+            stage_label = "盘后待验证"
+            stage_note = f"收盘后样本已经更新到推荐日 {latest_recommendation_date10 or '-'}，当前先展示待验证池；到 {active_trade_date10 or '-'} 09:25-09:30 再补真实竞价结果。"
+        else:
+            stage = "auction_snapshot_missing"
+            stage_label = "竞价快照缺失"
+            stage_note = f"待验证池已经存在，但 {active_trade_date10 or '-'} 的 9:25 快照没有成功落地，胜率统计只会停留在历史样本。"
+    elif has_historical_records:
+        stage = "historical_only"
+        stage_label = "仅历史统计"
+        stage_note = "当前没有新待验证池，页面仅展示历史样本和策略表现。"
+
+    return {
+        "stage": stage,
+        "stage_label": stage_label,
+        "stage_note": stage_note,
+        "quote_state": quote_state,
+        "quote_state_label": quote_state_label,
+        "quote_state_note": quote_state_note,
+        "has_current_plan": has_current_plan,
+        "has_historical_records": has_historical_records,
+        "has_realtime_snapshot": has_realtime_snapshot,
+        "latest_recommendation_date": latest_recommendation_date10,
+        "active_trade_date": active_trade_date10,
+        "latest_historical_recommendation_date": latest_backtest_date10,
+        "realtime_reference_date": str(realtime_buy.get("reference_date") or "").strip(),
+        "quote_time": quote_time,
+    }
+
+
+def upgrade_stock_research_backtest_payload(payload: dict[str, Any] | None) -> dict[str, Any]:
+    if not isinstance(payload, dict):
+        return {}
+    if str(payload.get("schema") or "") != "stock_research_backtest_v2":
+        return payload
+
+    upgraded = json.loads(json.dumps(payload, ensure_ascii=False))
+    meta = upgraded.get("meta") if isinstance(upgraded.get("meta"), dict) else {}
+    realtime_buy = upgraded.get("realtimeBuy") if isinstance(upgraded.get("realtimeBuy"), dict) else {}
+    current_pool_rows = upgraded.get("currentPoolRecords") if isinstance(upgraded.get("currentPoolRecords"), list) else []
+    backtest_rows = upgraded.get("records") if isinstance(upgraded.get("records"), list) else []
+    latest_recommendation_date10 = str(meta.get("latest_recommendation_date") or realtime_buy.get("reference_date") or "").strip()
+    active_trade_date10 = str(meta.get("active_trade_date") or realtime_buy.get("trade_date") or "").strip()
+    historical_dates = sorted({str(row.get("date10") or "").strip() for row in backtest_rows if str(row.get("date10") or "").strip()})
+    latest_backtest_date10 = historical_dates[-1] if historical_dates else ""
+
+    upgraded["meta"] = meta
+    meta.setdefault("is_empty", not current_pool_rows and not backtest_rows)
+    metrics = upgraded.get("metrics") if isinstance(upgraded.get("metrics"), dict) else {}
+    upgraded["metrics"] = metrics
+    for key in ("next_day", "hold_2d", "hold_3d"):
+        item = metrics.get(key)
+        if not isinstance(item, dict):
+            continue
+        scopes = item.get("scopes") if isinstance(item.get("scopes"), dict) else {}
+        if "tradable" not in scopes:
+            tradable_scope = json.loads(json.dumps(item, ensure_ascii=False))
+            tradable_scope.pop("scopes", None)
+            scopes["tradable"] = tradable_scope
+        if "all" not in scopes:
+            all_scope = json.loads(json.dumps(scopes["tradable"], ensure_ascii=False))
+            all_scope["base_total"] = int(item.get("total") or all_scope.get("total") or 0)
+            scopes["all"] = all_scope
+        item["scopes"] = scopes
+    upgraded["lifecycle"] = _build_lifecycle(
+        latest_recommendation_date10=latest_recommendation_date10,
+        active_trade_date10=active_trade_date10,
+        latest_backtest_date10=latest_backtest_date10,
+        current_pool_rows=current_pool_rows,
+        backtest_rows=backtest_rows,
+        realtime_buy=realtime_buy,
+    )
+    return upgraded
+
+
 def _empty_backtest_payload(*, generated_from: list[str] | None = None) -> dict[str, Any]:
     return {
         "schema": "stock_research_backtest_v2",
@@ -440,6 +583,22 @@ def _empty_backtest_payload(*, generated_from: list[str] | None = None) -> dict[
             "by_date_status": [],
         },
         "metrics": {},
+        "lifecycle": {
+            "stage": "empty",
+            "stage_label": "暂无数据",
+            "stage_note": "当前还没有可展示的个股回测样本。",
+            "quote_state": "pending_source",
+            "quote_state_label": "等待推送",
+            "quote_state_note": "当前还没有落地到可读的竞价引用日。",
+            "has_current_plan": False,
+            "has_historical_records": False,
+            "has_realtime_snapshot": False,
+            "latest_recommendation_date": "",
+            "active_trade_date": "",
+            "latest_historical_recommendation_date": "",
+            "realtime_reference_date": "",
+            "quote_time": "",
+        },
         "realtimeBuy": {
             "reference_date": "",
             "trade_date": "",
@@ -991,46 +1150,74 @@ def _evaluate_one(record: dict[str, Any], bars: list[dict[str, Any]]) -> dict[st
 
 
 def _summarize_strategy(records: list[dict[str, Any]], key: str, label: str) -> dict[str, Any]:
-    eligible = [r for r in records if (r.get("performance") or {}).get("open_check", {}).get("can_enter")]
-    covered_rows = [r for r in eligible if (r.get("performance") or {}).get(key, {}).get("status") == "covered"]
-    pending_rows = [r for r in eligible if (r.get("performance") or {}).get(key, {}).get("status") == "pending"]
-    missing_rows = [r for r in eligible if (r.get("performance") or {}).get(key, {}).get("status") == "missing"]
-    skipped_rows = [r for r in records if (r.get("performance") or {}).get(key, {}).get("status") == "skipped"]
-    returns = [float(r["performance"][key]["return_pct"]) for r in covered_rows]
-    wins = [r for r in covered_rows if r["performance"][key]["return_pct"] > 0]
-    flats = [r for r in covered_rows if r["performance"][key]["return_pct"] == 0]
-    losses = [r for r in covered_rows if r["performance"][key]["return_pct"] < 0]
+    def summarize_scope(scope_rows: list[dict[str, Any]], *, denominator_rows: list[dict[str, Any]]) -> dict[str, Any]:
+        covered_rows = [r for r in scope_rows if (r.get("performance") or {}).get(key, {}).get("status") == "covered"]
+        pending_rows = [r for r in scope_rows if (r.get("performance") or {}).get(key, {}).get("status") == "pending"]
+        missing_rows = [r for r in scope_rows if (r.get("performance") or {}).get(key, {}).get("status") == "missing"]
+        skipped_rows = [r for r in scope_rows if (r.get("performance") or {}).get(key, {}).get("status") == "skipped"]
+        returns = [float(r["performance"][key]["return_pct"]) for r in covered_rows]
+        wins = [r for r in covered_rows if r["performance"][key]["return_pct"] > 0]
+        flats = [r for r in covered_rows if r["performance"][key]["return_pct"] == 0]
+        losses = [r for r in covered_rows if r["performance"][key]["return_pct"] < 0]
 
-    by_open_status: dict[str, Any] = {}
-    for open_status in ("super", "expected"):
-        rows = [r for r in covered_rows if (r.get("performance") or {}).get("open_check", {}).get("status") == open_status]
-        row_returns = [float(r["performance"][key]["return_pct"]) for r in rows]
-        by_open_status[open_status] = {
-            "covered": len(rows),
-            "win_rate": _pct(sum(1 for x in row_returns if x > 0), len(rows)),
-            "avg_return": _avg(row_returns),
+        by_open_status: dict[str, Any] = {}
+        for open_status in ("super", "expected", "reject"):
+            rows = [r for r in covered_rows if (r.get("performance") or {}).get("open_check", {}).get("status") == open_status]
+            row_returns = [float(r["performance"][key]["return_pct"]) for r in rows]
+            by_open_status[open_status] = {
+                "covered": len(rows),
+                "win_rate": _pct(sum(1 for x in row_returns if x > 0), len(rows)),
+                "avg_return": _avg(row_returns),
+            }
+
+        return {
+            "status": "ready" if covered_rows else ("partial" if pending_rows else "missing"),
+            "covered": len(covered_rows),
+            "total": len(scope_rows),
+            "base_total": len(denominator_rows),
+            "eligible": len(scope_rows),
+            "coverage": _pct(len(covered_rows), len(scope_rows)),
+            "pending": len(pending_rows),
+            "missing": len(missing_rows),
+            "skipped": len(skipped_rows),
+            "win_count": len(wins),
+            "flat_count": len(flats),
+            "loss_count": len(losses),
+            "win_rate": _pct(len(wins), len(covered_rows)),
+            "avg_return": _avg(returns),
+            "avg_win_return": _avg([float(r["performance"][key]["return_pct"]) for r in wins]),
+            "avg_loss_return": _avg([float(r["performance"][key]["return_pct"]) for r in losses]),
+            "by_open_status": by_open_status,
         }
+
+    tradable_rows = [r for r in records if (r.get("performance") or {}).get("open_check", {}).get("can_enter")]
+    all_scope = summarize_scope(records, denominator_rows=records)
+    tradable_scope = summarize_scope(tradable_rows, denominator_rows=records)
 
     return {
         "key": key,
         "label": label,
-        "status": "ready" if covered_rows else ("partial" if pending_rows else "missing"),
-        "covered": len(covered_rows),
+        "status": tradable_scope["status"],
+        "covered": tradable_scope["covered"],
         "total": len(records),
-        "eligible": len(eligible),
-        "coverage": _pct(len(covered_rows), len(eligible)),
-        "pending": len(pending_rows),
-        "missing": len(missing_rows),
-        "skipped": len(skipped_rows),
-        "win_count": len(wins),
-        "flat_count": len(flats),
-        "loss_count": len(losses),
-        "win_rate": _pct(len(wins), len(covered_rows)),
-        "avg_return": _avg(returns),
-        "avg_win_return": _avg([float(r["performance"][key]["return_pct"]) for r in wins]),
-        "avg_loss_return": _avg([float(r["performance"][key]["return_pct"]) for r in losses]),
-        "by_open_status": by_open_status,
-        "note": "只统计 ztAnalysis 同源推荐；仅在次日 09:25-09:30 开盘信号满足符合预期或超预期开口径时记为入场。",
+        "eligible": tradable_scope["eligible"],
+        "coverage": tradable_scope["coverage"],
+        "pending": tradable_scope["pending"],
+        "missing": tradable_scope["missing"],
+        "skipped": tradable_scope["skipped"],
+        "win_count": tradable_scope["win_count"],
+        "flat_count": tradable_scope["flat_count"],
+        "loss_count": tradable_scope["loss_count"],
+        "win_rate": tradable_scope["win_rate"],
+        "avg_return": tradable_scope["avg_return"],
+        "avg_win_return": tradable_scope["avg_win_return"],
+        "avg_loss_return": tradable_scope["avg_loss_return"],
+        "by_open_status": tradable_scope["by_open_status"],
+        "scopes": {
+            "all": all_scope,
+            "tradable": tradable_scope,
+        },
+        "note": "只统计 ztAnalysis 同源推荐；策略表现同时提供全样本口径与可交易样本口径，默认主展示为可交易样本。",
     }
 
 
@@ -1118,12 +1305,25 @@ def build_stock_research_backtest_payload(*, current_market_data: dict[str, Any]
     current_pool_rows = _merge_current_pool_with_realtime(current_pool_rows, realtime_buy)
 
     backtest_rows = [r for r in enriched_rows if _is_backtest_ready_record(r)]
+    latest_backtest_date10 = ""
+    if backtest_rows:
+        latest_backtest_date10 = sorted({r["date10"] for r in backtest_rows})[-1]
+    lifecycle = _build_lifecycle(
+        latest_recommendation_date10=latest_source_date10,
+        active_trade_date10=active_trade_date10,
+        latest_backtest_date10=latest_backtest_date10,
+        current_pool_rows=current_pool_rows,
+        backtest_rows=backtest_rows,
+        realtime_buy=realtime_buy,
+    )
     if not backtest_rows:
         payload = _empty_backtest_payload(generated_from=generated_from)
         payload["summary"]["source_samples"] = len(enriched_rows)
         payload["summary"]["filtered_non_backtest_samples"] = len(enriched_rows)
         payload["meta"]["latest_recommendation_date"] = latest_source_date10
         payload["meta"]["active_trade_date"] = active_trade_date10
+        payload["meta"]["is_empty"] = False
+        payload["lifecycle"] = lifecycle
         payload["realtimeBuy"] = realtime_buy
         payload["currentPoolRecords"] = current_pool_rows
         payload["assumptions"].append("当天尚未走完次日开盘验证的数据会被清洗掉，不混入回测统计。")
@@ -1131,7 +1331,6 @@ def build_stock_research_backtest_payload(*, current_market_data: dict[str, Any]
         return payload
 
     date_list = sorted({r["date10"] for r in backtest_rows})
-    latest_backtest_date10 = date_list[-1]
 
     total = len(backtest_rows)
     eligible_rows = [r for r in backtest_rows if (r.get("performance") or {}).get("open_check", {}).get("can_enter")]
@@ -1208,6 +1407,7 @@ def build_stock_research_backtest_payload(*, current_market_data: dict[str, Any]
             "by_date_status": [{"date": k, **v} for k, v in sorted(by_date_status.items())],
         },
         "metrics": metrics,
+        "lifecycle": lifecycle,
         "realtimeBuy": realtime_buy,
         "currentPoolRecords": current_pool_rows,
         "records": backtest_rows,
