@@ -564,38 +564,25 @@ function strategyReturnClass(performance: any, key: string) {
       <div class="bt-metrics-grid">
         <div class="bt-metric-card" v-for="item in metrics" :key="item.key">
           <div class="section-header">{{ item.label }}</div>
-          <div class="bt-pill-row" style="margin-top:8px">
-            <span class="bt-pill is-super">可交易样本</span>
-            <span class="bt-pill is-neutral">全样本</span>
-          </div>
           <div class="bt-metric-rows" style="border:none">
             <div class="bt-metric-row">
               <div>
                 <div class="bt-metric-k">覆盖样本</div>
-                <div class="bt-metric-note">
-                  可交易 {{ metricScope(item, 'tradable')?.eligible ?? 0 }} / 已覆盖 {{ metricScope(item, 'tradable')?.covered ?? 0 }}
-                  ｜ 全样本 {{ metricScope(item, 'all')?.eligible ?? 0 }} / 已覆盖 {{ metricScope(item, 'all')?.covered ?? 0 }}
-                </div>
+                <div class="bt-metric-note">可执行 {{ metricScope(item, 'tradable')?.eligible ?? 0 }} 笔，已覆盖 {{ metricScope(item, 'tradable')?.covered ?? 0 }} 笔</div>
               </div>
               <div class="bt-metric-v">{{ metricScope(item, "tradable")?.coverage ?? 0 }}%</div>
             </div>
             <div class="bt-metric-row">
               <div>
                 <div class="bt-metric-k">胜率</div>
-                <div class="bt-metric-note">
-                  可交易：涨 {{ metricScope(item, 'tradable')?.win_count ?? 0 }} ｜ 平 {{ metricScope(item, 'tradable')?.flat_count ?? 0 }} ｜ 跌 {{ metricScope(item, 'tradable')?.loss_count ?? 0 }}
-                  ｜ 全样本胜率 {{ metricScope(item, 'all')?.win_rate ?? 0 }}%
-                </div>
+                <div class="bt-metric-note">上涨 {{ metricScope(item, 'tradable')?.win_count ?? 0 }} ｜ 平 {{ metricScope(item, 'tradable')?.flat_count ?? 0 }} ｜ 下跌 {{ metricScope(item, 'tradable')?.loss_count ?? 0 }}</div>
               </div>
               <div class="bt-metric-v">{{ metricScope(item, "tradable")?.win_rate ?? 0 }}%</div>
             </div>
             <div class="bt-metric-row">
               <div>
                 <div class="bt-metric-k">平均收益</div>
-                <div class="bt-metric-note">
-                  可交易：盈利 {{ metricScope(item, 'tradable')?.avg_win_return ?? 0 }}% ｜ 回撤 {{ metricScope(item, 'tradable')?.avg_loss_return ?? 0 }}%
-                  ｜ 全样本均值 {{ metricScope(item, 'all')?.avg_return ?? 0 }}%
-                </div>
+                <div class="bt-metric-note">平均盈利 {{ metricScope(item, 'tradable')?.avg_win_return ?? 0 }}% ｜ 平均回撤 {{ metricScope(item, 'tradable')?.avg_loss_return ?? 0 }}%</div>
               </div>
               <div class="bt-metric-v" :class="signedClass(metricScope(item, 'tradable')?.avg_return)">{{ formatSigned(metricScope(item, "tradable")?.avg_return, 2) }}%</div>
             </div>
