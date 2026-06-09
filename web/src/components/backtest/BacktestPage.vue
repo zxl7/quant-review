@@ -231,6 +231,14 @@ function formatPlain(val: unknown, digits = 2) {
   return n.toFixed(digits).replace(/\.00$/, "").replace(/(\.\d)0$/, "$1")
 }
 
+function formatMonthDay(val: unknown) {
+  const raw = String(val || "").trim()
+  if (!raw) return "-"
+  const matched = raw.match(/^(\d{4})-(\d{2})-(\d{2})$/)
+  if (!matched) return raw
+  return `${matched[2]}-${matched[3]}`
+}
+
 function xqUrl(code?: string | null) {
   const raw = String(code || "").trim()
   if (!raw) return "https://xueqiu.com"
@@ -399,7 +407,7 @@ function strategyReturnClass(performance: any, key: string) {
           </thead>
           <tbody>
             <tr v-for="row in currentRecords" :key="'plan-' + row.trade_date10 + '-' + row.code">
-              <td>{{ row.date10 || "-" }}</td>
+              <td class="bt-date-col">{{ formatMonthDay(row.date10) }}</td>
               <td class="bt-name-cell">
                 <div class="bt-name-line">
                   <a v-if="row.code" class="stock-link" :href="xqUrl(row.code)" target="_blank" rel="noopener noreferrer">{{ row.name }}</a>
@@ -484,8 +492,6 @@ function strategyReturnClass(performance: any, key: string) {
             <tr>
               <th>推荐日</th>
               <th>标的</th>
-              <th>池子</th>
-              <th>主线</th>
               <th>开盘判断</th>
               <th>涨幅</th>
               <th>T+1</th>
@@ -495,18 +501,13 @@ function strategyReturnClass(performance: any, key: string) {
           </thead>
           <tbody>
             <tr v-for="row in historicalRecords" :key="'record-' + row.date10 + '-' + row.code">
-              <td>{{ row.date10 || "-" }}</td>
+              <td class="bt-date-col">{{ formatMonthDay(row.date10) }}</td>
               <td class="bt-name-cell">
                 <div class="bt-name-line">
                   <a v-if="row.code" class="stock-link" :href="xqUrl(row.code)" target="_blank" rel="noopener noreferrer">{{ row.name }}</a>
                   <span v-else>{{ row.name || "-" }}</span>
                 </div>
                 <div class="bt-name-sub">{{ row.code || "-" }} ｜ {{ row.score ?? "-" }} ｜ {{ row.score_sub_label || row.style_tag || row.bucket_label || "-" }}</div>
-              </td>
-              <td>{{ row.bucket_label || row.bucket || "-" }}</td>
-              <td class="bt-left-cell">
-                <div>{{ row.main_line || "-" }}</div>
-                <div class="bt-cell-sub">{{ row.hy || row.plate_name || "-" }}</div>
               </td>
               <td class="bt-left-cell">
                 <span class="bt-pill" :class="openStatusClass(row.performance?.open_check?.status)">{{ openStatusLabel(row.performance?.open_check?.status, row.performance?.open_check?.label) }}</span>
