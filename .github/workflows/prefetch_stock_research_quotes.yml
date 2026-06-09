@@ -55,6 +55,7 @@ jobs:
           mkdir -p cache
           mkdir -p site_prev/cache
           cp -f site_prev/cache/market_data-*.json cache/ 2>/dev/null || true
+          cp -f site_prev/cache/stock_research_backtest_source.json cache/ 2>/dev/null || true
           cp -f site_prev/cache/stock_research_realtime_quotes-*.json cache/ 2>/dev/null || true
 
       - name: Prefetch 09:25 stock research quotes
