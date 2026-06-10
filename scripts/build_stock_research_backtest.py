@@ -21,6 +21,7 @@ from daily_review.http import HttpClient
 
 
 CACHE_DIR = ROOT / "cache"
+ONLINE_CACHE_DIR = ROOT / "cache_online"
 OUT_DIR = ROOT / "html" / "recommendation-preview"
 OUT_JSON = OUT_DIR / "stock_research_backtest.json"
 OUT_JS = OUT_DIR / "stock_research_backtest.js"
@@ -651,18 +652,21 @@ def _empty_backtest_payload(*, generated_from: list[str] | None = None) -> dict[
 
 
 def _market_data_snapshot_candidates(*, date10: str = "") -> list[Path]:
-    candidates: list[tuple[str, int, Path]] = []
-    for fp in CACHE_DIR.glob("market_data-*.json"):
-        match = re.match(r"^market_data-(\d{8})(-intraday)?$", fp.stem)
-        if not match:
+    candidates: list[tuple[str, int, int, Path]] = []
+    for source_priority, base_dir in ((1, CACHE_DIR), (0, ONLINE_CACHE_DIR)):
+        if not base_dir.exists():
             continue
-        d8 = match.group(1)
-        if date10 and d8 != date10.replace("-", ""):
-            continue
-        # 同日优先使用 intraday 快照，避免 9:25 的盘中结果后续无法复用。
-        priority = 1 if match.group(2) else 0
-        candidates.append((d8, priority, fp))
-    return [fp for _, _, fp in sorted(candidates, reverse=True)]
+        for fp in base_dir.glob("market_data-*.json"):
+            match = re.match(r"^market_data-(\d{8})(-intraday)?$", fp.stem)
+            if not match:
+                continue
+            d8 = match.group(1)
+            if date10 and d8 != date10.replace("-", ""):
+                continue
+            # 同日优先使用 intraday 快照；同类型下优先当前 cache，再回退 cache_online。
+            intraday_priority = 1 if match.group(2) else 0
+            candidates.append((d8, intraday_priority, source_priority, fp))
+    return [fp for _, _, _, fp in sorted(candidates, reverse=True)]
 
 
 def _load_latest_stock_research_snapshot(date10: str) -> dict[str, Any]:

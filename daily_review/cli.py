@@ -846,6 +846,23 @@ def run_fetch_and_rebuild(date: str | None) -> int:
     except Exception as e:
         print(f"⚠️ 盯盘快照生成失败（不影响主流程）: {e}")
 
+    # fetch 主流程会在 rebuild 之后继续追加一条最新盯盘切片。
+    # 这里需要把“追加后的切片 + 可能复用到的 09:25 实时快照”同步回最终 market_data，
+    # 否则后续发布仍可能拿到缺少最新时间节点/误判快照缺失的半成品。
+    try:
+        final_market_data = json.loads(market_path.read_text(encoding="utf-8")) if market_path.exists() else {}
+        if isinstance(final_market_data, dict):
+            inject_intraday_snapshots(root=root, date=actual_date, market_data=final_market_data)
+            attach_stock_research_backtest(
+                market_data=final_market_data,
+                sync_source=True,
+                log_fn=lambda msg: _log(f"[final-sync] {msg}"),
+            )
+            market_path.write_text(json.dumps(final_market_data, ensure_ascii=False, indent=2), encoding="utf-8")
+            _log("最终 market_data 已同步最新盯盘切片/个股回测快照")
+    except Exception as e:
+        print(f"⚠️ 最终 market_data 同步失败（不影响主流程）: {e}")
+
     return rc
 
 
