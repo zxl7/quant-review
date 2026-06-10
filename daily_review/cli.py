@@ -91,6 +91,58 @@ def _now_bj_date8() -> str:
     return _dt.datetime.now(_dt.timezone(_dt.timedelta(hours=8))).strftime("%Y%m%d")
 
 
+def _load_trade_days_from_local_cache(*, cache_dir: Path, limit: int) -> list[str]:
+    out: set[str] = set()
+
+    trade_days_path = cache_dir / "trade_days_cache.json"
+    trade_days_payload = read_json(trade_days_path, default={})
+    days = trade_days_payload.get("days") if isinstance(trade_days_payload, dict) else None
+    if isinstance(days, list):
+        for day in days:
+            if isinstance(day, str) and len(day) == 10:
+                out.add(day)
+
+    pools_path = cache_dir / "pools_cache.json"
+    pools_payload = read_json(pools_path, default={})
+    pools = pools_payload.get("pools") if isinstance(pools_payload, dict) else None
+    if isinstance(pools, dict):
+        for pool_name in ("ztgc", "dtgc", "zbgc", "qsgc"):
+            pool_rows = pools.get(pool_name)
+            if not isinstance(pool_rows, dict):
+                continue
+            for day in pool_rows.keys():
+                if isinstance(day, str) and len(day) == 10:
+                    out.add(day)
+
+    for fp in cache_dir.glob("market_data-*.json"):
+        name = fp.name
+        if not name.startswith("market_data-") or not name.endswith(".json"):
+            continue
+        day8 = name[len("market_data-") : -len(".json")]
+        if len(day8) == 8 and day8.isdigit():
+            out.add(f"{day8[:4]}-{day8[4:6]}-{day8[6:8]}")
+
+    ordered = sorted(out)
+    return ordered[-limit:] if limit > 0 else ordered
+
+
+def _resolve_trade_days_with_local_fallback(*, client: Any, cache_dir: Path, actual_date: str, n: int) -> list[str]:
+    try:
+        trade_days = get_trading_days_from_index_k(client, date=actual_date, n=n) or []
+    except (urllib.error.HTTPError, urllib.error.URLError, TimeoutError, OSError) as e:
+        _log(f"⚠️ 交易日序列在线获取失败: {e}，回退到本地缓存")
+        trade_days = []
+
+    if not trade_days:
+        trade_days = _load_trade_days_from_local_cache(cache_dir=cache_dir, limit=n)
+        if trade_days:
+            _log(f"↪ 使用本地交易日缓存兜底: {trade_days[-1]} (共 {len(trade_days)} 天)")
+
+    if actual_date not in trade_days:
+        trade_days = trade_days + [actual_date]
+    return sorted(set(trade_days))[-n:]
+
+
 _ABNORMAL_EVENT_TYPES_ALL = [10001, 10002, 10003, 10004, 10005, 10006, 10007, 10008, 10009, 10010, 10012, 10014, 11000, 11001]
 _ABNORMAL_EVENT_TYPES_DEFAULT = [11000, 11001, 10005, 10009, 10010]
 
@@ -578,10 +630,12 @@ def run_fetch_and_rebuild(date: str | None) -> int:
     )
 
     # 交易日序列（用于缓存裁剪/昨日）
-    trade_days = get_trading_days_from_index_k(client, date=actual_date, n=7) or [actual_date]
-    if actual_date not in trade_days:
-        trade_days = trade_days + [actual_date]
-    trade_days = sorted(set(trade_days))[-7:]
+    trade_days = _resolve_trade_days_with_local_fallback(
+        client=client,
+        cache_dir=cache_dir,
+        actual_date=actual_date,
+        n=7,
+    )
 
     # pools_cache.json：预热历史 + 强制刷新当日
     pools_path = cache_dir / "pools_cache.json"
@@ -833,10 +887,12 @@ def run_intraday_snapshot(date: str | None) -> int:
     _log(f"盘中快照模式启动 (请求日期: {date or '自动'})")
 
     # ===== 取数逻辑与 fetch 相同，但不强制刷新历史缓存 =====
-    trade_days = get_trading_days_from_index_k(client, date=actual_date, n=3) or [actual_date]
-    if actual_date not in trade_days:
-        trade_days = trade_days + [actual_date]
-    trade_days = sorted(set(trade_days))[-3:]
+    trade_days = _resolve_trade_days_with_local_fallback(
+        client=client,
+        cache_dir=cache_dir,
+        actual_date=actual_date,
+        n=3,
+    )
 
     pools_path = cache_dir / "pools_cache.json"
     pools_cache = read_json(pools_path, default={})
