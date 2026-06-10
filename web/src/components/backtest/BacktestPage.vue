@@ -219,18 +219,18 @@ const currentPlanTitleDate = computed(() => String(activeTradeDate.value || late
 const currentPlanCardTitle = computed(() => (currentPlanTitleDate.value ? `待验证池 — ${currentPlanTitleDate.value}` : "待验证池"))
 const realtimeSubtitle = computed(() => {
   if (hasRealtimeSnapshot.value && quoteUpdatedAt.value && quoteUpdatedAt.value !== "-") {
-    return `竞价快照：${quoteUpdatedAt.value}｜超预期 = 买入，符合预期 = 观察，低预期 = 不入场。`
+    return `竞价快照：${quoteUpdatedAt.value}｜固定买入优先只做评分前三；高开超5%先观察承接，不直接追。`
   }
   if (hasCurrentPlan.value && latestRecommendationDate.value) {
     return `盘后样本已更新到 ${latestRecommendationDate.value}，明日 09:25-09:30 再补真实竞价命中结果。`
   }
-  return "超预期 = 买入，符合预期 = 观察，低预期 = 不入场。"
+  return "固定买入优先只做评分前三；高开超5%先观察承接，不直接追。"
 })
 const strategySubtitle = computed(() => {
   const updatedAt = String(backtestUpdatedAt.value || "").trim()
   return updatedAt && updatedAt !== "-"
-    ? `收益口径：次日开盘买入，分别统计 T+1 / T+2 / T+3 收盘卖出；不含手续费、滑点和一字板无法成交约束。最新刷新：${updatedAt}`
-    : "收益口径：次日开盘买入，分别统计 T+1 / T+2 / T+3 收盘卖出；不含手续费、滑点和一字板无法成交约束。"
+    ? `收益口径：固定买入优先只做评分前三；高开超5%样本先观察承接，不计入直接开盘买入，再统计 T+1 / T+2 / T+3 收盘卖出。最新刷新：${updatedAt}`
+    : "收益口径：固定买入优先只做评分前三；高开超5%样本先观察承接，不计入直接开盘买入，再统计 T+1 / T+2 / T+3 收盘卖出。"
 })
 const stageClass = computed(() => {
   const stage = lifecycleStage.value
@@ -365,7 +365,7 @@ function openStatusLabel(status?: string, label?: string) {
   const key = String(status || "")
   if (key === "super") return "超预期"
   if (key === "expected") return "符合预期"
-  if (key === "pending") return "待确认"
+  if (key === "pending") return "观察承接"
   if (key === "wait_reseal") return "待确认"
   if (key === "reject") return "低预期"
   return "暂无判断"
@@ -375,7 +375,8 @@ function decisionLabel(signalStatus?: string, decisionStatus?: string, fallbackL
   const s = String(signalStatus || "")
   const d = String(decisionStatus || "")
   if (s === "super") return "买入"
-  if (s === "expected") return "观察"
+  if (s === "expected") return "买入"
+  if (s === "pending") return "观察承接"
   if (s === "reject") return "低预期"
   if (d === "pending") return "待盘中确认"
   if (d === "unavailable") return "报价缺失"
@@ -466,6 +467,7 @@ function strategyReturnClass(performance: any, key: string) {
           <thead>
             <tr>
               <th>标的</th>
+              <th>排名</th>
               <th>池子</th>
               <th>主线</th>
               <th>昨收</th>
@@ -486,6 +488,7 @@ function strategyReturnClass(performance: any, key: string) {
                 </div>
                 <div class="bt-name-sub">{{ row.code || "-" }} ｜ {{ row.score ?? "-" }}</div>
               </td>
+              <td>{{ row.daily_rank || "-" }}</td>
               <td>{{ row.bucket_label || row.bucket || "-" }}</td>
               <td class="bt-left-cell">
                 <div>{{ row.main_line || "-" }}</div>
@@ -512,7 +515,7 @@ function strategyReturnClass(performance: any, key: string) {
       <div class="card-header">
         <div>
           <div class="card-title">{{ currentPlanCardTitle }}</div>
-          <div class="bt-subtitle">这里展示收盘后由个股研究推送进回测 JSON 的样本，以及明天 09:25 需要命中的标准。</div>
+          <div class="bt-subtitle">这里展示收盘后由个股研究推送进回测 JSON 的样本。固定买入优先看评分前三，高开超5%的票先观察承接。</div>
         </div>
       </div>
 
@@ -521,6 +524,7 @@ function strategyReturnClass(performance: any, key: string) {
           <thead>
             <tr>
               <th>推荐日</th>
+              <th>排名</th>
               <th>标的</th>
               <th>池子</th>
               <th>主线</th>
@@ -532,6 +536,7 @@ function strategyReturnClass(performance: any, key: string) {
           <tbody>
             <tr v-for="row in currentRecords" :key="'plan-' + row.trade_date10 + '-' + row.code">
               <td class="bt-date-col">{{ formatMonthDay(row.date10) }}</td>
+              <td>{{ row.daily_rank || "-" }}</td>
               <td class="bt-name-cell">
                 <div class="bt-name-line">
                   <a v-if="row.code" class="stock-link" :href="xqUrl(row.code)" target="_blank" rel="noopener noreferrer">{{ row.name }}</a>
@@ -603,7 +608,7 @@ function strategyReturnClass(performance: any, key: string) {
       <div class="card-header">
         <div>
           <div class="card-title">历史样本明细</div>
-          <div class="bt-subtitle">这里保留跨多个推荐日的完整回测样本，方便回看"推荐理由 -> 开盘判断 -> 收益表现"的历史链路。</div>
+          <div class="bt-subtitle">这里保留跨多个推荐日的完整回测样本，方便回看“推荐理由 -> 开盘判断 -> 收益表现”的历史链路；前三优先和高开谨慎规则已同步纳入口径。</div>
         </div>
       </div>
 
@@ -616,6 +621,7 @@ function strategyReturnClass(performance: any, key: string) {
           <thead>
             <tr>
               <th>推荐日</th>
+              <th>排名</th>
               <th>标的</th>
               <th>开盘判断</th>
               <th>涨幅</th>
@@ -627,6 +633,7 @@ function strategyReturnClass(performance: any, key: string) {
           <tbody>
             <tr v-for="row in historicalRecords" :key="'record-' + row.date10 + '-' + row.code">
               <td class="bt-date-col">{{ formatMonthDay(row.date10) }}</td>
+              <td>{{ row.daily_rank || "-" }}</td>
               <td class="bt-name-cell">
                 <div class="bt-name-line">
                   <a v-if="row.code" class="stock-link" :href="xqUrl(row.code)" target="_blank" rel="noopener noreferrer">{{ row.name }}</a>

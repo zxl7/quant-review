@@ -33,6 +33,9 @@ STRATEGIES = (
     ("hold_3d", "3日收益", 3),
 )
 
+DIRECT_BUY_RANK_LIMIT = 3
+CAUTION_GAP_PCT = 5.0
+
 
 def _now_bj() -> datetime:
     return datetime.now(TZ_BJ)
@@ -371,6 +374,24 @@ def _load_stock_research_rows() -> tuple[list[dict[str, Any]], list[str]]:
         rows.extend(day_rows)
     rows.sort(key=lambda x: (x["date"], -x["score"], x["code"]))
     return rows, used_sources
+
+
+def _attach_daily_rank(rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    grouped: dict[str, list[dict[str, Any]]] = defaultdict(list)
+    for row in rows:
+        grouped[str(row.get("date10") or "")].append(dict(row))
+
+    ranked_rows: list[dict[str, Any]] = []
+    for date10 in sorted(grouped.keys()):
+        day_rows = grouped[date10]
+        day_rows.sort(key=lambda x: (-int(x.get("score") or 0), str(x.get("code") or "")))
+        for idx, row in enumerate(day_rows, start=1):
+            row["daily_rank"] = idx
+            row["direct_buy_rank_limit"] = DIRECT_BUY_RANK_LIMIT
+            ranked_rows.append(row)
+
+    ranked_rows.sort(key=lambda x: (x["date"], -x["score"], x["code"]))
+    return ranked_rows
 
 
 def _pick_active_trade_date(rows: list[dict[str, Any]], *, now: datetime | None = None) -> str:
@@ -839,9 +860,11 @@ def _signal_rank(status: str) -> int:
         return 0
     if status == "expected":
         return 1
-    if status == "reject":
+    if status == "pending":
         return 2
-    return 3
+    if status == "reject":
+        return 3
+    return 4
 
 
 def _evaluate_realtime_signal(record: dict[str, Any], quote: dict[str, Any] | None) -> dict[str, Any]:
@@ -856,6 +879,8 @@ def _evaluate_realtime_signal(record: dict[str, Any], quote: dict[str, Any] | No
         "bucket": record.get("bucket"),
         "bucket_label": record.get("bucket_label"),
         "score": record.get("score"),
+        "daily_rank": int(record.get("daily_rank") or 0),
+        "direct_buy_rank_limit": DIRECT_BUY_RANK_LIMIT,
         "main_line": record.get("main_line"),
         "reason_text": record.get("reason_text"),
         "expected_text": exp.get("expected_text") or "",
@@ -899,9 +924,32 @@ def _evaluate_realtime_signal(record: dict[str, Any], quote: dict[str, Any] | No
     super_gap_ok = super_gap_min is not None and gap_pct is not None and gap_pct >= float(super_gap_min)
     expected_ok = expected_range is not None and gap_pct is not None and expected_range[0] <= gap_pct <= expected_range[1]
     auction_ok = auction_amount_yi >= auction_amount_min_yi if auction_amount_min_yi > 0 else True
+    rank = int(record.get("daily_rank") or 0)
+    rank_limited = rank > DIRECT_BUY_RANK_LIMIT
+    high_gap_caution = gap_pct is not None and gap_pct > CAUTION_GAP_PCT
 
     # 超预期：涨幅达标 + 量能达标 → 直接买入
     if super_gap_ok and auction_ok:
+        if rank_limited:
+            return {
+                **base,
+                "decision_status": "pending",
+                "decision_label": "仅观察",
+                "signal_status": "pending",
+                "signal_label": "排名靠后",
+                "rule_text": exp.get("super_text") or "",
+                "note": f"竞价涨幅 {gap_pct:+.2f}% 达到超预期，但当前评分排名第 {rank}，固定买入只做前三，先观察承接再决定是否接力。",
+            }
+        if high_gap_caution:
+            return {
+                **base,
+                "decision_status": "pending",
+                "decision_label": "观察承接",
+                "signal_status": "pending",
+                "signal_label": "谨慎接力",
+                "rule_text": exp.get("super_text") or "",
+                "note": f"竞价涨幅 {gap_pct:+.2f}% 大于 {CAUTION_GAP_PCT:.0f}% ，属于高开过猛，先观察承接，不直接买入。",
+            }
         return {
             **base,
             "decision_status": "buy",
@@ -914,6 +962,26 @@ def _evaluate_realtime_signal(record: dict[str, Any], quote: dict[str, Any] | No
 
     # 符合预期：涨幅落在预期区间内 → 直接买入
     if expected_ok:
+        if rank_limited:
+            return {
+                **base,
+                "decision_status": "pending",
+                "decision_label": "仅观察",
+                "signal_status": "pending",
+                "signal_label": "排名靠后",
+                "rule_text": exp.get("expected_text") or "",
+                "note": f"竞价涨幅 {gap_pct:+.2f}% 落在预期区间，但当前评分排名第 {rank}，固定买入只做前三，先观察承接。",
+            }
+        if high_gap_caution:
+            return {
+                **base,
+                "decision_status": "pending",
+                "decision_label": "观察承接",
+                "signal_status": "pending",
+                "signal_label": "谨慎接力",
+                "rule_text": exp.get("expected_text") or "",
+                "note": f"竞价涨幅 {gap_pct:+.2f}% 大于 {CAUTION_GAP_PCT:.0f}% ，虽然符合预期，但不直接买入，先看承接。",
+            }
         return {
             **base,
             "decision_status": "buy",
@@ -1052,8 +1120,24 @@ def _classify_open_window(record: dict[str, Any], entry_bar: dict[str, Any]) -> 
     super_gap_min = exp.get("super_gap_min")
     expected_text = str(exp.get("expected_text") or "")
     super_text = str(exp.get("super_text") or "")
+    rank = int(record.get("daily_rank") or 0)
+    rank_limited = rank > DIRECT_BUY_RANK_LIMIT
+    high_gap_caution = gap_pct > CAUTION_GAP_PCT
+
+    def _pending(label: str, note: str) -> dict[str, Any]:
+        return {
+            "status": "pending",
+            "label": label,
+            "gap_pct": gap_pct,
+            "note": note,
+            "can_enter": False,
+        }
 
     if expected_range and expected_range[0] <= gap_pct <= expected_range[1]:
+        if rank_limited:
+            return _pending("仅观察", f"开盘涨幅落在预期区间，但评分排名第 {rank}，固定买入只做前三，先观察承接。")
+        if high_gap_caution:
+            return _pending("谨慎接力", f"开盘高开 {gap_pct:+.2f}% 大于 {CAUTION_GAP_PCT:.0f}% ，先观察承接，不按固定买入直接入场。")
         return {
             "status": "expected",
             "label": "符合预期",
@@ -1062,6 +1146,10 @@ def _classify_open_window(record: dict[str, Any], entry_bar: dict[str, Any]) -> 
             "can_enter": True,
         }
     if super_gap_min is not None and gap_pct >= super_gap_min:
+        if rank_limited:
+            return _pending("仅观察", f"开盘达到超预期，但评分排名第 {rank}，固定买入只做前三，先观察承接。")
+        if high_gap_caution:
+            return _pending("谨慎接力", f"开盘高开 {gap_pct:+.2f}% 大于 {CAUTION_GAP_PCT:.0f}% ，先观察承接，不按固定买入直接入场。")
         return {
             "status": "super",
             "label": "超预期",
@@ -1281,6 +1369,7 @@ def build_stock_research_backtest_payload(*, current_market_data: dict[str, Any]
     rows, generated_from = _load_stock_research_rows()
     if not rows:
         return _empty_backtest_payload(generated_from=generated_from)
+    rows = _attach_daily_rank(rows)
 
     unique_codes = sorted({r["code"] for r in rows if r["code"]})
     source_date_list = sorted({r["date10"] for r in rows})
@@ -1389,7 +1478,8 @@ def build_stock_research_backtest_payload(*, current_market_data: dict[str, Any]
             "realtime_unavailable_count": realtime_buy["unavailable_count"],
         },
         "assumptions": [
-            "回测样本只取超预期（super）口径：仅统计次日开盘涨幅≥超预期阈值的个股，符合预期的观察样本不入回测统计。",
+            f"固定买入优先只做评分前三的票；超过第 {DIRECT_BUY_RANK_LIMIT} 名的样本默认先观察，不直接纳入固定买入口径。",
+            f"若次日高开超过 {CAUTION_GAP_PCT:.0f}% ，统一提示谨慎接力，先观察承接，不直接按开盘价买入；历史胜率回测同步排除这类样本的直接入场。",
             "当天尚未走完次日开盘验证的数据会被清洗掉，不混入回测统计或策略表现。",
             "样本源只认收盘后的个股研究推送结果；盘中缓存、旧页面快照、其他补充入口都不作为回测样本源。",
             "这个 JSON 内会按回测交易日沉淀每天数据；开盘前优先读取最新收盘后推出来的下一交易日，开盘后优先读取当天交易日。",
