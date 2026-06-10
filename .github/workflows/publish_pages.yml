@@ -65,8 +65,18 @@ jobs:
           echo "DEBUG: event_name=${{ github.event_name }}"
           echo "DEBUG: beijing_now=${now_bj}"
           now_min=$((10#$(date +%H)*60 + 10#$(date +%M)))
+          # workflow 本身的允许窗口：
+          # - 09:25-09:34：允许执行，用于预抓取个股研究竞价报价；
+          # - 09:35-11:30 / 13:00-14:59：允许执行主页面发布；
+          # - 15:12-15:55：允许执行收盘版发布。
+          # 是否发布主页面由后面的 warmup guard 决定，不能在这里整条 workflow 提前 skip，
+          # 否则 09:25-09:34 的 Prefetch stock research quotes 也会被一起跳过。
+          hit_prefetch=false
+          if [ $(( now_min >= 9*60+25 && now_min < 9*60+35 )) -eq 1 ]; then
+            hit_prefetch=true
+          fi
+
           # 主页面发布：上午 09:35-11:30，下午 13:00-14:59。
-          # 09:25-09:34 仍属于早盘预热区，行情/题材/接力池经常不完整，不能把半成品推上 Pages。
           hit_intraday=false
           if [ $(( now_min >= 9*60+35 && now_min <= 11*60+30 )) -eq 1 ]; then
             hit_intraday=true
@@ -88,6 +98,10 @@ jobs:
             echo "skip=false" >> "$GITHUB_OUTPUT"
             echo "mode=eod" >> "$GITHUB_OUTPUT"
             echo "Close window hit -> eod"
+          elif [ "${hit_prefetch}" = "true" ]; then
+            echo "skip=false" >> "$GITHUB_OUTPUT"
+            echo "mode=prefetch" >> "$GITHUB_OUTPUT"
+            echo "Prefetch warmup window hit -> prefetch only"
           elif [ "${hit_intraday}" = "true" ]; then
             echo "skip=false" >> "$GITHUB_OUTPUT"
             echo "mode=intraday" >> "$GITHUB_OUTPUT"
