@@ -220,13 +220,24 @@ const availableRecommendationDates = computed<string[]>(() => {
   }
   return Array.from(dates).sort((a, b) => b.localeCompare(a))
 })
+const latestHistoricalRecommendationDate = computed(() => String(lifecycle.value?.latest_historical_recommendation_date || "").trim())
+const defaultRecommendationDate = computed(() => {
+  if (
+    latestHistoricalRecommendationDate.value &&
+    availableRecommendationDates.value.includes(latestHistoricalRecommendationDate.value)
+  ) {
+    return latestHistoricalRecommendationDate.value
+  }
+  if (latestRecommendationDate.value && availableRecommendationDates.value.includes(latestRecommendationDate.value)) {
+    return latestRecommendationDate.value
+  }
+  return availableRecommendationDates.value[0] || latestRecommendationDate.value || ""
+})
 const selectedRecommendationDate = computed(() => {
   const raw = String(selectedRecommendationDateInput.value || "").trim()
   if (raw && availableRecommendationDates.value.includes(raw)) return raw
-  if (latestRecommendationDate.value && availableRecommendationDates.value.includes(latestRecommendationDate.value)) return latestRecommendationDate.value
-  return availableRecommendationDates.value[0] || latestRecommendationDate.value || ""
+  return defaultRecommendationDate.value
 })
-const latestHistoricalRecommendationDate = computed(() => String(lifecycle.value?.latest_historical_recommendation_date || "").trim())
 const effectiveHistoricalDate = computed(() => {
   if (isViewingCurrentRecommendation.value && latestHistoricalRecommendationDate.value) return latestHistoricalRecommendationDate.value
   return selectedRecommendationDate.value
@@ -332,6 +343,13 @@ const strategySubtitle = computed(() => {
     ? `${dateLabel}收益口径：高开超5%样本先观察，不计入直接开盘买入，再统计 T+1 / T+2 / T+3 收盘卖出。最新刷新：${updatedAt}`
     : `${dateLabel}收益口径：高开超5%样本先观察，不计入直接开盘买入，再统计 T+1 / T+2 / T+3 收盘卖出。`
 })
+const summaryHeaderSubtitle = computed(() => {
+  if (!isViewingCurrentRecommendation.value && selectedRecommendationDate.value) {
+    const latestLabel = latestRecommendationDate.value ? `；切回 ${latestRecommendationDate.value} 可看最新待验证池` : ""
+    return `当前默认查看 ${selectedRecommendationDate.value} 的财富密码闭环${latestLabel}。`
+  }
+  return lifecycleStageNote.value || strategySubtitle.value
+})
 const stageClass = computed(() => {
   const stage = lifecycleStage.value
   if (stage === "auction_snapshot_ready") return "is-super"
@@ -361,9 +379,11 @@ const summaryCards = computed(() => [
   },
   {
     key: "pool",
-    label: "待验证池",
+    label: isViewingCurrentRecommendation.value ? "待验证池" : "推荐池样本",
     value: `${currentRecords.value.length}`,
-    note: currentEligibleCount.value > 0 ? `可入场候选 ${currentEligibleCount.value} 条` : "当前以盘后样本展示为主",
+    note: isViewingCurrentRecommendation.value
+      ? (currentEligibleCount.value > 0 ? `可入场候选 ${currentEligibleCount.value} 条` : "当前以盘后样本展示为主")
+      : (currentEligibleCount.value > 0 ? `当日可入场样本 ${currentEligibleCount.value} 条` : "当前以历史推荐样本展示为主"),
   },
   {
     key: "snapshot",
@@ -602,7 +622,7 @@ function strategyReturnClass(performance: any, key: string) {
       <div class="card-header">
         <div>
           <div class="card-title">个股回测状态</div>
-          <div class="bt-subtitle">{{ lifecycleStageNote || strategySubtitle }}</div>
+          <div class="bt-subtitle">{{ summaryHeaderSubtitle }}</div>
         </div>
         <div class="bt-filter-box" v-if="availableRecommendationDates.length">
           <label class="bt-filter-label" for="bt-recommendation-date">推荐日</label>
