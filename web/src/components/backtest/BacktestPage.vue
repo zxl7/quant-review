@@ -219,18 +219,18 @@ const currentPlanTitleDate = computed(() => String(activeTradeDate.value || late
 const currentPlanCardTitle = computed(() => (currentPlanTitleDate.value ? `待验证池 — ${currentPlanTitleDate.value}` : "待验证池"))
 const realtimeSubtitle = computed(() => {
   if (hasRealtimeSnapshot.value && quoteUpdatedAt.value && quoteUpdatedAt.value !== "-") {
-    return `竞价快照：${quoteUpdatedAt.value}｜固定买入优先只做评分前三；高开超5%先观察承接，不直接追。`
+    return `竞价快照：${quoteUpdatedAt.value}｜固定买入优先只做评分前三；高开超5%先观察，不直接追。`
   }
   if (hasCurrentPlan.value && latestRecommendationDate.value) {
     return `盘后样本已更新到 ${latestRecommendationDate.value}，明日 09:25-09:30 再补真实竞价命中结果。`
   }
-  return "固定买入优先只做评分前三；高开超5%先观察承接，不直接追。"
+  return "固定买入优先只做评分前三；高开超5%先观察，不直接追。"
 })
 const strategySubtitle = computed(() => {
   const updatedAt = String(backtestUpdatedAt.value || "").trim()
   return updatedAt && updatedAt !== "-"
-    ? `收益口径：固定买入优先只做评分前三；高开超5%样本先观察承接，不计入直接开盘买入，再统计 T+1 / T+2 / T+3 收盘卖出。最新刷新：${updatedAt}`
-    : "收益口径：固定买入优先只做评分前三；高开超5%样本先观察承接，不计入直接开盘买入，再统计 T+1 / T+2 / T+3 收盘卖出。"
+    ? `收益口径：固定买入优先只做评分前三；高开超5%样本先观察，不计入直接开盘买入，再统计 T+1 / T+2 / T+3 收盘卖出。最新刷新：${updatedAt}`
+    : "收益口径：固定买入优先只做评分前三；高开超5%样本先观察，不计入直接开盘买入，再统计 T+1 / T+2 / T+3 收盘卖出。"
 })
 const stageClass = computed(() => {
   const stage = lifecycleStage.value
@@ -365,7 +365,7 @@ function openStatusLabel(status?: string, label?: string) {
   const key = String(status || "")
   if (key === "super") return "超预期"
   if (key === "expected") return "符合预期"
-  if (key === "pending") return "观察承接"
+  if (key === "pending") return "观察"
   if (key === "wait_reseal") return "待确认"
   if (key === "reject") return "低预期"
   return "暂无判断"
@@ -376,9 +376,9 @@ function decisionLabel(signalStatus?: string, decisionStatus?: string, fallbackL
   const d = String(decisionStatus || "")
   if (s === "super") return "买入"
   if (s === "expected") return "买入"
-  if (s === "pending") return "观察承接"
+  if (s === "pending") return "观察"
   if (s === "reject") return "低预期"
-  if (d === "pending") return "待盘中确认"
+  if (d === "pending") return "观察"
   if (d === "unavailable") return "报价缺失"
   if (fallbackLabel) return fallbackLabel
   return "待判断"
@@ -515,7 +515,7 @@ function strategyReturnClass(performance: any, key: string) {
       <div class="card-header">
         <div>
           <div class="card-title">{{ currentPlanCardTitle }}</div>
-          <div class="bt-subtitle">这里展示收盘后由个股研究推送进回测 JSON 的样本。固定买入优先看评分前三，高开超5%的票先观察承接。</div>
+          <div class="bt-subtitle">这里展示收盘后由个股研究推送进回测 JSON 的样本。固定买入优先看评分前三，高开超5%的票先观察。</div>
         </div>
       </div>
 

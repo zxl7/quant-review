@@ -754,6 +754,75 @@ def _load_preserved_realtime_buy(latest_date10: str) -> dict[str, Any] | None:
     return None
 
 
+def _upgrade_preserved_realtime_buy_payload(realtime_buy: dict[str, Any] | None) -> dict[str, Any]:
+    if not isinstance(realtime_buy, dict):
+        return {}
+
+    upgraded_rows: list[dict[str, Any]] = []
+    migrated_high_gap = 0
+    migrated_rank_limited = 0
+    for bucket in ("buy_list", "pending_list", "rejected_list", "unavailable_list"):
+        for raw_row in realtime_buy.get(bucket) or []:
+            if not isinstance(raw_row, dict):
+                continue
+            row = json.loads(json.dumps(raw_row, ensure_ascii=False))
+            decision_status = str(row.get("decision_status") or "")
+            gap_pct = row.get("gap_pct")
+            try:
+                gap_pct_value = float(gap_pct) if gap_pct is not None else None
+            except Exception:
+                gap_pct_value = None
+            rank = int(row.get("daily_rank") or 0)
+
+            if decision_status == "buy" and rank > DIRECT_BUY_RANK_LIMIT:
+                row["decision_status"] = "pending"
+                row["decision_label"] = "观察"
+                row["signal_status"] = "pending"
+                row["signal_label"] = "排名靠后"
+                row["note"] = f"竞价涨幅 {gap_pct_value:+.2f}% 达到计划条件，但当前评分排名第 {rank}，固定买入只做前三，先观察承接。"
+                migrated_rank_limited += 1
+            elif decision_status == "buy" and gap_pct_value is not None and gap_pct_value > CAUTION_GAP_PCT:
+                row["decision_status"] = "pending"
+                row["decision_label"] = "观察"
+                row["signal_status"] = "pending"
+                row["signal_label"] = "谨慎接力"
+                row["note"] = f"竞价涨幅 {gap_pct_value:+.2f}% 大于 {CAUTION_GAP_PCT:.0f}% ，高开偏猛，先观察承接，不直接买入。"
+                migrated_high_gap += 1
+            upgraded_rows.append(row)
+
+    upgraded_rows.sort(key=lambda x: (_signal_rank(str(x.get("signal_status") or "")), -int(x.get("score") or 0), str(x.get("code") or "")))
+    buy_list = [row for row in upgraded_rows if row.get("decision_status") == "buy"]
+    pending_list = [row for row in upgraded_rows if row.get("decision_status") == "pending"]
+    rejected_list = [row for row in upgraded_rows if row.get("decision_status") == "reject"]
+    unavailable_list = [row for row in upgraded_rows if row.get("decision_status") == "unavailable"]
+    direct_super = [row for row in buy_list if row.get("signal_status") == "super"]
+    direct_expected = [row for row in buy_list if row.get("signal_status") == "expected"]
+
+    upgraded = json.loads(json.dumps(realtime_buy, ensure_ascii=False))
+    diagnostics = upgraded.get("diagnostics") if isinstance(upgraded.get("diagnostics"), dict) else {}
+    diagnostics["upgraded_rules"] = {
+        "migrated_high_gap_buy_to_pending": migrated_high_gap,
+        "migrated_rank_limited_buy_to_pending": migrated_rank_limited,
+    }
+    upgraded.update(
+        {
+            "candidate_count": len(upgraded_rows),
+            "buy_count": len(buy_list),
+            "direct_super_count": len(direct_super),
+            "direct_expected_count": len(direct_expected),
+            "pending_count": len(pending_list),
+            "rejected_count": len(rejected_list),
+            "unavailable_count": len(unavailable_list),
+            "buy_list": buy_list,
+            "pending_list": pending_list,
+            "rejected_list": rejected_list,
+            "unavailable_list": unavailable_list,
+            "diagnostics": diagnostics,
+        }
+    )
+    return upgraded
+
+
 def _normalize_realtime_quote(row: dict[str, Any]) -> dict[str, Any] | None:
     code6 = normalize_stock_code(str(row.get("dm") or row.get("code") or row.get("symbol") or ""))
     if not code6:
@@ -944,7 +1013,7 @@ def _evaluate_realtime_signal(record: dict[str, Any], quote: dict[str, Any] | No
             return {
                 **base,
                 "decision_status": "pending",
-                "decision_label": "观察承接",
+                "decision_label": "观察",
                 "signal_status": "pending",
                 "signal_label": "谨慎接力",
                 "rule_text": exp.get("super_text") or "",
@@ -976,7 +1045,7 @@ def _evaluate_realtime_signal(record: dict[str, Any], quote: dict[str, Any] | No
             return {
                 **base,
                 "decision_status": "pending",
-                "decision_label": "观察承接",
+                "decision_label": "观察",
                 "signal_status": "pending",
                 "signal_label": "谨慎接力",
                 "rule_text": exp.get("expected_text") or "",
@@ -1028,6 +1097,7 @@ def _build_realtime_buy_payload(
     if not in_window:
         preserved = _load_preserved_realtime_buy(latest_date10)
         if isinstance(preserved, dict):
+            preserved = _upgrade_preserved_realtime_buy_payload(preserved)
             diagnostics = preserved.get("diagnostics") if isinstance(preserved.get("diagnostics"), dict) else {}
             preserved["diagnostics"] = {
                 **diagnostics,
