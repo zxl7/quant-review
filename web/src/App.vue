@@ -45,7 +45,7 @@ const reviewTabs = [
   { id: "themes", name: "板块强度" },
   { id: "ladder", name: "连板天梯" },
   { id: "plan", name: "个股研究" },
-  { id: "backtest", name: "个股回测" },
+  { id: "backtest", name: "推演与回测" },
 ] as const
 const intradayTabs = [
   { id: "watch", name: "实时盯盘" },
@@ -53,6 +53,7 @@ const intradayTabs = [
   { id: "tomorrow", name: "今日题材" },
   { id: "abnormal", name: "异动监控" },
   { id: "flash", name: "实时快讯" },
+  { id: "backtest", name: "推演与回测" },
 ] as const
 type TabId = (typeof reviewTabs)[number]["id"] | (typeof intradayTabs)[number]["id"]
 const defaultPage = String(marketData.value?.meta?.default_page || "").trim()
