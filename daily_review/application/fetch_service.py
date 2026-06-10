@@ -112,25 +112,37 @@ def update_index_kline_cache(*, root: Path, client, actual_date: str) -> dict[st
     codes_entry = (idx_disk.get("codes") or {}) if isinstance(idx_disk, dict) else {}
     if not isinstance(codes_entry, dict):
         codes_entry = {}
+    existing_codes_entry = dict(codes_entry)
 
     import datetime as _dt
 
     for code in ("000001.SH", "399001.SZ", "399006.SZ"):
         end_date = actual_date.replace("-", "")
         start_date = (_dt.datetime.strptime(actual_date, "%Y-%m-%d") - _dt.timedelta(days=120)).strftime("%Y%m%d")
-        items = fetch_index_history_k(client, code=code, st=start_date, et=end_date)
-        if not isinstance(items, list):
-            items = []
-        cleaned = []
-        for item in items:
-            if not isinstance(item, dict):
+        try:
+            items = fetch_index_history_k(client, code=code, st=start_date, et=end_date)
+            if not isinstance(items, list):
+                items = []
+            cleaned = []
+            for item in items:
+                if not isinstance(item, dict):
+                    continue
+                if _to_int(item.get("sf"), 0) == 1:
+                    continue
+                if _to_float(item.get("a"), 0.0) <= 0 or _to_float(item.get("v"), 0.0) <= 0:
+                    continue
+                cleaned.append(item)
+            if cleaned:
+                codes_entry[code] = {"as_of": actual_date, "items": cleaned[-80:]}
                 continue
-            if _to_int(item.get("sf"), 0) == 1:
-                continue
-            if _to_float(item.get("a"), 0.0) <= 0 or _to_float(item.get("v"), 0.0) <= 0:
-                continue
-            cleaned.append(item)
-        codes_entry[code] = {"as_of": actual_date, "items": cleaned[-80:]}
+        except Exception:
+            pass
+
+        cached = existing_codes_entry.get(code)
+        if isinstance(cached, dict):
+            codes_entry[code] = cached
+        else:
+            codes_entry[code] = {"as_of": actual_date, "items": []}
 
     write_json(index_k_path, {"version": 1, "codes": codes_entry})
     return codes_entry
