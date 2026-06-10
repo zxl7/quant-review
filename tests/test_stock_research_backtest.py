@@ -56,6 +56,8 @@ class StockResearchBacktestRowsTest(unittest.TestCase):
 
         self.assertTrue(payload["meta"]["is_empty"])
         self.assertEqual(payload["summary"]["total_samples"], 0)
+        self.assertEqual(payload["displayRecords"], [])
+        self.assertEqual(payload["historicalSnapshots"], [])
         self.assertEqual(payload["records"], [])
         self.assertEqual(payload["meta"]["generated_from"], [])
 
@@ -238,8 +240,17 @@ class StockResearchBacktestRowsTest(unittest.TestCase):
         self.assertEqual(payload["meta"]["active_trade_date"], "2026-06-05")
         self.assertEqual(payload["realtimeBuy"]["reference_date"], "2026-06-04")
         self.assertEqual(payload["realtimeBuy"]["trade_date"], "2026-06-05")
+        self.assertEqual([row["code"] for row in payload["displayRecords"]], ["000003", "000004"])
         self.assertEqual([row["code"] for row in payload["records"]], ["000003"])
+        self.assertEqual(len(payload["historicalSnapshots"]), 1)
+        snapshot = payload["historicalSnapshots"][0]
+        self.assertEqual(snapshot["reference_date"], "2026-06-03")
+        self.assertEqual(snapshot["trade_date"], "2026-06-04")
+        self.assertEqual(snapshot["buy_count"], 1)
+        self.assertEqual(snapshot["quoted_count"], 1)
+        self.assertEqual(snapshot["diagnostics"]["source"], "recovered_from_backtest_records")
         self.assertEqual(payload["diagnostics"]["filtered_non_backtest_codes"], ["000004"])
+        self.assertEqual(payload["diagnostics"]["display_only_codes"], ["000004"])
 
 
 class StockResearchBacktestPublishFreshnessTest(unittest.TestCase):
@@ -291,6 +302,8 @@ class StockResearchBacktestPublishFreshnessTest(unittest.TestCase):
                 },
                 "realtimeBuy": {"trade_date": "2026-06-09"},
                 "currentPoolRecords": [{"code": "000001"}],
+                "displayRecords": [{"code": "000001"}],
+                "historicalSnapshots": [],
                 "records": [{"code": "000001"}],
             }
 

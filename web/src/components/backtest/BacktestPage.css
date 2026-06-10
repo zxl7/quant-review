@@ -11,6 +11,38 @@
   font-weight: 700;
 }
 
+.bt-filter-box {
+  display: grid;
+  gap: 6px;
+  min-width: 170px;
+}
+
+.bt-filter-label {
+  font-size: 11px;
+  line-height: 1.2;
+  color: var(--text-muted);
+  font-weight: 900;
+  text-align: right;
+}
+
+.bt-filter-select {
+  width: 100%;
+  min-height: 36px;
+  border-radius: 12px;
+  border: 1px solid color-mix(in oklab, var(--border) 72%, var(--theme-glow) 28%);
+  background: color-mix(in oklab, var(--theme-soft) 10%, rgba(255, 255, 255, 0.78));
+  color: var(--text-primary);
+  padding: 0 12px;
+  font-size: 12px;
+  font-weight: 800;
+  outline: none;
+}
+
+[data-theme="dark"] .bt-filter-select {
+  background: color-mix(in oklab, var(--theme-soft) 8%, rgba(15, 23, 42, 0.7));
+  border-color: rgba(148, 163, 184, 0.2);
+}
+
 .bt-badge {
   display: inline-flex;
   align-items: center;
@@ -505,6 +537,15 @@
   .bt-live-grid,
   .bt-metrics-grid {
     grid-template-columns: 1fr;
+  }
+
+  .bt-filter-box {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .bt-filter-label {
+    text-align: left;
   }
 
   .bt-live-stats,

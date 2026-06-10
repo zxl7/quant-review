@@ -1065,10 +1065,11 @@ def _is_complete_stock_research_backtest(payload: object) -> bool:
     realtime_buy = payload.get("realtimeBuy")
     meta = payload.get("meta")
     current_pool_records = payload.get("currentPoolRecords")
+    display_records = payload.get("displayRecords")
     records = payload.get("records")
     if not isinstance(summary, dict) or not isinstance(lifecycle, dict) or not isinstance(realtime_buy, dict) or not isinstance(meta, dict):
         return False
-    if not isinstance(current_pool_records, list) or not isinstance(records, list):
+    if not isinstance(current_pool_records, list) or not isinstance(display_records, list) or not isinstance(records, list):
         return False
     required_summary_keys = {
         "total_samples",
@@ -1171,23 +1172,18 @@ def _ensure_stock_research_backtest(md: dict) -> None:
     except Exception:
         upgrade_stock_research_backtest_payload = None  # type: ignore[assignment]
 
+    if callable(upgrade_stock_research_backtest_payload) and isinstance(existing, dict):
+        existing = upgrade_stock_research_backtest_payload(existing)
+        md["stockResearchBacktest"] = existing
     if _is_fresh_stock_research_backtest(existing, latest_source_snapshot=latest_source_snapshot):
         return
-    if callable(upgrade_stock_research_backtest_payload) and isinstance(existing, dict):
-        upgraded_existing = upgrade_stock_research_backtest_payload(existing)
-        if _is_fresh_stock_research_backtest(upgraded_existing, latest_source_snapshot=latest_source_snapshot):
-            md["stockResearchBacktest"] = upgraded_existing
-            return
     preserved = ((md.get("preservedResearch") or {}) if isinstance(md.get("preservedResearch"), dict) else {}).get("marketData")
     preserved_backtest = preserved.get("stockResearchBacktest") if isinstance(preserved, dict) else None
+    if callable(upgrade_stock_research_backtest_payload) and isinstance(preserved_backtest, dict):
+        preserved_backtest = upgrade_stock_research_backtest_payload(preserved_backtest)
     if _is_fresh_stock_research_backtest(preserved_backtest, latest_source_snapshot=latest_source_snapshot):
         md["stockResearchBacktest"] = preserved_backtest
         return
-    if callable(upgrade_stock_research_backtest_payload) and isinstance(preserved_backtest, dict):
-        upgraded_preserved = upgrade_stock_research_backtest_payload(preserved_backtest)
-        if _is_fresh_stock_research_backtest(upgraded_preserved, latest_source_snapshot=latest_source_snapshot):
-            md["stockResearchBacktest"] = upgraded_preserved
-            return
     try:
         from scripts.build_stock_research_backtest import build_stock_research_backtest_payload
 

@@ -34,7 +34,6 @@ STRATEGIES = (
     ("hold_3d", "3日收益", 3),
 )
 
-DIRECT_BUY_RANK_LIMIT = 3
 CAUTION_GAP_PCT = 5.0
 
 
@@ -388,7 +387,6 @@ def _attach_daily_rank(rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
         day_rows.sort(key=lambda x: (-int(x.get("score") or 0), str(x.get("code") or "")))
         for idx, row in enumerate(day_rows, start=1):
             row["daily_rank"] = idx
-            row["direct_buy_rank_limit"] = DIRECT_BUY_RANK_LIMIT
             ranked_rows.append(row)
 
     ranked_rows.sort(key=lambda x: (x["date"], -x["score"], x["code"]))
@@ -524,6 +522,11 @@ def upgrade_stock_research_backtest_payload(payload: dict[str, Any] | None) -> d
     realtime_buy = upgraded.get("realtimeBuy") if isinstance(upgraded.get("realtimeBuy"), dict) else {}
     current_pool_rows = upgraded.get("currentPoolRecords") if isinstance(upgraded.get("currentPoolRecords"), list) else []
     backtest_rows = upgraded.get("records") if isinstance(upgraded.get("records"), list) else []
+    display_rows = upgraded.get("displayRecords") if isinstance(upgraded.get("displayRecords"), list) else []
+    quote_time = str(realtime_buy.get("quote_time") or "").strip()
+    quoted_count = int(realtime_buy.get("quoted_count") or 0)
+    if quoted_count <= 0 or not _is_entry_window_time(quote_time):
+        realtime_buy["quote_time"] = ""
     latest_recommendation_date10 = str(meta.get("latest_recommendation_date") or realtime_buy.get("reference_date") or "").strip()
     active_trade_date10 = str(meta.get("active_trade_date") or realtime_buy.get("trade_date") or "").strip()
     historical_dates = sorted({str(row.get("date10") or "").strip() for row in backtest_rows if str(row.get("date10") or "").strip()})
@@ -531,6 +534,12 @@ def upgrade_stock_research_backtest_payload(payload: dict[str, Any] | None) -> d
 
     upgraded["meta"] = meta
     meta.setdefault("is_empty", not current_pool_rows and not backtest_rows)
+    upgraded["displayRecords"] = display_rows or json.loads(json.dumps(backtest_rows, ensure_ascii=False))
+    upgraded["historicalSnapshots"] = (
+        upgraded.get("historicalSnapshots")
+        if isinstance(upgraded.get("historicalSnapshots"), list)
+        else _build_historical_snapshots(backtest_rows)
+    )
     metrics = upgraded.get("metrics") if isinstance(upgraded.get("metrics"), dict) else {}
     upgraded["metrics"] = metrics
     for key in ("next_day", "hold_2d", "hold_3d"):
@@ -643,10 +652,13 @@ def _empty_backtest_payload(*, generated_from: list[str] | None = None) -> dict[
             "diagnostics": {"source": "empty"},
         },
         "currentPoolRecords": [],
+        "displayRecords": [],
+        "historicalSnapshots": [],
         "records": [],
         "diagnostics": {
             "price_history": {"source": "empty", "fetched": 0, "cached": 0, "missing": []},
             "realtime_buy": {"source": "empty"},
+            "display_only_codes": [],
         },
     }
 
@@ -764,7 +776,6 @@ def _upgrade_preserved_realtime_buy_payload(realtime_buy: dict[str, Any] | None)
 
     upgraded_rows: list[dict[str, Any]] = []
     migrated_high_gap = 0
-    migrated_rank_limited = 0
     for bucket in ("buy_list", "pending_list", "rejected_list", "unavailable_list"):
         for raw_row in realtime_buy.get(bucket) or []:
             if not isinstance(raw_row, dict):
@@ -776,16 +787,7 @@ def _upgrade_preserved_realtime_buy_payload(realtime_buy: dict[str, Any] | None)
                 gap_pct_value = float(gap_pct) if gap_pct is not None else None
             except Exception:
                 gap_pct_value = None
-            rank = int(row.get("daily_rank") or 0)
-
-            if decision_status == "buy" and rank > DIRECT_BUY_RANK_LIMIT:
-                row["decision_status"] = "pending"
-                row["decision_label"] = "观察"
-                row["signal_status"] = "pending"
-                row["signal_label"] = "排名靠后"
-                row["note"] = f"竞价涨幅 {gap_pct_value:+.2f}% 达到计划条件，但当前评分排名第 {rank}，固定买入只做前三，先观察承接。"
-                migrated_rank_limited += 1
-            elif decision_status == "buy" and gap_pct_value is not None and gap_pct_value > CAUTION_GAP_PCT:
+            if decision_status == "buy" and gap_pct_value is not None and gap_pct_value > CAUTION_GAP_PCT:
                 row["decision_status"] = "pending"
                 row["decision_label"] = "观察"
                 row["signal_status"] = "pending"
@@ -806,7 +808,6 @@ def _upgrade_preserved_realtime_buy_payload(realtime_buy: dict[str, Any] | None)
     diagnostics = upgraded.get("diagnostics") if isinstance(upgraded.get("diagnostics"), dict) else {}
     diagnostics["upgraded_rules"] = {
         "migrated_high_gap_buy_to_pending": migrated_high_gap,
-        "migrated_rank_limited_buy_to_pending": migrated_rank_limited,
     }
     upgraded.update(
         {
@@ -953,7 +954,6 @@ def _evaluate_realtime_signal(record: dict[str, Any], quote: dict[str, Any] | No
         "bucket_label": record.get("bucket_label"),
         "score": record.get("score"),
         "daily_rank": int(record.get("daily_rank") or 0),
-        "direct_buy_rank_limit": DIRECT_BUY_RANK_LIMIT,
         "main_line": record.get("main_line"),
         "reason_text": record.get("reason_text"),
         "expected_text": exp.get("expected_text") or "",
@@ -997,22 +997,10 @@ def _evaluate_realtime_signal(record: dict[str, Any], quote: dict[str, Any] | No
     super_gap_ok = super_gap_min is not None and gap_pct is not None and gap_pct >= float(super_gap_min)
     expected_ok = expected_range is not None and gap_pct is not None and expected_range[0] <= gap_pct <= expected_range[1]
     auction_ok = auction_amount_yi >= auction_amount_min_yi if auction_amount_min_yi > 0 else True
-    rank = int(record.get("daily_rank") or 0)
-    rank_limited = rank > DIRECT_BUY_RANK_LIMIT
     high_gap_caution = gap_pct is not None and gap_pct > CAUTION_GAP_PCT
 
     # 超预期：涨幅达标 + 量能达标 → 直接买入
     if super_gap_ok and auction_ok:
-        if rank_limited:
-            return {
-                **base,
-                "decision_status": "pending",
-                "decision_label": "仅观察",
-                "signal_status": "pending",
-                "signal_label": "排名靠后",
-                "rule_text": exp.get("super_text") or "",
-                "note": f"竞价涨幅 {gap_pct:+.2f}% 达到超预期，但当前评分排名第 {rank}，固定买入只做前三，先观察承接再决定是否接力。",
-            }
         if high_gap_caution:
             return {
                 **base,
@@ -1035,16 +1023,6 @@ def _evaluate_realtime_signal(record: dict[str, Any], quote: dict[str, Any] | No
 
     # 符合预期：涨幅落在预期区间内 → 直接买入
     if expected_ok:
-        if rank_limited:
-            return {
-                **base,
-                "decision_status": "pending",
-                "decision_label": "仅观察",
-                "signal_status": "pending",
-                "signal_label": "排名靠后",
-                "rule_text": exp.get("expected_text") or "",
-                "note": f"竞价涨幅 {gap_pct:+.2f}% 落在预期区间，但当前评分排名第 {rank}，固定买入只做前三，先观察承接。",
-            }
         if high_gap_caution:
             return {
                 **base,
@@ -1165,7 +1143,7 @@ def _build_realtime_buy_payload(
         "reference_date": latest_date10,
         "trade_date": trade_date10,
         "entry_window": "09:25-09:30",
-        "quote_time": quote_diag.get("as_of") or _now_bj().strftime("%Y-%m-%d %H:%M:%S"),
+        "quote_time": quote_diag.get("as_of") or "",
         "source_module": "ztAnalysis.relay/watch",
         "quote_source": "biying hsrl/ssjy_more 实时行情（失败时回退 raw.quotes）",
         "candidate_count": len(latest_rows),
@@ -1194,8 +1172,6 @@ def _classify_open_window(record: dict[str, Any], entry_bar: dict[str, Any]) -> 
     super_gap_min = exp.get("super_gap_min")
     expected_text = str(exp.get("expected_text") or "")
     super_text = str(exp.get("super_text") or "")
-    rank = int(record.get("daily_rank") or 0)
-    rank_limited = rank > DIRECT_BUY_RANK_LIMIT
     high_gap_caution = gap_pct > CAUTION_GAP_PCT
 
     def _pending(label: str, note: str) -> dict[str, Any]:
@@ -1208,8 +1184,6 @@ def _classify_open_window(record: dict[str, Any], entry_bar: dict[str, Any]) -> 
         }
 
     if expected_range and expected_range[0] <= gap_pct <= expected_range[1]:
-        if rank_limited:
-            return _pending("仅观察", f"开盘涨幅落在预期区间，但评分排名第 {rank}，固定买入只做前三，先观察承接。")
         if high_gap_caution:
             return _pending("谨慎接力", f"开盘高开 {gap_pct:+.2f}% 大于 {CAUTION_GAP_PCT:.0f}% ，先观察承接，不按固定买入直接入场。")
         return {
@@ -1220,8 +1194,6 @@ def _classify_open_window(record: dict[str, Any], entry_bar: dict[str, Any]) -> 
             "can_enter": True,
         }
     if super_gap_min is not None and gap_pct >= super_gap_min:
-        if rank_limited:
-            return _pending("仅观察", f"开盘达到超预期，但评分排名第 {rank}，固定买入只做前三，先观察承接。")
         if high_gap_caution:
             return _pending("谨慎接力", f"开盘高开 {gap_pct:+.2f}% 大于 {CAUTION_GAP_PCT:.0f}% ，先观察承接，不按固定买入直接入场。")
         return {
@@ -1383,6 +1355,100 @@ def _summarize_strategy(records: list[dict[str, Any]], key: str, label: str) -> 
     }
 
 
+def _build_historical_snapshot_row(record: dict[str, Any]) -> dict[str, Any]:
+    performance = record.get("performance") if isinstance(record.get("performance"), dict) else {}
+    open_check = performance.get("open_check") if isinstance(performance.get("open_check"), dict) else {}
+    next_day = performance.get("next_day") if isinstance(performance.get("next_day"), dict) else {}
+    hold_2d = performance.get("hold_2d") if isinstance(performance.get("hold_2d"), dict) else {}
+    hold_3d = performance.get("hold_3d") if isinstance(performance.get("hold_3d"), dict) else {}
+    signal_status = str(open_check.get("status") or "unavailable")
+    can_enter = bool(open_check.get("can_enter"))
+    decision_status = "buy" if can_enter else ("pending" if signal_status in {"pending", "wait_reseal"} else "reject")
+    decision_label = "直接买入" if decision_status == "buy" else ("观察" if decision_status == "pending" else "低预期")
+    return {
+        "date10": str(record.get("date10") or "").strip(),
+        "trade_date10": str(record.get("trade_date10") or "").strip(),
+        "code": str(record.get("code") or "").strip(),
+        "name": str(record.get("name") or "").strip(),
+        "bucket": str(record.get("bucket") or "").strip(),
+        "bucket_label": str(record.get("bucket_label") or "").strip(),
+        "score": record.get("score"),
+        "daily_rank": record.get("daily_rank"),
+        "main_line": str(record.get("main_line") or "").strip(),
+        "reason_text": str(record.get("reason_text") or "").strip(),
+        "expected_text": str(((record.get("expectation") or {}) if isinstance(record.get("expectation"), dict) else {}).get("expected_text") or "").strip(),
+        "super_text": str(((record.get("expectation") or {}) if isinstance(record.get("expectation"), dict) else {}).get("super_text") or "").strip(),
+        "low_text": str(((record.get("expectation") or {}) if isinstance(record.get("expectation"), dict) else {}).get("low_text") or "").strip(),
+        "signal_status": signal_status,
+        "signal_label": str(open_check.get("label") or "").strip(),
+        "decision_status": decision_status,
+        "decision_label": decision_label,
+        "gap_pct": open_check.get("gap_pct"),
+        "note": str(open_check.get("note") or "").strip(),
+        "gap_trap": bool(open_check.get("gap_trap")),
+        "next_day_status": str(next_day.get("status") or "").strip(),
+        "next_day_label": str(next_day.get("label") or "").strip(),
+        "next_day_return_pct": next_day.get("return_pct"),
+        "next_day_note": str(next_day.get("note") or "").strip(),
+        "hold_2d_status": str(hold_2d.get("status") or "").strip(),
+        "hold_2d_return_pct": hold_2d.get("return_pct"),
+        "hold_3d_status": str(hold_3d.get("status") or "").strip(),
+        "hold_3d_return_pct": hold_3d.get("return_pct"),
+    }
+
+
+def _build_historical_snapshots(backtest_rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    if not backtest_rows:
+        return []
+    grouped: dict[str, list[dict[str, Any]]] = defaultdict(list)
+    for row in backtest_rows:
+        date10 = str(row.get("date10") or "").strip()
+        if date10:
+            grouped[date10].append(row)
+
+    snapshots: list[dict[str, Any]] = []
+    for date10 in sorted(grouped.keys(), reverse=True):
+        rows = sorted(
+            grouped[date10],
+            key=lambda row: (int(row.get("daily_rank") or 9999), -int(float(row.get("score") or 0)), str(row.get("code") or "")),
+        )
+        decisions = [_build_historical_snapshot_row(row) for row in rows]
+        buy_list = [row for row in decisions if row.get("decision_status") == "buy"]
+        pending_list = [row for row in decisions if row.get("decision_status") == "pending"]
+        rejected_list = [row for row in decisions if row.get("decision_status") == "reject"]
+        direct_super = [row for row in buy_list if row.get("signal_status") == "super"]
+        direct_expected = [row for row in buy_list if row.get("signal_status") == "expected"]
+        trade_date10 = str(rows[0].get("trade_date10") or "").strip() if rows else ""
+        snapshots.append(
+            {
+                "reference_date": date10,
+                "trade_date": trade_date10,
+                "entry_window": "09:25-09:30",
+                "quote_time": "",
+                "source_module": "ztAnalysis.relay/watch",
+                "quote_source": "recovered_from_backtest_records",
+                "candidate_count": len(decisions),
+                "quoted_count": len(decisions),
+                "buy_count": len(buy_list),
+                "direct_super_count": len(direct_super),
+                "direct_expected_count": len(direct_expected),
+                "pending_count": len(pending_list),
+                "rejected_count": len(rejected_list),
+                "unavailable_count": 0,
+                "buy_list": buy_list,
+                "pending_list": pending_list,
+                "rejected_list": rejected_list,
+                "unavailable_list": [],
+                "diagnostics": {
+                    "source": "recovered_from_backtest_records",
+                    "recovered": True,
+                    "note": f"原始 9:25 快照缺失，已根据 {trade_date10 or '-'} 收盘后回测记录恢复开盘涨幅、命中结果与当日收益；原始竞价量能无法事后还原。",
+                },
+            }
+        )
+    return snapshots
+
+
 def _is_backtest_ready_record(record: dict[str, Any]) -> bool:
     performance = record.get("performance") if isinstance(record.get("performance"), dict) else {}
     open_check = performance.get("open_check") if isinstance(performance.get("open_check"), dict) else {}
@@ -1468,6 +1534,8 @@ def build_stock_research_backtest_payload(*, current_market_data: dict[str, Any]
     current_pool_rows = _merge_current_pool_with_realtime(current_pool_rows, realtime_buy)
 
     backtest_rows = [r for r in enriched_rows if _is_backtest_ready_record(r)]
+    display_rows = [json.loads(json.dumps(r, ensure_ascii=False)) for r in enriched_rows]
+    historical_snapshots = _build_historical_snapshots(backtest_rows)
     latest_backtest_date10 = ""
     if backtest_rows:
         latest_backtest_date10 = sorted({r["date10"] for r in backtest_rows})[-1]
@@ -1489,8 +1557,11 @@ def build_stock_research_backtest_payload(*, current_market_data: dict[str, Any]
         payload["lifecycle"] = lifecycle
         payload["realtimeBuy"] = realtime_buy
         payload["currentPoolRecords"] = current_pool_rows
+        payload["displayRecords"] = display_rows
+        payload["historicalSnapshots"] = historical_snapshots
         payload["assumptions"].append("当天尚未走完次日开盘验证的数据会被清洗掉，不混入回测统计。")
         payload["diagnostics"]["filtered_non_backtest_codes"] = [r["code"] for r in enriched_rows if r.get("code")]
+        payload["diagnostics"]["display_only_codes"] = [r["code"] for r in display_rows if r.get("code")]
         return payload
 
     date_list = sorted({r["date10"] for r in backtest_rows})
@@ -1552,7 +1623,6 @@ def build_stock_research_backtest_payload(*, current_market_data: dict[str, Any]
             "realtime_unavailable_count": realtime_buy["unavailable_count"],
         },
         "assumptions": [
-            f"固定买入优先只做评分前三的票；超过第 {DIRECT_BUY_RANK_LIMIT} 名的样本默认先观察，不直接纳入固定买入口径。",
             f"若次日高开超过 {CAUTION_GAP_PCT:.0f}% ，统一提示谨慎接力，先观察承接，不直接按开盘价买入；历史胜率回测同步排除这类样本的直接入场。",
             "当天尚未走完次日开盘验证的数据会被清洗掉，不混入回测统计或策略表现。",
             "样本源只认收盘后的个股研究推送结果；盘中缓存、旧页面快照、其他补充入口都不作为回测样本源。",
@@ -1574,11 +1644,14 @@ def build_stock_research_backtest_payload(*, current_market_data: dict[str, Any]
         "lifecycle": lifecycle,
         "realtimeBuy": realtime_buy,
         "currentPoolRecords": current_pool_rows,
+        "displayRecords": display_rows,
+        "historicalSnapshots": historical_snapshots,
         "records": backtest_rows,
         "diagnostics": {
             "price_history": price_diag,
             "realtime_buy": realtime_buy.get("diagnostics", {}),
             "filtered_non_backtest_codes": [r["code"] for r in enriched_rows if not _is_backtest_ready_record(r) and r.get("code")],
+            "display_only_codes": [r["code"] for r in display_rows if not _is_backtest_ready_record(r) and r.get("code")],
         },
     }
 
