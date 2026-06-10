@@ -13,6 +13,24 @@ from daily_review.features.build_features import build_mood_inputs, default_char
 from daily_review.application.index_formatters import format_index_pct, format_index_val
 
 
+def _to_float(v: Any, default: float = 0.0) -> float:
+    try:
+        if v is None or v == "":
+            return default
+        return float(v)
+    except Exception:
+        return default
+
+
+def _to_int(v: Any, default: int = 0) -> int:
+    try:
+        if v is None or v == "":
+            return default
+        return int(float(v))
+    except Exception:
+        return default
+
+
 def collect_pool_theme_codes(*, pools: dict, actual_date: str) -> list[str]:
     rows: list[dict[str, Any]] = []
     for key in ("ztgc", "zbgc", "dtgc"):
@@ -107,9 +125,9 @@ def update_index_kline_cache(*, root: Path, client, actual_date: str) -> dict[st
         for item in items:
             if not isinstance(item, dict):
                 continue
-            if int(item.get("sf", 0) or 0) == 1:
+            if _to_int(item.get("sf"), 0) == 1:
                 continue
-            if float(item.get("a", 0) or 0) <= 0 or float(item.get("v", 0) or 0) <= 0:
+            if _to_float(item.get("a"), 0.0) <= 0 or _to_float(item.get("v"), 0.0) <= 0:
                 continue
             cleaned.append(item)
         codes_entry[code] = {"as_of": actual_date, "items": cleaned[-80:]}
@@ -176,7 +194,7 @@ def build_report_indices(*, actual_date: str, codes_entry: dict[str, dict[str, A
             if not isinstance(item, dict):
                 continue
             date_text = norm_k_date(str(item.get("t") or ""))
-            if date_text == actual_date and int(item.get("sf", 0) or 0) != 1:
+            if date_text == actual_date and _to_int(item.get("sf"), 0) != 1:
                 return float(item.get("c", 0) or 0), float(item.get("pc", 0) or 0)
         return None
 
@@ -189,7 +207,7 @@ def build_report_indices(*, actual_date: str, codes_entry: dict[str, dict[str, A
             if not isinstance(item, dict):
                 continue
             date_text = norm_k_date(str(item.get("t") or ""))
-            if date_text and date_text <= actual_date and int(item.get("sf", 0) or 0) != 1:
+            if date_text and date_text <= actual_date and _to_int(item.get("sf"), 0) != 1:
                 closes.append(float(item.get("c", 0) or 0))
         closes = [close for close in closes if close > 0]
         if len(closes) < n:
