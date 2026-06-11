@@ -385,13 +385,16 @@ jobs:
         run: |
           set -euo pipefail
           # 所有触发方式统一使用同一套“当前时间 + 最近交易日”判定。
-          # 线上页面需要尽量拿到结构完整的最新数据，因此 schedule 盘中也走全量 fetch；
-          # 不再用轻量 intraday 发布模式，避免线上拿到保留上一份收盘推演的半成品。
+          # schedule 触发时，直接承接 timecheck 的窗口判定：
+          # - intraday：仅刷新实时盯盘运行时
+          # - eod：收盘后全量复盘发布
+          # - prefetch：前面已单独处理并提前退出
           latest_trade="${{ steps.tradeday.outputs.latest_trade_date }}"
           today_bj="${{ steps.tradeday.outputs.today_bj }}"
           realtime_market_date="${{ steps.tradeday.outputs.realtime_market_date }}"
           input_mode="${{ github.event.inputs.mode || '' }}"
           input_date10="${{ github.event.inputs.date10 || '' }}"
+          schedule_mode="${{ steps.timecheck.outputs.mode || '' }}"
 
           if [ -n "${input_date10}" ]; then
             if ! printf '%s' "${input_date10}" | grep -Eq '^[0-9]{4}-[0-9]{2}-[0-9]{2}$'; then
@@ -412,11 +415,17 @@ jobs:
           mode="fetch"
           if [ "${input_mode}" = "fetch" ] || [ "${input_mode}" = "intraday" ] || [ "${input_mode}" = "eod" ]; then
             mode="${input_mode}"
-          elif [ "${{ github.event_name }}" = "schedule" ] && { [ $(( now_min >= 9*60+35 && now_min <= 11*60+30 )) -eq 1 ] || [ $(( now_min >= 13*60 && now_min < 15*60 )) -eq 1 ]; }; then
-            mode="fetch"
+          elif [ "${{ github.event_name }}" = "schedule" ]; then
+            if [ "${schedule_mode}" = "intraday" ]; then
+              mode="intraday"
+            elif [ "${schedule_mode}" = "eod" ]; then
+              mode="eod"
+            else
+              mode="fetch"
+            fi
           fi
           if [ "${input_mode}" = "auto" ] || [ -z "${input_mode}" ]; then
-            if [ $(( now_min >= 15*60+12 && now_min < 15*60+32 )) -eq 1 ]; then
+            if [ $(( now_min >= 15*60+12 && now_min <= 15*60+55 )) -eq 1 ]; then
               mode="eod"
             fi
           fi
@@ -434,7 +443,7 @@ jobs:
           chmod +x ./qr.sh || true
 
       - name: Generate latest report (online fetch -> offline pipeline rebuild)
-        if: ${{ (github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true') && (github.event_name != 'schedule' || steps.timecheck.outputs.mode != 'prefetch') && steps.warmup.outputs.skip != 'true' && (github.event_name != 'schedule' || steps.tradeday.outputs.is_trade_today == 'true') }}
+        if: ${{ (github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true') && (github.event_name != 'schedule' || steps.timecheck.outputs.mode != 'prefetch') && steps.warmup.outputs.skip != 'true' && (github.event_name != 'schedule' || steps.tradeday.outputs.is_trade_today == 'true') && steps.pushmode.outputs.mode != 'intraday' }}
         timeout-minutes: 12
         env:
           BIYING_TOKEN: ${{ secrets.BIYING_TOKEN }}
@@ -506,6 +515,31 @@ jobs:
               print("WARNING: ztAnalysis relay empty while watch exists; publish continues because an empty relay pool can be valid intraday.")
           PY
 
+      - name: Generate intraday runtime only
+        if: ${{ (github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true') && steps.pushmode.outputs.mode == 'intraday' && steps.warmup.outputs.skip != 'true' && (github.event_name != 'schedule' || steps.tradeday.outputs.is_trade_today == 'true') }}
+        env:
+          BIYING_TOKEN: ${{ secrets.BIYING_TOKEN }}
+          BIYING_BASE_URL: ${{ secrets.BIYING_BASE_URL }}
+        run: |
+          set -euo pipefail
+          run_date="${{ steps.pushmode.outputs.date10 }}"
+          ./qr.sh watch-slice "${run_date}"
+          D8="$(echo "${run_date}" | tr -d '-')"
+          D8="${D8}" PYTHONPATH=. python3 - <<'PY'
+          import os
+          from pathlib import Path
+          from daily_review.metrics.intraday_resonance import detect_resonance_from_cache, save_resonance_cache
+          root = Path('.')
+          d8 = os.environ['D8']
+          results = detect_resonance_from_cache(root, d8)
+          if results:
+              p = save_resonance_cache(root, d8, results)
+              print(f'Resonance saved: {p} ({len(results)} events)')
+          else:
+              print('No resonance events detected')
+          PY
+          cp -f ./cache_online/intraday_resonance-"${D8}".json ./web/public/intraday_resonance.json 2>/dev/null || true
+
       - name: Pre-fetch external data (明日策略池 + 东方财富今日题材)
         if: ${{ (github.event_name != 'schedule' || steps.timecheck.outputs.mode != 'prefetch') && steps.warmup.outputs.skip != 'true' && steps.pushmode.outputs.mode != 'intraday' }}
         run: |
@@ -513,11 +547,11 @@ jobs:
           python3 tools/fetch_eastmoney_tomorrow.py web/public/eastmoney_tomorrow.json || echo "⚠ eastmoney tomorrow fetch failed, using cache"
 
       - name: Build Vue3 web (Vite -> single HTML)
-        if: ${{ (github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true') && (github.event_name != 'schedule' || steps.timecheck.outputs.mode != 'prefetch') && steps.warmup.outputs.skip != 'true' && (github.event_name != 'schedule' || steps.tradeday.outputs.is_trade_today == 'true') }}
+        if: ${{ (github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true') && (github.event_name != 'schedule' || steps.timecheck.outputs.mode != 'prefetch') && steps.warmup.outputs.skip != 'true' && (github.event_name != 'schedule' || steps.tradeday.outputs.is_trade_today == 'true') && steps.pushmode.outputs.mode != 'intraday' }}
         run: cd web && npm run build
 
       - name: Inject market data into Vue3 HTML
-        if: ${{ (github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true') && (github.event_name != 'schedule' || steps.timecheck.outputs.mode != 'prefetch') && steps.warmup.outputs.skip != 'true' && (github.event_name != 'schedule' || steps.tradeday.outputs.is_trade_today == 'true') }}
+        if: ${{ (github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true') && (github.event_name != 'schedule' || steps.timecheck.outputs.mode != 'prefetch') && steps.warmup.outputs.skip != 'true' && (github.event_name != 'schedule' || steps.tradeday.outputs.is_trade_today == 'true') && steps.pushmode.outputs.mode != 'intraday' }}
         env:
           RUN_DATE: ${{ steps.pushmode.outputs.date10 }}
         run: |
@@ -530,7 +564,7 @@ jobs:
           python3 inject_data.py "${d8}" --source "${source_path}"
 
       - name: Prepare Pages site
-        if: ${{ (github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true') && (github.event_name != 'schedule' || steps.timecheck.outputs.mode != 'prefetch') && steps.warmup.outputs.skip != 'true' && (github.event_name != 'schedule' || steps.tradeday.outputs.is_trade_today == 'true') }}
+        if: ${{ (github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true') && (github.event_name != 'schedule' || steps.timecheck.outputs.mode != 'prefetch') && steps.warmup.outputs.skip != 'true' && (github.event_name != 'schedule' || steps.tradeday.outputs.is_trade_today == 'true') && steps.pushmode.outputs.mode != 'intraday' }}
         run: |
           set -euo pipefail
           report_html="./web/dist/index.html"
@@ -592,8 +626,33 @@ jobs:
           echo "site data files:"
           ls -la ./site/ | grep -E '\.(json|js|html)$' || true
 
+      - name: Commit intraday runtime only to gh-pages
+        if: ${{ (github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true') && steps.pushmode.outputs.mode == 'intraday' && steps.warmup.outputs.skip != 'true' && (github.event_name != 'schedule' || steps.tradeday.outputs.is_trade_today == 'true') }}
+        run: |
+          set -euo pipefail
+          cp -f ./web/public/intraday_runtime.json site_prev/intraday_runtime.json
+          if [ -f ./web/public/intraday_resonance.json ]; then
+            cp -f ./web/public/intraday_resonance.json site_prev/intraday_resonance.json
+          fi
+          mkdir -p site_prev/cache
+          cp -f cache/intraday_slices-*.json site_prev/cache/ 2>/dev/null || true
+          sfiles=( $(ls -1 site_prev/cache/intraday_slices-*.json 2>/dev/null | sort || true) )
+          if [ ${#sfiles[@]} -gt 2 ]; then
+            rm -f "${sfiles[@]:0:${#sfiles[@]}-2}"
+          fi
+          if git -C site_prev diff --quiet; then
+            echo "No intraday runtime changes to commit."
+            exit 0
+          fi
+          git -C site_prev status --porcelain
+          git -C site_prev config user.name "github-actions[bot]"
+          git -C site_prev config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git -C site_prev add intraday_runtime.json intraday_resonance.json cache/intraday_slices-*.json 2>/dev/null || true
+          git -C site_prev commit -m "deploy: intraday runtime" || true
+          git -C site_prev push origin HEAD:gh-pages
+
       - name: Commit & push to gh-pages
-        if: ${{ (github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true') && (github.event_name != 'schedule' || steps.timecheck.outputs.mode != 'prefetch') && steps.warmup.outputs.skip != 'true' && (github.event_name != 'schedule' || steps.tradeday.outputs.is_trade_today == 'true') }}
+        if: ${{ (github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true') && (github.event_name != 'schedule' || steps.timecheck.outputs.mode != 'prefetch') && steps.warmup.outputs.skip != 'true' && (github.event_name != 'schedule' || steps.tradeday.outputs.is_trade_today == 'true') && steps.pushmode.outputs.mode != 'intraday' }}
         run: |
           set -euo pipefail
           # 将构建产物覆盖写入 gh-pages 根目录（Deploy from branch: /）

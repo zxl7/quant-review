@@ -53,6 +53,13 @@ def _intraday_slices_path(root: Path, date10: str) -> Path:
     return root / "cache" / f"intraday_slices-{_date10_to_8(date10)}.json"
 
 
+def _intraday_runtime_paths(root: Path) -> tuple[Path, Path]:
+    return (
+        root / "web" / "public" / "intraday_runtime.json",
+        root / "web" / "dist" / "intraday_runtime.json",
+    )
+
+
 def _date8_to_10(date8: str) -> str:
     """纯函数：YYYYMMDD -> YYYY-MM-DD。"""
     d8 = str(date8 or "").strip()
@@ -261,6 +268,36 @@ def append_intraday_slice(*, root: Path, snapshot: dict[str, Any]) -> dict[str, 
     return envelope
 
 
+def write_intraday_runtime(*, root: Path, snapshot: dict[str, Any], envelope: dict[str, Any]) -> dict[str, Any]:
+    market = snapshot.get("market") if isinstance(snapshot.get("market"), dict) else {}
+    payload = {
+        "schema": "intraday_runtime_v1",
+        "date": str(snapshot.get("date") or ""),
+        "updated_at": str(snapshot.get("ts_bj") or ""),
+        "source": str(snapshot.get("source") or "intraday_live"),
+        "latest": (envelope.get("latest") if isinstance(envelope, dict) else None),
+        "snapshots": (envelope.get("snapshots") if isinstance(envelope, dict) else []),
+        "live": {
+            "market": {
+                "zt": market.get("zt"),
+                "dt": market.get("dt"),
+                "zab": market.get("zab"),
+                "zab_rate": market.get("zab_rate"),
+                "lianban": market.get("lianban"),
+                "max_lianban": market.get("max_lianban"),
+                "amount": market.get("amount"),
+            },
+            "alerts": snapshot.get("alerts") or [],
+            "concepts": snapshot.get("concepts") or [],
+        },
+    }
+    public_path, dist_path = _intraday_runtime_paths(root)
+    _write_json(public_path, payload)
+    if dist_path.parent.exists():
+        _write_json(dist_path, payload)
+    return payload
+
+
 def main() -> int:
     ap = argparse.ArgumentParser(description="生成实时盯盘切片 JSON")
     ap.add_argument("--date", default="", help="YYYYMMDD；为空取北京时间今天")
@@ -285,8 +322,10 @@ def main() -> int:
     _purge_previous_day_slices(root=root, keep_date10=date10)
 
     snap = build_live_snapshot(date8, intraday=intraday).to_dict()
-    append_intraday_slice(root=root, snapshot=snap)
+    envelope = append_intraday_slice(root=root, snapshot=snap)
+    write_intraday_runtime(root=root, snapshot=snap, envelope=envelope)
     print(f"✅ 实时切片已写入: {_intraday_slices_path(root, str(snap.get('date') or ''))}")
+    print(f"✅ 盘中运行时已写入: {_intraday_runtime_paths(root)[0]}")
     if args.offline:
         print("⚠️  离线模式：数据可能非实时")
     return 0

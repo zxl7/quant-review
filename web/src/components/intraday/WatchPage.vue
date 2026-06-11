@@ -2,10 +2,12 @@
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { useMarketData } from "../../composables/useMarketData"
 import { useIntradayAlertPool } from "../../composables/useIntradayAlertPool"
+import { useIntradayRuntime } from "../../composables/useIntradayRuntime"
 import ShortReminderFooter from "../common/ShortReminderFooter.vue"
 
 const { marketData } = useMarketData()
 const intradayAlertPool = useIntradayAlertPool()
+const intradayRuntime = useIntradayRuntime()
 
 const toNum = (v: unknown, d = 0) => {
   try {
@@ -135,7 +137,7 @@ const compressFlatSeries = (series: unknown[], eps = 0.05) => {
   return out
 }
 
-const watchSnapshots = computed(() => (Array.isArray(marketData.value?.intradaySnapshots?.snapshots) ? marketData.value.intradaySnapshots.snapshots : []))
+const watchSnapshots = computed(() => intradayRuntime.snapshots.value || [])
 const watchCurrentSnap = computed(() => {
   const rows = watchSnapshots.value
   return rows.length ? rows[rows.length - 1] : null
@@ -159,7 +161,7 @@ const watchCurrentShift = computed(() => {
 
 const watchMarket = computed(() => {
   const snap = watchCurrentSnap.value || {}
-  const live = marketData.value?.live?.market || {}
+  const live = intradayRuntime.live.value?.market || marketData.value?.live?.market || {}
   const zt = snap.zt ?? live.zt ?? marketData.value?.panorama?.limitUp ?? "-"
   const zab = snap.zab ?? live.zab ?? "-"
   const dt = snap.dt ?? live.dt ?? marketData.value?.panorama?.limitDown ?? "-"
@@ -337,7 +339,7 @@ const watchEvolutionSummary = computed(() => {
   return `从 ${first.time || "开盘"} 到 ${last.time || "当前"}，情绪 ${dir}；${hr}。${peakText}${lowText}。收在 ${last.shift_label || last.headline || "稳定"} 状态。`
 })
 
-const liveError = computed(() => "")
+const liveError = computed(() => intradayRuntime.error.value || "")
 
 const enableIntradayAlert = () => {
   if (!intradayAlertPool.enabled.value) intradayAlertPool.setEnabled(true)
@@ -489,13 +491,13 @@ onBeforeUnmount(() => {
                 </div>
               </div>
             </div>
-            <div class="wb-alerts" v-if="(marketData.live?.alerts || []).length">
-              <span class="wb-alert" v-for="(a, i) in marketData.live.alerts" :key="'wba-' + i" :class="a.level">{{ a.text }}</span>
+            <div class="wb-alerts" v-if="((intradayRuntime.live.value?.alerts || marketData.live?.alerts) || []).length">
+              <span class="wb-alert" v-for="(a, i) in (intradayRuntime.live.value?.alerts || marketData.live?.alerts || [])" :key="'wba-' + i" :class="a.level">{{ a.text }}</span>
             </div>
             <div class="wb-alerts" v-if="liveError">
               <span class="wb-alert error">{{ liveError }}</span>
             </div>
-            <div v-if="!watchSnapshots.length && !marketData.live" style="margin-top: 10px; font-size: 12px; color: var(--text-muted); font-weight: 850">暂无盯盘快照，执行一次 fetch 即可生成</div>
+            <div v-if="!watchSnapshots.length && !intradayRuntime.live.value && !marketData.live" style="margin-top: 10px; font-size: 12px; color: var(--text-muted); font-weight: 850">暂无盯盘快照，执行一次 watch-slice 即可生成</div>
           </div>
 
           <div class="wb-span-12 wb-flat-section">

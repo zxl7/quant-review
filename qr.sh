@@ -299,11 +299,62 @@ cmd_watch_slice() {
   local date_arg="${DATE_ARG:-}"
   info "生成实时盯盘切片 JSON（独立请求层，不重建整份报告）"
   if [[ -n "${date_arg}" ]]; then
-    PYTHONPATH=. python3 -u -m daily_review.watch_runtime --date "$(date10_to_date8 "${date_arg}")" --publish
+    PYTHONPATH=. python3 -u -m daily_review.watch_runtime --date "$(date10_to_date8 "${date_arg}")"
   else
-    PYTHONPATH=. python3 -u -m daily_review.watch_runtime --publish
+    PYTHONPATH=. python3 -u -m daily_review.watch_runtime
   fi
   prune_extra_cache_artifacts
+}
+
+cmd_deploy_intraday() {
+  local pages_branch
+  pages_branch="${PAGES_BRANCH:-gh-pages}"
+
+  git rev-parse --is-inside-work-tree >/dev/null 2>&1 || die "请在 Git 仓库内执行。"
+
+  local repo_root current_branch
+  repo_root="$(git rev-parse --show-toplevel)"
+  current_branch="$(git branch --show-current)"
+  [[ -n "${current_branch}" ]] || die "当前不在任何分支（detached HEAD）。"
+  cd "${repo_root}"
+
+  [[ -f "./web/public/intraday_runtime.json" ]] || die "未找到盘中运行时文件：./web/public/intraday_runtime.json"
+
+  local tmp_runtime
+  local tmp_resonance
+  local tmp_slice_dir
+  tmp_runtime="$(mktemp -t intraday_runtime.XXXXXX.json)"
+  cp -f "./web/public/intraday_runtime.json" "${tmp_runtime}"
+  tmp_slice_dir="$(mktemp -d -t intraday_slices.XXXXXX)"
+  cp -f ./cache/intraday_slices-*.json "${tmp_slice_dir}/" 2>/dev/null || true
+  tmp_resonance=""
+  if [[ -f "./web/public/intraday_resonance.json" ]]; then
+    tmp_resonance="$(mktemp -t intraday_resonance.XXXXXX.json)"
+    cp -f "./web/public/intraday_resonance.json" "${tmp_resonance}"
+  fi
+
+  info "切到 ${pages_branch} 并同步盘中轻量运行时"
+  git switch "${pages_branch}"
+  cd "${repo_root}"
+  install -m 644 "${tmp_runtime}" "intraday_runtime.json"
+  rm -f "${tmp_runtime}"
+  if [[ -n "${tmp_resonance}" && -f "${tmp_resonance}" ]]; then
+    install -m 644 "${tmp_resonance}" "intraday_resonance.json"
+    rm -f "${tmp_resonance}"
+  fi
+  mkdir -p cache
+  cp -f "${tmp_slice_dir}"/intraday_slices-*.json ./cache/ 2>/dev/null || true
+  rm -rf "${tmp_slice_dir}"
+
+  git add intraday_runtime.json intraday_resonance.json cache/intraday_slices-*.json 2>/dev/null || true
+  git commit -m "deploy: intraday runtime $(date '+%F %T')" || true
+  git push
+
+  info "切回 ${current_branch}"
+  git switch "${current_branch}"
+  cd "${repo_root}"
+
+  echo "✅ 盘中轻量发布完成：已同步 intraday_runtime.json 到 ${pages_branch}"
 }
 
 cmd_deploy() {
@@ -381,6 +432,7 @@ usage() {
   ./qr.sh render [YYYY-MM-DD]  仅用 cache 离线重建 + 推票重算(--skip-fetch) + Vue3 构建（不请求接口）
   ./qr.sh build-web [YYYY-MM-DD]  仅 Vue3 构建 + web 数据刷新（不跑 pipeline，改 UI 用）
   ./qr.sh watch-slice [YYYY-MM-DD]  仅生成实时盯盘切片 JSON（供页面动态读取）
+  ./qr.sh deploy-intraday        （可选）仅发布盘中轻量运行时到 gh-pages
   ./qr.sh deploy               （可选）发布 web/dist/index.html 到 gh-pages/index.html
 EOF
 }
@@ -395,6 +447,7 @@ main() {
     build-web) cmd_build_web ;;
     sync-cache) cmd_sync_cache ;;
     watch-slice) cmd_watch_slice ;;
+    deploy-intraday) cmd_deploy_intraday ;;
     deploy) cmd_deploy ;;
     -h|--help|help) usage ;;
     *) die "未知命令：${cmd}（用 ./qr.sh help 查看用法）" ;;
