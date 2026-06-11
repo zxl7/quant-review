@@ -23,6 +23,20 @@ const toNum = (v: unknown, d = 0) => {
   return Number.isFinite(n) ? n : d
 }
 
+const heroJjRateText = computed(() => {
+  const moodInputs = props.marketData?.features?.mood_inputs || {}
+  const direct = moodInputs?.jj_rate_adj ?? moodInputs?.jj_rate
+  if (direct !== undefined && direct !== null && direct !== "") {
+    return `${Number(direct).toFixed(1)}%`
+  }
+  const hist = Array.isArray(moodInputs?.hist_jj_rate) ? moodInputs.hist_jj_rate : []
+  const last = hist.length ? hist[hist.length - 1] : null
+  if (last !== undefined && last !== null && last !== "") {
+    return `${Number(last).toFixed(1)}%`
+  }
+  return "-"
+})
+
 const ringSegments = computed(() => {
   const radius = 22
   const circumference = 2 * Math.PI * radius
@@ -119,7 +133,7 @@ const emit = defineEmits<{
             </div>
           </div>
           <div class="hero-kpi hero-kpi-balanced">
-            <div class="k">大盘强弱</div>
+            <div class="k">大盘 · 两市 {{ marketData.volume?.total ?? "-" }} </div>
             <div class="v">{{ marketData.mood?.market_score ?? "-" }} 分</div>
             <div class="s">
               {{ marketData.mood?.market_label || "-" }} · 指数 {{ marketData.mood?.market_components?.index_score ?? "-" }} / 广度 {{ marketData.mood?.market_components?.breadth_score ?? "-" }}
@@ -129,13 +143,10 @@ const emit = defineEmits<{
             <div class="k">量能 / 高度</div>
             <div class="v">{{ marketData.volume?.change ?? "-" }}</div>
             <div class="s">
-              两市 {{ marketData.volume?.total ?? "-" }} · 最高 {{ marketData.ladder?.[0]?.badge ?? "-" }} 板 · 封板 {{ marketData.panorama?.ratio ?? "-" }}
+              最高 {{ marketData.ladder?.[0]?.badge ?? "-" }} 板 · 封板 {{ marketData.panorama?.ratio ?? "-" }}
             </div>
             <div class="s">
-              晋级
-              {{
-                marketData.features?.mood_inputs?.jj_rate === undefined || marketData.features?.mood_inputs?.jj_rate === null ? "-" : Number(marketData.features.mood_inputs.jj_rate).toFixed(1) + "%"
-              }}
+              晋级 {{ heroJjRateText }}
             </div>
           </div>
         </div>

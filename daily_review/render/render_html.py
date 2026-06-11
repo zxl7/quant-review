@@ -284,6 +284,11 @@ def build_sentiment_explain_dims(market_data: Dict[str, Any]) -> list[Dict[str, 
                 parts.append(str(int(round(x))) if float(x).is_integer() else f"{x:.1f}")
         return "-".join(parts)
 
+    def tail_value(arr: list[float], default: float = 0.0) -> float:
+        if not arr:
+            return default
+        return _to_num(arr[-1], default)
+
     def delta_meta(v: float, prev_v: float, key: str, *, unit: str = "") -> tuple[str, str, Any]:
         d = _to_num(delta.get(key), v - prev_v)
         if abs(d) < 1e-9:
@@ -300,9 +305,9 @@ def build_sentiment_explain_dims(market_data: Dict[str, Any]) -> list[Dict[str, 
     lb_prev = _to_num((((prev.get("features") or {}) if isinstance(prev.get("features"), dict) else {}).get("mood_inputs") or {}).get("lianban_count"), lb)
     lb_hist = last_n(mi.get("hist_lianban"))
 
-    max_lb = _to_num(mi.get("max_lb"), _to_num(kpis.get("max_lianban"), 0))
-    max_lb_prev = _to_num((((prev.get("features") or {}) if isinstance(prev.get("features"), dict) else {}).get("mood_inputs") or {}).get("max_lb"), max_lb)
     max_lb_hist = last_n(mi.get("hist_max_lb"))
+    max_lb = _to_num(mi.get("max_lb"), _to_num(kpis.get("max_lianban"), tail_value(max_lb_hist, 0)))
+    max_lb_prev = _to_num((((prev.get("features") or {}) if isinstance(prev.get("features"), dict) else {}).get("mood_inputs") or {}).get("max_lb"), max_lb)
 
     dt = _to_num(pan.get("limitDown"), _to_num(mi.get("dt_count"), 0))
     dt_prev = _to_num(prev_pan.get("limitDown"), _to_num((((prev.get("features") or {}) if isinstance(prev.get("features"), dict) else {}).get("mood_inputs") or {}).get("dt_count"), dt))
@@ -312,9 +317,9 @@ def build_sentiment_explain_dims(market_data: Dict[str, Any]) -> list[Dict[str, 
     fb_prev = _to_num((((prev.get("features") or {}) if isinstance(prev.get("features"), dict) else {}).get("mood_inputs") or {}).get("fb_rate"), fb)
     fb_hist = last_n(mi.get("hist_fb_rate"))
 
-    jj = _to_num(mi.get("jj_rate_adj", mi.get("jj_rate")), 0)
-    jj_prev = _to_num((((prev.get("features") or {}) if isinstance(prev.get("features"), dict) else {}).get("mood_inputs") or {}).get("jj_rate_adj", (((prev.get("features") or {}) if isinstance(prev.get("features"), dict) else {}).get("mood_inputs") or {}).get("jj_rate")), jj)
     jj_hist = last_n(mi.get("hist_jj_rate"))
+    jj = _to_num(mi.get("jj_rate_adj", mi.get("jj_rate")), tail_value(jj_hist, 0))
+    jj_prev = _to_num((((prev.get("features") or {}) if isinstance(prev.get("features"), dict) else {}).get("mood_inputs") or {}).get("jj_rate_adj", (((prev.get("features") or {}) if isinstance(prev.get("features"), dict) else {}).get("mood_inputs") or {}).get("jj_rate")), jj)
 
     specs = [
         ("max_lb", "空间高度", max_lb, max_lb_prev, max_lb_hist, False, 3.0, 5.0, "板", 10.0),
@@ -1187,4 +1192,3 @@ def build_learning_notes(*, market_data: Dict[str, Any], cache_dir: Path) -> Dic
     from daily_review.learning.notes_loader import build_learning_notes as _impl
 
     return _impl(market_data=market_data, cache_dir=cache_dir)
-

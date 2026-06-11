@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref } from "vue"
+import { computed, ref, watchEffect } from "vue"
 import { useMarketData } from "../../composables/useMarketData"
 import { useECharts } from "../../composables/useECharts"
 import ShortReminderFooter from "../common/ShortReminderFooter.vue"
@@ -240,6 +240,14 @@ const selectedRecommendationDate = computed(() => {
   const raw = String(selectedRecommendationDateInput.value || "").trim()
   if (raw && availableRecommendationDates.value.includes(raw)) return raw
   return defaultRecommendationDate.value
+})
+watchEffect(() => {
+  const raw = String(selectedRecommendationDateInput.value || "").trim()
+  const next = String(defaultRecommendationDate.value || "").trim()
+  if (!next) return
+  if (raw && availableRecommendationDates.value.includes(raw)) return
+  if (raw === next) return
+  selectedRecommendationDateInput.value = next
 })
 const effectiveHistoricalDate = computed(() => {
   if (isViewingCurrentRecommendation.value && latestHistoricalRecommendationDate.value) return latestHistoricalRecommendationDate.value
@@ -882,7 +890,8 @@ function snapshotReturnClass(row: any) {
       <div class="card-header">
         <div>
           <div class="card-title">账户净值走势</div>
-          <div class="bt-subtitle">这里按历史回测中“符合买入条件”的个股做等权平均，默认满仓分配；如果某天有 4 只票，就按单只 25% 仓位折算成当天账户收益。</div>
+          <p class="bt-subtitle">这里按历史回测中"符合买入条件"的个股做等权平均，默认满仓分配；如果某天有 4 只票，就按单只 25% 仓位折算成当天账户收益。</p>
+          <p class="bt-subtitle">注：不考虑如何卖出，只考虑买入。</p>
         </div>
       </div>
 
