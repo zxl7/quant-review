@@ -1235,6 +1235,11 @@ def _evaluate_one(record: dict[str, Any], bars: list[dict[str, Any]]) -> dict[st
         and entry_close < entry_open_price
         and entry_prev_close > 0
     )
+    close_pct = round((entry_close - entry_prev_close) / entry_prev_close * 100.0, 2) if entry_prev_close > 0 else None
+    open_check["prev_close"] = round(entry_prev_close, 2) if entry_prev_close > 0 else None
+    open_check["open_price"] = round(entry_open_price, 2) if entry_open_price > 0 else None
+    open_check["close_price"] = round(entry_close, 2) if entry_close > 0 else None
+    open_check["close_pct"] = close_pct
     open_check["gap_trap"] = gap_trap
 
     if not open_check.get("can_enter"):
@@ -1383,7 +1388,11 @@ def _build_historical_snapshot_row(record: dict[str, Any]) -> dict[str, Any]:
         "signal_label": str(open_check.get("label") or "").strip(),
         "decision_status": decision_status,
         "decision_label": decision_label,
+        "prev_close": open_check.get("prev_close"),
+        "open_price": open_check.get("open_price"),
         "gap_pct": open_check.get("gap_pct"),
+        "close_price": open_check.get("close_price"),
+        "close_pct": open_check.get("close_pct"),
         "note": str(open_check.get("note") or "").strip(),
         "gap_trap": bool(open_check.get("gap_trap")),
         "next_day_status": str(next_day.get("status") or "").strip(),

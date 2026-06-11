@@ -1,12 +1,15 @@
 <script setup lang="ts">
 import { computed, ref } from "vue"
 import { useMarketData } from "../../composables/useMarketData"
+import { useECharts } from "../../composables/useECharts"
 import ShortReminderFooter from "../common/ShortReminderFooter.vue"
+import { computeAccountCurveFromBacktest, computeAccountCurveFromLedger } from "./accountCurve"
 const { marketData } = useMarketData()
 const backtestSource = computed<any>(() => {
   const md = marketData.value as any
   return md || {}
 })
+const accountCurveChartRef = ref<HTMLElement | null>(null)
 
 const emptyPayload = {
   schema: "stock_research_backtest_v2",
@@ -258,11 +261,10 @@ const currentRecords = computed<any[]>(() => {
   })
   return rows
 })
-const historicalRecords = computed<any[]>(() => selectedDayDisplayRecords.value)
 const currentEligibleCount = computed(() => currentRecords.value.filter((row) => !!row?.performance?.open_check?.can_enter).length)
 const metrics = computed(() => buildDateScopedMetrics(selectedDayRecordsAll.value))
 const hasCurrentPlan = computed(() => hasValidPayload.value && currentRecords.value.length > 0)
-const hasHistoricalRecords = computed(() => historicalRecords.value.length > 0)
+const hasHistoricalRecords = computed(() => selectedDayDisplayRecords.value.length > 0)
 const isViewingCurrentRecommendation = computed(() => !selectedRecommendationDate.value || selectedRecommendationDate.value === latestRecommendationDate.value)
 const historicalSnapshotMap = computed<Record<string, any>>(() => {
   const out: Record<string, any> = {}
@@ -292,8 +294,13 @@ const hasRealtimeSnapshot = computed(() => {
   return realtimeCandidates.value.length > 0
 })
 const showingRealtimeSnapshot = computed(() => hasRealtimeSnapshot.value)
-const hasSelectedSnapshot = computed(() => hasRealtimeSnapshot.value || historicalCandidates.value.length > 0)
-const allCandidates = computed<any[]>(() => (showingRealtimeSnapshot.value ? realtimeCandidates.value : historicalCandidates.value))
+const showingPredictionTable = computed(() => !showingRealtimeSnapshot.value && isViewingCurrentRecommendation.value && hasCurrentPlan.value)
+const hasSelectedSnapshot = computed(() => hasRealtimeSnapshot.value || showingPredictionTable.value || historicalCandidates.value.length > 0)
+const allCandidates = computed<any[]>(() => {
+  if (showingRealtimeSnapshot.value) return realtimeCandidates.value
+  if (showingPredictionTable.value) return currentRecords.value
+  return historicalCandidates.value
+})
 const hasAnyRenderableSection = computed(() => hasCurrentPlan.value || hasHistoricalRecords.value || hasSelectedSnapshot.value)
 const lifecycleStage = computed(() => String(lifecycle.value?.stage || "empty"))
 const lifecycleStageLabel = computed(() => String(lifecycle.value?.stage_label || "暂无数据"))
@@ -307,18 +314,13 @@ const snapshotTradeDate = computed(() => {
 })
 const snapshotCardTitle = computed(() => {
   if (showingRealtimeSnapshot.value) return realtimeTitleDate.value ? `竞价结果 — ${realtimeTitleDate.value} 9:25` : "竞价结果"
-  return snapshotTradeDate.value ? `竞价回放 — ${snapshotTradeDate.value}` : "竞价回放"
-})
-const currentPlanCardTitle = computed(() => {
-  if (!selectedRecommendationDate.value) return currentPlanTitleDate.value ? `待验证池 — ${currentPlanTitleDate.value}` : "待验证池"
-  if (isViewingCurrentRecommendation.value) return currentPlanTitleDate.value ? `待验证池 — ${currentPlanTitleDate.value}` : `待验证池 — ${selectedRecommendationDate.value}`
-  return `推荐池回看 — ${selectedRecommendationDate.value}`
-})
-const currentPlanSubtitle = computed(() => {
-  if (isViewingCurrentRecommendation.value) return "这里展示今天收盘后推送进回测 JSON 的待验证样本。9:25 没有真实快照前，只看预案，不展示历史收益。"
-  return `这里按推荐日回看 ${selectedRecommendationDate.value} 的推荐和预期条件，方便对照下方表现。`
+  if (showingPredictionTable.value) return currentPlanTitleDate.value ? `今日预测 — ${currentPlanTitleDate.value}` : "今日预测"
+  return snapshotTradeDate.value ? `今日预测 — ${snapshotTradeDate.value}` : "今日预测"
 })
 const realtimeSubtitle = computed(() => {
+  if (showingPredictionTable.value) {
+    return "这里展示今天收盘后推送进回测 JSON 的待验证样本，先看超预期/预期/低预期条件；到明天 09:25-09:30 再补真实竞价结果。"
+  }
   if (!isViewingCurrentRecommendation.value) {
     if (selectedHistoricalSnapshot.value) {
       return `这里根据收盘后回测记录恢复 ${effectiveHistoricalDate.value} 推荐在 ${selectedHistoricalSnapshot.value?.trade_date || "-"} 开盘的命中结果与当日收益，原始 9:25 快照缺失也不会断层。`
@@ -329,7 +331,7 @@ const realtimeSubtitle = computed(() => {
     return `竞价快照：${quoteUpdatedAt.value}｜高开超5%先观察，不直接追。`
   }
   if (selectedHistoricalSnapshot.value) {
-    return `当前上方展示 ${selectedRecommendationDate.value} 的待验证池；下方默认回看最近已完成的 ${effectiveHistoricalDate.value} 竞价结果与收益。`
+    return `这里根据收盘后回测记录恢复 ${effectiveHistoricalDate.value} 推荐在 ${selectedHistoricalSnapshot.value?.trade_date || "-"} 开盘的命中结果与当日收益。`
   }
   if (hasCurrentPlan.value && latestRecommendationDate.value) {
     return `盘后样本已更新到 ${latestRecommendationDate.value}，明日 09:25-09:30 再补真实竞价命中结果。`
@@ -345,7 +347,7 @@ const strategySubtitle = computed(() => {
 })
 const summaryHeaderSubtitle = computed(() => {
   if (!isViewingCurrentRecommendation.value && selectedRecommendationDate.value) {
-    const latestLabel = latestRecommendationDate.value ? `；切回 ${latestRecommendationDate.value} 可看最新待验证池` : ""
+    const latestLabel = latestRecommendationDate.value ? `；切回 ${latestRecommendationDate.value} 可看最新今日预测` : ""
     return `当前默认查看 ${selectedRecommendationDate.value} 的财富密码闭环${latestLabel}。`
   }
   return lifecycleStageNote.value || strategySubtitle.value
@@ -375,11 +377,11 @@ const summaryCards = computed(() => [
     key: "history",
     label: "历史统计刷新",
     value: String(latestHistoricalRecommendationDate.value || latestRecommendationDate.value || "-"),
-    note: hasHistoricalRecords.value ? `当前结果查看 ${effectiveHistoricalDate.value}｜展示 ${historicalRecords.value.length} 条｜纳入统计 ${selectedDayRecordsAll.value.length} 条` : "当前还没有历史回测样本",
+    note: hasHistoricalRecords.value ? `当前结果查看 ${effectiveHistoricalDate.value}｜纳入统计 ${selectedDayRecordsAll.value.length} 条` : "当前还没有历史回测样本",
   },
   {
     key: "pool",
-    label: isViewingCurrentRecommendation.value ? "待验证池" : "推荐池样本",
+    label: isViewingCurrentRecommendation.value ? "今日预测样本" : "推荐池样本",
     value: `${currentRecords.value.length}`,
     note: isViewingCurrentRecommendation.value
       ? (currentEligibleCount.value > 0 ? `可入场候选 ${currentEligibleCount.value} 条` : "当前以盘后样本展示为主")
@@ -387,14 +389,16 @@ const summaryCards = computed(() => [
   },
   {
     key: "snapshot",
-    label: showingRealtimeSnapshot.value ? "9:25 快照" : "竞价回放",
+    label: showingRealtimeSnapshot.value ? "9:25 快照" : "今日预测",
     value: hasSelectedSnapshot.value ? `${allCandidates.value.length}` : "-",
-    note: showingRealtimeSnapshot.value ? `快照时间 ${quoteUpdatedAt.value}` : (selectedHistoricalSnapshot.value?.diagnostics?.note || "历史回放未恢复"),
+    note: showingRealtimeSnapshot.value
+      ? `快照时间 ${quoteUpdatedAt.value}`
+      : (showingPredictionTable.value ? "当前展示收盘后推送的待验证样本" : (selectedHistoricalSnapshot.value?.diagnostics?.note || "历史预测未恢复")),
   },
 ])
 const emptyStateText = computed(() => {
   if (!hasValidPayload.value) return "当前暂无有效回测数据，明天 09:25-09:30 落地后会自动显示对应内容。"
-  if (hasCurrentPlan.value) return "收盘后推送的个股研究样本已经落进回测 JSON，当前先展示明天待验证池；到明天 09:25-09:30 再补真实竞价命中结果。"
+  if (hasCurrentPlan.value) return "收盘后推送的个股研究样本已经落进回测 JSON，当前先展示今日预测；到明天 09:25-09:30 再补真实竞价命中结果。"
   if (!realtimeBuy.value?.reference_date) return "当前推荐还没到次日 09:25-09:30，明天窗口内会落地实时行情。"
   if (!isEntryWindowTime(realtimeBuy.value?.quote_time)) return "当前暂无有效竞价快照，等明天 09:25-09:30 落地后再显示命中结果。"
   return "当前没有可展示的回测结果。"
@@ -402,15 +406,115 @@ const emptyStateText = computed(() => {
 const realtimeEmptyText = computed(() => {
   if (!hasValidPayload.value) return "当前暂无有效回测数据。"
   if (!isViewingCurrentRecommendation.value) return "所选推荐日没有原始 9:25 快照，但如果历史回测已落地，会在这里恢复命中结果。"
-  if (!hasCurrentPlan.value) return "当前还没有待验证池数据，先执行一次复盘脚本生成个股回测 JSON。"
+  if (!hasCurrentPlan.value) return "当前还没有今日预测数据，先执行一次复盘脚本生成个股回测 JSON。"
   if (!realtimeBuy.value?.reference_date) return "当前是收盘后待验证阶段，明天 09:25-09:30 会补充实时量价和命中结果。"
   if (!isEntryWindowTime(realtimeBuy.value?.quote_time)) return "当前还没到有效竞价快照时间，明天 09:25-09:30 会自动显示真实命中结果。"
   return "当前没有命中结果。"
 })
 const historicalSnapshotNotice = computed(() => {
-  if (showingRealtimeSnapshot.value) return ""
+  if (showingRealtimeSnapshot.value || showingPredictionTable.value) return ""
   return String(selectedHistoricalSnapshot.value?.diagnostics?.note || "").trim()
 })
+const accountCurveBase = computed(() => {
+  const md = marketData.value as any
+  return md?.accountNavLedger?.base ?? md?.accountCurve?.base ?? 1
+})
+const accountNavLedgerRecords = computed<any[]>(() => {
+  const md = marketData.value as any
+  return Array.isArray(md?.accountNavLedger?.records) ? md.accountNavLedger.records : []
+})
+const accountCurve = computed(() => {
+  if (accountNavLedgerRecords.value.length) {
+    return computeAccountCurveFromLedger(accountNavLedgerRecords.value, accountCurveBase.value)
+  }
+  return computeAccountCurveFromBacktest(records.value, accountCurveBase.value)
+})
+const accountCurvePoints = computed(() => accountCurve.value.points)
+const accountCurveSummary = computed(() => accountCurve.value.summary)
+const accountCurveUpdatedAt = computed(() => {
+  const points = accountCurvePoints.value
+  return points.length ? points[points.length - 1].date : "-"
+})
+const accountCurveOption = computed(() => {
+  const points = accountCurvePoints.value
+  if (!points.length) return null
+  const values = points.map((item) => Number(item.value.toFixed(4)))
+  const minValue = Math.min(...values)
+  const maxValue = Math.max(...values)
+  const span = maxValue - minValue || 0.01
+  const padding = span * 0.16
+  return {
+    animation: false,
+    grid: { left: 18, right: 18, top: 26, bottom: 30, containLabel: true },
+    tooltip: {
+      trigger: "axis",
+      backgroundColor: "rgba(15, 23, 42, 0.92)",
+      borderWidth: 0,
+      textStyle: { color: "#f8fafc" },
+        formatter: (items: any[]) => {
+          const first = Array.isArray(items) ? items[0] : null
+          const index = Number(first?.dataIndex ?? -1)
+          const point = index >= 0 ? points[index] : null
+          if (!point) return ""
+        return [
+          `<strong>${point.date}</strong>`,
+          `净值：${formatPlain(point.value, 4)}`,
+          `当日等权收益：${formatSigned(point.dailyPct, 2)}%`,
+          `累计：${formatSigned(point.cumPct, 2)}%`,
+          `回撤：${formatSigned(point.drawdownPct, 2)}%`,
+          `买入个股：${point.stockCount} 只`,
+          point.names.length ? `标的：${point.names.join(" / ")}` : "",
+        ].join("<br/>")
+      },
+    },
+    xAxis: {
+      type: "category",
+      boundaryGap: false,
+      data: points.map((item) => item.date.slice(5)),
+      axisLine: { lineStyle: { color: "rgba(148, 163, 184, 0.35)" } },
+      axisLabel: { color: "#94a3b8", fontSize: 11 },
+      axisTick: { show: false },
+    },
+    yAxis: {
+      type: "value",
+      min: Number((minValue - padding).toFixed(4)),
+      max: Number((maxValue + padding).toFixed(4)),
+      axisLine: { show: false },
+      axisTick: { show: false },
+      splitLine: { lineStyle: { color: "rgba(148, 163, 184, 0.14)" } },
+      axisLabel: {
+        color: "#94a3b8",
+        fontSize: 11,
+        formatter: (value: number) => formatPlain(value, 2),
+      },
+    },
+    series: [
+      {
+        type: "line",
+        smooth: true,
+        symbol: "circle",
+        symbolSize: 7,
+        data: values,
+        lineStyle: { width: 3, color: "#ef4444" },
+        itemStyle: { color: "#ef4444", borderColor: "#ffffff", borderWidth: 2 },
+        areaStyle: {
+          color: {
+            type: "linear",
+            x: 0,
+            y: 0,
+            x2: 0,
+            y2: 1,
+            colorStops: [
+              { offset: 0, color: "rgba(239, 68, 68, 0.28)" },
+              { offset: 1, color: "rgba(239, 68, 68, 0.02)" },
+            ],
+          },
+        },
+      },
+    ],
+  }
+})
+useECharts(accountCurveChartRef, accountCurveOption)
 
 function avgOf(values: number[]) {
   if (!values.length) return 0
@@ -508,14 +612,6 @@ function formatPlain(val: unknown, digits = 2) {
   return n.toFixed(digits).replace(/\.00$/, "").replace(/(\.\d)0$/, "$1")
 }
 
-function formatMonthDay(val: unknown) {
-  const raw = String(val || "").trim()
-  if (!raw) return "-"
-  const matched = raw.match(/^(\d{4})-(\d{2})-(\d{2})$/)
-  if (!matched) return raw
-  return `${matched[2]}-${matched[3]}`
-}
-
 function xqUrl(code?: string | null) {
   const raw = String(code || "").trim()
   if (!raw) return "https://xueqiu.com"
@@ -537,17 +633,6 @@ function openStatusClass(status?: string) {
   if (key === "pending" || key === "wait_reseal") return "is-wait"
   if (key === "reject") return "is-reject"
   return "is-neutral"
-}
-
-function openStatusLabel(status?: string, label?: string) {
-  if (label) return label
-  const key = String(status || "")
-  if (key === "super") return "超预期"
-  if (key === "expected") return "符合预期"
-  if (key === "pending") return "观察"
-  if (key === "wait_reseal") return "待确认"
-  if (key === "reject") return "低预期"
-  return "暂无判断"
 }
 
 function decisionLabel(signalStatus?: string, decisionStatus?: string, fallbackLabel?: string) {
@@ -578,29 +663,6 @@ function snapshotReturnClass(row: any) {
   return "orange-text"
 }
 
-function strategyReturnText(performance: any, key: string) {
-  const item = performance && typeof performance === "object" ? performance[key] || {} : {}
-  const status = String(item?.status || "")
-  if (status === "covered") return `${formatSigned(item?.return_pct, 2)}%`
-  if (status === "pending") return "待补齐"
-  if (status === "skipped") return "未入场"
-  if (status === "missing") return "缺失"
-  return item?.label || "-"
-}
-
-function strategyReturnNote(performance: any, key: string) {
-  const item = performance && typeof performance === "object" ? performance[key] || {} : {}
-  const status = String(item?.status || "")
-  if (status === "covered") return `${item?.entry_date || "-"} 开盘买入 -> ${item?.exit_date || "-"} 收盘`
-  return String(item?.note || item?.label || "-")
-}
-
-function strategyReturnClass(performance: any, key: string) {
-  const item = performance && typeof performance === "object" ? performance[key] || {} : {}
-  const status = String(item?.status || "")
-  if (status === "covered") return signedClass(item?.return_pct)
-  return "orange-text"
-}
 </script>
 
 <template>
@@ -699,17 +761,25 @@ function strategyReturnClass(performance: any, key: string) {
               <td class="bt-left-cell">
                 <div>{{ row.main_line || "-" }}</div>
               </td>
-              <td>{{ formatPlain(row.prev_close, 2) }}元</td>
-              <td :class="signedClass(row.gap_pct)">{{ formatPlain(row.auction_price, 2) }}元</td>
-              <td :class="signedClass(row.gap_pct)">{{ formatSigned(row.gap_pct, 2) }}%</td>
-              <td>{{ formatPlain(row.auction_amount_yi, 2) }}亿</td>
-              <td>{{ formatPlain(row.auction_amount_need_yi, 2) }}亿</td>
+              <td>{{ showingPredictionTable ? "-" : `${formatPlain(row.prev_close, 2)}元` }}</td>
+              <td :class="signedClass(row.gap_pct)">{{ showingPredictionTable ? "-" : `${formatPlain(row.auction_price, 2)}元` }}</td>
+              <td :class="signedClass(row.gap_pct)">{{ showingPredictionTable ? "-" : `${formatSigned(row.gap_pct, 2)}%` }}</td>
+              <td>{{ showingPredictionTable ? "-" : `${formatPlain(row.auction_amount_yi, 2)}亿` }}</td>
+              <td>{{ showingPredictionTable ? "-" : `${formatPlain(row.auction_amount_need_yi, 2)}亿` }}</td>
               <td>
-                <span class="bt-pill" :class="openStatusClass(row.signal_status)">{{ decisionLabel(row.signal_status, row.decision_status) }}</span>
+                <span v-if="!showingPredictionTable" class="bt-pill" :class="openStatusClass(row.signal_status)">{{ decisionLabel(row.signal_status, row.decision_status) }}</span>
+                <span v-else>-</span>
               </td>
               <td class="bt-cond-cell">
-                <span class="bt-pill" :class="openStatusClass(row.signal_status)" style="margin-right:4px">{{ row.signal_label || '-' }}</span>
-                <span class="bt-cell-sub">{{ row.rule_text || "-" }}</span>
+                <template v-if="showingPredictionTable">
+                  <div class="bt-cell-sub"><strong>超预期：</strong>{{ row.expectation?.super_text || "-" }}</div>
+                  <div class="bt-cell-sub"><strong>预期：</strong>{{ row.expectation?.expected_text || "-" }}</div>
+                  <div class="bt-cell-sub"><strong>低预期：</strong>{{ row.expectation?.low_text || "-" }}</div>
+                </template>
+                <template v-else>
+                  <span class="bt-pill" :class="openStatusClass(row.signal_status)" style="margin-right:4px">{{ row.signal_label || '-' }}</span>
+                  <span class="bt-cell-sub">{{ row.rule_text || "-" }}</span>
+                </template>
               </td>
             </tr>
           </tbody>
@@ -725,7 +795,10 @@ function strategyReturnClass(performance: any, key: string) {
               <th>池子</th>
               <th>主线</th>
               <th>开盘判断</th>
-              <th>涨幅</th>
+              <th>开盘价</th>
+              <th>开盘涨幅</th>
+              <th>收盘价</th>
+              <th>收盘涨幅</th>
               <th>当日收益</th>
               <th>说明</th>
             </tr>
@@ -745,58 +818,14 @@ function strategyReturnClass(performance: any, key: string) {
               <td>
                 <span class="bt-pill" :class="openStatusClass(row.signal_status)">{{ decisionLabel(row.signal_status, row.decision_status, row.signal_label) }}</span>
               </td>
+              <td>{{ formatPlain(row.open_price, 2) }}元</td>
               <td :class="signedClass(row.gap_pct)">{{ formatSigned(row.gap_pct, 2) }}%</td>
+              <td>{{ formatPlain(row.close_price, 2) }}元</td>
+              <td :class="signedClass(row.close_pct)">{{ formatSigned(row.close_pct, 2) }}%</td>
               <td :class="snapshotReturnClass(row)">{{ snapshotReturnText(row) }}</td>
               <td class="bt-cond-cell">
                 <div class="bt-cell-sub">{{ row.note || "-" }}</div>
               </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-
-    <div class="card" v-if="hasCurrentPlan">
-      <div class="card-header">
-        <div>
-          <div class="card-title">{{ currentPlanCardTitle }}</div>
-          <div class="bt-subtitle">{{ currentPlanSubtitle }}</div>
-        </div>
-      </div>
-
-      <div class="bt-table-wrap bt-table-wrap-plan">
-        <table class="ladder-table bt-plan-table">
-          <thead>
-            <tr>
-              <th>推荐日</th>
-              <th>排名</th>
-              <th>标的</th>
-              <th>池子</th>
-              <th>主线</th>
-              <th>超预期</th>
-              <th>预期</th>
-              <th>低预期</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="row in currentRecords" :key="'plan-' + row.trade_date10 + '-' + row.code">
-              <td class="bt-date-col">{{ formatMonthDay(row.date10) }}</td>
-              <td>{{ row.daily_rank || "-" }}</td>
-              <td class="bt-name-cell">
-                <div class="bt-name-line">
-                  <a v-if="row.code" class="stock-link" :href="xqUrl(row.code)" target="_blank" rel="noopener noreferrer">{{ row.name }}</a>
-                  <span v-else>{{ row.name || "-" }}</span>
-                </div>
-                <div class="bt-name-sub">{{ row.code || "-" }} ｜ {{ row.score ?? "-" }} ｜ {{ row.score_sub_label || row.style_tag || "-" }}</div>
-              </td>
-              <td>{{ row.bucket_label || row.bucket || "-" }}</td>
-              <td class="bt-left-cell">
-                <div>{{ row.main_line || "-" }}</div>
-                <div class="bt-cell-sub">{{ row.hy || row.plate_name || "-" }}</div>
-              </td>
-              <td class="bt-left-cell">{{ row.expectation?.super_text || "-" }}</td>
-              <td class="bt-left-cell">{{ row.expectation?.expected_text || "-" }}</td>
-              <td class="bt-left-cell">{{ row.expectation?.low_text || "-" }}</td>
             </tr>
           </tbody>
         </table>
@@ -852,61 +881,50 @@ function strategyReturnClass(performance: any, key: string) {
     <div class="card">
       <div class="card-header">
         <div>
-          <div class="card-title">历史样本明细</div>
-          <div class="bt-subtitle">这里按所选推荐日回看“推荐理由 -> 开盘判断 -> 收益表现”的完整链路；高开谨慎规则已同步纳入口径。</div>
+          <div class="card-title">账户净值走势</div>
+          <div class="bt-subtitle">这里按历史回测中“符合买入条件”的个股做等权平均，默认满仓分配；如果某天有 4 只票，就按单只 25% 仓位折算成当天账户收益。</div>
         </div>
       </div>
 
-      <div class="summary-box" v-if="!historicalRecords.length">
-        <div class="summary-text">当前还没有历史样本明细。只要累计多个推荐交易日，这里会自动展示跨日回测结果。</div>
+      <div class="summary-box" v-if="!accountCurvePoints.length">
+        <div class="summary-text">当前还没有可用于回放账户曲线的历史买入样本。只要历史回测里累计出可买入且已覆盖收益的个股，这里就会自动生成净值折线图。</div>
       </div>
 
-      <div class="bt-table-wrap" v-else>
-        <table class="ladder-table">
-          <thead>
-            <tr>
-              <th>推荐日</th>
-              <th>排名</th>
-              <th>标的</th>
-              <th>开盘判断</th>
-              <th>涨幅</th>
-              <th>T+1</th>
-              <th>T+2</th>
-              <th>T+3</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="row in historicalRecords" :key="'record-' + row.date10 + '-' + row.code">
-              <td class="bt-date-col">{{ formatMonthDay(row.date10) }}</td>
-              <td>{{ row.daily_rank || "-" }}</td>
-              <td class="bt-name-cell">
-                <div class="bt-name-line">
-                  <a v-if="row.code" class="stock-link" :href="xqUrl(row.code)" target="_blank" rel="noopener noreferrer">{{ row.name }}</a>
-                  <span v-else>{{ row.name || "-" }}</span>
-                </div>
-                <div class="bt-name-sub">{{ row.code || "-" }} ｜ {{ row.score ?? "-" }} ｜ {{ row.score_sub_label || row.style_tag || row.bucket_label || "-" }}</div>
-              </td>
-              <td class="bt-left-cell">
-                <span class="bt-pill" :class="openStatusClass(row.performance?.open_check?.status)">{{ openStatusLabel(row.performance?.open_check?.status, row.performance?.open_check?.label) }}</span>
-                <div class="bt-cell-sub">{{ row.performance?.open_check?.note || "-" }}</div>
-              </td>
-              <td :class="signedClass(row.performance?.open_check?.gap_pct)">{{ formatSigned(row.performance?.open_check?.gap_pct, 2) }}%</td>
-              <td :class="strategyReturnClass(row.performance, 'next_day')">
-                {{ strategyReturnText(row.performance, "next_day") }}
-                <div class="bt-cell-sub">{{ strategyReturnNote(row.performance, "next_day") }}</div>
-              </td>
-              <td :class="strategyReturnClass(row.performance, 'hold_2d')">
-                {{ strategyReturnText(row.performance, "hold_2d") }}
-                <div class="bt-cell-sub">{{ strategyReturnNote(row.performance, "hold_2d") }}</div>
-              </td>
-              <td :class="strategyReturnClass(row.performance, 'hold_3d')">
-                {{ strategyReturnText(row.performance, "hold_3d") }}
-                <div class="bt-cell-sub">{{ strategyReturnNote(row.performance, "hold_3d") }}</div>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+      <template v-else>
+        <div class="bt-kpi-grid bt-account-kpis">
+          <div class="bt-kpi-card">
+            <div class="bt-kpi-label">最新净值</div>
+            <div class="bt-kpi-value">{{ formatPlain(accountCurveSummary.latestValue, 4) }}</div>
+            <div class="bt-kpi-note">最新记录日期 {{ accountCurveUpdatedAt }}</div>
+          </div>
+          <div class="bt-kpi-card">
+            <div class="bt-kpi-label">累计收益</div>
+            <div class="bt-kpi-value" :class="signedClass(accountCurveSummary.totalReturnPct)">{{ formatSigned(accountCurveSummary.totalReturnPct, 2) }}%</div>
+            <div class="bt-kpi-note">初始基准 {{ formatPlain(accountCurveSummary.base, 2) }}</div>
+          </div>
+          <div class="bt-kpi-card">
+            <div class="bt-kpi-label">回放天数</div>
+            <div class="bt-kpi-value">{{ accountCurveSummary.tradeDays }}</div>
+            <div class="bt-kpi-note">按有买入样本的交易日统计</div>
+          </div>
+          <div class="bt-kpi-card">
+            <div class="bt-kpi-label">最大回撤</div>
+            <div class="bt-kpi-value green-text">{{ formatSigned(accountCurveSummary.maxDrawdownPct, 2) }}%</div>
+            <div class="bt-kpi-note">按历史净值高点回撤计算</div>
+          </div>
+          <div class="bt-kpi-card">
+            <div class="bt-kpi-label">单日波动</div>
+            <div class="bt-kpi-value">
+              <span class="red-text">{{ formatSigned(accountCurveSummary.bestDailyPct, 2) }}%</span>
+              /
+              <span class="green-text">{{ formatSigned(accountCurveSummary.worstDailyPct, 2) }}%</span>
+            </div>
+            <div class="bt-kpi-note">最好 / 最差单日等权收益</div>
+          </div>
+        </div>
+
+        <div ref="accountCurveChartRef" class="bt-account-chart" aria-label="账户净值折线图"></div>
+      </template>
     </div>
     </template>
 

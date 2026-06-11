@@ -1210,6 +1210,97 @@ def _resolve_eastmoney_tomorrow_path() -> Path:
     return fallback
 
 
+def _resolve_account_curve_path() -> Path:
+    return ROOT / "daily_review" / "data" / "account_curve.json"
+
+
+def _load_account_curve() -> dict:
+    path = _resolve_account_curve_path()
+    if not path.exists():
+        return {"base": 1, "records": []}
+    try:
+        payload = json.loads(path.read_text(encoding="utf-8"))
+    except Exception:
+        return {"base": 1, "records": []}
+    if not isinstance(payload, dict):
+        return {"base": 1, "records": []}
+    base = _to_float(payload.get("base"), 1.0)
+    rows = payload.get("records") if isinstance(payload.get("records"), list) else []
+    cleaned: list[dict[str, object]] = []
+    for item in rows:
+        if not isinstance(item, dict):
+            continue
+        date = str(item.get("date") or "").strip()
+        if not date:
+            continue
+        cleaned.append(
+            {
+                "date": date,
+                "dailyPct": round(_to_float(item.get("dailyPct"), 0.0), 4),
+            }
+        )
+    cleaned.sort(key=lambda item: str(item.get("date") or ""))
+    return {
+        "base": round(base if base > 0 else 1.0, 6),
+        "records": cleaned,
+    }
+
+
+def _resolve_account_nav_ledger_path() -> Path:
+    primary = ROOT / "data" / "account_nav_history.jsonl"
+    if primary.exists():
+        return primary
+    cache_fallback = ROOT / "cache" / "account_nav_history.jsonl"
+    if cache_fallback.exists():
+        return cache_fallback
+    online_fallback = ROOT / "cache_online" / "account_nav_history.jsonl"
+    return online_fallback
+
+
+def _load_account_nav_ledger() -> dict:
+    path = _resolve_account_nav_ledger_path()
+    records: list[dict[str, object]] = []
+    if path.exists():
+        try:
+            for line in path.read_text(encoding="utf-8").splitlines():
+                raw = line.strip()
+                if not raw:
+                    continue
+                item = json.loads(raw)
+                if not isinstance(item, dict):
+                    continue
+                trade_date = str(item.get("trade_date") or "").strip()
+                if not trade_date:
+                    continue
+                records.append(
+                    {
+                        "trade_date": trade_date,
+                        "recommendation_date": str(item.get("recommendation_date") or "").strip(),
+                        "strategy": str(item.get("strategy") or "").strip(),
+                        "stock_count": _to_int(item.get("stock_count"), 0),
+                        "avg_return_pct": round(_to_float(item.get("avg_return_pct"), 0.0), 4),
+                        "nav": round(_to_float(item.get("nav"), 0.0), 6),
+                        "codes": [str(x).strip() for x in (item.get("codes") or []) if str(x).strip()],
+                        "names": [str(x).strip() for x in (item.get("names") or []) if str(x).strip()],
+                    }
+                )
+        except Exception:
+            records = []
+    records.sort(key=lambda item: str(item.get("trade_date") or ""))
+    base = 1.0
+    if records:
+        first_nav = _to_float(records[0].get("nav"), 0.0)
+        first_pct = _to_float(records[0].get("avg_return_pct"), 0.0)
+        divisor = 1.0 + first_pct / 100.0
+        if first_nav > 0 and divisor > 0:
+            base = round(first_nav / divisor, 6)
+    return {
+        "base": base,
+        "records": records,
+        "source_path": str(path.relative_to(ROOT)) if path.exists() and path.is_relative_to(ROOT) else str(path),
+    }
+
+
 def _resolve_intraday_resonance_path(date8: str) -> Path:
     """盘中共振数据，从 cache_online 读取（由 cli intraday 模式产出）"""
     path = ROOT / "cache_online" / f"intraday_resonance-{date8}.json"
@@ -2712,6 +2803,8 @@ def _build_publish_payload(date8: str, source: Optional[str] = None, *, warn_con
     md, _data_path = _load_market_data(date8, source)
     _rebuild_web_derivatives(md, date8=date8, warn_context=warn_context)
     _apply_watchlist_enhancements(md, date8=date8, warn_context=warn_context)
+    md["accountCurve"] = _load_account_curve()
+    md["accountNavLedger"] = _load_account_nav_ledger()
     md["planThemeResolver"] = _build_plan_theme_resolver(md)
     md["ladderDecision"] = _build_ladder_decision(md)
     md["sentimentDecision"] = _build_sentiment_decision(md)

@@ -1,6 +1,6 @@
 # Cache 清理与线上同步报告
 
-- 最新报告日期：`2026-06-10`
+- 最新报告日期：`2026-06-11`
 - 线上目录模式：`minimal`
 
 ## 当前脚本自动清理现状
@@ -24,6 +24,8 @@
 - `abnormal_event_history-20260608.json`：未知文件，保守保留
 - `abnormal_event_history-20260609.json`：未知文件，保守保留
 - `abnormal_event_history-20260610.json`：未知文件，保守保留
+- `abnormal_event_history-20260611.json`：未知文件，保守保留
+- `account_nav_history.jsonl`：未知文件，保守保留
 - `backtest_history.json`：未知文件，保守保留
 - `concept_fund_flow_cache.json`：板块排行兜底数据
 - `dragon_tiger-20260522.json`：未知文件，保守保留
@@ -33,15 +35,15 @@
 - `dragon_tiger-20260529.json`：未知文件，保守保留
 - `height_trend_cache.json`：高度趋势模块依赖
 - `index_kline_cache.json`：指数K线/量能模块依赖
-- `intraday_slices-20260610.json`：保留最近 2 个盘中切片
+- `intraday_slices-20260611.json`：保留最近 2 个盘中切片
 - `learning_notes_history.json`：学习语录去重历史
-- `market_data-20260603.json`：最近 7 个 market_data 快照
 - `market_data-20260604-intraday.json`：最近 7 个 market_data 快照
 - `market_data-20260604.json`：最近 7 个 market_data 快照
 - `market_data-20260605.json`：最近 7 个 market_data 快照
 - `market_data-20260608.json`：最近 7 个 market_data 快照
 - `market_data-20260609.json`：最近 7 个 market_data 快照
 - `market_data-20260610.json`：最近 7 个 market_data 快照
+- `market_data-20260611.json`：最近 7 个 market_data 快照
 - `money_flow_cache.json`：板块流入聚合依赖
 - `plate_rotate_cache.json`：板块轮动明细必需
 - `pools_cache.json`：离线重建涨停/跌停/炸板池必需

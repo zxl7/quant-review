@@ -66,6 +66,7 @@ try:
     from .plan.v3_fullpos import V3_FULLPOS_MODULE
     from .sentiment.v3_reflexivity import V3_REFLEXIVITY_MODULE
     from .sentiment.v3_collapse import V3_COLLAPSE_MODULE
+    from .sync.v3_tonghuashun import TONGHUASHUN_SYNC_MODULE
 
     # v3 模块列表（按执行顺序排列，依赖前置模块先执行）
     V3_MODULES = [
@@ -80,6 +81,7 @@ try:
         V3_REBOUND_MODULE,        # 反弹三阶段策略
         V3_FULLPOS_MODULE,        # 满仓三条件共振
         V3_REFLEXIVITY_MODULE,   # Y=F(X)反身性模型
+        TONGHUASHUN_SYNC_MODULE,  # 同花顺自选同步（最后执行）
     ]
 except ImportError:
     # v3 模块依赖可能尚未完全就绪，静默降级

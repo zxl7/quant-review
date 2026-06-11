@@ -19,9 +19,11 @@ on:
         required: false
         default: ""
         type: string
-  # 工作日北京时间 09:25-15:55 期间每 5 分钟心跳一次，由 timecheck 决定是否真正执行
-  # 其中 09:25-09:34 仅给独立 prefetch workflow 抓个股研究报价，主页面发布需等到 09:35 之后。
+  # 工作日北京时间 09:25-15:55 的快照/发布统一由当前 workflow 承接：
+  # - 09:25-09:29：每分钟尝试一次，把个股研究竞价快照尽快落到 gh-pages/cache
+  # - 其余时段：每 5 分钟心跳一次，由 timecheck 决定是否真正执行主页面发布
   schedule:
+    - cron: "26-29 1 * * 1-5"
     - cron: "*/5 1-7 * * 1-5"
   # 提交代码后触发（除 gh-pages 外的所有分支）
   push:
@@ -66,11 +68,11 @@ jobs:
           echo "DEBUG: beijing_now=${now_bj}"
           now_min=$((10#$(date +%H)*60 + 10#$(date +%M)))
           # workflow 本身的允许窗口：
-          # - 09:25-09:34：允许执行，用于预抓取个股研究竞价报价；
+          # - 09:25-09:34：允许执行，仅落个股研究竞价快照到 gh-pages/cache；
           # - 09:35-11:30 / 13:00-14:59：允许执行主页面发布；
           # - 15:12-15:55：允许执行收盘版发布。
           # 是否发布主页面由后面的 warmup guard 决定，不能在这里整条 workflow 提前 skip，
-          # 否则 09:25-09:34 的 Prefetch stock research quotes 也会被一起跳过。
+          # 否则 09:25-09:29 抓到的竞价快照无法同步回 gh-pages/cache。
           hit_prefetch=false
           if [ $(( now_min >= 9*60+25 && now_min < 9*60+35 )) -eq 1 ]; then
             hit_prefetch=true
@@ -158,6 +160,7 @@ jobs:
           cp -f site_prev/cache/money_flow_cache.json cache/ 2>/dev/null || true
           cp -f site_prev/cache/trade_days_cache.json cache/ 2>/dev/null || true
           cp -f site_prev/cache/stock_research_backtest_source.json cache/ 2>/dev/null || true
+          cp -f site_prev/cache/account_nav_history.jsonl cache/ 2>/dev/null || true
           cp -f site_prev/cache/stock_research_realtime_quotes-*.json cache/ 2>/dev/null || true
           cp -f site_prev/cache/intraday_slices-*.json cache/ 2>/dev/null || true
           cp -f site_prev/cache/intraday_snapshots-*.json cache/ 2>/dev/null || true
@@ -189,29 +192,50 @@ jobs:
           fi
           PYTHONPATH=. python3 scripts/prefetch_stock_research_quotes.py --date "$(date +%F)" || echo "⚠ stock research quote prefetch failed, continue"
 
+      - name: Sync prefetched quotes back to gh-pages (prefetch-only window)
+        if: ${{ github.event_name == 'schedule' && steps.timecheck.outputs.mode == 'prefetch' }}
+        run: |
+          set -euo pipefail
+          mkdir -p site_prev/cache
+          cp -f cache/stock_research_realtime_quotes-*.json site_prev/cache/ 2>/dev/null || true
+          rfiles=( $(ls -1 site_prev/cache/stock_research_realtime_quotes-*.json 2>/dev/null | sort || true) )
+          if [ ${#rfiles[@]} -gt 7 ]; then
+            rm -f "${rfiles[@]:0:${#rfiles[@]}-7}"
+          fi
+          if git -C site_prev diff --quiet; then
+            echo "No prefetched quote cache changes."
+            exit 0
+          fi
+          git -C site_prev status --porcelain
+          git -C site_prev config user.name "github-actions[bot]"
+          git -C site_prev config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git -C site_prev add -A
+          git -C site_prev commit -m "cache: prefetch stock research quotes" || true
+          git -C site_prev push origin HEAD:gh-pages
+
       - name: Setup Python
         uses: actions/setup-python@v5
-        if: ${{ github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true' }}
+        if: ${{ (github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true') && (github.event_name != 'schedule' || steps.timecheck.outputs.mode != 'prefetch') }}
         with:
           python-version: "3.11"
 
       - name: Install dependencies
-        if: ${{ github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true' }}
+        if: ${{ (github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true') && (github.event_name != 'schedule' || steps.timecheck.outputs.mode != 'prefetch') }}
         run: pip install -r requirements.txt
 
       - name: Setup Node.js
-        if: ${{ github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true' }}
+        if: ${{ (github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true') && (github.event_name != 'schedule' || steps.timecheck.outputs.mode != 'prefetch') }}
         uses: actions/setup-node@v4
         with:
           node-version: "22"
 
       - name: Install web dependencies
-        if: ${{ github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true' }}
+        if: ${{ (github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true') && (github.event_name != 'schedule' || steps.timecheck.outputs.mode != 'prefetch') }}
         run: cd web && npm ci
 
       - name: Check A-share trade day
         id: tradeday
-        if: ${{ github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true' }}
+        if: ${{ (github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true') && (github.event_name != 'schedule' || steps.timecheck.outputs.mode != 'prefetch') }}
         env:
           BIYING_TOKEN: ${{ secrets.BIYING_TOKEN }}
           BIYING_BASE_URL: ${{ secrets.BIYING_BASE_URL }}
@@ -324,7 +348,7 @@ jobs:
 
       - name: Guard early publish warmup window
         id: warmup
-        if: ${{ github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true' }}
+        if: ${{ (github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true') && (github.event_name != 'schedule' || steps.timecheck.outputs.mode != 'prefetch') }}
         run: |
           set -euo pipefail
           now_min=$((10#$(date +%H)*60 + 10#$(date +%M)))
@@ -332,7 +356,7 @@ jobs:
           event_name="${{ github.event_name }}"
           is_trade_today="${{ steps.tradeday.outputs.is_trade_today }}"
 
-          # 09:25-09:34 只保留个股研究报价预取，不发布主页面。
+          # 09:25-09:34 只保留个股研究报价预取并落 cache，不发布主页面。
           # workflow_dispatch 且显式指定模式时允许人工强制执行。
           warmup_hit=false
           if [ "${is_trade_today}" = "true" ] && [ $(( now_min >= 9*60+25 && now_min < 9*60+35 )) -eq 1 ]; then
@@ -354,7 +378,7 @@ jobs:
 
       - name: Decide run mode/date
         id: pushmode
-        if: ${{ (github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true') && steps.warmup.outputs.skip != 'true' }}
+        if: ${{ (github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true') && (github.event_name != 'schedule' || steps.timecheck.outputs.mode != 'prefetch') && steps.warmup.outputs.skip != 'true' }}
         env:
           BIYING_TOKEN: ${{ secrets.BIYING_TOKEN }}
           BIYING_BASE_URL: ${{ secrets.BIYING_BASE_URL }}
@@ -405,12 +429,12 @@ jobs:
           echo "run_mode=${mode} (date10=${date10})"
 
       - name: Make scripts executable
-        if: ${{ github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true' }}
+        if: ${{ (github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true') && (github.event_name != 'schedule' || steps.timecheck.outputs.mode != 'prefetch') }}
         run: |
           chmod +x ./qr.sh || true
 
       - name: Generate latest report (online fetch -> offline pipeline rebuild)
-        if: ${{ (github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true') && steps.warmup.outputs.skip != 'true' && (github.event_name != 'schedule' || steps.tradeday.outputs.is_trade_today == 'true') }}
+        if: ${{ (github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true') && (github.event_name != 'schedule' || steps.timecheck.outputs.mode != 'prefetch') && steps.warmup.outputs.skip != 'true' && (github.event_name != 'schedule' || steps.tradeday.outputs.is_trade_today == 'true') }}
         timeout-minutes: 12
         env:
           BIYING_TOKEN: ${{ secrets.BIYING_TOKEN }}
@@ -483,17 +507,17 @@ jobs:
           PY
 
       - name: Pre-fetch external data (明日策略池 + 东方财富今日题材)
-        if: ${{ steps.warmup.outputs.skip != 'true' && steps.pushmode.outputs.mode != 'intraday' }}
+        if: ${{ (github.event_name != 'schedule' || steps.timecheck.outputs.mode != 'prefetch') && steps.warmup.outputs.skip != 'true' && steps.pushmode.outputs.mode != 'intraday' }}
         run: |
           python3 tools/fetch_tomorrow_picks.py web/public/tomorrow_picks.json || echo "⚠ tomorrow picks fetch failed, using cache"
           python3 tools/fetch_eastmoney_tomorrow.py web/public/eastmoney_tomorrow.json || echo "⚠ eastmoney tomorrow fetch failed, using cache"
 
       - name: Build Vue3 web (Vite -> single HTML)
-        if: ${{ (github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true') && steps.warmup.outputs.skip != 'true' && (github.event_name != 'schedule' || steps.tradeday.outputs.is_trade_today == 'true') }}
+        if: ${{ (github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true') && (github.event_name != 'schedule' || steps.timecheck.outputs.mode != 'prefetch') && steps.warmup.outputs.skip != 'true' && (github.event_name != 'schedule' || steps.tradeday.outputs.is_trade_today == 'true') }}
         run: cd web && npm run build
 
       - name: Inject market data into Vue3 HTML
-        if: ${{ (github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true') && steps.warmup.outputs.skip != 'true' && (github.event_name != 'schedule' || steps.tradeday.outputs.is_trade_today == 'true') }}
+        if: ${{ (github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true') && (github.event_name != 'schedule' || steps.timecheck.outputs.mode != 'prefetch') && steps.warmup.outputs.skip != 'true' && (github.event_name != 'schedule' || steps.tradeday.outputs.is_trade_today == 'true') }}
         env:
           RUN_DATE: ${{ steps.pushmode.outputs.date10 }}
         run: |
@@ -506,7 +530,7 @@ jobs:
           python3 inject_data.py "${d8}" --source "${source_path}"
 
       - name: Prepare Pages site
-        if: ${{ (github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true') && steps.warmup.outputs.skip != 'true' && (github.event_name != 'schedule' || steps.tradeday.outputs.is_trade_today == 'true') }}
+        if: ${{ (github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true') && (github.event_name != 'schedule' || steps.timecheck.outputs.mode != 'prefetch') && steps.warmup.outputs.skip != 'true' && (github.event_name != 'schedule' || steps.tradeday.outputs.is_trade_today == 'true') }}
         run: |
           set -euo pipefail
           report_html="./web/dist/index.html"
@@ -569,7 +593,7 @@ jobs:
           ls -la ./site/ | grep -E '\.(json|js|html)$' || true
 
       - name: Commit & push to gh-pages
-        if: ${{ (github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true') && steps.warmup.outputs.skip != 'true' && (github.event_name != 'schedule' || steps.tradeday.outputs.is_trade_today == 'true') }}
+        if: ${{ (github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true') && (github.event_name != 'schedule' || steps.timecheck.outputs.mode != 'prefetch') && steps.warmup.outputs.skip != 'true' && (github.event_name != 'schedule' || steps.tradeday.outputs.is_trade_today == 'true') }}
         run: |
           set -euo pipefail
           # 将构建产物覆盖写入 gh-pages 根目录（Deploy from branch: /）
@@ -605,6 +629,11 @@ jobs:
           cp -f cache/money_flow_cache.json site_prev/cache/ 2>/dev/null || true
           cp -f cache/trade_days_cache.json site_prev/cache/ 2>/dev/null || true
           cp -f cache/stock_research_backtest_source.json site_prev/cache/ 2>/dev/null || true
+          if [ -f data/account_nav_history.jsonl ]; then
+            cp -f data/account_nav_history.jsonl site_prev/cache/account_nav_history.jsonl
+          elif [ -f cache/account_nav_history.jsonl ]; then
+            cp -f cache/account_nav_history.jsonl site_prev/cache/account_nav_history.jsonl
+          fi
           cp -f cache/stock_research_realtime_quotes-*.json site_prev/cache/ 2>/dev/null || true
           cp -f cache/intraday_slices-*.json site_prev/cache/ 2>/dev/null || true
           cfiles=( $(ls -1 site_prev/cache/market_data-*.json 2>/dev/null | sort || true) )
