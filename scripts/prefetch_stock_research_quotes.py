@@ -42,22 +42,23 @@ def _pick_reference_date(rows: list[dict], *, before_date10: str = "") -> str:
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--date", default="", help="当前运行日期 YYYY-MM-DD；若提供，则优先抓取早于该日期的最新研究池")
+    ap.add_argument("--must-succeed", action="store_true", help="仅用于 09:25-09:30 守窗场景；窗口内没抓到则返回非 0")
     args = ap.parse_args()
 
     now_bj = _now_bj()
     if not _is_entry_window(now_bj):
         print("skip: outside 09:25-09:30 window")
-        return 0
+        return 2 if args.must_succeed else 0
 
     rows, _ = _load_stock_research_rows()
     if not rows:
         print("skip: no stock research rows in cache")
-        return 0
+        return 2 if args.must_succeed else 0
 
     reference_date = _pick_reference_date(rows, before_date10=str(args.date or "").strip())
     if not reference_date:
         print("skip: no valid reference date")
-        return 0
+        return 2 if args.must_succeed else 0
 
     codes = sorted(
         {
@@ -68,7 +69,7 @@ def main() -> int:
     )
     if not codes:
         print(f"skip: no codes for {reference_date}")
-        return 0
+        return 2 if args.must_succeed else 0
 
     cfg = load_config_from_env()
     client = HttpClient(base_url=cfg.base_url, token=cfg.token, timeout=12, retries=0)
@@ -76,7 +77,7 @@ def main() -> int:
 
     if not quotes_map:
         print(f"skip: no realtime quotes fetched for {reference_date}")
-        return 0
+        return 2 if args.must_succeed else 0
 
     path = save_prefetched_realtime_quotes(
         date10=reference_date,

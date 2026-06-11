@@ -20,11 +20,17 @@ on:
         default: ""
         type: string
   # 工作日北京时间 09:25-15:55 的快照/发布统一由当前 workflow 承接：
-  # - 09:25-09:29：每分钟尝试一次，把个股研究竞价快照尽快落到 gh-pages/cache
-  # - 其余时段：每 5 分钟心跳一次，由 timecheck 决定是否真正执行主页面发布
+  # - 09:25：只触发一次；随后在 workflow 内部守到 09:30，确保窗口内至少命中一次竞价数据
+  # - 09:35-11:30 / 13:00-14:59：每 5 分钟心跳一次
+  # - 15:12-15:55：收盘后补一次 15:12，再按 5 分钟心跳
   schedule:
-    - cron: "26-29 1 * * 1-5"
-    - cron: "*/5 1-7 * * 1-5"
+    - cron: "25 1 * * 1-5"
+    - cron: "35-55/5 1 * * 1-5"
+    - cron: "*/5 2 * * 1-5"
+    - cron: "0-30/5 3 * * 1-5"
+    - cron: "*/5 5-6 * * 1-5"
+    - cron: "59 6 * * 1-5"
+    - cron: "12,15,20,25,30,35,40,45,50,55 7 * * 1-5"
   # 提交代码后触发（除 gh-pages 外的所有分支）
   push:
     branches:
@@ -68,13 +74,13 @@ jobs:
           echo "DEBUG: beijing_now=${now_bj}"
           now_min=$((10#$(date +%H)*60 + 10#$(date +%M)))
           # workflow 本身的允许窗口：
-          # - 09:25-09:34：允许执行，仅落个股研究竞价快照到 gh-pages/cache；
+          # - 09:25-09:29：允许执行，仅落个股研究竞价快照到 gh-pages/cache；
           # - 09:35-11:30 / 13:00-14:59：允许执行主页面发布；
           # - 15:12-15:55：允许执行收盘版发布。
           # 是否发布主页面由后面的 warmup guard 决定，不能在这里整条 workflow 提前 skip，
-          # 否则 09:25-09:29 抓到的竞价快照无法同步回 gh-pages/cache。
+          # 否则 09:25-09:30 窗口里抓到的竞价快照无法同步回 gh-pages/cache。
           hit_prefetch=false
-          if [ $(( now_min >= 9*60+25 && now_min < 9*60+35 )) -eq 1 ]; then
+          if [ $(( now_min >= 9*60+25 && now_min < 9*60+30 )) -eq 1 ]; then
             hit_prefetch=true
           fi
 
@@ -190,7 +196,36 @@ jobs:
             echo "Skip prefetch: missing BIYING_TOKEN"
             exit 0
           fi
-          PYTHONPATH=. python3 scripts/prefetch_stock_research_quotes.py --date "$(date +%F)" || echo "⚠ stock research quote prefetch failed, continue"
+          if [ "${{ github.event_name }}" != "schedule" ] || [ "${{ steps.timecheck.outputs.mode || '' }}" != "prefetch" ]; then
+            PYTHONPATH=. python3 scripts/prefetch_stock_research_quotes.py --date "$(date +%F)" || echo "⚠ stock research quote prefetch failed, continue"
+            exit 0
+          fi
+
+          deadline_ts="$(python3 - <<'PY'
+          from datetime import datetime, timedelta, timezone
+          tz = timezone(timedelta(hours=8))
+          now = datetime.now(tz)
+          deadline = now.replace(hour=9, minute=30, second=0, microsecond=0)
+          print(int(deadline.timestamp()))
+          PY
+          )"
+
+          hit=0
+          attempt=1
+          while [ "$(date +%s)" -lt "${deadline_ts}" ]; do
+            echo "Prefetch attempt ${attempt} at $(date +'%F %T')"
+            if PYTHONPATH=. python3 scripts/prefetch_stock_research_quotes.py --date "$(date +%F)" --must-succeed; then
+              hit=1
+              break
+            fi
+            attempt=$((attempt + 1))
+            sleep 20
+          done
+
+          if [ "${hit}" -ne 1 ]; then
+            echo "❌ failed to capture auction snapshot within 09:25-09:30 window"
+            exit 1
+          fi
 
       - name: Sync prefetched quotes back to gh-pages (prefetch-only window)
         if: ${{ github.event_name == 'schedule' && steps.timecheck.outputs.mode == 'prefetch' }}
