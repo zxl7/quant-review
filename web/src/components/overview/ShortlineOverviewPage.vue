@@ -173,7 +173,36 @@ const openXq = (code?: string | null) => {
         <p v-else class="empty-hint">当前没有额外观察票，优先等待主线进一步收敛。</p>
       </article>
     </section>
+    <section class="command-grid">
+      <article class="command-card command-card-pool">
+        <div class="section-kicker">待验证池</div>
+        <h2>{{ currentPool.title || "次日优先盯哪些票" }}</h2>
+        <div class="pool-list" v-if="(currentPool.rows || []).length">
+          <button v-for="row in currentPool.rows || []" :key="row.code" class="pool-row" type="button" @click="emit('jump', (currentPool.jumpTab || 'backtest') as ReviewTabId)">
+            <div>
+              <span class="stock-link" role="link" tabindex="0" @click.stop="openXq(row.code)" @keydown.enter.stop="openXq(row.code)" @keydown.space.prevent.stop="openXq(row.code)">
+                <strong>{{ row.name }}</strong>
+                <span class="pool-code">{{ row.code }}</span>
+              </span>
+            </div>
+            <div class="pool-meta">{{ row.line || "待归因" }} · {{ row.nextStep || "待验证" }}</div>
+          </button>
+        </div>
+        <p v-else class="empty-hint">当前没有待验证池，先看个股研究和历史回测的有效样本。</p>
+      </article>
 
+      <article class="command-card command-card-index">
+        <div class="section-kicker">指数背景</div>
+        <h2>{{ indices.title || "指数和环境怎么配合" }}</h2>
+        <div class="index-list">
+          <div v-for="row in indices.rows || []" :key="row.code" class="index-row">
+            <span>{{ row.name }}</span>
+            <strong>{{ row.chg || "-" }}</strong>
+          </div>
+        </div>
+        <p class="index-foot">{{ indices.foot || "等待指数与情绪共振进一步确认。" }}</p>
+      </article>
+    </section>
     <section class="execution-card">
       <div class="section-kicker">明日剧本卡</div>
       <h2>{{ scripts.title || "次日 9:25 重点怎么判" }}</h2>
@@ -233,37 +262,6 @@ const openXq = (code?: string | null) => {
         </ul>
       </div>
       <button class="inline-link" type="button" @click="emit('jump', (backtestCorrection.jumpTab || 'backtest') as ReviewTabId)">{{ backtestCorrection.jumpLabel || "回到回测明细" }}</button>
-    </section>
-
-    <section class="command-grid">
-      <article class="command-card command-card-pool">
-        <div class="section-kicker">待验证池</div>
-        <h2>{{ currentPool.title || "次日优先盯哪些票" }}</h2>
-        <div class="pool-list" v-if="(currentPool.rows || []).length">
-          <button v-for="row in currentPool.rows || []" :key="row.code" class="pool-row" type="button" @click="emit('jump', (currentPool.jumpTab || 'backtest') as ReviewTabId)">
-            <div>
-              <span class="stock-link" role="link" tabindex="0" @click.stop="openXq(row.code)" @keydown.enter.stop="openXq(row.code)" @keydown.space.prevent.stop="openXq(row.code)">
-                <strong>{{ row.name }}</strong>
-                <span class="pool-code">{{ row.code }}</span>
-              </span>
-            </div>
-            <div class="pool-meta">{{ row.line || "待归因" }} · {{ row.nextStep || "待验证" }}</div>
-          </button>
-        </div>
-        <p v-else class="empty-hint">当前没有待验证池，先看个股研究和历史回测的有效样本。</p>
-      </article>
-
-      <article class="command-card command-card-index">
-        <div class="section-kicker">指数背景</div>
-        <h2>{{ indices.title || "指数和环境怎么配合" }}</h2>
-        <div class="index-list">
-          <div v-for="row in indices.rows || []" :key="row.code" class="index-row">
-            <span>{{ row.name }}</span>
-            <strong>{{ row.chg || "-" }}</strong>
-          </div>
-        </div>
-        <p class="index-foot">{{ indices.foot || "等待指数与情绪共振进一步确认。" }}</p>
-      </article>
     </section>
 
     <ShortReminderFooter />
