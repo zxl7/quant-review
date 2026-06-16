@@ -167,6 +167,7 @@ jobs:
           cp -f site_prev/cache/trade_days_cache.json cache/ 2>/dev/null || true
           cp -f site_prev/cache/stock_research_backtest_source.json cache/ 2>/dev/null || true
           cp -f site_prev/cache/account_nav_history.jsonl cache/ 2>/dev/null || true
+          cp -f site_prev/cache/account_strategy_metrics.json cache/ 2>/dev/null || true
           cp -f site_prev/cache/stock_research_realtime_quotes-*.json cache/ 2>/dev/null || true
           cp -f site_prev/cache/intraday_slices-*.json cache/ 2>/dev/null || true
           cp -f site_prev/cache/intraday_snapshots-*.json cache/ 2>/dev/null || true
@@ -727,6 +728,11 @@ jobs:
             cp -f data/account_nav_history.jsonl site_prev/cache/account_nav_history.jsonl
           elif [ -f cache/account_nav_history.jsonl ]; then
             cp -f cache/account_nav_history.jsonl site_prev/cache/account_nav_history.jsonl
+          fi
+          if [ -f data/account_strategy_metrics.json ]; then
+            cp -f data/account_strategy_metrics.json site_prev/cache/account_strategy_metrics.json
+          elif [ -f cache/account_strategy_metrics.json ]; then
+            cp -f cache/account_strategy_metrics.json site_prev/cache/account_strategy_metrics.json
           fi
           cp -f cache/stock_research_realtime_quotes-*.json site_prev/cache/ 2>/dev/null || true
           cp -f cache/intraday_slices-*.json site_prev/cache/ 2>/dev/null || true

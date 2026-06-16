@@ -17,6 +17,48 @@
 set -euo pipefail
 
 DATE_ARG="${2:-}"
+EXTRA_ARG="${3:-}"
+STOCK_RESEARCH_QUERY_TAG=""
+
+normalize_optional_args() {
+  local second="${2:-}"
+  local third="${3:-}"
+  DATE_ARG=""
+  EXTRA_ARG=""
+  STOCK_RESEARCH_QUERY_TAG=""
+
+  if [[ -n "${second}" && "${second}" =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}$ ]]; then
+    DATE_ARG="${second}"
+    EXTRA_ARG="${third}"
+  else
+    EXTRA_ARG="${second}"
+  fi
+
+  if [[ -n "${EXTRA_ARG}" ]]; then
+    STOCK_RESEARCH_QUERY_TAG="$(printf '%s' "${EXTRA_ARG}" | tr '[:upper:]' '[:lower:]')"
+  fi
+  if [[ -n "${STOCK_RESEARCH_QUERY_TAG}" ]]; then
+    export STOCK_RESEARCH_QUERY_TAG
+  else
+    unset STOCK_RESEARCH_QUERY_TAG 2>/dev/null || true
+  fi
+}
+
+cli_query_tag_args() {
+  local query_tag="${STOCK_RESEARCH_QUERY_TAG:-}"
+  if [[ -n "${query_tag}" ]]; then
+    printf '%s\n' "--stock-research-query-tag" "${query_tag}"
+  fi
+}
+
+run_daily_review_cli() {
+  local query_tag="${STOCK_RESEARCH_QUERY_TAG:-}"
+  if [[ -n "${query_tag}" ]]; then
+    PYTHONPATH=. python3 -u -m daily_review.cli "$@" --stock-research-query-tag "${query_tag}"
+  else
+    PYTHONPATH=. python3 -u -m daily_review.cli "$@"
+  fi
+}
 
 die() {
   echo "❌ $*" >&2
@@ -98,6 +140,27 @@ refresh_watchlist_cache() {
   fi
 }
 
+sync_account_nav_ledger_file() {
+  # 账户净值长期账本：每天只沉淀一条模拟涨跌幅/净值记录，
+  # 前端净值曲线统一从 data/account_nav_history.jsonl / cache/account_nav_history.jsonl 读取。
+  if [[ ! -f "scripts/build_account_nav_ledger.py" ]]; then
+    info "跳过账户净值账本同步：未找到 scripts/build_account_nav_ledger.py"
+    return 0
+  fi
+  info "同步账户净值账本: data/account_nav_history.jsonl"
+  PYTHONPATH=. python3 scripts/build_account_nav_ledger.py >/dev/null || die "账户净值账本同步失败"
+}
+
+sync_account_strategy_metrics_file() {
+  # 策略表现长期统计：每天沉淀一条推荐日汇总记录，页面优先从长期文件读取。
+  if [[ ! -f "scripts/build_account_strategy_metrics.py" ]]; then
+    info "跳过策略表现统计同步：未找到 scripts/build_account_strategy_metrics.py"
+    return 0
+  fi
+  info "同步策略表现统计: data/account_strategy_metrics.json"
+  PYTHONPATH=. python3 scripts/build_account_strategy_metrics.py >/dev/null || die "策略表现统计同步失败"
+}
+
 prune_cache_keep_latest_n() {
   # 只保留最近 N 个 market_data-YYYYMMDD.json（按文件名排序，等价于日期排序）
   local n="${1:-7}"
@@ -143,12 +206,13 @@ prune_extra_cache_artifacts() {
 }
 
 sync_online_cache_dir() {
-  # 将本地 cache 中远端构建需要的最小文件同步到 cache_online/
+  # 将本地 cache 中远端构建需要的最小文件同步到 cache_online/，
+  # 并按 7 天窗口清理本地/线上日期型缓存。
   # 默认不压缩；因为你的主流程是“本地构建 -> git 提交 -> 远端自动构建”
   local date10="$1"
   if [[ -f "manage_cache.py" ]]; then
-    info "同步 cache_online/（供远端自动构建使用）: ${date10}"
-    python3 manage_cache.py --date "${date10}" --mode minimal >/dev/null
+    info "同步 cache_online/ 并清理 7 天外缓存: ${date10}"
+    python3 manage_cache.py --date "${date10}" --mode minimal --retention-days 7 --apply >/dev/null
   else
     info "跳过 cache_online 同步：未找到 manage_cache.py"
   fi
@@ -189,17 +253,19 @@ cmd_fetch() {
   info "在线取数生成缓存（会请求接口，有成本） -> 离线 pipeline 重建 -> web 数据缓存"
   if [[ -n "${DATE_ARG}" ]]; then
     # daily_review.cli --fetch 内部已经 rebuild 过，下面只补 web 构建即可（不再重复 rebuild）
-    PYTHONPATH=. python3 -u -m daily_review.cli --fetch --date "${DATE_ARG}"
+    run_daily_review_cli --fetch --date "${DATE_ARG}"
     prune_cache_keep_latest_n 7
     prune_extra_cache_artifacts
     sync_online_cache_dir "${DATE_ARG}"
     refresh_watchlist_cache "${DATE_ARG}"
+    sync_account_nav_ledger_file
+    sync_account_strategy_metrics_file
     build_web_dist "$(date10_to_date8 "${DATE_ARG}")"
     return 0
   fi
 
   # 不指定日期：由 cli 负责自动回退到最近交易日
-  PYTHONPATH=. python3 -u -m daily_review.cli --fetch
+  run_daily_review_cli --fetch
 
   # 用缓存里最新的 market_data-*.json 再做 web 构建（不再取数，也不重复 rebuild）
   local d8 d10
@@ -208,6 +274,8 @@ cmd_fetch() {
   # 先 sync 到 cache_online（会清空目录），再生成 watchlist 推票，最后构建 web
   sync_online_cache_dir "${d10}"
   refresh_watchlist_cache "${d10}"
+  sync_account_nav_ledger_file
+  sync_account_strategy_metrics_file
   build_web_dist "${d8}"
   prune_cache_keep_latest_n 7
   prune_extra_cache_artifacts
@@ -221,16 +289,20 @@ cmd_gen() {
 
   info "仅在线取数并生成缓存（不做离线 pipeline 重建/渲染）"
   if [[ -n "${DATE_ARG}" ]]; then
-    PYTHONPATH=. python3 -u -m daily_review.cli --fetch --date "${DATE_ARG}"
+    run_daily_review_cli --fetch --date "${DATE_ARG}"
     sync_online_cache_dir "${DATE_ARG}"
     refresh_watchlist_cache "${DATE_ARG}"
+    sync_account_nav_ledger_file
+    sync_account_strategy_metrics_file
   else
-    PYTHONPATH=. python3 -u -m daily_review.cli --fetch
+    run_daily_review_cli --fetch
     local d8 d10
     d8="$(pick_latest_cache_date8)" || die "未找到 cache/market_data-*.json（尚未生成缓存？）"
     d10="$(date8_to_date10 "${d8}")"
     sync_online_cache_dir "${d10}"
     refresh_watchlist_cache "${d10}"
+    sync_account_nav_ledger_file
+    sync_account_strategy_metrics_file
   fi
 }
 
@@ -240,7 +312,10 @@ cmd_render() {
     # 先 sync + 用本地缓存重算 watchlist，再刷新 web 数据
     sync_online_cache_dir "${DATE_ARG}"
     refresh_watchlist_cache "${DATE_ARG}" "--skip-fetch"
-    render_offline "${DATE_ARG}"
+    run_daily_review_cli --date "${DATE_ARG}" --rebuild
+    sync_account_nav_ledger_file
+    sync_account_strategy_metrics_file
+    build_web_dist "$(date10_to_date8 "${DATE_ARG}")"
     prune_cache_keep_latest_n 7
     prune_extra_cache_artifacts
     return 0
@@ -251,7 +326,10 @@ cmd_render() {
   d10="$(date8_to_date10 "${d8}")"
   sync_online_cache_dir "${d10}"
   refresh_watchlist_cache "${d10}" "--skip-fetch"
-  render_offline "${d10}"
+  run_daily_review_cli --date "${d10}" --rebuild
+  sync_account_nav_ledger_file
+  sync_account_strategy_metrics_file
+  build_web_dist "${d8}"
   prune_cache_keep_latest_n 7
   prune_extra_cache_artifacts
   python3 inject_data.py "${d8}" --dev-only 2>/dev/null || true
@@ -274,6 +352,8 @@ cmd_build_web() {
   # build-web 也要先重算算法缓存，确保 web 入口消费最新 tide/coreTide/watchlist。
   sync_online_cache_dir "${d10}"
   refresh_watchlist_cache "${d10}" "--skip-fetch"
+  sync_account_nav_ledger_file
+  sync_account_strategy_metrics_file
   info "Web 构建 + 算法数据刷新 -> web/dist/index.html"
   (cd web && npm run build) || die "Vue3 构建失败"
   python3 inject_data.py "${d8}" || die "web 数据生成失败"
@@ -404,6 +484,11 @@ cmd_deploy() {
   elif [[ -f "./cache/account_nav_history.jsonl" ]]; then
     install -m 644 "./cache/account_nav_history.jsonl" "cache/account_nav_history.jsonl"
   fi
+  if [[ -f "./data/account_strategy_metrics.json" ]]; then
+    install -m 644 "./data/account_strategy_metrics.json" "cache/account_strategy_metrics.json"
+  elif [[ -f "./cache/account_strategy_metrics.json" ]]; then
+    install -m 644 "./cache/account_strategy_metrics.json" "cache/account_strategy_metrics.json"
+  fi
   for f in tomorrow_picks.json tomorrow_picks.js eastmoney_tomorrow.json intraday_resonance.json; do
     if [[ -f "./web/dist/${f}" ]]; then
       install -m 644 "./web/dist/${f}" "${f}"
@@ -414,7 +499,7 @@ cmd_deploy() {
 
   git add "${pages_file}" market_data.json market_data.js \
     tomorrow_picks.json tomorrow_picks.js eastmoney_tomorrow.json intraday_resonance.json \
-    cache/account_nav_history.jsonl 2>/dev/null || true
+    cache/account_nav_history.jsonl cache/account_strategy_metrics.json 2>/dev/null || true
   git commit -m "deploy: $(date '+%F %T')" || true
   git push
 
@@ -438,6 +523,7 @@ EOF
 }
 
 main() {
+  normalize_optional_args "$@"
   local cmd="${1:-}"
   case "${cmd}" in
     "")     cmd_fetch ;;

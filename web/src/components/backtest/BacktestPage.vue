@@ -134,10 +134,15 @@ const realtimeBuy = computed<any>(() => {
 const historicalSnapshots = computed<any[]>(() => (Array.isArray(payload.value?.historicalSnapshots) ? payload.value.historicalSnapshots : []))
 const hasValidPayload = computed(() => isCompleteBacktestPayload(backtestSource.value?.stockResearchBacktest))
 const activeTradeDate = computed(() => String(meta.value?.active_trade_date || realtimeBuy.value?.trade_date || "").trim())
-const realtimeTitleDate = computed(() => String(activeTradeDate.value || realtimeBuy.value?.reference_date || latestRecommendationDate.value || "").trim())
+const realtimeReferenceDate = computed(() => String(realtimeBuy.value?.reference_date || latestRecommendationDate.value || "").trim())
+const realtimeTitleDate = computed(() => {
+  if (isForcedQuerySnapshot.value) return realtimeReferenceDate.value
+  return String(activeTradeDate.value || realtimeBuy.value?.trade_date || realtimeReferenceDate.value || "").trim()
+})
 const realtimeCardTitle = computed(() => (realtimeTitleDate.value ? `竞价结果 — ${realtimeTitleDate.value} 9:25` : "竞价结果"))
 const backtestUpdatedAt = computed(() => meta.value?.generated_at_bj || backtestSource.value?.meta?.generatedAt || (marketData.value as any)?.meta?.generatedAt || "-")
 const quoteUpdatedAt = computed(() => realtimeBuy.value?.quote_time || "-")
+const isForcedQuerySnapshot = computed(() => !!realtimeBuy.value?.diagnostics?.forced_query)
 function sortSnapshotRows(rows: any[]) {
   const rank: Record<string, number> = { super: 0, expected: 1, pending: 2, reject: 3, unavailable: 4 }
   rows.sort((a, b) => {
@@ -225,14 +230,14 @@ const availableRecommendationDates = computed<string[]>(() => {
 })
 const latestHistoricalRecommendationDate = computed(() => String(lifecycle.value?.latest_historical_recommendation_date || "").trim())
 const defaultRecommendationDate = computed(() => {
+  if (latestRecommendationDate.value && availableRecommendationDates.value.includes(latestRecommendationDate.value)) {
+    return latestRecommendationDate.value
+  }
   if (
     latestHistoricalRecommendationDate.value &&
     availableRecommendationDates.value.includes(latestHistoricalRecommendationDate.value)
   ) {
     return latestHistoricalRecommendationDate.value
-  }
-  if (latestRecommendationDate.value && availableRecommendationDates.value.includes(latestRecommendationDate.value)) {
-    return latestRecommendationDate.value
   }
   return availableRecommendationDates.value[0] || latestRecommendationDate.value || ""
 })
@@ -270,7 +275,6 @@ const currentRecords = computed<any[]>(() => {
   return rows
 })
 const currentEligibleCount = computed(() => currentRecords.value.filter((row) => !!row?.performance?.open_check?.can_enter).length)
-const metrics = computed(() => buildDateScopedMetrics(selectedDayRecordsAll.value))
 const hasCurrentPlan = computed(() => hasValidPayload.value && currentRecords.value.length > 0)
 const hasHistoricalRecords = computed(() => selectedDayDisplayRecords.value.length > 0)
 const isViewingCurrentRecommendation = computed(() => !selectedRecommendationDate.value || selectedRecommendationDate.value === latestRecommendationDate.value)
@@ -298,7 +302,7 @@ const hasRealtimeSnapshot = computed(() => {
   if (!hasValidPayload.value) return false
   if (selectedRecommendationDate.value && selectedRecommendationDate.value !== String(realtimeBuy.value?.reference_date || "").trim()) return false
   if (!realtimeBuy.value?.reference_date) return false
-  if (!isEntryWindowTime(realtimeBuy.value?.quote_time)) return false
+  if (!isForcedQuerySnapshot.value && !isEntryWindowTime(realtimeBuy.value?.quote_time)) return false
   return realtimeCandidates.value.length > 0
 })
 const showingRealtimeSnapshot = computed(() => hasRealtimeSnapshot.value)
@@ -315,13 +319,16 @@ const lifecycleStageLabel = computed(() => String(lifecycle.value?.stage_label |
 const lifecycleStageNote = computed(() => String(lifecycle.value?.stage_note || "").trim())
 const lifecycleQuoteLabel = computed(() => String(lifecycle.value?.quote_state_label || "等待推送"))
 const lifecycleQuoteNote = computed(() => String(lifecycle.value?.quote_state_note || "").trim())
-const currentPlanTitleDate = computed(() => String(activeTradeDate.value || latestRecommendationDate.value || "").trim())
+const currentPlanTitleDate = computed(() => String(selectedRecommendationDate.value || latestRecommendationDate.value || activeTradeDate.value || "").trim())
 const snapshotTradeDate = computed(() => {
   if (showingRealtimeSnapshot.value) return realtimeTitleDate.value
   return String(selectedHistoricalSnapshot.value?.trade_date || effectiveHistoricalDate.value || "").trim()
 })
 const snapshotCardTitle = computed(() => {
-  if (showingRealtimeSnapshot.value) return realtimeTitleDate.value ? `竞价结果 — ${realtimeTitleDate.value} 9:25` : "竞价结果"
+  if (showingRealtimeSnapshot.value) {
+    if (isForcedQuerySnapshot.value) return realtimeTitleDate.value ? `强制竞价匹配 — ${realtimeTitleDate.value}` : "强制竞价匹配"
+    return realtimeTitleDate.value ? `竞价结果 — ${realtimeTitleDate.value} 9:25` : "竞价结果"
+  }
   if (showingPredictionTable.value) return currentPlanTitleDate.value ? `今日预测 — ${currentPlanTitleDate.value}` : "今日预测"
   return snapshotTradeDate.value ? `今日预测 — ${snapshotTradeDate.value}` : "今日预测"
 })
@@ -336,6 +343,9 @@ const realtimeSubtitle = computed(() => {
     return `当前只保留最新推荐日 ${String(realtimeBuy.value?.reference_date || "-")} 的 9:25 竞价快照；所选推荐日请看下方开盘判断和收益表现。`
   }
   if (hasRealtimeSnapshot.value && quoteUpdatedAt.value && quoteUpdatedAt.value !== "-") {
+    if (isForcedQuerySnapshot.value) {
+      return `当前按 fore 模式忽略 09:25 时间窗，直接使用 ${quoteUpdatedAt.value} 的实时行情去匹配财富密码。`
+    }
     return `竞价快照：${quoteUpdatedAt.value}｜高开超5%先观察，不直接追。`
   }
   if (selectedHistoricalSnapshot.value) {
@@ -400,7 +410,7 @@ const summaryCards = computed(() => [
     label: showingRealtimeSnapshot.value ? "9:25 快照" : "今日预测",
     value: hasSelectedSnapshot.value ? `${allCandidates.value.length}` : "-",
     note: showingRealtimeSnapshot.value
-      ? `快照时间 ${quoteUpdatedAt.value}`
+      ? (isForcedQuerySnapshot.value ? `强制查询时间 ${quoteUpdatedAt.value}` : `快照时间 ${quoteUpdatedAt.value}`)
       : (showingPredictionTable.value ? "当前展示收盘后推送的待验证样本" : (selectedHistoricalSnapshot.value?.diagnostics?.note || "历史预测未恢复")),
   },
 ])
@@ -408,6 +418,7 @@ const emptyStateText = computed(() => {
   if (!hasValidPayload.value) return "当前暂无有效回测数据，明天 09:25-09:30 落地后会自动显示对应内容。"
   if (hasCurrentPlan.value) return "收盘后推送的个股研究样本已经落进回测 JSON，当前先展示今日预测；到明天 09:25-09:30 再补真实竞价命中结果。"
   if (!realtimeBuy.value?.reference_date) return "当前推荐还没到次日 09:25-09:30，明天窗口内会落地实时行情。"
+  if (isForcedQuerySnapshot.value) return "当前已按 fore 模式直接用最新实时行情匹配财富密码结果。"
   if (!isEntryWindowTime(realtimeBuy.value?.quote_time)) return "当前暂无有效竞价快照，等明天 09:25-09:30 落地后再显示命中结果。"
   return "当前没有可展示的回测结果。"
 })
@@ -416,12 +427,52 @@ const realtimeEmptyText = computed(() => {
   if (!isViewingCurrentRecommendation.value) return "所选推荐日没有原始 9:25 快照，但如果历史回测已落地，会在这里恢复命中结果。"
   if (!hasCurrentPlan.value) return "当前还没有今日预测数据，先执行一次复盘脚本生成个股回测 JSON。"
   if (!realtimeBuy.value?.reference_date) return "当前是收盘后待验证阶段，明天 09:25-09:30 会补充实时量价和命中结果。"
+  if (isForcedQuerySnapshot.value) return "fore 模式已启用，但当前仍未拿到可用实时行情。"
   if (!isEntryWindowTime(realtimeBuy.value?.quote_time)) return "当前还没到有效竞价快照时间，明天 09:25-09:30 会自动显示真实命中结果。"
   return "当前没有命中结果。"
 })
 const historicalSnapshotNotice = computed(() => {
   if (showingRealtimeSnapshot.value || showingPredictionTable.value) return ""
   return String(selectedHistoricalSnapshot.value?.diagnostics?.note || "").trim()
+})
+const accountStrategyMetricsPayload = computed<any>(() => {
+  const md = marketData.value as any
+  const raw = md?.accountStrategyMetrics
+  return raw && typeof raw === "object" ? raw : { records: [] }
+})
+const accountStrategyMetricMap = computed<Record<string, any>>(() => {
+  const out: Record<string, any> = {}
+  const rows = Array.isArray(accountStrategyMetricsPayload.value?.records) ? accountStrategyMetricsPayload.value.records : []
+  for (const item of rows) {
+    const key = String(item?.recommendation_date || "").trim()
+    if (key) out[key] = item
+  }
+  return out
+})
+const selectedStrategyMetricRecord = computed<any | null>(() => {
+  const key = selectedRecommendationDate.value || effectiveHistoricalDate.value
+  return key ? accountStrategyMetricMap.value[key] || null : null
+})
+const metrics = computed(() => {
+  const record = selectedStrategyMetricRecord.value
+  const defs = [
+    { key: "next_day", label: "隔日收益" },
+    { key: "hold_2d", label: "2日收益" },
+    { key: "hold_3d", label: "3日收益" },
+  ]
+  if (record?.metrics && typeof record.metrics === "object") {
+    return defs.map((item) => ({
+      key: item.key,
+      label: item.label,
+      data: {
+        scopes: {
+          all: record.metrics?.[item.key]?.all || {},
+          tradable: record.metrics?.[item.key]?.tradable || {},
+        },
+      },
+    }))
+  }
+  return buildDateScopedMetrics(selectedDayRecordsAll.value)
 })
 const accountCurveBase = computed(() => {
   const md = marketData.value as any

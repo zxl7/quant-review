@@ -605,7 +605,7 @@ def run_full(date: str | None) -> int:
     return run_fetch_and_rebuild(date)
 
 
-def run_fetch_and_rebuild(date: str | None) -> int:
+def run_fetch_and_rebuild(date: str | None, stock_research_query_tag: str = "") -> int:
     """
     FULL 新入口：在线取数 + 生成 cache/market_data-YYYYMMDD.json + rebuild（离线）
     """
@@ -830,7 +830,7 @@ def run_fetch_and_rebuild(date: str | None) -> int:
 
     # 离线重建（pipeline）并渲染 tab-v1
     _log("开始离线重建 pipeline...")
-    rc = run_rebuild(actual_date, allow_network=True)
+    rc = run_rebuild(actual_date, allow_network=True, stock_research_query_tag=stock_research_query_tag)
 
     # 同步生成盯盘快照：每次 fetch 都追加一条盘中切片
     # 注意：run_rebuild 会将完整 market_data（含 volume/plateRankTop10/mood_inputs）写回缓存文件
@@ -856,6 +856,7 @@ def run_fetch_and_rebuild(date: str | None) -> int:
             attach_stock_research_backtest(
                 market_data=final_market_data,
                 sync_source=True,
+                query_tag=stock_research_query_tag,
                 log_fn=lambda msg: _log(f"[final-sync] {msg}"),
             )
             market_path.write_text(json.dumps(final_market_data, ensure_ascii=False, indent=2), encoding="utf-8")
@@ -1155,6 +1156,7 @@ def _postprocess_market_data(
     apply_runtime_display: bool,
     normalize_meta: bool,
     sync_stock_research_source: bool,
+    stock_research_query_tag: str = "",
     include_prd_v2: bool,
     log_prefix: str = "",
 ) -> None:
@@ -1237,6 +1239,7 @@ def _postprocess_market_data(
         attach_stock_research_backtest(
             market_data=market_data,
             sync_source=sync_stock_research_source,
+            query_tag=stock_research_query_tag,
             log_fn=lambda msg: _log(f"{log_prefix}{msg}"),
         )
     except Exception:
@@ -1271,6 +1274,7 @@ def run_rebuild(
     suffix: str = "",
     source_market_path: Path | None = None,
     allow_network: bool = False,
+    stock_research_query_tag: str = "",
 ) -> int:
     """
     离线重建（不请求接口）：
@@ -1304,6 +1308,7 @@ def run_rebuild(
         apply_runtime_display=True,
         normalize_meta=True,
         sync_stock_research_source=True,
+        stock_research_query_tag=stock_research_query_tag,
         include_prd_v2=True,
     )
 
@@ -1955,7 +1960,12 @@ def main(argv: list[str] | None = None) -> int:
         default="eod",
         help="运行模式：eod=收盘版（默认），intraday=盘中快照版（数据截止当前时刻）",
     )
+    ap.add_argument("--stock-research-query-tag", default="", help="个股研究竞价查询 tag，例如 fore 表示忽略 09:25 时间窗强制按当前行情匹配")
     args = ap.parse_args(argv)
+
+    stock_research_query_tag = str(args.stock_research_query_tag or "").strip().lower()
+    if stock_research_query_tag:
+        os.environ["STOCK_RESEARCH_QUERY_TAG"] = stock_research_query_tag
 
     # === 入口日志 ===
     if args.fetch:
@@ -1988,10 +1998,14 @@ def main(argv: list[str] | None = None) -> int:
     if args.rebuild:
         if not args.date:
             raise SystemExit("--rebuild 模式必须指定 --date")
-        return run_rebuild(args.date, allow_network=args.allow_network)
+        return run_rebuild(
+            args.date,
+            allow_network=args.allow_network,
+            stock_research_query_tag=stock_research_query_tag,
+        )
 
     if args.fetch:
-        return run_fetch_and_rebuild(args.date)
+        return run_fetch_and_rebuild(args.date, stock_research_query_tag=stock_research_query_tag)
 
     # 盘中快照模式
     if args.mode == "intraday":

@@ -1257,6 +1257,17 @@ def _resolve_account_nav_ledger_path() -> Path:
     return online_fallback
 
 
+def _resolve_account_strategy_metrics_path() -> Path:
+    primary = ROOT / "data" / "account_strategy_metrics.json"
+    if primary.exists():
+        return primary
+    cache_fallback = ROOT / "cache" / "account_strategy_metrics.json"
+    if cache_fallback.exists():
+        return cache_fallback
+    online_fallback = ROOT / "cache_online" / "account_strategy_metrics.json"
+    return online_fallback
+
+
 def _load_account_nav_ledger() -> dict:
     path = _resolve_account_nav_ledger_path()
     records: list[dict[str, object]] = []
@@ -1299,6 +1310,20 @@ def _load_account_nav_ledger() -> dict:
         "records": records,
         "source_path": str(path.relative_to(ROOT)) if path.exists() and path.is_relative_to(ROOT) else str(path),
     }
+
+
+def _load_account_strategy_metrics() -> dict:
+    path = _resolve_account_strategy_metrics_path()
+    if not path.exists():
+        return {"schema": "account_strategy_metrics_v1", "records": [], "source_path": str(path)}
+    try:
+        payload = json.loads(path.read_text(encoding="utf-8"))
+    except Exception:
+        return {"schema": "account_strategy_metrics_v1", "records": [], "source_path": str(path)}
+    if not isinstance(payload, dict):
+        payload = {"schema": "account_strategy_metrics_v1", "records": []}
+    payload["source_path"] = str(path.relative_to(ROOT)) if path.exists() and path.is_relative_to(ROOT) else str(path)
+    return payload
 
 
 def _resolve_intraday_resonance_path(date8: str) -> Path:
@@ -2805,6 +2830,7 @@ def _build_publish_payload(date8: str, source: Optional[str] = None, *, warn_con
     _apply_watchlist_enhancements(md, date8=date8, warn_context=warn_context)
     md["accountCurve"] = _load_account_curve()
     md["accountNavLedger"] = _load_account_nav_ledger()
+    md["accountStrategyMetrics"] = _load_account_strategy_metrics()
     md["planThemeResolver"] = _build_plan_theme_resolver(md)
     md["ladderDecision"] = _build_ladder_decision(md)
     md["sentimentDecision"] = _build_sentiment_decision(md)

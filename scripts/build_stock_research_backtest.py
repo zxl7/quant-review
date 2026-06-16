@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import json
+import os
 import re
 import sys
 from collections import Counter, defaultdict
@@ -35,10 +36,22 @@ STRATEGIES = (
 )
 
 CAUTION_GAP_PCT = 5.0
+FORCED_QUERY_TAGS = {"fore"}
 
 
 def _now_bj() -> datetime:
     return datetime.now(TZ_BJ)
+
+
+def _normalize_query_tag(query_tag: str | None = None) -> str:
+    raw = query_tag
+    if raw in (None, ""):
+        raw = os.environ.get("STOCK_RESEARCH_QUERY_TAG", "")
+    return str(raw or "").strip().lower()
+
+
+def _is_forced_query_tag(query_tag: str | None = None) -> bool:
+    return _normalize_query_tag(query_tag) in FORCED_QUERY_TAGS
 
 
 def _load_json(path: Path, default: Any | None = None) -> Any:
@@ -433,9 +446,13 @@ def _build_lifecycle(
     quote_time = str(realtime_buy.get("quote_time") or "").strip()
     quoted_count = int(realtime_buy.get("quoted_count") or 0)
     candidate_count = int(realtime_buy.get("candidate_count") or 0)
+    diagnostics = realtime_buy.get("diagnostics") if isinstance(realtime_buy.get("diagnostics"), dict) else {}
+    forced_query = bool(diagnostics.get("forced_query"))
     has_current_plan = bool(current_pool_rows)
     has_historical_records = bool(backtest_rows)
-    has_realtime_snapshot = bool(realtime_buy.get("reference_date")) and quoted_count > 0 and _is_entry_window_time(quote_time)
+    has_realtime_snapshot = bool(realtime_buy.get("reference_date")) and quoted_count > 0 and (
+        forced_query or _is_entry_window_time(quote_time)
+    )
 
     quote_state = "pending_source"
     quote_state_label = "等待推送"
@@ -443,8 +460,12 @@ def _build_lifecycle(
 
     if has_realtime_snapshot:
         quote_state = "ready"
-        quote_state_label = "快照已落地"
-        quote_state_note = f"9:25 竞价快照已生成，时间 {quote_time or '-'}。"
+        if forced_query:
+            quote_state_label = "强制查询已落地"
+            quote_state_note = f"fore 模式已忽略 09:25 时间窗，使用当前实时行情时间 {quote_time or '-'}。"
+        else:
+            quote_state_label = "快照已落地"
+            quote_state_note = f"9:25 竞价快照已生成，时间 {quote_time or '-'}。"
     elif has_current_plan:
         if active_trade_date10 and active_trade_date10 > today10:
             quote_state = "waiting_trade_day"
@@ -477,8 +498,12 @@ def _build_lifecycle(
     stage_note = "当前还没有可展示的个股回测样本。"
     if has_current_plan and has_realtime_snapshot:
         stage = "auction_snapshot_ready"
-        stage_label = "竞价结果已落地"
-        stage_note = f"推荐日 {latest_recommendation_date10 or '-'} 的待验证池已匹配到 {active_trade_date10 or '-'} 9:25 竞价结果，历史统计与当前快照都可同时查看。"
+        if forced_query:
+            stage_label = "强制竞价匹配已落地"
+            stage_note = f"推荐日 {latest_recommendation_date10 or '-'} 的待验证池已按 fore 模式匹配当前实时行情，可直接查看财富密码命中结果。"
+        else:
+            stage_label = "竞价结果已落地"
+            stage_note = f"推荐日 {latest_recommendation_date10 or '-'} 的待验证池已匹配到 {active_trade_date10 or '-'} 9:25 竞价结果，历史统计与当前快照都可同时查看。"
     elif has_current_plan:
         if quote_state in {"waiting_trade_day", "waiting_window", "window_live"}:
             stage = "post_close_wait_auction"
@@ -508,6 +533,7 @@ def _build_lifecycle(
         "latest_historical_recommendation_date": latest_backtest_date10,
         "realtime_reference_date": str(realtime_buy.get("reference_date") or "").strip(),
         "quote_time": quote_time,
+        "forced_query": forced_query,
     }
 
 
@@ -525,7 +551,9 @@ def upgrade_stock_research_backtest_payload(payload: dict[str, Any] | None) -> d
     display_rows = upgraded.get("displayRecords") if isinstance(upgraded.get("displayRecords"), list) else []
     quote_time = str(realtime_buy.get("quote_time") or "").strip()
     quoted_count = int(realtime_buy.get("quoted_count") or 0)
-    if quoted_count <= 0 or not _is_entry_window_time(quote_time):
+    diagnostics = realtime_buy.get("diagnostics") if isinstance(realtime_buy.get("diagnostics"), dict) else {}
+    forced_query = bool(diagnostics.get("forced_query"))
+    if quoted_count <= 0 or (not forced_query and not _is_entry_window_time(quote_time)):
         realtime_buy["quote_time"] = ""
     latest_recommendation_date10 = str(meta.get("latest_recommendation_date") or realtime_buy.get("reference_date") or "").strip()
     active_trade_date10 = str(meta.get("active_trade_date") or realtime_buy.get("trade_date") or "").strip()
@@ -873,7 +901,8 @@ def _fetch_realtime_quotes(codes: list[str], *, fallback_quotes: dict[str, Any] 
     }
     quotes_map: dict[str, dict[str, Any]] = {}
 
-    if force or _should_request_realtime_quotes():
+    forced_query = force or _is_forced_query_tag()
+    if forced_query or _should_request_realtime_quotes():
         try:
             cfg = load_config_from_env()
             client = HttpClient(base_url=cfg.base_url, token=cfg.token, timeout=12, retries=0)
@@ -887,7 +916,9 @@ def _fetch_realtime_quotes(codes: list[str], *, fallback_quotes: dict[str, Any] 
                     if not isinstance(row, dict):
                         continue
                     quote = _normalize_realtime_quote(row)
-                    if not quote or not _is_entry_window_time(str(quote.get("time") or "")):
+                    if not quote:
+                        continue
+                    if not forced_query and not _is_entry_window_time(str(quote.get("time") or "")):
                         continue
                     if quote.get("time") and not diagnostics["as_of"]:
                         diagnostics["as_of"] = quote["time"]
@@ -908,7 +939,9 @@ def _fetch_realtime_quotes(codes: list[str], *, fallback_quotes: dict[str, Any] 
             if not isinstance(raw, dict):
                 continue
             quote = _normalize_realtime_quote(raw)
-            if not quote or not _is_entry_window_time(str(quote.get("time") or "")):
+            if not quote:
+                continue
+            if not forced_query and not _is_entry_window_time(str(quote.get("time") or "")):
                 continue
             quotes_map[code6] = quote
             diagnostics["fallback_used"] += 1
@@ -926,6 +959,12 @@ def _fetch_realtime_quotes(codes: list[str], *, fallback_quotes: dict[str, Any] 
 
     diagnostics["received"] = len(quotes_map)
     diagnostics["missing"] = [code for code in uniq_codes if code not in quotes_map]
+    if forced_query:
+        diagnostics["source"] = "forced_query" if quotes_map else "forced_query_unavailable"
+        diagnostics["forced_query"] = True
+        diagnostics["request_window"] = "forced"
+        if not diagnostics["error"]:
+            diagnostics["error"] = "已按 fore 模式忽略 09:25-09:30 窗口限制，直接使用当前实时行情。"
     return quotes_map, diagnostics
 
 
@@ -1073,9 +1112,11 @@ def _build_realtime_buy_payload(
     latest_date10: str,
     trade_date10: str = "",
     current_market_data: dict[str, Any] | None = None,
+    query_tag: str | None = None,
 ) -> dict[str, Any]:
     latest_rows = [dict(row) for row in rows if row.get("date10") == latest_date10]
-    in_window = _should_request_realtime_quotes()
+    forced_query = _is_forced_query_tag(query_tag)
+    in_window = forced_query or _should_request_realtime_quotes()
     if not in_window:
         preserved = _load_preserved_realtime_buy(latest_date10)
         if isinstance(preserved, dict):
@@ -1127,7 +1168,11 @@ def _build_realtime_buy_payload(
             "request_window": "09:25-09:30",
         }
     else:
-        quotes_map, quote_diag = _fetch_realtime_quotes(codes, fallback_quotes=raw_quotes if isinstance(raw_quotes, dict) else None)
+        quotes_map, quote_diag = _fetch_realtime_quotes(
+            codes,
+            fallback_quotes=raw_quotes if isinstance(raw_quotes, dict) else None,
+            force=forced_query,
+        )
 
     decisions = [_evaluate_realtime_signal(row, quotes_map.get(str(row.get("code") or "").strip())) for row in latest_rows]
     decisions.sort(key=lambda x: (_signal_rank(str(x.get("signal_status") or "")), -int(x.get("score") or 0), str(x.get("code") or "")))
@@ -1512,7 +1557,7 @@ def _merge_current_pool_with_realtime(rows: list[dict[str, Any]], realtime_buy: 
     return merged_rows
 
 
-def build_stock_research_backtest_payload(*, current_market_data: dict[str, Any] | None = None) -> dict[str, Any]:
+def build_stock_research_backtest_payload(*, current_market_data: dict[str, Any] | None = None, query_tag: str | None = None) -> dict[str, Any]:
     if isinstance(current_market_data, dict):
         sync_stock_research_backtest_source(market_data=current_market_data)
     rows, generated_from = _load_stock_research_rows()
@@ -1539,6 +1584,7 @@ def build_stock_research_backtest_payload(*, current_market_data: dict[str, Any]
         latest_date10=reference_date10,
         trade_date10=active_trade_date10,
         current_market_data=current_market_data,
+        query_tag=query_tag,
     ) if reference_date10 else _empty_backtest_payload()["realtimeBuy"]
     current_pool_rows = _merge_current_pool_with_realtime(current_pool_rows, realtime_buy)
 

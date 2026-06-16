@@ -170,6 +170,7 @@ def attach_stock_research_backtest(
     *,
     market_data: MarketData,
     sync_source: bool,
+    query_tag: str = "",
     log_fn: Callable[[str], None] | None = None,
 ) -> None:
     from scripts.build_stock_research_backtest import build_stock_research_backtest_payload
@@ -178,6 +179,9 @@ def attach_stock_research_backtest(
         from scripts.build_stock_research_backtest import sync_stock_research_backtest_source
 
         sync_stock_research_backtest_source(market_data=market_data)
-    market_data["stockResearchBacktest"] = build_stock_research_backtest_payload(current_market_data=market_data)
+    market_data["stockResearchBacktest"] = build_stock_research_backtest_payload(
+        current_market_data=market_data,
+        query_tag=query_tag,
+    )
     if log_fn:
-        log_fn("stockResearchBacktest 已按个股研究推送历史源派生")
+        log_fn(f"stockResearchBacktest 已按个股研究推送历史源派生{f' (tag={query_tag})' if query_tag else ''}")
