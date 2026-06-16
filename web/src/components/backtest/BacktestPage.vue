@@ -119,6 +119,7 @@ const payload = computed<any>(() => {
   return isCompleteBacktestPayload(raw) ? raw : emptyPayload
 })
 
+const marketSessionDate = computed(() => String((marketData.value as any)?.date || backtestSource.value?.date || "").trim())
 const meta = computed(() => payload.value?.meta || emptyPayload.meta)
 const summary = computed(() => payload.value?.summary || emptyPayload.summary)
 const lifecycle = computed<any>(() => (payload.value?.lifecycle && typeof payload.value.lifecycle === "object" ? payload.value.lifecycle : emptyPayload.lifecycle))
@@ -229,15 +230,35 @@ const availableRecommendationDates = computed<string[]>(() => {
   return Array.from(dates).sort((a, b) => b.localeCompare(a))
 })
 const latestHistoricalRecommendationDate = computed(() => String(lifecycle.value?.latest_historical_recommendation_date || "").trim())
+const recommendationTradeDateMap = computed<Record<string, string>>(() => {
+  const out: Record<string, string> = {}
+  for (const item of historicalSnapshots.value) {
+    const referenceDate = String(item?.reference_date || "").trim()
+    const tradeDate = String(item?.trade_date || item?.trade_date10 || "").trim()
+    if (referenceDate && tradeDate) out[referenceDate] = tradeDate
+  }
+  const realtimeReference = String(realtimeBuy.value?.reference_date || latestRecommendationDate.value || "").trim()
+  const realtimeTradeDate = String(realtimeBuy.value?.trade_date || activeTradeDate.value || "").trim()
+  if (realtimeReference && realtimeTradeDate) out[realtimeReference] = realtimeTradeDate
+  return out
+})
+const latestClosedRecommendationDate = computed(() => {
+  if (latestHistoricalRecommendationDate.value && availableRecommendationDates.value.includes(latestHistoricalRecommendationDate.value)) {
+    return latestHistoricalRecommendationDate.value
+  }
+  const historicalDates = new Set<string>()
+  for (const item of historicalSnapshots.value) {
+    const date10 = String(item?.reference_date || "").trim()
+    if (date10 && availableRecommendationDates.value.includes(date10)) historicalDates.add(date10)
+  }
+  return Array.from(historicalDates).sort((a, b) => b.localeCompare(a))[0] || ""
+})
 const defaultRecommendationDate = computed(() => {
+  if (latestClosedRecommendationDate.value) {
+    return latestClosedRecommendationDate.value
+  }
   if (latestRecommendationDate.value && availableRecommendationDates.value.includes(latestRecommendationDate.value)) {
     return latestRecommendationDate.value
-  }
-  if (
-    latestHistoricalRecommendationDate.value &&
-    availableRecommendationDates.value.includes(latestHistoricalRecommendationDate.value)
-  ) {
-    return latestHistoricalRecommendationDate.value
   }
   return availableRecommendationDates.value[0] || latestRecommendationDate.value || ""
 })
@@ -314,6 +335,20 @@ const allCandidates = computed<any[]>(() => {
   return historicalCandidates.value
 })
 const hasAnyRenderableSection = computed(() => hasCurrentPlan.value || hasHistoricalRecords.value || hasSelectedSnapshot.value)
+const selectedResultTradeDate = computed(() => {
+  if (showingRealtimeSnapshot.value) return realtimeTitleDate.value
+  if (showingPredictionTable.value) {
+    return String(recommendationTradeDateMap.value[selectedRecommendationDate.value] || activeTradeDate.value || "").trim()
+  }
+  return String(selectedHistoricalSnapshot.value?.trade_date || recommendationTradeDateMap.value[selectedRecommendationDate.value] || "").trim()
+})
+const isDefaultSelection = computed(() => selectedRecommendationDate.value === defaultRecommendationDate.value)
+const isSkippedMissingClosedDay = computed(() => {
+  if (!isDefaultSelection.value) return false
+  if (showingRealtimeSnapshot.value || showingPredictionTable.value) return false
+  if (!marketSessionDate.value || !selectedResultTradeDate.value) return false
+  return selectedResultTradeDate.value !== marketSessionDate.value
+})
 const lifecycleStage = computed(() => String(lifecycle.value?.stage || "empty"))
 const lifecycleStageLabel = computed(() => String(lifecycle.value?.stage_label || "暂无数据"))
 const lifecycleStageNote = computed(() => String(lifecycle.value?.stage_note || "").trim())
@@ -329,12 +364,12 @@ const snapshotCardTitle = computed(() => {
     if (isForcedQuerySnapshot.value) return realtimeTitleDate.value ? `强制竞价匹配 — ${realtimeTitleDate.value}` : "强制竞价匹配"
     return realtimeTitleDate.value ? `竞价结果 — ${realtimeTitleDate.value} 9:25` : "竞价结果"
   }
-  if (showingPredictionTable.value) return currentPlanTitleDate.value ? `今日预测 — ${currentPlanTitleDate.value}` : "今日预测"
-  return snapshotTradeDate.value ? `今日预测 — ${snapshotTradeDate.value}` : "今日预测"
+  if (showingPredictionTable.value) return currentPlanTitleDate.value ? `待验证推荐 — ${currentPlanTitleDate.value}` : "待验证推荐"
+  return snapshotTradeDate.value ? `闭环结果 — ${snapshotTradeDate.value}` : "闭环结果"
 })
 const realtimeSubtitle = computed(() => {
   if (showingPredictionTable.value) {
-    return "这里展示今天收盘后推送进回测 JSON 的待验证样本，先看超预期/预期/低预期条件；到明天 09:25-09:30 再补真实竞价结果。"
+    return "这里展示最新收盘后推送进回测 JSON 的待验证样本，先看超预期/预期/低预期条件；到下一交易日 09:25-09:30 再补真实竞价结果。"
   }
   if (!isViewingCurrentRecommendation.value) {
     if (selectedHistoricalSnapshot.value) {
@@ -357,7 +392,7 @@ const realtimeSubtitle = computed(() => {
   return "高开超5%先观察，不直接追。"
 })
 const strategySubtitle = computed(() => {
-  const dateLabel = effectiveHistoricalDate.value ? `结果口径 ${effectiveHistoricalDate.value}｜` : ""
+  const dateLabel = selectedResultTradeDate.value ? `结果口径 ${selectedResultTradeDate.value}｜` : ""
   const updatedAt = String(backtestUpdatedAt.value || "").trim()
   return updatedAt && updatedAt !== "-"
     ? `${dateLabel}收益口径：高开超5%样本先观察，不计入直接开盘买入，再统计 T+1 / T+2 / T+3 收盘卖出。最新刷新：${updatedAt}`
@@ -365,8 +400,15 @@ const strategySubtitle = computed(() => {
 })
 const summaryHeaderSubtitle = computed(() => {
   if (!isViewingCurrentRecommendation.value && selectedRecommendationDate.value) {
-    const latestLabel = latestRecommendationDate.value ? `；切回 ${latestRecommendationDate.value} 可看最新今日预测` : ""
-    return `当前默认查看 ${selectedRecommendationDate.value} 的财富密码闭环${latestLabel}。`
+    const latestLabel = latestRecommendationDate.value ? `；切回 ${latestRecommendationDate.value} 可看待验证推荐` : ""
+    const tradeDate = selectedResultTradeDate.value || "-"
+    if (isDefaultSelection.value && marketSessionDate.value) {
+      if (isSkippedMissingClosedDay.value) {
+        return `今天是 ${marketSessionDate.value}，当天闭环缺失时会自动跳过；当前展示最近一个有数据的闭环日 ${tradeDate}（对应推荐日 ${selectedRecommendationDate.value}）${latestLabel}。`
+      }
+      return `今天是 ${marketSessionDate.value}，页面默认展示当天闭环结果 ${tradeDate}（对应推荐日 ${selectedRecommendationDate.value}）${latestLabel}。`
+    }
+    return `当前展示 ${tradeDate} 的闭环结果（对应推荐日 ${selectedRecommendationDate.value}）${latestLabel}。`
   }
   return lifecycleStageNote.value || strategySubtitle.value
 })
@@ -386,20 +428,26 @@ const quoteClass = computed(() => {
 })
 const summaryCards = computed(() => [
   {
-    key: "recommendation",
-    label: "当前查看",
-    value: selectedRecommendationDate.value || latestRecommendationDate.value || "-",
-    note: availableRecommendationDates.value.length > 1 ? `可切换 ${availableRecommendationDates.value.length} 个推荐日` : (activeTradeDate.value ? `待验证交易日 ${activeTradeDate.value}` : "当前暂无待验证交易日"),
+    key: "session_date",
+    label: "页面日期",
+    value: marketSessionDate.value || "-",
+    note: selectedResultTradeDate.value
+      ? (isSkippedMissingClosedDay.value
+          ? `当天闭环缺失，已自动跳到最近有数据的 ${selectedResultTradeDate.value}`
+          : `默认按今天进入页面，主结果展示 ${selectedResultTradeDate.value}`)
+      : (activeTradeDate.value ? `待验证交易日 ${activeTradeDate.value}` : "当前暂无待验证交易日"),
   },
   {
     key: "history",
-    label: "历史统计刷新",
-    value: String(latestHistoricalRecommendationDate.value || latestRecommendationDate.value || "-"),
-    note: hasHistoricalRecords.value ? `当前结果查看 ${effectiveHistoricalDate.value}｜纳入统计 ${selectedDayRecordsAll.value.length} 条` : "当前还没有历史回测样本",
+    label: isViewingCurrentRecommendation.value ? "待验证批次" : "当前闭环",
+    value: selectedResultTradeDate.value || activeTradeDate.value || "-",
+    note: selectedRecommendationDate.value
+      ? `对应推荐日 ${selectedRecommendationDate.value}${availableRecommendationDates.value.length > 1 ? `｜可切换 ${availableRecommendationDates.value.length} 个批次` : ""}`
+      : "当前还没有可切换批次",
   },
   {
     key: "pool",
-    label: isViewingCurrentRecommendation.value ? "今日预测样本" : "推荐池样本",
+    label: isViewingCurrentRecommendation.value ? "待验证样本" : "推荐池样本",
     value: `${currentRecords.value.length}`,
     note: isViewingCurrentRecommendation.value
       ? (currentEligibleCount.value > 0 ? `可入场候选 ${currentEligibleCount.value} 条` : "当前以盘后样本展示为主")
@@ -407,16 +455,25 @@ const summaryCards = computed(() => [
   },
   {
     key: "snapshot",
-    label: showingRealtimeSnapshot.value ? "9:25 快照" : "今日预测",
+    label: showingRealtimeSnapshot.value ? "9:25 快照" : "闭环结果",
     value: hasSelectedSnapshot.value ? `${allCandidates.value.length}` : "-",
     note: showingRealtimeSnapshot.value
       ? (isForcedQuerySnapshot.value ? `强制查询时间 ${quoteUpdatedAt.value}` : `快照时间 ${quoteUpdatedAt.value}`)
       : (showingPredictionTable.value ? "当前展示收盘后推送的待验证样本" : (selectedHistoricalSnapshot.value?.diagnostics?.note || "历史预测未恢复")),
   },
 ])
+function recommendationOptionLabel(date10: string) {
+  const recommendationDate = String(date10 || "").trim()
+  if (!recommendationDate) return "-"
+  const tradeDate = String(recommendationTradeDateMap.value[recommendationDate] || "").trim()
+  if (recommendationDate === latestRecommendationDate.value) {
+    return tradeDate ? `${tradeDate} 待验证（推荐于 ${recommendationDate}）` : `${recommendationDate} · 最新推荐`
+  }
+  return tradeDate ? `${tradeDate} 闭环（推荐于 ${recommendationDate}）` : recommendationDate
+}
 const emptyStateText = computed(() => {
   if (!hasValidPayload.value) return "当前暂无有效回测数据，明天 09:25-09:30 落地后会自动显示对应内容。"
-  if (hasCurrentPlan.value) return "收盘后推送的个股研究样本已经落进回测 JSON，当前先展示今日预测；到明天 09:25-09:30 再补真实竞价命中结果。"
+  if (hasCurrentPlan.value) return "收盘后推送的个股研究样本已经落进回测 JSON，当前先展示待验证推荐；到下一交易日 09:25-09:30 再补真实竞价命中结果。"
   if (!realtimeBuy.value?.reference_date) return "当前推荐还没到次日 09:25-09:30，明天窗口内会落地实时行情。"
   if (isForcedQuerySnapshot.value) return "当前已按 fore 模式直接用最新实时行情匹配财富密码结果。"
   if (!isEntryWindowTime(realtimeBuy.value?.quote_time)) return "当前暂无有效竞价快照，等明天 09:25-09:30 落地后再显示命中结果。"
@@ -425,7 +482,7 @@ const emptyStateText = computed(() => {
 const realtimeEmptyText = computed(() => {
   if (!hasValidPayload.value) return "当前暂无有效回测数据。"
   if (!isViewingCurrentRecommendation.value) return "所选推荐日没有原始 9:25 快照，但如果历史回测已落地，会在这里恢复命中结果。"
-  if (!hasCurrentPlan.value) return "当前还没有今日预测数据，先执行一次复盘脚本生成个股回测 JSON。"
+  if (!hasCurrentPlan.value) return "当前还没有待验证推荐数据，先执行一次复盘脚本生成个股回测 JSON。"
   if (!realtimeBuy.value?.reference_date) return "当前是收盘后待验证阶段，明天 09:25-09:30 会补充实时量价和命中结果。"
   if (isForcedQuerySnapshot.value) return "fore 模式已启用，但当前仍未拿到可用实时行情。"
   if (!isEntryWindowTime(realtimeBuy.value?.quote_time)) return "当前还没到有效竞价快照时间，明天 09:25-09:30 会自动显示真实命中结果。"
@@ -746,10 +803,10 @@ function snapshotReturnClass(row: any) {
           <div class="bt-subtitle">{{ summaryHeaderSubtitle }}</div>
         </div>
         <div class="bt-filter-box" v-if="availableRecommendationDates.length">
-          <label class="bt-filter-label" for="bt-recommendation-date">推荐日</label>
+          <label class="bt-filter-label" for="bt-recommendation-date">结果批次</label>
           <select id="bt-recommendation-date" class="bt-filter-select" v-model="selectedRecommendationDateInput">
             <option v-for="date10 in availableRecommendationDates" :key="date10" :value="date10">
-              {{ date10 }}{{ date10 === latestRecommendationDate ? " · 最新" : "" }}
+              {{ recommendationOptionLabel(date10) }}
             </option>
           </select>
         </div>
