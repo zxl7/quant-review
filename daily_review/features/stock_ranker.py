@@ -663,6 +663,7 @@ def build_picks_advisor(
             leader_rows=leader_rows,
             zt_map=zt_map,
             env_ctx=env_ctx,
+            blocked_codes=used_codes,
         )
 
         if not ml_members:
@@ -726,7 +727,12 @@ def build_picks_advisor(
                 if s.code not in buy_codes and s.score >= max(42, watch_floor - 3)
             ][:2]
         if not watch_candidates and ml_members:
-            watch_candidates = _fallback_watch_candidates(ml_members, buy_codes, limit=min(2, watch_n))
+            watch_candidates = _fallback_watch_candidates(
+                ml_members,
+                buy_codes,
+                watch_floor=watch_floor,
+                limit=min(2, watch_n),
+            )
 
         watch = _pick_balanced_candidates(
             watch_candidates,
@@ -740,8 +746,18 @@ def build_picks_advisor(
             watch=watch,
             watch_n=watch_n,
             leader_rows=leader_rows,
+            watch_floor=watch_floor,
+            blocked_codes=used_codes,
         )
-        watch = _ensure_leading_stocks_present(ml=ml, ml_members=ml_members, buy=buy, watch=watch, watch_n=watch_n)
+        watch = _ensure_leading_stocks_present(
+            ml=ml,
+            ml_members=ml_members,
+            buy=buy,
+            watch=watch,
+            watch_n=watch_n,
+            watch_floor=watch_floor,
+            blocked_codes=used_codes,
+        )
         
         for s in buy: s.action = "buy"
         for s in watch: s.action = "watch"
@@ -1028,6 +1044,8 @@ def _ensure_leading_stocks_present(
     buy: list[StockScore],
     watch: list[StockScore],
     watch_n: int,
+    watch_floor: int,
+    blocked_codes: set[str] | None = None,
 ) -> list[StockScore]:
     """
     把主线领涨股纳入推荐池。
@@ -1041,10 +1059,13 @@ def _ensure_leading_stocks_present(
         return watch
     member_map = {row.code: row for row in ml_members if row.code}
     selected_codes = {row.code for row in [*buy, *watch] if row.code}
+    selected_codes.update(blocked_codes or set())
     merged = list(watch)
     for code in ml.leading_stocks[:2]:
         leader = member_map.get(code)
         if leader is None or leader.code in selected_codes:
+            continue
+        if not _qualifies_for_watch_support(leader, watch_floor=watch_floor):
             continue
         selected_codes.add(leader.code)
         leader.action = "watch"
@@ -1067,12 +1088,15 @@ def _ensure_theme_leader_present(
     watch: list[StockScore],
     watch_n: int,
     leader_rows: dict[str, dict[str, Any]],
+    watch_floor: int,
+    blocked_codes: set[str] | None = None,
 ) -> list[StockScore]:
     """
     如果 leaders 明确给出了当前主线题材龙头，但常规 sector 归属没挂进去，
     也要把它补回推荐池。
     """
     selected_codes = {row.code for row in [*buy, *watch] if row.code}
+    selected_codes.update(blocked_codes or set())
     member_map = {row.code: row for row in ml_members if row.code}
     target_keys = set(_theme_candidate_keys(ml.name, *ml.constituents))
     if not target_keys:
@@ -1093,6 +1117,8 @@ def _ensure_theme_leader_present(
         return watch
     candidate = member_map.get(best_code)
     if candidate is None:
+        return watch
+    if not _qualifies_for_watch_support(candidate, watch_floor=watch_floor):
         return watch
     candidate.action = "watch"
     candidate.reasons = list(dict.fromkeys([*candidate.reasons, "题材龙头"]))
@@ -1118,6 +1144,7 @@ def _append_theme_leader_candidate(
     leader_rows: dict[str, dict[str, Any]],
     zt_map: dict[str, dict[str, Any]],
     env_ctx: dict[str, Any],
+    blocked_codes: set[str] | None = None,
 ) -> list[StockScore]:
     """
     题材龙头候选补全：
@@ -1129,6 +1156,7 @@ def _append_theme_leader_candidate(
     if not target_keys:
         return ml_members
     selected_codes = {row.code for row in ml_members if row.code}
+    selected_codes.update(blocked_codes or set())
     best_candidate: StockScore | None = None
     best_priority: tuple[float, int, float, float] | None = None
 
@@ -1323,6 +1351,21 @@ def _selection_sort_key(score: StockScore) -> tuple[float, ...]:
     )
 
 
+def _qualifies_for_watch_support(score: StockScore, *, watch_floor: int) -> bool:
+    """弱线允许少展示，但不再为了凑数硬塞明显偏弱的观察票。"""
+    min_score = max(40, watch_floor - 6)
+    if score.risk_penalty > 12:
+        return False
+    if score.score >= min_score:
+        return True
+    return (
+        score.zt_placement in {"relay", "watch"}
+        and score.relay_power_score >= max(50, min_score + 6)
+        and score.score >= max(36, min_score - 4)
+        and score.risk_penalty <= 8
+    )
+
+
 def _pick_balanced_candidates(
     candidates: list[StockScore],
     *,
@@ -1417,12 +1460,17 @@ def _fallback_watch_candidates(
     members: list[StockScore],
     excluded_codes: set[str],
     *,
+    watch_floor: int,
     limit: int,
 ) -> list[StockScore]:
     """弱主线兜底给出代表票，避免页面只剩主线标题没有个股。"""
     if limit <= 0:
         return []
-    candidates = [s for s in members if s.code not in excluded_codes]
+    candidates = [
+        s
+        for s in members
+        if s.code not in excluded_codes and _qualifies_for_watch_support(s, watch_floor=watch_floor)
+    ]
     ordered = sorted(
         candidates,
         key=lambda s: (

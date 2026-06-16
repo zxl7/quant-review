@@ -11,6 +11,8 @@ from unittest.mock import patch
 
 import daily_review.publish.web_bundle as web_bundle
 import scripts.build_stock_research_backtest as backtest
+from daily_review.features.ladder_builder import LadderResult, MainLine, TierCell
+from daily_review.features.stock_ranker import build_picks_advisor
 
 
 class StockResearchBacktestRowsTest(unittest.TestCase):
@@ -183,6 +185,118 @@ class StockResearchBacktestRowsTest(unittest.TestCase):
         self.assertTrue(payload["realtimeBuy"]["diagnostics"]["forced_query"])
         self.assertEqual(payload["lifecycle"]["quote_state"], "ready")
         self.assertTrue(payload["lifecycle"]["forced_query"])
+
+
+class PicksAdvisorStabilityTest(unittest.TestCase):
+    def test_does_not_duplicate_same_stock_across_main_lines(self) -> None:
+        ladder = LadderResult(
+            date="2026-06-16",
+            tiers={1: [], 2: [], 3: [], 4: []},
+            main_lines=[
+                MainLine(
+                    name="宽主线",
+                    is_chain=False,
+                    constituents=["AI", "算力"],
+                    confidence=0.82,
+                    biying_signal=0.6,
+                    em_signal=0.5,
+                    xgb_signal=0.4,
+                    leading_stocks=["000001"],
+                ),
+                MainLine(
+                    name="窄主线",
+                    is_chain=False,
+                    constituents=["AI"],
+                    confidence=0.78,
+                    biying_signal=0.6,
+                    em_signal=0.5,
+                    xgb_signal=0.4,
+                    leading_stocks=["000001"],
+                ),
+            ],
+        )
+        ladder.tiers = {
+            1: [
+                TierCell(
+                    code="000001",
+                    name="同一只票",
+                    lbc=2,
+                    cje_yi=45,
+                    turnover=8,
+                    seal_fund_yi=2.2,
+                    zbc=0,
+                    score=88,
+                    sectors=[("AI", 1.0)],
+                    primary_sector="AI",
+                )
+            ],
+            2: [],
+            3: [],
+            4: [],
+        }
+        market_data = {
+            "leaders": [{"code": "000001", "score": 88}],
+            "ztAnalysis": {"relay": [{"code": "000001", "factorScore": 88}], "watch": []},
+            "moodStage": {"cycle": "FERMENT", "dayState": "修复"},
+            "actionAdvisor": {"posture": "谨慎进攻"},
+        }
+
+        payload = build_picks_advisor(ladder=ladder, market_data=market_data, top_k_lines=2, buy_n=1, watch_n=2)
+        picked_codes = [
+            row["code"]
+            for group in payload.to_dict()["main_line_picks"]
+            for row in [*(group.get("buy") or []), *(group.get("watch") or [])]
+        ]
+
+        self.assertEqual(picked_codes.count("000001"), 1)
+
+    def test_weak_watch_fallback_does_not_force_low_quality_stock(self) -> None:
+        ladder = LadderResult(
+            date="2026-06-16",
+            tiers={1: [], 2: [], 3: [], 4: []},
+            main_lines=[
+                MainLine(
+                    name="弱主线",
+                    is_chain=False,
+                    constituents=["铜箔"],
+                    confidence=0.5,
+                    biying_signal=0.3,
+                    em_signal=0.2,
+                    xgb_signal=0.1,
+                ),
+            ],
+        )
+        ladder.tiers = {
+            1: [
+                TierCell(
+                    code="000002",
+                    name="低质票",
+                    lbc=1,
+                    cje_yi=8,
+                    turnover=2,
+                    seal_fund_yi=0.1,
+                    zbc=0,
+                    score=28,
+                    sectors=[("铜箔", 1.0)],
+                    primary_sector="铜箔",
+                )
+            ],
+            2: [],
+            3: [],
+            4: [],
+        }
+        market_data = {
+            "leaders": [{"code": "000002", "score": 28}],
+            "ztAnalysis": {"relay": [], "watch": []},
+            "moodStage": {"cycle": "ICE", "dayState": "分歧"},
+            "actionAdvisor": {"posture": "防守"},
+        }
+
+        payload = build_picks_advisor(ladder=ladder, market_data=market_data, top_k_lines=1, buy_n=1, watch_n=2)
+        picks = payload.to_dict()["main_line_picks"][0]
+
+        self.assertEqual(picks["buy"], [])
+        self.assertEqual(picks["watch"], [])
 
     def test_preserved_realtime_buy_reads_intraday_snapshot(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
