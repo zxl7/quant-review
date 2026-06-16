@@ -754,6 +754,38 @@ def save_prefetched_realtime_quotes(*, date10: str, items: dict[str, Any], as_of
     return path
 
 
+def _save_normalized_prefetched_realtime_quotes(*, date10: str, quotes_map: dict[str, dict[str, Any]], source: str) -> Path | None:
+    if len(date10) != 10 or not isinstance(quotes_map, dict) or not quotes_map:
+        return None
+    items: dict[str, Any] = {}
+    as_of = ""
+    for code6, quote in quotes_map.items():
+        if not isinstance(quote, dict):
+            continue
+        raw = quote.get("raw") if isinstance(quote.get("raw"), dict) else {}
+        quote_time = str(quote.get("time") or quote.get("quote_time") or "").strip()
+        auction_amount_yuan = quote.get("auction_amount_yuan")
+        if not auction_amount_yuan and quote.get("auction_amount_yi") not in (None, ""):
+            try:
+                auction_amount_yuan = float(quote.get("auction_amount_yi")) * 1e8
+            except Exception:
+                auction_amount_yuan = 0.0
+        payload = dict(raw) if raw else {
+            "dm": code6,
+            "t": quote_time,
+            "yc": quote.get("prev_close"),
+            "o": quote.get("open_price") or quote.get("auction_price"),
+            "p": quote.get("auction_price") or quote.get("last_price"),
+            "cje": auction_amount_yuan,
+        }
+        items[str(code6)] = payload
+        if not as_of:
+            as_of = str(payload.get("t") or quote_time).strip()
+    if not items:
+        return None
+    return save_prefetched_realtime_quotes(date10=date10, items=items, as_of=as_of, source=source)
+
+
 def _is_entry_window_time(hhmmss: str) -> bool:
     text = str(hhmmss or "").strip()
     if not text:
@@ -792,7 +824,9 @@ def _load_preserved_realtime_buy(latest_date10: str) -> dict[str, Any] | None:
         if str(realtime_buy.get("reference_date") or "") != latest_date10:
             continue
         quote_time = str(realtime_buy.get("quote_time") or "")
-        if not _is_entry_window_time(quote_time):
+        diagnostics = realtime_buy.get("diagnostics") if isinstance(realtime_buy.get("diagnostics"), dict) else {}
+        forced_query = bool(diagnostics.get("forced_query"))
+        if not quote_time or (not forced_query and not _is_entry_window_time(quote_time)):
             continue
         return json.loads(json.dumps(realtime_buy, ensure_ascii=False))
     return None
@@ -1139,6 +1173,8 @@ def _build_realtime_buy_payload(
     if isinstance(items, dict):
         raw_quotes.update(items)
     prefetched_as_of = str(prefetched.get("as_of") or "").strip() if isinstance(prefetched, dict) else ""
+    prefetched_source = str(prefetched.get("source") or "").strip() if isinstance(prefetched, dict) else ""
+    prefetched_codes = set(items.keys()) if isinstance(items, dict) else set()
     codes = [str(row.get("code") or "").strip() for row in latest_rows if str(row.get("code") or "").strip()]
 
     if not in_window:
@@ -1146,33 +1182,55 @@ def _build_realtime_buy_payload(
         # 直接从缓存构建 quotes_map
         quotes_map: dict[str, dict[str, Any]] = {}
         as_of = prefetched_as_of
+        allow_forced_prefetched = prefetched_source == "forced_query"
         for code6 in codes:
             raw = raw_quotes.get(code6)
             if not isinstance(raw, dict):
                 continue
             quote = _normalize_realtime_quote(raw)
-            if not quote or not _is_entry_window_time(str(quote.get("time") or "")):
+            if not quote:
                 continue
+            quote_time = str(quote.get("time") or "").strip()
+            if not _is_entry_window_time(quote_time):
+                if not (allow_forced_prefetched and code6 in prefetched_codes and quote_time):
+                    continue
             quotes_map[code6] = quote
-            if quote.get("time") and not as_of:
-                as_of = str(quote.get("time") or "").strip()
+            if quote_time and not as_of:
+                as_of = quote_time
+        source = "cache.raw.quotes" if quotes_map else "unavailable"
+        if allow_forced_prefetched and quotes_map:
+            source = "forced_query_cache"
         quote_diag: dict[str, Any] = {
             "requested": len(codes),
             "received": len(quotes_map),
             "remote_received": 0,
             "fallback_used": len(quotes_map),
             "missing": [c for c in codes if c not in quotes_map],
-            "source": "cache.raw.quotes" if quotes_map else "unavailable",
+            "source": source,
             "as_of": as_of,
-            "error": "窗口外无 preserved 快照，使用本地缓存数据（无远端请求）" if quotes_map else "窗口外无 preserved 快照且无可用缓存数据",
-            "request_window": "09:25-09:30",
+            "error": "",
+            "request_window": "forced" if allow_forced_prefetched and quotes_map else "09:25-09:30",
         }
+        if allow_forced_prefetched and quotes_map:
+            quote_diag["forced_query"] = True
+            quote_diag["error"] = "已复用此前 fore 模式落地的代理快照，当前不在 09:25-09:30 也继续沿用该结果。"
+        elif quotes_map:
+            quote_diag["error"] = "窗口外无 preserved 快照，使用本地缓存数据（无远端请求）"
+        else:
+            quote_diag["error"] = "窗口外无 preserved 快照且无可用缓存数据"
     else:
         quotes_map, quote_diag = _fetch_realtime_quotes(
             codes,
             fallback_quotes=raw_quotes if isinstance(raw_quotes, dict) else None,
             force=forced_query,
         )
+        quote_time = str(quote_diag.get("as_of") or "").strip()
+        if quotes_map and latest_date10 and (forced_query or _is_entry_window_time(quote_time)):
+            _save_normalized_prefetched_realtime_quotes(
+                date10=latest_date10,
+                quotes_map=quotes_map,
+                source="forced_query" if forced_query else "realtime_buy_snapshot",
+            )
 
     decisions = [_evaluate_realtime_signal(row, quotes_map.get(str(row.get("code") or "").strip())) for row in latest_rows]
     decisions.sort(key=lambda x: (_signal_rank(str(x.get("signal_status") or "")), -int(x.get("score") or 0), str(x.get("code") or "")))
@@ -1205,6 +1263,35 @@ def _build_realtime_buy_payload(
         "unavailable_list": unavailable_list,
         "diagnostics": quote_diag,
     }
+
+
+def _merge_historical_snapshot_row_with_realtime(
+    base_row: dict[str, Any],
+    decision_row: dict[str, Any] | None,
+) -> dict[str, Any]:
+    if not isinstance(decision_row, dict):
+        return base_row
+
+    merged = dict(base_row)
+    auction_price = decision_row.get("auction_price")
+    merged.update(
+        {
+            "signal_status": decision_row.get("signal_status") or merged.get("signal_status"),
+            "signal_label": decision_row.get("signal_label") or merged.get("signal_label"),
+            "decision_status": decision_row.get("decision_status") or merged.get("decision_status"),
+            "decision_label": decision_row.get("decision_label") or merged.get("decision_label"),
+            "prev_close": decision_row.get("prev_close") if decision_row.get("prev_close") is not None else merged.get("prev_close"),
+            "open_price": auction_price if auction_price is not None else merged.get("open_price"),
+            "auction_price": auction_price,
+            "auction_amount_yi": decision_row.get("auction_amount_yi"),
+            "auction_amount_need_yi": decision_row.get("auction_amount_need_yi"),
+            "gap_pct": decision_row.get("gap_pct") if decision_row.get("gap_pct") is not None else merged.get("gap_pct"),
+            "quote_time": str(decision_row.get("quote_time") or "").strip(),
+            "rule_text": str(decision_row.get("rule_text") or "").strip(),
+            "note": str(decision_row.get("note") or "").strip() or merged.get("note"),
+        }
+    )
+    return merged
 
 
 def _classify_open_window(record: dict[str, Any], entry_bar: dict[str, Any]) -> dict[str, Any]:
@@ -1451,6 +1538,81 @@ def _build_historical_snapshot_row(record: dict[str, Any]) -> dict[str, Any]:
     }
 
 
+def _build_historical_snapshot_from_prefetched_quotes(date10: str, rows: list[dict[str, Any]]) -> dict[str, Any] | None:
+    prefetched = load_prefetched_realtime_quotes(date10)
+    items = prefetched.get("items") if isinstance(prefetched, dict) else None
+    if not isinstance(items, dict) or not items:
+        return None
+
+    prefetched_source = str(prefetched.get("source") or "").strip() if isinstance(prefetched, dict) else ""
+    allow_non_window_quotes = prefetched_source == "forced_query"
+    quote_map: dict[str, dict[str, Any]] = {}
+    for code6, raw in items.items():
+        if not isinstance(raw, dict):
+            continue
+        quote = _normalize_realtime_quote(raw)
+        if not quote:
+            continue
+        quote_time = str(quote.get("time") or "").strip()
+        if not _is_entry_window_time(quote_time) and not (allow_non_window_quotes and quote_time):
+            continue
+        quote_map[str(code6)] = quote
+    if not quote_map:
+        return None
+
+    merged_rows: list[dict[str, Any]] = []
+    for row in rows:
+        base_row = _build_historical_snapshot_row(row)
+        code6 = str(row.get("code") or "").strip()
+        quote = quote_map.get(code6)
+        if not quote:
+            merged_rows.append(base_row)
+            continue
+        decision_row = _evaluate_realtime_signal(row, quote)
+        merged_rows.append(_merge_historical_snapshot_row_with_realtime(base_row, decision_row))
+
+    merged_rows.sort(key=lambda x: (_signal_rank(str(x.get("signal_status") or "")), -int(x.get("score") or 0), str(x.get("code") or "")))
+    buy_list = [row for row in merged_rows if row.get("decision_status") == "buy"]
+    pending_list = [row for row in merged_rows if row.get("decision_status") == "pending"]
+    rejected_list = [row for row in merged_rows if row.get("decision_status") == "reject"]
+    unavailable_list = [row for row in merged_rows if row.get("decision_status") == "unavailable"]
+    direct_super = [row for row in buy_list if row.get("signal_status") == "super"]
+    direct_expected = [row for row in buy_list if row.get("signal_status") == "expected"]
+    trade_date10 = str(rows[0].get("trade_date10") or "").strip() if rows else ""
+    as_of = str(prefetched.get("as_of") or "").strip() if isinstance(prefetched, dict) else ""
+    reused_label = "fore 代理快照" if allow_non_window_quotes else "09:25 竞价快照"
+    partial_count = max(len(rows) - len(quote_map), 0)
+    note = f"已复用 {trade_date10 or '-'} 的{reused_label}恢复竞价判断；收盘收益字段仍按历史闭环记录计算。"
+    if partial_count > 0:
+        note += f" 其中 {partial_count} 只未命中原始快照，已回退为收盘后闭环恢复。"
+    return {
+        "reference_date": date10,
+        "trade_date": trade_date10,
+        "entry_window": "09:25-09:30",
+        "quote_time": as_of,
+        "source_module": "ztAnalysis.relay/watch",
+        "quote_source": "prefetched_realtime_quotes",
+        "candidate_count": len(merged_rows),
+        "quoted_count": len(quote_map),
+        "buy_count": len(buy_list),
+        "direct_super_count": len(direct_super),
+        "direct_expected_count": len(direct_expected),
+        "pending_count": len(pending_list),
+        "rejected_count": len(rejected_list),
+        "unavailable_count": len(unavailable_list),
+        "buy_list": buy_list,
+        "pending_list": pending_list,
+        "rejected_list": rejected_list,
+        "unavailable_list": unavailable_list,
+        "diagnostics": {
+            "source": str(prefetched.get("source") or "prefetched_realtime_quotes"),
+            "recovered": False,
+            "used_prefetched_snapshot": True,
+            "note": note,
+        },
+    }
+
+
 def _build_historical_snapshots(backtest_rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
     if not backtest_rows:
         return []
@@ -1466,6 +1628,10 @@ def _build_historical_snapshots(backtest_rows: list[dict[str, Any]]) -> list[dic
             grouped[date10],
             key=lambda row: (int(row.get("daily_rank") or 9999), -int(float(row.get("score") or 0)), str(row.get("code") or "")),
         )
+        prefetched_snapshot = _build_historical_snapshot_from_prefetched_quotes(date10, rows)
+        if prefetched_snapshot:
+            snapshots.append(prefetched_snapshot)
+            continue
         decisions = [_build_historical_snapshot_row(row) for row in rows]
         buy_list = [row for row in decisions if row.get("decision_status") == "buy"]
         pending_list = [row for row in decisions if row.get("decision_status") == "pending"]

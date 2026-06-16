@@ -308,9 +308,125 @@ class StockResearchBacktestRowsTest(unittest.TestCase):
         self.assertEqual(snapshot["trade_date"], "2026-06-04")
         self.assertEqual(snapshot["buy_count"], 1)
         self.assertEqual(snapshot["quoted_count"], 1)
-        self.assertEqual(snapshot["diagnostics"]["source"], "recovered_from_backtest_records")
+        self.assertEqual(snapshot["diagnostics"]["source"], "unit_test")
+        self.assertTrue(snapshot["diagnostics"]["used_prefetched_snapshot"])
+        self.assertEqual(snapshot["quote_time"], "2026-06-04 09:25:03")
+        self.assertEqual(snapshot["buy_list"][0]["auction_price"], 10.2)
+        self.assertEqual(snapshot["buy_list"][0]["prev_close"], 10.0)
         self.assertEqual(payload["diagnostics"]["filtered_non_backtest_codes"], ["000004"])
         self.assertEqual(payload["diagnostics"]["display_only_codes"], ["000004"])
+
+    def test_forced_query_persists_snapshot_for_later_historical_reuse(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            cache_dir = Path(tmp) / "cache"
+            cache_dir.mkdir()
+            backtest_payload = {
+                "date": "2026-06-03",
+                "meta": {"mode": "eod"},
+                "ztAnalysis": {
+                    "relay": [
+                        {
+                            "code": "000003",
+                            "name": "今天接力",
+                            "factorScore": 90,
+                            "reason": "预期 +1% ~ +3%",
+                        }
+                    ],
+                    "watch": [],
+                },
+            }
+
+            with patch.object(backtest, "CACHE_DIR", cache_dir), patch.object(
+                backtest,
+                "_get_price_histories",
+                return_value=(
+                    {
+                        "000003": [
+                            {"date": "2026-06-03", "open": 10.0, "close": 10.0, "prev_close": 9.9},
+                        ]
+                    },
+                    {"source": "mock", "fetched": 1, "cached": 0, "missing": []},
+                ),
+            ), patch.object(
+                backtest,
+                "fetch_stocks_realtime",
+                return_value=[
+                    {
+                        "dm": "000003",
+                        "t": "2026-06-04 13:14:15",
+                        "yc": 10.0,
+                        "o": 10.2,
+                        "p": 10.3,
+                        "cje": 200000000,
+                    }
+                ],
+            ):
+                backtest.sync_stock_research_backtest_source(market_data=backtest_payload)
+                payload = backtest.build_stock_research_backtest_payload(query_tag="fore")
+                persisted = backtest.load_prefetched_realtime_quotes("2026-06-03")
+
+        self.assertEqual(payload["realtimeBuy"]["quote_time"], "2026-06-04 13:14:15")
+        self.assertEqual(persisted["source"], "forced_query")
+        self.assertEqual(persisted["items"]["000003"]["t"], "2026-06-04 13:14:15")
+
+    def test_forced_query_cache_is_reused_outside_window(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            cache_dir = Path(tmp) / "cache"
+            cache_dir.mkdir()
+            backtest_payload = {
+                "date": "2026-06-03",
+                "meta": {"mode": "eod"},
+                "ztAnalysis": {
+                    "relay": [
+                        {
+                            "code": "000003",
+                            "name": "今天接力",
+                            "factorScore": 90,
+                            "reason": "预期 +1% ~ +3%",
+                        }
+                    ],
+                    "watch": [],
+                },
+            }
+
+            with patch.object(backtest, "CACHE_DIR", cache_dir), patch.object(
+                backtest,
+                "_get_price_histories",
+                return_value=(
+                    {
+                        "000003": [
+                            {"date": "2026-06-03", "open": 10.0, "close": 10.0, "prev_close": 9.9},
+                        ]
+                    },
+                    {"source": "mock", "fetched": 1, "cached": 0, "missing": []},
+                ),
+            ), patch.object(
+                backtest, "_should_request_realtime_quotes", return_value=False
+            ), patch.object(
+                backtest, "_load_preserved_realtime_buy", return_value=None
+            ):
+                backtest.sync_stock_research_backtest_source(market_data=backtest_payload)
+                backtest.save_prefetched_realtime_quotes(
+                    date10="2026-06-03",
+                    items={
+                        "000003": {
+                            "dm": "000003",
+                            "t": "2026-06-04 13:14:15",
+                            "yc": 10.0,
+                            "o": 10.2,
+                            "p": 10.3,
+                            "cje": 200000000,
+                        }
+                    },
+                    as_of="2026-06-04 13:14:15",
+                    source="forced_query",
+                )
+                payload = backtest.build_stock_research_backtest_payload()
+
+        self.assertEqual(payload["realtimeBuy"]["quote_time"], "2026-06-04 13:14:15")
+        self.assertEqual(payload["realtimeBuy"]["diagnostics"]["source"], "forced_query_cache")
+        self.assertTrue(payload["realtimeBuy"]["diagnostics"]["forced_query"])
+        self.assertEqual(payload["lifecycle"]["quote_state"], "ready")
 
 
 class StockResearchBacktestPublishFreshnessTest(unittest.TestCase):
