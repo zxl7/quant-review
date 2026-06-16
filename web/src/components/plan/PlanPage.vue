@@ -96,7 +96,7 @@ const ztDebugPlacementClass = (placement: string) => {
 
 const ztTagRows = (row: any) => (Array.isArray(row?.tagRows) ? row.tagRows : [])
 
-// 推荐线：来自 watchlist.picks_advisor，合并展示在板块·梯队 内。
+// 推荐线：来自 watchlist.picks_advisor，合并展示在板块🌟梯队🌟个股 内。
 type PickStock = {
   code: string
   name: string
@@ -908,7 +908,7 @@ const sectorPicksMeta = computed(() => {
     <div class="card" data-page="plan" id="sec-sector-tier-picks" v-if="sectorTierPicks.length">
       <div class="card-header">
         <div>
-          <div class="card-title">板块·梯队 </div>
+          <div class="card-title">板块🌟梯队🌟个股 </div>
           <div class="stp-subtitle">
             <span class="stp-dot-realtime"></span>
             实时驱动
@@ -1107,7 +1107,7 @@ const sectorPicksMeta = computed(() => {
       <div class="card-header">
         <div class="zt-header-left">
           <div class="card-title">
-            <span>涨停数据分析</span>
+            <span>涨停分析</span>
             <span class="zt-header-sector" v-if="planSource.ztAnalysis?.meta?.tierThemeCount">
               梯队：{{ planSource.ztAnalysis?.meta?.tierThemeCount }}板块
               <template v-if="planSource.ztAnalysis?.meta?.tierThemeTop">（{{ planSource.ztAnalysis?.meta?.tierThemeTop }}）</template>
@@ -1124,7 +1124,7 @@ const sectorPicksMeta = computed(() => {
         </div>
         <div class="zt-header-actions">
           <button class="plan-toggle-btn" :class="{ expanded: ztAnalysisExpanded }" type="button" :aria-expanded="ztAnalysisExpanded" @click="ztAnalysisExpanded = !ztAnalysisExpanded">
-            <span class="plan-toggle-btn__label">涨停数据分析</span>
+            <span class="plan-toggle-btn__label">涨停分析</span>
             <span class="plan-toggle-btn__state">{{ ztAnalysisExpanded ? "收起" : "展开" }}</span>
           </button>
         </div>

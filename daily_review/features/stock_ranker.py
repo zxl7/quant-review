@@ -387,6 +387,18 @@ def infer_style_tag(metrics: ScoringMetrics) -> tuple[str, int]:
         if metrics.zt_leader_philosophy >= 88 or metrics.zt_leader_factor >= 84:
             return "龙头博弈", 92
         return "接力", 82
+    if (
+        c.lbc >= 2
+        and (
+            metrics.zt_relay_factor >= 72
+            or metrics.zt_leader_factor >= 76
+            or metrics.zt_leader_philosophy >= 80
+            or metrics.leaders_score >= 82
+        )
+    ):
+        if metrics.zt_leader_philosophy >= 86 or metrics.leaders_score >= 88:
+            return "龙头博弈", 88
+        return "接力", 80
     if c.cje_yi >= 50 or metrics.zt_capacity_factor >= 78:
         return "容量", 78
     if c.lbc == 1:
@@ -1337,16 +1349,120 @@ def _watch_floor(ml: MainLine, line_penalty: int, env_ctx: dict[str, Any]) -> in
     return floor
 
 
+def _liquidity_comfort_score(cje_yi: float) -> float:
+    """短线排序更看重舒适成交区间，而不是单纯越大越好。"""
+    cje = float(cje_yi or 0.0)
+    if 8 <= cje <= 60:
+        return 5.0
+    if 60 < cje <= 120:
+        return 4.0
+    if 3 <= cje < 8:
+        return 2.5
+    if 120 < cje <= 180:
+        return 2.0
+    if 0 < cje < 3:
+        return 0.5
+    return 0.0
+
+
+def _certainty_sort_score(score: StockScore) -> float:
+    """确定性：主线贴合、封板质量、换手健康、风险约束。"""
+    bd = score.breakdown or {}
+    certainty = 0.0
+    certainty += float(bd.get("贴合度", 0)) * 1.3
+    certainty += float(bd.get("封板", 0)) * 1.1
+    certainty += float(bd.get("换手", 0)) * 0.7
+    certainty += float(score.primary_confidence or 0.0) * 18.0
+    certainty += min(float(score.seal_fund_yi or 0.0), 5.0) * 1.2
+    certainty += max(0.0, 6.0 - float(score.risk_penalty or 0.0)) * 0.8
+    certainty += max(0.0, float(score.env_adjust or 0.0)) * 0.5
+    certainty += max(0.0, float(score.tide_adjust or 0.0)) * 0.35
+    if 3 <= float(score.turnover or 0.0) <= 20:
+        certainty += 1.5
+    elif float(score.turnover or 0.0) > 30:
+        certainty -= 3.0
+    return round(certainty, 2)
+
+
+def _identity_sort_score(score: StockScore) -> float:
+    """辨识度：龙头属性、连板地位、核心标签。"""
+    identity = 0.0
+    identity += float(score.leaders_score or 0.0) * 0.22
+    identity += _style_rank(score.style_tag) * 1.8
+    identity += float(min(score.lbc, 4)) * 3.5
+    identity += min(float(score.seal_fund_yi or 0.0), 5.0) * 1.4
+
+    text_pool = [str(text) for text in [*(score.reasons or []), *(score.bonus_reasons or [])] if text]
+    if any("核心" in text for text in text_pool):
+        identity += 3.5
+    if any(("题材龙头" in text) or ("主线领涨" in text) or ("先锋龙" in text) for text in text_pool):
+        identity += 5.0
+    return round(identity, 2)
+
+
+def _opportunity_sort_score(score: StockScore) -> float:
+    """收益弹性：在可控风险前提下，优先短线效率更高的票。"""
+    bd = score.breakdown or {}
+    opportunity = 0.0
+    opportunity += float(score.relay_power_score or 0.0) * 0.45
+    opportunity += float(bd.get("板块", 0)) * 0.8
+    opportunity += float(bd.get("量能", 0)) * 0.35
+    opportunity += _liquidity_comfort_score(score.cje_yi) * 1.4
+    if score.lbc >= 2:
+        opportunity += 4.0
+    if score.lbc >= 3:
+        opportunity += 2.0
+    if score.zt_placement == "relay":
+        opportunity += 5.0
+    elif score.zt_placement == "watch":
+        opportunity += 2.0
+    if score.style_tag == "龙头博弈":
+        opportunity += 6.0
+    elif score.style_tag == "接力":
+        opportunity += 5.0
+    elif score.style_tag == "容量":
+        opportunity += 0.8
+    elif score.style_tag == "低位试错":
+        opportunity += 0.5
+    if score.lbc == 1 and score.style_tag == "容量":
+        opportunity -= 2.5
+    opportunity -= max(0.0, float(score.risk_penalty or 0.0) - 6.0)
+    return round(opportunity, 2)
+
+
+def _selection_priority(score: StockScore) -> float:
+    """综合优先级：收益为底，确定性和辨识度做放大，风险做硬折减。"""
+    certainty = _certainty_sort_score(score)
+    identity = _identity_sort_score(score)
+    opportunity = _opportunity_sort_score(score)
+    priority = float(score.score)
+    priority += certainty * 0.20
+    priority += identity * 0.24
+    priority += opportunity * 0.18
+    priority -= float(score.risk_penalty or 0.0) * 0.55
+    if float(score.env_adjust or 0.0) < -4:
+        priority -= 2.0
+    if float(score.tide_adjust or 0.0) < -6:
+        priority -= 2.0
+    if score.lbc >= 2 and score.style_tag in {"龙头博弈", "接力"}:
+        priority += 3.0
+    if score.lbc == 1 and score.style_tag == "容量":
+        priority -= 2.5
+    return round(priority, 2)
+
+
 def _selection_sort_key(score: StockScore) -> tuple[float, ...]:
-    """排序仍以分数为核心，风格和位置只做增强，不反客为主。"""
+    """排序以综合优先级为核心，小分差时优先更稳、更有辨识度的票。"""
     return (
+        _selection_priority(score),
         float(score.score),
-        1.5 if score.zt_placement == "relay" else 0.0,
+        _certainty_sort_score(score),
+        _identity_sort_score(score),
+        _opportunity_sort_score(score),
+        float(score.primary_confidence or 0.0),
+        1.0 if score.zt_placement == "relay" else 0.0,
         1.0 if score.style_tag == "龙头博弈" else 0.0,
-        0.6 if score.style_tag == "接力" else 0.0,
-        0.3 if score.style_tag == "容量" else 0.0,
         float(min(score.lbc, 6)),
-        float(min(score.cje_yi / 20.0, 6.0)),
         -float(score.risk_penalty),
     )
 

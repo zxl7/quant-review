@@ -12,7 +12,7 @@ from unittest.mock import patch
 import daily_review.publish.web_bundle as web_bundle
 import scripts.build_stock_research_backtest as backtest
 from daily_review.features.ladder_builder import LadderResult, MainLine, TierCell
-from daily_review.features.stock_ranker import build_picks_advisor
+from daily_review.features.stock_ranker import build_picks_advisor, StockScore, _selection_sort_key
 
 
 class StockResearchBacktestRowsTest(unittest.TestCase):
@@ -297,6 +297,114 @@ class PicksAdvisorStabilityTest(unittest.TestCase):
 
         self.assertEqual(picks["buy"], [])
         self.assertEqual(picks["watch"], [])
+
+    def test_sorting_prefers_certainty_identity_and_lower_risk_on_close_scores(self) -> None:
+        risky = StockScore(
+            code="000010",
+            name="高弹性高风险",
+            action="skip",
+            score=66,
+            main_line="测试主线",
+            primary_sector="AI",
+            primary_confidence=0.45,
+            breakdown={"贴合度": 10, "封板": 4, "换手": 2, "板块": 7, "量能": 12},
+            reasons=["AI"],
+            cautions=["换手过热"],
+            lbc=1,
+            cje_yi=150,
+            seal_fund_yi=0.3,
+            turnover=38,
+            leaders_score=20,
+            env_adjust=1,
+            relay_adjust=0,
+            risk_penalty=11,
+            zt_placement="watch",
+            style_tag="容量",
+            style_confidence=78,
+            relay_power_score=62,
+        )
+        steady = StockScore(
+            code="000011",
+            name="稳健核心",
+            action="skip",
+            score=64,
+            main_line="测试主线",
+            primary_sector="AI",
+            primary_confidence=0.82,
+            breakdown={"贴合度": 20, "封板": 11, "换手": 10, "板块": 7, "量能": 9},
+            reasons=["AI核心", "主线领涨"],
+            cautions=[],
+            lbc=2,
+            cje_yi=36,
+            seal_fund_yi=2.6,
+            turnover=9,
+            leaders_score=86,
+            env_adjust=3,
+            relay_adjust=8,
+            risk_penalty=3,
+            zt_placement="relay",
+            style_tag="龙头博弈",
+            style_confidence=92,
+            relay_power_score=68,
+        )
+
+        ordered = sorted([risky, steady], key=_selection_sort_key, reverse=True)
+
+        self.assertEqual([row.code for row in ordered], ["000011", "000010"])
+
+    def test_sorting_prefers_lbc2_relay_over_lbc1_capacity_when_quality_is_close(self) -> None:
+        relay = StockScore(
+            code="000020",
+            name="龙头接力",
+            action="skip",
+            score=62,
+            main_line="测试主线",
+            primary_sector="AI",
+            primary_confidence=0.76,
+            breakdown={"贴合度": 16, "封板": 10, "换手": 8, "板块": 7, "量能": 8},
+            reasons=["AI核心", "主线领涨"],
+            cautions=[],
+            lbc=2,
+            cje_yi=42,
+            seal_fund_yi=2.1,
+            turnover=10,
+            leaders_score=84,
+            env_adjust=2,
+            relay_adjust=10,
+            risk_penalty=4,
+            zt_placement="relay",
+            style_tag="龙头博弈",
+            style_confidence=92,
+            relay_power_score=66,
+        )
+        capacity = StockScore(
+            code="000021",
+            name="容量首板",
+            action="skip",
+            score=63,
+            main_line="测试主线",
+            primary_sector="AI",
+            primary_confidence=0.88,
+            breakdown={"贴合度": 18, "封板": 9, "换手": 10, "板块": 7, "量能": 12},
+            reasons=["AI", "板块强共振"],
+            cautions=[],
+            lbc=1,
+            cje_yi=95,
+            seal_fund_yi=2.8,
+            turnover=12,
+            leaders_score=60,
+            env_adjust=2,
+            relay_adjust=2,
+            risk_penalty=4,
+            zt_placement="",
+            style_tag="容量",
+            style_confidence=78,
+            relay_power_score=52,
+        )
+
+        ordered = sorted([capacity, relay], key=_selection_sort_key, reverse=True)
+
+        self.assertEqual([row.code for row in ordered], ["000020", "000021"])
 
     def test_preserved_realtime_buy_reads_intraday_snapshot(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
