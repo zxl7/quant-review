@@ -1145,8 +1145,19 @@ def _evaluate_realtime_signal(record: dict[str, Any], quote: dict[str, Any] | No
         {
             "prev_close": round(prev_close, 2) if prev_close > 0 else None,
             "auction_price": round(auction_price, 2) if auction_price > 0 else None,
+            "open_price": round(auction_price, 2) if auction_price > 0 else None,
+            "close_price": None,
+            "close_pct": None,
             "auction_amount_yi": round(auction_amount_yi, 2),
             "gap_pct": gap_pct,
+            "trade_date10": str(record.get("trade_date10") or "").strip(),
+            "next_day_status": "pending",
+            "next_day_label": "隔日收益",
+            "next_day_return_pct": None,
+            "hold_2d_status": "pending",
+            "hold_2d_return_pct": None,
+            "hold_3d_status": "pending",
+            "hold_3d_return_pct": None,
         }
     )
     if prev_close <= 0 or auction_price <= 0 or auction_amount_yi <= 0:
@@ -1830,12 +1841,20 @@ def _merge_current_pool_with_realtime(rows: list[dict[str, Any]], realtime_buy: 
         open_check = performance.get("open_check") if isinstance(performance.get("open_check"), dict) else {}
         if str(open_check.get("status") or "") == "missing":
             signal_status = str(decision.get("signal_status") or "")
+            auction_price = decision.get("auction_price")
+            prev_close = decision.get("prev_close")
+            gap_pct = decision.get("gap_pct")
             performance["open_check"] = {
                 "status": signal_status or ("expected" if decision.get("decision_status") == "buy" else "reject"),
                 "label": decision.get("signal_label") or decision.get("decision_label") or "待判断",
-                "gap_pct": decision.get("gap_pct"),
+                "gap_pct": gap_pct,
                 "note": decision.get("note") or "已按 9:25 实时竞价补齐开盘判断。",
                 "can_enter": str(decision.get("decision_status") or "") == "buy",
+                "prev_close": round(float(prev_close), 2) if prev_close not in (None, "") else None,
+                "open_price": round(float(auction_price), 2) if auction_price not in (None, "") else None,
+                "close_price": None,
+                "close_pct": None,
+                "gap_trap": False,
             }
             for key, label, _ in STRATEGIES:
                 item = performance.get(key) if isinstance(performance.get(key), dict) else {}
@@ -1846,6 +1865,31 @@ def _merge_current_pool_with_realtime(rows: list[dict[str, Any]], realtime_buy: 
                         "note": "已拿到 9:25 开盘判断，待收盘后补齐收益表现。",
                     }
         rec["performance"] = performance
+        if decision.get("prev_close") not in (None, ""):
+            rec["prev_close"] = decision.get("prev_close")
+        if decision.get("auction_price") not in (None, ""):
+            rec["open_price"] = decision.get("auction_price")
+            rec["auction_price"] = decision.get("auction_price")
+        if decision.get("gap_pct") not in (None, ""):
+            rec["gap_pct"] = decision.get("gap_pct")
+        if decision.get("auction_amount_yi") not in (None, ""):
+            rec["auction_amount_yi"] = decision.get("auction_amount_yi")
+        if decision.get("auction_amount_need_yi") not in (None, ""):
+            rec["auction_amount_need_yi"] = decision.get("auction_amount_need_yi")
+        if decision.get("quote_time"):
+            rec["quote_time"] = str(decision.get("quote_time") or "").strip()
+        if decision.get("signal_status"):
+            rec["signal_status"] = decision.get("signal_status")
+        if decision.get("signal_label"):
+            rec["signal_label"] = decision.get("signal_label")
+        if decision.get("decision_status"):
+            rec["decision_status"] = decision.get("decision_status")
+        if decision.get("decision_label"):
+            rec["decision_label"] = decision.get("decision_label")
+        if decision.get("rule_text"):
+            rec["rule_text"] = decision.get("rule_text")
+        if decision.get("note"):
+            rec["note"] = decision.get("note")
         merged_rows.append(rec)
     return merged_rows
 
