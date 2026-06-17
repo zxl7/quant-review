@@ -20,12 +20,12 @@ on:
         default: ""
         type: string
       stock_research_query_tag:
-        description: "个股研究竞价查询 tag；填 fore 可强制忽略 09:25 窗口直接落财富密码快照"
+        description: "个股研究竞价查询 tag；留空则自动预检今日快照，填 fore 可手动补抓一次"
         required: false
         default: ""
         type: string
   # 工作日北京时间 09:26-17:00 的发布统一由当前 workflow 承接：
-  # - 09:26：直接执行一次正式 fetch，并强制带 fore，保证当天第一次更新就落下财富密码匹配结果
+  # - 09:26：直接执行一次正式 fetch，若当天快照缺失则补 fore（只补一次）
   # - 09:35-11:30 / 13:00-14:59：每 5 分钟心跳一次
   # - 15:00 / 16:00 / 17:00：收盘后各跑一次
   schedule:
@@ -81,7 +81,7 @@ jobs:
           echo "DEBUG: beijing_now=${now_bj}"
           now_min=$((10#$(date +%H)*60 + 10#$(date +%M)))
           # workflow 本身的允许窗口：
-          # - 09:26-09:34：允许执行当天第一次正式 fetch，并强制带 fore；
+          # - 09:26-09:34：允许执行当天第一次正式 fetch，并在缺快照时补 fore；
           # - 09:35-11:30 / 13:00-14:59：允许执行主页面发布；
           # - 15:00 / 16:00 / 17:00：允许执行收盘版发布。
           hit_open_fore=false
@@ -336,7 +336,7 @@ jobs:
           schedule_mode="${{ steps.timecheck.outputs.mode || '' }}"
 
           # 仅对常规定时窗口保留这层保护；
-          # - 9:26 的 schedule 会直接跑正式 fetch + fore；
+          # - 9:26 的 schedule 会先做快照预检，再决定是否补 fore；
           # - push / workflow_dispatch 允许立即进入主流程，并在缺快照时自动补 fore。
           warmup_hit=false
           if [ "${event_name}" = "schedule" ] && [ "${schedule_mode}" = "open_fore" ]; then
@@ -370,7 +370,7 @@ jobs:
           set -euo pipefail
           # 所有触发方式统一使用同一套“当前时间 + 最近交易日”判定。
           # schedule 触发时，直接承接 timecheck 的窗口判定：
-          # - open_fore：09:26 的首次正式 fetch，并强制带 fore
+          # - open_fore：09:26 的首次正式 fetch，优先按需补 fore
           # - intraday：仅刷新实时盯盘运行时
           # - eod：收盘后全量复盘发布
           latest_trade="${{ steps.tradeday.outputs.latest_trade_date }}"
@@ -428,6 +428,60 @@ jobs:
         run: |
           chmod +x ./qr.sh || true
 
+      - name: Resolve stock research query tag
+        id: stockresearch
+        if: ${{ (github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true') && steps.warmup.outputs.skip != 'true' && (github.event_name != 'schedule' || steps.tradeday.outputs.is_trade_today == 'true') && steps.pushmode.outputs.mode != 'intraday' }}
+        run: |
+          set -euo pipefail
+          mode="${{ steps.pushmode.outputs.mode }}"
+          run_date="${{ steps.pushmode.outputs.date10 }}"
+          is_trade_today="${{ steps.tradeday.outputs.is_trade_today }}"
+          input_query_tag="${{ github.event.inputs.stock_research_query_tag || '' }}"
+          effective_query_tag="$(
+            MODE="${mode}" \
+            RUN_DATE="${run_date}" \
+            IS_TRADE_TODAY="${is_trade_today}" \
+            INPUT_QUERY_TAG="${input_query_tag}" \
+            python3 - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          mode = os.environ["MODE"].strip()
+          run_date = os.environ["RUN_DATE"].strip()
+          is_trade_today = os.environ["IS_TRADE_TODAY"].strip() == "true"
+          input_query_tag = os.environ["INPUT_QUERY_TAG"].strip()
+
+          def has_valid_snapshot(path: Path) -> bool:
+              if not path.exists():
+                  return False
+              try:
+                  data = json.loads(path.read_text(encoding="utf-8"))
+              except Exception:
+                  return False
+              backtest = data.get("stockResearchBacktest") if isinstance(data, dict) else {}
+              realtime_buy = backtest.get("realtimeBuy") if isinstance(backtest, dict) else {}
+              diagnostics = realtime_buy.get("diagnostics") if isinstance(realtime_buy, dict) else {}
+              quote_time = str(realtime_buy.get("quote_time") or "").strip()
+              source = str(diagnostics.get("source") or "").strip()
+              return (
+                  quote_time.startswith(run_date)
+                  and len(quote_time) >= 19
+                  and source not in {"unavailable", "forced_query_unavailable"}
+              )
+
+          if input_query_tag:
+              print(input_query_tag)
+          elif mode == "intraday" or not is_trade_today:
+              print("")
+          else:
+              path = Path("cache") / f"market_data-{run_date.replace('-', '')}.json"
+              print("" if has_valid_snapshot(path) else "fore")
+          PY
+          )"
+          echo "effective_query_tag=${effective_query_tag}" >> "$GITHUB_OUTPUT"
+          echo "Resolved stock research query tag: ${effective_query_tag:-<none>}"
+
       - name: Generate latest report (online fetch -> offline pipeline rebuild)
         if: ${{ (github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true') && steps.warmup.outputs.skip != 'true' && (github.event_name != 'schedule' || steps.tradeday.outputs.is_trade_today == 'true') && steps.pushmode.outputs.mode != 'intraday' }}
         timeout-minutes: 12
@@ -442,61 +496,20 @@ jobs:
           fi
           mode="${{ steps.pushmode.outputs.mode }}"
           schedule_mode="${{ steps.timecheck.outputs.mode || '' }}"
-          query_tag="${{ steps.pushmode.outputs.stock_research_query_tag || '' }}"
+          query_tag="${{ steps.stockresearch.outputs.effective_query_tag || '' }}"
           is_trade_today="${{ steps.tradeday.outputs.is_trade_today }}"
           echo "Run mode=${mode}"
           run_date="${{ steps.pushmode.outputs.date10 }}"
-          ran_fore=false
           if [ "${mode}" = "intraday" ]; then
             # 盘中：只跑轻量 intraday，刷新实时情绪/快照；明日接力/观察保留上一份收盘推演。
             PRESERVE_ZT_ANALYSIS=1 PYTHONPATH=. python3 -u -m daily_review.cli --mode intraday --date "${run_date}"
           else
-            # 9:26 定时任务：直接正式 fetch，并强制带 fore。
-            # 手动 workflow_dispatch：允许通过 stock_research_query_tag=fore 显式强制补抓。
+            # 先预检今天是否已有有效财富密码快照；没有才补 fore。
             if [ -n "${query_tag}" ]; then
               ./qr.sh fetch "${run_date}" "${query_tag}"
-              if [ "${query_tag}" = "fore" ]; then
-                ran_fore=true
-              fi
-            elif [ "${{ github.event_name }}" = "schedule" ] && [ "${schedule_mode}" = "open_fore" ]; then
-              ./qr.sh fetch "${run_date}" fore
-              ran_fore=true
             else
               # 其他触发方式：保持原有在线全量 fetch。
               ./qr.sh fetch "${run_date}"
-            fi
-          fi
-          if [ "${mode}" != "intraday" ] && [ "${is_trade_today}" = "true" ] && [ "${ran_fore}" != "true" ]; then
-            NEED_FORE="$(
-              RUN_DATE="${run_date}" python3 - <<'PY'
-          import json
-          import os
-          from pathlib import Path
-
-          run_date = os.environ["RUN_DATE"]
-          path = Path("cache") / f"market_data-{run_date.replace('-', '')}.json"
-          need = "1"
-          if path.exists():
-              try:
-                  data = json.loads(path.read_text(encoding="utf-8"))
-                  backtest = data.get("stockResearchBacktest") if isinstance(data, dict) else {}
-                  realtime_buy = backtest.get("realtimeBuy") if isinstance(backtest, dict) else {}
-                  diagnostics = realtime_buy.get("diagnostics") if isinstance(realtime_buy, dict) else {}
-                  quote_time = str(realtime_buy.get("quote_time") or "").strip()
-                  source = str(diagnostics.get("source") or "").strip()
-                  has_snapshot = quote_time.startswith(run_date) and len(quote_time) >= 19
-                  if has_snapshot and source not in {"unavailable", "forced_query_unavailable"}:
-                      need = "0"
-              except Exception:
-                  need = "1"
-          print(need)
-          PY
-            )"
-            if [ "${NEED_FORE}" = "1" ]; then
-              echo "No valid stock research snapshot found after initial fetch; rerun fetch with fore to persist today's first result."
-              ./qr.sh fetch "${run_date}" fore
-            else
-              echo "Valid stock research snapshot already present; skip fore rerun."
             fi
           fi
           expected_d8="$(echo "${run_date}" | tr -d '-')"
