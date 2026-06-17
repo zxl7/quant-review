@@ -19,6 +19,11 @@ on:
         required: false
         default: ""
         type: string
+      stock_research_query_tag:
+        description: "个股研究竞价查询 tag；填 fore 可强制忽略 09:25 窗口直接落财富密码快照"
+        required: false
+        default: ""
+        type: string
   # 工作日北京时间 09:26-15:55 的发布统一由当前 workflow 承接：
   # - 09:26：直接执行一次正式 fetch，并强制带 fore，保证当天第一次更新就落下财富密码匹配结果
   # - 09:35-11:30 / 13:00-14:59：每 5 分钟心跳一次
@@ -328,10 +333,13 @@ jobs:
           is_trade_today="${{ steps.tradeday.outputs.is_trade_today }}"
           schedule_mode="${{ steps.timecheck.outputs.mode || '' }}"
 
-          # 仅对非 9:26 定时任务保留这层保护；9:26 的 schedule 现在直接跑正式 fetch + fore。
-          # workflow_dispatch 且显式指定模式时允许人工强制执行。
+          # 仅对常规定时窗口保留这层保护；
+          # - 9:26 的 schedule 会直接跑正式 fetch + fore；
+          # - push / workflow_dispatch 允许立即进入主流程，并在缺快照时自动补 fore。
           warmup_hit=false
           if [ "${event_name}" = "schedule" ] && [ "${schedule_mode}" = "open_fore" ]; then
+            warmup_hit=false
+          elif [ "${event_name}" = "push" ]; then
             warmup_hit=false
           elif [ "${is_trade_today}" = "true" ] && [ $(( now_min >= 9*60+25 && now_min < 9*60+35 )) -eq 1 ]; then
             warmup_hit=true
@@ -368,6 +376,7 @@ jobs:
           realtime_market_date="${{ steps.tradeday.outputs.realtime_market_date }}"
           input_mode="${{ github.event.inputs.mode || '' }}"
           input_date10="${{ github.event.inputs.date10 || '' }}"
+          input_query_tag="${{ github.event.inputs.stock_research_query_tag || '' }}"
           schedule_mode="${{ steps.timecheck.outputs.mode || '' }}"
 
           if [ -n "${input_date10}" ]; then
@@ -406,9 +415,10 @@ jobs:
           if [ "${input_mode}" = "eod" ]; then
             mode="eod"
           fi
-          echo "event=${{ github.event_name }} input_mode=${input_mode:-auto} → mode=${mode} date10=${date10}"
+          echo "event=${{ github.event_name }} input_mode=${input_mode:-auto} query_tag=${input_query_tag:-none} → mode=${mode} date10=${date10}"
           echo "mode=${mode}" >> "$GITHUB_OUTPUT"
           echo "date10=${date10}" >> "$GITHUB_OUTPUT"
+          echo "stock_research_query_tag=${input_query_tag}" >> "$GITHUB_OUTPUT"
           echo "run_mode=${mode} (date10=${date10})"
 
       - name: Make scripts executable
@@ -430,22 +440,31 @@ jobs:
           fi
           mode="${{ steps.pushmode.outputs.mode }}"
           schedule_mode="${{ steps.timecheck.outputs.mode || '' }}"
+          query_tag="${{ steps.pushmode.outputs.stock_research_query_tag || '' }}"
+          is_trade_today="${{ steps.tradeday.outputs.is_trade_today }}"
           echo "Run mode=${mode}"
           run_date="${{ steps.pushmode.outputs.date10 }}"
+          ran_fore=false
           if [ "${mode}" = "intraday" ]; then
             # 盘中：只跑轻量 intraday，刷新实时情绪/快照；明日接力/观察保留上一份收盘推演。
             PRESERVE_ZT_ANALYSIS=1 PYTHONPATH=. python3 -u -m daily_review.cli --mode intraday --date "${run_date}"
           else
             # 9:26 定时任务：直接正式 fetch，并强制带 fore。
-            if [ "${{ github.event_name }}" = "schedule" ] && [ "${schedule_mode}" = "open_fore" ]; then
+            # 手动 workflow_dispatch：允许通过 stock_research_query_tag=fore 显式强制补抓。
+            if [ -n "${query_tag}" ]; then
+              ./qr.sh fetch "${run_date}" "${query_tag}"
+              if [ "${query_tag}" = "fore" ]; then
+                ran_fore=true
+              fi
+            elif [ "${{ github.event_name }}" = "schedule" ] && [ "${schedule_mode}" = "open_fore" ]; then
               ./qr.sh fetch "${run_date}" fore
+              ran_fore=true
             else
               # 其他触发方式：保持原有在线全量 fetch。
               ./qr.sh fetch "${run_date}"
             fi
           fi
-          now_min=$((10#$(date +%H)*60 + 10#$(date +%M)))
-          if [ "${mode}" != "intraday" ] && [ $(( now_min >= 9*60+35 && now_min < 10*60 )) -eq 1 ]; then
+          if [ "${mode}" != "intraday" ] && [ "${is_trade_today}" = "true" ] && [ "${ran_fore}" != "true" ]; then
             NEED_FORE="$(
               RUN_DATE="${run_date}" python3 - <<'PY'
           import json
