@@ -61,11 +61,15 @@ def _extract_stocks_from_v3(market_data: Dict) -> List[Dict[str, Any]]:
     返回: [{"code": "sh600519", "name": "贵州茅台", "source": "dragon"}, ...]
     """
     results: List[Dict] = []
-    v3 = market_data.get("v3", {})
+    v3 = market_data.get("v3")
+    if not isinstance(v3, dict):
+        return []
     seen: set = set()
 
     # 1. 龙头三要素候选（优先级最高）
-    dragon = v3.get("dragon", {})
+    dragon = v3.get("dragon")
+    if not isinstance(dragon, dict):
+        dragon = {}
     for r in (dragon.get("rankings") or []):
         code = str(r.get("code", "")).strip()
         if not code or code in seen:
@@ -81,9 +85,15 @@ def _extract_stocks_from_v3(market_data: Dict) -> List[Dict[str, Any]]:
         })
 
     # 2. 主流主线龙头
-    mainstream = v3.get("mainstream", {})
-    sector = mainstream.get("sector_ladder", {})
-    dragon_info = sector.get("dragon", {})
+    mainstream = v3.get("mainstream")
+    if not isinstance(mainstream, dict):
+        mainstream = {}
+    sector = mainstream.get("sector_ladder")
+    if not isinstance(sector, dict):
+        sector = {}
+    dragon_info = sector.get("dragon")
+    if not isinstance(dragon_info, dict):
+        dragon_info = {}
     if dragon_info.get("name"):
         code = str(dragon_info.get("code", "")).strip()
         if code and code not in seen:
@@ -98,7 +108,9 @@ def _extract_stocks_from_v3(market_data: Dict) -> List[Dict[str, Any]]:
             })
 
     # 3. 渡劫诊断中存活率高的股票（补充）
-    dujie = v3.get("dujie", {})
+    dujie = v3.get("dujie")
+    if not isinstance(dujie, dict):
+        dujie = {}
     for s in (dujie.get("stocks") or []):
         code = str(s.get("code", "")).strip()
         if not code or code in seen:
