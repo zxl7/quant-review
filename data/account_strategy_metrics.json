@@ -1,6 +1,6 @@
 {
   "schema": "account_strategy_metrics_v1",
-  "generated_at_bj": "2026-06-17 11:45:19",
+  "generated_at_bj": "2026-06-17 17:08:48",
   "records": [
     {
       "recommendation_date": "2026-06-04",
@@ -1420,6 +1420,150 @@
           "key": "hold_3d",
           "label": "3日收益",
           "tradable": {
+            "covered": 6,
+            "eligible": 6,
+            "coverage": 100.0,
+            "pending": 0,
+            "missing": 0,
+            "skipped": 0,
+            "win_count": 5,
+            "flat_count": 0,
+            "loss_count": 1,
+            "win_rate": 83.3,
+            "avg_return": 4.84,
+            "avg_win_return": 5.89,
+            "avg_loss_return": -0.41,
+            "by_open_status": {
+              "super": {
+                "covered": 2,
+                "win_rate": 100.0,
+                "avg_return": 3.19
+              },
+              "expected": {
+                "covered": 4,
+                "win_rate": 75.0,
+                "avg_return": 5.67
+              },
+              "reject": {
+                "covered": 0,
+                "win_rate": 0.0,
+                "avg_return": 0.0
+              }
+            }
+          },
+          "all": {
+            "covered": 6,
+            "eligible": 8,
+            "coverage": 75.0,
+            "pending": 0,
+            "missing": 0,
+            "skipped": 2,
+            "win_count": 5,
+            "flat_count": 0,
+            "loss_count": 1,
+            "win_rate": 83.3,
+            "avg_return": 4.84,
+            "avg_win_return": 5.89,
+            "avg_loss_return": -0.41,
+            "by_open_status": {
+              "super": {
+                "covered": 2,
+                "win_rate": 100.0,
+                "avg_return": 3.19
+              },
+              "expected": {
+                "covered": 4,
+                "win_rate": 75.0,
+                "avg_return": 5.67
+              },
+              "reject": {
+                "covered": 0,
+                "win_rate": 0.0,
+                "avg_return": 0.0
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "recommendation_date": "2026-06-16",
+      "trade_date": "2026-06-17",
+      "sample_count": 11,
+      "tradable_count": 6,
+      "metrics": {
+        "next_day": {
+          "key": "next_day",
+          "label": "隔日收益",
+          "tradable": {
+            "covered": 6,
+            "eligible": 6,
+            "coverage": 100.0,
+            "pending": 0,
+            "missing": 0,
+            "skipped": 0,
+            "win_count": 5,
+            "flat_count": 0,
+            "loss_count": 1,
+            "win_rate": 83.3,
+            "avg_return": 3.36,
+            "avg_win_return": 4.54,
+            "avg_loss_return": -2.52,
+            "by_open_status": {
+              "super": {
+                "covered": 1,
+                "win_rate": 100.0,
+                "avg_return": 0.04
+              },
+              "expected": {
+                "covered": 5,
+                "win_rate": 80.0,
+                "avg_return": 4.03
+              },
+              "reject": {
+                "covered": 0,
+                "win_rate": 0.0,
+                "avg_return": 0.0
+              }
+            }
+          },
+          "all": {
+            "covered": 6,
+            "eligible": 11,
+            "coverage": 54.5,
+            "pending": 0,
+            "missing": 0,
+            "skipped": 5,
+            "win_count": 5,
+            "flat_count": 0,
+            "loss_count": 1,
+            "win_rate": 83.3,
+            "avg_return": 3.36,
+            "avg_win_return": 4.54,
+            "avg_loss_return": -2.52,
+            "by_open_status": {
+              "super": {
+                "covered": 1,
+                "win_rate": 100.0,
+                "avg_return": 0.04
+              },
+              "expected": {
+                "covered": 5,
+                "win_rate": 80.0,
+                "avg_return": 4.03
+              },
+              "reject": {
+                "covered": 0,
+                "win_rate": 0.0,
+                "avg_return": 0.0
+              }
+            }
+          }
+        },
+        "hold_2d": {
+          "key": "hold_2d",
+          "label": "2日收益",
+          "tradable": {
             "covered": 0,
             "eligible": 6,
             "coverage": 0.0,
@@ -1453,11 +1597,79 @@
           },
           "all": {
             "covered": 0,
-            "eligible": 8,
+            "eligible": 11,
             "coverage": 0.0,
             "pending": 6,
             "missing": 0,
-            "skipped": 2,
+            "skipped": 5,
+            "win_count": 0,
+            "flat_count": 0,
+            "loss_count": 0,
+            "win_rate": 0.0,
+            "avg_return": 0.0,
+            "avg_win_return": 0.0,
+            "avg_loss_return": 0.0,
+            "by_open_status": {
+              "super": {
+                "covered": 0,
+                "win_rate": 0.0,
+                "avg_return": 0.0
+              },
+              "expected": {
+                "covered": 0,
+                "win_rate": 0.0,
+                "avg_return": 0.0
+              },
+              "reject": {
+                "covered": 0,
+                "win_rate": 0.0,
+                "avg_return": 0.0
+              }
+            }
+          }
+        },
+        "hold_3d": {
+          "key": "hold_3d",
+          "label": "3日收益",
+          "tradable": {
+            "covered": 0,
+            "eligible": 6,
+            "coverage": 0.0,
+            "pending": 6,
+            "missing": 0,
+            "skipped": 0,
+            "win_count": 0,
+            "flat_count": 0,
+            "loss_count": 0,
+            "win_rate": 0.0,
+            "avg_return": 0.0,
+            "avg_win_return": 0.0,
+            "avg_loss_return": 0.0,
+            "by_open_status": {
+              "super": {
+                "covered": 0,
+                "win_rate": 0.0,
+                "avg_return": 0.0
+              },
+              "expected": {
+                "covered": 0,
+                "win_rate": 0.0,
+                "avg_return": 0.0
+              },
+              "reject": {
+                "covered": 0,
+                "win_rate": 0.0,
+                "avg_return": 0.0
+              }
+            }
+          },
+          "all": {
+            "covered": 0,
+            "eligible": 11,
+            "coverage": 0.0,
+            "pending": 6,
+            "missing": 0,
+            "skipped": 5,
             "win_count": 0,
             "flat_count": 0,
             "loss_count": 0,
@@ -1487,6 +1699,6 @@
       }
     }
   ],
-  "latest_recommendation_date": "2026-06-12",
-  "latest_trade_date": "2026-06-15"
+  "latest_recommendation_date": "2026-06-16",
+  "latest_trade_date": "2026-06-17"
 }
