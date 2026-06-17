@@ -334,7 +334,7 @@ def _market_gate(score: float, *, promo_ecology: float, break_risk_base: float, 
     elif score >= 70:
         label, action, adjust = "接力可做", "优先核心确认", 0.0
     elif score >= 58:
-        label, action, adjust = "只做核心", "降低出手频次", -4.0
+        label, action, adjust = "领头羊", "降低出手频次", -4.0
     elif score >= 45:
         label, action, adjust = "防守观察", "只看回封确认", -8.0
     else:

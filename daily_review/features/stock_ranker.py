@@ -251,9 +251,9 @@ def calc_env_adjust(metrics: ScoringMetrics) -> tuple[int, list[str]]:
     elif gate == "接力可做":
         adjust += 3 if cell.lbc >= 2 else 1
         reasons.append("接力可做")
-    elif gate == "只做核心":
+    elif gate == "领头羊":
         adjust -= 2 if cell.lbc >= 2 else 0
-        reasons.append("只做核心")
+        reasons.append("领头羊")
     elif gate in {"防守观察", "休息优先"}:
         adjust -= 5 if cell.lbc >= 2 else 2
         reasons.append("环境防守")
@@ -1307,7 +1307,7 @@ def _main_line_penalty(ml: MainLine, members: list[StockScore], env_ctx: dict[st
         penalty += 4
     if relay_hits == 0 and ml.confidence < 0.68:
         penalty += 3
-    if gate in {"只做核心", "防守观察", "休息优先"} and not any(s.lbc >= 2 for s in members):
+    if gate in {"领头羊", "防守观察", "休息优先"} and not any(s.lbc >= 2 for s in members):
         penalty += 2
     return penalty
 
@@ -1344,7 +1344,7 @@ def _watch_floor(ml: MainLine, line_penalty: int, env_ctx: dict[str, Any]) -> in
         floor += 3
     elif line_penalty >= 3:
         floor += 1
-    if gate in {"只做核心", "防守观察", "休息优先"}:
+    if gate in {"领头羊", "防守观察", "休息优先"}:
         floor += 2
     return floor
 
