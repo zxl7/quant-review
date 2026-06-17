@@ -868,6 +868,12 @@ function snapshotReturnClass(row: any) {
   return "orange-text"
 }
 
+function rowOpenPrice(row: any) {
+  const direct = row?.open_price
+  if (direct !== undefined && direct !== null && direct !== "") return direct
+  return row?.auction_price
+}
+
 </script>
 
 <template>
@@ -1025,7 +1031,7 @@ function snapshotReturnClass(row: any) {
               <td>
                 <span class="bt-pill" :class="openStatusClass(row.signal_status)">{{ decisionLabel(row.signal_status, row.decision_status, row.signal_label) }}</span>
               </td>
-              <td>{{ formatPlain(row.open_price, 2) }}元</td>
+              <td>{{ formatPlain(rowOpenPrice(row), 2) }}元</td>
               <td :class="signedClass(row.gap_pct)">{{ formatSigned(row.gap_pct, 2) }}%</td>
               <td>{{ formatPlain(row.close_price, 2) }}元</td>
               <td :class="signedClass(row.close_pct)">{{ formatSigned(row.close_pct, 2) }}%</td>

@@ -912,11 +912,26 @@ def _upgrade_preserved_realtime_buy_payload(realtime_buy: dict[str, Any] | None)
 
     upgraded_rows: list[dict[str, Any]] = []
     migrated_high_gap = 0
+    trade_date10 = str(realtime_buy.get("trade_date") or "").strip()
     for bucket in ("buy_list", "pending_list", "rejected_list", "unavailable_list"):
         for raw_row in realtime_buy.get(bucket) or []:
             if not isinstance(raw_row, dict):
                 continue
             row = json.loads(json.dumps(raw_row, ensure_ascii=False))
+            auction_price = row.get("auction_price")
+            if row.get("open_price") in (None, "") and auction_price not in (None, ""):
+                row["open_price"] = auction_price
+            row.setdefault("close_price", None)
+            row.setdefault("close_pct", None)
+            if trade_date10 and not str(row.get("trade_date10") or "").strip():
+                row["trade_date10"] = trade_date10
+            row.setdefault("next_day_status", "pending")
+            row.setdefault("next_day_label", "隔日收益")
+            row.setdefault("next_day_return_pct", None)
+            row.setdefault("hold_2d_status", "pending")
+            row.setdefault("hold_2d_return_pct", None)
+            row.setdefault("hold_3d_status", "pending")
+            row.setdefault("hold_3d_return_pct", None)
             decision_status = str(row.get("decision_status") or "")
             gap_pct = row.get("gap_pct")
             try:
