@@ -37,7 +37,9 @@ def main():
         "generatedAt": data.get("meta", {}).get("generatedAt", ""),
         "relay": relay[:15],
         "watch": watch[:15],
+        "relaySelectionMode": za.get("meta", {}).get("relaySelectionMode", ""),
         "relayDiagnostics": za.get("meta", {}).get("relayDiagnostics", {}),
+        "watchGroups": [str(row.get("watchGroup") or "").strip() for row in watch[:15] if isinstance(row, dict) and str(row.get("watchGroup") or "").strip()],
     }
 
     output_path.parent.mkdir(parents=True, exist_ok=True)

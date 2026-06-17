@@ -21,6 +21,79 @@ ROOT = Path(__file__).resolve().parent.parent.parent
 PRICE_HISTORY_CACHE = ROOT / "cache_online" / "recommendation_price_history.json"
 
 
+def leader_role_profile(row: Dict[str, Any]) -> Dict[str, Any]:
+    theme_ladder = row.get("themeLadderProfile") if isinstance(row.get("themeLadderProfile"), dict) else {}
+    follower_count = _to_num(theme_ladder.get("followerCount"), 0.0)
+    gap_count = _to_num(theme_ladder.get("gapCount"), 0.0)
+    has_carry = bool(theme_ladder.get("hasCarry"))
+    is_theme_leader = bool(row.get("_isThemeLeader"))
+    leader_bonus = _to_num(row.get("_leaderBonus"), 0.0)
+    lbc = _to_num(row.get("lbc"), 0.0)
+    break_risk = _to_num(row.get("breakRisk"), 0.0)
+    factor_hint = str(row.get("factorHint") or "")
+    is_broad_only = bool(row.get("isBroadOnly"))
+    has_trade_theme = bool(row.get("hasTradeTheme"))
+    leader_factor = _to_num(row.get("leaderFactorScore"), 0.0)
+    relay_factor = _to_num(row.get("relayFactorScore"), 0.0)
+    leader_philosophy = _to_num(row.get("leaderPhilosophyScore"), 0.0)
+    step_context = _to_num(row.get("stepContextScore"), 0.0)
+    capacity_factor = _to_num(row.get("capacityFactorScore"), 0.0)
+    quality_score = _to_num(row.get("qualityScore"), 0.0)
+
+    is_driver = bool(
+        not is_broad_only
+        and (
+            row.get("_superLeaderCandidate")
+            or row.get("_heightBreakoutLeader")
+            or row.get("_uniqueMarketLeader")
+            or (is_theme_leader and (follower_count >= 1 or has_carry or "带动" in factor_hint))
+            or (leader_bonus >= 10 and lbc >= 2 and break_risk < 72)
+        )
+    )
+    is_core = bool(
+        not is_driver
+        and not is_broad_only
+        and (
+            is_theme_leader
+            or leader_bonus >= 6
+            or (lbc >= 2 and has_carry and gap_count <= 1)
+            or (
+                has_trade_theme
+                and lbc == 1
+                and leader_factor >= 60
+                and relay_factor >= 64
+                and leader_philosophy >= 66
+                and step_context >= 55
+                and break_risk < 68
+                and capacity_factor >= 68
+                and quality_score >= 80
+            )
+        )
+    )
+    is_follower = bool(
+        not is_broad_only
+        and not is_driver
+        and (
+            "跟风" in factor_hint
+            or gap_count >= 1
+            or (
+                not is_theme_leader
+                and follower_count <= 0
+                and lbc <= 2
+                and leader_factor < 70
+                and relay_factor < 66
+            )
+        )
+    )
+    role = "driver" if is_driver else "core" if is_core else "follower" if is_follower else "neutral"
+    return {
+        "role": role,
+        "isDriver": is_driver,
+        "isCore": is_core,
+        "isFollower": is_follower,
+    }
+
+
 def _to_num(v: Any, d: float = 0.0) -> float:
     try:
         if v is None:
@@ -2328,6 +2401,31 @@ def build_zt_analysis(*, market_data: Dict[str, Any]) -> Dict[str, Any]:
         if em_themes and xgb_events:
             tags.append({"text": "共振确认", "tone": "super-leader"})
         normalized_tags = _normalize_tags(tags)
+        leader_role = leader_role_profile(
+            {
+                "_superLeaderCandidate": super_leader_candidate,
+                "_heightBreakoutLeader": height_breakout_leader,
+                "_uniqueMarketLeader": unique_market_leader,
+                "_isThemeLeader": is_theme_leader,
+                "_leaderBonus": leader_bonus,
+                "factorHint": factor_hint,
+                "themeLadderProfile": {
+                    "followerCount": theme_ladder_follower_count,
+                    "gapCount": theme_ladder_gap_count,
+                    "hasCarry": theme_ladder_has_carry,
+                },
+                "hasTradeTheme": has_trade_theme,
+                "lbc": lbc,
+                "breakRisk": individual_break_risk,
+                "isBroadOnly": is_broad_only,
+                "leaderFactorScore": leader_factor_score,
+                "relayFactorScore": relay_factor_score,
+                "leaderPhilosophyScore": leader_philosophy_score,
+                "stepContextScore": step_context_score,
+                "capacityFactorScore": capacity_score,
+                "qualityScore": quality_score,
+            }
+        )
         scored.append(
             {
                 "name": name,
@@ -2384,6 +2482,7 @@ def build_zt_analysis(*, market_data: Dict[str, Any]) -> Dict[str, Any]:
                 "_superLeaderCandidate": super_leader_candidate,
                 "_themeNet": theme_net,
                 "_isMain": is_main,
+                "leaderRole": leader_role.get("role"),
                 "_raw": _round(raw_score),
                 "score": _round(raw_score),
                 "factorScore": _round(raw_score),
@@ -2444,11 +2543,20 @@ def build_zt_analysis(*, market_data: Dict[str, Any]) -> Dict[str, Any]:
     for idx, r in enumerate(ranked):
         r["factorRank"] = idx + 1
 
-    def relay_sort(r: Dict[str, Any]) -> Tuple[float, float, float, float, float, float, float, float, float]:
+    def relay_sort(r: Dict[str, Any]) -> Tuple[float, float, float, float, float, float, float, float, float, float, float]:
+        lbc = _to_num(r.get("lbc"), 0)
+        is_first_board = 1.0 if lbc <= 1 else 0.0
+        broad_penalty = 1.0 if r.get("isBroadOnly") else 0.0
+        theme_ladder = r.get("themeLadderProfile") if isinstance(r.get("themeLadderProfile"), dict) else {}
+        leader_role = leader_role_profile(r)
         return (
             1.0 if r.get("_superLeaderCandidate") else 0.0,
             1.0 if r.get("_heightBreakoutLeader") else 0.0,
+            1.0 if leader_role.get("isDriver") else 0.0,
+            1.0 if 2 <= lbc <= 5 and r.get("hasTradeTheme") and not r.get("isBroadOnly") else 0.0,
+            1.0 if 3 <= lbc <= 5 and (r.get("_isThemeLeader") or _to_num(r.get("_leaderBonus"), 0) >= 10) else 0.0,
             _to_num(r.get("tideRelayGate"), 0),
+            _to_num(r.get("leaderPhilosophyScore"), 0),
             _to_num(r.get("_raw"), 0),
             _to_num(((r.get("themeLadderProfile") or {}).get("score")), 0),
             _to_num(r.get("leaderFactorScore"), 0),
@@ -2456,6 +2564,9 @@ def build_zt_analysis(*, market_data: Dict[str, Any]) -> Dict[str, Any]:
             _to_num(r.get("environmentScore"), 0),
             _to_num(r.get("capacityFactorScore"), 0),
             -_to_num(r.get("breakRisk"), 0),
+            -is_first_board,
+            -broad_penalty,
+            -_to_num(theme_ladder.get("gapCount"), 0),
         )
 
     def tide_relay_blocked(r: Dict[str, Any]) -> bool:
@@ -2491,8 +2602,11 @@ def build_zt_analysis(*, market_data: Dict[str, Any]) -> Dict[str, Any]:
     def relay_core_ok(r: Dict[str, Any]) -> bool:
         if tide_relay_blocked(r):
             return False
+        leader_role = leader_role_profile(r)
+        open_cnt = _to_num(r.get("open"), 0)
         return bool(
             r.get("hasTradeTheme")
+            and not r.get("isBroadOnly")
             and not r.get("isYizi")
             and not r.get("isShrinkSeal")
             and 2 <= _to_num(r.get("lbc"), 0) <= 5
@@ -2501,14 +2615,20 @@ def build_zt_analysis(*, market_data: Dict[str, Any]) -> Dict[str, Any]:
             and _to_num(r.get("breakRisk"), 0) < 76
             and _to_num(r.get("stepContextScore"), 0) >= 38
             and _to_num(r.get("tideRelayGate"), 0) >= 0
+            and not leader_role.get("isFollower")
+            and (leader_role.get("isDriver") or leader_role.get("isCore"))
+            and not (leader_role.get("isDriver") and _to_num(r.get("lbc"), 0) >= 3 and open_cnt >= 3)
+            and not (_to_num(r.get("lbc"), 0) >= 3 and _to_num(((r.get("themeLadderProfile") or {}).get("gapCount")), 0) >= 1)
         )
 
     def relay_high_mark_ok(r: Dict[str, Any]) -> bool:
         if tide_relay_blocked(r):
             return False
         lbc = _to_num(r.get("lbc"), 0)
+        leader_role = leader_role_profile(r)
         return bool(
             r.get("hasTradeTheme")
+            and not r.get("isBroadOnly")
             and not r.get("isYizi")
             and not r.get("isShrinkSeal")
             and 3 <= lbc <= 5
@@ -2517,6 +2637,8 @@ def build_zt_analysis(*, market_data: Dict[str, Any]) -> Dict[str, Any]:
             and _to_num(r.get("leaderPhilosophyScore"), 0) >= 76
             and _to_num(r.get("breakRisk"), 0) < 68
             and _to_num(r.get("open"), 0) <= 2
+            and leader_role.get("isDriver")
+            and _to_num(((r.get("themeLadderProfile") or {}).get("gapCount")), 0) <= 0
             and (
                 _to_num(r.get("stepContextScore"), 0) >= 32
                 or r.get("_isThemeLeader")
@@ -2529,23 +2651,33 @@ def build_zt_analysis(*, market_data: Dict[str, Any]) -> Dict[str, Any]:
     def relay_one_to_two_ok(r: Dict[str, Any]) -> bool:
         if tide_relay_blocked(r):
             return False
+        leader_role = leader_role_profile(r)
         return bool(
             r.get("hasTradeTheme")
+            and not r.get("isBroadOnly")
             and not r.get("isYizi")
             and not r.get("isShrinkSeal")
             and _to_num(r.get("lbc"), 0) == 1
             and _to_num(r.get("open"), 0) < 3
             and _to_num(r.get("_raw"), 0) >= 72
             and _to_num(r.get("stepContextScore"), 0) >= 55
+            and _to_num(r.get("leaderFactorScore"), 0) >= 60
+            and _to_num(r.get("relayFactorScore"), 0) >= 64
+            and _to_num(r.get("leaderPhilosophyScore"), 0) >= 66
+            and _to_num(r.get("capacityFactorScore"), 0) >= 68
+            and _to_num(r.get("qualityScore"), 0) >= 80
             and _to_num(r.get("breakRisk"), 0) < 68
-            and _to_num(r.get("tideRelayGate"), 0) >= 3
+            and _to_num(r.get("tideRelayGate"), 0) >= 0
+            and (leader_role.get("isDriver") or leader_role.get("isCore"))
         )
 
     def relay_relaxed_ok(r: Dict[str, Any]) -> bool:
         if tide_relay_blocked(r):
             return False
+        leader_role = leader_role_profile(r)
         return bool(
             r.get("hasTradeTheme")
+            and not r.get("isBroadOnly")
             and not r.get("isYizi")
             and not r.get("isShrinkSeal")
             and 2 <= _to_num(r.get("lbc"), 0) <= 4
@@ -2556,6 +2688,7 @@ def build_zt_analysis(*, market_data: Dict[str, Any]) -> Dict[str, Any]:
             and _to_num((r.get("factorBreakdown") or {}).get("sector"), 0) >= 70
             and _to_num(r.get("capacityFactorScore"), 0) >= 55
             and _to_num(r.get("tideRelayGate"), 0) >= -6
+            and not leader_role.get("isFollower")
         )
 
     def relay_broad_ok(r: Dict[str, Any]) -> bool:
@@ -2567,6 +2700,8 @@ def build_zt_analysis(*, market_data: Dict[str, Any]) -> Dict[str, Any]:
             and _to_num(r.get("open"), 0) < 12
             and _to_num(r.get("breakRisk"), 0) < 95
             and _to_num(r.get("_raw"), 0) >= 55
+            and not (_to_num(r.get("lbc"), 0) >= 3 and _to_num(((r.get("themeLadderProfile") or {}).get("gapCount")), 0) >= 1)
+            and not (r.get("isBroadOnly") and _to_num(r.get("lbc"), 0) <= 1 and _to_num(r.get("capacityFactorScore"), 0) < 72)
         )
 
     def relay_emergency_ok(r: Dict[str, Any]) -> bool:
@@ -2578,6 +2713,8 @@ def build_zt_analysis(*, market_data: Dict[str, Any]) -> Dict[str, Any]:
             and _to_num(r.get("open"), 0) < 15
             and _to_num(r.get("breakRisk"), 0) < 98
             and _to_num(r.get("_raw"), 0) >= 45
+            and not (_to_num(r.get("lbc"), 0) >= 3 and _to_num(((r.get("themeLadderProfile") or {}).get("gapCount")), 0) >= 1)
+            and not (r.get("isBroadOnly") and _to_num(r.get("lbc"), 0) <= 1)
         )
 
     def relay_hit_labels(r: Dict[str, Any]) -> List[str]:
@@ -2609,9 +2746,9 @@ def build_zt_analysis(*, market_data: Dict[str, Any]) -> Dict[str, Any]:
             labels.append("一字难参与")
         if r.get("isShrinkSeal"):
             labels.append("缩量参与难")
-        if _to_num(r.get("open"), 0) >= 8:
+        if _to_num(r.get("open"), 0) >= 5:
             labels.append("开板过多")
-        elif _to_num(r.get("open"), 0) >= 3 and lbc >= 2:
+        elif _to_num(r.get("open"), 0) >= 3:
             labels.append("分歧偏大")
         if _to_num(r.get("breakRisk"), 0) >= 76:
             labels.append("断板风险高")
@@ -2731,6 +2868,8 @@ def build_zt_analysis(*, market_data: Dict[str, Any]) -> Dict[str, Any]:
         tide_phase = str(r.get("tidePhase") or "")
         if tide_action == "no_new_position" or tide_status in {"afterglow_risk", "rebound_warning"}:
             return 3
+        if lbc >= 3 and open_cnt >= 3:
+            return 1
         if tide_status in {"core_mainline", "confirmed_mainline"} and tide_phase != "ebbing":
             return 0
         if tide_status in {"resonance_traverse", "traverse_candidate"}:
@@ -2740,6 +2879,8 @@ def build_zt_analysis(*, market_data: Dict[str, Any]) -> Dict[str, Any]:
         if lbc >= max(4.0, max_lbc) or leader_bonus >= 10 or r.get("_isThemeLeader") or r.get("_isNewHigh"):
             return 0
         if lbc >= 3:
+            return 1
+        if lbc >= 2 and r.get("hasTradeTheme") and not r.get("isBroadOnly") and break_risk < 72:
             return 1
         if cje_yi >= cap_threshold and r.get("hasTradeTheme") and open_cnt < 3 and break_risk < 70:
             return 2
@@ -2782,9 +2923,9 @@ def build_zt_analysis(*, market_data: Dict[str, Any]) -> Dict[str, Any]:
         if bucket == 0:
             return bucket_base + height + theme_core * 0.55 + ladder_core * 0.22 + capacity * 0.22 + core * 0.22 + tide_bias - divergence * 0.15 - ladder_gap * 0.10
         if bucket == 1:
-            return bucket_base + height * 0.65 + divergence * 0.78 + capacity * 0.42 + theme_core * 0.25 + ladder_core * 0.12 + tide_bias * 0.75 - ladder_gap * 0.18
+            return bucket_base + height * 0.78 + divergence * 0.68 + capacity * 0.34 + theme_core * 0.30 + ladder_core * 0.18 + tide_bias * 0.78 - ladder_gap * 0.18
         if bucket == 2:
-            return bucket_base + capacity + theme_core * 0.72 + ladder_core * 0.16 + core * 0.22 + tide_bias * 0.92 - divergence * 0.22 - ladder_gap * 0.12
+            return bucket_base + capacity * 0.92 + theme_core * 0.60 + ladder_core * 0.14 + core * 0.18 + tide_bias * 0.88 - divergence * 0.25 - ladder_gap * 0.12
         if bucket == 3:
             return bucket_base + capacity * 0.78 + divergence * 0.82 + theme_core * 0.22 + theme_gap * 0.25 + tide_bias * 0.35 - ladder_gap * 0.18
         return bucket_base + core * 0.45 + capacity * 0.45 + height * 0.35 + ladder_core * 0.12 + theme_gap + weak_step + tide_bias * 0.55 - ladder_gap * 0.12
@@ -2803,16 +2944,21 @@ def build_zt_analysis(*, market_data: Dict[str, Any]) -> Dict[str, Any]:
             or not r.get("hasTradeTheme")
         )
     ]
-    def watch_sort_key(r: Dict[str, Any]) -> Tuple[float, float, float, float, float, float, float, float]:
+    def watch_sort_key(r: Dict[str, Any]) -> Tuple[float, float, float, float, float, float, float, float, float, float]:
+        leader_role = leader_role_profile(r)
         return (
-            _to_num(r.get("_raw"), 0),
-            _to_num(r.get("tideWatchAdjust"), 0),
+            -float(watch_bucket(r)),
+            watch_rank(r),
+            1.0 if leader_role.get("isDriver") else 0.0,
+            1.0 if leader_role.get("isCore") else 0.0,
+            -1.0 if leader_role.get("isFollower") else 0.0,
             _to_num(r.get("leaderFactorScore"), 0),
+            _to_num(r.get("leaderPhilosophyScore"), 0),
             _to_num(r.get("relayFactorScore"), 0),
             _to_num(r.get("capacityFactorScore"), 0),
             _to_num(r.get("qualityScore"), 0),
-            -float(watch_bucket(r)),
-            watch_rank(r),
+            _to_num(r.get("_raw"), 0),
+            _to_num(r.get("tideWatchAdjust"), 0),
         )
 
     watch_pool = sorted(watch_pool, key=watch_sort_key, reverse=True)
@@ -2887,6 +3033,7 @@ def build_zt_analysis(*, market_data: Dict[str, Any]) -> Dict[str, Any]:
                 "tideRelayGate": _to_num(r.get("tideRelayGate"), 0),
                 "tideHint": str(r.get("tideHint") or ""),
                 "tideCaution": str(r.get("tideCaution") or ""),
+                "leaderRole": str(r.get("leaderRole") or ""),
                 "hitRules": relay_hit_labels(r),
                 "blockReasons": relay_block_labels(r),
                 "isThemeLeader": bool(r.get("_isThemeLeader")),

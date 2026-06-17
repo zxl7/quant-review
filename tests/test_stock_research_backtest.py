@@ -9,6 +9,7 @@ import unittest
 from pathlib import Path
 from unittest.mock import patch
 
+import daily_review.application.stock_research_service as stock_research_service
 import daily_review.publish.web_bundle as web_bundle
 import scripts.build_stock_research_backtest as backtest
 from daily_review.features.ladder_builder import LadderResult, MainLine, TierCell
@@ -16,6 +17,87 @@ from daily_review.features.stock_ranker import build_picks_advisor, StockScore, 
 
 
 class StockResearchBacktestRowsTest(unittest.TestCase):
+    def test_row_from_item_keeps_selection_diagnostics(self) -> None:
+        row = backtest._row_from_item(
+            {
+                "code": "000001",
+                "name": "接力核心",
+                "factorScore": 87,
+                "predTheme": "机器人",
+                "qualityLabel": "封单充足",
+                "lbc": 3,
+                "cjeYi": 31.2,
+                "capacityFactorScore": 69.4,
+                "nextStep": "分歧转一致",
+                "plateName": "机器人",
+                "hy": "机器人",
+                "factorHint": "辨识度高",
+                "relayRank": 1,
+                "watchRank": 0,
+                "relaySelectionMode": "strict",
+                "watchGroup": "",
+                "scoreLabel": "推荐因子",
+                "leaderFactorScore": 88.1,
+                "relayFactorScore": 83.6,
+                "leaderPhilosophyScore": 86.3,
+                "breakRisk": 32.0,
+                "environmentScore": 74.0,
+                "stepContextScore": 72.0,
+                "tideRelayGate": 4.0,
+                "themeLadderProfile": {
+                    "label": "梯队完整",
+                    "score": 92.0,
+                    "gapCount": 0,
+                    "frontCount": 3,
+                    "leaderBoards": 3,
+                    "hasCarry": True,
+                },
+                "hitRules": ["高标龙头", "主线接力"],
+                "blockReasons": ["梯队断层"],
+                "reason": "预期 +1% ~ +3%",
+            },
+            date10="2026-06-03",
+            bucket="relay",
+        )
+
+        self.assertEqual(row["placement_label"], "接力候选")
+        self.assertEqual(row["relay_rank"], 1)
+        self.assertEqual(row["relay_selection_mode"], "strict")
+        self.assertEqual(row["leader_factor_score"], 88.1)
+        self.assertEqual(row["theme_ladder_profile"]["label"], "梯队完整")
+        self.assertEqual(row["hit_rules"], ["高标龙头", "主线接力"])
+        self.assertEqual(row["block_reasons"], ["梯队断层"])
+
+    def test_daily_rank_prefers_selection_priority_over_raw_score(self) -> None:
+        ranked = backtest._attach_daily_rank(
+            [
+                {
+                    "date": "20260603",
+                    "date10": "2026-06-03",
+                    "code": "000001",
+                    "bucket": "watch",
+                    "score": 99,
+                    "watch_rank": 1,
+                    "relay_rank": 0,
+                    "watch_group": "容量核心",
+                },
+                {
+                    "date": "20260603",
+                    "date10": "2026-06-03",
+                    "code": "000002",
+                    "bucket": "relay",
+                    "score": 81,
+                    "relay_rank": 1,
+                    "watch_rank": 0,
+                },
+            ]
+        )
+
+        by_code = {row["code"]: row for row in ranked}
+        self.assertEqual(by_code["000002"]["daily_rank"], 1)
+        self.assertEqual(by_code["000001"]["daily_rank"], 2)
+        self.assertEqual([row["code"] for row in ranked], ["000002", "000001"])
+
     def test_rows_are_built_only_from_pushed_source_history(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             cache_dir = Path(tmp) / "cache"
@@ -125,6 +207,129 @@ class StockResearchBacktestRowsTest(unittest.TestCase):
         self.assertEqual(payload["realtimeBuy"]["trade_date"], "2026-06-04")
         self.assertEqual(payload["realtimeBuy"]["quote_time"], "2026-06-04 09:25:01")
         self.assertEqual(payload["realtimeBuy"]["diagnostics"]["as_of"], "2026-06-04 09:25:01")
+
+    def test_payload_propagates_selection_diagnostics_and_unified_ordering(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            cache_dir = Path(tmp) / "cache"
+            cache_dir.mkdir()
+            backtest_payload = {
+                "date": "2026-06-03",
+                "meta": {"mode": "eod"},
+                "ztAnalysis": {
+                    "relay": [
+                        {
+                            "code": "000003",
+                            "name": "接力龙头",
+                            "factorScore": 88,
+                            "predTheme": "机器人",
+                            "plateName": "机器人",
+                            "hy": "机器人",
+                            "lbc": 3,
+                            "cjeYi": 38.0,
+                            "capacityFactorScore": 68.0,
+                            "relayRank": 1,
+                            "relaySelectionMode": "strict",
+                            "scoreLabel": "推荐因子",
+                            "leaderFactorScore": 90.0,
+                            "relayFactorScore": 84.0,
+                            "leaderPhilosophyScore": 87.0,
+                            "breakRisk": 31.0,
+                            "environmentScore": 75.0,
+                            "stepContextScore": 72.0,
+                            "tideRelayGate": 4.0,
+                            "themeLadderProfile": {"label": "梯队完整", "score": 93.0, "gapCount": 0, "frontCount": 3, "leaderBoards": 3, "hasCarry": True},
+                            "hitRules": ["高标龙头", "主线接力"],
+                            "blockReasons": ["梯队断层"],
+                            "factorHint": "辨识度强",
+                            "reason": "预期 +1% ~ +3%",
+                        }
+                    ],
+                    "watch": [
+                        {
+                            "code": "000004",
+                            "name": "容量观察",
+                            "factorScore": 96,
+                            "predTheme": "机器人",
+                            "plateName": "机器人",
+                            "hy": "机器人",
+                            "lbc": 1,
+                            "cjeYi": 66.0,
+                            "capacityFactorScore": 91.0,
+                            "watchRank": 1,
+                            "watchGroup": "容量核心",
+                            "scoreLabel": "观察因子",
+                            "leaderFactorScore": 61.0,
+                            "relayFactorScore": 56.0,
+                            "leaderPhilosophyScore": 58.0,
+                            "breakRisk": 48.0,
+                            "environmentScore": 71.0,
+                            "stepContextScore": 53.0,
+                            "tideRelayGate": 2.0,
+                            "themeLadderProfile": {"label": "梯队良好", "score": 72.0, "gapCount": 0, "frontCount": 2, "leaderBoards": 1, "hasCarry": True},
+                            "hitRules": ["宽松候选"],
+                            "blockReasons": ["题材偏泛化"],
+                            "factorHint": "容量承接",
+                            "reason": "预期 0% ~ +2%",
+                        }
+                    ],
+                },
+            }
+            histories = {
+                "000003": [
+                    {"date": "2026-06-03", "open": 10.0, "close": 10.0, "prev_close": 9.8},
+                    {"date": "2026-06-04", "open": 10.2, "close": 10.7, "prev_close": 10.0},
+                ],
+                "000004": [
+                    {"date": "2026-06-03", "open": 8.0, "close": 8.0, "prev_close": 7.9},
+                    {"date": "2026-06-04", "open": 8.08, "close": 8.2, "prev_close": 8.0},
+                ],
+            }
+
+            with patch.object(backtest, "CACHE_DIR", cache_dir), patch.object(
+                backtest,
+                "_get_price_histories",
+                return_value=(histories, {"source": "mock", "fetched": 2, "cached": 0, "missing": []}),
+            ), patch.object(
+                backtest, "_should_request_realtime_quotes", return_value=False
+            ), patch.object(
+                backtest, "_load_preserved_realtime_buy", return_value=None
+            ):
+                backtest.sync_stock_research_backtest_source(market_data=backtest_payload)
+                backtest.save_prefetched_realtime_quotes(
+                    date10="2026-06-03",
+                    items={
+                        "000003": {"dm": "000003", "t": "2026-06-04 09:25:01", "yc": 10.0, "o": 10.2, "p": 10.2, "cje": 200000000},
+                        "000004": {"dm": "000004", "t": "2026-06-04 09:25:02", "yc": 8.0, "o": 8.08, "p": 8.08, "cje": 260000000},
+                    },
+                    as_of="2026-06-04 09:25:02",
+                    source="unit_test",
+                )
+                payload = backtest.build_stock_research_backtest_payload()
+
+        self.assertEqual([row["code"] for row in payload["currentPoolRecords"]], ["000003", "000004"])
+        relay_row = payload["currentPoolRecords"][0]
+        watch_row = payload["currentPoolRecords"][1]
+        self.assertEqual(relay_row["relay_rank"], 1)
+        self.assertEqual(relay_row["relay_selection_mode"], "strict")
+        self.assertEqual(relay_row["theme_ladder_profile"]["label"], "梯队完整")
+        self.assertEqual(watch_row["watch_rank"], 1)
+        self.assertEqual(watch_row["watch_group"], "容量核心")
+
+        realtime_rows = [
+            row
+            for bucket in ("buy_list", "pending_list", "rejected_list", "unavailable_list")
+            for row in payload["realtimeBuy"][bucket]
+        ]
+        realtime_by_code = {row["code"]: row for row in realtime_rows}
+        self.assertEqual(realtime_rows[0]["code"], "000003")
+        self.assertEqual(realtime_by_code["000003"]["hit_rules"], ["高标龙头", "主线接力"])
+        self.assertEqual(realtime_by_code["000003"]["block_reasons"], ["梯队断层"])
+        self.assertEqual(realtime_by_code["000004"]["watch_group"], "容量核心")
+
+        snapshot = payload["historicalSnapshots"][0]
+        self.assertEqual(snapshot["buy_list"][0]["code"], "000003")
+        self.assertEqual(snapshot["buy_list"][0]["relay_rank"], 1)
+        self.assertEqual(snapshot["buy_list"][0]["theme_ladder_profile"]["label"], "梯队完整")
 
     def test_forced_query_tag_uses_current_realtime_quote_outside_window(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
@@ -652,6 +857,51 @@ class PicksAdvisorStabilityTest(unittest.TestCase):
 
 
 class StockResearchBacktestPublishFreshnessTest(unittest.TestCase):
+    def test_publish_marks_payload_stale_when_selection_fields_are_missing(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            cache_dir = root / "cache"
+            cache_dir.mkdir()
+            (cache_dir / "stock_research_backtest_source.json").write_text(
+                json.dumps(
+                    {
+                        "schema": "stock_research_backtest_source_v1",
+                        "dates": {
+                            "2026-06-10": {
+                                "date": "2026-06-10",
+                                "recommendation_date": "2026-06-09",
+                                "rows": [{"code": "000001"}],
+                            }
+                        },
+                    },
+                    ensure_ascii=False,
+                ),
+                encoding="utf-8",
+            )
+            payload = {
+                "schema": "stock_research_backtest_v2",
+                "meta": {"latest_recommendation_date": "2026-06-09", "active_trade_date": "2026-06-10"},
+                "summary": {
+                    "total_samples": 1,
+                    "source_samples": 1,
+                    "filtered_non_backtest_samples": 0,
+                    "eligible_samples": 1,
+                    "realtime_candidate_count": 1,
+                    "realtime_buy_count": 0,
+                    "realtime_pending_count": 0,
+                    "realtime_unavailable_count": 1,
+                },
+                "lifecycle": {"stage": "post_close_wait_auction", "quote_state": "waiting_trade_day"},
+                "realtimeBuy": {"trade_date": "2026-06-10"},
+                "currentPoolRecords": [{"code": "000001"}],
+                "displayRecords": [{"code": "000001"}],
+                "historicalSnapshots": [],
+                "records": [{"code": "000001"}],
+            }
+
+            with patch.object(web_bundle, "ROOT", root):
+                self.assertFalse(web_bundle._is_fresh_stock_research_backtest(payload))
+
     def test_publish_rebuilds_when_source_history_is_newer_than_payload(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
@@ -708,6 +958,31 @@ class StockResearchBacktestPublishFreshnessTest(unittest.TestCase):
             with patch.object(web_bundle, "ROOT", root):
                 self.assertTrue(web_bundle._is_complete_stock_research_backtest(stale_payload))
                 self.assertFalse(web_bundle._is_fresh_stock_research_backtest(stale_payload))
+
+    def test_preserved_snapshot_keeps_stock_research_backtest_payload(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            cache_dir = root / "cache"
+            cache_dir.mkdir()
+            (cache_dir / "market_data-20260615.json").write_text(
+                json.dumps(
+                    {
+                        "date": "2026-06-15",
+                        "ztAnalysis": {"relay": [{"code": "000001", "name": "接力龙头"}], "watch": []},
+                        "stockResearchBacktest": {
+                            "schema": "stock_research_backtest_v2",
+                            "meta": {"latest_recommendation_date": "2026-06-15"},
+                        },
+                    },
+                    ensure_ascii=False,
+                ),
+                encoding="utf-8",
+            )
+
+            snapshot = stock_research_service.load_latest_valid_research_snapshot(root=root, current_date="2026-06-16")
+
+        self.assertIsNotNone(snapshot)
+        self.assertEqual(snapshot["marketData"]["stockResearchBacktest"]["meta"]["latest_recommendation_date"], "2026-06-15")
 
 
 if __name__ == "__main__":

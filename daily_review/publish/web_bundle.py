@@ -1151,6 +1151,10 @@ def _is_fresh_stock_research_backtest(
         return False
     if source_rows_count > 0 and len(current_pool_records) < source_rows_count:
         return False
+    if source_rows_count > 0 and current_pool_records:
+        first = current_pool_records[0] if isinstance(current_pool_records[0], dict) else {}
+        if "placement_label" not in first or "relay_rank" not in first or "watch_rank" not in first:
+            return False
     return True
 
 
@@ -1636,7 +1640,6 @@ def _build_shortline_decision(md: dict) -> dict:
             for row in group.get(bucket) or []:
                 if isinstance(row, dict):
                     flattened_picks.append({**row, "bucket": bucket, "line": main_line})
-    flattened_picks.sort(key=lambda row: (0 if row.get("bucket") == "buy" else 1, -_to_float(row.get("score"), 0.0)))
 
     def _candidate_tone(row: dict) -> str:
         if str(row.get("bucket") or "") == "buy":
@@ -1648,6 +1651,28 @@ def _build_shortline_decision(md: dict) -> dict:
     market_gate = str((picks_advisor.get("diagnostics") or {}).get("market_gate") or "").strip() or "按情绪择时"
     tide_gate = str((picks_advisor.get("diagnostics") or {}).get("core_tide_status") or "").strip() or "neutral"
     strict_gate = market_gate in {"休息优先", "防守优先"} or stance_tone == "danger"
+
+    current_pool_records = backtest.get("currentPoolRecords") if isinstance(backtest.get("currentPoolRecords"), list) else []
+    current_pool_map = {
+        str(row.get("code") or "").strip(): row
+        for row in current_pool_records
+        if isinstance(row, dict) and str(row.get("code") or "").strip()
+    }
+    current_pool_priority = {
+        code: idx
+        for idx, code in enumerate(current_pool_map.keys())
+    }
+
+    def _flattened_pick_sort_key(row: dict) -> tuple[float, ...]:
+        code = str(row.get("code") or "").strip()
+        return (
+            current_pool_priority.get(code, 999),
+            0 if row.get("bucket") == "buy" else 1,
+            -_to_float(row.get("score"), 0.0),
+            code,
+        )
+
+    flattened_picks.sort(key=_flattened_pick_sort_key)
 
     primary_candidates_raw = [row for row in flattened_picks if row.get("bucket") == "buy"][:3]
     watch_candidates_raw = [row for row in flattened_picks if row.get("bucket") != "buy"][:4]
@@ -1689,13 +1714,6 @@ def _build_shortline_decision(md: dict) -> dict:
         trade_summary = "今天没有明确可执行标的，先看情绪与主线是否修复。"
     if strict_gate:
         trade_summary = f"{market_gate}：先观察，暂不把候选当成直接出手信号。"
-
-    current_pool_records = backtest.get("currentPoolRecords") if isinstance(backtest.get("currentPoolRecords"), list) else []
-    current_pool_map = {
-        str(row.get("code") or "").strip(): row
-        for row in current_pool_records
-        if isinstance(row, dict) and str(row.get("code") or "").strip()
-    }
 
     script_cards: list[dict] = []
     seen_codes: set[str] = set()

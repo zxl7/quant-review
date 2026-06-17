@@ -144,14 +144,59 @@ const realtimeCardTitle = computed(() => (realtimeTitleDate.value ? `竞价结�
 const backtestUpdatedAt = computed(() => meta.value?.generated_at_bj || backtestSource.value?.meta?.generatedAt || (marketData.value as any)?.meta?.generatedAt || "-")
 const quoteUpdatedAt = computed(() => realtimeBuy.value?.quote_time || "-")
 const isForcedQuerySnapshot = computed(() => !!realtimeBuy.value?.diagnostics?.forced_query)
+const watchGroupRank: Record<string, number> = {
+  "高标/题材核心": 0,
+  "高位分歧": 1,
+  "容量核心": 2,
+  "风险观察": 3,
+  "补充观察": 4,
+}
+const snapshotSignalRank: Record<string, number> = { super: 0, expected: 1, pending: 2, reject: 3, unavailable: 4 }
+
+function compareSelectionRows(a: any, b: any) {
+  const aBucket = String(a?.bucket || "")
+  const bBucket = String(b?.bucket || "")
+  if (aBucket !== bBucket) {
+    if (aBucket === "relay") return -1
+    if (bBucket === "relay") return 1
+    if (aBucket === "watch") return -1
+    if (bBucket === "watch") return 1
+    return aBucket.localeCompare(bBucket)
+  }
+  const aRelayRank = toNum(a?.relay_rank, 0)
+  const bRelayRank = toNum(b?.relay_rank, 0)
+  if (aRelayRank || bRelayRank) {
+    const diff = (aRelayRank || 999) - (bRelayRank || 999)
+    if (diff) return diff
+  }
+  const aWatchRank = toNum(a?.watch_rank, 0)
+  const bWatchRank = toNum(b?.watch_rank, 0)
+  if (aWatchRank || bWatchRank) {
+    const diff = (aWatchRank || 999) - (bWatchRank || 999)
+    if (diff) return diff
+  }
+  const aWatchGroup = watchGroupRank[String(a?.watch_group || "")] ?? 9
+  const bWatchGroup = watchGroupRank[String(b?.watch_group || "")] ?? 9
+  if (aWatchGroup !== bWatchGroup) return aWatchGroup - bWatchGroup
+  const scoreDiff = toNum(b?.score, 0) - toNum(a?.score, 0)
+  if (scoreDiff) return scoreDiff
+  return String(a?.code || "").localeCompare(String(b?.code || ""))
+}
+
+function compareSnapshotRows(a: any, b: any) {
+  const ra = snapshotSignalRank[String(a?.signal_status || "")] ?? 9
+  const rb = snapshotSignalRank[String(b?.signal_status || "")] ?? 9
+  if (ra !== rb) return ra - rb
+  return compareSelectionRows(a, b)
+}
+
+function sortSelectionRows(rows: any[]) {
+  rows.sort(compareSelectionRows)
+  return rows
+}
+
 function sortSnapshotRows(rows: any[]) {
-  const rank: Record<string, number> = { super: 0, expected: 1, pending: 2, reject: 3, unavailable: 4 }
-  rows.sort((a, b) => {
-    const ra = rank[String(a?.signal_status || "")] ?? 9
-    const rb = rank[String(b?.signal_status || "")] ?? 9
-    if (ra !== rb) return ra - rb
-    return (b?.score ?? 0) - (a?.score ?? 0)
-  })
+  rows.sort(compareSnapshotRows)
   return rows
 }
 const realtimeCandidates = computed<any[]>(() => {
@@ -170,12 +215,7 @@ function metricScope(item: any, scope: "all" | "tradable") {
 
 const currentPoolRecords = computed<any[]>(() => {
   const rows = Array.isArray(payload.value?.currentPoolRecords) ? [...payload.value.currentPoolRecords] : []
-  rows.sort((a, b) => {
-    const scoreDiff = toNum(b?.score, 0) - toNum(a?.score, 0)
-    if (scoreDiff) return scoreDiff
-    return String(a?.code || "").localeCompare(String(b?.code || ""))
-  })
-  return rows
+  return sortSelectionRows(rows)
 })
 
 function historicalStatusRank(status?: string) {
@@ -195,9 +235,7 @@ const records = computed<any[]>(() => {
     const statusDiff =
       historicalStatusRank(a?.performance?.open_check?.status) - historicalStatusRank(b?.performance?.open_check?.status)
     if (statusDiff) return statusDiff
-    const scoreDiff = toNum(b?.score, 0) - toNum(a?.score, 0)
-    if (scoreDiff) return scoreDiff
-    return String(a?.code || "").localeCompare(String(b?.code || ""))
+    return compareSelectionRows(a, b)
   })
   return rows
 })
@@ -209,9 +247,7 @@ const displayRecords = computed<any[]>(() => {
     const statusDiff =
       historicalStatusRank(a?.performance?.open_check?.status) - historicalStatusRank(b?.performance?.open_check?.status)
     if (statusDiff) return statusDiff
-    const scoreDiff = toNum(b?.score, 0) - toNum(a?.score, 0)
-    if (scoreDiff) return scoreDiff
-    return String(a?.code || "").localeCompare(String(b?.code || ""))
+    return compareSelectionRows(a, b)
   })
   return rows
 })
@@ -288,12 +324,7 @@ const selectedDayDisplayRecords = computed<any[]>(() =>
 const currentRecords = computed<any[]>(() => {
   const currentRows = currentPoolRecords.value.filter((row) => String(row?.date10 || "") === selectedRecommendationDate.value)
   const rows = currentRows.length ? [...currentRows] : [...selectedDayDisplayRecords.value]
-  rows.sort((a, b) => {
-    const scoreDiff = toNum(b?.score, 0) - toNum(a?.score, 0)
-    if (scoreDiff) return scoreDiff
-    return String(a?.code || "").localeCompare(String(b?.code || ""))
-  })
-  return rows
+  return sortSelectionRows(rows)
 })
 const currentEligibleCount = computed(() => currentRecords.value.filter((row) => !!row?.performance?.open_check?.can_enter).length)
 const hasCurrentPlan = computed(() => hasValidPayload.value && currentRecords.value.length > 0)
@@ -369,11 +400,11 @@ const snapshotCardTitle = computed(() => {
 })
 const realtimeSubtitle = computed(() => {
   if (showingPredictionTable.value) {
-    return "这里展示最新收盘后推送进回测 JSON 的待验证样本，先看超预期/预期/低预期条件；到下一交易日 09:25-09:30 再补真实竞价结果。"
+    return "当前财富密码样本直接来自上一交易日涨停分析的接力池/观察池，排序已按龙头接力优先、确定性优先重排；先看盘后条件，次日 09:25 再补竞价结果。"
   }
   if (!isViewingCurrentRecommendation.value) {
     if (selectedHistoricalSnapshot.value) {
-      return `这里根据收盘后回测记录恢复 ${effectiveHistoricalDate.value} 推荐在 ${selectedHistoricalSnapshot.value?.trade_date || "-"} 开盘的命中结果与当日收益，原始 9:25 快照缺失也不会断层。`
+      return `这里按同一套龙头接力优先顺位，恢复 ${effectiveHistoricalDate.value} 推荐在 ${selectedHistoricalSnapshot.value?.trade_date || "-"} 开盘的命中结果与当日收益；原始 9:25 快照缺失也会自动衔接。`
     }
     return `当前只保留最新推荐日 ${String(realtimeBuy.value?.reference_date || "-")} 的 9:25 竞价快照；所选推荐日请看下方开盘判断和收益表现。`
   }
@@ -764,6 +795,41 @@ function decisionLabel(signalStatus?: string, decisionStatus?: string, fallbackL
   return "待判断"
 }
 
+function relaySelectionModeText(mode?: unknown) {
+  const key = String(mode || "").trim()
+  if (key === "strict") return "严格接力"
+  if (key === "relaxed") return "宽松补位"
+  if (key === "broad") return "宽题材兜底"
+  if (key === "emergency") return "应急兜底"
+  return ""
+}
+
+function rowPlacementText(row: any) {
+  const label = String(row?.placement_label || row?.bucket_label || row?.bucket || "").trim() || "-"
+  const relayRank = toNum(row?.relay_rank, 0)
+  const watchRank = toNum(row?.watch_rank, 0)
+  const watchGroup = String(row?.watch_group || "").trim()
+  if (relayRank > 0) return `${label} #${relayRank}`
+  if (watchRank > 0) return watchGroup ? `${label} #${watchRank} · ${watchGroup}` : `${label} #${watchRank}`
+  if (watchGroup) return `${label} · ${watchGroup}`
+  return label
+}
+
+function rowExplainText(row: any) {
+  const parts: string[] = []
+  const selectionMode = relaySelectionModeText(row?.relay_selection_mode)
+  const ladderLabel = String(row?.theme_ladder_profile?.label || "").trim()
+  const hitRules = Array.isArray(row?.hit_rules) ? row.hit_rules.filter(Boolean) : []
+  const blockReasons = Array.isArray(row?.block_reasons) ? row.block_reasons.filter(Boolean) : []
+  const factorHint = String(row?.factor_hint || "").trim()
+  if (selectionMode) parts.push(`口径：${selectionMode}`)
+  if (ladderLabel) parts.push(ladderLabel)
+  if (hitRules.length) parts.push(`命中：${hitRules.join(" / ")}`)
+  if (blockReasons.length) parts.push(`拦截：${blockReasons.join(" / ")}`)
+  if (factorHint) parts.push(factorHint)
+  return parts.join(" ｜ ") || "-"
+}
+
 function snapshotReturnText(row: any) {
   const status = String(row?.next_day_status || "")
   if (status === "covered") return `${formatSigned(row?.next_day_return_pct, 2)}%`
@@ -870,10 +936,10 @@ function snapshotReturnClass(row: any) {
                   <a v-if="row.code" class="stock-link" :class="signedClass(row.gap_pct)" :href="xqUrl(row.code)" target="_blank" rel="noopener noreferrer">{{ row.name }}</a>
                   <span v-else :class="signedClass(row.gap_pct)">{{ row.name || "-" }}</span>
                 </div>
-                <div class="bt-name-sub">{{ row.code || "-" }} ｜ {{ row.score ?? "-" }}</div>
+                <div class="bt-name-sub">{{ row.code || "-" }} ｜ {{ row.score_label || "综合分" }} {{ row.score ?? "-" }}</div>
               </td>
-              <td>{{ row.daily_rank || "-" }}</td>
-              <td>{{ row.bucket_label || row.bucket || "-" }}</td>
+              <td>{{ row.relay_rank || row.watch_rank || row.daily_rank || "-" }}</td>
+              <td>{{ rowPlacementText(row) }}</td>
               <td class="bt-left-cell">
                 <div>{{ row.main_line || "-" }}</div>
               </td>
@@ -888,13 +954,15 @@ function snapshotReturnClass(row: any) {
               </td>
               <td class="bt-cond-cell">
                 <template v-if="showingPredictionTable">
+                  <div class="bt-cell-sub">{{ rowExplainText(row) }}</div>
                   <div class="bt-cell-sub"><strong>超预期：</strong>{{ row.expectation?.super_text || "-" }}</div>
                   <div class="bt-cell-sub"><strong>预期：</strong>{{ row.expectation?.expected_text || "-" }}</div>
                   <div class="bt-cell-sub"><strong>低预期：</strong>{{ row.expectation?.low_text || "-" }}</div>
                 </template>
                 <template v-else>
                   <span class="bt-pill" :class="openStatusClass(row.signal_status)" style="margin-right:4px">{{ row.signal_label || '-' }}</span>
-                  <span class="bt-cell-sub">{{ row.rule_text || "-" }}</span>
+                  <div class="bt-cell-sub">{{ row.rule_text || row.reason_text || "-" }}</div>
+                  <div class="bt-cell-sub">{{ rowExplainText(row) }}</div>
                 </template>
               </td>
             </tr>
@@ -926,10 +994,10 @@ function snapshotReturnClass(row: any) {
                   <a v-if="row.code" class="stock-link" :class="signedClass(row.gap_pct)" :href="xqUrl(row.code)" target="_blank" rel="noopener noreferrer">{{ row.name }}</a>
                   <span v-else :class="signedClass(row.gap_pct)">{{ row.name || "-" }}</span>
                 </div>
-                <div class="bt-name-sub">{{ row.code || "-" }} ｜ {{ row.score ?? "-" }}</div>
+                <div class="bt-name-sub">{{ row.code || "-" }} ｜ {{ row.score_label || "综合分" }} {{ row.score ?? "-" }}</div>
               </td>
-              <td>{{ row.daily_rank || "-" }}</td>
-              <td>{{ row.bucket_label || row.bucket || "-" }}</td>
+              <td>{{ row.relay_rank || row.watch_rank || row.daily_rank || "-" }}</td>
+              <td>{{ rowPlacementText(row) }}</td>
               <td class="bt-left-cell">{{ row.main_line || "-" }}</td>
               <td>
                 <span class="bt-pill" :class="openStatusClass(row.signal_status)">{{ decisionLabel(row.signal_status, row.decision_status, row.signal_label) }}</span>
@@ -941,6 +1009,7 @@ function snapshotReturnClass(row: any) {
               <td :class="snapshotReturnClass(row)">{{ snapshotReturnText(row) }}</td>
               <td class="bt-cond-cell">
                 <div class="bt-cell-sub">{{ row.note || "-" }}</div>
+                <div class="bt-cell-sub">{{ rowExplainText(row) }}</div>
               </td>
             </tr>
           </tbody>

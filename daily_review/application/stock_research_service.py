@@ -75,6 +75,7 @@ def load_latest_valid_research_snapshot(*, root: Path, current_date: str) -> Pre
         "watchlist",
         "watchlist_stock_index",
         "picks_advisor",
+        "stockResearchBacktest",
         "tideSignal",
         "coreTideSignal",
         "theme_alias_map",

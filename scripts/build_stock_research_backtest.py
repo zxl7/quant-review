@@ -293,6 +293,9 @@ def _extract_expectation(reason_html: str) -> dict[str, Any]:
 def _row_from_item(item: dict[str, Any], *, date10: str, bucket: str) -> dict[str, Any]:
     market_gate = item.get("marketGate") if isinstance(item.get("marketGate"), dict) else {}
     expectation = _extract_expectation(str(item.get("reason") or ""))
+    theme_ladder = item.get("themeLadderProfile") if isinstance(item.get("themeLadderProfile"), dict) else {}
+    hit_rules = [str(x).strip() for x in (item.get("hitRules") or []) if str(x).strip()]
+    block_reasons = [str(x).strip() for x in (item.get("blockReasons") or []) if str(x).strip()]
     return {
         "date": date10.replace("-", ""),
         "date10": date10,
@@ -313,6 +316,30 @@ def _row_from_item(item: dict[str, Any], *, date10: str, bucket: str) -> dict[st
         "plate_name": str(item.get("plateName") or "").strip(),
         "hy": str(item.get("hy") or "").strip(),
         "factor_hint": str(item.get("factorHint") or "").strip(),
+        "relay_rank": int(round(float(item.get("relayRank") or 0))) if item.get("relayRank") not in (None, "") else 0,
+        "watch_rank": int(round(float(item.get("watchRank") or 0))) if item.get("watchRank") not in (None, "") else 0,
+        "relay_selection_mode": str(item.get("relaySelectionMode") or "").strip(),
+        "watch_group": str(item.get("watchGroup") or "").strip(),
+        "score_label": str(item.get("scoreLabel") or "").strip(),
+        "placement_label": "接力候选" if bucket == "relay" else "观察池",
+        "leader_factor_score": round(float(item.get("leaderFactorScore") or 0.0), 2),
+        "relay_factor_score": round(float(item.get("relayFactorScore") or 0.0), 2),
+        "leader_philosophy_score": round(float(item.get("leaderPhilosophyScore") or 0.0), 2),
+        "break_risk": round(float(item.get("breakRisk") or 0.0), 2),
+        "environment_score": round(float(item.get("environmentScore") or 0.0), 2),
+        "capacity_factor_score": round(float(item.get("capacityFactorScore") or 0.0), 2),
+        "step_context_score": round(float(item.get("stepContextScore") or 0.0), 2),
+        "tide_relay_gate": round(float(item.get("tideRelayGate") or 0.0), 2),
+        "theme_ladder_profile": {
+            "label": str(theme_ladder.get("label") or "").strip(),
+            "score": round(float(theme_ladder.get("score") or 0.0), 2),
+            "gap_count": int(round(float(theme_ladder.get("gapCount") or 0))) if theme_ladder.get("gapCount") not in (None, "") else 0,
+            "front_count": int(round(float(theme_ladder.get("frontCount") or 0))) if theme_ladder.get("frontCount") not in (None, "") else 0,
+            "leader_boards": int(round(float(theme_ladder.get("leaderBoards") or 0))) if theme_ladder.get("leaderBoards") not in (None, "") else 0,
+            "has_carry": bool(theme_ladder.get("hasCarry")),
+        },
+        "hit_rules": hit_rules,
+        "block_reasons": block_reasons,
         "reason_html": str(item.get("reason") or ""),
         "reason_text": _strip_html(item.get("reason") or ""),
         "expectation": expectation,
@@ -389,6 +416,54 @@ def _load_stock_research_rows() -> tuple[list[dict[str, Any]], list[str]]:
     return rows, used_sources
 
 
+def _row_selection_priority(row: dict[str, Any]) -> tuple[float, ...]:
+    bucket = str(row.get("bucket") or "").strip()
+    relay_rank = int(row.get("relay_rank") or 0)
+    watch_rank = int(row.get("watch_rank") or 0)
+    watch_group = str(row.get("watch_group") or "").strip()
+    hit_rules = [str(x).strip() for x in (row.get("hit_rules") or []) if str(x).strip()]
+    block_reasons = [str(x).strip() for x in (row.get("block_reasons") or []) if str(x).strip()]
+    theme_ladder = row.get("theme_ladder_profile") if isinstance(row.get("theme_ladder_profile"), dict) else {}
+
+    primary_rank = relay_rank if relay_rank > 0 else watch_rank if watch_rank > 0 else 999
+    bucket_bias = 0 if bucket == "relay" else 1 if bucket == "watch" else 2
+    watch_group_rank = {
+        "高标/题材核心": 0,
+        "高位分歧": 1,
+        "容量核心": 2,
+        "风险观察": 3,
+        "补充观察": 4,
+    }.get(watch_group, 5)
+    core_hit = 1 if any(rule in {"高标龙头", "主线接力", "高度突破"} for rule in hit_rules) else 0
+    one_to_two_hit = 1 if "1进2" in hit_rules else 0
+    broad_only = 1 if any("题材偏泛化" in reason for reason in block_reasons) else 0
+    ladder_gap = int(theme_ladder.get("gap_count") or 0)
+
+    return (
+        bucket_bias,
+        primary_rank,
+        watch_group_rank,
+        -core_hit,
+        -one_to_two_hit,
+        -float(row.get("leader_factor_score") or 0.0),
+        -float(row.get("relay_factor_score") or 0.0),
+        -float(row.get("leader_philosophy_score") or 0.0),
+        -float(row.get("step_context_score") or 0.0),
+        float(row.get("break_risk") or 0.0),
+        broad_only,
+        ladder_gap,
+        -int(row.get("lbc") or 0),
+        -int(row.get("score") or 0),
+        str(row.get("code") or ""),
+    )
+
+
+def _sort_rows_by_selection_priority(rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    ordered = [dict(row) for row in rows]
+    ordered.sort(key=_row_selection_priority)
+    return ordered
+
+
 def _attach_daily_rank(rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
     grouped: dict[str, list[dict[str, Any]]] = defaultdict(list)
     for row in rows:
@@ -396,13 +471,12 @@ def _attach_daily_rank(rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
 
     ranked_rows: list[dict[str, Any]] = []
     for date10 in sorted(grouped.keys()):
-        day_rows = grouped[date10]
-        day_rows.sort(key=lambda x: (-int(x.get("score") or 0), str(x.get("code") or "")))
+        day_rows = _sort_rows_by_selection_priority(grouped[date10])
         for idx, row in enumerate(day_rows, start=1):
             row["daily_rank"] = idx
             ranked_rows.append(row)
 
-    ranked_rows.sort(key=lambda x: (x["date"], -x["score"], x["code"]))
+    ranked_rows.sort(key=lambda x: (x["date"], *_row_selection_priority(x)))
     return ranked_rows
 
 
@@ -1025,10 +1099,28 @@ def _evaluate_realtime_signal(record: dict[str, Any], quote: dict[str, Any] | No
         "name": record.get("name"),
         "bucket": record.get("bucket"),
         "bucket_label": record.get("bucket_label"),
+        "placement_label": record.get("placement_label"),
         "score": record.get("score"),
         "daily_rank": int(record.get("daily_rank") or 0),
+        "relay_rank": int(record.get("relay_rank") or 0),
+        "watch_rank": int(record.get("watch_rank") or 0),
+        "relay_selection_mode": str(record.get("relay_selection_mode") or "").strip(),
+        "watch_group": str(record.get("watch_group") or "").strip(),
         "main_line": record.get("main_line"),
+        "score_label": str(record.get("score_label") or "").strip(),
         "reason_text": record.get("reason_text"),
+        "factor_hint": str(record.get("factor_hint") or "").strip(),
+        "hit_rules": [str(x).strip() for x in (record.get("hit_rules") or []) if str(x).strip()],
+        "block_reasons": [str(x).strip() for x in (record.get("block_reasons") or []) if str(x).strip()],
+        "leader_factor_score": record.get("leader_factor_score"),
+        "relay_factor_score": record.get("relay_factor_score"),
+        "leader_philosophy_score": record.get("leader_philosophy_score"),
+        "break_risk": record.get("break_risk"),
+        "environment_score": record.get("environment_score"),
+        "capacity_factor_score": record.get("capacity_factor_score"),
+        "step_context_score": record.get("step_context_score"),
+        "tide_relay_gate": record.get("tide_relay_gate"),
+        "theme_ladder_profile": json.loads(json.dumps(record.get("theme_ladder_profile") or {}, ensure_ascii=False)),
         "expected_text": exp.get("expected_text") or "",
         "super_text": exp.get("super_text") or "",
         "low_text": exp.get("low_text") or "",
@@ -1233,7 +1325,8 @@ def _build_realtime_buy_payload(
             )
 
     decisions = [_evaluate_realtime_signal(row, quotes_map.get(str(row.get("code") or "").strip())) for row in latest_rows]
-    decisions.sort(key=lambda x: (_signal_rank(str(x.get("signal_status") or "")), -int(x.get("score") or 0), str(x.get("code") or "")))
+    decisions = _sort_rows_by_selection_priority(decisions)
+    decisions.sort(key=lambda x: (_signal_rank(str(x.get("signal_status") or "")), *_row_selection_priority(x)))
 
     buy_list = [row for row in decisions if row.get("decision_status") == "buy"]
     pending_list = [row for row in decisions if row.get("decision_status") == "pending"]
@@ -1280,6 +1373,24 @@ def _merge_historical_snapshot_row_with_realtime(
             "signal_label": decision_row.get("signal_label") or merged.get("signal_label"),
             "decision_status": decision_row.get("decision_status") or merged.get("decision_status"),
             "decision_label": decision_row.get("decision_label") or merged.get("decision_label"),
+            "relay_rank": decision_row.get("relay_rank") or merged.get("relay_rank"),
+            "watch_rank": decision_row.get("watch_rank") or merged.get("watch_rank"),
+            "relay_selection_mode": decision_row.get("relay_selection_mode") or merged.get("relay_selection_mode"),
+            "watch_group": decision_row.get("watch_group") or merged.get("watch_group"),
+            "score_label": decision_row.get("score_label") or merged.get("score_label"),
+            "placement_label": decision_row.get("placement_label") or merged.get("placement_label"),
+            "factor_hint": decision_row.get("factor_hint") or merged.get("factor_hint"),
+            "hit_rules": decision_row.get("hit_rules") or merged.get("hit_rules"),
+            "block_reasons": decision_row.get("block_reasons") or merged.get("block_reasons"),
+            "leader_factor_score": decision_row.get("leader_factor_score") if decision_row.get("leader_factor_score") is not None else merged.get("leader_factor_score"),
+            "relay_factor_score": decision_row.get("relay_factor_score") if decision_row.get("relay_factor_score") is not None else merged.get("relay_factor_score"),
+            "leader_philosophy_score": decision_row.get("leader_philosophy_score") if decision_row.get("leader_philosophy_score") is not None else merged.get("leader_philosophy_score"),
+            "break_risk": decision_row.get("break_risk") if decision_row.get("break_risk") is not None else merged.get("break_risk"),
+            "environment_score": decision_row.get("environment_score") if decision_row.get("environment_score") is not None else merged.get("environment_score"),
+            "capacity_factor_score": decision_row.get("capacity_factor_score") if decision_row.get("capacity_factor_score") is not None else merged.get("capacity_factor_score"),
+            "step_context_score": decision_row.get("step_context_score") if decision_row.get("step_context_score") is not None else merged.get("step_context_score"),
+            "tide_relay_gate": decision_row.get("tide_relay_gate") if decision_row.get("tide_relay_gate") is not None else merged.get("tide_relay_gate"),
+            "theme_ladder_profile": decision_row.get("theme_ladder_profile") or merged.get("theme_ladder_profile"),
             "prev_close": decision_row.get("prev_close") if decision_row.get("prev_close") is not None else merged.get("prev_close"),
             "open_price": auction_price if auction_price is not None else merged.get("open_price"),
             "auction_price": auction_price,
@@ -1509,10 +1620,28 @@ def _build_historical_snapshot_row(record: dict[str, Any]) -> dict[str, Any]:
         "name": str(record.get("name") or "").strip(),
         "bucket": str(record.get("bucket") or "").strip(),
         "bucket_label": str(record.get("bucket_label") or "").strip(),
+        "placement_label": str(record.get("placement_label") or "").strip(),
         "score": record.get("score"),
         "daily_rank": record.get("daily_rank"),
+        "relay_rank": int(record.get("relay_rank") or 0),
+        "watch_rank": int(record.get("watch_rank") or 0),
+        "relay_selection_mode": str(record.get("relay_selection_mode") or "").strip(),
+        "watch_group": str(record.get("watch_group") or "").strip(),
         "main_line": str(record.get("main_line") or "").strip(),
+        "score_label": str(record.get("score_label") or "").strip(),
         "reason_text": str(record.get("reason_text") or "").strip(),
+        "factor_hint": str(record.get("factor_hint") or "").strip(),
+        "hit_rules": [str(x).strip() for x in (record.get("hit_rules") or []) if str(x).strip()],
+        "block_reasons": [str(x).strip() for x in (record.get("block_reasons") or []) if str(x).strip()],
+        "leader_factor_score": record.get("leader_factor_score"),
+        "relay_factor_score": record.get("relay_factor_score"),
+        "leader_philosophy_score": record.get("leader_philosophy_score"),
+        "break_risk": record.get("break_risk"),
+        "environment_score": record.get("environment_score"),
+        "capacity_factor_score": record.get("capacity_factor_score"),
+        "step_context_score": record.get("step_context_score"),
+        "tide_relay_gate": record.get("tide_relay_gate"),
+        "theme_ladder_profile": json.loads(json.dumps(record.get("theme_ladder_profile") or {}, ensure_ascii=False)),
         "expected_text": str(((record.get("expectation") or {}) if isinstance(record.get("expectation"), dict) else {}).get("expected_text") or "").strip(),
         "super_text": str(((record.get("expectation") or {}) if isinstance(record.get("expectation"), dict) else {}).get("super_text") or "").strip(),
         "low_text": str(((record.get("expectation") or {}) if isinstance(record.get("expectation"), dict) else {}).get("low_text") or "").strip(),
@@ -1571,7 +1700,7 @@ def _build_historical_snapshot_from_prefetched_quotes(date10: str, rows: list[di
         decision_row = _evaluate_realtime_signal(row, quote)
         merged_rows.append(_merge_historical_snapshot_row_with_realtime(base_row, decision_row))
 
-    merged_rows.sort(key=lambda x: (_signal_rank(str(x.get("signal_status") or "")), -int(x.get("score") or 0), str(x.get("code") or "")))
+    merged_rows.sort(key=lambda x: (_signal_rank(str(x.get("signal_status") or "")), *_row_selection_priority(x)))
     buy_list = [row for row in merged_rows if row.get("decision_status") == "buy"]
     pending_list = [row for row in merged_rows if row.get("decision_status") == "pending"]
     rejected_list = [row for row in merged_rows if row.get("decision_status") == "reject"]
@@ -1624,15 +1753,13 @@ def _build_historical_snapshots(backtest_rows: list[dict[str, Any]]) -> list[dic
 
     snapshots: list[dict[str, Any]] = []
     for date10 in sorted(grouped.keys(), reverse=True):
-        rows = sorted(
-            grouped[date10],
-            key=lambda row: (int(row.get("daily_rank") or 9999), -int(float(row.get("score") or 0)), str(row.get("code") or "")),
-        )
+        rows = sorted(grouped[date10], key=lambda row: (int(row.get("daily_rank") or 9999), *_row_selection_priority(row)))
         prefetched_snapshot = _build_historical_snapshot_from_prefetched_quotes(date10, rows)
         if prefetched_snapshot:
             snapshots.append(prefetched_snapshot)
             continue
         decisions = [_build_historical_snapshot_row(row) for row in rows]
+        decisions.sort(key=lambda x: (_signal_rank(str(x.get("signal_status") or "")), *_row_selection_priority(x)))
         buy_list = [row for row in decisions if row.get("decision_status") == "buy"]
         pending_list = [row for row in decisions if row.get("decision_status") == "pending"]
         rejected_list = [row for row in decisions if row.get("decision_status") == "reject"]
@@ -1744,6 +1871,7 @@ def build_stock_research_backtest_payload(*, current_market_data: dict[str, Any]
 
     active_trade_date10 = _pick_active_trade_date(enriched_rows)
     current_pool_rows = [r for r in enriched_rows if str(r.get("trade_date10") or "") == active_trade_date10]
+    current_pool_rows = _sort_rows_by_selection_priority(current_pool_rows)
     reference_date10 = _pick_realtime_reference_date(current_pool_rows, current_market_data=current_market_data)
     realtime_buy = _build_realtime_buy_payload(
         current_pool_rows or enriched_rows,
@@ -1752,10 +1880,10 @@ def build_stock_research_backtest_payload(*, current_market_data: dict[str, Any]
         current_market_data=current_market_data,
         query_tag=query_tag,
     ) if reference_date10 else _empty_backtest_payload()["realtimeBuy"]
-    current_pool_rows = _merge_current_pool_with_realtime(current_pool_rows, realtime_buy)
+    current_pool_rows = _sort_rows_by_selection_priority(_merge_current_pool_with_realtime(current_pool_rows, realtime_buy))
 
     backtest_rows = [r for r in enriched_rows if _is_backtest_ready_record(r)]
-    display_rows = [json.loads(json.dumps(r, ensure_ascii=False)) for r in enriched_rows]
+    display_rows = _sort_rows_by_selection_priority([json.loads(json.dumps(r, ensure_ascii=False)) for r in enriched_rows])
     historical_snapshots = _build_historical_snapshots(backtest_rows)
     latest_backtest_date10 = ""
     if backtest_rows:
