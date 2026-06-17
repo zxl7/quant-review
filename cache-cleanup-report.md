@@ -26,7 +26,6 @@
 - `cache/concept_fund_flow_cache.json`：板块排行兜底数据
 - `cache/height_trend_cache.json`：高度趋势模块依赖
 - `cache/index_kline_cache.json`：指数K线/量能模块依赖
-- `cache/intraday_slices-20260616.json`：保留最近 7 天 intraday slices 缓存
 - `cache/learning_notes_history.json`：学习语录去重历史
 - `cache/market_data-20260605.json`：保留最近 7 天 market_data 快照
 - `cache/market_data-20260608.json`：保留最近 7 天 market_data 快照
