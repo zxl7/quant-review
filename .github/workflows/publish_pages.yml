@@ -24,10 +24,10 @@ on:
         required: false
         default: ""
         type: string
-  # 工作日北京时间 09:26-15:00 前的盘中发布统一由当前 workflow 承接：
+  # 工作日北京时间 09:26-15:00 前执行盘中任务，并在 17:00 固定补一次收盘版发布：
   # - 09:26：直接执行一次正式 fetch，若当天快照缺失则补 fore（只补一次）
   # - 09:35-11:30 / 13:00-14:59：每 5 分钟心跳一次
-  # - 15:00 之后不再定时执行盘中快照；收盘版如需补跑，改走手动 workflow_dispatch
+  # - 15:00 之后不再定时执行盘中快照；仅保留 17:00 一次收盘版定时发布
   schedule:
     - cron: "26 1 * * 1-5"
     - cron: "35-55/5 1 * * 1-5"
@@ -35,6 +35,7 @@ on:
     - cron: "0-30/5 3 * * 1-5"
     - cron: "*/5 5-6 * * 1-5"
     - cron: "59 6 * * 1-5"
+    - cron: "0 9 * * 1-5"
   # 提交代码后触发（除 gh-pages 外的所有分支）
   push:
     branches:
@@ -82,7 +83,7 @@ jobs:
           # workflow 本身的允许窗口：
           # - 09:26-09:34：允许执行当天第一次正式 fetch，并在缺快照时补 fore；
           # - 09:35-11:30 / 13:00-14:59：允许执行盘中主页面 / 实时快照发布；
-          # - 15:00 后不再通过 schedule 定时执行快照。
+          # - 17:00：允许执行一次收盘版定时发布。
           hit_open_fore=false
           if [ $(( now_min >= 9*60+26 && now_min < 9*60+35 )) -eq 1 ]; then
             hit_open_fore=true
@@ -97,7 +98,16 @@ jobs:
             hit_intraday=true
           fi
 
-          if [ "${hit_open_fore}" = "true" ]; then
+          hit_close=false
+          if [ $(( now_min == 17*60 )) -eq 1 ]; then
+            hit_close=true
+          fi
+
+          if [ "${hit_close}" = "true" ]; then
+            echo "skip=false" >> "$GITHUB_OUTPUT"
+            echo "mode=eod" >> "$GITHUB_OUTPUT"
+            echo "Close window hit -> eod"
+          elif [ "${hit_open_fore}" = "true" ]; then
             echo "skip=false" >> "$GITHUB_OUTPUT"
             echo "mode=open_fore" >> "$GITHUB_OUTPUT"
             echo "Open window hit -> fetch with fore"
@@ -344,6 +354,7 @@ jobs:
           # schedule 触发时，直接承接 timecheck 的窗口判定：
           # - open_fore：09:26 的首次正式 fetch，优先按需补 fore
           # - intraday：盘中仅刷新实时盯盘运行时
+          # - eod：17:00 执行一次收盘版发布
           latest_trade="${{ steps.tradeday.outputs.latest_trade_date }}"
           today_bj="${{ steps.tradeday.outputs.today_bj }}"
           realtime_market_date="${{ steps.tradeday.outputs.realtime_market_date }}"
@@ -374,6 +385,8 @@ jobs:
           elif [ "${{ github.event_name }}" = "schedule" ]; then
             if [ "${schedule_mode}" = "intraday" ]; then
               mode="intraday"
+            elif [ "${schedule_mode}" = "eod" ]; then
+              mode="eod"
             else
               mode="fetch"
             fi
