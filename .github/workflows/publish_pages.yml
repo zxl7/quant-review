@@ -49,8 +49,10 @@ permissions:
   contents: write
 
 concurrency:
-  group: "gh-pages-publish"
-  # 高频心跳下不要取消正在运行的发布；否则一次 fetch 超过 5 分钟会被下一轮打断。
+  # 将 schedule 与手动/代码触发拆成两条并发通道，避免高频心跳把人工补跑或代码推送排队顶掉。
+  # 同一通道内部仍保持串行，避免多路同时写 gh-pages。
+  group: ${{ github.event_name == 'schedule' && 'gh-pages-publish-schedule' || format('gh-pages-publish-interactive-{0}', github.ref_name) }}
+  # 不取消已在执行中的发布；仅让同通道的新请求接替旧的等待项。
   cancel-in-progress: false
 
 env:
