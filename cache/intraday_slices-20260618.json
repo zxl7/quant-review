@@ -2,7 +2,7 @@
   "schema": "intraday_snapshot_v1",
   "render_mode": "snapshot_stream",
   "date": "2026-06-18",
-  "count": 2,
+  "count": 3,
   "interval_min": 10,
   "simulated": false,
   "snapshots": [
@@ -116,41 +116,96 @@
       "shift_score": 58,
       "shift_label": "分歧",
       "note": "炸板/跌停抬升，情绪明显走弱。"
+    },
+    {
+      "time": "11:23:11",
+      "ts_bj": "2026-06-18 11:23:11",
+      "date": "2026-06-18",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "zt": 62,
+      "dt": 6,
+      "zab": 33,
+      "zb": 34.7,
+      "fb": 65.3,
+      "jj": 19.4,
+      "lianban": 12,
+      "max_lb": 4,
+      "amount": "20916.0亿",
+      "bf": 0,
+      "heat": 51,
+      "risk": 43,
+      "headline": "分歧",
+      "concepts": [
+        {
+          "name": "汽车零部",
+          "lead": "华达科技",
+          "chg_pct": null
+        },
+        {
+          "name": "通用设备",
+          "lead": "铂力特",
+          "chg_pct": null
+        },
+        {
+          "name": "非金属材",
+          "lead": "金博股份",
+          "chg_pct": null
+        },
+        {
+          "name": "通信设备",
+          "lead": "通鼎互联",
+          "chg_pct": null
+        },
+        {
+          "name": "元件",
+          "lead": "艾华集团",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "warn",
+          "text": "本地缓存数据不完整，启用必盈实时拉取"
+        },
+        {
+          "level": "warn",
+          "text": "炸板率偏高（34.7%）→ 注意回封质量"
+        }
+      ],
+      "shift_score": 54,
+      "shift_label": "分歧",
+      "note": "情绪略有回落，注意午后分歧。"
     }
   ],
   "latest": {
-    "time": "10:30:39",
-    "ts_bj": "2026-06-18 10:30:39",
+    "time": "11:23:11",
+    "ts_bj": "2026-06-18 11:23:11",
     "date": "2026-06-18",
     "source": "intraday_live",
     "provider": "必盈(实时)+必盈(实时)",
-    "zt": 53,
-    "dt": 4,
-    "zab": 23,
-    "zb": 30.3,
-    "fb": 69.7,
-    "jj": 20.8,
-    "lianban": 11,
+    "zt": 62,
+    "dt": 6,
+    "zab": 33,
+    "zb": 34.7,
+    "fb": 65.3,
+    "jj": 19.4,
+    "lianban": 12,
     "max_lb": 4,
-    "amount": "15563.2亿",
+    "amount": "20916.0亿",
     "bf": 0,
     "heat": 51,
-    "risk": 33,
+    "risk": 43,
     "headline": "分歧",
     "concepts": [
-      {
-        "name": "通用设备",
-        "lead": "铂力特",
-        "chg_pct": null
-      },
       {
         "name": "汽车零部",
         "lead": "华达科技",
         "chg_pct": null
       },
       {
-        "name": "元件",
-        "lead": "艾华集团",
+        "name": "通用设备",
+        "lead": "铂力特",
         "chg_pct": null
       },
       {
@@ -162,6 +217,11 @@
         "name": "通信设备",
         "lead": "通鼎互联",
         "chg_pct": null
+      },
+      {
+        "name": "元件",
+        "lead": "艾华集团",
+        "chg_pct": null
       }
     ],
     "alerts": [
@@ -171,13 +231,13 @@
       },
       {
         "level": "warn",
-        "text": "炸板率偏高（30.3%）→ 注意回封质量"
+        "text": "炸板率偏高（34.7%）→ 注意回封质量"
       }
     ],
-    "shift_score": 58,
+    "shift_score": 54,
     "shift_label": "分歧",
-    "note": "炸板/跌停抬升，情绪明显走弱。"
+    "note": "情绪略有回落，注意午后分歧。"
   },
-  "updated_at": "2026-06-18 10:30:39",
-  "snapshot_sig": "2026-06-18|2026-06-18 10:30:39|2"
+  "updated_at": "2026-06-18 11:23:11",
+  "snapshot_sig": "2026-06-18|2026-06-18 11:23:11|3"
 }
