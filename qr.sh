@@ -489,7 +489,7 @@ cmd_deploy() {
   elif [[ -f "./cache/account_strategy_metrics.json" ]]; then
     install -m 644 "./cache/account_strategy_metrics.json" "cache/account_strategy_metrics.json"
   fi
-  for f in tomorrow_picks.json tomorrow_picks.js eastmoney_tomorrow.json intraday_resonance.json; do
+  for f in tomorrow_picks.json tomorrow_picks.js eastmoney_tomorrow.json intraday_resonance.json intraday_runtime.json; do
     if [[ -f "./web/dist/${f}" ]]; then
       install -m 644 "./web/dist/${f}" "${f}"
     elif [[ -f "./web/public/${f}" ]]; then
@@ -498,7 +498,7 @@ cmd_deploy() {
   done
 
   git add "${pages_file}" market_data.json market_data.js \
-    tomorrow_picks.json tomorrow_picks.js eastmoney_tomorrow.json intraday_resonance.json \
+    tomorrow_picks.json tomorrow_picks.js eastmoney_tomorrow.json intraday_resonance.json intraday_runtime.json \
     cache/account_nav_history.jsonl cache/account_strategy_metrics.json 2>/dev/null || true
   git commit -m "deploy: $(date '+%F %T')" || true
   git push

@@ -2872,6 +2872,30 @@ def _read_optional_payload(*, path: Path, fallback: Optional[Path] = None, defau
     return default
 
 
+def _build_intraday_runtime_payload_from_market_data(md: dict) -> str:
+    snapshots_box = md.get("intradaySnapshots") if isinstance(md.get("intradaySnapshots"), dict) else {}
+    snapshots = snapshots_box.get("snapshots") if isinstance(snapshots_box.get("snapshots"), list) else []
+    latest = snapshots_box.get("latest") if isinstance(snapshots_box.get("latest"), dict) else (snapshots[-1] if snapshots else None)
+    latest = latest if isinstance(latest, dict) else None
+    date10 = str((latest or {}).get("date") or md.get("date") or "").strip()
+    updated_at = str((latest or {}).get("ts_bj") or snapshots_box.get("updated_at") or "").strip()
+    source = str((latest or {}).get("provider") or (latest or {}).get("source") or "market_data.intradaySnapshots").strip()
+    payload = {
+        "schema": "intraday_runtime_v1",
+        "date": date10,
+        "updated_at": updated_at,
+        "source": source,
+        "latest": latest,
+        "snapshots": snapshots,
+        "live": {
+            "market": ((md.get("live") or {}).get("market") if isinstance(md.get("live"), dict) else {}) or {},
+            "alerts": ((md.get("live") or {}).get("alerts") if isinstance(md.get("live"), dict) else []) or [],
+            "concepts": ((md.get("live") or {}).get("concepts") if isinstance(md.get("live"), dict) else []) or [],
+        },
+    }
+    return json.dumps(payload, ensure_ascii=False)
+
+
 def _latest_cache_date8() -> Optional[str]:
     files = sorted((ROOT / "cache").glob("market_data-*.json"))
     for path in reversed(files):
@@ -2884,6 +2908,7 @@ def _latest_cache_date8() -> Optional[str]:
 def build_web_data(date8: str, source: Optional[str] = None) -> Path:
     """生成 web/dist 旁路数据文件并返回 dist 目录。"""
     payload = _build_publish_payload(date8, source)
+    md_for_runtime = json.loads(payload)
 
     tp_payload = _read_optional_payload(
         path=ROOT / "web" / "public" / "tomorrow_picks.json",
@@ -2892,6 +2917,7 @@ def build_web_data(date8: str, source: Optional[str] = None) -> Path:
     )
     em_payload = _read_optional_payload(path=_resolve_eastmoney_tomorrow_path(), default="{}")
     resonance_payload = _read_optional_payload(path=_resolve_intraday_resonance_path(date8), default="[]")
+    intraday_runtime_payload = _build_intraday_runtime_payload_from_market_data(md_for_runtime)
 
     dist_dir = ROOT / "web" / "dist"
     if not (dist_dir / "index.html").exists():
@@ -2899,6 +2925,7 @@ def build_web_data(date8: str, source: Optional[str] = None) -> Path:
 
     (dist_dir / "market_data.json").write_text(payload, encoding="utf-8")
     (dist_dir / "market_data.js").write_text(f"window.__MARKET_DATA__={payload};", encoding="utf-8")
+    (dist_dir / "intraday_runtime.json").write_text(intraday_runtime_payload, encoding="utf-8")
     if tp_payload != "{}":
         (dist_dir / "tomorrow_picks.json").write_text(tp_payload, encoding="utf-8")
     if em_payload != "{}":
@@ -2917,12 +2944,16 @@ def inject(date8: str, source: Optional[str] = None) -> Path:
 def refresh_dev_data(date8: str, source: Optional[str] = None) -> None:
     """刷新 web/public 数据文件（供 Vite dev 和 dist 直开使用）"""
     payload = _build_publish_payload(date8, source, warn_context="dev ")
+    md_for_runtime = json.loads(payload)
+    intraday_runtime_payload = _build_intraday_runtime_payload_from_market_data(md_for_runtime)
 
     dev_file = ROOT / "web" / "public" / "market_data.json"
     dev_script = ROOT / "web" / "public" / "market_data.js"
+    runtime_file = ROOT / "web" / "public" / "intraday_runtime.json"
     dev_file.parent.mkdir(parents=True, exist_ok=True)
     dev_file.write_text(payload, encoding="utf-8")
     dev_script.write_text(f"window.__MARKET_DATA__={payload};", encoding="utf-8")
+    runtime_file.write_text(intraday_runtime_payload, encoding="utf-8")
 
     res_file = _resolve_intraday_resonance_path(date8)
     if res_file.exists():
@@ -2932,6 +2963,7 @@ def refresh_dev_data(date8: str, source: Optional[str] = None) -> None:
             print("  盘中共振 dev 数据已同步")
     print(f"  dev 数据已刷新: {dev_file}")
     print(f"  dev 脚本已刷新: {dev_script}")
+    print(f"  dev 盯盘运行时已刷新: {runtime_file}")
 
 
 def main(argv: Optional[list[str]] = None) -> int:

@@ -661,7 +661,7 @@ jobs:
             exit 4
           fi
           # 旁路数据（前端有兜底逻辑，缺失不致命）：优先 web/dist，回退 web/public
-          for f in tomorrow_picks.json tomorrow_picks.js eastmoney_tomorrow.json intraday_resonance.json; do
+          for f in tomorrow_picks.json tomorrow_picks.js eastmoney_tomorrow.json intraday_resonance.json intraday_runtime.json; do
             if [ -f "./web/dist/${f}" ]; then
               cp -f "./web/dist/${f}" "./site/${f}"
             elif [ -f "./web/public/${f}" ]; then
@@ -712,7 +712,7 @@ jobs:
           done
           # 运行时数据文件（market_data 是必需，其余有兜底）一律从 ./site/ 镜像到 gh-pages
           for f in market_data.json market_data.js \
-                   tomorrow_picks.json tomorrow_picks.js eastmoney_tomorrow.json intraday_resonance.json; do
+                   tomorrow_picks.json tomorrow_picks.js eastmoney_tomorrow.json intraday_resonance.json intraday_runtime.json; do
             if [ -f "./site/${f}" ]; then
               cp -f "./site/${f}" "site_prev/${f}"
             fi

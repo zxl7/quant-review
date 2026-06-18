@@ -18,6 +18,31 @@ const runtimeError = ref('')
 let runtimeTimer: number | null = null
 let runtimeReqInFlight = false
 
+function latestSnapshotTs(source: unknown): string {
+  if (!source || typeof source !== 'object') return ''
+  const latest = (source as any).latest
+  if (latest && typeof latest === 'object') {
+    const ts = String((latest as any).ts_bj || (latest as any).updated_at || '').trim()
+    if (ts) return ts
+  }
+  const rows = Array.isArray((source as any).snapshots) ? (source as any).snapshots : []
+  const last = rows.length ? rows[rows.length - 1] : null
+  if (last && typeof last === 'object') {
+    return String((last as any).ts_bj || (last as any).updated_at || '').trim()
+  }
+  return String((source as any).updated_at || '').trim()
+}
+
+function isRuntimePayloadFresh(runtime: IntradayRuntime, fallback: Record<string, any> | null, marketDate: string) {
+  const runtimeDate = String(runtime?.date || '').trim()
+  if (runtimeDate && marketDate && runtimeDate < marketDate) return false
+  const runtimeTs = latestSnapshotTs(runtime)
+  if (!runtimeTs) return false
+  const fallbackTs = latestSnapshotTs(fallback)
+  if (!fallbackTs) return true
+  return runtimeTs >= fallbackTs
+}
+
 async function fetchIntradayRuntime() {
   try {
     if (runtimeReqInFlight) return
@@ -72,23 +97,30 @@ function stopIntradayRuntimePolling() {
 
 export function useIntradayRuntime() {
   const { marketData } = useMarketData()
+  const marketDate = computed(() => String(marketData.value?.date || '').trim())
+  const fallbackRuntime = computed<Record<string, any> | null>(() => {
+    const raw = marketData.value?.intradaySnapshots
+    return raw && typeof raw === 'object' ? raw : null
+  })
   const fallbackSnapshots = computed<any[]>(() =>
-    Array.isArray(marketData.value?.intradaySnapshots?.snapshots) ? marketData.value.intradaySnapshots.snapshots : [],
+    Array.isArray(fallbackRuntime.value?.snapshots) ? fallbackRuntime.value.snapshots : [],
   )
   const fallbackLive = computed<any>(() => (marketData.value?.live && typeof marketData.value.live === 'object' ? marketData.value.live : null))
+  const runtimeFresh = computed(() => isRuntimePayloadFresh(runtimeState.value || {}, fallbackRuntime.value, marketDate.value))
+  const effectiveRuntime = computed<IntradayRuntime>(() => (runtimeFresh.value ? runtimeState.value || {} : {}))
 
   const snapshots = computed<any[]>(() => {
-    const rows = runtimeState.value?.snapshots
+    const rows = effectiveRuntime.value?.snapshots
     return Array.isArray(rows) && rows.length ? rows : fallbackSnapshots.value
   })
   const latest = computed<any>(() => {
-    const row = runtimeState.value?.latest
+    const row = effectiveRuntime.value?.latest
     if (row && typeof row === 'object') return row
     const rows = snapshots.value
     return rows.length ? rows[rows.length - 1] : null
   })
   const live = computed<any>(() => {
-    const row = runtimeState.value?.live
+    const row = effectiveRuntime.value?.live
     if (row && typeof row === 'object') return row
     return fallbackLive.value
   })
