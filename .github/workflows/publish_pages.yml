@@ -24,10 +24,10 @@ on:
         required: false
         default: ""
         type: string
-  # 工作日北京时间 09:26-17:00 的发布统一由当前 workflow 承接：
+  # 工作日北京时间 09:26-15:00 前的盘中发布统一由当前 workflow 承接：
   # - 09:26：直接执行一次正式 fetch，若当天快照缺失则补 fore（只补一次）
   # - 09:35-11:30 / 13:00-14:59：每 5 分钟心跳一次
-  # - 15:00 / 16:00 / 17:00：收盘后各跑一次
+  # - 15:00 之后不再定时执行盘中快照；收盘版如需补跑，改走手动 workflow_dispatch
   schedule:
     - cron: "26 1 * * 1-5"
     - cron: "35-55/5 1 * * 1-5"
@@ -35,9 +35,6 @@ on:
     - cron: "0-30/5 3 * * 1-5"
     - cron: "*/5 5-6 * * 1-5"
     - cron: "59 6 * * 1-5"
-    - cron: "0 7 * * 1-5"
-    - cron: "0 8 * * 1-5"
-    - cron: "0 9 * * 1-5"
   # 提交代码后触发（除 gh-pages 外的所有分支）
   push:
     branches:
@@ -84,8 +81,8 @@ jobs:
           now_min=$((10#$(date +%H)*60 + 10#$(date +%M)))
           # workflow 本身的允许窗口：
           # - 09:26-09:34：允许执行当天第一次正式 fetch，并在缺快照时补 fore；
-          # - 09:35-11:30 / 13:00-14:59：允许执行主页面发布；
-          # - 15:00 / 16:00 / 17:00：允许执行收盘版发布。
+          # - 09:35-11:30 / 13:00-14:59：允许执行盘中主页面 / 实时快照发布；
+          # - 15:00 后不再通过 schedule 定时执行快照。
           hit_open_fore=false
           if [ $(( now_min >= 9*60+26 && now_min < 9*60+35 )) -eq 1 ]; then
             hit_open_fore=true
@@ -100,20 +97,7 @@ jobs:
             hit_intraday=true
           fi
 
-          t_close=$((15*60))
-          t_close_end=$((17*60+59))
-          hit_close=false
-          # 收盘版回测/个股研究推送可能晚于 15:00 才完全落地，
-          # 这里把窗口放宽到 17:59，避免一次调度抖动就整晚停留在旧版回测。
-          if [ $(( now_min >= t_close && now_min <= t_close_end )) -eq 1 ]; then
-            hit_close=true
-          fi
-
-          if [ "${hit_close}" = "true" ]; then
-            echo "skip=false" >> "$GITHUB_OUTPUT"
-            echo "mode=eod" >> "$GITHUB_OUTPUT"
-            echo "Close window hit -> eod"
-          elif [ "${hit_open_fore}" = "true" ]; then
+          if [ "${hit_open_fore}" = "true" ]; then
             echo "skip=false" >> "$GITHUB_OUTPUT"
             echo "mode=open_fore" >> "$GITHUB_OUTPUT"
             echo "Open window hit -> fetch with fore"
@@ -359,8 +343,7 @@ jobs:
           # 所有触发方式统一使用同一套“当前时间 + 最近交易日”判定。
           # schedule 触发时，直接承接 timecheck 的窗口判定：
           # - open_fore：09:26 的首次正式 fetch，优先按需补 fore
-          # - intraday：仅刷新实时盯盘运行时
-          # - eod：收盘后全量复盘发布
+          # - intraday：盘中仅刷新实时盯盘运行时
           latest_trade="${{ steps.tradeday.outputs.latest_trade_date }}"
           today_bj="${{ steps.tradeday.outputs.today_bj }}"
           realtime_market_date="${{ steps.tradeday.outputs.realtime_market_date }}"
@@ -391,8 +374,6 @@ jobs:
           elif [ "${{ github.event_name }}" = "schedule" ]; then
             if [ "${schedule_mode}" = "intraday" ]; then
               mode="intraday"
-            elif [ "${schedule_mode}" = "eod" ]; then
-              mode="eod"
             else
               mode="fetch"
             fi
