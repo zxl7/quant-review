@@ -49,9 +49,9 @@ permissions:
   contents: write
 
 concurrency:
-  # 将 schedule 与手动/代码触发拆成两条并发通道，避免高频心跳把人工补跑或代码推送排队顶掉。
-  # 同一通道内部仍保持串行，避免多路同时写 gh-pages。
-  group: ${{ github.event_name == 'schedule' && 'gh-pages-publish-schedule' || format('gh-pages-publish-interactive-{0}', github.ref_name) }}
+  # schedule 按 cron 通道分流，避免 09:26/open 或收盘重任务把 5 分钟盘中快照队列堵住。
+  # 手动/代码触发仍按分支串行，避免同一分支多路同时写 gh-pages。
+  group: ${{ github.event_name == 'schedule' && format('gh-pages-publish-schedule-{0}', github.event.schedule) || format('gh-pages-publish-interactive-{0}', github.ref_name) }}
   # 不取消已在执行中的发布；仅让同通道的新请求接替旧的等待项。
   cancel-in-progress: false
 
@@ -198,20 +198,6 @@ jobs:
         if: ${{ github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true' }}
         with:
           python-version: "3.11"
-
-      - name: Install dependencies
-        if: ${{ github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true' }}
-        run: pip install -r requirements.txt
-
-      - name: Setup Node.js
-        if: ${{ github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true' }}
-        uses: actions/setup-node@v4
-        with:
-          node-version: "22"
-
-      - name: Install web dependencies
-        if: ${{ github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true' }}
-        run: cd web && npm ci
 
       - name: Check A-share trade day
         id: tradeday
@@ -429,6 +415,20 @@ jobs:
         if: ${{ github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true' }}
         run: |
           chmod +x ./qr.sh || true
+
+      - name: Install Python dependencies (full publish only)
+        if: ${{ (github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true') && steps.warmup.outputs.skip != 'true' && steps.pushmode.outputs.mode != 'intraday' }}
+        run: pip install -r requirements.txt
+
+      - name: Setup Node.js (full publish only)
+        if: ${{ (github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true') && steps.warmup.outputs.skip != 'true' && steps.pushmode.outputs.mode != 'intraday' }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Install web dependencies (full publish only)
+        if: ${{ (github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true') && steps.warmup.outputs.skip != 'true' && steps.pushmode.outputs.mode != 'intraday' }}
+        run: cd web && npm ci
 
       - name: Resolve stock research query tag
         id: stockresearch
@@ -699,7 +699,25 @@ jobs:
           git -C site_prev config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git -C site_prev add intraday_runtime.json intraday_resonance.json cache/intraday_slices-*.json 2>/dev/null || true
           git -C site_prev commit -m "deploy: intraday runtime" || true
-          git -C site_prev push origin HEAD:gh-pages
+          push_rc=1
+          for attempt in 1 2 3; do
+            if git -C site_prev push origin HEAD:gh-pages; then
+              echo "Push intraday runtime to gh-pages succeeded on attempt ${attempt}"
+              push_rc=0
+              break
+            fi
+            push_rc=$?
+            echo "Push intraday runtime failed on attempt ${attempt} (rc=${push_rc})"
+            if [ "${attempt}" -lt 3 ]; then
+              sleep $((attempt * 5))
+              git -C site_prev fetch origin gh-pages || true
+              git -C site_prev rebase origin/gh-pages || {
+                git -C site_prev rebase --abort || true
+                echo "Rebase against origin/gh-pages failed; retrying push without rebase"
+              }
+            fi
+          done
+          exit "${push_rc}"
 
       - name: Commit & push to gh-pages
         if: ${{ (github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true') && steps.warmup.outputs.skip != 'true' && (github.event_name != 'schedule' || steps.tradeday.outputs.is_trade_today == 'true') && steps.pushmode.outputs.mode != 'intraday' }}

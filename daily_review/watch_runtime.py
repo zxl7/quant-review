@@ -83,9 +83,9 @@ def _purge_previous_day_slices(*, root: Path, keep_date10: str) -> None:
 
 
 # 盘中快照粒度（分钟）
-INTRADAY_INTERVAL_MIN = 10
-# 单日最多保留的盘中节点（10 分钟粒度下可覆盖约 2 个交易日）
-INTRADAY_SLICE_MAX = 48
+INTRADAY_INTERVAL_MIN = 5
+# 单日最多保留的盘中节点（5 分钟粒度下可覆盖一个完整交易日，并为延迟重试留余量）
+INTRADAY_SLICE_MAX = 96
 
 
 def _read_slices_rows(path: Path) -> list[dict[str, Any]]:
