@@ -484,6 +484,10 @@ jobs:
         env:
           BIYING_TOKEN: ${{ secrets.BIYING_TOKEN }}
           BIYING_BASE_URL: ${{ secrets.BIYING_BASE_URL }}
+          QR_SKIP_CACHE_SYNC: "1"
+          QR_SKIP_WATCHLIST_REFRESH: "1"
+          QR_SKIP_ACCOUNT_METRICS_SYNC: "1"
+          QR_SKIP_WEB_BUILD: "1"
         run: |
           set -euo pipefail
           if [ -z "${BIYING_TOKEN}" ]; then
@@ -558,6 +562,17 @@ jobs:
           if not relay and watch:
               print("WARNING: ztAnalysis relay empty while watch exists; publish continues because an empty relay pool can be valid intraday.")
           PY
+
+      - name: Post-fetch cache sync and derived data
+        if: ${{ (github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true') && steps.warmup.outputs.skip != 'true' && (github.event_name != 'schedule' || steps.tradeday.outputs.is_trade_today == 'true') && steps.pushmode.outputs.mode != 'intraday' }}
+        timeout-minutes: 6
+        run: |
+          set -euo pipefail
+          run_date="${{ steps.pushmode.outputs.date10 }}"
+          python3 manage_cache.py --date "${run_date}" --mode minimal --retention-days 7 --apply >/dev/null
+          PYTHONPATH=. python3 tools/fetch_watchlist.py --date "${run_date}" --skip-fetch || echo "⚠ watchlist rebuild failed, using cache"
+          PYTHONPATH=. python3 scripts/build_account_nav_ledger.py >/dev/null || echo "⚠ account nav ledger sync failed"
+          PYTHONPATH=. python3 scripts/build_account_strategy_metrics.py >/dev/null || echo "⚠ account strategy metrics sync failed"
 
       - name: Generate intraday runtime only
         if: ${{ (github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true') && steps.pushmode.outputs.mode == 'intraday' && steps.warmup.outputs.skip != 'true' && (github.event_name != 'schedule' || steps.tradeday.outputs.is_trade_today == 'true') }}

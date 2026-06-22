@@ -73,6 +73,12 @@ warn() {
   echo "⚠️  $*" >&2
 }
 
+flag_enabled() {
+  local value="${1:-}"
+  value="$(printf '%s' "${value}" | tr '[:upper:]' '[:lower:]')"
+  [[ "${value}" == "1" || "${value}" == "true" || "${value}" == "yes" || "${value}" == "on" ]]
+}
+
 script_dir() {
   # 纯函数：输出脚本所在目录（绝对路径）
   cd "$(dirname "${BASH_SOURCE[0]}")" && pwd
@@ -256,11 +262,27 @@ cmd_fetch() {
     run_daily_review_cli --fetch --date "${DATE_ARG}"
     prune_cache_keep_latest_n 7
     prune_extra_cache_artifacts
-    sync_online_cache_dir "${DATE_ARG}"
-    refresh_watchlist_cache "${DATE_ARG}"
-    sync_account_nav_ledger_file
-    sync_account_strategy_metrics_file
-    build_web_dist "$(date10_to_date8 "${DATE_ARG}")"
+    if ! flag_enabled "${QR_SKIP_CACHE_SYNC:-}"; then
+      sync_online_cache_dir "${DATE_ARG}"
+    else
+      info "跳过 cache_online 同步（QR_SKIP_CACHE_SYNC=1）"
+    fi
+    if ! flag_enabled "${QR_SKIP_WATCHLIST_REFRESH:-}"; then
+      refresh_watchlist_cache "${DATE_ARG}"
+    else
+      info "跳过 watchlist 推票刷新（QR_SKIP_WATCHLIST_REFRESH=1）"
+    fi
+    if ! flag_enabled "${QR_SKIP_ACCOUNT_METRICS_SYNC:-}"; then
+      sync_account_nav_ledger_file
+      sync_account_strategy_metrics_file
+    else
+      info "跳过账户净值/策略表现同步（QR_SKIP_ACCOUNT_METRICS_SYNC=1）"
+    fi
+    if ! flag_enabled "${QR_SKIP_WEB_BUILD:-}"; then
+      build_web_dist "$(date10_to_date8 "${DATE_ARG}")"
+    else
+      info "跳过 Web 构建（QR_SKIP_WEB_BUILD=1）"
+    fi
     return 0
   fi
 
@@ -272,14 +294,32 @@ cmd_fetch() {
   d8="$(pick_latest_cache_date8)" || die "未找到 cache/market_data-*.json（尚未生成缓存？）"
   d10="$(date8_to_date10 "${d8}")"
   # 先 sync 到 cache_online（会清空目录），再生成 watchlist 推票，最后构建 web
-  sync_online_cache_dir "${d10}"
-  refresh_watchlist_cache "${d10}"
-  sync_account_nav_ledger_file
-  sync_account_strategy_metrics_file
-  build_web_dist "${d8}"
+  if ! flag_enabled "${QR_SKIP_CACHE_SYNC:-}"; then
+    sync_online_cache_dir "${d10}"
+  else
+    info "跳过 cache_online 同步（QR_SKIP_CACHE_SYNC=1）"
+  fi
+  if ! flag_enabled "${QR_SKIP_WATCHLIST_REFRESH:-}"; then
+    refresh_watchlist_cache "${d10}"
+  else
+    info "跳过 watchlist 推票刷新（QR_SKIP_WATCHLIST_REFRESH=1）"
+  fi
+  if ! flag_enabled "${QR_SKIP_ACCOUNT_METRICS_SYNC:-}"; then
+    sync_account_nav_ledger_file
+    sync_account_strategy_metrics_file
+  else
+    info "跳过账户净值/策略表现同步（QR_SKIP_ACCOUNT_METRICS_SYNC=1）"
+  fi
+  if ! flag_enabled "${QR_SKIP_WEB_BUILD:-}"; then
+    build_web_dist "${d8}"
+  else
+    info "跳过 Web 构建（QR_SKIP_WEB_BUILD=1）"
+  fi
   prune_cache_keep_latest_n 7
   prune_extra_cache_artifacts
-  python3 inject_data.py "${d8}" --dev-only 2>/dev/null || true
+  if ! flag_enabled "${QR_SKIP_WEB_BUILD:-}"; then
+    python3 inject_data.py "${d8}" --dev-only 2>/dev/null || true
+  fi
 }
 
 cmd_gen() {
