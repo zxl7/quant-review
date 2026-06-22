@@ -48,8 +48,10 @@ permissions:
 
 concurrency:
   # schedule 按 cron 通道分流，避免 09:26/open 或收盘重任务把 5 分钟盘中快照队列堵住。
-  # 手动/代码触发仍按分支串行，避免同一分支多路同时写 gh-pages。
-  group: ${{ github.event_name == 'schedule' && format('gh-pages-publish-schedule-{0}', github.event.schedule) || format('gh-pages-publish-interactive-{0}', github.ref_name) }}
+  # push 与 workflow_dispatch 分通道串行：
+  # - 各自通道内仍按分支串行，避免同一来源的重复发布互相覆盖；
+  # - 手动触发不再和同分支 push 共用一个等待队列，避免 queued run 被“更高优先级等待项”顶掉。
+  group: ${{ github.event_name == 'schedule' && format('gh-pages-publish-schedule-{0}', github.event.schedule) || github.event_name == 'workflow_dispatch' && format('gh-pages-publish-dispatch-{0}', github.ref_name) || format('gh-pages-publish-push-{0}', github.ref_name) }}
   # 不取消已在执行中的发布；仅让同通道的新请求接替旧的等待项。
   cancel-in-progress: false
 
