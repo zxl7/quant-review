@@ -37,6 +37,9 @@ STRATEGIES = (
 
 CAUTION_GAP_PCT = 5.0
 FORCED_QUERY_TAGS = {"fore"}
+SOURCE_HISTORY_SCHEMA = "stock_research_backtest_source_v1"
+SOURCE_HISTORY_CLOSE_PUSH = "ztAnalysis.relay/watch.close_push"
+MARKET_CLOSE_SECONDS = 15 * 3600
 
 
 def _now_bj() -> datetime:
@@ -134,6 +137,91 @@ def _save_price_cache(payload: dict[str, Any]) -> None:
 
 def _source_history_path() -> Path:
     return CACHE_DIR / "stock_research_backtest_source.json"
+
+
+def _parse_bj_datetime(text: Any) -> datetime | None:
+    raw = str(text or "").strip().replace("T", " ")
+    if not raw:
+        return None
+    if len(raw) == 16:
+        raw = f"{raw}:00"
+    try:
+        parsed = datetime.fromisoformat(raw)
+    except ValueError:
+        return None
+    if parsed.tzinfo is None:
+        return parsed.replace(tzinfo=TZ_BJ)
+    return parsed.astimezone(TZ_BJ)
+
+
+def _seconds_of_day(current: datetime) -> int:
+    return current.hour * 3600 + current.minute * 60 + current.second
+
+
+def _is_after_close(current: datetime | None = None) -> bool:
+    return _seconds_of_day(current or _now_bj()) >= MARKET_CLOSE_SECONDS
+
+
+def _is_same_day_pre_close(timestamp_text: Any, date10: str) -> bool:
+    if len(date10) != 10:
+        return False
+    parsed = _parse_bj_datetime(timestamp_text)
+    if not parsed:
+        return False
+    return parsed.strftime("%Y-%m-%d") == date10 and _seconds_of_day(parsed) < MARKET_CLOSE_SECONDS
+
+
+def _recommendation_date_from_source_item(item: dict[str, Any]) -> str:
+    recommendation_date = str(item.get("recommendation_date") or "").strip()
+    if len(recommendation_date) == 10:
+        return recommendation_date
+    rows = item.get("rows") if isinstance(item.get("rows"), list) else []
+    for row in rows:
+        if not isinstance(row, dict):
+            continue
+        row_date10 = str(row.get("date10") or "").strip()
+        if len(row_date10) == 10:
+            return row_date10
+    return ""
+
+
+def _is_invalid_close_push_source_item(*, item: dict[str, Any]) -> bool:
+    source = str(item.get("source") or "").strip()
+    if source != SOURCE_HISTORY_CLOSE_PUSH:
+        return False
+    recommendation_date = _recommendation_date_from_source_item(item)
+    if len(recommendation_date) != 10:
+        return False
+    generated_at_bj = str(item.get("generated_at_bj") or "").strip()
+    pushed_at_bj = str(item.get("pushed_at_bj") or "").strip()
+    if _is_same_day_pre_close(generated_at_bj, recommendation_date):
+        return True
+    if not generated_at_bj and _is_same_day_pre_close(pushed_at_bj, recommendation_date):
+        return True
+    return False
+
+
+def _is_close_ready_market_data(market_data: dict[str, Any]) -> bool:
+    if not isinstance(market_data, dict):
+        return False
+    date10 = str(market_data.get("date") or "").strip()
+    if len(date10) != 10:
+        return False
+    current = _now_bj()
+    today10 = current.strftime("%Y-%m-%d")
+    if date10 != today10:
+        return True
+    meta = market_data.get("meta") if isinstance(market_data.get("meta"), dict) else {}
+    asof = meta.get("asOf") if isinstance(meta.get("asOf"), dict) else {}
+    generated_at = str(meta.get("generatedAt") or "").strip()
+    generated_dt = _parse_bj_datetime(generated_at)
+    if generated_dt and generated_dt.strftime("%Y-%m-%d") == date10 and _is_after_close(generated_dt):
+        return True
+    if isinstance(asof, dict):
+        for key in ("indices", "pools", "themes"):
+            if str(asof.get(key) or "").strip() == "收盘":
+                return True
+    return False
 
 
 def _trade_days_cache_path_candidates() -> list[Path]:
@@ -349,8 +437,8 @@ def _row_from_item(item: dict[str, Any], *, date10: str, bucket: str) -> dict[st
 def _load_source_history() -> dict[str, Any]:
     data = _load_json(_source_history_path(), default={})
     if not isinstance(data, dict):
-        return {"schema": "stock_research_backtest_source_v1", "dates": {}}
-    data.setdefault("schema", "stock_research_backtest_source_v1")
+        return {"schema": SOURCE_HISTORY_SCHEMA, "dates": {}}
+    data.setdefault("schema", SOURCE_HISTORY_SCHEMA)
     data.setdefault("dates", {})
     return data
 
@@ -368,6 +456,8 @@ def sync_stock_research_backtest_source(*, market_data: dict[str, Any]) -> bool:
         return False
     meta = market_data.get("meta") if isinstance(market_data.get("meta"), dict) else {}
     if str(meta.get("mode") or "").strip() == "intraday":
+        return False
+    if not _is_close_ready_market_data(market_data):
         return False
     zt = market_data.get("ztAnalysis") if isinstance(market_data.get("ztAnalysis"), dict) else {}
     relay = zt.get("relay") if isinstance(zt.get("relay"), list) else []
@@ -388,7 +478,7 @@ def sync_stock_research_backtest_source(*, market_data: dict[str, Any]) -> bool:
     dates[trade_date10] = {
         "date": trade_date10,
         "recommendation_date": date10,
-        "source": "ztAnalysis.relay/watch.close_push",
+        "source": SOURCE_HISTORY_CLOSE_PUSH,
         "generated_at_bj": str(meta.get("generatedAt") or "").strip(),
         "pushed_at_bj": _now_bj().strftime("%Y-%m-%d %H:%M:%S"),
         "rows": rows,
@@ -397,19 +487,46 @@ def sync_stock_research_backtest_source(*, market_data: dict[str, Any]) -> bool:
     return True
 
 
-def _load_stock_research_rows() -> tuple[list[dict[str, Any]], list[str]]:
-    history = _load_source_history()
+def _iter_valid_source_history_items(history: dict[str, Any]) -> list[tuple[str, dict[str, Any]]]:
     dates = history.get("dates") if isinstance(history.get("dates"), dict) else {}
-
-    rows: list[dict[str, Any]] = []
-    used_sources: list[str] = []
-    for date10 in sorted(dates.keys()):
-        item = dates.get(date10)
+    items: list[tuple[str, dict[str, Any]]] = []
+    for trade_date10 in sorted(dates.keys()):
+        item = dates.get(trade_date10)
         if not isinstance(item, dict):
             continue
         day_rows = item.get("rows") if isinstance(item.get("rows"), list) else []
         if not day_rows:
             continue
+        if _is_invalid_close_push_source_item(item=item):
+            continue
+        items.append((trade_date10, item))
+    return items
+
+
+def get_latest_stock_research_source_snapshot() -> dict[str, Any]:
+    history = _load_source_history()
+    valid_items = _iter_valid_source_history_items(history)
+    if not valid_items:
+        return {}
+    latest_trade_date, latest_item = valid_items[-1]
+    rows = latest_item.get("rows") if isinstance(latest_item.get("rows"), list) else []
+    return {
+        "trade_date": latest_trade_date,
+        "recommendation_date": _recommendation_date_from_source_item(latest_item),
+        "rows_count": len(rows),
+        "pushed_at_bj": str(latest_item.get("pushed_at_bj") or "").strip(),
+        "generated_at_bj": str(latest_item.get("generated_at_bj") or "").strip(),
+        "source": str(latest_item.get("source") or "").strip(),
+    }
+
+
+def _load_stock_research_rows() -> tuple[list[dict[str, Any]], list[str]]:
+    history = _load_source_history()
+
+    rows: list[dict[str, Any]] = []
+    used_sources: list[str] = []
+    for date10, item in _iter_valid_source_history_items(history):
+        day_rows = item.get("rows") if isinstance(item.get("rows"), list) else []
         used_sources.append(str(item.get("source") or f"stock_research_backtest_source:{date10}"))
         rows.extend(day_rows)
     rows.sort(key=lambda x: (x["date"], -x["score"], x["code"]))
@@ -500,10 +617,6 @@ def _pick_active_trade_date(rows: list[dict[str, Any]], *, now: datetime | None 
     return trade_dates[-1]
 
 
-def _seconds_since_midnight(current: datetime) -> int:
-    return current.hour * 3600 + current.minute * 60 + current.second
-
-
 def _build_lifecycle(
     *,
     latest_recommendation_date10: str,
@@ -516,7 +629,7 @@ def _build_lifecycle(
 ) -> dict[str, Any]:
     current = now or _now_bj()
     today10 = current.strftime("%Y-%m-%d")
-    now_seconds = _seconds_since_midnight(current)
+    now_seconds = _seconds_of_day(current)
     quote_time = str(realtime_buy.get("quote_time") or "").strip()
     quoted_count = int(realtime_buy.get("quoted_count") or 0)
     candidate_count = int(realtime_buy.get("candidate_count") or 0)
@@ -1909,8 +2022,13 @@ def _merge_current_pool_with_realtime(rows: list[dict[str, Any]], realtime_buy: 
     return merged_rows
 
 
-def build_stock_research_backtest_payload(*, current_market_data: dict[str, Any] | None = None, query_tag: str | None = None) -> dict[str, Any]:
-    if isinstance(current_market_data, dict):
+def build_stock_research_backtest_payload(
+    *,
+    current_market_data: dict[str, Any] | None = None,
+    query_tag: str | None = None,
+    sync_source_from_market_data: bool = True,
+) -> dict[str, Any]:
+    if sync_source_from_market_data and isinstance(current_market_data, dict):
         sync_stock_research_backtest_source(market_data=current_market_data)
     rows, generated_from = _load_stock_research_rows()
     if not rows:

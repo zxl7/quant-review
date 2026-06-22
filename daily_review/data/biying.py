@@ -34,6 +34,12 @@ def get_realtime_market_date(client: HttpClient, *, code: str = "000001.SH") -> 
         return ""
 
 
+def _is_after_close_now(now: _dt.datetime | None = None) -> bool:
+    current = now or _dt.datetime.now()
+    total = current.hour * 3600 + current.minute * 60 + current.second
+    return total >= 15 * 3600
+
+
 def _extract_trade_dates(items: Any) -> list[str]:
     """
     从指数K线条目提取“真实交易日”列表。
@@ -115,11 +121,11 @@ def resolve_trade_date(client: HttpClient, requested_date: str | None) -> tuple[
 
     today = _dt.datetime.now().strftime("%Y-%m-%d")
     dates = get_recent_trade_dates(client, n=20)
+    rt_date = get_realtime_market_date(client)
 
     # 兜底：通过上证指数实时行情日期判断最近交易日
     if not dates:
         try:
-            rt_date = get_realtime_market_date(client)
             if rt_date and len(rt_date) == 10:
                 if requested_date > rt_date:
                     note = f"非交易日自动回退到最近交易日：{rt_date}"
@@ -133,6 +139,9 @@ def resolve_trade_date(client: HttpClient, requested_date: str | None) -> tuple[
     # 若请求的是"今天"，且今天在交易日列表内，则直接按今天处理。
     if requested_date == today and today in dates:
         return requested_date, ""
+    # 收盘后若实时行情已确认今天是交易日，即使指数日K尚未补齐今天，也应继续使用今天。
+    if requested_date == today and rt_date == today and today > dates[-1] and _is_after_close_now():
+        return requested_date, "收盘后模式：实时行情已确认当日交易，忽略指数日K回退。"
 
     if requested_date in dates:
         return requested_date, ""

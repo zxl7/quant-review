@@ -183,6 +183,7 @@ def attach_stock_research_backtest(
     market_data["stockResearchBacktest"] = build_stock_research_backtest_payload(
         current_market_data=market_data,
         query_tag=query_tag,
+        sync_source_from_market_data=False,
     )
     if log_fn:
         log_fn(f"stockResearchBacktest 已按个股研究推送历史源派生{f' (tag={query_tag})' if query_tag else ''}")

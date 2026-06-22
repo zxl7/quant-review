@@ -1097,31 +1097,12 @@ def _is_complete_stock_research_backtest(payload: object) -> bool:
 
 
 def _latest_stock_research_source_snapshot() -> dict[str, object]:
-    path = ROOT / "cache" / "stock_research_backtest_source.json"
-    if not path.exists():
-        return {}
     try:
-        data = json.loads(path.read_text(encoding="utf-8"))
+        from scripts.build_stock_research_backtest import get_latest_stock_research_source_snapshot
     except Exception:
         return {}
-    dates = data.get("dates") if isinstance(data, dict) else {}
-    if not isinstance(dates, dict):
-        return {}
-
-    valid_dates = [str(date10).strip() for date10 in dates.keys() if re.match(r"^\d{4}-\d{2}-\d{2}$", str(date10 or "").strip())]
-    if not valid_dates:
-        return {}
-    latest_trade_date = sorted(valid_dates)[-1]
-    latest_item = dates.get(latest_trade_date)
-    if not isinstance(latest_item, dict):
-        return {}
-    rows = latest_item.get("rows") if isinstance(latest_item.get("rows"), list) else []
-    return {
-        "trade_date": latest_trade_date,
-        "recommendation_date": str(latest_item.get("recommendation_date") or "").strip(),
-        "rows_count": len(rows),
-        "pushed_at_bj": str(latest_item.get("pushed_at_bj") or "").strip(),
-    }
+    snapshot = get_latest_stock_research_source_snapshot()
+    return snapshot if isinstance(snapshot, dict) else {}
 
 
 def _is_fresh_stock_research_backtest(
@@ -1191,7 +1172,10 @@ def _ensure_stock_research_backtest(md: dict) -> None:
     try:
         from scripts.build_stock_research_backtest import build_stock_research_backtest_payload
 
-        md["stockResearchBacktest"] = build_stock_research_backtest_payload(current_market_data=md)
+        md["stockResearchBacktest"] = build_stock_research_backtest_payload(
+            current_market_data=md,
+            sync_source_from_market_data=False,
+        )
     except Exception:
         return
 

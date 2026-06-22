@@ -6,10 +6,12 @@ from __future__ import annotations
 import json
 import tempfile
 import unittest
+from datetime import datetime as real_datetime
 from pathlib import Path
 from unittest.mock import patch
 
 import daily_review.application.stock_research_service as stock_research_service
+import daily_review.data.biying as biying
 import daily_review.publish.web_bundle as web_bundle
 import scripts.build_stock_research_backtest as backtest
 from daily_review.features.ladder_builder import LadderResult, MainLine, TierCell
@@ -129,6 +131,69 @@ class StockResearchBacktestRowsTest(unittest.TestCase):
         self.assertEqual({row["date10"] for row in rows}, {"2026-06-03"})
         self.assertEqual([row["name"] for row in rows], ["今天接力", "今天观察"])
         self.assertEqual(sources, ["ztAnalysis.relay/watch.close_push"])
+
+    def test_invalid_same_day_pre_close_close_push_is_ignored(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            cache_dir = Path(tmp) / "cache"
+            cache_dir.mkdir()
+            (cache_dir / "stock_research_backtest_source.json").write_text(
+                json.dumps(
+                    {
+                        "schema": "stock_research_backtest_source_v1",
+                        "dates": {
+                            "2026-06-22": {
+                                "date": "2026-06-22",
+                                "recommendation_date": "2026-06-19",
+                                "source": "ztAnalysis.relay/watch.close_push",
+                                "generated_at_bj": "2026-06-19 17:02:29",
+                                "rows": [
+                                    {"date": "20260619", "date10": "2026-06-19", "trade_date10": "2026-06-22", "code": "000111", "name": "有效接力", "bucket": "relay", "score": 90}
+                                ],
+                            },
+                            "2026-06-23": {
+                                "date": "2026-06-23",
+                                "recommendation_date": "2026-06-22",
+                                "source": "ztAnalysis.relay/watch.close_push",
+                                "generated_at_bj": "2026-06-22 09:45:56",
+                                "pushed_at_bj": "2026-06-22 09:48:32",
+                                "rows": [
+                                    {"date": "20260622", "date10": "2026-06-22", "trade_date10": "2026-06-23", "code": "000222", "name": "脏早盘记录", "bucket": "relay", "score": 95}
+                                ],
+                            },
+                        },
+                    },
+                    ensure_ascii=False,
+                ),
+                encoding="utf-8",
+            )
+
+            with patch.object(backtest, "CACHE_DIR", cache_dir):
+                rows, _ = backtest._load_stock_research_rows()
+                snapshot = backtest.get_latest_stock_research_source_snapshot()
+
+        self.assertEqual([row["code"] for row in rows], ["000111"])
+        self.assertEqual(snapshot["trade_date"], "2026-06-22")
+        self.assertEqual(snapshot["recommendation_date"], "2026-06-19")
+
+    def test_sync_source_skips_same_day_pre_close_market_data(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            cache_dir = Path(tmp) / "cache"
+            cache_dir.mkdir()
+            market_data = {
+                "date": "2026-06-22",
+                "meta": {"generatedAt": "2026-06-22 09:45:56"},
+                "ztAnalysis": {
+                    "relay": [{"code": "000333", "name": "早盘接力", "factorScore": 88, "reason": "预期 +1% ~ +3%"}],
+                    "watch": [],
+                },
+            }
+
+            with patch.object(backtest, "CACHE_DIR", cache_dir):
+                synced = backtest.sync_stock_research_backtest_source(market_data=market_data)
+                history = backtest._load_source_history()
+
+        self.assertFalse(synced)
+        self.assertEqual(history.get("dates"), {})
 
     def test_empty_payload_is_returned_when_no_rows_exist(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
@@ -983,6 +1048,27 @@ class StockResearchBacktestPublishFreshnessTest(unittest.TestCase):
 
         self.assertIsNotNone(snapshot)
         self.assertEqual(snapshot["marketData"]["stockResearchBacktest"]["meta"]["latest_recommendation_date"], "2026-06-15")
+
+
+class TradeDateResolveTest(unittest.TestCase):
+    def test_after_close_today_keeps_today_even_if_kline_list_lags(self) -> None:
+        client = object()
+        fake_datetime_cls = type(
+            "FakeDateTime",
+            (),
+            {
+                "now": staticmethod(lambda: real_datetime(2026, 6, 19, 17, 2, 0)),
+                "strptime": staticmethod(real_datetime.strptime),
+            },
+        )
+        fake_dt_module = type("FakeDtModule", (), {"datetime": fake_datetime_cls})
+        with patch.object(biying, "_dt", fake_dt_module), patch.object(
+            biying, "get_recent_trade_dates", return_value=["2026-06-17", "2026-06-18"]
+        ), patch.object(biying, "get_realtime_market_date", return_value="2026-06-19"):
+            actual, note = biying.resolve_trade_date(client, "2026-06-19")
+
+        self.assertEqual(actual, "2026-06-19")
+        self.assertIn("收盘后模式", note)
 
 
 if __name__ == "__main__":
