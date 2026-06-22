@@ -133,6 +133,66 @@ class WorkflowScheduleTest(unittest.TestCase):
         self.assertTrue(result["required"])
         self.assertFalse(result["ok"])
 
+    def test_validate_market_data_snapshot_allows_future_trade_day_pending_guard(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            market_path = Path(tmp) / "market_data.json"
+            market_path.write_text(
+                json.dumps(
+                    {
+                        "stockResearchBacktest": {
+                            "realtimeBuy": {
+                                "trade_date": "2026-06-23",
+                                "reference_date": "2026-06-22",
+                                "candidate_count": 11,
+                                "quote_time": "",
+                                "diagnostics": {
+                                    "source": "future_trade_day_guard",
+                                    "future_trade_day_guard": True,
+                                },
+                            }
+                        }
+                    },
+                    ensure_ascii=False,
+                ),
+                encoding="utf-8",
+            )
+
+            result = validate_market_data_stock_research_snapshot(market_path, "2026-06-22")
+
+        self.assertTrue(result["ok"])
+        self.assertFalse(result["required"])
+        self.assertEqual(result["message"], "future_trade_day_pending")
+        self.assertTrue(result["future_trade_day_guard"])
+
+    def test_validate_market_data_snapshot_does_not_exempt_non_future_trade_day_guard(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            market_path = Path(tmp) / "market_data.json"
+            market_path.write_text(
+                json.dumps(
+                    {
+                        "stockResearchBacktest": {
+                            "realtimeBuy": {
+                                "trade_date": "2026-06-22",
+                                "reference_date": "2026-06-21",
+                                "candidate_count": 1,
+                                "quote_time": "",
+                                "diagnostics": {
+                                    "source": "future_trade_day_guard",
+                                    "future_trade_day_guard": True,
+                                },
+                            }
+                        }
+                    },
+                    ensure_ascii=False,
+                ),
+                encoding="utf-8",
+            )
+
+            result = validate_market_data_stock_research_snapshot(market_path, "2026-06-22")
+
+        self.assertFalse(result["ok"])
+        self.assertTrue(result["required"])
+
     def test_validate_market_data_snapshot_skips_when_no_candidates_exist(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             market_path = Path(tmp) / "market_data.json"
@@ -158,6 +218,33 @@ class WorkflowScheduleTest(unittest.TestCase):
 
         self.assertFalse(result["required"])
         self.assertTrue(result["ok"])
+
+    def test_validate_market_data_snapshot_passes_with_same_day_quote(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            market_path = Path(tmp) / "market_data.json"
+            market_path.write_text(
+                json.dumps(
+                    {
+                        "stockResearchBacktest": {
+                            "realtimeBuy": {
+                                "trade_date": "2026-06-22",
+                                "reference_date": "2026-06-19",
+                                "candidate_count": 2,
+                                "quote_time": "2026-06-22 09:25:01",
+                                "diagnostics": {"source": "workflow_prefetch"},
+                            }
+                        }
+                    },
+                    ensure_ascii=False,
+                ),
+                encoding="utf-8",
+            )
+
+            result = validate_market_data_stock_research_snapshot(market_path, "2026-06-22")
+
+        self.assertTrue(result["ok"])
+        self.assertTrue(result["required"])
+        self.assertEqual(result["message"], "snapshot_ready")
 
 
 if __name__ == "__main__":

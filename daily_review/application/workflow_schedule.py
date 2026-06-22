@@ -111,6 +111,7 @@ def describe_market_data_snapshot(path: Path, trade_date10: str) -> dict[str, An
         "trade_date": "",
         "reference_date": "",
         "candidate_count": 0,
+        "future_trade_day_guard": False,
     }
     if len(trade_date10) != 10 or not path.exists():
         return result
@@ -124,6 +125,7 @@ def describe_market_data_snapshot(path: Path, trade_date10: str) -> dict[str, An
     trade_date = str(realtime_buy.get("trade_date") or "").strip()
     reference_date = str(realtime_buy.get("reference_date") or "").strip()
     candidate_count = int(realtime_buy.get("candidate_count") or 0)
+    future_trade_day_guard = bool(diagnostics.get("future_trade_day_guard")) or source == "future_trade_day_guard"
     valid = (
         quote_time.startswith(trade_date10)
         and len(quote_time) >= 19
@@ -138,6 +140,7 @@ def describe_market_data_snapshot(path: Path, trade_date10: str) -> dict[str, An
             "trade_date": trade_date,
             "reference_date": reference_date,
             "candidate_count": candidate_count,
+            "future_trade_day_guard": future_trade_day_guard,
         }
     )
     return result
@@ -199,9 +202,15 @@ def validate_market_data_stock_research_snapshot(path: Path, trade_date10: str) 
         result["message"] = "snapshot_ready"
         return result
 
+    trade_date = str(snapshot.get("trade_date") or "").strip()
+    if trade_date > trade_date10 and bool(snapshot.get("future_trade_day_guard")):
+        result["required"] = False
+        result["message"] = "future_trade_day_pending"
+        return result
+
     quote_time = str(snapshot.get("quote_time") or "").strip() or "<missing>"
     source = str(snapshot.get("source") or "").strip() or "<missing>"
-    trade_date = str(snapshot.get("trade_date") or "").strip() or "<missing>"
+    trade_date = trade_date or "<missing>"
     result["ok"] = False
     result["message"] = (
         "trade-day stockResearchBacktest snapshot missing or invalid: "
