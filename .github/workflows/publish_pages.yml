@@ -300,6 +300,18 @@ jobs:
             f.write(f"realtime_market_date={rt_date}\n")
             f.write(f"is_trade_today={is_trade_today}\n")
             f.write(f"trade_day_source={source}\n")
+          merged_dates = sorted(set(local_dates) | set(remote_dates) | ({rt_date} if rt_date else set()) | ({today} if is_trade_today == "true" else set()))
+          if merged_dates:
+            payload = {
+              "days": merged_dates,
+              "latest_trade_date": latest_trade,
+              "today_bj": today,
+              "realtime_market_date": rt_date,
+              "is_trade_today": is_trade_today == "true",
+              "source": source,
+            }
+            cache_dir.mkdir(parents=True, exist_ok=True)
+            (cache_dir / "trade_days_cache.json").write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
           print("today_bj=", today)
           print("latest_trade_date=", latest_trade)
           print("trade_day_source=", source)

@@ -19,6 +19,36 @@ from daily_review.features.stock_ranker import build_picks_advisor, StockScore, 
 
 
 class StockResearchBacktestRowsTest(unittest.TestCase):
+    def test_resolve_next_trade_date_merges_local_sources_before_weekday_fallback(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            cache_dir = root / "cache"
+            cache_online_dir = root / "cache_online"
+            cache_dir.mkdir()
+            cache_online_dir.mkdir()
+            (cache_dir / "trade_days_cache.json").write_text(
+                json.dumps({"days": ["2026-04-20", "2026-04-21"]}, ensure_ascii=False),
+                encoding="utf-8",
+            )
+            (cache_dir / "pools_cache.json").write_text(
+                json.dumps(
+                    {
+                        "pools": {
+                            "ztgc": {
+                                "2026-06-18": [],
+                                "2026-06-22": [],
+                            }
+                        }
+                    },
+                    ensure_ascii=False,
+                ),
+                encoding="utf-8",
+            )
+            (cache_dir / "market_data-20260622.json").write_text("{}", encoding="utf-8")
+
+            with patch.object(backtest, "ROOT", root), patch.object(backtest, "CACHE_DIR", cache_dir):
+                self.assertEqual(backtest._resolve_next_trade_date("2026-06-18"), "2026-06-22")
+
     def test_row_from_item_keeps_selection_diagnostics(self) -> None:
         row = backtest._row_from_item(
             {
@@ -1045,6 +1075,48 @@ class StockResearchBacktestPublishFreshnessTest(unittest.TestCase):
         self.assertEqual(upgraded["meta"]["default_display_trade_date"], "2026-06-22")
         self.assertEqual(upgraded["meta"]["default_display_recommendation_date"], "2026-06-19")
         self.assertTrue(upgraded["meta"]["has_pending_next_trade_day"])
+
+    def test_upgrade_corrects_invalid_trade_dates_before_recomputing_anchors(self) -> None:
+        payload = {
+            "schema": "stock_research_backtest_v2",
+            "meta": {"latest_recommendation_date": "2026-06-22", "active_trade_date": "2026-06-23"},
+            "summary": {
+                "total_samples": 1,
+                "source_samples": 1,
+                "filtered_non_backtest_samples": 0,
+                "eligible_samples": 1,
+                "realtime_candidate_count": 1,
+                "realtime_buy_count": 0,
+                "realtime_pending_count": 0,
+                "realtime_unavailable_count": 1,
+            },
+            "lifecycle": {"stage": "post_close_wait_auction", "quote_state": "waiting_trade_day"},
+            "realtimeBuy": {"trade_date": "2026-06-23", "reference_date": "2026-06-22", "quoted_count": 0, "diagnostics": {}},
+            "currentPoolRecords": [{"code": "000002", "date10": "2026-06-22", "trade_date10": "2026-06-23"}],
+            "displayRecords": [{"code": "000001", "date10": "2026-06-18", "trade_date10": "2026-06-19"}],
+            "historicalSnapshots": [{"reference_date": "2026-06-18", "trade_date": "2026-06-19"}],
+            "records": [{"code": "000001", "date10": "2026-06-18", "trade_date10": "2026-06-19"}],
+        }
+
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            cache_dir = root / "cache"
+            cache_dir.mkdir()
+            (cache_dir / "pools_cache.json").write_text(
+                json.dumps({"pools": {"ztgc": {"2026-06-18": [], "2026-06-22": [], "2026-06-23": []}}}, ensure_ascii=False),
+                encoding="utf-8",
+            )
+            with patch.object(backtest, "ROOT", root), patch.object(backtest, "CACHE_DIR", cache_dir), patch.object(
+                backtest,
+                "_now_bj",
+                return_value=real_datetime(2026, 6, 22, 16, 0, 0, tzinfo=backtest.TZ_BJ),
+            ):
+                upgraded = backtest.upgrade_stock_research_backtest_payload(payload)
+
+        self.assertEqual(upgraded["records"][0]["trade_date10"], "2026-06-22")
+        self.assertEqual(upgraded["historicalSnapshots"][0]["trade_date"], "2026-06-22")
+        self.assertEqual(upgraded["meta"]["default_display_trade_date"], "2026-06-22")
+        self.assertEqual(upgraded["meta"]["default_display_recommendation_date"], "2026-06-18")
 
     def test_publish_rebuilds_when_source_history_is_newer_than_payload(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

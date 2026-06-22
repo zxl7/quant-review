@@ -225,24 +225,79 @@ def _is_close_ready_market_data(market_data: dict[str, Any]) -> bool:
 
 
 def _trade_days_cache_path_candidates() -> list[Path]:
+    online_cache_dir = CACHE_DIR.parent / "cache_online"
     return [
         CACHE_DIR / "trade_days_cache.json",
-        ROOT / "cache_online" / "trade_days_cache.json",
+        online_cache_dir / "trade_days_cache.json",
     ]
 
 
-def _load_trade_days() -> list[str]:
-    for path in _trade_days_cache_path_candidates():
-        data = _load_json(path, default={})
-        if not isinstance(data, dict):
+def _trade_day_dir_candidates() -> list[Path]:
+    out: list[Path] = []
+    seen: set[str] = set()
+    online_cache_dir = CACHE_DIR.parent / "cache_online"
+    for path in (CACHE_DIR, online_cache_dir):
+        key = str(path)
+        if key in seen:
             continue
+        seen.add(key)
+        out.append(path)
+    return out
+
+
+def _clean_trade_days(days: list[Any]) -> list[str]:
+    cleaned = [str(day).strip() for day in days if re.match(r"^\d{4}-\d{2}-\d{2}$", str(day).strip())]
+    return sorted(dict.fromkeys(cleaned))
+
+
+def _load_trade_days_from_payload(path: Path) -> list[str]:
+    data = _load_json(path, default={})
+    if isinstance(data, dict):
         days = data.get("days")
-        if not isinstance(days, list):
-            continue
-        cleaned = [str(day).strip() for day in days if isinstance(day, str) and len(str(day).strip()) == 10]
-        if cleaned:
-            return sorted(dict.fromkeys(cleaned))
+        if isinstance(days, list):
+            return _clean_trade_days(days)
+    if isinstance(data, list):
+        return _clean_trade_days(data)
     return []
+
+
+def _load_trade_days_from_pools_cache(path: Path) -> list[str]:
+    data = _load_json(path, default={})
+    if not isinstance(data, dict):
+        return []
+    pools = data.get("pools") if isinstance(data.get("pools"), dict) else {}
+    if not isinstance(pools, dict):
+        return []
+    days: list[Any] = []
+    for pool_name in ("ztgc", "dtgc", "zbgc", "qsgc"):
+        rows = pools.get(pool_name)
+        if isinstance(rows, dict):
+            days.extend(rows.keys())
+    return _clean_trade_days(days)
+
+
+def _load_trade_days_from_market_data_dir(path: Path) -> list[str]:
+    out: list[str] = []
+    try:
+        for fp in path.glob("market_data-*.json"):
+            m = re.match(r"market_data-(\d{8})\.json$", fp.name)
+            if not m:
+                continue
+            d8 = m.group(1)
+            out.append(f"{d8[:4]}-{d8[4:6]}-{d8[6:8]}")
+    except Exception:
+        return []
+    return _clean_trade_days(out)
+
+
+def _load_trade_days() -> list[str]:
+    merged: set[str] = set()
+    for path in _trade_days_cache_path_candidates():
+        merged.update(_load_trade_days_from_payload(path))
+    for path in _trade_day_dir_candidates():
+        merged.update(_load_trade_days_from_pools_cache(path / "pools_cache.json"))
+        merged.update(_load_trade_days_from_market_data_dir(path))
+    return sorted(merged)
 
 
 def _next_weekday(date10: str) -> str:
@@ -253,13 +308,123 @@ def _next_weekday(date10: str) -> str:
     return probe.strftime("%Y-%m-%d")
 
 
-def _resolve_next_trade_date(date10: str) -> str:
-    days = _load_trade_days()
+def _resolve_next_trade_date(date10: str, *, trade_days: list[str] | None = None) -> str:
+    days = trade_days if trade_days is not None else _load_trade_days()
     if days:
         future = [day for day in days if day > date10]
         if future:
             return future[0]
     return _next_weekday(date10)
+
+
+def _resolve_trade_date10_for_reference_date(
+    reference_date10: str,
+    current_trade_date10: str = "",
+    *,
+    trade_days: list[str] | None = None,
+) -> str:
+    if len(reference_date10) != 10:
+        return str(current_trade_date10 or "").strip()
+    known_trade_days = trade_days if trade_days is not None else _load_trade_days()
+    trade_day_set = set(known_trade_days)
+    existing = str(current_trade_date10 or "").strip()
+    resolved = _resolve_next_trade_date(reference_date10, trade_days=known_trade_days) if known_trade_days else ""
+    if len(existing) == 10 and existing > reference_date10:
+        if not trade_day_set:
+            return existing
+        if existing in trade_day_set:
+            return existing
+        if resolved and resolved != existing:
+            return resolved
+        return existing
+    if resolved:
+        return resolved
+    return existing or _next_weekday(reference_date10)
+
+
+def _upgrade_rows_trade_dates(rows: list[dict[str, Any]], *, trade_days: list[str] | None = None) -> list[dict[str, Any]]:
+    upgraded: list[dict[str, Any]] = []
+    for row in rows:
+        if not isinstance(row, dict):
+            continue
+        record = dict(row)
+        reference_date10 = str(record.get("date10") or "").strip()
+        current_trade_date10 = str(record.get("trade_date10") or record.get("trade_date") or "").strip()
+        resolved_trade_date10 = _resolve_trade_date10_for_reference_date(
+            reference_date10,
+            current_trade_date10,
+            trade_days=trade_days,
+        )
+        if resolved_trade_date10:
+            record["trade_date10"] = resolved_trade_date10
+            if "trade_date" in record:
+                record["trade_date"] = resolved_trade_date10
+        upgraded.append(record)
+    return upgraded
+
+
+def _upgrade_realtime_buy_trade_date(
+    realtime_buy: dict[str, Any],
+    *,
+    trade_days: list[str] | None = None,
+) -> dict[str, Any]:
+    upgraded = dict(realtime_buy)
+    reference_date10 = str(upgraded.get("reference_date") or "").strip()
+    current_trade_date10 = str(upgraded.get("trade_date") or "").strip()
+    resolved_trade_date10 = _resolve_trade_date10_for_reference_date(
+        reference_date10,
+        current_trade_date10,
+        trade_days=trade_days,
+    )
+    if resolved_trade_date10:
+        upgraded["trade_date"] = resolved_trade_date10
+    for bucket in ("buy_list", "pending_list", "rejected_list", "unavailable_list"):
+        rows = upgraded.get(bucket)
+        if isinstance(rows, list):
+            upgraded[bucket] = _upgrade_rows_trade_dates(rows, trade_days=trade_days)
+    return upgraded
+
+
+def _upgrade_historical_snapshots(
+    historical_snapshots: list[dict[str, Any]],
+    backtest_rows: list[dict[str, Any]],
+    *,
+    trade_days: list[str] | None = None,
+) -> list[dict[str, Any]]:
+    if not historical_snapshots:
+        return _build_historical_snapshots(backtest_rows) if backtest_rows else []
+
+    trade_date_by_reference: dict[str, str] = {}
+    for row in backtest_rows:
+        if not isinstance(row, dict):
+            continue
+        reference_date10 = str(row.get("date10") or "").strip()
+        trade_date10 = str(row.get("trade_date10") or "").strip()
+        if len(reference_date10) == 10 and len(trade_date10) == 10:
+            trade_date_by_reference[reference_date10] = trade_date10
+
+    upgraded: list[dict[str, Any]] = []
+    for item in historical_snapshots:
+        if not isinstance(item, dict):
+            continue
+        snapshot = dict(item)
+        reference_date10 = str(snapshot.get("reference_date") or "").strip()
+        for bucket in ("buy_list", "pending_list", "rejected_list", "unavailable_list"):
+            rows = snapshot.get(bucket)
+            if isinstance(rows, list):
+                snapshot[bucket] = _upgrade_rows_trade_dates(rows, trade_days=trade_days)
+        resolved_trade_date10 = trade_date_by_reference.get(reference_date10)
+        if not resolved_trade_date10 and len(reference_date10) == 10:
+            resolved_trade_date10 = _resolve_trade_date10_for_reference_date(
+                reference_date10,
+                str(snapshot.get("trade_date") or snapshot.get("trade_date10") or "").strip(),
+                trade_days=trade_days,
+            )
+        if resolved_trade_date10:
+            snapshot["trade_date"] = resolved_trade_date10
+            snapshot["trade_date10"] = resolved_trade_date10
+        upgraded.append(snapshot)
+    return upgraded
 
 
 def _is_open_session(now: datetime | None = None) -> bool:
@@ -469,7 +634,8 @@ def sync_stock_research_backtest_source(*, market_data: dict[str, Any]) -> bool:
     rows.extend(_row_from_item(item, date10=date10, bucket="watch") for item in watch if isinstance(item, dict))
     if not rows:
         return False
-    trade_date10 = _resolve_next_trade_date(date10)
+    trade_days = _load_trade_days()
+    trade_date10 = _resolve_next_trade_date(date10, trade_days=trade_days)
     for row in rows:
         row["trade_date10"] = trade_date10
 
@@ -489,17 +655,33 @@ def sync_stock_research_backtest_source(*, market_data: dict[str, Any]) -> bool:
 
 def _iter_valid_source_history_items(history: dict[str, Any]) -> list[tuple[str, dict[str, Any]]]:
     dates = history.get("dates") if isinstance(history.get("dates"), dict) else {}
+    trade_days = _load_trade_days()
     items: list[tuple[str, dict[str, Any]]] = []
     for trade_date10 in sorted(dates.keys()):
         item = dates.get(trade_date10)
         if not isinstance(item, dict):
             continue
         day_rows = item.get("rows") if isinstance(item.get("rows"), list) else []
+        upgraded_rows = _upgrade_rows_trade_dates(day_rows, trade_days=trade_days)
         if not day_rows:
             continue
         if _is_invalid_close_push_source_item(item=item):
             continue
-        items.append((trade_date10, item))
+        resolved_trade_date10 = ""
+        if upgraded_rows:
+            resolved_trade_date10 = str(upgraded_rows[0].get("trade_date10") or "").strip()
+        if not resolved_trade_date10:
+            resolved_trade_date10 = _resolve_trade_date10_for_reference_date(
+                _recommendation_date_from_source_item(item),
+                trade_date10,
+                trade_days=trade_days,
+            )
+        upgraded_item = dict(item)
+        upgraded_item["rows"] = upgraded_rows
+        if resolved_trade_date10:
+            upgraded_item["date"] = resolved_trade_date10
+        items.append((resolved_trade_date10 or trade_date10, upgraded_item))
+    items.sort(key=lambda pair: pair[0])
     return items
 
 
@@ -864,10 +1046,15 @@ def upgrade_stock_research_backtest_payload(payload: dict[str, Any] | None) -> d
 
     upgraded = json.loads(json.dumps(payload, ensure_ascii=False))
     meta = upgraded.get("meta") if isinstance(upgraded.get("meta"), dict) else {}
+    trade_days = _load_trade_days()
     realtime_buy = upgraded.get("realtimeBuy") if isinstance(upgraded.get("realtimeBuy"), dict) else {}
     current_pool_rows = upgraded.get("currentPoolRecords") if isinstance(upgraded.get("currentPoolRecords"), list) else []
     backtest_rows = upgraded.get("records") if isinstance(upgraded.get("records"), list) else []
     display_rows = upgraded.get("displayRecords") if isinstance(upgraded.get("displayRecords"), list) else []
+    current_pool_rows = _upgrade_rows_trade_dates(current_pool_rows, trade_days=trade_days)
+    backtest_rows = _upgrade_rows_trade_dates(backtest_rows, trade_days=trade_days)
+    display_rows = _upgrade_rows_trade_dates(display_rows or backtest_rows, trade_days=trade_days)
+    realtime_buy = _upgrade_realtime_buy_trade_date(realtime_buy, trade_days=trade_days)
     quote_time = str(realtime_buy.get("quote_time") or "").strip()
     quoted_count = int(realtime_buy.get("quoted_count") or 0)
     diagnostics = realtime_buy.get("diagnostics") if isinstance(realtime_buy.get("diagnostics"), dict) else {}
@@ -880,6 +1067,12 @@ def upgrade_stock_research_backtest_payload(payload: dict[str, Any] | None) -> d
         upgraded.get("historicalSnapshots")
         if isinstance(upgraded.get("historicalSnapshots"), list)
         else _build_historical_snapshots(backtest_rows)
+    )
+    historical_snapshots = _upgrade_historical_snapshots(historical_snapshots, backtest_rows, trade_days=trade_days)
+    active_trade_date10 = _resolve_trade_date10_for_reference_date(
+        latest_recommendation_date10,
+        active_trade_date10,
+        trade_days=trade_days,
     )
     historical_dates = sorted({str(row.get("date10") or "").strip() for row in backtest_rows if str(row.get("date10") or "").strip()})
     latest_backtest_date10 = historical_dates[-1] if historical_dates else ""
@@ -899,6 +1092,9 @@ def upgrade_stock_research_backtest_payload(payload: dict[str, Any] | None) -> d
     meta["default_display_trade_date"] = anchors["default_display_trade_date"]
     meta["default_display_recommendation_date"] = anchors["default_display_recommendation_date"]
     meta["has_pending_next_trade_day"] = anchors["has_pending_next_trade_day"]
+    upgraded["currentPoolRecords"] = current_pool_rows
+    upgraded["records"] = backtest_rows
+    upgraded["realtimeBuy"] = realtime_buy
     upgraded["displayRecords"] = display_rows or json.loads(json.dumps(backtest_rows, ensure_ascii=False))
     upgraded["historicalSnapshots"] = historical_snapshots
     metrics = upgraded.get("metrics") if isinstance(upgraded.get("metrics"), dict) else {}
@@ -931,6 +1127,8 @@ def upgrade_stock_research_backtest_payload(payload: dict[str, Any] | None) -> d
         backtest_rows=backtest_rows,
         realtime_buy=realtime_buy,
     )
+    meta["active_trade_date"] = active_trade_date10
+    meta["latest_recommendation_date"] = latest_recommendation_date10
     return upgraded
 
 

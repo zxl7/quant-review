@@ -400,7 +400,9 @@ const selectedResultTradeDate = computed(() => {
   if (showingPredictionTable.value) {
     return String(recommendationTradeDateMap.value[selectedRecommendationDate.value] || activeTradeDate.value || "").trim()
   }
-  return String(selectedHistoricalSnapshot.value?.trade_date || recommendationTradeDateMap.value[selectedRecommendationDate.value] || "").trim()
+  return String(
+    selectedHistoricalSnapshot.value?.trade_date || recommendationTradeDateMap.value[selectedRecommendationDate.value] || defaultDisplayTradeDate.value || ""
+  ).trim()
 })
 const isDefaultSelection = computed(() => selectedRecommendationDate.value === defaultRecommendationDate.value)
 const isSkippedMissingClosedDay = computed(() => {
@@ -429,14 +431,14 @@ const isViewingCurrentRecommendation = computed(() => {
 })
 const snapshotTradeDate = computed(() => {
   if (showingRealtimeSnapshot.value) return realtimeTitleDate.value
-  return String(selectedHistoricalSnapshot.value?.trade_date || effectiveHistoricalDate.value || "").trim()
+  return String(selectedHistoricalSnapshot.value?.trade_date || selectedResultTradeDate.value || defaultDisplayTradeDate.value || "").trim()
 })
 const snapshotCardTitle = computed(() => {
   if (showingRealtimeSnapshot.value) {
     return realtimeTitleDate.value ? `闭环结果 — ${realtimeTitleDate.value}` : "闭环结果"
   }
   if (showingPredictionTable.value) return currentPlanTitleDate.value ? `待验证推荐 — ${currentPlanTitleDate.value}` : "待验证推荐"
-  return snapshotTradeDate.value ? `闭环结果 — ${snapshotTradeDate.value}` : "闭环结果"
+  return snapshotTradeDate.value ? `闭环结果 — ${snapshotTradeDate.value}` : "闭环结果待补"
 })
 const realtimeSubtitle = computed(() => {
   if (showingPredictionTable.value) {
