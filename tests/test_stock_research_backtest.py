@@ -448,13 +448,63 @@ class StockResearchBacktestRowsTest(unittest.TestCase):
                 backtest.sync_stock_research_backtest_source(market_data=backtest_payload)
                 payload = backtest.build_stock_research_backtest_payload(query_tag="fore")
 
-        self.assertEqual(payload["realtimeBuy"]["quoted_count"], 1)
-        self.assertEqual(payload["realtimeBuy"]["buy_count"], 1)
-        self.assertEqual(payload["realtimeBuy"]["quote_time"], "2026-06-04 13:14:15")
-        self.assertEqual(payload["realtimeBuy"]["diagnostics"]["source"], "forced_query")
+        self.assertEqual(payload["realtimeBuy"]["quoted_count"], 0)
+        self.assertEqual(payload["realtimeBuy"]["buy_count"], 0)
+        self.assertEqual(payload["realtimeBuy"]["quote_time"], "")
+        self.assertEqual(payload["realtimeBuy"]["diagnostics"]["source"], "fore_today_only_guard")
         self.assertTrue(payload["realtimeBuy"]["diagnostics"]["forced_query"])
-        self.assertEqual(payload["lifecycle"]["quote_state"], "ready")
+        self.assertEqual(payload["lifecycle"]["quote_state"], "missing")
         self.assertTrue(payload["lifecycle"]["forced_query"])
+
+    def test_default_display_anchors_prefer_latest_closed_loop_over_pending_next_day(self) -> None:
+        rows = [
+            {"date10": "2026-06-19", "trade_date10": "2026-06-22", "code": "000001", "bucket": "relay", "score": 90},
+            {"date10": "2026-06-22", "trade_date10": "2026-06-23", "code": "000002", "bucket": "relay", "score": 88},
+        ]
+        backtest_rows = [dict(rows[0])]
+        historical_snapshots = [{"reference_date": "2026-06-19", "trade_date": "2026-06-22"}]
+        realtime_buy = {
+            "reference_date": "",
+            "trade_date": "",
+            "quote_time": "",
+            "quoted_count": 0,
+            "diagnostics": {},
+        }
+
+        anchors = backtest._resolve_display_anchors(
+            current_pool_rows=[dict(rows[1])],
+            backtest_rows=backtest_rows,
+            historical_snapshots=historical_snapshots,
+            realtime_buy=realtime_buy,
+            active_trade_date10="2026-06-23",
+            latest_recommendation_date10="2026-06-22",
+            now=real_datetime(2026, 6, 22, 16, 0, 0, tzinfo=backtest.TZ_BJ),
+        )
+
+        self.assertEqual(anchors["latest_closed_trade_date"], "2026-06-22")
+        self.assertEqual(anchors["latest_closed_recommendation_date"], "2026-06-19")
+        self.assertEqual(anchors["default_display_trade_date"], "2026-06-22")
+        self.assertEqual(anchors["default_display_recommendation_date"], "2026-06-19")
+        self.assertTrue(anchors["has_pending_next_trade_day"])
+
+    def test_normal_mode_blocks_future_trade_date_realtime_matching(self) -> None:
+        row = {"date10": "2026-06-22", "trade_date10": "2026-06-23", "code": "000001", "bucket": "relay", "score": 90}
+        with patch.object(backtest, "_now_bj", return_value=real_datetime(2026, 6, 22, 16, 0, 0, tzinfo=backtest.TZ_BJ)):
+            payload = backtest._build_realtime_buy_payload([row], latest_date10="2026-06-22", trade_date10="2026-06-23")
+
+        self.assertEqual(payload["quoted_count"], 0)
+        self.assertEqual(payload["diagnostics"]["source"], "future_trade_day_guard")
+        self.assertTrue(payload["diagnostics"]["future_trade_day_guard"])
+
+    def test_forced_query_also_blocks_future_trade_date_realtime_matching(self) -> None:
+        row = {"date10": "2026-06-22", "trade_date10": "2026-06-23", "code": "000001", "bucket": "relay", "score": 90}
+        with patch.object(backtest, "_now_bj", return_value=real_datetime(2026, 6, 22, 16, 0, 0, tzinfo=backtest.TZ_BJ)):
+            payload = backtest._build_realtime_buy_payload([row], latest_date10="2026-06-22", trade_date10="2026-06-23", query_tag="fore")
+
+        self.assertEqual(payload["quoted_count"], 0)
+        self.assertEqual(payload["diagnostics"]["source"], "future_trade_day_guard")
+        self.assertTrue(payload["diagnostics"]["future_trade_day_guard"])
+        self.assertTrue(payload["diagnostics"]["forced_query"])
 
 
 class PicksAdvisorStabilityTest(unittest.TestCase):
@@ -857,9 +907,9 @@ class PicksAdvisorStabilityTest(unittest.TestCase):
                 payload = backtest.build_stock_research_backtest_payload(query_tag="fore")
                 persisted = backtest.load_prefetched_realtime_quotes("2026-06-03")
 
-        self.assertEqual(payload["realtimeBuy"]["quote_time"], "2026-06-04 13:14:15")
-        self.assertEqual(persisted["source"], "forced_query")
-        self.assertEqual(persisted["items"]["000003"]["t"], "2026-06-04 13:14:15")
+        self.assertEqual(payload["realtimeBuy"]["quote_time"], "")
+        self.assertEqual(payload["realtimeBuy"]["diagnostics"]["source"], "fore_today_only_guard")
+        self.assertEqual(persisted, {})
 
     def test_forced_query_cache_is_reused_outside_window(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
@@ -966,6 +1016,35 @@ class StockResearchBacktestPublishFreshnessTest(unittest.TestCase):
 
             with patch.object(web_bundle, "ROOT", root):
                 self.assertFalse(web_bundle._is_fresh_stock_research_backtest(payload))
+
+    def test_upgrade_backfills_default_display_anchor_fields(self) -> None:
+        payload = {
+            "schema": "stock_research_backtest_v2",
+            "meta": {"latest_recommendation_date": "2026-06-22", "active_trade_date": "2026-06-23"},
+            "summary": {
+                "total_samples": 1,
+                "source_samples": 1,
+                "filtered_non_backtest_samples": 0,
+                "eligible_samples": 1,
+                "realtime_candidate_count": 1,
+                "realtime_buy_count": 0,
+                "realtime_pending_count": 0,
+                "realtime_unavailable_count": 1,
+            },
+            "lifecycle": {"stage": "post_close_wait_auction", "quote_state": "waiting_trade_day"},
+            "realtimeBuy": {"trade_date": "2026-06-23", "reference_date": "2026-06-22", "quoted_count": 0, "diagnostics": {}},
+            "currentPoolRecords": [{"code": "000002", "date10": "2026-06-22", "trade_date10": "2026-06-23"}],
+            "displayRecords": [{"code": "000001", "date10": "2026-06-19", "trade_date10": "2026-06-22"}],
+            "historicalSnapshots": [{"reference_date": "2026-06-19", "trade_date": "2026-06-22"}],
+            "records": [{"code": "000001", "date10": "2026-06-19", "trade_date10": "2026-06-22"}],
+        }
+
+        with patch.object(backtest, "_now_bj", return_value=real_datetime(2026, 6, 22, 16, 0, 0, tzinfo=backtest.TZ_BJ)):
+            upgraded = backtest.upgrade_stock_research_backtest_payload(payload)
+
+        self.assertEqual(upgraded["meta"]["default_display_trade_date"], "2026-06-22")
+        self.assertEqual(upgraded["meta"]["default_display_recommendation_date"], "2026-06-19")
+        self.assertTrue(upgraded["meta"]["has_pending_next_trade_day"])
 
     def test_publish_rebuilds_when_source_history_is_newer_than_payload(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

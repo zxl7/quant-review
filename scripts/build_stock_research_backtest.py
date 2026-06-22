@@ -617,11 +617,133 @@ def _pick_active_trade_date(rows: list[dict[str, Any]], *, now: datetime | None 
     return trade_dates[-1]
 
 
+def _has_realtime_snapshot_payload(realtime_buy: dict[str, Any] | None) -> bool:
+    if not isinstance(realtime_buy, dict):
+        return False
+    quote_time = str(realtime_buy.get("quote_time") or "").strip()
+    quoted_count = int(realtime_buy.get("quoted_count") or 0)
+    diagnostics = realtime_buy.get("diagnostics") if isinstance(realtime_buy.get("diagnostics"), dict) else {}
+    forced_query = bool(diagnostics.get("forced_query"))
+    return bool(realtime_buy.get("reference_date")) and quoted_count > 0 and (forced_query or _is_entry_window_time(quote_time))
+
+
+def _resolve_display_anchors(
+    *,
+    current_pool_rows: list[dict[str, Any]],
+    backtest_rows: list[dict[str, Any]],
+    historical_snapshots: list[dict[str, Any]],
+    realtime_buy: dict[str, Any],
+    active_trade_date10: str,
+    latest_recommendation_date10: str,
+    now: datetime | None = None,
+) -> dict[str, Any]:
+    current = now or _now_bj()
+    today10 = current.strftime("%Y-%m-%d")
+
+    candidates: list[dict[str, str]] = []
+    seen: set[tuple[str, str]] = set()
+    for item in historical_snapshots:
+        if not isinstance(item, dict):
+            continue
+        reference_date = str(item.get("reference_date") or "").strip()
+        trade_date = str(item.get("trade_date") or item.get("trade_date10") or "").strip()
+        if len(reference_date) != 10 or len(trade_date) != 10:
+            continue
+        key = (reference_date, trade_date)
+        if key in seen:
+            continue
+        seen.add(key)
+        candidates.append({"recommendation_date": reference_date, "trade_date": trade_date})
+
+    if not candidates:
+        fallback_candidates: dict[tuple[str, str], dict[str, str]] = {}
+        for row in backtest_rows:
+            reference_date = str(row.get("date10") or "").strip()
+            trade_date = str(row.get("trade_date10") or "").strip()
+            if len(reference_date) != 10 or len(trade_date) != 10:
+                continue
+            fallback_candidates[(reference_date, trade_date)] = {
+                "recommendation_date": reference_date,
+                "trade_date": trade_date,
+            }
+        candidates = list(fallback_candidates.values())
+
+    candidates.sort(key=lambda item: (item["trade_date"], item["recommendation_date"]))
+    latest_closed = candidates[-1] if candidates else {}
+    default_closed = {}
+    for item in reversed(candidates):
+        trade_date = str(item.get("trade_date") or "").strip()
+        if trade_date and trade_date <= today10:
+            default_closed = item
+            break
+    if not default_closed:
+        default_closed = latest_closed
+
+    default_display = dict(default_closed) if default_closed else {}
+    realtime_reference_date10 = str(realtime_buy.get("reference_date") or "").strip()
+    realtime_trade_date10 = str(realtime_buy.get("trade_date") or "").strip()
+    if (
+        _has_realtime_snapshot_payload(realtime_buy)
+        and len(realtime_reference_date10) == 10
+        and len(realtime_trade_date10) == 10
+        and realtime_trade_date10 <= today10
+    ):
+        default_display = {
+            "recommendation_date": realtime_reference_date10,
+            "trade_date": realtime_trade_date10,
+        }
+
+    if not default_display and current_pool_rows:
+        current_reference_dates = sorted(
+            {
+                str(row.get("date10") or "").strip()
+                for row in current_pool_rows
+                if len(str(row.get("date10") or "").strip()) == 10
+            }
+        )
+        current_reference_date10 = current_reference_dates[-1] if current_reference_dates else latest_recommendation_date10
+        if current_reference_date10 or active_trade_date10:
+            default_display = {
+                "recommendation_date": current_reference_date10,
+                "trade_date": active_trade_date10,
+            }
+
+    latest_closed_trade_date10 = str(latest_closed.get("trade_date") or "").strip()
+    latest_closed_recommendation_date10 = str(latest_closed.get("recommendation_date") or "").strip()
+    default_display_trade_date10 = str(default_display.get("trade_date") or "").strip()
+    default_display_recommendation_date10 = str(default_display.get("recommendation_date") or "").strip()
+    has_pending_next_trade_day = bool(current_pool_rows and active_trade_date10 and active_trade_date10 > today10)
+
+    if default_display_trade_date10 and default_display_recommendation_date10:
+        default_display_note = (
+            f"页面默认展示 {default_display_trade_date10} 的结果（对应推荐日 {default_display_recommendation_date10}）。"
+        )
+    elif default_display_trade_date10:
+        default_display_note = f"页面默认展示 {default_display_trade_date10} 的结果。"
+    else:
+        default_display_note = "当前还没有可默认展示的闭环结果。"
+
+    return {
+        "latest_closed_trade_date": latest_closed_trade_date10,
+        "latest_closed_recommendation_date": latest_closed_recommendation_date10,
+        "default_display_trade_date": default_display_trade_date10,
+        "default_display_recommendation_date": default_display_recommendation_date10,
+        "has_pending_next_trade_day": has_pending_next_trade_day,
+        "default_display_note": default_display_note,
+    }
+
+
 def _build_lifecycle(
     *,
     latest_recommendation_date10: str,
     active_trade_date10: str,
     latest_backtest_date10: str,
+    latest_closed_trade_date10: str,
+    latest_closed_recommendation_date10: str,
+    default_display_trade_date10: str,
+    default_display_recommendation_date10: str,
+    has_pending_next_trade_day: bool,
+    default_display_note: str,
     current_pool_rows: list[dict[str, Any]],
     backtest_rows: list[dict[str, Any]],
     realtime_buy: dict[str, Any],
@@ -637,9 +759,7 @@ def _build_lifecycle(
     forced_query = bool(diagnostics.get("forced_query"))
     has_current_plan = bool(current_pool_rows)
     has_historical_records = bool(backtest_rows)
-    has_realtime_snapshot = bool(realtime_buy.get("reference_date")) and quoted_count > 0 and (
-        forced_query or _is_entry_window_time(quote_time)
-    )
+    has_realtime_snapshot = _has_realtime_snapshot_payload(realtime_buy)
 
     quote_state = "pending_source"
     quote_state_label = "等待推送"
@@ -648,8 +768,8 @@ def _build_lifecycle(
     if has_realtime_snapshot:
         quote_state = "ready"
         if forced_query:
-            quote_state_label = "强制查询已落地"
-            quote_state_note = f"fore 模式已忽略 09:25 时间窗，使用当前实时行情时间 {quote_time or '-'}。"
+            quote_state_label = "快照已补齐"
+            quote_state_note = f"今日缺失的竞价快照已补齐，时间 {quote_time or '-'}。"
         else:
             quote_state_label = "快照已落地"
             quote_state_note = f"9:25 竞价快照已生成，时间 {quote_time or '-'}。"
@@ -657,7 +777,10 @@ def _build_lifecycle(
         if active_trade_date10 and active_trade_date10 > today10:
             quote_state = "waiting_trade_day"
             quote_state_label = "等待明日竞价"
-            quote_state_note = f"盘后样本已经推到推荐日 {latest_recommendation_date10 or '-'}，等待 {active_trade_date10} 的 09:25-09:30 竞价快照。"
+            quote_state_note = (
+                f"盘后样本已经推到推荐日 {latest_recommendation_date10 or '-'}，等待 {active_trade_date10} 的 09:25-09:30 竞价快照。"
+                f" {default_display_note}"
+            ).strip()
         elif active_trade_date10 and active_trade_date10 == today10:
             if now_seconds < 9 * 3600 + 25 * 60:
                 quote_state = "waiting_window"
@@ -686,8 +809,8 @@ def _build_lifecycle(
     if has_current_plan and has_realtime_snapshot:
         stage = "auction_snapshot_ready"
         if forced_query:
-            stage_label = "强制竞价匹配已落地"
-            stage_note = f"推荐日 {latest_recommendation_date10 or '-'} 的待验证池已按 fore 模式匹配当前实时行情，可直接查看财富密码命中结果。"
+            stage_label = "竞价结果已补齐"
+            stage_note = f"推荐日 {latest_recommendation_date10 or '-'} 的待验证池缺失快照已补齐，当前可按正常闭环查看竞价命中结果。"
         else:
             stage_label = "竞价结果已落地"
             stage_note = f"推荐日 {latest_recommendation_date10 or '-'} 的待验证池已匹配到 {active_trade_date10 or '-'} 9:25 竞价结果，历史统计与当前快照都可同时查看。"
@@ -695,7 +818,10 @@ def _build_lifecycle(
         if quote_state in {"waiting_trade_day", "waiting_window", "window_live"}:
             stage = "post_close_wait_auction"
             stage_label = "盘后待验证"
-            stage_note = f"收盘后样本已经更新到推荐日 {latest_recommendation_date10 or '-'}，当前先展示待验证池；到 {active_trade_date10 or '-'} 09:25-09:30 再补真实竞价结果。"
+            stage_note = (
+                f"收盘后样本已经更新到推荐日 {latest_recommendation_date10 or '-'}，当前先展示待验证池；"
+                f"到 {active_trade_date10 or '-'} 09:25-09:30 再补真实竞价结果。 {default_display_note}"
+            ).strip()
         else:
             stage = "auction_snapshot_missing"
             stage_label = "竞价快照缺失"
@@ -718,6 +844,12 @@ def _build_lifecycle(
         "latest_recommendation_date": latest_recommendation_date10,
         "active_trade_date": active_trade_date10,
         "latest_historical_recommendation_date": latest_backtest_date10,
+        "latest_closed_trade_date": latest_closed_trade_date10,
+        "latest_closed_recommendation_date": latest_closed_recommendation_date10,
+        "default_display_trade_date": default_display_trade_date10,
+        "default_display_recommendation_date": default_display_recommendation_date10,
+        "has_pending_next_trade_day": has_pending_next_trade_day,
+        "default_display_note": default_display_note,
         "realtime_reference_date": str(realtime_buy.get("reference_date") or "").strip(),
         "quote_time": quote_time,
         "forced_query": forced_query,
@@ -744,17 +876,31 @@ def upgrade_stock_research_backtest_payload(payload: dict[str, Any] | None) -> d
         realtime_buy["quote_time"] = ""
     latest_recommendation_date10 = str(meta.get("latest_recommendation_date") or realtime_buy.get("reference_date") or "").strip()
     active_trade_date10 = str(meta.get("active_trade_date") or realtime_buy.get("trade_date") or "").strip()
-    historical_dates = sorted({str(row.get("date10") or "").strip() for row in backtest_rows if str(row.get("date10") or "").strip()})
-    latest_backtest_date10 = historical_dates[-1] if historical_dates else ""
-
-    upgraded["meta"] = meta
-    meta.setdefault("is_empty", not current_pool_rows and not backtest_rows)
-    upgraded["displayRecords"] = display_rows or json.loads(json.dumps(backtest_rows, ensure_ascii=False))
-    upgraded["historicalSnapshots"] = (
+    historical_snapshots = (
         upgraded.get("historicalSnapshots")
         if isinstance(upgraded.get("historicalSnapshots"), list)
         else _build_historical_snapshots(backtest_rows)
     )
+    historical_dates = sorted({str(row.get("date10") or "").strip() for row in backtest_rows if str(row.get("date10") or "").strip()})
+    latest_backtest_date10 = historical_dates[-1] if historical_dates else ""
+    anchors = _resolve_display_anchors(
+        current_pool_rows=current_pool_rows,
+        backtest_rows=backtest_rows,
+        historical_snapshots=historical_snapshots,
+        realtime_buy=realtime_buy,
+        active_trade_date10=active_trade_date10,
+        latest_recommendation_date10=latest_recommendation_date10,
+    )
+
+    upgraded["meta"] = meta
+    meta.setdefault("is_empty", not current_pool_rows and not backtest_rows)
+    meta["latest_closed_trade_date"] = anchors["latest_closed_trade_date"]
+    meta["latest_closed_recommendation_date"] = anchors["latest_closed_recommendation_date"]
+    meta["default_display_trade_date"] = anchors["default_display_trade_date"]
+    meta["default_display_recommendation_date"] = anchors["default_display_recommendation_date"]
+    meta["has_pending_next_trade_day"] = anchors["has_pending_next_trade_day"]
+    upgraded["displayRecords"] = display_rows or json.loads(json.dumps(backtest_rows, ensure_ascii=False))
+    upgraded["historicalSnapshots"] = historical_snapshots
     metrics = upgraded.get("metrics") if isinstance(upgraded.get("metrics"), dict) else {}
     upgraded["metrics"] = metrics
     for key in ("next_day", "hold_2d", "hold_3d"):
@@ -775,6 +921,12 @@ def upgrade_stock_research_backtest_payload(payload: dict[str, Any] | None) -> d
         latest_recommendation_date10=latest_recommendation_date10,
         active_trade_date10=active_trade_date10,
         latest_backtest_date10=latest_backtest_date10,
+        latest_closed_trade_date10=anchors["latest_closed_trade_date"],
+        latest_closed_recommendation_date10=anchors["latest_closed_recommendation_date"],
+        default_display_trade_date10=anchors["default_display_trade_date"],
+        default_display_recommendation_date10=anchors["default_display_recommendation_date"],
+        has_pending_next_trade_day=bool(anchors["has_pending_next_trade_day"]),
+        default_display_note=str(anchors["default_display_note"] or "").strip(),
         current_pool_rows=current_pool_rows,
         backtest_rows=backtest_rows,
         realtime_buy=realtime_buy,
@@ -796,6 +948,11 @@ def _empty_backtest_payload(*, generated_from: list[str] | None = None) -> dict[
             "source_module": "ztAnalysis.relay/watch",
             "latest_recommendation_date": "",
             "active_trade_date": "",
+            "latest_closed_trade_date": "",
+            "latest_closed_recommendation_date": "",
+            "default_display_trade_date": "",
+            "default_display_recommendation_date": "",
+            "has_pending_next_trade_day": False,
             "is_empty": True,
         },
         "summary": {
@@ -842,6 +999,12 @@ def _empty_backtest_payload(*, generated_from: list[str] | None = None) -> dict[
             "latest_recommendation_date": "",
             "active_trade_date": "",
             "latest_historical_recommendation_date": "",
+            "latest_closed_trade_date": "",
+            "latest_closed_recommendation_date": "",
+            "default_display_trade_date": "",
+            "default_display_recommendation_date": "",
+            "has_pending_next_trade_day": False,
+            "default_display_note": "",
             "realtime_reference_date": "",
             "quote_time": "",
         },
@@ -998,6 +1161,7 @@ def _should_request_realtime_quotes(now: datetime | None = None) -> bool:
 
 
 def _load_preserved_realtime_buy(latest_date10: str) -> dict[str, Any] | None:
+    today10 = _now_bj().strftime("%Y-%m-%d")
     for fp in _market_data_snapshot_candidates():
         data = _load_json(fp, default={})
         if not isinstance(data, dict):
@@ -1009,6 +1173,9 @@ def _load_preserved_realtime_buy(latest_date10: str) -> dict[str, Any] | None:
         if not isinstance(realtime_buy, dict):
             continue
         if str(realtime_buy.get("reference_date") or "") != latest_date10:
+            continue
+        trade_date10 = str(realtime_buy.get("trade_date") or "").strip()
+        if trade_date10 and trade_date10 > today10:
             continue
         quote_time = str(realtime_buy.get("quote_time") or "")
         diagnostics = realtime_buy.get("diagnostics") if isinstance(realtime_buy.get("diagnostics"), dict) else {}
@@ -1200,7 +1367,7 @@ def _fetch_realtime_quotes(codes: list[str], *, fallback_quotes: dict[str, Any] 
         diagnostics["forced_query"] = True
         diagnostics["request_window"] = "forced"
         if not diagnostics["error"]:
-            diagnostics["error"] = "已按 fore 模式忽略 09:25-09:30 窗口限制，直接使用当前实时行情。"
+            diagnostics["error"] = "已跳过 09:25-09:30 时间窗限制，尝试补齐今天缺失的竞价快照。"
     return quotes_map, diagnostics
 
 
@@ -1381,6 +1548,80 @@ def _build_realtime_buy_payload(
 ) -> dict[str, Any]:
     latest_rows = [dict(row) for row in rows if row.get("date10") == latest_date10]
     forced_query = _is_forced_query_tag(query_tag)
+    today10 = _now_bj().strftime("%Y-%m-%d")
+    if trade_date10 and trade_date10 > today10:
+        return {
+            "reference_date": latest_date10,
+            "trade_date": trade_date10,
+            "entry_window": "09:25-09:30",
+            "quote_time": "",
+            "source_module": "ztAnalysis.relay/watch",
+            "quote_source": "guard.future_trade_date",
+            "candidate_count": len(latest_rows),
+            "quoted_count": 0,
+            "buy_count": 0,
+            "direct_super_count": 0,
+            "direct_expected_count": 0,
+            "pending_count": 0,
+            "rejected_count": 0,
+            "unavailable_count": 0,
+            "buy_list": [],
+            "pending_list": [],
+            "rejected_list": [],
+            "unavailable_list": [],
+            "diagnostics": {
+                "requested": 0,
+                "received": 0,
+                "remote_received": 0,
+                "fallback_used": 0,
+                "missing": [],
+                "source": "future_trade_day_guard",
+                "as_of": "",
+                "error": (
+                    f"{'fore 补丁也不能' if forced_query else '普通模式禁止'}"
+                    f"用 {today10} 的实时行情去匹配未来交易日 {trade_date10}。"
+                ),
+                "request_window": "09:25-09:30",
+                "future_trade_day_guard": True,
+                "current_session_date": today10,
+                "forced_query": forced_query,
+            },
+        }
+    if forced_query and trade_date10 and trade_date10 != today10:
+        return {
+            "reference_date": latest_date10,
+            "trade_date": trade_date10,
+            "entry_window": "09:25-09:30",
+            "quote_time": "",
+            "source_module": "ztAnalysis.relay/watch",
+            "quote_source": "guard.fore_today_only",
+            "candidate_count": len(latest_rows),
+            "quoted_count": 0,
+            "buy_count": 0,
+            "direct_super_count": 0,
+            "direct_expected_count": 0,
+            "pending_count": 0,
+            "rejected_count": 0,
+            "unavailable_count": 0,
+            "buy_list": [],
+            "pending_list": [],
+            "rejected_list": [],
+            "unavailable_list": [],
+            "diagnostics": {
+                "requested": 0,
+                "received": 0,
+                "remote_received": 0,
+                "fallback_used": 0,
+                "missing": [],
+                "source": "fore_today_only_guard",
+                "as_of": "",
+                "error": f"fore 只允许补抓今天 {today10} 的缺失快照，当前目标交易日 {trade_date10} 不可补抓。",
+                "request_window": "09:25-09:30",
+                "fore_today_only_guard": True,
+                "current_session_date": today10,
+                "forced_query": True,
+            },
+        }
     in_window = forced_query or _should_request_realtime_quotes()
     if not in_window:
         preserved = _load_preserved_realtime_buy(latest_date10)
@@ -1444,7 +1685,7 @@ def _build_realtime_buy_payload(
         }
         if allow_forced_prefetched and quotes_map:
             quote_diag["forced_query"] = True
-            quote_diag["error"] = "已复用此前 fore 模式落地的代理快照，当前不在 09:25-09:30 也继续沿用该结果。"
+            quote_diag["error"] = "已复用此前补齐成功的快照，当前不在 09:25-09:30 也继续沿用该结果。"
         elif quotes_map:
             quote_diag["error"] = "窗口外无 preserved 快照，使用本地缓存数据（无远端请求）"
         else:
@@ -2065,10 +2306,24 @@ def build_stock_research_backtest_payload(
     latest_backtest_date10 = ""
     if backtest_rows:
         latest_backtest_date10 = sorted({r["date10"] for r in backtest_rows})[-1]
+    anchors = _resolve_display_anchors(
+        current_pool_rows=current_pool_rows,
+        backtest_rows=backtest_rows,
+        historical_snapshots=historical_snapshots,
+        realtime_buy=realtime_buy,
+        active_trade_date10=active_trade_date10,
+        latest_recommendation_date10=latest_source_date10,
+    )
     lifecycle = _build_lifecycle(
         latest_recommendation_date10=latest_source_date10,
         active_trade_date10=active_trade_date10,
         latest_backtest_date10=latest_backtest_date10,
+        latest_closed_trade_date10=anchors["latest_closed_trade_date"],
+        latest_closed_recommendation_date10=anchors["latest_closed_recommendation_date"],
+        default_display_trade_date10=anchors["default_display_trade_date"],
+        default_display_recommendation_date10=anchors["default_display_recommendation_date"],
+        has_pending_next_trade_day=bool(anchors["has_pending_next_trade_day"]),
+        default_display_note=str(anchors["default_display_note"] or "").strip(),
         current_pool_rows=current_pool_rows,
         backtest_rows=backtest_rows,
         realtime_buy=realtime_buy,
@@ -2079,6 +2334,11 @@ def build_stock_research_backtest_payload(
         payload["summary"]["filtered_non_backtest_samples"] = len(enriched_rows)
         payload["meta"]["latest_recommendation_date"] = latest_source_date10
         payload["meta"]["active_trade_date"] = active_trade_date10
+        payload["meta"]["latest_closed_trade_date"] = anchors["latest_closed_trade_date"]
+        payload["meta"]["latest_closed_recommendation_date"] = anchors["latest_closed_recommendation_date"]
+        payload["meta"]["default_display_trade_date"] = anchors["default_display_trade_date"]
+        payload["meta"]["default_display_recommendation_date"] = anchors["default_display_recommendation_date"]
+        payload["meta"]["has_pending_next_trade_day"] = anchors["has_pending_next_trade_day"]
         payload["meta"]["is_empty"] = False
         payload["lifecycle"] = lifecycle
         payload["realtimeBuy"] = realtime_buy
@@ -2128,6 +2388,11 @@ def build_stock_research_backtest_payload(
             "source_module": "ztAnalysis.relay/watch",
             "latest_recommendation_date": latest_source_date10 or latest_backtest_date10,
             "active_trade_date": active_trade_date10,
+            "latest_closed_trade_date": anchors["latest_closed_trade_date"],
+            "latest_closed_recommendation_date": anchors["latest_closed_recommendation_date"],
+            "default_display_trade_date": anchors["default_display_trade_date"],
+            "default_display_recommendation_date": anchors["default_display_recommendation_date"],
+            "has_pending_next_trade_day": anchors["has_pending_next_trade_day"],
         },
         "summary": {
             "total_samples": total,
