@@ -73,55 +73,32 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Check Beijing time (schedule only)
+      - name: Resolve schedule mode (schedule only)
         id: timecheck
         if: ${{ github.event_name == 'schedule' }}
         run: |
           set -euo pipefail
-          now_bj="$(date +'%H:%M')"
-          echo "DEBUG: event_name=${{ github.event_name }}"
-          echo "DEBUG: beijing_now=${now_bj}"
-          now_min=$((10#$(date +%H)*60 + 10#$(date +%M)))
-          # workflow 本身的允许窗口：
-          # - 09:26-09:34：允许执行当天第一次正式 fetch，并在缺快照时补 fore；
-          # - 09:35-11:30 / 13:00-14:59：允许执行盘中主页面 / 实时快照发布；
-          # - 17:00：允许执行一次收盘版定时发布。
-          hit_open_fore=false
-          if [ $(( now_min >= 9*60+26 && now_min < 9*60+35 )) -eq 1 ]; then
-            hit_open_fore=true
-          fi
+          schedule_expr="${{ github.event.schedule || '' }}"
+          SCHEDULE_EXPR="${schedule_expr}" python3 - <<'PY'
+          import os
 
-          # 主页面发布：上午 09:35-11:30，下午 13:00-14:59。
-          hit_intraday=false
-          if [ $(( now_min >= 9*60+35 && now_min <= 11*60+30 )) -eq 1 ]; then
-            hit_intraday=true
-          fi
-          if [ $(( now_min >= 13*60 && now_min < 15*60 )) -eq 1 ]; then
-            hit_intraday=true
-          fi
+          from daily_review.application.workflow_schedule import resolve_publish_schedule_mode
 
-          hit_close=false
-          if [ $(( now_min == 17*60 )) -eq 1 ]; then
-            hit_close=true
-          fi
-
-          if [ "${hit_close}" = "true" ]; then
-            echo "skip=false" >> "$GITHUB_OUTPUT"
-            echo "mode=eod" >> "$GITHUB_OUTPUT"
-            echo "Close window hit -> eod"
-          elif [ "${hit_open_fore}" = "true" ]; then
-            echo "skip=false" >> "$GITHUB_OUTPUT"
-            echo "mode=open_fore" >> "$GITHUB_OUTPUT"
-            echo "Open window hit -> fetch with fore"
-          elif [ "${hit_intraday}" = "true" ]; then
-            echo "skip=false" >> "$GITHUB_OUTPUT"
-            echo "mode=intraday" >> "$GITHUB_OUTPUT"
-            echo "Intraday window hit -> intraday"
-          else
-            echo "skip=true" >> "$GITHUB_OUTPUT"
-            echo "mode=skip" >> "$GITHUB_OUTPUT"
-            echo "Not in close window, skip."
-          fi
+          result = resolve_publish_schedule_mode(
+              event_name="schedule",
+              schedule_expr=os.environ.get("SCHEDULE_EXPR", ""),
+          )
+          print(f"DEBUG: github.event.schedule={result['schedule_expr'] or '<empty>'}")
+          print(f"DEBUG: beijing_now={result['beijing_now']}")
+          print(f"DEBUG: resolved_mode={result['mode'] or '<empty>'}")
+          print(f"DEBUG: schedule_reason={result['reason']}")
+          with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as fh:
+              fh.write(f"skip={result['skip']}\n")
+              fh.write(f"mode={result['mode']}\n")
+              fh.write(f"reason={result['reason']}\n")
+              fh.write(f"beijing_now={result['beijing_now']}\n")
+              fh.write(f"schedule_expr={result['schedule_expr']}\n")
+          PY
 
       - name: Compute cache key (Beijing date)
         id: datekey
@@ -364,11 +341,6 @@ jobs:
           BIYING_BASE_URL: ${{ secrets.BIYING_BASE_URL }}
         run: |
           set -euo pipefail
-          # 所有触发方式统一使用同一套“当前时间 + 最近交易日”判定。
-          # schedule 触发时，直接承接 timecheck 的窗口判定：
-          # - open_fore：09:26 的首次正式 fetch，优先按需补 fore
-          # - intraday：盘中仅刷新实时盯盘运行时
-          # - eod：17:00 执行一次收盘版发布
           latest_trade="${{ steps.tradeday.outputs.latest_trade_date }}"
           today_bj="${{ steps.tradeday.outputs.today_bj }}"
           realtime_market_date="${{ steps.tradeday.outputs.realtime_market_date }}"
@@ -401,6 +373,8 @@ jobs:
               mode="intraday"
             elif [ "${schedule_mode}" = "eod" ]; then
               mode="eod"
+            elif [ "${schedule_mode}" = "open_fore" ]; then
+              mode="fetch"
             else
               mode="fetch"
             fi
@@ -413,7 +387,7 @@ jobs:
           if [ "${input_mode}" = "eod" ]; then
             mode="eod"
           fi
-          echo "event=${{ github.event_name }} input_mode=${input_mode:-auto} query_tag=${input_query_tag:-none} → mode=${mode} date10=${date10}"
+          echo "event=${{ github.event_name }} schedule=${{ github.event.schedule || '' }} input_mode=${input_mode:-auto} query_tag=${input_query_tag:-none} -> mode=${mode} date10=${date10}"
           echo "mode=${mode}" >> "$GITHUB_OUTPUT"
           echo "date10=${date10}" >> "$GITHUB_OUTPUT"
           echo "stock_research_query_tag=${input_query_tag}" >> "$GITHUB_OUTPUT"
@@ -447,50 +421,58 @@ jobs:
           run_date="${{ steps.pushmode.outputs.date10 }}"
           is_trade_today="${{ steps.tradeday.outputs.is_trade_today }}"
           input_query_tag="${{ github.event.inputs.stock_research_query_tag || '' }}"
-          effective_query_tag="$(
-            MODE="${mode}" \
-            RUN_DATE="${run_date}" \
-            IS_TRADE_TODAY="${is_trade_today}" \
-            INPUT_QUERY_TAG="${input_query_tag}" \
-            python3 - <<'PY'
+          MODE="${mode}" \
+          RUN_DATE="${run_date}" \
+          IS_TRADE_TODAY="${is_trade_today}" \
+          INPUT_QUERY_TAG="${input_query_tag}" \
+          python3 - <<'PY'
           import json
           import os
           from pathlib import Path
+
+          from daily_review.application.workflow_schedule import resolve_stock_research_query_plan
 
           mode = os.environ["MODE"].strip()
           run_date = os.environ["RUN_DATE"].strip()
           is_trade_today = os.environ["IS_TRADE_TODAY"].strip() == "true"
           input_query_tag = os.environ["INPUT_QUERY_TAG"].strip()
 
-          def has_valid_snapshot(path: Path) -> bool:
-              if not path.exists():
-                  return False
-              try:
-                  data = json.loads(path.read_text(encoding="utf-8"))
-              except Exception:
-                  return False
-              backtest = data.get("stockResearchBacktest") if isinstance(data, dict) else {}
-              realtime_buy = backtest.get("realtimeBuy") if isinstance(backtest, dict) else {}
-              diagnostics = realtime_buy.get("diagnostics") if isinstance(realtime_buy, dict) else {}
-              quote_time = str(realtime_buy.get("quote_time") or "").strip()
-              source = str(diagnostics.get("source") or "").strip()
-              return (
-                  quote_time.startswith(run_date)
-                  and len(quote_time) >= 19
-                  and source not in {"unavailable", "forced_query_unavailable"}
-              )
-
-          if input_query_tag:
-              print(input_query_tag)
-          elif mode == "intraday" or not is_trade_today:
-              print("")
-          else:
-              path = Path("cache") / f"market_data-{run_date.replace('-', '')}.json"
-              print("" if has_valid_snapshot(path) else "fore")
+          plan = resolve_stock_research_query_plan(
+              mode=mode,
+              trade_date10=run_date,
+              is_trade_today=is_trade_today,
+              input_query_tag=input_query_tag,
+              cache_dir=Path("cache"),
+          )
+          prefetched = plan["prefetched_snapshot"]
+          market = plan["market_data_snapshot"]
+          print("stock_research_query_plan=" + json.dumps(plan, ensure_ascii=False, sort_keys=True))
+          print(
+              "Prefetched snapshot: "
+              f"found={prefetched.get('found')} "
+              f"as_of={prefetched.get('as_of') or '-'} "
+              f"source={prefetched.get('source') or '-'} "
+              f"path={prefetched.get('path') or '-'}"
+          )
+          print(
+              "Cached market_data snapshot: "
+              f"found={market.get('found')} "
+              f"quote_time={market.get('quote_time') or '-'} "
+              f"source={market.get('source') or '-'} "
+              f"path={market.get('path') or '-'}"
+          )
+          print(
+              "Resolved stock research query tag: "
+              f"{plan['effective_query_tag'] or '<none>'} "
+              f"(reason={plan['resolution_reason']})"
+          )
+          with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as fh:
+              fh.write(f"effective_query_tag={plan['effective_query_tag']}\n")
+              fh.write(f"resolution_reason={plan['resolution_reason']}\n")
+              fh.write(f"prefetched_found={'true' if prefetched.get('found') else 'false'}\n")
+              fh.write(f"prefetched_as_of={prefetched.get('as_of') or ''}\n")
+              fh.write(f"prefetched_source={prefetched.get('source') or ''}\n")
           PY
-          )"
-          echo "effective_query_tag=${effective_query_tag}" >> "$GITHUB_OUTPUT"
-          echo "Resolved stock research query tag: ${effective_query_tag:-<none>}"
 
       - name: Generate latest report (online fetch -> offline pipeline rebuild)
         if: ${{ (github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true') && steps.warmup.outputs.skip != 'true' && (github.event_name != 'schedule' || steps.tradeday.outputs.is_trade_today == 'true') && steps.pushmode.outputs.mode != 'intraday' }}
@@ -513,6 +495,12 @@ jobs:
           query_tag="${{ steps.stockresearch.outputs.effective_query_tag || '' }}"
           is_trade_today="${{ steps.tradeday.outputs.is_trade_today }}"
           echo "Run mode=${mode}"
+          echo "Schedule expr=${{ github.event.schedule || '' }}"
+          echo "Schedule mode=${schedule_mode:-<none>}"
+          echo "Schedule reason=${{ steps.timecheck.outputs.reason || '' }}"
+          echo "Beijing now=${{ steps.timecheck.outputs.beijing_now || '' }}"
+          echo "Prefetched snapshot hit=${{ steps.stockresearch.outputs.prefetched_found || 'false' }} as_of=${{ steps.stockresearch.outputs.prefetched_as_of || '' }} source=${{ steps.stockresearch.outputs.prefetched_source || '' }}"
+          echo "Final stock_research_query_tag=${query_tag:-<none>} reason=${{ steps.stockresearch.outputs.resolution_reason || '' }}"
           run_date="${{ steps.pushmode.outputs.date10 }}"
           if [ "${mode}" = "intraday" ]; then
             # 盘中：只跑轻量 intraday，刷新实时情绪/快照；明日接力/观察保留上一份收盘推演。
@@ -614,7 +602,7 @@ jobs:
           cp -f ./cache_online/intraday_resonance-"${D8}".json ./web/public/intraday_resonance.json 2>/dev/null || true
 
       - name: Pre-fetch external data (明日策略池 + 东方财富今日题材)
-        if: ${{ steps.warmup.outputs.skip != 'true' && steps.pushmode.outputs.mode != 'intraday' }}
+        if: ${{ (github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true') && steps.warmup.outputs.skip != 'true' && (github.event_name != 'schedule' || steps.tradeday.outputs.is_trade_today == 'true') && steps.pushmode.outputs.mode != 'intraday' }}
         run: |
           python3 tools/fetch_tomorrow_picks.py web/public/tomorrow_picks.json || echo "⚠ tomorrow picks fetch failed, using cache"
           python3 tools/fetch_eastmoney_tomorrow.py web/public/eastmoney_tomorrow.json || echo "⚠ eastmoney tomorrow fetch failed, using cache"
@@ -635,6 +623,48 @@ jobs:
             source_path="cache/market_data-${d8}-intraday.json"
           fi
           python3 inject_data.py "${d8}" --source "${source_path}"
+
+      - name: Validate stock research snapshot in published market data
+        if: ${{ (github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true') && steps.warmup.outputs.skip != 'true' && (github.event_name != 'schedule' || steps.tradeday.outputs.is_trade_today == 'true') && steps.pushmode.outputs.mode != 'intraday' }}
+        env:
+          RUN_DATE: ${{ steps.pushmode.outputs.date10 }}
+          TODAY_BJ: ${{ steps.tradeday.outputs.today_bj }}
+          IS_TRADE_TODAY: ${{ steps.tradeday.outputs.is_trade_today }}
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          from daily_review.application.workflow_schedule import validate_market_data_stock_research_snapshot
+
+          run_date = os.environ["RUN_DATE"]
+          today_bj = os.environ.get("TODAY_BJ", "").strip()
+          is_trade_today = os.environ.get("IS_TRADE_TODAY", "").strip() == "true"
+          if not is_trade_today or run_date != today_bj:
+              print(
+                  "published_stock_research_snapshot="
+                  + json.dumps(
+                      {
+                          "ok": True,
+                          "required": False,
+                          "message": "skip_non_today_target",
+                          "run_date": run_date,
+                          "today_bj": today_bj,
+                          "is_trade_today": is_trade_today,
+                      },
+                      ensure_ascii=False,
+                      sort_keys=True,
+                  )
+              )
+              raise SystemExit(0)
+          market_path = Path("web/dist/market_data.json")
+          result = validate_market_data_stock_research_snapshot(market_path, run_date)
+          print("published_stock_research_snapshot=" + json.dumps(result, ensure_ascii=False, sort_keys=True))
+          if not result["ok"]:
+              raise SystemExit(result["message"])
+          PY
 
       - name: Prepare Pages site
         if: ${{ (github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true') && steps.warmup.outputs.skip != 'true' && (github.event_name != 'schedule' || steps.tradeday.outputs.is_trade_today == 'true') && steps.pushmode.outputs.mode != 'intraday' }}

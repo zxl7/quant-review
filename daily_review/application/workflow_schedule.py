@@ -1,0 +1,210 @@
+from __future__ import annotations
+
+import json
+from datetime import datetime, timedelta, timezone
+from pathlib import Path
+from typing import Any
+
+
+TZ_BJ = timezone(timedelta(hours=8))
+
+SCHEDULE_MODE_BY_CRON: dict[str, str] = {
+    "26 1 * * 1-5": "open_fore",
+    "35-55/5 1 * * 1-5": "intraday",
+    "*/5 2 * * 1-5": "intraday",
+    "0-30/5 3 * * 1-5": "intraday",
+    "*/5 5-6 * * 1-5": "intraday",
+    "59 6 * * 1-5": "intraday",
+    "0 9 * * 1-5": "eod",
+}
+
+INVALID_QUOTE_SOURCES = {"unavailable", "forced_query_unavailable"}
+
+
+def _now_bj() -> datetime:
+    return datetime.now(TZ_BJ)
+
+
+def _read_json(path: Path) -> dict[str, Any]:
+    try:
+        data = json.loads(path.read_text(encoding="utf-8"))
+    except Exception:
+        return {}
+    return data if isinstance(data, dict) else {}
+
+
+def resolve_publish_schedule_mode(
+    event_name: str,
+    schedule_expr: str = "",
+    *,
+    now: datetime | None = None,
+) -> dict[str, str]:
+    current = now.astimezone(TZ_BJ) if now else _now_bj()
+    schedule_text = str(schedule_expr or "").strip()
+    result = {
+        "event_name": str(event_name or "").strip(),
+        "schedule_expr": schedule_text,
+        "beijing_now": current.strftime("%H:%M"),
+        "skip": "false",
+        "mode": "",
+        "reason": "",
+    }
+    if result["event_name"] != "schedule":
+        result["reason"] = "non_schedule_event"
+        return result
+
+    mode = SCHEDULE_MODE_BY_CRON.get(schedule_text)
+    if mode:
+        result["mode"] = mode
+        result["reason"] = f"resolved_from_schedule:{schedule_text}"
+        return result
+
+    result["skip"] = "true"
+    result["mode"] = "skip"
+    result["reason"] = f"unsupported_schedule:{schedule_text or '<empty>'}"
+    return result
+
+
+def describe_prefetched_quotes_snapshot(cache_dir: Path, trade_date10: str) -> dict[str, Any]:
+    result: dict[str, Any] = {
+        "found": False,
+        "path": "",
+        "source": "",
+        "as_of": "",
+        "count": 0,
+        "reference_date": "",
+    }
+    if len(trade_date10) != 10 or not cache_dir.exists():
+        return result
+
+    for path in sorted(cache_dir.glob("stock_research_realtime_quotes-*.json"), reverse=True):
+        payload = _read_json(path)
+        items = payload.get("items")
+        as_of = str(payload.get("as_of") or "").strip()
+        source = str(payload.get("source") or "").strip()
+        if not isinstance(items, dict) or not items:
+            continue
+        if not as_of.startswith(trade_date10) or len(as_of) < 19:
+            continue
+        if source in INVALID_QUOTE_SOURCES:
+            continue
+        result.update(
+            {
+                "found": True,
+                "path": str(path),
+                "source": source,
+                "as_of": as_of,
+                "count": len(items),
+                "reference_date": str(payload.get("date") or "").strip(),
+            }
+        )
+        return result
+    return result
+
+
+def describe_market_data_snapshot(path: Path, trade_date10: str) -> dict[str, Any]:
+    result: dict[str, Any] = {
+        "found": False,
+        "path": str(path),
+        "source": "",
+        "quote_time": "",
+        "trade_date": "",
+        "reference_date": "",
+        "candidate_count": 0,
+    }
+    if len(trade_date10) != 10 or not path.exists():
+        return result
+
+    payload = _read_json(path)
+    backtest = payload.get("stockResearchBacktest") if isinstance(payload.get("stockResearchBacktest"), dict) else {}
+    realtime_buy = backtest.get("realtimeBuy") if isinstance(backtest.get("realtimeBuy"), dict) else {}
+    diagnostics = realtime_buy.get("diagnostics") if isinstance(realtime_buy.get("diagnostics"), dict) else {}
+    quote_time = str(realtime_buy.get("quote_time") or "").strip()
+    source = str(diagnostics.get("source") or "").strip()
+    trade_date = str(realtime_buy.get("trade_date") or "").strip()
+    reference_date = str(realtime_buy.get("reference_date") or "").strip()
+    candidate_count = int(realtime_buy.get("candidate_count") or 0)
+    valid = (
+        quote_time.startswith(trade_date10)
+        and len(quote_time) >= 19
+        and trade_date == trade_date10
+        and source not in INVALID_QUOTE_SOURCES
+    )
+    result.update(
+        {
+            "found": valid,
+            "source": source,
+            "quote_time": quote_time,
+            "trade_date": trade_date,
+            "reference_date": reference_date,
+            "candidate_count": candidate_count,
+        }
+    )
+    return result
+
+
+def resolve_stock_research_query_plan(
+    *,
+    mode: str,
+    trade_date10: str,
+    is_trade_today: bool,
+    input_query_tag: str,
+    cache_dir: Path,
+) -> dict[str, Any]:
+    normalized_input = str(input_query_tag or "").strip().lower()
+    prefetched = describe_prefetched_quotes_snapshot(cache_dir, trade_date10)
+    market_data = describe_market_data_snapshot(cache_dir / f"market_data-{trade_date10.replace('-', '')}.json", trade_date10)
+
+    if normalized_input:
+        effective_query_tag = normalized_input
+        reason = "manual_input"
+    elif mode == "intraday":
+        effective_query_tag = ""
+        reason = "intraday_mode"
+    elif not is_trade_today:
+        effective_query_tag = ""
+        reason = "not_trade_today"
+    elif prefetched["found"]:
+        effective_query_tag = ""
+        reason = "prefetched_quotes_ready"
+    elif market_data["found"]:
+        effective_query_tag = ""
+        reason = "market_data_snapshot_ready"
+    else:
+        effective_query_tag = "fore"
+        reason = "snapshot_missing_fallback_to_fore"
+
+    return {
+        "effective_query_tag": effective_query_tag,
+        "resolution_reason": reason,
+        "prefetched_snapshot": prefetched,
+        "market_data_snapshot": market_data,
+    }
+
+
+def validate_market_data_stock_research_snapshot(path: Path, trade_date10: str) -> dict[str, Any]:
+    snapshot = describe_market_data_snapshot(path, trade_date10)
+    result: dict[str, Any] = {
+        "ok": True,
+        "required": False,
+        "message": "no_candidate_rows",
+        **snapshot,
+    }
+    candidate_count = int(snapshot.get("candidate_count") or 0)
+    if candidate_count <= 0:
+        return result
+
+    result["required"] = True
+    if snapshot["found"]:
+        result["message"] = "snapshot_ready"
+        return result
+
+    quote_time = str(snapshot.get("quote_time") or "").strip() or "<missing>"
+    source = str(snapshot.get("source") or "").strip() or "<missing>"
+    trade_date = str(snapshot.get("trade_date") or "").strip() or "<missing>"
+    result["ok"] = False
+    result["message"] = (
+        "trade-day stockResearchBacktest snapshot missing or invalid: "
+        f"trade_date={trade_date} quote_time={quote_time} source={source}"
+    )
+    return result
