@@ -645,6 +645,15 @@ const accountCurveUpdatedAt = computed(() => {
   const points = accountCurvePoints.value
   return points.length ? points[points.length - 1].date : "-"
 })
+const accountCurveCurrentTradeDate = computed(() => {
+  const publishedDate = marketSessionDate.value
+  if (publishedDate) return publishedDate
+  const now = new Date()
+  const yyyy = now.getFullYear()
+  const mm = String(now.getMonth() + 1).padStart(2, "0")
+  const dd = String(now.getDate()).padStart(2, "0")
+  return `${yyyy}-${mm}-${dd}`
+})
 const accountCurveOption = computed(() => {
   const points = accountCurvePoints.value
   if (!points.length) return null
@@ -666,6 +675,7 @@ const accountCurveOption = computed(() => {
           const index = Number(first?.dataIndex ?? -1)
           const point = index >= 0 ? points[index] : null
           if (!point) return ""
+          const showTodayNames = point.date === accountCurveCurrentTradeDate.value
         return [
           `<strong>${point.date}</strong>`,
           `净值：${formatPlain(point.value, 4)}`,
@@ -673,7 +683,7 @@ const accountCurveOption = computed(() => {
           `累计：${formatSigned(point.cumPct, 2)}%`,
           `回撤：${formatSigned(point.drawdownPct, 2)}%`,
           `买入个股：${point.stockCount} 只`,
-          point.names.length ? `标的：${point.names.join(" / ")}` : "",
+          showTodayNames && point.names.length ? `标的：${point.names.join(" / ")}` : "",
         ].join("<br/>")
       },
     },
