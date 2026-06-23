@@ -231,6 +231,11 @@ def resolve_stock_research_query_plan(
         reason = "not_trade_today"
         refresh_backtest = False
         validate_snapshot = False
+    elif mode == "eod":
+        effective_query_tag = ""
+        reason = "eod_refresh_prediction_pool"
+        refresh_backtest = True
+        validate_snapshot = False
     elif mode != "open_fore":
         effective_query_tag = ""
         reason = "non_open_fore_mode"

@@ -186,7 +186,7 @@ class WorkflowScheduleTest(unittest.TestCase):
         self.assertTrue(plan["refresh_backtest"])
         self.assertTrue(plan["validate_snapshot"])
 
-    def test_query_plan_does_not_fallback_to_fore_for_eod(self) -> None:
+    def test_query_plan_refreshes_prediction_pool_without_fore_for_eod(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             cache_dir = Path(tmp) / "cache"
             cache_dir.mkdir()
@@ -200,8 +200,8 @@ class WorkflowScheduleTest(unittest.TestCase):
             )
 
         self.assertEqual(plan["effective_query_tag"], "")
-        self.assertEqual(plan["resolution_reason"], "non_open_fore_mode")
-        self.assertFalse(plan["refresh_backtest"])
+        self.assertEqual(plan["resolution_reason"], "eod_refresh_prediction_pool")
+        self.assertTrue(plan["refresh_backtest"])
         self.assertFalse(plan["validate_snapshot"])
 
     def test_query_plan_manual_without_tag_keeps_stock_research_disabled(self) -> None:
