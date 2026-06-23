@@ -12,6 +12,9 @@ from daily_review.data.biying import (
 from daily_review.features.build_features import build_mood_inputs, default_chart_palette
 from daily_review.application.index_formatters import format_index_pct, format_index_val
 
+INDEX_KLINE_LOOKBACK_DAYS = 20
+INDEX_KLINE_MAX_ITEMS = 10
+
 
 def _to_float(v: Any, default: float = 0.0) -> float:
     try:
@@ -118,7 +121,9 @@ def update_index_kline_cache(*, root: Path, client, actual_date: str) -> dict[st
 
     for code in ("000001.SH", "399001.SZ", "399006.SZ"):
         end_date = actual_date.replace("-", "")
-        start_date = (_dt.datetime.strptime(actual_date, "%Y-%m-%d") - _dt.timedelta(days=120)).strftime("%Y%m%d")
+        start_date = (
+            _dt.datetime.strptime(actual_date, "%Y-%m-%d") - _dt.timedelta(days=INDEX_KLINE_LOOKBACK_DAYS)
+        ).strftime("%Y%m%d")
         try:
             items = fetch_index_history_k(client, code=code, st=start_date, et=end_date)
             if not isinstance(items, list):
@@ -133,7 +138,7 @@ def update_index_kline_cache(*, root: Path, client, actual_date: str) -> dict[st
                     continue
                 cleaned.append(item)
             if cleaned:
-                codes_entry[code] = {"as_of": actual_date, "items": cleaned[-80:]}
+                codes_entry[code] = {"as_of": actual_date, "items": cleaned[-INDEX_KLINE_MAX_ITEMS:]}
                 continue
         except Exception:
             pass

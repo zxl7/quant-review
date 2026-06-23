@@ -536,6 +536,8 @@ jobs:
           QR_DISABLE_STOCK_RESEARCH_HISTORY_FETCH: "1"
           QR_SKIP_WEB_BUILD: "1"
           QR_DISABLE_STOCK_RESEARCH_BACKTEST_REFRESH: ${{ steps.stockresearchfinal.outputs.refresh_backtest != 'true' && '1' || '0' }}
+          QR_ENABLE_THS_NEWHIGH_FETCH: ${{ github.event_name == 'schedule' && steps.timecheck.outputs.mode == 'eod' && '1' || '0' }}
+          QR_ENABLE_CORE_QUOTES_REFRESH: ${{ github.event_name == 'schedule' && steps.timecheck.outputs.mode == 'eod' && '1' || '0' }}
         run: |
           set -euo pipefail
           mode="${{ steps.pushmode.outputs.mode }}"
@@ -800,6 +802,28 @@ jobs:
           result["effective_reason"] = effective_reason
           result["published_date"] = published_date
           print("published_stock_research_snapshot=" + json.dumps(result, ensure_ascii=False, sort_keys=True))
+          if not result["ok"]:
+              raise SystemExit(result["message"])
+          PY
+
+      - name: Validate eod stock research prediction pool
+        if: ${{ github.event_name == 'schedule' && steps.timecheck.outputs.mode == 'eod' && steps.timecheck.outputs.skip != 'true' && steps.warmup.outputs.skip != 'true' && steps.tradeday.outputs.is_trade_today == 'true' && steps.pushmode.outputs.mode != 'intraday' }}
+        env:
+          RUN_DATE: ${{ steps.pushmode.outputs.date10 }}
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          from daily_review.application.workflow_schedule import validate_eod_stock_research_prediction_pool
+
+          result = validate_eod_stock_research_prediction_pool(
+              Path("web/dist/market_data.json"),
+              os.environ["RUN_DATE"],
+          )
+          print("published_stock_research_prediction_pool=" + json.dumps(result, ensure_ascii=False, sort_keys=True))
           if not result["ok"]:
               raise SystemExit(result["message"])
           PY

@@ -12,6 +12,7 @@ CLI 入口。
 from __future__ import annotations
 
 import argparse
+from concurrent.futures import ThreadPoolExecutor, as_completed
 import json
 import os
 import time
@@ -22,6 +23,7 @@ from pathlib import Path
 from typing import Any
 
 from daily_review.application.fetch_service import (
+    INDEX_KLINE_MAX_ITEMS,
     attach_quotes_and_features,
     build_base_market_data,
     build_height_trend_cache,
@@ -110,6 +112,14 @@ def _daily_snapshot_limit_enabled() -> bool:
     return _env_truthy("QR_LIMIT_DAILY_SNAPSHOT")
 
 
+def _ths_newhigh_fetch_enabled() -> bool:
+    return _env_truthy("QR_ENABLE_THS_NEWHIGH_FETCH")
+
+
+def _core_quotes_refresh_enabled() -> bool:
+    return _env_truthy("QR_ENABLE_CORE_QUOTES_REFRESH")
+
+
 def _same_day_stock_research_backtest(payload: Any, trade_date10: str) -> dict[str, Any] | None:
     if not isinstance(payload, dict):
         return None
@@ -186,7 +196,37 @@ def _load_trade_days_from_local_cache(*, cache_dir: Path, limit: int) -> list[st
     return ordered[-limit:] if limit > 0 else ordered
 
 
+def _persist_trade_days_local_cache(*, cache_dir: Path, trade_days: list[str], actual_date: str) -> None:
+    cleaned = sorted(
+        {
+            str(day).strip()
+            for day in trade_days
+            if isinstance(day, str) and len(str(day).strip()) == 10
+        }
+    )
+    if actual_date and actual_date not in cleaned:
+        cleaned.append(actual_date)
+        cleaned = sorted(set(cleaned))
+    if not cleaned:
+        return
+
+    path = cache_dir / "trade_days_cache.json"
+    payload = read_json(path, default={})
+    if not isinstance(payload, dict):
+        payload = {"version": 1}
+    payload["version"] = payload.get("version") or 1
+    payload["as_of"] = max(cleaned)
+    payload["days"] = cleaned
+    path.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
+
+
 def _resolve_trade_days_with_local_fallback(*, client: Any, cache_dir: Path, actual_date: str, n: int) -> list[str]:
+    used_local_fallback = False
+    trade_days = _load_trade_days_from_local_cache(cache_dir=cache_dir, limit=n)
+    if actual_date in trade_days and len(trade_days) >= min(n, 3):
+        _log(f"↪ 本地交易日序列命中: {trade_days[-1]} (共 {len(trade_days)} 天)")
+        return sorted(set(trade_days))[-n:]
+
     try:
         trade_days = get_trading_days_from_index_k(client, date=actual_date, n=n) or []
     except (urllib.error.HTTPError, urllib.error.URLError, TimeoutError, OSError) as e:
@@ -195,12 +235,41 @@ def _resolve_trade_days_with_local_fallback(*, client: Any, cache_dir: Path, act
 
     if not trade_days:
         trade_days = _load_trade_days_from_local_cache(cache_dir=cache_dir, limit=n)
+        used_local_fallback = True
         if trade_days:
             _log(f"↪ 使用本地交易日缓存兜底: {trade_days[-1]} (共 {len(trade_days)} 天)")
 
     if actual_date not in trade_days:
         trade_days = trade_days + [actual_date]
-    return sorted(set(trade_days))[-n:]
+    resolved = sorted(set(trade_days))[-n:]
+    if used_local_fallback:
+        try:
+            _persist_trade_days_local_cache(cache_dir=cache_dir, trade_days=resolved, actual_date=actual_date)
+            _log(f"↪ 本地交易日缓存已更新: {resolved[-1]} (共 {len(resolved)} 天)")
+        except Exception as e:
+            _log(f"⚠️ 本地交易日缓存更新失败: {e}")
+    return resolved
+
+
+def _resolve_trade_date_fast(
+    *,
+    client: Any,
+    requested_date: str | None,
+    cache_dir: Path,
+) -> tuple[str, str]:
+    import datetime as _dt
+
+    if not requested_date:
+        requested_date = _dt.datetime.now().strftime("%Y-%m-%d")
+    try:
+        _dt.datetime.strptime(requested_date, "%Y-%m-%d")
+    except Exception:
+        return resolve_trade_date(client, requested_date)
+
+    local_days = _load_trade_days_from_local_cache(cache_dir=cache_dir, limit=120)
+    if requested_date in local_days:
+        return requested_date, "本地交易日缓存命中，跳过在线日期确认"
+    return resolve_trade_date(client, requested_date)
 
 
 _ABNORMAL_EVENT_TYPES_ALL = [10001, 10002, 10003, 10004, 10005, 10006, 10007, 10008, 10009, 10010, 10012, 10014, 11000, 11001]
@@ -672,6 +741,39 @@ def _fetch_pool_with_cache_fallback(
     return []
 
 
+def _refresh_pools_for_date(
+    *,
+    client: Any,
+    pool_names: list[str],
+    actual_date: str,
+    pools: dict[str, Any],
+    prev_days: list[str],
+) -> dict[str, list[dict]]:
+    def _fetch_one(pool_name: str) -> tuple[str, list[dict]]:
+        rows = _fetch_pool_with_cache_fallback(
+            client,
+            pool_name=pool_name,
+            date=actual_date,
+            pools=pools,
+            fallback_dates=prev_days,
+        )
+        return pool_name, rows
+
+    results: dict[str, list[dict]] = {}
+    max_workers = max(1, min(len(pool_names), 4))
+    with ThreadPoolExecutor(max_workers=max_workers) as executor:
+        future_map = {executor.submit(_fetch_one, pool_name): pool_name for pool_name in pool_names}
+        for future in as_completed(future_map):
+            pool_name = future_map[future]
+            try:
+                resolved_name, rows = future.result()
+            except Exception as e:
+                _log(f"⚠️ {pool_name}@{actual_date} 并发抓取失败: {e}，回退空结果")
+                resolved_name, rows = pool_name, []
+            results[resolved_name] = rows if isinstance(rows, list) else []
+    return results
+
+
 def run_full(date: str | None) -> int:
     """
     全量更新（收口阶段）：
@@ -696,9 +798,16 @@ def run_fetch_and_rebuild(date: str | None, stock_research_query_tag: str = "") 
     from daily_review.http import HttpClient
 
     client = HttpClient(base_url=cfg.base_url, token=cfg.token, timeout=30)
+    trade_date_client = HttpClient(base_url=cfg.base_url, token=cfg.token, timeout=5, retries=0)
+    pools_client = HttpClient(base_url=cfg.base_url, token=cfg.token, timeout=10, retries=0)
+    index_k_client = HttpClient(base_url=cfg.base_url, token=cfg.token, timeout=5, retries=0)
     req_date = date
     with _timed_stage("交易日解析"):
-        actual_date, date_note = resolve_trade_date(client, req_date)
+        actual_date, date_note = _resolve_trade_date_fast(
+            client=trade_date_client,
+            requested_date=req_date,
+            cache_dir=cache_dir,
+        )
     _log(f"交易日确认: {actual_date} ({date_note})")
     refresh_stock_research_backtest = _stock_research_backtest_refresh_enabled()
 
@@ -711,7 +820,7 @@ def run_fetch_and_rebuild(date: str | None, stock_research_query_tag: str = "") 
     # 交易日序列（用于缓存裁剪/昨日）
     with _timed_stage("交易日序列解析"):
         trade_days = _resolve_trade_days_with_local_fallback(
-            client=client,
+            client=trade_date_client,
             cache_dir=cache_dir,
             actual_date=actual_date,
             n=7,
@@ -735,7 +844,7 @@ def run_fetch_and_rebuild(date: str | None, stock_research_query_tag: str = "") 
                 if d not in (pools.get(pn) or {}):
                     prev_days = [x for x in trade_days if x < d]
                     rows = _fetch_pool_with_cache_fallback(
-                        client,
+                        pools_client,
                         pool_name=pn,
                         date=d,
                         pools=pools,
@@ -745,16 +854,19 @@ def run_fetch_and_rebuild(date: str | None, stock_research_query_tag: str = "") 
 
     # 当日强制刷新（zt/dt/zb/qsgc）
     with _timed_stage("当日四池刷新"):
-        for pn in ("ztgc", "dtgc", "zbgc", "qsgc"):
+        pool_names = ["ztgc", "dtgc", "zbgc", "qsgc"]
+        prev_days = [x for x in trade_days if x < actual_date]
+        for pn in pool_names:
             pools.setdefault(pn, {})
-            prev_days = [x for x in trade_days if x < actual_date]
-            pools[pn][actual_date] = _fetch_pool_with_cache_fallback(
-                client,
-                pool_name=pn,
-                date=actual_date,
-                pools=pools,
-                fallback_dates=prev_days,
-            )
+        day_pools = _refresh_pools_for_date(
+            client=pools_client,
+            pool_names=pool_names,
+            actual_date=actual_date,
+            pools=pools,
+            prev_days=prev_days,
+        )
+        for pn in pool_names:
+            pools[pn][actual_date] = day_pools.get(pn) or []
 
     # 开盘首条自动快照偶发会遇到三池接口短暂空窗，这时全市场数据会异常接近 0。
     # 仅在“涨停/跌停/炸板/强势池同时为空”时做一次短暂重试，避免第一条线上快照失真。
@@ -774,15 +886,17 @@ def run_fetch_and_rebuild(date: str | None, stock_research_query_tag: str = "") 
     if should_retry_open:
         _log("开盘首条快照疑似空窗，10秒后重试一次三池数据")
         time.sleep(10)
-        for pn in ("ztgc", "dtgc", "zbgc", "qsgc"):
-            prev_days = [x for x in trade_days if x < actual_date]
-            pools[pn][actual_date] = _fetch_pool_with_cache_fallback(
-                client,
-                pool_name=pn,
-                date=actual_date,
-                pools=pools,
-                fallback_dates=prev_days,
-            )
+        pool_names = ["ztgc", "dtgc", "zbgc", "qsgc"]
+        prev_days = [x for x in trade_days if x < actual_date]
+        day_pools = _refresh_pools_for_date(
+            client=pools_client,
+            pool_names=pool_names,
+            actual_date=actual_date,
+            pools=pools,
+            prev_days=prev_days,
+        )
+        for pn in pool_names:
+            pools[pn][actual_date] = day_pools.get(pn) or []
 
     # 裁剪
     keep = set(trade_days)
@@ -833,15 +947,15 @@ def run_fetch_and_rebuild(date: str | None, stock_research_query_tag: str = "") 
     # - 用 history 拉更长序列（便于 MA5/MA20 等技术指标在 v3 右侧交易中使用）
     # - 仍保留占位过滤（sf=1 / a<=0 / v<=0）
     with _timed_stage("指数日K缓存"):
-        codes_entry = update_index_kline_cache(root=root, client=client, actual_date=actual_date)
-    _log("指数日K已缓存 (近120日)")
+        codes_entry = update_index_kline_cache(root=root, client=index_k_client, actual_date=actual_date)
+    _log(f"指数日K已缓存 (近{INDEX_KLINE_MAX_ITEMS}个交易日)")
 
     # height_trend_cache.json：近 7 日高度趋势（只缓存历史日，不缓存当天）
     with _timed_stage("高度趋势计算"):
         build_height_trend_cache(root=root, pools=pools, trade_days=trade_days, actual_date=actual_date)
     _log("高度趋势已计算 (近7日)")
 
-    if not _daily_snapshot_limit_enabled():
+    if _ths_newhigh_fetch_enabled():
         try:
             ths_newhigh_path = save_newhigh_snapshot(
                 root=root,
@@ -853,7 +967,7 @@ def run_fetch_and_rebuild(date: str | None, stock_research_query_tag: str = "") 
         except Exception as e:
             _log_stage_failed("同花顺创新高榜单抓取", e)
     else:
-        _log("每日快照限量模式：跳过同花顺创新高榜单抓取")
+        _log("默认跳过同花顺创新高榜单抓取")
 
     # indices（实时）：仅用于 asOf 展示（HH:MM:SS）
     with _timed_stage("指数实时行情"):
@@ -897,28 +1011,31 @@ def run_fetch_and_rebuild(date: str | None, stock_research_query_tag: str = "") 
 
     # === v3 增强：批量个股实时行情（让 v3 输出更“厚”） ===
     quotes_map: dict[str, Any] = {}
-    try:
-        quote_stage_start = time.perf_counter()
-        codes = collect_core_realtime_quote_codes_for_full_publish(raw_pools)
-        batch_size = 20
-        batch_count = (len(codes) + batch_size - 1) // batch_size if codes else 0
-        _log(f"核心个股实时行情请求: codes_count={len(codes)} batch_count={batch_count} scope=ztgc+yest_lbc_ge_2")
-        quotes_map = _fetch_realtime_quotes_map(client, codes, limit=len(codes) or None, batch_size=batch_size)
-        quote_elapsed = time.perf_counter() - quote_stage_start
-        _log(f"阶段耗时 核心个股实时行情: {_fmt_elapsed(quote_elapsed)}")
-        attach_quotes_and_features(
-            market_data=market_data,
-            raw_pools=raw_pools,
-            quotes_asof=indices_asof,
-            quotes_map=quotes_map,
-        )
-        _log(
-            "个股实时行情已获取 "
-            f"({len(quotes_map)} 只, requested={len(codes)}, batch_count={batch_count}, "
-            f"elapsed_seconds={quote_elapsed:.2f})"
-        )
-    except Exception as e:
-        _log_stage_failed("核心个股实时行情", e)
+    if _core_quotes_refresh_enabled():
+        try:
+            quote_stage_start = time.perf_counter()
+            codes = collect_core_realtime_quote_codes_for_full_publish(raw_pools)
+            batch_size = 20
+            batch_count = (len(codes) + batch_size - 1) // batch_size if codes else 0
+            _log(f"核心个股实时行情请求: codes_count={len(codes)} batch_count={batch_count} scope=ztgc+yest_lbc_ge_2")
+            quotes_map = _fetch_realtime_quotes_map(client, codes, limit=len(codes) or None, batch_size=batch_size)
+            quote_elapsed = time.perf_counter() - quote_stage_start
+            _log(f"阶段耗时 核心个股实时行情: {_fmt_elapsed(quote_elapsed)}")
+            attach_quotes_and_features(
+                market_data=market_data,
+                raw_pools=raw_pools,
+                quotes_asof=indices_asof,
+                quotes_map=quotes_map,
+            )
+            _log(
+                "个股实时行情已获取 "
+                f"({len(quotes_map)} 只, requested={len(codes)}, batch_count={batch_count}, "
+                f"elapsed_seconds={quote_elapsed:.2f})"
+            )
+        except Exception as e:
+            _log_stage_failed("核心个股实时行情", e)
+    else:
+        _log("默认跳过核心个股实时行情补厚")
 
     # features：最小可用版
     with _timed_stage("情绪输入计算"):
@@ -1004,6 +1121,7 @@ def run_intraday_snapshot(date: str | None) -> int:
     from daily_review.http import HttpClient
 
     client = HttpClient(base_url=cfg.base_url, token=cfg.token, timeout=30)
+    pools_client = HttpClient(base_url=cfg.base_url, token=cfg.token, timeout=10, retries=0)
     req_date = date
     actual_date, date_note = resolve_trade_date_intraday(client, req_date)
     _log(f"盘中交易日: {actual_date} ({date_note})")
@@ -1024,7 +1142,7 @@ def run_intraday_snapshot(date: str | None) -> int:
 
     # ===== 取数逻辑与 fetch 相同，但不强制刷新历史缓存 =====
     trade_days = _resolve_trade_days_with_local_fallback(
-        client=client,
+        client=pools_client,
         cache_dir=cache_dir,
         actual_date=actual_date,
         n=3,
@@ -1039,16 +1157,19 @@ def run_intraday_snapshot(date: str | None) -> int:
     pools.setdefault("qsgc", {})
 
     # 只取当日数据（不预取历史，加快速度）
-    for pn in ("ztgc", "dtgc", "zbgc", "qsgc"):
+    pool_names = ["ztgc", "dtgc", "zbgc", "qsgc"]
+    prev_days = [x for x in trade_days if x < actual_date]
+    for pn in pool_names:
         pools.setdefault(pn, {})
-        prev_days = [x for x in trade_days if x < actual_date]
-        pools[pn][actual_date] = _fetch_pool_with_cache_fallback(
-            client,
-            pool_name=pn,
-            date=actual_date,
-            pools=pools,
-            fallback_dates=prev_days,
-        )
+    day_pools = _refresh_pools_for_date(
+        client=pools_client,
+        pool_names=pool_names,
+        actual_date=actual_date,
+        pools=pools,
+        prev_days=prev_days,
+    )
+    for pn in pool_names:
+        pools[pn][actual_date] = day_pools.get(pn) or []
 
     # 开盘首条盘中快照偶发会遇到三池接口短暂空窗。
     # intraday 模式同样补一次短暂重试，避免自动盘中首轮与手动触发口径不一致。
@@ -1068,15 +1189,15 @@ def run_intraday_snapshot(date: str | None) -> int:
     if should_retry_open:
         _log("盘中首条快照疑似空窗，10秒后重试一次三池数据")
         time.sleep(10)
-        for pn in ("ztgc", "dtgc", "zbgc", "qsgc"):
-            prev_days = [x for x in trade_days if x < actual_date]
-            pools[pn][actual_date] = _fetch_pool_with_cache_fallback(
-                client,
-                pool_name=pn,
-                date=actual_date,
-                pools=pools,
-                fallback_dates=prev_days,
-            )
+        day_pools = _refresh_pools_for_date(
+            client=pools_client,
+            pool_names=pool_names,
+            actual_date=actual_date,
+            pools=pools,
+            prev_days=prev_days,
+        )
+        for pn in pool_names:
+            pools[pn][actual_date] = day_pools.get(pn) or []
     # 裁剪：只保留近 3 个交易日（watch 模式 trade_days 最多 3 天）
     watch_keep = set(trade_days)
     for pn in ("ztgc", "dtgc", "zbgc", "qsgc"):
@@ -2153,28 +2274,32 @@ def main(argv: list[str] | None = None) -> int:
     # 传递 mode 到全局上下文
     if args.mode == "intraday":
         os.environ["REPORT_MODE"] = "intraday"
-    if args.only:
-        if not args.date:
-            raise SystemExit("--only 模式必须指定 --date")
-        return run_partial(args.date, args.only)
+    try:
+        if args.only:
+            if not args.date:
+                raise SystemExit("--only 模式必须指定 --date")
+            return run_partial(args.date, args.only)
 
-    if args.rebuild:
-        if not args.date:
-            raise SystemExit("--rebuild 模式必须指定 --date")
-        return run_rebuild(
-            args.date,
-            allow_network=args.allow_network,
-            stock_research_query_tag=stock_research_query_tag,
-        )
+        if args.rebuild:
+            if not args.date:
+                raise SystemExit("--rebuild 模式必须指定 --date")
+            return run_rebuild(
+                args.date,
+                allow_network=args.allow_network,
+                stock_research_query_tag=stock_research_query_tag,
+            )
 
-    if args.fetch:
-        return run_fetch_and_rebuild(args.date, stock_research_query_tag=stock_research_query_tag)
+        if args.fetch:
+            return run_fetch_and_rebuild(args.date, stock_research_query_tag=stock_research_query_tag)
 
-    # 盘中快照模式
-    if args.mode == "intraday":
-        return run_intraday_snapshot(args.date)
+        # 盘中快照模式
+        if args.mode == "intraday":
+            return run_intraday_snapshot(args.date)
 
-    return run_full(args.date)
+        return run_full(args.date)
+    except KeyboardInterrupt:
+        print("⏹ 用户中断，已停止本次执行")
+        return 130
 
 
 if __name__ == "__main__":

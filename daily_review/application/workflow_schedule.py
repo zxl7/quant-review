@@ -267,6 +267,64 @@ def resolve_stock_research_query_plan(
     }
 
 
+def validate_eod_stock_research_prediction_pool(path: Path, run_date10: str) -> dict[str, Any]:
+    result: dict[str, Any] = {
+        "ok": True,
+        "required": False,
+        "message": "no_eod_candidates",
+        "path": str(path),
+        "run_date": str(run_date10 or "").strip(),
+        "published_date": "",
+        "active_trade_date": "",
+        "current_pool_count": 0,
+        "candidate_count": 0,
+    }
+    if len(result["run_date"]) != 10:
+        result["ok"] = False
+        result["message"] = "invalid_run_date"
+        return result
+    if not path.exists():
+        result["ok"] = False
+        result["message"] = "market_data_missing"
+        return result
+
+    payload = _read_json(path)
+    published_date = str(payload.get("date") or "").strip()
+    result["published_date"] = published_date
+    if published_date != result["run_date"]:
+        result["ok"] = False
+        result["message"] = "published_date_mismatch"
+        return result
+
+    zt = payload.get("ztAnalysis") if isinstance(payload.get("ztAnalysis"), dict) else {}
+    relay = zt.get("relay") if isinstance(zt.get("relay"), list) else []
+    watch = zt.get("watch") if isinstance(zt.get("watch"), list) else []
+    candidate_count = len(relay) + len(watch)
+    result["candidate_count"] = candidate_count
+    if candidate_count <= 0:
+        return result
+
+    result["required"] = True
+    backtest = payload.get("stockResearchBacktest") if isinstance(payload.get("stockResearchBacktest"), dict) else {}
+    meta = backtest.get("meta") if isinstance(backtest.get("meta"), dict) else {}
+    current_pool = backtest.get("currentPoolRecords") if isinstance(backtest.get("currentPoolRecords"), list) else []
+    active_trade_date = str(meta.get("active_trade_date") or "").strip()
+    result["active_trade_date"] = active_trade_date
+    result["current_pool_count"] = len(current_pool)
+
+    if active_trade_date > result["run_date"] and current_pool:
+        result["message"] = "prediction_pool_ready"
+        return result
+
+    result["ok"] = False
+    result["message"] = (
+        "eod stockResearchBacktest prediction pool missing or stale: "
+        f"run_date={result['run_date']} active_trade_date={active_trade_date or '<missing>'} "
+        f"current_pool_count={len(current_pool)} candidate_count={candidate_count}"
+    )
+    return result
+
+
 def validate_market_data_stock_research_snapshot(path: Path, trade_date10: str) -> dict[str, Any]:
     snapshot = describe_market_data_snapshot(path, trade_date10)
     result: dict[str, Any] = {

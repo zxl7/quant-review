@@ -15,6 +15,7 @@ from daily_review.application.workflow_schedule import (
     resolve_publish_schedule_mode,
     resolve_full_publish_source_cache,
     resolve_stock_research_query_plan,
+    validate_eod_stock_research_prediction_pool,
     validate_market_data_stock_research_snapshot,
 )
 
@@ -433,6 +434,90 @@ class WorkflowScheduleTest(unittest.TestCase):
         self.assertEqual(published_date, "2026-06-22")
         self.assertNotEqual(published_date, "2026-06-23")
         self.assertFalse(result["ok"])
+
+    def test_validate_eod_prediction_pool_passes_when_next_trade_pool_exists(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            market_path = Path(tmp) / "market_data.json"
+            market_path.write_text(
+                json.dumps(
+                    {
+                        "date": "2026-06-23",
+                        "ztAnalysis": {"relay": [{"code": "000001"}], "watch": []},
+                        "stockResearchBacktest": {
+                            "meta": {"active_trade_date": "2026-06-24"},
+                            "currentPoolRecords": [{"code": "000001", "trade_date10": "2026-06-24"}],
+                        },
+                    },
+                    ensure_ascii=False,
+                ),
+                encoding="utf-8",
+            )
+
+            result = validate_eod_stock_research_prediction_pool(market_path, "2026-06-23")
+
+        self.assertTrue(result["ok"])
+        self.assertTrue(result["required"])
+        self.assertEqual(result["message"], "prediction_pool_ready")
+        self.assertEqual(result["active_trade_date"], "2026-06-24")
+        self.assertEqual(result["current_pool_count"], 1)
+
+    def test_validate_eod_prediction_pool_fails_when_candidates_exist_but_pool_is_stale(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            market_path = Path(tmp) / "market_data.json"
+            market_path.write_text(
+                json.dumps(
+                    {
+                        "date": "2026-06-23",
+                        "ztAnalysis": {"relay": [{"code": "000001"}], "watch": [{"code": "000002"}]},
+                        "stockResearchBacktest": {
+                            "meta": {"active_trade_date": "2026-06-23"},
+                            "currentPoolRecords": [{"code": "000001", "trade_date10": "2026-06-23"}],
+                        },
+                    },
+                    ensure_ascii=False,
+                ),
+                encoding="utf-8",
+            )
+
+            result = validate_eod_stock_research_prediction_pool(market_path, "2026-06-23")
+
+        self.assertFalse(result["ok"])
+        self.assertTrue(result["required"])
+        self.assertEqual(result["candidate_count"], 2)
+        self.assertIn("prediction pool missing or stale", result["message"])
+
+    def test_validate_eod_prediction_pool_skips_when_no_candidates_exist(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            market_path = Path(tmp) / "market_data.json"
+            market_path.write_text(
+                json.dumps(
+                    {
+                        "date": "2026-06-23",
+                        "ztAnalysis": {"relay": [], "watch": []},
+                    },
+                    ensure_ascii=False,
+                ),
+                encoding="utf-8",
+            )
+
+            result = validate_eod_stock_research_prediction_pool(market_path, "2026-06-23")
+
+        self.assertTrue(result["ok"])
+        self.assertFalse(result["required"])
+        self.assertEqual(result["message"], "no_eod_candidates")
+
+    def test_validate_eod_prediction_pool_fails_on_published_date_mismatch(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            market_path = Path(tmp) / "market_data.json"
+            market_path.write_text(
+                json.dumps({"date": "2026-06-22"}, ensure_ascii=False),
+                encoding="utf-8",
+            )
+
+            result = validate_eod_stock_research_prediction_pool(market_path, "2026-06-23")
+
+        self.assertFalse(result["ok"])
+        self.assertEqual(result["message"], "published_date_mismatch")
 
 
 if __name__ == "__main__":
