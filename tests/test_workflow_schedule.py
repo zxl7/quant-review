@@ -183,6 +183,62 @@ class WorkflowScheduleTest(unittest.TestCase):
 
         self.assertEqual(plan["effective_query_tag"], "fore")
         self.assertEqual(plan["resolution_reason"], "snapshot_missing_fallback_to_fore")
+        self.assertTrue(plan["refresh_backtest"])
+        self.assertTrue(plan["validate_snapshot"])
+
+    def test_query_plan_does_not_fallback_to_fore_for_eod(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            cache_dir = Path(tmp) / "cache"
+            cache_dir.mkdir()
+
+            plan = resolve_stock_research_query_plan(
+                mode="eod",
+                trade_date10="2026-06-22",
+                is_trade_today=True,
+                input_query_tag="",
+                cache_dir=cache_dir,
+            )
+
+        self.assertEqual(plan["effective_query_tag"], "")
+        self.assertEqual(plan["resolution_reason"], "non_open_fore_mode")
+        self.assertFalse(plan["refresh_backtest"])
+        self.assertFalse(plan["validate_snapshot"])
+
+    def test_query_plan_manual_without_tag_keeps_stock_research_disabled(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            cache_dir = Path(tmp) / "cache"
+            cache_dir.mkdir()
+
+            plan = resolve_stock_research_query_plan(
+                mode="fetch",
+                trade_date10="2026-06-22",
+                is_trade_today=True,
+                input_query_tag="",
+                cache_dir=cache_dir,
+            )
+
+        self.assertEqual(plan["effective_query_tag"], "")
+        self.assertEqual(plan["resolution_reason"], "non_open_fore_mode")
+        self.assertFalse(plan["refresh_backtest"])
+        self.assertFalse(plan["validate_snapshot"])
+
+    def test_query_plan_manual_fore_enables_refresh_and_validation(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            cache_dir = Path(tmp) / "cache"
+            cache_dir.mkdir()
+
+            plan = resolve_stock_research_query_plan(
+                mode="fetch",
+                trade_date10="2026-06-22",
+                is_trade_today=True,
+                input_query_tag="fore",
+                cache_dir=cache_dir,
+            )
+
+        self.assertEqual(plan["effective_query_tag"], "fore")
+        self.assertEqual(plan["resolution_reason"], "manual_input")
+        self.assertTrue(plan["refresh_backtest"])
+        self.assertTrue(plan["validate_snapshot"])
 
     def test_describe_prefetched_quotes_snapshot_matches_trade_day_by_as_of(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

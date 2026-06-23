@@ -101,8 +101,26 @@ def _resolve_prd_v2_network_allowed(*, allow_network: bool) -> bool:
     return not _env_truthy("QR_DISABLE_PRD_V2_NETWORK")
 
 
+def _stock_research_backtest_refresh_enabled() -> bool:
+    return not _env_truthy("QR_DISABLE_STOCK_RESEARCH_BACKTEST_REFRESH")
+
+
 def _daily_snapshot_limit_enabled() -> bool:
     return _env_truthy("QR_LIMIT_DAILY_SNAPSHOT")
+
+
+def _same_day_stock_research_backtest(payload: Any, trade_date10: str) -> dict[str, Any] | None:
+    if not isinstance(payload, dict):
+        return None
+    backtest = payload.get("stockResearchBacktest")
+    if not isinstance(backtest, dict):
+        return None
+    realtime_buy = backtest.get("realtimeBuy")
+    if not isinstance(realtime_buy, dict):
+        return None
+    if str(realtime_buy.get("trade_date") or "").strip() != str(trade_date10 or "").strip():
+        return None
+    return json.loads(json.dumps(backtest, ensure_ascii=False))
 
 
 def _load_trade_days_from_local_cache(*, cache_dir: Path, limit: int) -> list[str]:
@@ -636,6 +654,7 @@ def run_fetch_and_rebuild(date: str | None, stock_research_query_tag: str = "") 
     req_date = date
     actual_date, date_note = resolve_trade_date(client, req_date)
     _log(f"交易日确认: {actual_date} ({date_note})")
+    refresh_stock_research_backtest = _stock_research_backtest_refresh_enabled()
 
     import datetime as _dt
     now = _dt.datetime.now()
@@ -812,6 +831,15 @@ def run_fetch_and_rebuild(date: str | None, stock_research_query_tag: str = "") 
         theme_trend_by_day=by_day,
     )
 
+    if not refresh_stock_research_backtest:
+        preserved_today_backtest = _same_day_stock_research_backtest(
+            read_json(cache_dir / f"market_data-{actual_date.replace('-', '')}.json", default={}),
+            actual_date,
+        )
+        if preserved_today_backtest:
+            market_data["stockResearchBacktest"] = preserved_today_backtest
+            _log("沿用当日已存在 stockResearchBacktest，跳过非早盘刷新")
+
     # === v3 增强：批量个股实时行情（让 v3 输出更“厚”） ===
     quotes_map: dict[str, Any] = {}
     try:
@@ -850,7 +878,12 @@ def run_fetch_and_rebuild(date: str | None, stock_research_query_tag: str = "") 
 
     # 离线重建（pipeline）并渲染 tab-v1
     _log("开始离线重建 pipeline...")
-    rc = run_rebuild(actual_date, allow_network=True, stock_research_query_tag=stock_research_query_tag)
+    rc = run_rebuild(
+        actual_date,
+        allow_network=True,
+        stock_research_query_tag=stock_research_query_tag,
+        refresh_stock_research_backtest=refresh_stock_research_backtest,
+    )
 
     # 同步生成盯盘快照：每次 fetch 都追加一条盘中切片
     # 注意：run_rebuild 会将完整 market_data（含 volume/plateRankTop10/mood_inputs）写回缓存文件
@@ -873,13 +906,19 @@ def run_fetch_and_rebuild(date: str | None, stock_research_query_tag: str = "") 
         final_market_data = json.loads(market_path.read_text(encoding="utf-8")) if market_path.exists() else {}
         if isinstance(final_market_data, dict):
             inject_intraday_snapshots(root=root, date=actual_date, market_data=final_market_data)
-            attach_stock_research_backtest(
-                market_data=final_market_data,
-                sync_source=True,
-                query_tag=stock_research_query_tag,
-                log_fn=lambda msg: _log(f"[final-sync] {msg}"),
-            )
-            _log("最终 market_data 已同步最新盯盘切片/个股回测快照")
+            if refresh_stock_research_backtest:
+                attach_stock_research_backtest(
+                    market_data=final_market_data,
+                    sync_source=True,
+                    query_tag=stock_research_query_tag,
+                    log_fn=lambda msg: _log(f"[final-sync] {msg}"),
+                )
+                _log("最终 market_data 已同步最新盯盘切片/个股回测快照")
+            else:
+                preserved_today_backtest = _same_day_stock_research_backtest(final_market_data, actual_date)
+                if preserved_today_backtest:
+                    final_market_data["stockResearchBacktest"] = preserved_today_backtest
+                _log("最终 market_data 已同步最新盯盘切片，保留同日财富密码快照")
             market_path.write_text(json.dumps(final_market_data, ensure_ascii=False, indent=2), encoding="utf-8")
     except Exception as e:
         print(f"⚠️ 最终 market_data 同步失败（不影响主流程）: {e}")
@@ -1177,6 +1216,7 @@ def _postprocess_market_data(
     apply_runtime_display: bool,
     normalize_meta: bool,
     sync_stock_research_source: bool,
+    refresh_stock_research_backtest: bool,
     stock_research_query_tag: str = "",
     include_prd_v2: bool,
     log_prefix: str = "",
@@ -1256,15 +1296,16 @@ def _postprocess_market_data(
     except Exception:
         pass
 
-    try:
-        attach_stock_research_backtest(
-            market_data=market_data,
-            sync_source=sync_stock_research_source,
-            query_tag=stock_research_query_tag,
-            log_fn=lambda msg: _log(f"{log_prefix}{msg}"),
-        )
-    except Exception:
-        pass
+    if refresh_stock_research_backtest:
+        try:
+            attach_stock_research_backtest(
+                market_data=market_data,
+                sync_source=sync_stock_research_source,
+                query_tag=stock_research_query_tag,
+                log_fn=lambda msg: _log(f"{log_prefix}{msg}"),
+            )
+        except Exception:
+            pass
 
     try:
         from daily_review.render.render_html import build_market_overview_7d, build_sentiment_explain_dims
@@ -1304,6 +1345,7 @@ def run_rebuild(
     allow_network: bool = False,
     prd_v2_allow_network: bool | None = None,
     stock_research_query_tag: str = "",
+    refresh_stock_research_backtest: bool | None = None,
 ) -> int:
     """
     离线重建（不请求接口）：
@@ -1327,6 +1369,11 @@ def run_rebuild(
     market_data = ctx.market_data
     _log("pipeline 已执行")
     preserve_zt = _env_truthy("PRESERVE_ZT_ANALYSIS")
+    resolved_refresh_stock_research_backtest = (
+        _stock_research_backtest_refresh_enabled()
+        if refresh_stock_research_backtest is None
+        else bool(refresh_stock_research_backtest)
+    )
     resolved_prd_v2_allow_network = (
         _resolve_prd_v2_network_allowed(allow_network=allow_network)
         if prd_v2_allow_network is None
@@ -1343,6 +1390,7 @@ def run_rebuild(
         apply_runtime_display=True,
         normalize_meta=True,
         sync_stock_research_source=True,
+        refresh_stock_research_backtest=resolved_refresh_stock_research_backtest,
         stock_research_query_tag=stock_research_query_tag,
         include_prd_v2=True,
     )
@@ -1974,6 +2022,7 @@ def run_partial(date: str, modules: list[str]) -> int:
         apply_runtime_display=False,
         normalize_meta=False,
         sync_stock_research_source=False,
+        refresh_stock_research_backtest=False,
         include_prd_v2=False,
         log_prefix="partial ",
     )

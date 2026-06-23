@@ -219,25 +219,44 @@ def resolve_stock_research_query_plan(
     if normalized_input:
         effective_query_tag = normalized_input
         reason = "manual_input"
+        refresh_backtest = True
+        validate_snapshot = True
     elif mode == "intraday":
         effective_query_tag = ""
         reason = "intraday_mode"
+        refresh_backtest = False
+        validate_snapshot = False
     elif not is_trade_today:
         effective_query_tag = ""
         reason = "not_trade_today"
+        refresh_backtest = False
+        validate_snapshot = False
+    elif mode != "open_fore":
+        effective_query_tag = ""
+        reason = "non_open_fore_mode"
+        refresh_backtest = False
+        validate_snapshot = False
     elif prefetched["found"]:
         effective_query_tag = ""
         reason = "prefetched_quotes_ready"
+        refresh_backtest = True
+        validate_snapshot = True
     elif market_data["found"]:
         effective_query_tag = ""
         reason = "market_data_snapshot_ready"
+        refresh_backtest = True
+        validate_snapshot = True
     else:
         effective_query_tag = "fore"
         reason = "snapshot_missing_fallback_to_fore"
+        refresh_backtest = True
+        validate_snapshot = True
 
     return {
         "effective_query_tag": effective_query_tag,
         "resolution_reason": reason,
+        "refresh_backtest": refresh_backtest,
+        "validate_snapshot": validate_snapshot,
         "prefetched_snapshot": prefetched,
         "market_data_snapshot": market_data,
     }

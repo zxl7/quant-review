@@ -417,7 +417,7 @@ jobs:
 
       - name: Resolve stock research query tag
         id: stockresearch
-        if: ${{ (github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true') && steps.warmup.outputs.skip != 'true' && (github.event_name != 'schedule' || steps.tradeday.outputs.is_trade_today == 'true') && steps.pushmode.outputs.mode != 'intraday' && github.event_name != 'push' }}
+        if: ${{ (github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true') && steps.warmup.outputs.skip != 'true' && (github.event_name != 'schedule' || steps.tradeday.outputs.is_trade_today == 'true') && steps.pushmode.outputs.mode != 'intraday' && github.event_name != 'push' && ((github.event_name == 'schedule' && steps.timecheck.outputs.mode == 'open_fore') || (github.event_name == 'workflow_dispatch' && github.event.inputs.stock_research_query_tag != '')) }}
         run: |
           set -euo pipefail
           mode="${{ steps.pushmode.outputs.mode }}"
@@ -469,13 +469,59 @@ jobs:
               f"{plan['effective_query_tag'] or '<none>'} "
               f"(reason={plan['resolution_reason']})"
           )
+          print(
+              "Stock research strategy: "
+              f"refresh_backtest={plan['refresh_backtest']} "
+              f"validate_snapshot={plan['validate_snapshot']}"
+          )
           with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as fh:
               fh.write(f"effective_query_tag={plan['effective_query_tag']}\n")
               fh.write(f"resolution_reason={plan['resolution_reason']}\n")
+              fh.write(f"refresh_backtest={'true' if plan['refresh_backtest'] else 'false'}\n")
+              fh.write(f"validate_snapshot={'true' if plan['validate_snapshot'] else 'false'}\n")
               fh.write(f"prefetched_found={'true' if prefetched.get('found') else 'false'}\n")
               fh.write(f"prefetched_as_of={prefetched.get('as_of') or ''}\n")
               fh.write(f"prefetched_source={prefetched.get('source') or ''}\n")
           PY
+
+      - name: Default stock research strategy
+        id: stockresearchdefault
+        if: ${{ (github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true') && steps.warmup.outputs.skip != 'true' && (github.event_name != 'schedule' || steps.tradeday.outputs.is_trade_today == 'true') && steps.pushmode.outputs.mode != 'intraday' && (github.event_name == 'push' || (github.event_name == 'schedule' && steps.timecheck.outputs.mode != 'open_fore') || (github.event_name == 'workflow_dispatch' && github.event.inputs.stock_research_query_tag == '')) }}
+        run: |
+          set -euo pipefail
+          {
+            echo "effective_query_tag="
+            echo "resolution_reason=default_no_stock_research_refresh"
+            echo "refresh_backtest=false"
+            echo "validate_snapshot=false"
+            echo "prefetched_found=false"
+            echo "prefetched_as_of="
+            echo "prefetched_source="
+          } >> "$GITHUB_OUTPUT"
+          echo "Stock research strategy: refresh_backtest=false validate_snapshot=false reason=default_no_stock_research_refresh"
+
+      - name: Finalize stock research strategy
+        id: stockresearchfinal
+        if: ${{ (github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true') && steps.warmup.outputs.skip != 'true' && (github.event_name != 'schedule' || steps.tradeday.outputs.is_trade_today == 'true') && steps.pushmode.outputs.mode != 'intraday' }}
+        run: |
+          set -euo pipefail
+          effective_query_tag="${{ steps.stockresearch.outputs.effective_query_tag || steps.stockresearchdefault.outputs.effective_query_tag || '' }}"
+          resolution_reason="${{ steps.stockresearch.outputs.resolution_reason || steps.stockresearchdefault.outputs.resolution_reason || '' }}"
+          refresh_backtest="${{ steps.stockresearch.outputs.refresh_backtest || steps.stockresearchdefault.outputs.refresh_backtest || 'false' }}"
+          validate_snapshot="${{ steps.stockresearch.outputs.validate_snapshot || steps.stockresearchdefault.outputs.validate_snapshot || 'false' }}"
+          prefetched_found="${{ steps.stockresearch.outputs.prefetched_found || steps.stockresearchdefault.outputs.prefetched_found || 'false' }}"
+          prefetched_as_of="${{ steps.stockresearch.outputs.prefetched_as_of || steps.stockresearchdefault.outputs.prefetched_as_of || '' }}"
+          prefetched_source="${{ steps.stockresearch.outputs.prefetched_source || steps.stockresearchdefault.outputs.prefetched_source || '' }}"
+          {
+            echo "effective_query_tag=${effective_query_tag}"
+            echo "resolution_reason=${resolution_reason}"
+            echo "refresh_backtest=${refresh_backtest}"
+            echo "validate_snapshot=${validate_snapshot}"
+            echo "prefetched_found=${prefetched_found}"
+            echo "prefetched_as_of=${prefetched_as_of}"
+            echo "prefetched_source=${prefetched_source}"
+          } >> "$GITHUB_OUTPUT"
+          echo "Final stock research strategy: refresh_backtest=${refresh_backtest} validate_snapshot=${validate_snapshot} query_tag=${effective_query_tag:-<none>} reason=${resolution_reason}"
 
       - name: Generate latest report (online fetch -> offline pipeline rebuild)
         if: ${{ (github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true') && steps.warmup.outputs.skip != 'true' && (github.event_name != 'schedule' || steps.tradeday.outputs.is_trade_today == 'true') && steps.pushmode.outputs.mode != 'intraday' && github.event_name != 'push' }}
@@ -489,11 +535,13 @@ jobs:
           QR_DISABLE_PRD_V2_NETWORK: "1"
           QR_DISABLE_STOCK_RESEARCH_HISTORY_FETCH: "1"
           QR_SKIP_WEB_BUILD: "1"
+          QR_DISABLE_STOCK_RESEARCH_BACKTEST_REFRESH: ${{ steps.stockresearchfinal.outputs.refresh_backtest != 'true' && '1' || '0' }}
         run: |
           set -euo pipefail
           mode="${{ steps.pushmode.outputs.mode }}"
           schedule_mode="${{ steps.timecheck.outputs.mode || '' }}"
-          query_tag="${{ steps.stockresearch.outputs.effective_query_tag || '' }}"
+          query_tag="${{ steps.stockresearchfinal.outputs.effective_query_tag || '' }}"
+          stock_research_refresh_enabled="${{ steps.stockresearchfinal.outputs.refresh_backtest == 'true' && 'true' || 'false' }}"
           is_trade_today="${{ steps.tradeday.outputs.is_trade_today }}"
           event_name="${{ github.event_name }}"
           echo "Run mode=${mode}"
@@ -502,8 +550,9 @@ jobs:
           echo "Schedule mode=${schedule_mode:-<none>}"
           echo "Schedule reason=${{ steps.timecheck.outputs.reason || '' }}"
           echo "Beijing now=${{ steps.timecheck.outputs.beijing_now || '' }}"
-          echo "Prefetched snapshot hit=${{ steps.stockresearch.outputs.prefetched_found || 'false' }} as_of=${{ steps.stockresearch.outputs.prefetched_as_of || '' }} source=${{ steps.stockresearch.outputs.prefetched_source || '' }}"
-          echo "Final stock_research_query_tag=${query_tag:-<none>} reason=${{ steps.stockresearch.outputs.resolution_reason || '' }}"
+          echo "Stock research refresh enabled=${stock_research_refresh_enabled}"
+          echo "Prefetched snapshot hit=${{ steps.stockresearchfinal.outputs.prefetched_found || 'false' }} as_of=${{ steps.stockresearchfinal.outputs.prefetched_as_of || '' }} source=${{ steps.stockresearchfinal.outputs.prefetched_source || '' }}"
+          echo "Final stock_research_query_tag=${query_tag:-<none>} reason=${{ steps.stockresearchfinal.outputs.resolution_reason || '' }}"
           run_date="${{ steps.pushmode.outputs.date10 }}"
           if [ "${mode}" = "intraday" ]; then
             # 盘中：只跑轻量 intraday，刷新实时情绪/快照；明日接力/观察保留上一份收盘推演。
@@ -695,7 +744,7 @@ jobs:
           python3 inject_data.py "${d8}" --source "${source_path}"
 
       - name: Validate stock research snapshot in published market data
-        if: ${{ (github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true') && steps.warmup.outputs.skip != 'true' && (github.event_name != 'schedule' || steps.tradeday.outputs.is_trade_today == 'true') && steps.pushmode.outputs.mode != 'intraday' }}
+        if: ${{ (github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true') && steps.warmup.outputs.skip != 'true' && (github.event_name != 'schedule' || steps.tradeday.outputs.is_trade_today == 'true') && steps.pushmode.outputs.mode != 'intraday' && steps.stockresearchfinal.outputs.validate_snapshot == 'true' }}
         env:
           EVENT_NAME: ${{ github.event_name }}
           RUN_DATE: ${{ steps.pushmode.outputs.date10 }}
