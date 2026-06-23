@@ -14,6 +14,7 @@ from __future__ import annotations
 import argparse
 import json
 import math
+import os
 import re
 import shutil
 import sys
@@ -1168,6 +1169,13 @@ def _ensure_stock_research_backtest(md: dict) -> None:
         preserved_backtest = upgrade_stock_research_backtest_payload(preserved_backtest)
     if _is_fresh_stock_research_backtest(preserved_backtest, latest_source_snapshot=latest_source_snapshot):
         md["stockResearchBacktest"] = preserved_backtest
+        return
+    if str(os.environ.get("QR_DISABLE_STOCK_RESEARCH_BACKTEST_REBUILD") or "").strip().lower() in {
+        "1",
+        "true",
+        "yes",
+        "on",
+    }:
         return
     try:
         from scripts.build_stock_research_backtest import build_stock_research_backtest_payload

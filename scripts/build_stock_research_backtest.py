@@ -57,6 +57,15 @@ def _is_forced_query_tag(query_tag: str | None = None) -> bool:
     return _normalize_query_tag(query_tag) in FORCED_QUERY_TAGS
 
 
+def _history_fetch_disabled() -> bool:
+    return str(os.environ.get("QR_DISABLE_STOCK_RESEARCH_HISTORY_FETCH") or "").strip().lower() in {
+        "1",
+        "true",
+        "yes",
+        "on",
+    }
+
+
 def _load_json(path: Path, default: Any | None = None) -> Any:
     if not path.exists():
         return {} if default is None else default
@@ -437,10 +446,19 @@ def _get_price_histories(codes: list[str], *, st8: str, et8: str) -> tuple[dict[
     cache = _load_price_cache()
     code_cache = cache.setdefault("codes", {})
     histories: dict[str, list[dict[str, Any]]] = {}
-    diagnostics: dict[str, Any] = {"source": "cache+api", "fetched": 0, "cached": 0, "missing": []}
+    history_fetch_disabled = _history_fetch_disabled()
+    diagnostics: dict[str, Any] = {
+        "source": "cache_only" if history_fetch_disabled else "cache+api",
+        "fetched": 0,
+        "cached": 0,
+        "missing": [],
+        "history_fetch_disabled": history_fetch_disabled,
+    }
 
-    cfg = load_config_from_env()
-    client = HttpClient(base_url=cfg.base_url, token=cfg.token, timeout=12, retries=0)
+    client = None
+    if not history_fetch_disabled:
+        cfg = load_config_from_env()
+        client = HttpClient(base_url=cfg.base_url, token=cfg.token, timeout=12, retries=0)
 
     for code in codes:
         cached = code_cache.get(code) if isinstance(code_cache.get(code), dict) else {}
@@ -450,6 +468,14 @@ def _get_price_histories(codes: list[str], *, st8: str, et8: str) -> tuple[dict[
         if cached_bars and earliest <= st8 and latest >= et8:
             histories[code] = cached_bars
             diagnostics["cached"] += 1
+            continue
+
+        if history_fetch_disabled:
+            if cached_bars:
+                histories[code] = cached_bars
+                diagnostics["cached"] += 1
+            else:
+                diagnostics["missing"].append(code)
             continue
 
         rows = fetch_stock_history_k(client, code=_code_with_suffix(code), st=st8, et=et8)

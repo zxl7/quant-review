@@ -1003,6 +1003,53 @@ class PicksAdvisorStabilityTest(unittest.TestCase):
 
 
 class StockResearchBacktestPublishFreshnessTest(unittest.TestCase):
+    def test_history_fetch_can_be_disabled_for_publish_path(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            cache_dir = root / "cache"
+            cache_online_dir = root / "cache_online"
+            cache_dir.mkdir()
+            cache_online_dir.mkdir()
+            (cache_online_dir / "recommendation_price_history.json").write_text(
+                json.dumps(
+                    {
+                        "schema": "recommendation_price_history_v1",
+                        "codes": {
+                            "000001": {
+                                "code": "000001",
+                                "bars": [
+                                    {
+                                        "date": "2026-06-20",
+                                        "open": 10.0,
+                                        "close": 10.1,
+                                        "high": 10.2,
+                                        "low": 9.9,
+                                        "prev_close": 9.8,
+                                    }
+                                ],
+                            }
+                        },
+                    },
+                    ensure_ascii=False,
+                ),
+                encoding="utf-8",
+            )
+
+            with patch.object(backtest, "ROOT", root), patch.object(
+                backtest, "PRICE_CACHE", cache_online_dir / "recommendation_price_history.json"
+            ), patch.dict(
+                backtest.os.environ, {"QR_DISABLE_STOCK_RESEARCH_HISTORY_FETCH": "1"}, clear=False
+            ), patch.object(
+                backtest, "fetch_stock_history_k"
+            ) as mock_fetch:
+                histories, diag = backtest._get_price_histories(["000001", "000002"], st8="20260620", et8="20260623")
+
+        self.assertFalse(mock_fetch.called)
+        self.assertEqual(diag["source"], "cache_only")
+        self.assertTrue(diag["history_fetch_disabled"])
+        self.assertIn("000001", histories)
+        self.assertEqual(diag["missing"], ["000002"])
+
     def test_publish_marks_payload_stale_when_selection_fields_are_missing(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
@@ -1200,6 +1247,19 @@ class StockResearchBacktestPublishFreshnessTest(unittest.TestCase):
 
         self.assertIsNotNone(snapshot)
         self.assertEqual(snapshot["marketData"]["stockResearchBacktest"]["meta"]["latest_recommendation_date"], "2026-06-15")
+
+    def test_publish_can_skip_live_backtest_rebuild(self) -> None:
+        md = {}
+        with patch.dict(web_bundle.os.environ, {"QR_DISABLE_STOCK_RESEARCH_BACKTEST_REBUILD": "1"}, clear=False), patch.object(
+            web_bundle, "_latest_stock_research_source_snapshot", return_value={}
+        ), patch.object(
+            web_bundle, "_is_fresh_stock_research_backtest", return_value=False
+        ), patch.object(
+            web_bundle, "_is_complete_stock_research_backtest", return_value=False
+        ):
+            web_bundle._ensure_stock_research_backtest(md)
+
+        self.assertNotIn("stockResearchBacktest", md)
 
 
 class TradeDateResolveTest(unittest.TestCase):

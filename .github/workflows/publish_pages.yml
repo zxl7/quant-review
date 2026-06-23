@@ -487,18 +487,17 @@ jobs:
           QR_SKIP_WATCHLIST_REFRESH: "1"
           QR_SKIP_ACCOUNT_METRICS_SYNC: "1"
           QR_DISABLE_PRD_V2_NETWORK: "1"
+          QR_DISABLE_STOCK_RESEARCH_HISTORY_FETCH: "1"
           QR_SKIP_WEB_BUILD: "1"
         run: |
           set -euo pipefail
-          if [ -z "${BIYING_TOKEN}" ]; then
-            echo "Missing secrets.BIYING_TOKEN"
-            exit 2
-          fi
           mode="${{ steps.pushmode.outputs.mode }}"
           schedule_mode="${{ steps.timecheck.outputs.mode || '' }}"
           query_tag="${{ steps.stockresearch.outputs.effective_query_tag || '' }}"
           is_trade_today="${{ steps.tradeday.outputs.is_trade_today }}"
+          event_name="${{ github.event_name }}"
           echo "Run mode=${mode}"
+          echo "Event name=${event_name}"
           echo "Schedule expr=${{ github.event.schedule || '' }}"
           echo "Schedule mode=${schedule_mode:-<none>}"
           echo "Schedule reason=${{ steps.timecheck.outputs.reason || '' }}"
@@ -509,7 +508,14 @@ jobs:
           if [ "${mode}" = "intraday" ]; then
             # 盘中：只跑轻量 intraday，刷新实时情绪/快照；明日接力/观察保留上一份收盘推演。
             PRESERVE_ZT_ANALYSIS=1 PYTHONPATH=. python3 -u -m daily_review.cli --mode intraday --date "${run_date}"
+          elif [ "${event_name}" = "push" ]; then
+            echo "Push event: prefer offline rebuild from restored cache"
+            PYTHONPATH=. python3 -u -m daily_review.cli --date "${run_date}" --rebuild
           else
+            if [ -z "${BIYING_TOKEN}" ]; then
+              echo "Missing secrets.BIYING_TOKEN"
+              exit 2
+            fi
             # 先预检今天是否已有有效财富密码快照；没有才补 fore。
             if [ -n "${query_tag}" ]; then
               ./qr.sh fetch "${run_date}" "${query_tag}"
@@ -576,9 +582,13 @@ jobs:
           set -euo pipefail
           run_date="${{ steps.pushmode.outputs.date10 }}"
           python3 manage_cache.py --date "${run_date}" --mode minimal --retention-days 7 --apply >/dev/null
-          PYTHONPATH=. python3 tools/fetch_watchlist.py --date "${run_date}" --skip-fetch || echo "⚠ watchlist rebuild failed, using cache"
-          PYTHONPATH=. python3 scripts/build_account_nav_ledger.py >/dev/null || echo "⚠ account nav ledger sync failed"
-          PYTHONPATH=. python3 scripts/build_account_strategy_metrics.py >/dev/null || echo "⚠ account strategy metrics sync failed"
+          if [ "${{ github.event_name }}" != "push" ]; then
+            PYTHONPATH=. python3 tools/fetch_watchlist.py --date "${run_date}" --skip-fetch || echo "⚠ watchlist rebuild failed, using cache"
+            PYTHONPATH=. python3 scripts/build_account_nav_ledger.py >/dev/null || echo "⚠ account nav ledger sync failed"
+            PYTHONPATH=. python3 scripts/build_account_strategy_metrics.py >/dev/null || echo "⚠ account strategy metrics sync failed"
+          else
+            echo "Push event: skip heavy derived rebuilds and reuse restored caches"
+          fi
 
       - name: Generate intraday runtime only
         if: ${{ (github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true') && steps.pushmode.outputs.mode == 'intraday' && steps.warmup.outputs.skip != 'true' && (github.event_name != 'schedule' || steps.tradeday.outputs.is_trade_today == 'true') }}
@@ -608,8 +618,12 @@ jobs:
       - name: Pre-fetch external data (明日策略池 + 东方财富今日题材)
         if: ${{ (github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true') && steps.warmup.outputs.skip != 'true' && (github.event_name != 'schedule' || steps.tradeday.outputs.is_trade_today == 'true') && steps.pushmode.outputs.mode != 'intraday' }}
         run: |
-          python3 tools/fetch_tomorrow_picks.py web/public/tomorrow_picks.json || echo "⚠ tomorrow picks fetch failed, using cache"
-          python3 tools/fetch_eastmoney_tomorrow.py web/public/eastmoney_tomorrow.json || echo "⚠ eastmoney tomorrow fetch failed, using cache"
+          if [ "${{ github.event_name }}" != "push" ]; then
+            python3 tools/fetch_tomorrow_picks.py web/public/tomorrow_picks.json || echo "⚠ tomorrow picks fetch failed, using cache"
+            python3 tools/fetch_eastmoney_tomorrow.py web/public/eastmoney_tomorrow.json || echo "⚠ eastmoney tomorrow fetch failed, using cache"
+          else
+            echo "Push event: skip external tomorrow-data fetch and reuse published artifacts if present"
+          fi
 
       - name: Build Vue3 web (Vite -> single HTML)
         if: ${{ (github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true') && steps.warmup.outputs.skip != 'true' && (github.event_name != 'schedule' || steps.tradeday.outputs.is_trade_today == 'true') && steps.pushmode.outputs.mode != 'intraday' }}
@@ -619,6 +633,8 @@ jobs:
         if: ${{ (github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true') && steps.warmup.outputs.skip != 'true' && (github.event_name != 'schedule' || steps.tradeday.outputs.is_trade_today == 'true') && steps.pushmode.outputs.mode != 'intraday' }}
         env:
           RUN_DATE: ${{ steps.pushmode.outputs.date10 }}
+          QR_DISABLE_STOCK_RESEARCH_BACKTEST_REBUILD: "1"
+          QR_DISABLE_STOCK_RESEARCH_HISTORY_FETCH: "1"
         run: |
           run_date="${RUN_DATE}"
           d8="$(echo "${run_date}" | tr -d '-')"
