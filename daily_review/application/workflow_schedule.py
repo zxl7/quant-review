@@ -14,8 +14,10 @@ SCHEDULE_MODE_BY_CRON: dict[str, str] = {
     "*/5 2 * * 1-5": "intraday",
     "0-30/5 3 * * 1-5": "intraday",
     "*/5 5-6 * * 1-5": "intraday",
-    "59 6 * * 1-5": "intraday",
+    "0 7 * * 1-5": "eod",
+    "0 8 * * 1-5": "eod",
     "0 9 * * 1-5": "eod",
+    "0 10 * * 1-5": "eod",
 }
 
 INVALID_QUOTE_SOURCES = {"unavailable", "forced_query_unavailable"}

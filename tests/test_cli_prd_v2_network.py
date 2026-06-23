@@ -370,7 +370,7 @@ class RunFetchAndRebuildDailySnapshotLimitTest(unittest.TestCase):
 
                 self.assertEqual(rc, 0)
                 self.assertFalse(mock_sample.called)
-                self.assertFalse(mock_newhigh.called)
+                self.assertTrue(mock_newhigh.called)
                 self.assertTrue(mock_quotes.called)
                 self.assertTrue(mock_attach_quotes.called)
                 self.assertTrue(mock_attach_backtest.called)
@@ -378,7 +378,7 @@ class RunFetchAndRebuildDailySnapshotLimitTest(unittest.TestCase):
         self.assertEqual(realtime_buy.get("trade_date"), "2026-06-23")
         self.assertEqual(realtime_buy.get("quote_time"), "2026-06-23 09:25:01")
 
-    def test_run_fetch_and_rebuild_skips_ths_newhigh_by_default(self) -> None:
+    def test_run_fetch_and_rebuild_fetches_ths_newhigh_by_default(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
             cache_dir = root / "cache"
@@ -421,59 +421,59 @@ class RunFetchAndRebuildDailySnapshotLimitTest(unittest.TestCase):
                 stack.enter_context(patch.object(cli, "inject_intraday_snapshots"))
                 stack.enter_context(patch.object(cli, "attach_stock_research_backtest"))
                 stack.enter_context(patch.object(cli.time, "sleep"))
-                rc = cli.run_fetch_and_rebuild("2026-06-23")
-
-        self.assertEqual(rc, 0)
-        self.assertFalse(mock_newhigh.called)
-
-    def test_run_fetch_and_rebuild_fetches_ths_newhigh_when_enabled(self) -> None:
-        with tempfile.TemporaryDirectory() as tmp:
-            root = Path(tmp)
-            cache_dir = root / "cache"
-            cache_dir.mkdir()
-            market_path = cache_dir / "market_data-20260623.json"
-            fake_cfg = SimpleNamespace(base_url="https://example.test", token="token")
-
-            def fake_write_market_data(*, root: Path, market_data: dict, actual_date: str, suffix: str = "") -> Path:
-                market_path.write_text(json.dumps(market_data, ensure_ascii=False, indent=2), encoding="utf-8")
-                return market_path
-
-            with ExitStack() as stack:
-                stack.enter_context(patch.object(cli, "_workspace_root", return_value=root))
-                stack.enter_context(patch.object(cli, "load_config_from_env", return_value=fake_cfg))
-                stack.enter_context(patch("daily_review.http.HttpClient", return_value=object()))
-                stack.enter_context(patch.object(cli, "_resolve_trade_date_fast", return_value=("2026-06-23", "trade_day")))
-                stack.enter_context(
-                    patch.object(
-                        cli,
-                        "_resolve_trade_days_with_local_fallback",
-                        return_value=["2026-06-19", "2026-06-22", "2026-06-23"],
-                    )
-                )
-                stack.enter_context(patch.object(cli, "_refresh_pools_for_date", return_value={"ztgc": [], "dtgc": [], "zbgc": [], "qsgc": []}))
-                stack.enter_context(patch.object(cli, "update_theme_cache", return_value={}))
-                stack.enter_context(patch.object(cli, "build_theme_trend_cache", return_value={}))
-                stack.enter_context(patch.object(cli, "_save_abnormal_event_history_sample"))
-                stack.enter_context(patch.object(cli, "update_index_kline_cache", return_value={}))
-                stack.enter_context(patch.object(cli, "build_height_trend_cache"))
-                mock_newhigh = stack.enter_context(patch.object(cli, "save_newhigh_snapshot"))
-                stack.enter_context(patch.object(cli, "fetch_indices_realtime", return_value=([], "09:26:00")))
-                stack.enter_context(patch.object(cli, "build_report_indices", return_value=[]))
-                stack.enter_context(patch.object(cli, "build_raw_pools", return_value={"ztgc": [], "qsgc": [], "zbgc": [], "dtgc": []}))
-                stack.enter_context(patch.object(cli, "build_base_market_data", return_value={"date": "2026-06-23", "features": {}, "raw": {}}))
-                stack.enter_context(patch.object(cli, "_fetch_realtime_quotes_map", return_value={}))
-                stack.enter_context(patch.object(cli, "attach_quotes_and_features"))
-                stack.enter_context(patch.object(cli, "write_market_data", side_effect=fake_write_market_data))
-                stack.enter_context(patch.object(cli, "run_rebuild", return_value=0))
-                stack.enter_context(patch.object(cli, "append_watch_runtime_slice"))
-                stack.enter_context(patch.object(cli, "inject_intraday_snapshots"))
-                stack.enter_context(patch.object(cli, "attach_stock_research_backtest"))
-                stack.enter_context(patch.object(cli.time, "sleep"))
-                stack.enter_context(patch.dict(cli.os.environ, {"QR_ENABLE_THS_NEWHIGH_FETCH": "1"}, clear=False))
                 rc = cli.run_fetch_and_rebuild("2026-06-23")
 
         self.assertEqual(rc, 0)
         self.assertTrue(mock_newhigh.called)
+
+    def test_run_fetch_and_rebuild_skips_ths_newhigh_when_disabled(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            cache_dir = root / "cache"
+            cache_dir.mkdir()
+            market_path = cache_dir / "market_data-20260623.json"
+            fake_cfg = SimpleNamespace(base_url="https://example.test", token="token")
+
+            def fake_write_market_data(*, root: Path, market_data: dict, actual_date: str, suffix: str = "") -> Path:
+                market_path.write_text(json.dumps(market_data, ensure_ascii=False, indent=2), encoding="utf-8")
+                return market_path
+
+            with ExitStack() as stack:
+                stack.enter_context(patch.object(cli, "_workspace_root", return_value=root))
+                stack.enter_context(patch.object(cli, "load_config_from_env", return_value=fake_cfg))
+                stack.enter_context(patch("daily_review.http.HttpClient", return_value=object()))
+                stack.enter_context(patch.object(cli, "_resolve_trade_date_fast", return_value=("2026-06-23", "trade_day")))
+                stack.enter_context(
+                    patch.object(
+                        cli,
+                        "_resolve_trade_days_with_local_fallback",
+                        return_value=["2026-06-19", "2026-06-22", "2026-06-23"],
+                    )
+                )
+                stack.enter_context(patch.object(cli, "_refresh_pools_for_date", return_value={"ztgc": [], "dtgc": [], "zbgc": [], "qsgc": []}))
+                stack.enter_context(patch.object(cli, "update_theme_cache", return_value={}))
+                stack.enter_context(patch.object(cli, "build_theme_trend_cache", return_value={}))
+                stack.enter_context(patch.object(cli, "_save_abnormal_event_history_sample"))
+                stack.enter_context(patch.object(cli, "update_index_kline_cache", return_value={}))
+                stack.enter_context(patch.object(cli, "build_height_trend_cache"))
+                mock_newhigh = stack.enter_context(patch.object(cli, "save_newhigh_snapshot"))
+                stack.enter_context(patch.object(cli, "fetch_indices_realtime", return_value=([], "09:26:00")))
+                stack.enter_context(patch.object(cli, "build_report_indices", return_value=[]))
+                stack.enter_context(patch.object(cli, "build_raw_pools", return_value={"ztgc": [], "qsgc": [], "zbgc": [], "dtgc": []}))
+                stack.enter_context(patch.object(cli, "build_base_market_data", return_value={"date": "2026-06-23", "features": {}, "raw": {}}))
+                stack.enter_context(patch.object(cli, "_fetch_realtime_quotes_map", return_value={}))
+                stack.enter_context(patch.object(cli, "attach_quotes_and_features"))
+                stack.enter_context(patch.object(cli, "write_market_data", side_effect=fake_write_market_data))
+                stack.enter_context(patch.object(cli, "run_rebuild", return_value=0))
+                stack.enter_context(patch.object(cli, "append_watch_runtime_slice"))
+                stack.enter_context(patch.object(cli, "inject_intraday_snapshots"))
+                stack.enter_context(patch.object(cli, "attach_stock_research_backtest"))
+                stack.enter_context(patch.object(cli.time, "sleep"))
+                stack.enter_context(patch.dict(cli.os.environ, {"QR_DISABLE_THS_NEWHIGH_FETCH": "1"}, clear=False))
+                rc = cli.run_fetch_and_rebuild("2026-06-23")
+
+        self.assertEqual(rc, 0)
+        self.assertFalse(mock_newhigh.called)
 
     def test_run_fetch_and_rebuild_limits_full_publish_quotes_to_core_pool(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

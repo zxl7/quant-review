@@ -112,7 +112,7 @@ def _daily_snapshot_limit_enabled() -> bool:
 
 
 def _ths_newhigh_fetch_enabled() -> bool:
-    return _env_truthy("QR_ENABLE_THS_NEWHIGH_FETCH")
+    return not _env_truthy("QR_DISABLE_THS_NEWHIGH_FETCH")
 
 
 def _core_quotes_refresh_enabled() -> bool:
@@ -960,7 +960,7 @@ def run_fetch_and_rebuild(date: str | None, stock_research_query_tag: str = "") 
         except Exception as e:
             _log_stage_failed("同花顺创新高榜单抓取", e)
     else:
-        _log("默认跳过同花顺创新高榜单抓取")
+        _log("显式禁用同花顺创新高榜单抓取")
 
     # indices（实时）：仅用于 asOf 展示（HH:MM:SS）
     with _timed_stage("指数实时行情"):

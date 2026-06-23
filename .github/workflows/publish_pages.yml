@@ -28,15 +28,17 @@ on:
   # - 09:25：独立 prefetch 预抓竞价快照（见 prefetch_stock_research_quotes.yml）
   # - 09:26：早盘主链执行一次正式 fetch，若当天快照缺失则补 fore（只补一次）
   # - 09:35-11:30 / 13:00-14:59：仅执行盘中轻量任务快照（runtime/slices）
-  # - 17:00：执行收盘版全量复盘发布
+  # - 15:00 / 16:00 / 17:00 / 18:00：执行收盘后全量复盘发布
   schedule:
     - cron: "26 1 * * 1-5"
     - cron: "35-55/5 1 * * 1-5"
     - cron: "*/5 2 * * 1-5"
     - cron: "0-30/5 3 * * 1-5"
     - cron: "*/5 5-6 * * 1-5"
-    - cron: "59 6 * * 1-5"
+    - cron: "0 7 * * 1-5"
     - cron: "0 9 * * 1-5"
+    - cron: "0 8 * * 1-5"
+    - cron: "0 10 * * 1-5"
   # 提交代码后触发（除 gh-pages 外的所有分支）
   push:
     branches:
@@ -537,7 +539,6 @@ jobs:
           QR_DISABLE_STOCK_RESEARCH_HISTORY_FETCH: "1"
           QR_SKIP_WEB_BUILD: "1"
           QR_DISABLE_STOCK_RESEARCH_BACKTEST_REFRESH: ${{ steps.stockresearchfinal.outputs.refresh_backtest != 'true' && '1' || '0' }}
-          QR_ENABLE_THS_NEWHIGH_FETCH: ${{ github.event_name == 'schedule' && steps.timecheck.outputs.mode == 'eod' && '1' || '0' }}
           QR_ENABLE_CORE_QUOTES_REFRESH: ${{ github.event_name == 'schedule' && steps.timecheck.outputs.mode == 'eod' && '1' || '0' }}
         run: |
           set -euo pipefail

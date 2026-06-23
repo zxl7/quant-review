@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import json
+import os
 import sys
 from pathlib import Path
 from typing import Any
@@ -83,7 +84,14 @@ def _summarize_scope(rows: list[dict[str, Any]], key: str) -> dict[str, Any]:
 def build_account_strategy_metrics() -> dict[str, Any]:
     from scripts.build_stock_research_backtest import build_stock_research_backtest_payload
 
-    payload = build_stock_research_backtest_payload()
+    previous_disable_history_fetch = os.environ.get("QR_DISABLE_STOCK_RESEARCH_HISTORY_FETCH")
+    if previous_disable_history_fetch is None:
+        os.environ["QR_DISABLE_STOCK_RESEARCH_HISTORY_FETCH"] = "1"
+    try:
+        payload = build_stock_research_backtest_payload()
+    finally:
+        if previous_disable_history_fetch is None:
+            os.environ.pop("QR_DISABLE_STOCK_RESEARCH_HISTORY_FETCH", None)
     records = payload.get("records") if isinstance(payload, dict) else []
     valid_records = [row for row in records if isinstance(row, dict)]
     by_date: dict[str, list[dict[str, Any]]] = {}
