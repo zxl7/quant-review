@@ -17,6 +17,7 @@ import os
 import time
 import urllib.error
 import urllib.request
+from contextlib import contextmanager
 from pathlib import Path
 from typing import Any
 
@@ -619,6 +620,23 @@ def _log(msg: str) -> None:
     print(f"  [{ts}] {msg}", flush=True)
 
 
+def _fmt_elapsed(seconds: float) -> str:
+    return f"{max(seconds, 0.0):.2f}s"
+
+
+@contextmanager
+def _timed_stage(name: str, *, log_prefix: str = ""):
+    start = time.perf_counter()
+    try:
+        yield
+    finally:
+        _log(f"{log_prefix}阶段耗时 {name}: {_fmt_elapsed(time.perf_counter() - start)}")
+
+
+def _log_stage_failed(name: str, err: Exception, *, log_prefix: str = "") -> None:
+    _log(f"{log_prefix}{name} failed/skipped: {err}")
+
+
 def _fetch_pool_with_cache_fallback(
     client,
     *,
@@ -679,7 +697,8 @@ def run_fetch_and_rebuild(date: str | None, stock_research_query_tag: str = "") 
 
     client = HttpClient(base_url=cfg.base_url, token=cfg.token, timeout=30)
     req_date = date
-    actual_date, date_note = resolve_trade_date(client, req_date)
+    with _timed_stage("交易日解析"):
+        actual_date, date_note = resolve_trade_date(client, req_date)
     _log(f"交易日确认: {actual_date} ({date_note})")
     refresh_stock_research_backtest = _stock_research_backtest_refresh_enabled()
 
@@ -690,12 +709,13 @@ def run_fetch_and_rebuild(date: str | None, stock_research_query_tag: str = "") 
     )
 
     # 交易日序列（用于缓存裁剪/昨日）
-    trade_days = _resolve_trade_days_with_local_fallback(
-        client=client,
-        cache_dir=cache_dir,
-        actual_date=actual_date,
-        n=7,
-    )
+    with _timed_stage("交易日序列解析"):
+        trade_days = _resolve_trade_days_with_local_fallback(
+            client=client,
+            cache_dir=cache_dir,
+            actual_date=actual_date,
+            n=7,
+        )
 
     # pools_cache.json：预热历史 + 强制刷新当日
     pools_path = cache_dir / "pools_cache.json"
@@ -707,32 +727,34 @@ def run_fetch_and_rebuild(date: str | None, stock_research_query_tag: str = "") 
     pools.setdefault("qsgc", {})
 
     # 预热历史
-    for d in trade_days:
-        if d == actual_date:
-            continue
-        for pn in ("ztgc", "dtgc", "zbgc"):
-            if d not in (pools.get(pn) or {}):
-                prev_days = [x for x in trade_days if x < d]
-                rows = _fetch_pool_with_cache_fallback(
-                    client,
-                    pool_name=pn,
-                    date=d,
-                    pools=pools,
-                    fallback_dates=prev_days,
-                )
-                pools[pn][d] = rows
+    with _timed_stage("历史池预热"):
+        for d in trade_days:
+            if d == actual_date:
+                continue
+            for pn in ("ztgc", "dtgc", "zbgc"):
+                if d not in (pools.get(pn) or {}):
+                    prev_days = [x for x in trade_days if x < d]
+                    rows = _fetch_pool_with_cache_fallback(
+                        client,
+                        pool_name=pn,
+                        date=d,
+                        pools=pools,
+                        fallback_dates=prev_days,
+                    )
+                    pools[pn][d] = rows
 
     # 当日强制刷新（zt/dt/zb/qsgc）
-    for pn in ("ztgc", "dtgc", "zbgc", "qsgc"):
-        pools.setdefault(pn, {})
-        prev_days = [x for x in trade_days if x < actual_date]
-        pools[pn][actual_date] = _fetch_pool_with_cache_fallback(
-            client,
-            pool_name=pn,
-            date=actual_date,
-            pools=pools,
-            fallback_dates=prev_days,
-        )
+    with _timed_stage("当日四池刷新"):
+        for pn in ("ztgc", "dtgc", "zbgc", "qsgc"):
+            pools.setdefault(pn, {})
+            prev_days = [x for x in trade_days if x < actual_date]
+            pools[pn][actual_date] = _fetch_pool_with_cache_fallback(
+                client,
+                pool_name=pn,
+                date=actual_date,
+                pools=pools,
+                fallback_dates=prev_days,
+            )
 
     # 开盘首条自动快照偶发会遇到三池接口短暂空窗，这时全市场数据会异常接近 0。
     # 仅在“涨停/跌停/炸板/强势池同时为空”时做一次短暂重试，避免第一条线上快照失真。
@@ -771,23 +793,25 @@ def run_fetch_and_rebuild(date: str | None, stock_research_query_tag: str = "") 
     _log("涨停池/跌停池/炸板池/强势池 已获取并落盘")
 
     # theme_cache.json：只补齐"当日出现的 code6"，避免无限增长
-    codes_map = update_theme_cache(
-        root=root,
-        pools=pools,
-        actual_date=actual_date,
-        clean_theme_names=_clean_theme_names,
-        fetch_stock_labels_batch_fn=fetch_stock_labels_batch,
-    )
+    with _timed_stage("题材缓存更新"):
+        codes_map = update_theme_cache(
+            root=root,
+            pools=pools,
+            actual_date=actual_date,
+            clean_theme_names=_clean_theme_names,
+            fetch_stock_labels_batch_fn=fetch_stock_labels_batch,
+        )
     _log(f"题材缓存已更新 (共 {len(codes_map)} 只股票)")
 
     # theme_trend_cache.json：主线题材近 5 日持续性（只用已缓存的 code2themes，不额外请求）
-    by_day = build_theme_trend_cache(
-        root=root,
-        pools=pools,
-        trade_days=trade_days,
-        actual_date=actual_date,
-        codes_map=codes_map,
-    )
+    with _timed_stage("主线趋势计算"):
+        by_day = build_theme_trend_cache(
+            root=root,
+            pools=pools,
+            trade_days=trade_days,
+            actual_date=actual_date,
+            codes_map=codes_map,
+        )
     _log("主线趋势已计算 (近5日)")
 
     if not _daily_snapshot_limit_enabled():
@@ -801,18 +825,20 @@ def run_fetch_and_rebuild(date: str | None, stock_research_query_tag: str = "") 
             if sample_path:
                 _log(f"异动原始样本已落盘: {sample_path.name}")
         except Exception as e:
-            _log(f"异动原始样本保存失败（不影响主流程）: {e}")
+            _log_stage_failed("异动原始样本保存", e)
     else:
         _log("每日快照限量模式：跳过异动原始样本留存")
 
     # index_kline_cache.json：缓存指数日K
     # - 用 history 拉更长序列（便于 MA5/MA20 等技术指标在 v3 右侧交易中使用）
     # - 仍保留占位过滤（sf=1 / a<=0 / v<=0）
-    codes_entry = update_index_kline_cache(root=root, client=client, actual_date=actual_date)
+    with _timed_stage("指数日K缓存"):
+        codes_entry = update_index_kline_cache(root=root, client=client, actual_date=actual_date)
     _log("指数日K已缓存 (近120日)")
 
     # height_trend_cache.json：近 7 日高度趋势（只缓存历史日，不缓存当天）
-    build_height_trend_cache(root=root, pools=pools, trade_days=trade_days, actual_date=actual_date)
+    with _timed_stage("高度趋势计算"):
+        build_height_trend_cache(root=root, pools=pools, trade_days=trade_days, actual_date=actual_date)
     _log("高度趋势已计算 (近7日)")
 
     if not _daily_snapshot_limit_enabled():
@@ -825,17 +851,19 @@ def run_fetch_and_rebuild(date: str | None, stock_research_query_tag: str = "") 
             )
             _log(f"同花顺创新高榜单已缓存: {ths_newhigh_path.name}")
         except Exception as e:
-            _log(f"同花顺创新高榜单抓取失败（不影响主流程）: {e}")
+            _log_stage_failed("同花顺创新高榜单抓取", e)
     else:
         _log("每日快照限量模式：跳过同花顺创新高榜单抓取")
 
     # indices（实时）：仅用于 asOf 展示（HH:MM:SS）
-    indices_rt, indices_asof = fetch_indices_realtime(
-        client,
-        codes=[("000001.SH", "上证指数"), ("399001.SZ", "深证成指"), ("399006.SZ", "创业板指")],
-    )
+    with _timed_stage("指数实时行情"):
+        indices_rt, indices_asof = fetch_indices_realtime(
+            client,
+            codes=[("000001.SH", "上证指数"), ("399001.SZ", "深证成指"), ("399006.SZ", "创业板指")],
+        )
     # indices（报告口径）：用指数日K按“收盘价 vs 前收”计算，确保与 actual_date 一致
-    indices_for_report = build_report_indices(actual_date=actual_date, codes_entry=codes_entry)
+    with _timed_stage("报告指数计算"):
+        indices_for_report = build_report_indices(actual_date=actual_date, codes_entry=codes_entry)
 
     # 构造 raw.pools（给 pipeline 使用）
     yest = trade_days[-2] if len(trade_days) >= 2 else ""
@@ -870,74 +898,89 @@ def run_fetch_and_rebuild(date: str | None, stock_research_query_tag: str = "") 
     # === v3 增强：批量个股实时行情（让 v3 输出更“厚”） ===
     quotes_map: dict[str, Any] = {}
     try:
+        quote_stage_start = time.perf_counter()
         codes = collect_core_realtime_quote_codes_for_full_publish(raw_pools)
-        quotes_map = _fetch_realtime_quotes_map(client, codes, limit=len(codes) or None, batch_size=20)
+        batch_size = 20
+        batch_count = (len(codes) + batch_size - 1) // batch_size if codes else 0
+        _log(f"核心个股实时行情请求: codes_count={len(codes)} batch_count={batch_count} scope=ztgc+yest_lbc_ge_2")
+        quotes_map = _fetch_realtime_quotes_map(client, codes, limit=len(codes) or None, batch_size=batch_size)
+        quote_elapsed = time.perf_counter() - quote_stage_start
+        _log(f"阶段耗时 核心个股实时行情: {_fmt_elapsed(quote_elapsed)}")
         attach_quotes_and_features(
             market_data=market_data,
             raw_pools=raw_pools,
             quotes_asof=indices_asof,
             quotes_map=quotes_map,
         )
-        _log(f"个股实时行情已获取 ({len(quotes_map)} 只)")
-    except Exception:
-        pass
+        _log(
+            "个股实时行情已获取 "
+            f"({len(quotes_map)} 只, requested={len(codes)}, batch_count={batch_count}, "
+            f"elapsed_seconds={quote_elapsed:.2f})"
+        )
+    except Exception as e:
+        _log_stage_failed("核心个股实时行情", e)
 
     # features：最小可用版
-    mood_inputs = (market_data.get("features") or {}).get("mood_inputs") or build_mood_inputs(pools=raw_pools, quotes=quotes_map)
-    if not (market_data.get("features") or {}).get("mood_inputs"):
-        market_data["features"]["mood_inputs"] = mood_inputs
-        market_data["features"]["chart_palette"] = default_chart_palette()
+    with _timed_stage("情绪输入计算"):
+        mood_inputs = (market_data.get("features") or {}).get("mood_inputs") or build_mood_inputs(pools=raw_pools, quotes=quotes_map)
+        if not (market_data.get("features") or {}).get("mood_inputs"):
+            market_data["features"]["mood_inputs"] = mood_inputs
+            market_data["features"]["chart_palette"] = default_chart_palette()
 
     # 写 market_data 缓存（供 rebuild/partial 使用）
-    market_path = write_market_data(root=root, market_data=market_data, actual_date=actual_date)
+    with _timed_stage("market_data 写缓存"):
+        market_path = write_market_data(root=root, market_data=market_data, actual_date=actual_date)
     _log(f"market_data 缓存已写入: {market_path.name}")
 
     # 离线重建（pipeline）并渲染 tab-v1
     _log("开始离线重建 pipeline...")
-    rc = run_rebuild(
-        actual_date,
-        allow_network=True,
-        stock_research_query_tag=stock_research_query_tag,
-        refresh_stock_research_backtest=refresh_stock_research_backtest,
-    )
+    with _timed_stage("run_rebuild"):
+        rc = run_rebuild(
+            actual_date,
+            allow_network=True,
+            stock_research_query_tag=stock_research_query_tag,
+            refresh_stock_research_backtest=refresh_stock_research_backtest,
+        )
 
     # 同步生成盯盘快照：每次 fetch 都追加一条盘中切片
     # 注意：run_rebuild 会将完整 market_data（含 volume/plateRankTop10/mood_inputs）写回缓存文件
     # 快照构建需从缓存文件重新读取，确保拿到 rebuild 后的完整数据
     try:
-        append_watch_runtime_slice(
-            root=root,
-            market_path=market_path,
-            fallback_market_data=market_data,
-            fallback_mood_inputs=mood_inputs,
-            log_fn=_log,
-        )
+        with _timed_stage("盯盘切片追加"):
+            append_watch_runtime_slice(
+                root=root,
+                market_path=market_path,
+                fallback_market_data=market_data,
+                fallback_mood_inputs=mood_inputs,
+                log_fn=_log,
+            )
     except Exception as e:
-        print(f"⚠️ 盯盘快照生成失败（不影响主流程）: {e}")
+        _log_stage_failed("盯盘快照生成", e)
 
     # fetch 主流程会在 rebuild 之后继续追加一条最新盯盘切片。
     # 这里需要把“追加后的切片 + 可能复用到的 09:25 实时快照”同步回最终 market_data，
     # 否则后续发布仍可能拿到缺少最新时间节点/误判快照缺失的半成品。
     try:
-        final_market_data = json.loads(market_path.read_text(encoding="utf-8")) if market_path.exists() else {}
-        if isinstance(final_market_data, dict):
-            inject_intraday_snapshots(root=root, date=actual_date, market_data=final_market_data)
-            if refresh_stock_research_backtest:
-                attach_stock_research_backtest(
-                    market_data=final_market_data,
-                    sync_source=True,
-                    query_tag=stock_research_query_tag,
-                    log_fn=lambda msg: _log(f"[final-sync] {msg}"),
-                )
-                _log("最终 market_data 已同步最新盯盘切片/个股回测快照")
-            else:
-                preserved_today_backtest = _same_day_stock_research_backtest(final_market_data, actual_date)
-                if preserved_today_backtest:
-                    final_market_data["stockResearchBacktest"] = preserved_today_backtest
-                _log("最终 market_data 已同步最新盯盘切片，保留同日财富密码快照")
-            market_path.write_text(json.dumps(final_market_data, ensure_ascii=False, indent=2), encoding="utf-8")
+        with _timed_stage("最终 market_data 同步"):
+            final_market_data = json.loads(market_path.read_text(encoding="utf-8")) if market_path.exists() else {}
+            if isinstance(final_market_data, dict):
+                inject_intraday_snapshots(root=root, date=actual_date, market_data=final_market_data)
+                if refresh_stock_research_backtest:
+                    attach_stock_research_backtest(
+                        market_data=final_market_data,
+                        sync_source=True,
+                        query_tag=stock_research_query_tag,
+                        log_fn=lambda msg: _log(f"[final-sync] {msg}"),
+                    )
+                    _log("最终 market_data 已同步最新盯盘切片/个股回测快照")
+                else:
+                    preserved_today_backtest = _same_day_stock_research_backtest(final_market_data, actual_date)
+                    if preserved_today_backtest:
+                        final_market_data["stockResearchBacktest"] = preserved_today_backtest
+                    _log("最终 market_data 已同步最新盯盘切片，保留同日财富密码快照")
+                market_path.write_text(json.dumps(final_market_data, ensure_ascii=False, indent=2), encoding="utf-8")
     except Exception as e:
-        print(f"⚠️ 最终 market_data 同步失败（不影响主流程）: {e}")
+        _log_stage_failed("最终 market_data 同步", e)
 
     return rc
 
@@ -1239,118 +1282,129 @@ def _postprocess_market_data(
 ) -> None:
     if apply_runtime_display:
         try:
-            _apply_realtime_indices_display(market_data)
-            _normalize_indices_display(market_data)
-            _apply_intraday_volume_from_realtime_indices(market_data)
-        except Exception:
-            pass
+            with _timed_stage("运行时指数展示处理", log_prefix=log_prefix):
+                _apply_realtime_indices_display(market_data)
+                _normalize_indices_display(market_data)
+                _apply_intraday_volume_from_realtime_indices(market_data)
+        except Exception as e:
+            _log_stage_failed("运行时指数展示处理", e, log_prefix=log_prefix)
 
     if include_intraday_snapshots:
         try:
-            inject_intraday_snapshots(root=root, date=date, market_data=market_data)
+            with _timed_stage("盘中快照注入", log_prefix=log_prefix):
+                inject_intraday_snapshots(root=root, date=date, market_data=market_data)
             _log(f"{log_prefix}盘中快照已注入 ({len(market_data.get('intradaySnapshots', {}).get('snapshots', []))} 条)")
-        except Exception:
-            pass
+        except Exception as e:
+            _log_stage_failed("盘中快照注入", e, log_prefix=log_prefix)
 
     if normalize_meta:
         try:
-            import datetime as _dt
+            with _timed_stage("meta 归一化", log_prefix=log_prefix):
+                import datetime as _dt
 
-            meta = market_data.get("meta") if isinstance(market_data.get("meta"), dict) else {}
-            if not isinstance(meta, dict):
-                meta = {}
-            asof = meta.get("asOf") if isinstance(meta.get("asOf"), dict) else {}
-            if not isinstance(asof, dict):
-                asof = {}
-            gen_time = _dt.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-            meta.setdefault("generatedAt", gen_time)
-            idx = str(asof.get("indices") or "").strip()
-            if not idx or idx == "00:00:00":
-                asof["indices"] = "收盘"
-            if not str(asof.get("pools") or "").strip():
-                asof["pools"] = "收盘"
-            if not str(asof.get("themes") or "").strip():
-                asof["themes"] = "收盘"
-            meta["asOf"] = asof
-            market_data["meta"] = meta
-        except Exception:
-            pass
+                meta = market_data.get("meta") if isinstance(market_data.get("meta"), dict) else {}
+                if not isinstance(meta, dict):
+                    meta = {}
+                asof = meta.get("asOf") if isinstance(meta.get("asOf"), dict) else {}
+                if not isinstance(asof, dict):
+                    asof = {}
+                gen_time = _dt.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                meta.setdefault("generatedAt", gen_time)
+                idx = str(asof.get("indices") or "").strip()
+                if not idx or idx == "00:00:00":
+                    asof["indices"] = "收盘"
+                if not str(asof.get("pools") or "").strip():
+                    asof["pools"] = "收盘"
+                if not str(asof.get("themes") or "").strip():
+                    asof["themes"] = "收盘"
+                meta["asOf"] = asof
+                market_data["meta"] = meta
+        except Exception as e:
+            _log_stage_failed("meta 归一化", e, log_prefix=log_prefix)
 
     try:
-        inject_mood_history_and_delta(root=root, date=date, market_data=market_data)
+        with _timed_stage("情绪历史趋势/昨日对比", log_prefix=log_prefix):
+            inject_mood_history_and_delta(root=root, date=date, market_data=market_data)
         _log(f"{log_prefix}情绪历史趋势/昨日对比 已注入")
-    except Exception:
-        pass
+    except Exception as e:
+        _log_stage_failed("情绪历史趋势/昨日对比", e, log_prefix=log_prefix)
 
     try:
-        from daily_review.metrics.action_advisor import build_action_advisor
+        with _timed_stage("actionAdvisor", log_prefix=log_prefix):
+            from daily_review.metrics.action_advisor import build_action_advisor
 
-        market_data["actionAdvisor"] = build_action_advisor(market_data=market_data)
+            market_data["actionAdvisor"] = build_action_advisor(market_data=market_data)
         _log(f"{log_prefix}actionAdvisor 已生成")
-    except Exception:
-        pass
+    except Exception as e:
+        _log_stage_failed("actionAdvisor", e, log_prefix=log_prefix)
 
     if preserve_zt_analysis:
         try:
-            apply_preserved_research_snapshot(
+            with _timed_stage("ztAnalysis preserved snapshot", log_prefix=log_prefix):
+                apply_preserved_research_snapshot(
+                    root=root,
+                    current_date=date,
+                    market_data=market_data,
+                    log_fn=lambda msg: _log(f"{log_prefix}{msg}"),
+                )
+        except Exception as e:
+            _log_stage_failed("ztAnalysis preserved snapshot", e, log_prefix=log_prefix)
+
+    try:
+        with _timed_stage("ztAnalysis", log_prefix=log_prefix):
+            apply_zt_analysis(
                 root=root,
                 current_date=date,
                 market_data=market_data,
+                preserve_zt_analysis=preserve_zt_analysis,
                 log_fn=lambda msg: _log(f"{log_prefix}{msg}"),
             )
-        except Exception:
-            pass
-
-    try:
-        apply_zt_analysis(
-            root=root,
-            current_date=date,
-            market_data=market_data,
-            preserve_zt_analysis=preserve_zt_analysis,
-            log_fn=lambda msg: _log(f"{log_prefix}{msg}"),
-        )
-    except Exception:
-        pass
+    except Exception as e:
+        _log_stage_failed("ztAnalysis", e, log_prefix=log_prefix)
 
     if refresh_stock_research_backtest:
         try:
-            attach_stock_research_backtest(
-                market_data=market_data,
-                sync_source=sync_stock_research_source,
-                query_tag=stock_research_query_tag,
-                log_fn=lambda msg: _log(f"{log_prefix}{msg}"),
-            )
-        except Exception:
-            pass
+            with _timed_stage("stockResearchBacktest", log_prefix=log_prefix):
+                attach_stock_research_backtest(
+                    market_data=market_data,
+                    sync_source=sync_stock_research_source,
+                    query_tag=stock_research_query_tag,
+                    log_fn=lambda msg: _log(f"{log_prefix}{msg}"),
+                )
+        except Exception as e:
+            _log_stage_failed("stockResearchBacktest", e, log_prefix=log_prefix)
 
     try:
-        from daily_review.render.render_html import build_market_overview_7d, build_sentiment_explain_dims
+        with _timed_stage("marketOverview7d/sentimentExplainDims", log_prefix=log_prefix):
+            from daily_review.render.render_html import build_market_overview_7d, build_sentiment_explain_dims
 
-        market_data["marketOverview7d"] = build_market_overview_7d(market_data=market_data)
-        market_data["sentimentExplainDims"] = build_sentiment_explain_dims(market_data=market_data)
+            market_data["marketOverview7d"] = build_market_overview_7d(market_data=market_data)
+            market_data["sentimentExplainDims"] = build_sentiment_explain_dims(market_data=market_data)
         _log(f"{log_prefix}marketOverview7d / sentimentExplainDims 已生成")
-    except Exception:
-        pass
+    except Exception as e:
+        _log_stage_failed("marketOverview7d/sentimentExplainDims", e, log_prefix=log_prefix)
 
     if include_prd_v2:
         try:
-            if allow_network and not prd_v2_allow_network:
-                _log(f"{log_prefix}PRD v2 二次联网已禁用，仅读取本地缓存")
-            _inject_prd_v2_metrics(
-                root=root,
-                date=date,
-                market_data=market_data,
-                allow_network=prd_v2_allow_network,
-            )
+            with _timed_stage("PRD v2", log_prefix=log_prefix):
+                if allow_network and not prd_v2_allow_network:
+                    _log(f"{log_prefix}PRD v2 二次联网已禁用，仅读取本地缓存")
+                _inject_prd_v2_metrics(
+                    root=root,
+                    date=date,
+                    market_data=market_data,
+                    allow_network=prd_v2_allow_network,
+                )
             _log(f"{log_prefix}PRD v2 指标已注入 (sectorHeatmap/threeQuadrants)")
-        except Exception:
-            pass
+        except Exception as e:
+            _log_stage_failed("PRD v2", e, log_prefix=log_prefix)
 
     try:
-        _prune_frontend_unused_fields(market_data)
+        with _timed_stage("前端冗余字段清理", log_prefix=log_prefix):
+            _prune_frontend_unused_fields(market_data)
         _log(f"{log_prefix}前端冗余字段已清理")
-    except Exception:
-        pass
+    except Exception as e:
+        _log_stage_failed("前端冗余字段清理", e, log_prefix=log_prefix)
 
 
 def run_rebuild(

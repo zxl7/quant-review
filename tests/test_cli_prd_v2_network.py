@@ -226,6 +226,67 @@ class RunFetchAndRebuildDailySnapshotLimitTest(unittest.TestCase):
         self.assertEqual(mock_quotes.call_args.args[1], ["000001", "000002", "000004"])
         self.assertEqual(mock_quotes.call_args.kwargs["limit"], 3)
 
+    def test_run_fetch_and_rebuild_logs_core_quote_scope_and_elapsed_seconds(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            cache_dir = root / "cache"
+            cache_dir.mkdir()
+            market_path = cache_dir / "market_data-20260623.json"
+            fake_cfg = SimpleNamespace(base_url="https://example.test", token="token")
+            fake_client = object()
+            raw_pools = {
+                "ztgc": [{"dm": "000001", "lbc": 1}, {"dm": "000002", "lbc": 2}],
+                "yest_ztgc": [{"dm": "000003", "lbc": 2}, {"dm": "000004", "lbc": 1}],
+            }
+            logs: list[str] = []
+
+            def fake_write_market_data(*, root: Path, market_data: dict, actual_date: str, suffix: str = "") -> Path:
+                market_path.write_text(json.dumps(market_data, ensure_ascii=False, indent=2), encoding="utf-8")
+                return market_path
+
+            with ExitStack() as stack:
+                stack.enter_context(patch.object(cli, "_workspace_root", return_value=root))
+                stack.enter_context(patch.object(cli, "load_config_from_env", return_value=fake_cfg))
+                stack.enter_context(patch("daily_review.http.HttpClient", return_value=fake_client))
+                stack.enter_context(patch.object(cli, "resolve_trade_date", return_value=("2026-06-23", "trade_day")))
+                stack.enter_context(
+                    patch.object(
+                        cli,
+                        "_resolve_trade_days_with_local_fallback",
+                        return_value=["2026-06-19", "2026-06-22", "2026-06-23"],
+                    )
+                )
+                stack.enter_context(patch.object(cli, "_fetch_pool_with_cache_fallback", return_value=[]))
+                stack.enter_context(patch.object(cli, "update_theme_cache", return_value={}))
+                stack.enter_context(patch.object(cli, "build_theme_trend_cache", return_value={}))
+                stack.enter_context(patch.object(cli, "_save_abnormal_event_history_sample"))
+                stack.enter_context(patch.object(cli, "update_index_kline_cache", return_value={}))
+                stack.enter_context(patch.object(cli, "build_height_trend_cache"))
+                stack.enter_context(patch.object(cli, "save_newhigh_snapshot"))
+                stack.enter_context(patch.object(cli, "fetch_indices_realtime", return_value=([], "14:00:00")))
+                stack.enter_context(patch.object(cli, "build_report_indices", return_value=[]))
+                stack.enter_context(patch.object(cli, "build_raw_pools", return_value=raw_pools))
+                stack.enter_context(
+                    patch.object(cli, "build_base_market_data", return_value={"date": "2026-06-23", "features": {}, "raw": {}})
+                )
+                stack.enter_context(
+                    patch.object(cli, "_fetch_realtime_quotes_map", return_value={"000001": {"dm": "000001"}})
+                )
+                stack.enter_context(patch.object(cli, "attach_quotes_and_features"))
+                stack.enter_context(patch.object(cli, "write_market_data", side_effect=fake_write_market_data))
+                stack.enter_context(patch.object(cli, "run_rebuild", return_value=0))
+                stack.enter_context(patch.object(cli, "append_watch_runtime_slice"))
+                stack.enter_context(patch.object(cli, "inject_intraday_snapshots"))
+                stack.enter_context(patch.object(cli, "attach_stock_research_backtest"))
+                stack.enter_context(patch.object(cli.time, "sleep"))
+                stack.enter_context(patch.object(cli, "_log", side_effect=logs.append))
+                rc = cli.run_fetch_and_rebuild("2026-06-23")
+
+        self.assertEqual(rc, 0)
+        joined = "\n".join(logs)
+        self.assertIn("核心个股实时行情请求: codes_count=3 batch_count=1 scope=ztgc+yest_lbc_ge_2", joined)
+        self.assertIn("个股实时行情已获取 (1 只, requested=3, batch_count=1, elapsed_seconds=", joined)
+
     def test_disable_stock_research_refresh_skips_attach_and_preserves_same_day_snapshot(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
