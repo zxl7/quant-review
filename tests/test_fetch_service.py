@@ -30,6 +30,7 @@ class UpdateIndexKlineCacheTest(unittest.TestCase):
         for _, st, et in calls:
             self.assertEqual(st, "20260603")
             self.assertEqual(et, "20260623")
+        self.assertEqual({code for code, _, _ in calls}, {"000001.SH", "399001.SZ", "399006.SZ"})
 
     def test_update_index_kline_cache_skips_malformed_numeric_rows(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

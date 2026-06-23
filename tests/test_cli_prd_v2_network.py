@@ -240,7 +240,8 @@ class RunFetchAndRebuildDailySnapshotLimitTest(unittest.TestCase):
                 rc = cli.run_fetch_and_rebuild("2026-06-23")
 
         self.assertEqual(rc, 0)
-        self.assertIn((30, 2), created_clients)
+        self.assertGreaterEqual(created_clients.count((30, 2)), 1)
+        self.assertIn((5, 0), created_clients)
         self.assertIn((10, 0), created_clients)
         pool_client = mock_fetch_pool.call_args_list[0].args[0]
         self.assertEqual((pool_client.timeout, pool_client.retries), (10, 0))

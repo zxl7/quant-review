@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import json
+import os
 import tempfile
 import unittest
 from datetime import datetime as real_datetime
@@ -1059,6 +1060,27 @@ class PicksAdvisorStabilityTest(unittest.TestCase):
 
 
 class StockResearchBacktestPublishFreshnessTest(unittest.TestCase):
+    def test_attach_stock_research_backtest_disables_history_fetch_by_default(self) -> None:
+        from daily_review.application import stock_research_service as service
+
+        market_data = {"date": "2026-06-23"}
+
+        def fake_build_stock_research_backtest_payload(**kwargs):
+            self.assertEqual(os.environ.get("QR_DISABLE_STOCK_RESEARCH_HISTORY_FETCH"), "1")
+            self.assertFalse(kwargs["sync_source_from_market_data"])
+            return {"meta": {"date": "2026-06-23"}}
+
+        with patch("scripts.build_stock_research_backtest.build_stock_research_backtest_payload", side_effect=fake_build_stock_research_backtest_payload):
+            service.attach_stock_research_backtest(
+                market_data=market_data,
+                sync_source=False,
+                query_tag="",
+                log_fn=None,
+            )
+
+        self.assertEqual(market_data["stockResearchBacktest"]["meta"], {"date": "2026-06-23"})
+        self.assertIsNone(os.environ.get("QR_DISABLE_STOCK_RESEARCH_HISTORY_FETCH"))
+
     def test_history_fetch_can_be_disabled_for_publish_path(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 from typing import Any
 
@@ -119,7 +120,9 @@ def update_index_kline_cache(*, root: Path, client, actual_date: str) -> dict[st
 
     import datetime as _dt
 
-    for code in ("000001.SH", "399001.SZ", "399006.SZ"):
+    codes = ("000001.SH", "399001.SZ", "399006.SZ")
+
+    def _fetch_one(code: str) -> tuple[str, list[dict[str, Any]] | None]:
         end_date = actual_date.replace("-", "")
         start_date = (
             _dt.datetime.strptime(actual_date, "%Y-%m-%d") - _dt.timedelta(days=INDEX_KLINE_LOOKBACK_DAYS)
@@ -138,16 +141,28 @@ def update_index_kline_cache(*, root: Path, client, actual_date: str) -> dict[st
                     continue
                 cleaned.append(item)
             if cleaned:
-                codes_entry[code] = {"as_of": actual_date, "items": cleaned[-INDEX_KLINE_MAX_ITEMS:]}
-                continue
+                return code, cleaned[-INDEX_KLINE_MAX_ITEMS:]
         except Exception:
-            pass
+            return code, None
+        return code, None
 
-        cached = existing_codes_entry.get(code)
-        if isinstance(cached, dict):
-            codes_entry[code] = cached
-        else:
-            codes_entry[code] = {"as_of": actual_date, "items": []}
+    with ThreadPoolExecutor(max_workers=len(codes)) as executor:
+        future_map = {executor.submit(_fetch_one, code): code for code in codes}
+        for future in as_completed(future_map):
+            code = future_map[future]
+            try:
+                resolved_code, cleaned = future.result()
+            except Exception:
+                resolved_code, cleaned = code, None
+            if cleaned:
+                codes_entry[resolved_code] = {"as_of": actual_date, "items": cleaned}
+                continue
+
+            cached = existing_codes_entry.get(resolved_code)
+            if isinstance(cached, dict):
+                codes_entry[resolved_code] = cached
+            else:
+                codes_entry[resolved_code] = {"as_of": actual_date, "items": []}
 
     write_json(index_k_path, {"version": 1, "codes": codes_entry})
     return codes_entry

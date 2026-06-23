@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import os
 from pathlib import Path
 from typing import Callable
 
@@ -180,10 +181,17 @@ def attach_stock_research_backtest(
         from scripts.build_stock_research_backtest import sync_stock_research_backtest_source
 
         sync_stock_research_backtest_source(market_data=market_data)
-    market_data["stockResearchBacktest"] = build_stock_research_backtest_payload(
-        current_market_data=market_data,
-        query_tag=query_tag,
-        sync_source_from_market_data=False,
-    )
+    previous_disable_history_fetch = os.environ.get("QR_DISABLE_STOCK_RESEARCH_HISTORY_FETCH")
+    if previous_disable_history_fetch is None:
+        os.environ["QR_DISABLE_STOCK_RESEARCH_HISTORY_FETCH"] = "1"
+    try:
+        market_data["stockResearchBacktest"] = build_stock_research_backtest_payload(
+            current_market_data=market_data,
+            query_tag=query_tag,
+            sync_source_from_market_data=False,
+        )
+    finally:
+        if previous_disable_history_fetch is None:
+            os.environ.pop("QR_DISABLE_STOCK_RESEARCH_HISTORY_FETCH", None)
     if log_fn:
         log_fn(f"stockResearchBacktest 已按个股研究推送历史源派生{f' (tag={query_tag})' if query_tag else ''}")

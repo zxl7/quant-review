@@ -798,6 +798,7 @@ def run_fetch_and_rebuild(date: str | None, stock_research_query_tag: str = "") 
     from daily_review.http import HttpClient
 
     client = HttpClient(base_url=cfg.base_url, token=cfg.token, timeout=30)
+    indices_rt_client = HttpClient(base_url=cfg.base_url, token=cfg.token, timeout=5, retries=0)
     trade_date_client = HttpClient(base_url=cfg.base_url, token=cfg.token, timeout=5, retries=0)
     pools_client = HttpClient(base_url=cfg.base_url, token=cfg.token, timeout=10, retries=0)
     index_k_client = HttpClient(base_url=cfg.base_url, token=cfg.token, timeout=5, retries=0)
@@ -972,7 +973,7 @@ def run_fetch_and_rebuild(date: str | None, stock_research_query_tag: str = "") 
     # indices（实时）：仅用于 asOf 展示（HH:MM:SS）
     with _timed_stage("指数实时行情"):
         indices_rt, indices_asof = fetch_indices_realtime(
-            client,
+            indices_rt_client,
             codes=[("000001.SH", "上证指数"), ("399001.SZ", "深证成指"), ("399006.SZ", "创业板指")],
         )
     # indices（报告口径）：用指数日K按“收盘价 vs 前收”计算，确保与 actual_date 一致
