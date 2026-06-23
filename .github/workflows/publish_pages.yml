@@ -66,7 +66,7 @@ env:
 jobs:
   build:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 30
     outputs:
       skip: ${{ steps.timecheck.outputs.skip }}
     steps:
@@ -132,6 +132,7 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p cache
+          mkdir -p cache_online
           mkdir -p site_prev/cache
           # 把 gh-pages 中沉淀的历史 cache 拉回工作区，供“趋势/分位”计算使用
           cp -f site_prev/cache/market_data-*.json cache/ 2>/dev/null || true
@@ -151,6 +152,8 @@ jobs:
           cp -f site_prev/cache/stock_research_realtime_quotes-*.json cache/ 2>/dev/null || true
           cp -f site_prev/cache/intraday_slices-*.json cache/ 2>/dev/null || true
           cp -f site_prev/cache/intraday_snapshots-*.json cache/ 2>/dev/null || true
+          # 个股回测价格历史缓存实际读取自 cache_online/，需要从 gh-pages 恢复以避免每次冷启动重拉历史 K 线。
+          cp -f site_prev/cache/recommendation_price_history.json cache_online/ 2>/dev/null || true
 
           # 本地 cache 只保留最近 7 个交易日（按文件名 YYYYMMDD 排序）
           files=( $(ls -1 cache/market_data-*.json 2>/dev/null | sort || true) )
@@ -476,7 +479,7 @@ jobs:
 
       - name: Generate latest report (online fetch -> offline pipeline rebuild)
         if: ${{ (github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true') && steps.warmup.outputs.skip != 'true' && (github.event_name != 'schedule' || steps.tradeday.outputs.is_trade_today == 'true') && steps.pushmode.outputs.mode != 'intraday' }}
-        timeout-minutes: 12
+        timeout-minutes: 20
         env:
           BIYING_TOKEN: ${{ secrets.BIYING_TOKEN }}
           BIYING_BASE_URL: ${{ secrets.BIYING_BASE_URL }}
@@ -809,6 +812,7 @@ jobs:
           cp -f cache/money_flow_cache.json site_prev/cache/ 2>/dev/null || true
           cp -f cache/trade_days_cache.json site_prev/cache/ 2>/dev/null || true
           cp -f cache/stock_research_backtest_source.json site_prev/cache/ 2>/dev/null || true
+          cp -f cache_online/recommendation_price_history.json site_prev/cache/ 2>/dev/null || true
           if [ -f data/account_nav_history.jsonl ]; then
             cp -f data/account_nav_history.jsonl site_prev/cache/account_nav_history.jsonl
           elif [ -f cache/account_nav_history.jsonl ]; then
