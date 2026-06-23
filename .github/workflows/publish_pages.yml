@@ -489,7 +489,6 @@ jobs:
           QR_DISABLE_PRD_V2_NETWORK: "1"
           QR_DISABLE_STOCK_RESEARCH_HISTORY_FETCH: "1"
           QR_SKIP_WEB_BUILD: "1"
-          QR_LIMIT_DAILY_SNAPSHOT: ${{ github.event_name == 'schedule' && '1' || '' }}
         run: |
           set -euo pipefail
           mode="${{ steps.pushmode.outputs.mode }}"
@@ -677,13 +676,7 @@ jobs:
         if: ${{ (github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true') && steps.warmup.outputs.skip != 'true' && (github.event_name != 'schedule' || steps.tradeday.outputs.is_trade_today == 'true') && steps.pushmode.outputs.mode != 'intraday' }}
         run: |
           set -euo pipefail
-          if [ "${{ github.event_name }}" = "schedule" ] && [ -f "./site_prev/index.html" ]; then
-            mkdir -p ./web/dist
-            cp -f ./site_prev/index.html ./web/dist/index.html
-            echo "Schedule event: reuse published index.html shell to avoid extra Vite build"
-          else
-            cd web && npm run build
-          fi
+          cd web && npm run build
 
       - name: Inject market data into Vue3 HTML
         if: ${{ (github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true') && steps.warmup.outputs.skip != 'true' && (github.event_name != 'schedule' || steps.tradeday.outputs.is_trade_today == 'true') && steps.pushmode.outputs.mode != 'intraday' }}

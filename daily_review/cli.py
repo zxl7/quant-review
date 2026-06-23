@@ -814,32 +814,29 @@ def run_fetch_and_rebuild(date: str | None, stock_research_query_tag: str = "") 
 
     # === v3 增强：批量个股实时行情（让 v3 输出更“厚”） ===
     quotes_map: dict[str, Any] = {}
-    if not _daily_snapshot_limit_enabled():
-        try:
-            codes = []
-            for arr in (raw_pools.get("ztgc") or [], raw_pools.get("qsgc") or [], raw_pools.get("zbgc") or [], raw_pools.get("dtgc") or []):
-                if not isinstance(arr, list):
+    try:
+        codes = []
+        for arr in (raw_pools.get("ztgc") or [], raw_pools.get("qsgc") or [], raw_pools.get("zbgc") or [], raw_pools.get("dtgc") or []):
+            if not isinstance(arr, list):
+                continue
+            for s in arr[:80]:
+                if not isinstance(s, dict):
                     continue
-                for s in arr[:80]:
-                    if not isinstance(s, dict):
-                        continue
-                    code6 = normalize_stock_code(str(s.get("dm") or s.get("code") or ""))
-                    if code6:
-                        codes.append(code6)
-            preserved_research = load_latest_valid_research_snapshot(root=root, current_date=actual_date)
-            codes.extend(collect_research_codes_from_snapshot(preserved_research))
-            quotes_map = _fetch_realtime_quotes_map(client, codes, limit=220, batch_size=20)
-            attach_quotes_and_features(
-                market_data=market_data,
-                raw_pools=raw_pools,
-                quotes_asof=indices_asof,
-                quotes_map=quotes_map,
-            )
-            _log(f"个股实时行情已获取 ({len(quotes_map)} 只)")
-        except Exception:
-            pass
-    else:
-        _log("每日快照限量模式：跳过批量个股实时行情补抓")
+                code6 = normalize_stock_code(str(s.get("dm") or s.get("code") or ""))
+                if code6:
+                    codes.append(code6)
+        preserved_research = load_latest_valid_research_snapshot(root=root, current_date=actual_date)
+        codes.extend(collect_research_codes_from_snapshot(preserved_research))
+        quotes_map = _fetch_realtime_quotes_map(client, codes, limit=220, batch_size=20)
+        attach_quotes_and_features(
+            market_data=market_data,
+            raw_pools=raw_pools,
+            quotes_asof=indices_asof,
+            quotes_map=quotes_map,
+        )
+        _log(f"个股实时行情已获取 ({len(quotes_map)} 只)")
+    except Exception:
+        pass
 
     # features：最小可用版
     mood_inputs = (market_data.get("features") or {}).get("mood_inputs") or build_mood_inputs(pools=raw_pools, quotes=quotes_map)
@@ -876,16 +873,13 @@ def run_fetch_and_rebuild(date: str | None, stock_research_query_tag: str = "") 
         final_market_data = json.loads(market_path.read_text(encoding="utf-8")) if market_path.exists() else {}
         if isinstance(final_market_data, dict):
             inject_intraday_snapshots(root=root, date=actual_date, market_data=final_market_data)
-            if not _daily_snapshot_limit_enabled():
-                attach_stock_research_backtest(
-                    market_data=final_market_data,
-                    sync_source=True,
-                    query_tag=stock_research_query_tag,
-                    log_fn=lambda msg: _log(f"[final-sync] {msg}"),
-                )
-                _log("最终 market_data 已同步最新盯盘切片/个股回测快照")
-            else:
-                _log("每日快照限量模式：最终 market_data 仅同步最新盯盘切片")
+            attach_stock_research_backtest(
+                market_data=final_market_data,
+                sync_source=True,
+                query_tag=stock_research_query_tag,
+                log_fn=lambda msg: _log(f"[final-sync] {msg}"),
+            )
+            _log("最终 market_data 已同步最新盯盘切片/个股回测快照")
             market_path.write_text(json.dumps(final_market_data, ensure_ascii=False, indent=2), encoding="utf-8")
     except Exception as e:
         print(f"⚠️ 最终 market_data 同步失败（不影响主流程）: {e}")
