@@ -12,7 +12,6 @@ CLI 入口。
 from __future__ import annotations
 
 import argparse
-from concurrent.futures import ThreadPoolExecutor, as_completed
 import json
 import os
 import time
@@ -717,15 +716,17 @@ def _fetch_pool_with_cache_fallback(
     """
     线上接口偶发 5xx/超时，不能让整条 workflow 因单个池子失败直接中断。
     """
+    started = time.perf_counter()
     try:
         rows = fetch_pool(client, pool_name=pool_name, date=date)
         if isinstance(rows, list):
             return rows
     except Exception as e:
+        elapsed = _fmt_elapsed(time.perf_counter() - started)
         if isinstance(e, urllib.error.HTTPError):
-            _log(f"⚠️ {pool_name}@{date} 在线抓取失败: HTTP {e.code}，尝试使用缓存兜底")
+            _log(f"⚠️ {pool_name}@{date} 在线抓取失败: HTTP {e.code} elapsed={elapsed}，尝试使用缓存兜底")
         else:
-            _log(f"⚠️ {pool_name}@{date} 在线抓取失败: {e}，尝试使用缓存兜底")
+            _log(f"⚠️ {pool_name}@{date} 在线抓取失败: {type(e).__name__}: {e} elapsed={elapsed}，尝试使用缓存兜底")
 
     pool_cache = pools.get(pool_name) if isinstance(pools.get(pool_name), dict) else {}
     same_day = pool_cache.get(date) if isinstance(pool_cache, dict) else None
@@ -749,7 +750,8 @@ def _refresh_pools_for_date(
     pools: dict[str, Any],
     prev_days: list[str],
 ) -> dict[str, list[dict]]:
-    def _fetch_one(pool_name: str) -> tuple[str, list[dict]]:
+    results: dict[str, list[dict]] = {}
+    for idx, pool_name in enumerate(pool_names):
         rows = _fetch_pool_with_cache_fallback(
             client,
             pool_name=pool_name,
@@ -757,20 +759,10 @@ def _refresh_pools_for_date(
             pools=pools,
             fallback_dates=prev_days,
         )
-        return pool_name, rows
-
-    results: dict[str, list[dict]] = {}
-    max_workers = max(1, min(len(pool_names), 4))
-    with ThreadPoolExecutor(max_workers=max_workers) as executor:
-        future_map = {executor.submit(_fetch_one, pool_name): pool_name for pool_name in pool_names}
-        for future in as_completed(future_map):
-            pool_name = future_map[future]
-            try:
-                resolved_name, rows = future.result()
-            except Exception as e:
-                _log(f"⚠️ {pool_name}@{actual_date} 并发抓取失败: {e}，回退空结果")
-                resolved_name, rows = pool_name, []
-            results[resolved_name] = rows if isinstance(rows, list) else []
+        results[pool_name] = rows if isinstance(rows, list) else []
+        if idx < len(pool_names) - 1:
+            _log(f"↪ {pool_name}@{actual_date} 请求完成，等待 2s 后继续下一个池")
+            time.sleep(2)
     return results
 
 

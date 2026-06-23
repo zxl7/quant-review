@@ -49,14 +49,16 @@
 - `cache_online/eastmoney_theme_stocks-20260616.json`：保留最近 7 天 eastmoney theme stocks 缓存
 - `cache_online/eastmoney_theme_stocks-20260617.json`：保留最近 7 天 eastmoney theme stocks 缓存
 - `cache_online/eastmoney_theme_stocks-20260622.json`：保留最近 7 天 eastmoney theme stocks 缓存
+- `cache_online/eastmoney_theme_stocks-20260623.json`：保留最近 7 天 eastmoney theme stocks 缓存
 - `cache_online/eastmoney_tomorrow_themes-20260610.json`：保留最近 7 天 eastmoney tomorrow themes 缓存
 - `cache_online/eastmoney_tomorrow_themes-20260611.json`：保留最近 7 天 eastmoney tomorrow themes 缓存
 - `cache_online/eastmoney_tomorrow_themes-20260612.json`：保留最近 7 天 eastmoney tomorrow themes 缓存
 - `cache_online/eastmoney_tomorrow_themes-20260616.json`：保留最近 7 天 eastmoney tomorrow themes 缓存
 - `cache_online/eastmoney_tomorrow_themes-20260617.json`：保留最近 7 天 eastmoney tomorrow themes 缓存
 - `cache_online/eastmoney_tomorrow_themes-20260622.json`：保留最近 7 天 eastmoney tomorrow themes 缓存
+- `cache_online/eastmoney_tomorrow_themes-20260623.json`：保留最近 7 天 eastmoney tomorrow themes 缓存
 - `cache_online/manifest.json`：线上同步 manifest，会覆盖更新
-- `cache_online/market_data-20260622.json`：未知文件，保守保留
+- `cache_online/market_data-20260623.json`：未知文件，保守保留
 - `cache_online/plate_rotate_cache.json`：线上/本地复用的轮动缓存
 - `cache_online/pools_cache.json`：线上/本地复用的三池缓存
 - `cache_online/recommendation_price_history.json`：价格历史缓存文件保留，但内部会裁到最近 7 个交易日
@@ -73,18 +75,21 @@
 - `cache_online/watchlist_cache-20260616.json`：保留最近 7 天 watchlist cache 缓存
 - `cache_online/watchlist_cache-20260617.json`：保留最近 7 天 watchlist cache 缓存
 - `cache_online/watchlist_cache-20260622.json`：保留最近 7 天 watchlist cache 缓存
+- `cache_online/watchlist_cache-20260623.json`：保留最近 7 天 watchlist cache 缓存
 - `cache_online/xuangubao_abnormal-20260610.json`：保留最近 7 天 xuangubao abnormal 缓存
 - `cache_online/xuangubao_abnormal-20260611.json`：保留最近 7 天 xuangubao abnormal 缓存
 - `cache_online/xuangubao_abnormal-20260612.json`：保留最近 7 天 xuangubao abnormal 缓存
 - `cache_online/xuangubao_abnormal-20260616.json`：保留最近 7 天 xuangubao abnormal 缓存
 - `cache_online/xuangubao_abnormal-20260617.json`：保留最近 7 天 xuangubao abnormal 缓存
 - `cache_online/xuangubao_abnormal-20260622.json`：保留最近 7 天 xuangubao abnormal 缓存
+- `cache_online/xuangubao_abnormal-20260623.json`：保留最近 7 天 xuangubao abnormal 缓存
 - `cache_online/xuangubao_surge_plates-20260610.json`：保留最近 7 天 xuangubao surge plates 缓存
 - `cache_online/xuangubao_surge_plates-20260611.json`：保留最近 7 天 xuangubao surge plates 缓存
 - `cache_online/xuangubao_surge_plates-20260612.json`：保留最近 7 天 xuangubao surge plates 缓存
 - `cache_online/xuangubao_surge_plates-20260616.json`：保留最近 7 天 xuangubao surge plates 缓存
 - `cache_online/xuangubao_surge_plates-20260617.json`：保留最近 7 天 xuangubao surge plates 缓存
 - `cache_online/xuangubao_surge_plates-20260622.json`：保留最近 7 天 xuangubao surge plates 缓存
+- `cache_online/xuangubao_surge_plates-20260623.json`：保留最近 7 天 xuangubao surge plates 缓存
 - `daily_review/output/tonghuashun/sync-2026-06-11.txt`：保留最近 7 天同花顺同步输出
 - `daily_review/output/tonghuashun/sync-2026-06-12.txt`：保留最近 7 天同花顺同步输出
 - `daily_review/output/tonghuashun/sync-2026-06-16.txt`：保留最近 7 天同花顺同步输出

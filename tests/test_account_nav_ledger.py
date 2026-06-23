@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import json
+import os
 import tempfile
 import unittest
 from pathlib import Path
@@ -42,6 +43,24 @@ def _covered_row(*, code: str, name: str, recommendation_date: str, trade_date: 
 
 
 class AccountNavLedgerTest(unittest.TestCase):
+    def test_build_account_nav_ledger_disables_history_fetch_by_default(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            data_path = root / "data" / "account_nav_history.jsonl"
+            cache_path = root / "cache" / "account_nav_history.jsonl"
+
+            def fake_payload_builder() -> dict:
+                self.assertEqual(os.environ.get("QR_DISABLE_STOCK_RESEARCH_HISTORY_FETCH"), "1")
+                return _payload([])
+
+            with patch.object(ledger, "LEDGER_PATH", data_path), patch.object(
+                ledger, "CACHE_LEDGER_PATH", cache_path
+            ), patch("scripts.build_stock_research_backtest.build_stock_research_backtest_payload", side_effect=fake_payload_builder):
+                rows = ledger.build_account_nav_ledger()
+
+        self.assertEqual(rows, [])
+        self.assertIsNone(os.environ.get("QR_DISABLE_STOCK_RESEARCH_HISTORY_FETCH"))
+
     def test_keeps_existing_history_when_payload_window_is_short(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)

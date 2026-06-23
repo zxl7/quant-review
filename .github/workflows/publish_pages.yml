@@ -24,10 +24,11 @@ on:
         required: false
         default: ""
         type: string
-  # 工作日北京时间 09:26-15:00 前执行盘中任务，并在 17:00 固定补一次收盘版发布：
-  # - 09:26：直接执行一次正式 fetch，若当天快照缺失则补 fore（只补一次）
-  # - 09:35-11:30 / 13:00-14:59：每 5 分钟心跳一次
-  # - 15:00 之后不再定时执行盘中快照；仅保留 17:00 一次收盘版定时发布
+  # 工作日北京时间固定保留 3 条自动链路：
+  # - 09:25：独立 prefetch 预抓竞价快照（见 prefetch_stock_research_quotes.yml）
+  # - 09:26：早盘主链执行一次正式 fetch，若当天快照缺失则补 fore（只补一次）
+  # - 09:35-11:30 / 13:00-14:59：仅执行盘中轻量任务快照（runtime/slices）
+  # - 17:00：执行收盘版全量复盘发布
   schedule:
     - cron: "26 1 * * 1-5"
     - cron: "35-55/5 1 * * 1-5"
@@ -47,7 +48,7 @@ permissions:
   contents: write
 
 concurrency:
-  # schedule 按 cron 通道分流，避免 09:26/open 或收盘重任务把 5 分钟盘中快照队列堵住。
+  # schedule 按 cron 通道分流，避免 09:26/open、盘中轻量快照或收盘重任务互相堵住。
   # push 与 workflow_dispatch 分通道串行：
   # - 各自通道内仍按分支串行，避免同一来源的重复发布互相覆盖；
   # - 手动触发不再和同分支 push 共用一个等待队列，避免 queued run 被“更高优先级等待项”顶掉。
@@ -523,7 +524,7 @@ jobs:
           } >> "$GITHUB_OUTPUT"
           echo "Final stock research strategy: refresh_backtest=${refresh_backtest} validate_snapshot=${validate_snapshot} query_tag=${effective_query_tag:-<none>} reason=${resolution_reason}"
 
-      - name: Generate latest report (online fetch -> offline pipeline rebuild)
+      - name: Generate latest full report (online fetch -> offline pipeline rebuild)
         if: ${{ (github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true') && steps.warmup.outputs.skip != 'true' && (github.event_name != 'schedule' || steps.tradeday.outputs.is_trade_today == 'true') && steps.pushmode.outputs.mode != 'intraday' && github.event_name != 'push' }}
         timeout-minutes: 20
         env:
@@ -556,10 +557,7 @@ jobs:
           echo "Prefetched snapshot hit=${{ steps.stockresearchfinal.outputs.prefetched_found || 'false' }} as_of=${{ steps.stockresearchfinal.outputs.prefetched_as_of || '' }} source=${{ steps.stockresearchfinal.outputs.prefetched_source || '' }}"
           echo "Final stock_research_query_tag=${query_tag:-<none>} reason=${{ steps.stockresearchfinal.outputs.resolution_reason || '' }}"
           run_date="${{ steps.pushmode.outputs.date10 }}"
-          if [ "${mode}" = "intraday" ]; then
-            # 盘中：只跑轻量 intraday，刷新实时情绪/快照；明日接力/观察保留上一份收盘推演。
-            PRESERVE_ZT_ANALYSIS=1 PYTHONPATH=. python3 -u -m daily_review.cli --mode intraday --date "${run_date}"
-          elif [ "${event_name}" = "push" ]; then
+          if [ "${event_name}" = "push" ]; then
             echo "Push event: prefer offline rebuild from restored cache"
             PYTHONPATH=. python3 -u -m daily_review.cli --date "${run_date}" --rebuild
           else
@@ -591,9 +589,6 @@ jobs:
               print('No resonance events detected')
           PY
           expected_cache="cache/market_data-${expected_d8}.json"
-          if [ "${mode}" = "intraday" ]; then
-            expected_cache="cache/market_data-${expected_d8}-intraday.json"
-          fi
           if [ ! -f "${expected_cache}" ]; then
             echo "Expected fresh cache not found: ${expected_cache}"
             ls -la cache || true
@@ -623,7 +618,7 @@ jobs:
           print("fresh_watch_names=", [x.get("name") for x in watch[:8] if isinstance(x, dict)])
           print("fresh_relay_diagnostics=", diag)
           if not relay and watch:
-              print("WARNING: ztAnalysis relay empty while watch exists; publish continues because an empty relay pool can be valid intraday.")
+              print("WARNING: ztAnalysis relay empty while watch exists; publish continues because an empty relay pool can be valid in the latest full cache.")
           PY
 
       - name: Post-fetch cache sync and derived data
@@ -643,7 +638,7 @@ jobs:
             echo "Push event: skip heavy derived rebuilds and reuse restored caches"
           fi
 
-      - name: Generate intraday runtime only
+      - name: Generate intraday lightweight runtime snapshot only
         if: ${{ (github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true') && steps.pushmode.outputs.mode == 'intraday' && steps.warmup.outputs.skip != 'true' && (github.event_name != 'schedule' || steps.tradeday.outputs.is_trade_today == 'true') }}
         env:
           BIYING_TOKEN: ${{ secrets.BIYING_TOKEN }}
@@ -651,6 +646,7 @@ jobs:
         run: |
           set -euo pipefail
           run_date="${{ steps.pushmode.outputs.date10 }}"
+          echo "Intraday mode: runtime-only lightweight snapshot"
           ./qr.sh watch-slice "${run_date}"
           D8="$(echo "${run_date}" | tr -d '-')"
           D8="${D8}" PYTHONPATH=. python3 - <<'PY'
@@ -890,7 +886,7 @@ jobs:
           echo "site data files:"
           ls -la ./site/ | grep -E '\.(json|js|html)$' || true
 
-      - name: Commit intraday runtime only to gh-pages
+      - name: Commit intraday lightweight runtime snapshot only to gh-pages
         if: ${{ (github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true') && steps.pushmode.outputs.mode == 'intraday' && steps.warmup.outputs.skip != 'true' && (github.event_name != 'schedule' || steps.tradeday.outputs.is_trade_today == 'true') }}
         run: |
           set -euo pipefail

@@ -248,11 +248,16 @@ class RunFetchAndRebuildDailySnapshotLimitTest(unittest.TestCase):
 
     def test_refresh_pools_for_date_collects_all_pool_results(self) -> None:
         pools = {"ztgc": {}, "dtgc": {}, "zbgc": {}, "qsgc": {}}
+        sleep_calls: list[int | float] = []
+        seen_order: list[str] = []
 
         def fake_fetch(client, *, pool_name: str, date: str, pools: dict, fallback_dates: list[str] | None = None):
+            seen_order.append(pool_name)
             return [{"pool": pool_name, "date": date}]
 
-        with patch.object(cli, "_fetch_pool_with_cache_fallback", side_effect=fake_fetch):
+        with patch.object(cli, "_fetch_pool_with_cache_fallback", side_effect=fake_fetch), patch.object(
+            cli.time, "sleep", side_effect=lambda seconds: sleep_calls.append(seconds)
+        ):
             result = cli._refresh_pools_for_date(
                 client=object(),
                 pool_names=["ztgc", "dtgc", "zbgc", "qsgc"],
@@ -264,6 +269,33 @@ class RunFetchAndRebuildDailySnapshotLimitTest(unittest.TestCase):
         self.assertEqual(set(result.keys()), {"ztgc", "dtgc", "zbgc", "qsgc"})
         self.assertEqual(result["ztgc"][0]["pool"], "ztgc")
         self.assertEqual(result["qsgc"][0]["pool"], "qsgc")
+        self.assertEqual(seen_order, ["ztgc", "dtgc", "zbgc", "qsgc"])
+        self.assertEqual(sleep_calls, [2, 2, 2])
+
+    def test_fetch_pool_with_cache_fallback_logs_elapsed_error_details(self) -> None:
+        logs: list[str] = []
+        http_error = urllib.error.HTTPError(
+            url="https://example.test/hslt/ztgc/2026-06-23/token",
+            code=500,
+            msg="Internal Server Error",
+            hdrs=None,
+            fp=None,
+        )
+
+        with patch.object(cli, "fetch_pool", side_effect=http_error), patch.object(cli, "_log", side_effect=logs.append):
+            rows = cli._fetch_pool_with_cache_fallback(
+                object(),
+                pool_name="ztgc",
+                date="2026-06-23",
+                pools={"ztgc": {"2026-06-23": [{"dm": "000001"}]}},
+                fallback_dates=["2026-06-20"],
+            )
+
+        self.assertEqual(len(rows), 1)
+        joined = "\n".join(logs)
+        self.assertIn("HTTP 500", joined)
+        self.assertIn("elapsed=", joined)
+        self.assertIn("使用缓存兜底", joined)
 
     def test_daily_snapshot_limit_keeps_core_realtime_and_backtest_sync(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

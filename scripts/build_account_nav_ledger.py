@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import json
+import os
 import sys
 from pathlib import Path
 from typing import Any
@@ -183,7 +184,14 @@ def _merge_ledger_rows(
 def build_account_nav_ledger(*, base_nav: float = 1.0) -> list[dict[str, Any]]:
     from scripts.build_stock_research_backtest import build_stock_research_backtest_payload
 
-    payload = build_stock_research_backtest_payload()
+    previous_disable_history_fetch = os.environ.get("QR_DISABLE_STOCK_RESEARCH_HISTORY_FETCH")
+    if previous_disable_history_fetch is None:
+        os.environ["QR_DISABLE_STOCK_RESEARCH_HISTORY_FETCH"] = "1"
+    try:
+        payload = build_stock_research_backtest_payload()
+    finally:
+        if previous_disable_history_fetch is None:
+            os.environ.pop("QR_DISABLE_STOCK_RESEARCH_HISTORY_FETCH", None)
     existing_rows = _load_existing_ledger()
     incremental_rows = _build_incremental_rows_from_payload(payload if isinstance(payload, dict) else {})
     return _merge_ledger_rows(existing_rows, incremental_rows, base_nav=base_nav)

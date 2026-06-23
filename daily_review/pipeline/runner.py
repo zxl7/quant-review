@@ -10,6 +10,7 @@ from __future__ import annotations
 - patch 合并（写入 ctx.market_data）
 """
 
+import time
 from typing import Any, Mapping, Sequence
 
 from .context import Context, set_path
@@ -132,6 +133,9 @@ class Runner:
             exec_modules = self.modules
 
         for m in exec_modules:
+            started = time.perf_counter()
             patch = m.compute(ctx) or {}
             apply_patch_to_market_data(ctx, patch, m.provides, m.name)
+            elapsed = max(time.perf_counter() - started, 0.0)
+            print(f"  [{time.strftime('%H:%M:%S')}] pipeline 模块耗时 {m.name}: {elapsed:.2f}s", flush=True)
         return ctx
