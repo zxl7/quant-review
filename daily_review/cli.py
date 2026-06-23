@@ -101,6 +101,10 @@ def _resolve_prd_v2_network_allowed(*, allow_network: bool) -> bool:
     return not _env_truthy("QR_DISABLE_PRD_V2_NETWORK")
 
 
+def _daily_snapshot_limit_enabled() -> bool:
+    return _env_truthy("QR_LIMIT_DAILY_SNAPSHOT")
+
+
 def _load_trade_days_from_local_cache(*, cache_dir: Path, limit: int) -> list[str]:
     out: set[str] = set()
 
@@ -740,17 +744,20 @@ def run_fetch_and_rebuild(date: str | None, stock_research_query_tag: str = "") 
     )
     _log("主线趋势已计算 (近5日)")
 
-    try:
-        sample_path = _save_abnormal_event_history_sample(
-            root=root,
-            date=actual_date,
-            mode="fetch",
-            note="收盘/全量流程自动留样，供周末异动模块复盘与算法优化使用",
-        )
-        if sample_path:
-            _log(f"异动原始样本已落盘: {sample_path.name}")
-    except Exception as e:
-        _log(f"异动原始样本保存失败（不影响主流程）: {e}")
+    if not _daily_snapshot_limit_enabled():
+        try:
+            sample_path = _save_abnormal_event_history_sample(
+                root=root,
+                date=actual_date,
+                mode="fetch",
+                note="收盘/全量流程自动留样，供周末异动模块复盘与算法优化使用",
+            )
+            if sample_path:
+                _log(f"异动原始样本已落盘: {sample_path.name}")
+        except Exception as e:
+            _log(f"异动原始样本保存失败（不影响主流程）: {e}")
+    else:
+        _log("每日快照限量模式：跳过异动原始样本留存")
 
     # index_kline_cache.json：缓存指数日K
     # - 用 history 拉更长序列（便于 MA5/MA20 等技术指标在 v3 右侧交易中使用）
@@ -762,16 +769,19 @@ def run_fetch_and_rebuild(date: str | None, stock_research_query_tag: str = "") 
     build_height_trend_cache(root=root, pools=pools, trade_days=trade_days, actual_date=actual_date)
     _log("高度趋势已计算 (近7日)")
 
-    try:
-        ths_newhigh_path = save_newhigh_snapshot(
-            root=root,
-            date=actual_date,
-            mode="fetch",
-            note="收盘/全量流程自动抓取同花顺创新高榜单，供个股强度确认使用",
-        )
-        _log(f"同花顺创新高榜单已缓存: {ths_newhigh_path.name}")
-    except Exception as e:
-        _log(f"同花顺创新高榜单抓取失败（不影响主流程）: {e}")
+    if not _daily_snapshot_limit_enabled():
+        try:
+            ths_newhigh_path = save_newhigh_snapshot(
+                root=root,
+                date=actual_date,
+                mode="fetch",
+                note="收盘/全量流程自动抓取同花顺创新高榜单，供个股强度确认使用",
+            )
+            _log(f"同花顺创新高榜单已缓存: {ths_newhigh_path.name}")
+        except Exception as e:
+            _log(f"同花顺创新高榜单抓取失败（不影响主流程）: {e}")
+    else:
+        _log("每日快照限量模式：跳过同花顺创新高榜单抓取")
 
     # indices（实时）：仅用于 asOf 展示（HH:MM:SS）
     indices_rt, indices_asof = fetch_indices_realtime(
@@ -804,29 +814,32 @@ def run_fetch_and_rebuild(date: str | None, stock_research_query_tag: str = "") 
 
     # === v3 增强：批量个股实时行情（让 v3 输出更“厚”） ===
     quotes_map: dict[str, Any] = {}
-    try:
-        codes = []
-        for arr in (raw_pools.get("ztgc") or [], raw_pools.get("qsgc") or [], raw_pools.get("zbgc") or [], raw_pools.get("dtgc") or []):
-            if not isinstance(arr, list):
-                continue
-            for s in arr[:80]:
-                if not isinstance(s, dict):
+    if not _daily_snapshot_limit_enabled():
+        try:
+            codes = []
+            for arr in (raw_pools.get("ztgc") or [], raw_pools.get("qsgc") or [], raw_pools.get("zbgc") or [], raw_pools.get("dtgc") or []):
+                if not isinstance(arr, list):
                     continue
-                code6 = normalize_stock_code(str(s.get("dm") or s.get("code") or ""))
-                if code6:
-                    codes.append(code6)
-        preserved_research = load_latest_valid_research_snapshot(root=root, current_date=actual_date)
-        codes.extend(collect_research_codes_from_snapshot(preserved_research))
-        quotes_map = _fetch_realtime_quotes_map(client, codes, limit=220, batch_size=20)
-        attach_quotes_and_features(
-            market_data=market_data,
-            raw_pools=raw_pools,
-            quotes_asof=indices_asof,
-            quotes_map=quotes_map,
-        )
-        _log(f"个股实时行情已获取 ({len(quotes_map)} 只)")
-    except Exception:
-        pass
+                for s in arr[:80]:
+                    if not isinstance(s, dict):
+                        continue
+                    code6 = normalize_stock_code(str(s.get("dm") or s.get("code") or ""))
+                    if code6:
+                        codes.append(code6)
+            preserved_research = load_latest_valid_research_snapshot(root=root, current_date=actual_date)
+            codes.extend(collect_research_codes_from_snapshot(preserved_research))
+            quotes_map = _fetch_realtime_quotes_map(client, codes, limit=220, batch_size=20)
+            attach_quotes_and_features(
+                market_data=market_data,
+                raw_pools=raw_pools,
+                quotes_asof=indices_asof,
+                quotes_map=quotes_map,
+            )
+            _log(f"个股实时行情已获取 ({len(quotes_map)} 只)")
+        except Exception:
+            pass
+    else:
+        _log("每日快照限量模式：跳过批量个股实时行情补抓")
 
     # features：最小可用版
     mood_inputs = (market_data.get("features") or {}).get("mood_inputs") or build_mood_inputs(pools=raw_pools, quotes=quotes_map)
@@ -863,14 +876,17 @@ def run_fetch_and_rebuild(date: str | None, stock_research_query_tag: str = "") 
         final_market_data = json.loads(market_path.read_text(encoding="utf-8")) if market_path.exists() else {}
         if isinstance(final_market_data, dict):
             inject_intraday_snapshots(root=root, date=actual_date, market_data=final_market_data)
-            attach_stock_research_backtest(
-                market_data=final_market_data,
-                sync_source=True,
-                query_tag=stock_research_query_tag,
-                log_fn=lambda msg: _log(f"[final-sync] {msg}"),
-            )
+            if not _daily_snapshot_limit_enabled():
+                attach_stock_research_backtest(
+                    market_data=final_market_data,
+                    sync_source=True,
+                    query_tag=stock_research_query_tag,
+                    log_fn=lambda msg: _log(f"[final-sync] {msg}"),
+                )
+                _log("最终 market_data 已同步最新盯盘切片/个股回测快照")
+            else:
+                _log("每日快照限量模式：最终 market_data 仅同步最新盯盘切片")
             market_path.write_text(json.dumps(final_market_data, ensure_ascii=False, indent=2), encoding="utf-8")
-            _log("最终 market_data 已同步最新盯盘切片/个股回测快照")
     except Exception as e:
         print(f"⚠️ 最终 market_data 同步失败（不影响主流程）: {e}")
 

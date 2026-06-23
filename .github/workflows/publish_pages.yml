@@ -489,6 +489,7 @@ jobs:
           QR_DISABLE_PRD_V2_NETWORK: "1"
           QR_DISABLE_STOCK_RESEARCH_HISTORY_FETCH: "1"
           QR_SKIP_WEB_BUILD: "1"
+          QR_LIMIT_DAILY_SNAPSHOT: ${{ github.event_name == 'schedule' && '1' || '' }}
         run: |
           set -euo pipefail
           mode="${{ steps.pushmode.outputs.mode }}"
@@ -582,7 +583,9 @@ jobs:
           set -euo pipefail
           run_date="${{ steps.pushmode.outputs.date10 }}"
           python3 manage_cache.py --date "${run_date}" --mode minimal --retention-days 7 --apply >/dev/null
-          if [ "${{ github.event_name }}" != "push" ]; then
+          if [ "${{ github.event_name }}" = "schedule" ]; then
+            echo "Schedule event: skip watchlist/account derived sync for daily snapshot limit"
+          elif [ "${{ github.event_name }}" != "push" ]; then
             PYTHONPATH=. python3 tools/fetch_watchlist.py --date "${run_date}" --skip-fetch || echo "⚠ watchlist rebuild failed, using cache"
             PYTHONPATH=. python3 scripts/build_account_nav_ledger.py >/dev/null || echo "⚠ account nav ledger sync failed"
             PYTHONPATH=. python3 scripts/build_account_strategy_metrics.py >/dev/null || echo "⚠ account strategy metrics sync failed"
@@ -618,7 +621,9 @@ jobs:
       - name: Pre-fetch external data (明日策略池 + 东方财富今日题材)
         if: ${{ (github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true') && steps.warmup.outputs.skip != 'true' && (github.event_name != 'schedule' || steps.tradeday.outputs.is_trade_today == 'true') && steps.pushmode.outputs.mode != 'intraday' && github.event_name != 'push' }}
         run: |
-          if [ "${{ github.event_name }}" != "push" ]; then
+          if [ "${{ github.event_name }}" = "schedule" ]; then
+            echo "Schedule event: skip tomorrow-data prefetch and reuse published artifacts if present"
+          elif [ "${{ github.event_name }}" != "push" ]; then
             python3 tools/fetch_tomorrow_picks.py web/public/tomorrow_picks.json || echo "⚠ tomorrow picks fetch failed, using cache"
             python3 tools/fetch_eastmoney_tomorrow.py web/public/eastmoney_tomorrow.json || echo "⚠ eastmoney tomorrow fetch failed, using cache"
           else
@@ -670,7 +675,15 @@ jobs:
 
       - name: Build Vue3 web (Vite -> single HTML)
         if: ${{ (github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true') && steps.warmup.outputs.skip != 'true' && (github.event_name != 'schedule' || steps.tradeday.outputs.is_trade_today == 'true') && steps.pushmode.outputs.mode != 'intraday' }}
-        run: cd web && npm run build
+        run: |
+          set -euo pipefail
+          if [ "${{ github.event_name }}" = "schedule" ] && [ -f "./site_prev/index.html" ]; then
+            mkdir -p ./web/dist
+            cp -f ./site_prev/index.html ./web/dist/index.html
+            echo "Schedule event: reuse published index.html shell to avoid extra Vite build"
+          else
+            cd web && npm run build
+          fi
 
       - name: Inject market data into Vue3 HTML
         if: ${{ (github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true') && steps.warmup.outputs.skip != 'true' && (github.event_name != 'schedule' || steps.tradeday.outputs.is_trade_today == 'true') && steps.pushmode.outputs.mode != 'intraday' }}
