@@ -218,7 +218,8 @@ class StockResearchBacktestRowsTest(unittest.TestCase):
                 },
             }
 
-            with patch.object(backtest, "CACHE_DIR", cache_dir):
+            fake_now = real_datetime(2026, 6, 22, 10, 0, tzinfo=backtest.TZ_BJ)
+            with patch.object(backtest, "CACHE_DIR", cache_dir), patch.object(backtest, "_now_bj", return_value=fake_now):
                 synced = backtest.sync_stock_research_backtest_source(market_data=market_data)
                 history = backtest._load_source_history()
 

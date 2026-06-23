@@ -91,6 +91,16 @@ def _now_bj_date8() -> str:
     return _dt.datetime.now(_dt.timezone(_dt.timedelta(hours=8))).strftime("%Y%m%d")
 
 
+def _env_truthy(name: str) -> bool:
+    return str(os.environ.get(name) or "").strip().lower() in {"1", "true", "yes", "on"}
+
+
+def _resolve_prd_v2_network_allowed(*, allow_network: bool) -> bool:
+    if not allow_network:
+        return False
+    return not _env_truthy("QR_DISABLE_PRD_V2_NETWORK")
+
+
 def _load_trade_days_from_local_cache(*, cache_dir: Path, limit: int) -> list[str]:
     out: set[str] = set()
 
@@ -1151,6 +1161,7 @@ def _postprocess_market_data(
     date: str,
     market_data: dict,
     allow_network: bool,
+    prd_v2_allow_network: bool,
     include_intraday_snapshots: bool,
     preserve_zt_analysis: bool,
     apply_runtime_display: bool,
@@ -1256,7 +1267,14 @@ def _postprocess_market_data(
 
     if include_prd_v2:
         try:
-            _inject_prd_v2_metrics(root=root, date=date, market_data=market_data, allow_network=allow_network)
+            if allow_network and not prd_v2_allow_network:
+                _log(f"{log_prefix}PRD v2 二次联网已禁用，仅读取本地缓存")
+            _inject_prd_v2_metrics(
+                root=root,
+                date=date,
+                market_data=market_data,
+                allow_network=prd_v2_allow_network,
+            )
             _log(f"{log_prefix}PRD v2 指标已注入 (sectorHeatmap/threeQuadrants)")
         except Exception:
             pass
@@ -1274,6 +1292,7 @@ def run_rebuild(
     suffix: str = "",
     source_market_path: Path | None = None,
     allow_network: bool = False,
+    prd_v2_allow_network: bool | None = None,
     stock_research_query_tag: str = "",
 ) -> int:
     """
@@ -1297,12 +1316,18 @@ def run_rebuild(
     runner.run(ctx, targets=(modules or None))
     market_data = ctx.market_data
     _log("pipeline 已执行")
-    preserve_zt = str(os.environ.get("PRESERVE_ZT_ANALYSIS") or "").strip().lower() in {"1", "true", "yes", "on"}
+    preserve_zt = _env_truthy("PRESERVE_ZT_ANALYSIS")
+    resolved_prd_v2_allow_network = (
+        _resolve_prd_v2_network_allowed(allow_network=allow_network)
+        if prd_v2_allow_network is None
+        else bool(prd_v2_allow_network)
+    )
     _postprocess_market_data(
         root=root,
         date=date,
         market_data=market_data,
         allow_network=allow_network,
+        prd_v2_allow_network=resolved_prd_v2_allow_network,
         include_intraday_snapshots=True,
         preserve_zt_analysis=preserve_zt,
         apply_runtime_display=True,
@@ -1750,35 +1775,39 @@ def _inject_prd_v2_metrics(*, root: Path, date: str, market_data: dict, allow_ne
     if not isinstance(market_data.get("riskEngine"), dict):
         market_data["riskEngine"] = build_risk_engine(market_data, date=date)
 
+    client = None
+
     # 4) divergenceEngine（分歧与承接）— 资金维度需精确：调用资金流向接口（样本口径）
     if not isinstance(market_data.get("divergenceEngine"), dict):
-        try:
-            from daily_review.config import load_config_from_env
-            from daily_review.http import HttpClient
-
-            cfg = load_config_from_env()
-            client = HttpClient(base_url=cfg.base_url, token=cfg.token, timeout=30)
-        except Exception:
-            client = None
-        market_data["divergenceEngine"] = build_divergence_engine(market_data, date=date, client=client)
-
-    # 4.1) sectorFlow7d（近7天2连板题材的资金流入聚合）— 需要 token 才能精确计算
-    try:
-        # divergenceEngine 已存在时，本函数可能没有初始化 client；这里独立兜底一次
-        if "client" not in locals() or client is None:
+        if allow_network:
             try:
                 from daily_review.config import load_config_from_env
                 from daily_review.http import HttpClient
 
                 cfg = load_config_from_env()
-                if (cfg.token or "").strip():
-                    client = HttpClient(base_url=cfg.base_url, token=cfg.token, timeout=30)
+                client = HttpClient(base_url=cfg.base_url, token=cfg.token, timeout=30)
             except Exception:
                 client = None
-        if client is not None:
-            _inject_sector_flow_7d(root=root, date=date, market_data=market_data, client=client)
-    except Exception:
-        pass
+        market_data["divergenceEngine"] = build_divergence_engine(market_data, date=date, client=client)
+
+    # 4.1) sectorFlow7d（近7天2连板题材的资金流入聚合）— 需要 token 才能精确计算
+    if allow_network:
+        try:
+            # divergenceEngine 已存在时，本函数可能没有初始化 client；这里独立兜底一次
+            if client is None:
+                try:
+                    from daily_review.config import load_config_from_env
+                    from daily_review.http import HttpClient
+
+                    cfg = load_config_from_env()
+                    if (cfg.token or "").strip():
+                        client = HttpClient(base_url=cfg.base_url, token=cfg.token, timeout=30)
+                except Exception:
+                    client = None
+            if client is not None:
+                _inject_sector_flow_7d(root=root, date=date, market_data=market_data, client=client)
+        except Exception:
+            pass
 
     # 4.2) plateRotateTop（短线侠板块轮动强度）：
     # - 优先读取本地缓存
@@ -1888,14 +1917,18 @@ def _inject_prd_v2_metrics(*, root: Path, date: str, market_data: dict, allow_ne
 
     # 5) highPositionRisk（高位风险预警）— 未触发也输出结构化结果
     if not isinstance(market_data.get("highPositionRisk"), dict):
-        try:
-            from daily_review.config import load_config_from_env
-            from daily_review.http import HttpClient
+        hp_client = None
+        if allow_network:
+            try:
+                if client is None:
+                    from daily_review.config import load_config_from_env
+                    from daily_review.http import HttpClient
 
-            cfg = load_config_from_env()
-            hp_client = HttpClient(base_url=cfg.base_url, token=cfg.token, timeout=30)
-        except Exception:
-            hp_client = None
+                    cfg = load_config_from_env()
+                    client = HttpClient(base_url=cfg.base_url, token=cfg.token, timeout=30)
+                hp_client = client
+            except Exception:
+                hp_client = None
         market_data["highPositionRisk"] = build_high_position_risk(market_data, date=date, client=hp_client, trigger_lb=4)
 
     # 6) structureV2（结构拆解 v2：3结论卡 + 证据链）
@@ -1925,6 +1958,7 @@ def run_partial(date: str, modules: list[str]) -> int:
         date=date,
         market_data=market_data,
         allow_network=False,
+        prd_v2_allow_network=False,
         include_intraday_snapshots=False,
         preserve_zt_analysis=False,
         apply_runtime_display=False,
