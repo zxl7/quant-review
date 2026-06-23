@@ -348,6 +348,36 @@ class WorkflowScheduleTest(unittest.TestCase):
         self.assertTrue(result["required"])
         self.assertEqual(result["message"], "snapshot_ready")
 
+    def test_published_market_data_date_must_match_target_trade_day_for_schedule_manual(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            market_path = Path(tmp) / "market_data.json"
+            market_path.write_text(
+                json.dumps(
+                    {
+                        "date": "2026-06-22",
+                        "stockResearchBacktest": {
+                            "realtimeBuy": {
+                                "trade_date": "2026-06-22",
+                                "reference_date": "2026-06-19",
+                                "candidate_count": 2,
+                                "quote_time": "2026-06-22 09:25:01",
+                                "diagnostics": {"source": "workflow_prefetch"},
+                            }
+                        },
+                    },
+                    ensure_ascii=False,
+                ),
+                encoding="utf-8",
+            )
+
+            payload = json.loads(market_path.read_text(encoding="utf-8"))
+            published_date = str(payload.get("date") or "").strip()
+            result = validate_market_data_stock_research_snapshot(market_path, "2026-06-23")
+
+        self.assertEqual(published_date, "2026-06-22")
+        self.assertNotEqual(published_date, "2026-06-23")
+        self.assertFalse(result["ok"])
+
 
 if __name__ == "__main__":
     unittest.main()

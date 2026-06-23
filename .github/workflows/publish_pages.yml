@@ -739,10 +739,17 @@ jobs:
               )
               raise SystemExit(0)
           market_path = Path("web/dist/market_data.json")
+          payload = json.loads(market_path.read_text(encoding="utf-8"))
+          published_date = str(payload.get("date") or "").strip()
+          if published_date != enforce_trade_date:
+              raise SystemExit(
+                  f"published market_data date mismatch: expected {enforce_trade_date}, got {published_date or '<missing>'}"
+              )
           result = validate_market_data_stock_research_snapshot(market_path, enforce_trade_date)
           result["requested_run_date"] = run_date
           result["effective_date10"] = effective_date
           result["effective_reason"] = effective_reason
+          result["published_date"] = published_date
           print("published_stock_research_snapshot=" + json.dumps(result, ensure_ascii=False, sort_keys=True))
           if not result["ok"]:
               raise SystemExit(result["message"])

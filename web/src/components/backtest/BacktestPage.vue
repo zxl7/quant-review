@@ -273,6 +273,12 @@ const latestClosedRecommendationDateMeta = computed(() => String(meta.value?.lat
 const defaultDisplayTradeDate = computed(() => String(meta.value?.default_display_trade_date || lifecycle.value?.default_display_trade_date || "").trim())
 const defaultDisplayRecommendationDateMeta = computed(() => String(meta.value?.default_display_recommendation_date || lifecycle.value?.default_display_recommendation_date || "").trim())
 const hasPendingNextTradeDay = computed(() => !!(meta.value?.has_pending_next_trade_day ?? lifecycle.value?.has_pending_next_trade_day))
+const isTodaySnapshotMissing = computed(() => {
+  return (
+    String(activeTradeDate.value || "").trim() === String(marketSessionDate.value || "").trim() &&
+    String(lifecycle.value?.quote_state || "").trim() === "missing"
+  )
+})
 const selectedRecommendationDateInput = ref("")
 const availableRecommendationDates = computed<string[]>(() => {
   const dates = new Set<string>()
@@ -546,6 +552,9 @@ function recommendationOptionLabel(date10: string) {
   const recommendationDate = String(date10 || "").trim()
   if (!recommendationDate) return "-"
   const tradeDate = String(recommendationTradeDateMap.value[recommendationDate] || "").trim()
+  if (recommendationDate === latestRecommendationDate.value && isTodaySnapshotMissing.value) {
+    return tradeDate ? `${tradeDate} 快照缺失（推荐于 ${recommendationDate}）` : `${recommendationDate} · 快照缺失`
+  }
   if (recommendationDate === defaultDisplayRecommendationDateMeta.value) {
     return tradeDate ? `${tradeDate} 闭环（默认，推荐于 ${recommendationDate}）` : `${recommendationDate} · 闭环（默认）`
   }
@@ -559,16 +568,18 @@ const emptyStateText = computed(() => {
   if (hasCurrentPlan.value) return "收盘后推送的个股研究样本已经落进回测 JSON，当前先展示待验证推荐；到下一交易日 09:25-09:30 再补真实竞价命中结果。"
   if (!realtimeBuy.value?.reference_date) return "当前推荐还没到次日 09:25-09:30，明天窗口内会落地实时行情。"
   if (isForcedQuerySnapshot.value) return "今日缺失的竞价快照正在补齐，补齐后会按正常闭环结果展示。"
-  if (!isEntryWindowTime(realtimeBuy.value?.quote_time)) return "当前暂无有效竞价快照，等明天 09:25-09:30 落地后再显示命中结果。"
+  if (isTodaySnapshotMissing.value) return "今日竞价快照缺失，当前仅展示今日待验证池；补抓成功后才会显示真实闭环结果。"
+  if (!isEntryWindowTime(realtimeBuy.value?.quote_time)) return "当前暂无有效竞价快照，等对应交易日 09:25-09:30 落地后再显示命中结果。"
   return "当前没有可展示的回测结果。"
 })
 const realtimeEmptyText = computed(() => {
   if (!hasValidPayload.value) return "当前暂无有效回测数据。"
   if (!isViewingCurrentRecommendation.value) return "所选推荐日没有原始 9:25 快照，但如果历史回测已落地，会在这里恢复命中结果。"
   if (!hasCurrentPlan.value) return "当前还没有待验证推荐数据，先执行一次复盘脚本生成个股回测 JSON。"
-  if (!realtimeBuy.value?.reference_date) return "当前是收盘后待验证阶段，明天 09:25-09:30 会补充实时量价和命中结果。"
+  if (!realtimeBuy.value?.reference_date) return "当前是收盘后待验证阶段，会在对应交易日 09:25-09:30 补充实时量价和命中结果。"
   if (isForcedQuerySnapshot.value) return "今日缺失的竞价快照补齐仍未拿到可用实时行情。"
-  if (!isEntryWindowTime(realtimeBuy.value?.quote_time)) return "当前还没到有效竞价快照时间，明天 09:25-09:30 会自动显示真实命中结果。"
+  if (isTodaySnapshotMissing.value) return "今日竞价快照缺失，当前不会自动回退展示昨天闭环结果；请补抓后再查看真实命中结果。"
+  if (!isEntryWindowTime(realtimeBuy.value?.quote_time)) return "当前还没到有效竞价快照时间，会在对应交易日 09:25-09:30 自动显示真实命中结果。"
   return "当前没有命中结果。"
 })
 const historicalSnapshotNotice = computed(() => {

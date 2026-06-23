@@ -487,7 +487,40 @@ class StockResearchBacktestRowsTest(unittest.TestCase):
         self.assertEqual(payload["lifecycle"]["quote_state"], "missing")
         self.assertTrue(payload["lifecycle"]["forced_query"])
 
-    def test_default_display_anchors_prefer_latest_closed_loop_over_pending_next_day(self) -> None:
+    def test_default_display_anchors_prefer_current_trade_day_when_today_snapshot_missing(self) -> None:
+        rows = [
+            {"date10": "2026-06-19", "trade_date10": "2026-06-22", "code": "000001", "bucket": "relay", "score": 90},
+            {"date10": "2026-06-22", "trade_date10": "2026-06-23", "code": "000002", "bucket": "relay", "score": 88},
+        ]
+        backtest_rows = [dict(rows[0])]
+        historical_snapshots = [{"reference_date": "2026-06-19", "trade_date": "2026-06-22"}]
+        realtime_buy = {
+            "reference_date": "2026-06-22",
+            "trade_date": "2026-06-23",
+            "quote_time": "",
+            "quoted_count": 0,
+            "candidate_count": 1,
+            "diagnostics": {"source": "unavailable"},
+        }
+
+        anchors = backtest._resolve_display_anchors(
+            current_pool_rows=[dict(rows[1])],
+            backtest_rows=backtest_rows,
+            historical_snapshots=historical_snapshots,
+            realtime_buy=realtime_buy,
+            active_trade_date10="2026-06-23",
+            latest_recommendation_date10="2026-06-22",
+            now=real_datetime(2026, 6, 23, 10, 0, 0, tzinfo=backtest.TZ_BJ),
+        )
+
+        self.assertEqual(anchors["latest_closed_trade_date"], "2026-06-22")
+        self.assertEqual(anchors["latest_closed_recommendation_date"], "2026-06-19")
+        self.assertEqual(anchors["default_display_trade_date"], "2026-06-23")
+        self.assertEqual(anchors["default_display_recommendation_date"], "2026-06-22")
+        self.assertIn("不会自动回退到历史闭环", anchors["default_display_note"])
+        self.assertFalse(anchors["has_pending_next_trade_day"])
+
+    def test_default_display_anchors_prefer_latest_closed_loop_over_future_pending_next_day(self) -> None:
         rows = [
             {"date10": "2026-06-19", "trade_date10": "2026-06-22", "code": "000001", "bucket": "relay", "score": 90},
             {"date10": "2026-06-22", "trade_date10": "2026-06-23", "code": "000002", "bucket": "relay", "score": 88},
@@ -517,6 +550,29 @@ class StockResearchBacktestRowsTest(unittest.TestCase):
         self.assertEqual(anchors["default_display_trade_date"], "2026-06-22")
         self.assertEqual(anchors["default_display_recommendation_date"], "2026-06-19")
         self.assertTrue(anchors["has_pending_next_trade_day"])
+
+    def test_default_display_anchors_prefer_same_day_realtime_snapshot_when_ready(self) -> None:
+        realtime_buy = {
+            "reference_date": "2026-06-22",
+            "trade_date": "2026-06-23",
+            "quote_time": "2026-06-23 09:25:01",
+            "quoted_count": 1,
+            "candidate_count": 1,
+            "diagnostics": {"source": "workflow_prefetch"},
+        }
+
+        anchors = backtest._resolve_display_anchors(
+            current_pool_rows=[{"date10": "2026-06-22", "trade_date10": "2026-06-23", "code": "000002", "bucket": "relay", "score": 88}],
+            backtest_rows=[{"date10": "2026-06-19", "trade_date10": "2026-06-22", "code": "000001", "bucket": "relay", "score": 90}],
+            historical_snapshots=[{"reference_date": "2026-06-19", "trade_date": "2026-06-22"}],
+            realtime_buy=realtime_buy,
+            active_trade_date10="2026-06-23",
+            latest_recommendation_date10="2026-06-22",
+            now=real_datetime(2026, 6, 23, 9, 28, 0, tzinfo=backtest.TZ_BJ),
+        )
+
+        self.assertEqual(anchors["default_display_trade_date"], "2026-06-23")
+        self.assertEqual(anchors["default_display_recommendation_date"], "2026-06-22")
 
     def test_normal_mode_blocks_future_trade_date_realtime_matching(self) -> None:
         row = {"date10": "2026-06-22", "trade_date10": "2026-06-23", "code": "000001", "bucket": "relay", "score": 90}
@@ -1165,6 +1221,45 @@ class StockResearchBacktestPublishFreshnessTest(unittest.TestCase):
         self.assertEqual(upgraded["historicalSnapshots"][0]["trade_date"], "2026-06-22")
         self.assertEqual(upgraded["meta"]["default_display_trade_date"], "2026-06-22")
         self.assertEqual(upgraded["meta"]["default_display_recommendation_date"], "2026-06-18")
+
+    def test_upgrade_prefers_today_pending_batch_over_historical_closed_loop(self) -> None:
+        payload = {
+            "schema": "stock_research_backtest_v2",
+            "meta": {"latest_recommendation_date": "2026-06-22", "active_trade_date": "2026-06-23"},
+            "summary": {
+                "total_samples": 1,
+                "source_samples": 1,
+                "filtered_non_backtest_samples": 0,
+                "eligible_samples": 1,
+                "realtime_candidate_count": 1,
+                "realtime_buy_count": 0,
+                "realtime_pending_count": 1,
+                "realtime_unavailable_count": 0,
+            },
+            "lifecycle": {"stage": "auction_snapshot_missing", "quote_state": "missing"},
+            "realtimeBuy": {
+                "trade_date": "2026-06-23",
+                "reference_date": "2026-06-22",
+                "candidate_count": 1,
+                "quoted_count": 0,
+                "quote_time": "",
+                "diagnostics": {"source": "unavailable"},
+            },
+            "currentPoolRecords": [{"code": "000002", "date10": "2026-06-22", "trade_date10": "2026-06-23"}],
+            "displayRecords": [{"code": "000001", "date10": "2026-06-19", "trade_date10": "2026-06-22"}],
+            "historicalSnapshots": [{"reference_date": "2026-06-19", "trade_date": "2026-06-22"}],
+            "records": [{"code": "000001", "date10": "2026-06-19", "trade_date10": "2026-06-22"}],
+        }
+
+        with patch.object(backtest, "_now_bj", return_value=real_datetime(2026, 6, 23, 10, 0, 0, tzinfo=backtest.TZ_BJ)):
+            upgraded = backtest.upgrade_stock_research_backtest_payload(payload)
+
+        self.assertEqual(upgraded["meta"]["default_display_trade_date"], "2026-06-23")
+        self.assertEqual(upgraded["meta"]["default_display_recommendation_date"], "2026-06-22")
+        self.assertEqual(upgraded["lifecycle"]["quote_state"], "missing")
+        self.assertEqual(upgraded["lifecycle"]["stage"], "auction_snapshot_missing")
+        self.assertIn("不再自动跳到历史闭环结果", upgraded["lifecycle"]["stage_note"])
+        self.assertIn("当前仅保留今日待验证池", upgraded["lifecycle"]["quote_state_note"])
 
     def test_publish_rebuilds_when_source_history_is_newer_than_payload(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

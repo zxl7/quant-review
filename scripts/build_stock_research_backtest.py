@@ -890,7 +890,27 @@ def _resolve_display_anchors(
     default_display = dict(default_closed) if default_closed else {}
     realtime_reference_date10 = str(realtime_buy.get("reference_date") or "").strip()
     realtime_trade_date10 = str(realtime_buy.get("trade_date") or "").strip()
-    if (
+    has_current_plan = bool(current_pool_rows)
+    is_today_pending_or_missing = bool(
+        has_current_plan
+        and active_trade_date10
+        and active_trade_date10 <= today10
+        and not _has_realtime_snapshot_payload(realtime_buy)
+    )
+    if is_today_pending_or_missing:
+        current_reference_dates = sorted(
+            {
+                str(row.get("date10") or "").strip()
+                for row in current_pool_rows
+                if len(str(row.get("date10") or "").strip()) == 10
+            }
+        )
+        current_reference_date10 = current_reference_dates[-1] if current_reference_dates else latest_recommendation_date10
+        default_display = {
+            "recommendation_date": current_reference_date10,
+            "trade_date": active_trade_date10,
+        }
+    elif (
         _has_realtime_snapshot_payload(realtime_buy)
         and len(realtime_reference_date10) == 10
         and len(realtime_trade_date10) == 10
@@ -922,7 +942,12 @@ def _resolve_display_anchors(
     default_display_recommendation_date10 = str(default_display.get("recommendation_date") or "").strip()
     has_pending_next_trade_day = bool(current_pool_rows and active_trade_date10 and active_trade_date10 > today10)
 
-    if default_display_trade_date10 and default_display_recommendation_date10:
+    if is_today_pending_or_missing and default_display_trade_date10 and default_display_recommendation_date10:
+        default_display_note = (
+            f"页面默认停留在 {default_display_trade_date10} 这批待验证结果（对应推荐日 {default_display_recommendation_date10}），"
+            "不会自动回退到历史闭环。"
+        )
+    elif default_display_trade_date10 and default_display_recommendation_date10:
         default_display_note = (
             f"页面默认展示 {default_display_trade_date10} 的结果（对应推荐日 {default_display_recommendation_date10}）。"
         )
@@ -1001,7 +1026,7 @@ def _build_lifecycle(
             else:
                 quote_state = "missing"
                 quote_state_label = "快照缺失"
-                quote_state_note = f"{active_trade_date10} 的 09:25 竞价窗口已过，但没有拿到有效快照，当前只保留待验证池。"
+                quote_state_note = f"{active_trade_date10} 的 09:25 竞价窗口已过，但没有拿到有效快照；当前仅保留今日待验证池，需补抓后才能展示真实闭环结果。"
         else:
             quote_state = "missing" if candidate_count > 0 else "pending_source"
             quote_state_label = "快照缺失" if candidate_count > 0 else "等待推送"
@@ -1033,7 +1058,7 @@ def _build_lifecycle(
         else:
             stage = "auction_snapshot_missing"
             stage_label = "竞价快照缺失"
-            stage_note = f"待验证池已经存在，但 {active_trade_date10 or '-'} 的 9:25 快照没有成功落地，胜率统计只会停留在历史样本。"
+            stage_note = f"待验证池已经存在，但 {active_trade_date10 or '-'} 的 9:25 快照没有成功落地；页面会停留在当前批次，不再自动跳到历史闭环结果。"
     elif has_historical_records:
         stage = "historical_only"
         stage_label = "仅历史统计"
