@@ -13,6 +13,7 @@ from daily_review.application.workflow_schedule import (
     SCHEDULE_MODE_BY_CRON,
     describe_prefetched_quotes_snapshot,
     resolve_publish_schedule_mode,
+    resolve_full_publish_source_cache,
     resolve_stock_research_query_plan,
     validate_market_data_stock_research_snapshot,
 )
@@ -34,6 +35,107 @@ class WorkflowScheduleTest(unittest.TestCase):
         result = resolve_publish_schedule_mode("schedule", "26 1 * * 1-5", now=delayed_now)
         self.assertEqual(result["mode"], "open_fore")
         self.assertEqual(result["beijing_now"], "10:27")
+
+    def test_resolve_full_publish_source_cache_prefers_requested_day(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            cache_dir = Path(tmp) / "cache"
+            cache_dir.mkdir()
+            (cache_dir / "market_data-20260622.json").write_text(
+                json.dumps({"date": "2026-06-22"}, ensure_ascii=False),
+                encoding="utf-8",
+            )
+            (cache_dir / "market_data-20260621.json").write_text(
+                json.dumps({"date": "2026-06-21"}, ensure_ascii=False),
+                encoding="utf-8",
+            )
+
+            result = resolve_full_publish_source_cache(cache_dir, "2026-06-22")
+
+        self.assertTrue(result["found"])
+        self.assertEqual(result["effective_date10"], "2026-06-22")
+        self.assertEqual(result["effective_date8"], "20260622")
+        self.assertEqual(result["reason"], "requested_date_cache_ready")
+
+    def test_resolve_full_publish_source_cache_falls_back_to_latest_valid_full_cache(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            cache_dir = Path(tmp) / "cache"
+            cache_dir.mkdir()
+            (cache_dir / "market_data-20260620.json").write_text(
+                json.dumps({"date": "2026-06-20"}, ensure_ascii=False),
+                encoding="utf-8",
+            )
+            (cache_dir / "market_data-20260622.json").write_text(
+                json.dumps({"date": "2026-06-21"}, ensure_ascii=False),
+                encoding="utf-8",
+            )
+            (cache_dir / "market_data-20260623-intraday.json").write_text(
+                json.dumps({"date": "2026-06-23"}, ensure_ascii=False),
+                encoding="utf-8",
+            )
+
+            result = resolve_full_publish_source_cache(cache_dir, "2026-06-23")
+
+        self.assertTrue(result["found"])
+        self.assertEqual(result["effective_date10"], "2026-06-20")
+        self.assertEqual(result["reason"], "fallback_latest_valid_full_cache")
+        self.assertTrue(result["path"].endswith("market_data-20260620.json"))
+
+    def test_resolve_full_publish_source_cache_ignores_intraday_variant_even_for_requested_day(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            cache_dir = Path(tmp) / "cache"
+            cache_dir.mkdir()
+            (cache_dir / "market_data-20260623-intraday.json").write_text(
+                json.dumps({"date": "2026-06-23"}, ensure_ascii=False),
+                encoding="utf-8",
+            )
+            (cache_dir / "market_data-20260622.json").write_text(
+                json.dumps({"date": "2026-06-22"}, ensure_ascii=False),
+                encoding="utf-8",
+            )
+
+            result = resolve_full_publish_source_cache(cache_dir, "2026-06-23")
+
+        self.assertTrue(result["found"])
+        self.assertEqual(result["effective_date10"], "2026-06-22")
+        self.assertEqual(result["reason"], "fallback_latest_valid_full_cache")
+
+    def test_resolve_full_publish_source_cache_skips_invalid_json_or_date_mismatch(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            cache_dir = Path(tmp) / "cache"
+            cache_dir.mkdir()
+            (cache_dir / "market_data-20260621.json").write_text("{", encoding="utf-8")
+            (cache_dir / "market_data-20260622.json").write_text(
+                json.dumps({"date": "2026-06-20"}, ensure_ascii=False),
+                encoding="utf-8",
+            )
+            (cache_dir / "market_data-20260619.json").write_text(
+                json.dumps({"date": "2026-06-19"}, ensure_ascii=False),
+                encoding="utf-8",
+            )
+
+            result = resolve_full_publish_source_cache(cache_dir, "2026-06-22")
+
+        self.assertTrue(result["found"])
+        self.assertEqual(result["effective_date10"], "2026-06-19")
+        self.assertEqual(result["reason"], "fallback_latest_valid_full_cache")
+
+    def test_resolve_full_publish_source_cache_fails_when_no_valid_full_cache_exists(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            cache_dir = Path(tmp) / "cache"
+            cache_dir.mkdir()
+            (cache_dir / "market_data-20260623-intraday.json").write_text(
+                json.dumps({"date": "2026-06-23"}, ensure_ascii=False),
+                encoding="utf-8",
+            )
+            (cache_dir / "market_data-20260622.json").write_text(
+                json.dumps({"date": "2026-06-20"}, ensure_ascii=False),
+                encoding="utf-8",
+            )
+
+            result = resolve_full_publish_source_cache(cache_dir, "2026-06-23")
+
+        self.assertFalse(result["found"])
+        self.assertEqual(result["reason"], "no_valid_full_cache")
 
     def test_query_plan_prefers_prefetched_quotes_cache_before_fore(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

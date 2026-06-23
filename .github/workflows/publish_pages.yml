@@ -417,7 +417,7 @@ jobs:
 
       - name: Resolve stock research query tag
         id: stockresearch
-        if: ${{ (github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true') && steps.warmup.outputs.skip != 'true' && (github.event_name != 'schedule' || steps.tradeday.outputs.is_trade_today == 'true') && steps.pushmode.outputs.mode != 'intraday' }}
+        if: ${{ (github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true') && steps.warmup.outputs.skip != 'true' && (github.event_name != 'schedule' || steps.tradeday.outputs.is_trade_today == 'true') && steps.pushmode.outputs.mode != 'intraday' && github.event_name != 'push' }}
         run: |
           set -euo pipefail
           mode="${{ steps.pushmode.outputs.mode }}"
@@ -478,7 +478,7 @@ jobs:
           PY
 
       - name: Generate latest report (online fetch -> offline pipeline rebuild)
-        if: ${{ (github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true') && steps.warmup.outputs.skip != 'true' && (github.event_name != 'schedule' || steps.tradeday.outputs.is_trade_today == 'true') && steps.pushmode.outputs.mode != 'intraday' }}
+        if: ${{ (github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true') && steps.warmup.outputs.skip != 'true' && (github.event_name != 'schedule' || steps.tradeday.outputs.is_trade_today == 'true') && steps.pushmode.outputs.mode != 'intraday' && github.event_name != 'push' }}
         timeout-minutes: 20
         env:
           BIYING_TOKEN: ${{ secrets.BIYING_TOKEN }}
@@ -576,7 +576,7 @@ jobs:
           PY
 
       - name: Post-fetch cache sync and derived data
-        if: ${{ (github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true') && steps.warmup.outputs.skip != 'true' && (github.event_name != 'schedule' || steps.tradeday.outputs.is_trade_today == 'true') && steps.pushmode.outputs.mode != 'intraday' }}
+        if: ${{ (github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true') && steps.warmup.outputs.skip != 'true' && (github.event_name != 'schedule' || steps.tradeday.outputs.is_trade_today == 'true') && steps.pushmode.outputs.mode != 'intraday' && github.event_name != 'push' }}
         timeout-minutes: 6
         run: |
           set -euo pipefail
@@ -616,7 +616,7 @@ jobs:
           cp -f ./cache_online/intraday_resonance-"${D8}".json ./web/public/intraday_resonance.json 2>/dev/null || true
 
       - name: Pre-fetch external data (明日策略池 + 东方财富今日题材)
-        if: ${{ (github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true') && steps.warmup.outputs.skip != 'true' && (github.event_name != 'schedule' || steps.tradeday.outputs.is_trade_today == 'true') && steps.pushmode.outputs.mode != 'intraday' }}
+        if: ${{ (github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true') && steps.warmup.outputs.skip != 'true' && (github.event_name != 'schedule' || steps.tradeday.outputs.is_trade_today == 'true') && steps.pushmode.outputs.mode != 'intraday' && github.event_name != 'push' }}
         run: |
           if [ "${{ github.event_name }}" != "push" ]; then
             python3 tools/fetch_tomorrow_picks.py web/public/tomorrow_picks.json || echo "⚠ tomorrow picks fetch failed, using cache"
@@ -624,6 +624,49 @@ jobs:
           else
             echo "Push event: skip external tomorrow-data fetch and reuse published artifacts if present"
           fi
+
+      - name: Resolve full publish source cache
+        id: publishsource
+        if: ${{ (github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true') && steps.warmup.outputs.skip != 'true' && (github.event_name != 'schedule' || steps.tradeday.outputs.is_trade_today == 'true') && steps.pushmode.outputs.mode != 'intraday' }}
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          REQUESTED_DATE: ${{ steps.pushmode.outputs.date10 }}
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          from daily_review.application.workflow_schedule import resolve_full_publish_source_cache
+
+          event_name = os.environ["EVENT_NAME"].strip()
+          requested_date = os.environ["REQUESTED_DATE"].strip()
+          result = resolve_full_publish_source_cache(Path("cache"), requested_date)
+          print("publish_source_cache=" + json.dumps(result, ensure_ascii=False, sort_keys=True))
+          if not result["found"]:
+              raise SystemExit(
+                  f"No valid full publish source cache for requested_date={requested_date}: {result['reason']}"
+              )
+          if event_name != "push" and result["effective_date10"] != requested_date:
+              raise SystemExit(
+                  "Non-push full publish requires requested-date cache, "
+                  f"but resolved fallback effective_date={result['effective_date10']} reason={result['reason']}"
+              )
+          print(
+              "Resolved publish source cache: "
+              f"event={event_name} "
+              f"requested_date={requested_date} "
+              f"effective_date={result['effective_date10']} "
+              f"path={result['path']} "
+              f"reason={result['reason']}"
+          )
+          with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as fh:
+              fh.write(f"effective_source_path={result['path']}\n")
+              fh.write(f"effective_date10={result['effective_date10']}\n")
+              fh.write(f"effective_date8={result['effective_date8']}\n")
+              fh.write(f"effective_reason={result['reason']}\n")
+          PY
 
       - name: Build Vue3 web (Vite -> single HTML)
         if: ${{ (github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true') && steps.warmup.outputs.skip != 'true' && (github.event_name != 'schedule' || steps.tradeday.outputs.is_trade_today == 'true') && steps.pushmode.outputs.mode != 'intraday' }}
@@ -633,21 +676,25 @@ jobs:
         if: ${{ (github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true') && steps.warmup.outputs.skip != 'true' && (github.event_name != 'schedule' || steps.tradeday.outputs.is_trade_today == 'true') && steps.pushmode.outputs.mode != 'intraday' }}
         env:
           RUN_DATE: ${{ steps.pushmode.outputs.date10 }}
+          EFFECTIVE_DATE8: ${{ steps.publishsource.outputs.effective_date8 }}
+          EFFECTIVE_SOURCE_PATH: ${{ steps.publishsource.outputs.effective_source_path }}
+          EFFECTIVE_REASON: ${{ steps.publishsource.outputs.effective_reason }}
           QR_DISABLE_STOCK_RESEARCH_BACKTEST_REBUILD: "1"
           QR_DISABLE_STOCK_RESEARCH_HISTORY_FETCH: "1"
         run: |
           run_date="${RUN_DATE}"
-          d8="$(echo "${run_date}" | tr -d '-')"
-          source_path="cache/market_data-${d8}.json"
-          if [ "${{ steps.pushmode.outputs.mode }}" = "intraday" ]; then
-            source_path="cache/market_data-${d8}-intraday.json"
-          fi
+          d8="${EFFECTIVE_DATE8}"
+          source_path="${EFFECTIVE_SOURCE_PATH}"
+          echo "Inject source cache: requested_date=${run_date} effective_date=${{ steps.publishsource.outputs.effective_date10 }} reason=${EFFECTIVE_REASON} path=${source_path}"
           python3 inject_data.py "${d8}" --source "${source_path}"
 
       - name: Validate stock research snapshot in published market data
         if: ${{ (github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true') && steps.warmup.outputs.skip != 'true' && (github.event_name != 'schedule' || steps.tradeday.outputs.is_trade_today == 'true') && steps.pushmode.outputs.mode != 'intraday' }}
         env:
+          EVENT_NAME: ${{ github.event_name }}
           RUN_DATE: ${{ steps.pushmode.outputs.date10 }}
+          EFFECTIVE_DATE10: ${{ steps.publishsource.outputs.effective_date10 }}
+          EFFECTIVE_REASON: ${{ steps.publishsource.outputs.effective_reason }}
           TODAY_BJ: ${{ steps.tradeday.outputs.today_bj }}
           IS_TRADE_TODAY: ${{ steps.tradeday.outputs.is_trade_today }}
         run: |
@@ -659,9 +706,15 @@ jobs:
 
           from daily_review.application.workflow_schedule import validate_market_data_stock_research_snapshot
 
+          event_name = os.environ.get("EVENT_NAME", "").strip()
           run_date = os.environ["RUN_DATE"]
+          effective_date = os.environ.get("EFFECTIVE_DATE10", "").strip() or run_date
+          effective_reason = os.environ.get("EFFECTIVE_REASON", "").strip()
           today_bj = os.environ.get("TODAY_BJ", "").strip()
           is_trade_today = os.environ.get("IS_TRADE_TODAY", "").strip() == "true"
+          enforce_trade_date = run_date
+          if event_name == "push" and effective_reason == "fallback_latest_valid_full_cache":
+              enforce_trade_date = effective_date
           if not is_trade_today or run_date != today_bj:
               print(
                   "published_stock_research_snapshot="
@@ -680,7 +733,10 @@ jobs:
               )
               raise SystemExit(0)
           market_path = Path("web/dist/market_data.json")
-          result = validate_market_data_stock_research_snapshot(market_path, run_date)
+          result = validate_market_data_stock_research_snapshot(market_path, enforce_trade_date)
+          result["requested_run_date"] = run_date
+          result["effective_date10"] = effective_date
+          result["effective_reason"] = effective_reason
           print("published_stock_research_snapshot=" + json.dumps(result, ensure_ascii=False, sort_keys=True))
           if not result["ok"]:
               raise SystemExit(result["message"])
@@ -702,18 +758,17 @@ jobs:
             exit 2
           }
           run_date="${{ steps.pushmode.outputs.date10 }}"
-          d8="$(echo "${run_date}" | tr -d '-')"
-          source_path="cache/market_data-${d8}.json"
-          if [ "${{ steps.pushmode.outputs.mode }}" = "intraday" ]; then
-            source_path="cache/market_data-${d8}-intraday.json"
-          fi
+          effective_date="${{ steps.publishsource.outputs.effective_date10 }}"
+          effective_reason="${{ steps.publishsource.outputs.effective_reason }}"
+          source_path="${{ steps.publishsource.outputs.effective_source_path }}"
+          echo "Prepare Pages site: requested_date=${run_date} effective_date=${effective_date} reason=${effective_reason} source_path=${source_path}"
           if [ ! -f "${source_path}" ]; then
             echo "Source market data not found: ${source_path}"
             ls -la cache || true
             exit 3
           fi
-          if ! python3 -c 'import json, sys; data = json.load(open(sys.argv[1], encoding="utf-8")); raise SystemExit(0 if str(data.get("date") or "") == sys.argv[2] else 1)' "${source_path}" "${run_date}"; then
-            echo "Source market data date mismatch: expected ${run_date} in ${source_path}"
+          if ! python3 -c 'import json, sys; data = json.load(open(sys.argv[1], encoding="utf-8")); raise SystemExit(0 if str(data.get("date") or "") == sys.argv[2] else 1)' "${source_path}" "${effective_date}"; then
+            echo "Source market data date mismatch: expected ${effective_date} in ${source_path}"
             exit 3
           fi
           # 发布目录：只保留“最新一份报告 + index.html”

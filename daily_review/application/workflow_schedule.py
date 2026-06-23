@@ -65,6 +65,64 @@ def resolve_publish_schedule_mode(
     return result
 
 
+def resolve_full_publish_source_cache(cache_dir: Path, requested_date10: str) -> dict[str, Any]:
+    requested = str(requested_date10 or "").strip()
+    result: dict[str, Any] = {
+        "found": False,
+        "path": "",
+        "requested_date10": requested,
+        "effective_date10": "",
+        "effective_date8": "",
+        "reason": "no_valid_full_cache",
+    }
+    if len(requested) != 10:
+        result["reason"] = "invalid_requested_date"
+        return result
+    if not cache_dir.exists():
+        result["reason"] = "cache_dir_missing"
+        return result
+
+    requested_date8 = requested.replace("-", "")
+    valid_candidates: list[tuple[str, Path]] = []
+    for path in sorted(cache_dir.glob("market_data-*.json"), reverse=True):
+        stem = path.stem
+        suffix = stem[len("market_data-") :] if stem.startswith("market_data-") else ""
+        # full publish 只消费标准收盘缓存，显式忽略 -intraday 变体。
+        if len(suffix) != 8 or not suffix.isdigit():
+            continue
+        payload = _read_json(path)
+        expected_date10 = f"{suffix[:4]}-{suffix[4:6]}-{suffix[6:8]}"
+        if str(payload.get("date") or "").strip() != expected_date10:
+            continue
+        valid_candidates.append((suffix, path))
+        if suffix == requested_date8:
+            result.update(
+                {
+                    "found": True,
+                    "path": str(path),
+                    "effective_date10": expected_date10,
+                    "effective_date8": suffix,
+                    "reason": "requested_date_cache_ready",
+                }
+            )
+            return result
+
+    if not valid_candidates:
+        return result
+
+    latest_date8, latest_path = max(valid_candidates, key=lambda item: item[0])
+    result.update(
+        {
+            "found": True,
+            "path": str(latest_path),
+            "effective_date10": f"{latest_date8[:4]}-{latest_date8[4:6]}-{latest_date8[6:8]}",
+            "effective_date8": latest_date8,
+            "reason": "fallback_latest_valid_full_cache",
+        }
+    )
+    return result
+
+
 def describe_prefetched_quotes_snapshot(cache_dir: Path, trade_date10: str) -> dict[str, Any]:
     result: dict[str, Any] = {
         "found": False,
