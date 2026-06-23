@@ -54,6 +54,28 @@ class RunRebuildPrdV2NetworkTest(unittest.TestCase):
 
 
 class RunFetchAndRebuildDailySnapshotLimitTest(unittest.TestCase):
+    def test_collect_core_realtime_quote_codes_for_full_publish_uses_ztgc_and_yesterday_lianban_only(self) -> None:
+        raw_pools = {
+            "ztgc": [
+                {"dm": "000001", "lbc": 1},
+                {"dm": "000002", "lbc": 3},
+                {"dm": "000001", "lbc": 1},
+            ],
+            "qsgc": [{"dm": "300001", "lbc": 1}],
+            "zbgc": [{"dm": "300002", "lbc": 2}],
+            "dtgc": [{"dm": "300003", "lbc": 4}],
+            "yest_ztgc": [
+                {"dm": "000002", "lbc": 3},
+                {"dm": "000004", "lbc": 2},
+                {"dm": "000005", "lbc": 1},
+                {"dm": "000006", "lbc": 5},
+            ],
+        }
+
+        result = cli.collect_core_realtime_quote_codes_for_full_publish(raw_pools)
+
+        self.assertEqual(result, ["000001", "000002", "000004", "000006"])
+
     def test_daily_snapshot_limit_keeps_core_realtime_and_backtest_sync(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
@@ -103,8 +125,6 @@ class RunFetchAndRebuildDailySnapshotLimitTest(unittest.TestCase):
                 stack.enter_context(
                     patch.object(cli, "build_base_market_data", return_value={"date": "2026-06-23", "features": {}, "raw": {}})
                 )
-                stack.enter_context(patch.object(cli, "load_latest_valid_research_snapshot", return_value={}))
-                stack.enter_context(patch.object(cli, "collect_research_codes_from_snapshot", return_value=["000001"]))
                 mock_quotes = stack.enter_context(
                     patch.object(cli, "_fetch_realtime_quotes_map", return_value={"000001": {"dm": "000001"}})
                 )
@@ -130,6 +150,81 @@ class RunFetchAndRebuildDailySnapshotLimitTest(unittest.TestCase):
         realtime_buy = ((payload.get("stockResearchBacktest") or {}).get("realtimeBuy") or {})
         self.assertEqual(realtime_buy.get("trade_date"), "2026-06-23")
         self.assertEqual(realtime_buy.get("quote_time"), "2026-06-23 09:25:01")
+
+    def test_run_fetch_and_rebuild_limits_full_publish_quotes_to_core_pool(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            cache_dir = root / "cache"
+            cache_dir.mkdir()
+            market_path = cache_dir / "market_data-20260623.json"
+            fake_cfg = SimpleNamespace(base_url="https://example.test", token="token")
+            fake_client = object()
+            raw_pools = {
+                "ztgc": [
+                    {"dm": "000001", "lbc": 1},
+                    {"dm": "000002", "lbc": 2},
+                ],
+                "qsgc": [{"dm": "300001", "lbc": 1}],
+                "zbgc": [{"dm": "300002", "lbc": 3}],
+                "dtgc": [{"dm": "300003", "lbc": 4}],
+                "yest_ztgc": [
+                    {"dm": "000002", "lbc": 2},
+                    {"dm": "000004", "lbc": 3},
+                    {"dm": "000005", "lbc": 1},
+                ],
+            }
+
+            def fake_write_market_data(*, root: Path, market_data: dict, actual_date: str, suffix: str = "") -> Path:
+                market_path.write_text(json.dumps(market_data, ensure_ascii=False, indent=2), encoding="utf-8")
+                return market_path
+
+            with ExitStack() as stack:
+                stack.enter_context(patch.object(cli, "_workspace_root", return_value=root))
+                stack.enter_context(patch.object(cli, "load_config_from_env", return_value=fake_cfg))
+                stack.enter_context(patch("daily_review.http.HttpClient", return_value=fake_client))
+                stack.enter_context(patch.object(cli, "resolve_trade_date", return_value=("2026-06-23", "trade_day")))
+                stack.enter_context(
+                    patch.object(
+                        cli,
+                        "_resolve_trade_days_with_local_fallback",
+                        return_value=["2026-06-19", "2026-06-22", "2026-06-23"],
+                    )
+                )
+                stack.enter_context(patch.object(cli, "_fetch_pool_with_cache_fallback", return_value=[]))
+                stack.enter_context(patch.object(cli, "update_theme_cache", return_value={}))
+                stack.enter_context(patch.object(cli, "build_theme_trend_cache", return_value={}))
+                stack.enter_context(patch.object(cli, "_save_abnormal_event_history_sample"))
+                stack.enter_context(patch.object(cli, "update_index_kline_cache", return_value={}))
+                stack.enter_context(patch.object(cli, "build_height_trend_cache"))
+                stack.enter_context(patch.object(cli, "save_newhigh_snapshot"))
+                stack.enter_context(patch.object(cli, "fetch_indices_realtime", return_value=([], "14:00:00")))
+                stack.enter_context(patch.object(cli, "build_report_indices", return_value=[]))
+                stack.enter_context(patch.object(cli, "build_raw_pools", return_value=raw_pools))
+                stack.enter_context(
+                    patch.object(cli, "build_base_market_data", return_value={"date": "2026-06-23", "features": {}, "raw": {}})
+                )
+                mock_load_snapshot = stack.enter_context(patch.object(cli, "load_latest_valid_research_snapshot", return_value={}))
+                mock_collect_snapshot_codes = stack.enter_context(
+                    patch.object(cli, "collect_research_codes_from_snapshot", return_value=["999999"])
+                )
+                mock_quotes = stack.enter_context(
+                    patch.object(cli, "_fetch_realtime_quotes_map", return_value={"000001": {"dm": "000001"}})
+                )
+                stack.enter_context(patch.object(cli, "attach_quotes_and_features"))
+                stack.enter_context(patch.object(cli, "write_market_data", side_effect=fake_write_market_data))
+                stack.enter_context(patch.object(cli, "run_rebuild", return_value=0))
+                stack.enter_context(patch.object(cli, "append_watch_runtime_slice"))
+                stack.enter_context(patch.object(cli, "inject_intraday_snapshots"))
+                stack.enter_context(patch.object(cli, "attach_stock_research_backtest"))
+                stack.enter_context(patch.object(cli.time, "sleep"))
+                rc = cli.run_fetch_and_rebuild("2026-06-23")
+
+        self.assertEqual(rc, 0)
+        self.assertFalse(mock_load_snapshot.called)
+        self.assertFalse(mock_collect_snapshot_codes.called)
+        self.assertTrue(mock_quotes.called)
+        self.assertEqual(mock_quotes.call_args.args[1], ["000001", "000002", "000004"])
+        self.assertEqual(mock_quotes.call_args.kwargs["limit"], 3)
 
     def test_disable_stock_research_refresh_skips_attach_and_preserves_same_day_snapshot(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
@@ -188,8 +283,6 @@ class RunFetchAndRebuildDailySnapshotLimitTest(unittest.TestCase):
                 stack.enter_context(
                     patch.object(cli, "build_base_market_data", return_value={"date": "2026-06-23", "features": {}, "raw": {}})
                 )
-                stack.enter_context(patch.object(cli, "load_latest_valid_research_snapshot", return_value={}))
-                stack.enter_context(patch.object(cli, "collect_research_codes_from_snapshot", return_value=[]))
                 stack.enter_context(patch.object(cli, "_fetch_realtime_quotes_map", return_value={}))
                 stack.enter_context(patch.object(cli, "attach_quotes_and_features"))
                 stack.enter_context(patch.object(cli, "write_market_data", side_effect=fake_write_market_data))
@@ -267,8 +360,6 @@ class RunFetchAndRebuildDailySnapshotLimitTest(unittest.TestCase):
                 stack.enter_context(
                     patch.object(cli, "build_base_market_data", return_value={"date": "2026-06-23", "features": {}, "raw": {}})
                 )
-                stack.enter_context(patch.object(cli, "load_latest_valid_research_snapshot", return_value={}))
-                stack.enter_context(patch.object(cli, "collect_research_codes_from_snapshot", return_value=[]))
                 stack.enter_context(patch.object(cli, "_fetch_realtime_quotes_map", return_value={}))
                 stack.enter_context(patch.object(cli, "attach_quotes_and_features"))
                 stack.enter_context(patch.object(cli, "write_market_data", side_effect=fake_write_market_data))

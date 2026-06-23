@@ -123,6 +123,33 @@ def _same_day_stock_research_backtest(payload: Any, trade_date10: str) -> dict[s
     return json.loads(json.dumps(backtest, ensure_ascii=False))
 
 
+def collect_core_realtime_quote_codes_for_full_publish(raw_pools: dict[str, Any]) -> list[str]:
+    codes: list[str] = []
+    seen: set[str] = set()
+
+    def _append_rows(rows: Any, *, min_lbc: int = 0) -> None:
+        if not isinstance(rows, list):
+            return
+        for row in rows:
+            if not isinstance(row, dict):
+                continue
+            if min_lbc > 0:
+                try:
+                    if int(float(row.get("lbc") or 0)) < min_lbc:
+                        continue
+                except Exception:
+                    continue
+            code6 = normalize_stock_code(str(row.get("dm") or row.get("code") or ""))
+            if not code6 or code6 in seen:
+                continue
+            seen.add(code6)
+            codes.append(code6)
+
+    _append_rows(raw_pools.get("ztgc") or [])
+    _append_rows(raw_pools.get("yest_ztgc") or [], min_lbc=2)
+    return codes
+
+
 def _load_trade_days_from_local_cache(*, cache_dir: Path, limit: int) -> list[str]:
     out: set[str] = set()
 
@@ -843,19 +870,8 @@ def run_fetch_and_rebuild(date: str | None, stock_research_query_tag: str = "") 
     # === v3 增强：批量个股实时行情（让 v3 输出更“厚”） ===
     quotes_map: dict[str, Any] = {}
     try:
-        codes = []
-        for arr in (raw_pools.get("ztgc") or [], raw_pools.get("qsgc") or [], raw_pools.get("zbgc") or [], raw_pools.get("dtgc") or []):
-            if not isinstance(arr, list):
-                continue
-            for s in arr[:80]:
-                if not isinstance(s, dict):
-                    continue
-                code6 = normalize_stock_code(str(s.get("dm") or s.get("code") or ""))
-                if code6:
-                    codes.append(code6)
-        preserved_research = load_latest_valid_research_snapshot(root=root, current_date=actual_date)
-        codes.extend(collect_research_codes_from_snapshot(preserved_research))
-        quotes_map = _fetch_realtime_quotes_map(client, codes, limit=220, batch_size=20)
+        codes = collect_core_realtime_quote_codes_for_full_publish(raw_pools)
+        quotes_map = _fetch_realtime_quotes_map(client, codes, limit=len(codes) or None, batch_size=20)
         attach_quotes_and_features(
             market_data=market_data,
             raw_pools=raw_pools,
