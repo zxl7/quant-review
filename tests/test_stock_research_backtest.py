@@ -548,8 +548,8 @@ class StockResearchBacktestRowsTest(unittest.TestCase):
 
         self.assertEqual(anchors["latest_closed_trade_date"], "2026-06-22")
         self.assertEqual(anchors["latest_closed_recommendation_date"], "2026-06-19")
-        self.assertEqual(anchors["default_display_trade_date"], "2026-06-22")
-        self.assertEqual(anchors["default_display_recommendation_date"], "2026-06-19")
+        self.assertEqual(anchors["default_display_trade_date"], "2026-06-23")
+        self.assertEqual(anchors["default_display_recommendation_date"], "2026-06-22")
         self.assertTrue(anchors["has_pending_next_trade_day"])
 
     def test_default_display_anchors_prefer_same_day_realtime_snapshot_when_ready(self) -> None:
@@ -1223,8 +1223,8 @@ class StockResearchBacktestPublishFreshnessTest(unittest.TestCase):
         with patch.object(backtest, "_now_bj", return_value=real_datetime(2026, 6, 22, 16, 0, 0, tzinfo=backtest.TZ_BJ)):
             upgraded = backtest.upgrade_stock_research_backtest_payload(payload)
 
-        self.assertEqual(upgraded["meta"]["default_display_trade_date"], "2026-06-22")
-        self.assertEqual(upgraded["meta"]["default_display_recommendation_date"], "2026-06-19")
+        self.assertEqual(upgraded["meta"]["default_display_trade_date"], "2026-06-23")
+        self.assertEqual(upgraded["meta"]["default_display_recommendation_date"], "2026-06-22")
         self.assertTrue(upgraded["meta"]["has_pending_next_trade_day"])
 
     def test_upgrade_corrects_invalid_trade_dates_before_recomputing_anchors(self) -> None:
@@ -1266,8 +1266,8 @@ class StockResearchBacktestPublishFreshnessTest(unittest.TestCase):
 
         self.assertEqual(upgraded["records"][0]["trade_date10"], "2026-06-22")
         self.assertEqual(upgraded["historicalSnapshots"][0]["trade_date"], "2026-06-22")
-        self.assertEqual(upgraded["meta"]["default_display_trade_date"], "2026-06-22")
-        self.assertEqual(upgraded["meta"]["default_display_recommendation_date"], "2026-06-18")
+        self.assertEqual(upgraded["meta"]["default_display_trade_date"], "2026-06-23")
+        self.assertEqual(upgraded["meta"]["default_display_recommendation_date"], "2026-06-22")
 
     def test_upgrade_prefers_today_pending_batch_over_historical_closed_loop(self) -> None:
         payload = {

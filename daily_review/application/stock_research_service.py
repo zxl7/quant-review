@@ -173,6 +173,7 @@ def attach_stock_research_backtest(
     market_data: MarketData,
     sync_source: bool,
     query_tag: str = "",
+    allow_history_fetch: bool | None = None,
     log_fn: Callable[[str], None] | None = None,
 ) -> None:
     from scripts.build_stock_research_backtest import build_stock_research_backtest_payload
@@ -182,8 +183,11 @@ def attach_stock_research_backtest(
 
         sync_stock_research_backtest_source(market_data=market_data)
     previous_disable_history_fetch = os.environ.get("QR_DISABLE_STOCK_RESEARCH_HISTORY_FETCH")
-    normalized_disable_history_fetch = str(previous_disable_history_fetch or "").strip().lower()
-    if previous_disable_history_fetch is None:
+    if allow_history_fetch is True:
+        os.environ["QR_DISABLE_STOCK_RESEARCH_HISTORY_FETCH"] = "0"
+    elif allow_history_fetch is False:
+        os.environ["QR_DISABLE_STOCK_RESEARCH_HISTORY_FETCH"] = "1"
+    elif previous_disable_history_fetch is None:
         os.environ["QR_DISABLE_STOCK_RESEARCH_HISTORY_FETCH"] = "1"
     try:
         market_data["stockResearchBacktest"] = build_stock_research_backtest_payload(
@@ -194,7 +198,7 @@ def attach_stock_research_backtest(
     finally:
         if previous_disable_history_fetch is None:
             os.environ.pop("QR_DISABLE_STOCK_RESEARCH_HISTORY_FETCH", None)
-        elif normalized_disable_history_fetch in {"0", "false", "no", "off"}:
+        else:
             os.environ["QR_DISABLE_STOCK_RESEARCH_HISTORY_FETCH"] = previous_disable_history_fetch
     if log_fn:
         log_fn(f"stockResearchBacktest 已按个股研究推送历史源派生{f' (tag={query_tag})' if query_tag else ''}")

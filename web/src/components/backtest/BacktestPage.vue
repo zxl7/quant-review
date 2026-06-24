@@ -116,12 +116,8 @@ function isCompleteBacktestPayload(raw: any) {
   if (!raw || typeof raw !== "object") return false
   if (String(raw.schema || "") !== "stock_research_backtest_v2") return false
   if (!raw.meta || typeof raw.meta !== "object") return false
-  if (!raw.summary || typeof raw.summary !== "object") return false
   if (!raw.lifecycle || typeof raw.lifecycle !== "object") return false
   if (!raw.realtimeBuy || typeof raw.realtimeBuy !== "object") return false
-  if (!Array.isArray(raw.currentPoolRecords)) return false
-  if (!Array.isArray(raw.displayRecords)) return false
-  if (!Array.isArray(raw.records)) return false
   return true
 }
 

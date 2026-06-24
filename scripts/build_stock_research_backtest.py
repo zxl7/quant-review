@@ -887,17 +887,17 @@ def _resolve_display_anchors(
     if not default_closed:
         default_closed = latest_closed
 
+    has_current_plan = bool(current_pool_rows)
     default_display = dict(default_closed) if default_closed else {}
     realtime_reference_date10 = str(realtime_buy.get("reference_date") or "").strip()
     realtime_trade_date10 = str(realtime_buy.get("trade_date") or "").strip()
-    has_current_plan = bool(current_pool_rows)
     is_today_pending_or_missing = bool(
         has_current_plan
         and active_trade_date10
         and active_trade_date10 <= today10
         and not _has_realtime_snapshot_payload(realtime_buy)
     )
-    if is_today_pending_or_missing:
+    if has_current_plan:
         current_reference_dates = sorted(
             {
                 str(row.get("date10") or "").strip()
@@ -920,21 +920,6 @@ def _resolve_display_anchors(
             "recommendation_date": realtime_reference_date10,
             "trade_date": realtime_trade_date10,
         }
-
-    if not default_display and current_pool_rows:
-        current_reference_dates = sorted(
-            {
-                str(row.get("date10") or "").strip()
-                for row in current_pool_rows
-                if len(str(row.get("date10") or "").strip()) == 10
-            }
-        )
-        current_reference_date10 = current_reference_dates[-1] if current_reference_dates else latest_recommendation_date10
-        if current_reference_date10 or active_trade_date10:
-            default_display = {
-                "recommendation_date": current_reference_date10,
-                "trade_date": active_trade_date10,
-            }
 
     latest_closed_trade_date10 = str(latest_closed.get("trade_date") or "").strip()
     latest_closed_recommendation_date10 = str(latest_closed.get("recommendation_date") or "").strip()
