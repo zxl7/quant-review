@@ -603,6 +603,38 @@ class WorkflowScheduleTest(unittest.TestCase):
         self.assertTrue(result["ok"])
         self.assertEqual(result["covered_count"], 1)
 
+    def test_validate_eod_stock_research_closeout_passes_when_closeout_only_exists_under_performance(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            market_path = Path(tmp) / "market_data.json"
+            market_path.write_text(
+                json.dumps(
+                    {
+                        "date": "2026-06-23",
+                        "ztAnalysis": {"relay": [{"code": "000001"}], "watch": []},
+                        "stockResearchBacktest": {
+                            "meta": {"latest_closed_trade_date": "2026-06-23"},
+                            "displayRecords": [
+                                {
+                                    "trade_date10": "2026-06-23",
+                                    "code": "000001",
+                                    "performance": {
+                                        "open_check": {"close_price": 10.2, "close_pct": 2.1},
+                                        "next_day": {"status": "covered", "return_pct": 1.8},
+                                    },
+                                }
+                            ],
+                        },
+                    },
+                    ensure_ascii=False,
+                ),
+                encoding="utf-8",
+            )
+
+            result = validate_eod_stock_research_closeout(market_path, "2026-06-23")
+
+        self.assertTrue(result["ok"])
+        self.assertEqual(result["covered_count"], 1)
+
     def test_validate_eod_stock_research_closeout_fails_when_latest_closed_trade_date_is_stale(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             market_path = Path(tmp) / "market_data.json"

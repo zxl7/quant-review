@@ -414,11 +414,19 @@ def validate_eod_stock_research_closeout(path: Path, run_date10: str) -> dict[st
             continue
         if str(row.get("trade_date10") or "").strip() != result["run_date"]:
             continue
-        has_close = row.get("close_price") not in (None, "")
-        has_close_pct = row.get("close_pct") not in (None, "")
+        performance = row.get("performance") if isinstance(row.get("performance"), dict) else {}
+        open_check = performance.get("open_check") if isinstance(performance.get("open_check"), dict) else {}
+        next_day = performance.get("next_day") if isinstance(performance.get("next_day"), dict) else {}
+        hold_2d = performance.get("hold_2d") if isinstance(performance.get("hold_2d"), dict) else {}
+        hold_3d = performance.get("hold_3d") if isinstance(performance.get("hold_3d"), dict) else {}
+        has_close = row.get("close_price") not in (None, "") or open_check.get("close_price") not in (None, "")
+        has_close_pct = row.get("close_pct") not in (None, "") or open_check.get("close_pct") not in (None, "")
         has_return = any(
             row.get(key) not in (None, "")
             for key in ("next_day_return_pct", "hold_2d_return_pct", "hold_3d_return_pct", "return_pct")
+        ) or any(
+            item.get("return_pct") not in (None, "")
+            for item in (next_day, hold_2d, hold_3d)
         )
         if has_close or has_close_pct or has_return:
             covered_rows.append(row)
