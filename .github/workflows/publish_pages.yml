@@ -629,8 +629,12 @@ jobs:
           set -euo pipefail
           run_date="${{ steps.pushmode.outputs.date10 }}"
           python3 manage_cache.py --date "${run_date}" --mode minimal --retention-days 7 --apply >/dev/null
-          if [ "${{ github.event_name }}" = "schedule" ]; then
-            echo "Schedule event: skip watchlist/account derived sync for daily snapshot limit"
+          if [ "${{ github.event_name }}" = "schedule" ] && [ "${{ steps.timecheck.outputs.mode }}" != "eod" ]; then
+            echo "Schedule event (non-eod): skip watchlist/account derived sync for daily snapshot limit"
+          elif [ "${{ github.event_name }}" = "schedule" ]; then
+            echo "Schedule event (eod): sync account derived data"
+            PYTHONPATH=. python3 scripts/build_account_nav_ledger.py >/dev/null
+            PYTHONPATH=. python3 scripts/build_account_strategy_metrics.py >/dev/null
           elif [ "${{ github.event_name }}" != "push" ]; then
             PYTHONPATH=. python3 tools/fetch_watchlist.py --date "${run_date}" --skip-fetch || echo "⚠ watchlist rebuild failed, using cache"
             PYTHONPATH=. python3 scripts/build_account_nav_ledger.py >/dev/null || echo "⚠ account nav ledger sync failed"
@@ -821,6 +825,64 @@ jobs:
               os.environ["RUN_DATE"],
           )
           print("published_stock_research_prediction_pool=" + json.dumps(result, ensure_ascii=False, sort_keys=True))
+          if not result["ok"]:
+              raise SystemExit(result["message"])
+          PY
+
+      - name: Validate intraday runtime indices in published artifacts
+        if: ${{ github.event_name == 'schedule' && steps.timecheck.outputs.skip != 'true' && steps.warmup.outputs.skip != 'true' && steps.tradeday.outputs.is_trade_today == 'true' }}
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+
+          from daily_review.application.workflow_schedule import validate_intraday_runtime_indices
+
+          result = validate_intraday_runtime_indices(Path("web/dist/intraday_runtime.json"))
+          print("published_intraday_runtime_indices=" + json.dumps(result, ensure_ascii=False, sort_keys=True))
+          if not result["ok"]:
+              raise SystemExit(result["message"])
+          PY
+
+      - name: Validate eod stock research closeout
+        if: ${{ github.event_name == 'schedule' && steps.timecheck.outputs.mode == 'eod' && steps.timecheck.outputs.skip != 'true' && steps.warmup.outputs.skip != 'true' && steps.tradeday.outputs.is_trade_today == 'true' && steps.pushmode.outputs.mode != 'intraday' }}
+        env:
+          RUN_DATE: ${{ steps.pushmode.outputs.date10 }}
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          from daily_review.application.workflow_schedule import validate_eod_stock_research_closeout
+
+          result = validate_eod_stock_research_closeout(Path("web/dist/market_data.json"), os.environ["RUN_DATE"])
+          print("published_stock_research_closeout=" + json.dumps(result, ensure_ascii=False, sort_keys=True))
+          if not result["ok"]:
+              raise SystemExit(result["message"])
+          PY
+
+      - name: Validate eod account derivatives
+        if: ${{ github.event_name == 'schedule' && steps.timecheck.outputs.mode == 'eod' && steps.timecheck.outputs.skip != 'true' && steps.warmup.outputs.skip != 'true' && steps.tradeday.outputs.is_trade_today == 'true' && steps.pushmode.outputs.mode != 'intraday' }}
+        env:
+          RUN_DATE: ${{ steps.pushmode.outputs.date10 }}
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          from daily_review.application.workflow_schedule import validate_account_derivatives
+
+          result = validate_account_derivatives(
+              ledger_path=Path("data/account_nav_history.jsonl"),
+              metrics_path=Path("data/account_strategy_metrics.json"),
+              run_date10=os.environ["RUN_DATE"],
+          )
+          print("published_account_derivatives=" + json.dumps(result, ensure_ascii=False, sort_keys=True))
           if not result["ok"]:
               raise SystemExit(result["message"])
           PY

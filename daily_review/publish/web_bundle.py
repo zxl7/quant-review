@@ -1123,11 +1123,14 @@ def _is_fresh_stock_research_backtest(
     current_pool_records = payload.get("currentPoolRecords") if isinstance(payload.get("currentPoolRecords"), list) else []
     active_trade_date = str(meta.get("active_trade_date") or "").strip()
     latest_recommendation_date = str(meta.get("latest_recommendation_date") or "").strip()
+    latest_closed_trade_date = str(meta.get("latest_closed_trade_date") or "").strip()
     source_trade_date = str(latest_source_snapshot.get("trade_date") or "").strip()
     source_recommendation_date = str(latest_source_snapshot.get("recommendation_date") or "").strip()
     source_rows_count = _to_int(latest_source_snapshot.get("rows_count"), 0)
 
     if source_trade_date and active_trade_date != source_trade_date:
+        return False
+    if source_trade_date and latest_closed_trade_date and latest_closed_trade_date < source_trade_date:
         return False
     if source_recommendation_date and latest_recommendation_date != source_recommendation_date:
         return False

@@ -185,6 +185,7 @@ def build_account_nav_ledger(*, base_nav: float = 1.0) -> list[dict[str, Any]]:
     from scripts.build_stock_research_backtest import build_stock_research_backtest_payload
 
     previous_disable_history_fetch = os.environ.get("QR_DISABLE_STOCK_RESEARCH_HISTORY_FETCH")
+    normalized_disable_history_fetch = str(previous_disable_history_fetch or "").strip().lower()
     if previous_disable_history_fetch is None:
         os.environ["QR_DISABLE_STOCK_RESEARCH_HISTORY_FETCH"] = "1"
     try:
@@ -192,6 +193,8 @@ def build_account_nav_ledger(*, base_nav: float = 1.0) -> list[dict[str, Any]]:
     finally:
         if previous_disable_history_fetch is None:
             os.environ.pop("QR_DISABLE_STOCK_RESEARCH_HISTORY_FETCH", None)
+        elif normalized_disable_history_fetch in {"0", "false", "no", "off"}:
+            os.environ["QR_DISABLE_STOCK_RESEARCH_HISTORY_FETCH"] = previous_disable_history_fetch
     existing_rows = _load_existing_ledger()
     incremental_rows = _build_incremental_rows_from_payload(payload if isinstance(payload, dict) else {})
     return _merge_ledger_rows(existing_rows, incremental_rows, base_nav=base_nav)

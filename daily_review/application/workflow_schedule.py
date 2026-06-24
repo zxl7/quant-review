@@ -335,6 +335,168 @@ def validate_eod_stock_research_prediction_pool(path: Path, run_date10: str) -> 
     return result
 
 
+def validate_intraday_runtime_indices(path: Path) -> dict[str, Any]:
+    result: dict[str, Any] = {
+        "ok": True,
+        "message": "indices_ready",
+        "path": str(path),
+        "count": 0,
+        "names": [],
+        "as_of": "",
+    }
+    if not path.exists():
+        result["ok"] = False
+        result["message"] = "intraday_runtime_missing"
+        return result
+
+    payload = _read_json(path)
+    rows = payload.get("indices") if isinstance(payload.get("indices"), list) else []
+    names = [str(row.get("name") or "").strip() for row in rows if isinstance(row, dict) and str(row.get("name") or "").strip()]
+    as_of = str(((payload.get("asOf") or {}) if isinstance(payload.get("asOf"), dict) else {}).get("indices") or "").strip()
+    result["count"] = len(names)
+    result["names"] = names
+    result["as_of"] = as_of
+    required = {"上证指数", "深证成指", "创业板指"}
+    if len(names) < 3 or not required.issubset(set(names)) or not as_of:
+        result["ok"] = False
+        result["message"] = (
+            "intraday_runtime_indices_incomplete: "
+            f"count={len(names)} names={names} as_of={as_of or '<missing>'}"
+        )
+    return result
+
+
+def validate_eod_stock_research_closeout(path: Path, run_date10: str) -> dict[str, Any]:
+    result: dict[str, Any] = {
+        "ok": True,
+        "required": False,
+        "message": "no_eod_candidates",
+        "path": str(path),
+        "run_date": str(run_date10 or "").strip(),
+        "published_date": "",
+        "latest_closed_trade_date": "",
+        "candidate_count": 0,
+        "covered_count": 0,
+    }
+    if len(result["run_date"]) != 10:
+        result["ok"] = False
+        result["message"] = "invalid_run_date"
+        return result
+    if not path.exists():
+        result["ok"] = False
+        result["message"] = "market_data_missing"
+        return result
+
+    payload = _read_json(path)
+    published_date = str(payload.get("date") or "").strip()
+    result["published_date"] = published_date
+    if published_date != result["run_date"]:
+        result["ok"] = False
+        result["message"] = "published_date_mismatch"
+        return result
+
+    zt = payload.get("ztAnalysis") if isinstance(payload.get("ztAnalysis"), dict) else {}
+    relay = zt.get("relay") if isinstance(zt.get("relay"), list) else []
+    watch = zt.get("watch") if isinstance(zt.get("watch"), list) else []
+    candidate_count = len(relay) + len(watch)
+    result["candidate_count"] = candidate_count
+    if candidate_count <= 0:
+        return result
+
+    result["required"] = True
+    backtest = payload.get("stockResearchBacktest") if isinstance(payload.get("stockResearchBacktest"), dict) else {}
+    meta = backtest.get("meta") if isinstance(backtest.get("meta"), dict) else {}
+    display_records = backtest.get("displayRecords") if isinstance(backtest.get("displayRecords"), list) else []
+    result["latest_closed_trade_date"] = str(meta.get("latest_closed_trade_date") or "").strip()
+    covered_rows = []
+    for row in display_records:
+        if not isinstance(row, dict):
+            continue
+        if str(row.get("trade_date10") or "").strip() != result["run_date"]:
+            continue
+        has_close = row.get("close_price") not in (None, "")
+        has_close_pct = row.get("close_pct") not in (None, "")
+        has_return = any(
+            row.get(key) not in (None, "")
+            for key in ("next_day_return_pct", "hold_2d_return_pct", "hold_3d_return_pct", "return_pct")
+        )
+        if has_close or has_close_pct or has_return:
+            covered_rows.append(row)
+    result["covered_count"] = len(covered_rows)
+
+    if result["latest_closed_trade_date"] != result["run_date"]:
+        result["ok"] = False
+        result["message"] = (
+            "latest_closed_trade_date_stale: "
+            f"run_date={result['run_date']} latest_closed_trade_date={result['latest_closed_trade_date'] or '<missing>'}"
+        )
+        return result
+
+    if not covered_rows:
+        result["ok"] = False
+        result["message"] = (
+            "eod_stock_research_closeout_missing: "
+            f"run_date={result['run_date']} candidate_count={candidate_count} covered_count=0"
+        )
+    return result
+
+
+def validate_account_derivatives(*, ledger_path: Path, metrics_path: Path, run_date10: str) -> dict[str, Any]:
+    result: dict[str, Any] = {
+        "ok": True,
+        "message": "account_derivatives_ready",
+        "run_date": str(run_date10 or "").strip(),
+        "ledger_path": str(ledger_path),
+        "metrics_path": str(metrics_path),
+        "ledger_latest_trade_date": "",
+        "metrics_latest_trade_date": "",
+    }
+    if len(result["run_date"]) != 10:
+        result["ok"] = False
+        result["message"] = "invalid_run_date"
+        return result
+    if not ledger_path.exists():
+        result["ok"] = False
+        result["message"] = "account_nav_ledger_missing"
+        return result
+    if not metrics_path.exists():
+        result["ok"] = False
+        result["message"] = "account_strategy_metrics_missing"
+        return result
+
+    ledger_rows: list[dict[str, Any]] = []
+    for line in ledger_path.read_text(encoding="utf-8").splitlines():
+        raw = line.strip()
+        if not raw:
+            continue
+        try:
+            item = json.loads(raw)
+        except Exception:
+            continue
+        if isinstance(item, dict):
+            ledger_rows.append(item)
+    if ledger_rows:
+        result["ledger_latest_trade_date"] = str(ledger_rows[-1].get("trade_date") or "").strip()
+
+    metrics_payload = _read_json(metrics_path)
+    result["metrics_latest_trade_date"] = str(metrics_payload.get("latest_trade_date") or "").strip()
+
+    if result["ledger_latest_trade_date"] != result["run_date"]:
+        result["ok"] = False
+        result["message"] = (
+            "account_nav_ledger_stale: "
+            f"run_date={result['run_date']} latest_trade_date={result['ledger_latest_trade_date'] or '<missing>'}"
+        )
+        return result
+    if result["metrics_latest_trade_date"] != result["run_date"]:
+        result["ok"] = False
+        result["message"] = (
+            "account_strategy_metrics_stale: "
+            f"run_date={result['run_date']} latest_trade_date={result['metrics_latest_trade_date'] or '<missing>'}"
+        )
+    return result
+
+
 def validate_market_data_stock_research_snapshot(path: Path, trade_date10: str) -> dict[str, Any]:
     snapshot = describe_market_data_snapshot(path, trade_date10)
     result: dict[str, Any] = {

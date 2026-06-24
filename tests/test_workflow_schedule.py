@@ -15,7 +15,10 @@ from daily_review.application.workflow_schedule import (
     resolve_publish_schedule_mode,
     resolve_full_publish_source_cache,
     resolve_stock_research_query_plan,
+    validate_account_derivatives,
     validate_eod_stock_research_prediction_pool,
+    validate_eod_stock_research_closeout,
+    validate_intraday_runtime_indices,
     validate_market_data_stock_research_snapshot,
 )
 
@@ -528,6 +531,145 @@ class WorkflowScheduleTest(unittest.TestCase):
 
         self.assertFalse(result["ok"])
         self.assertEqual(result["message"], "published_date_mismatch")
+
+    def test_validate_intraday_runtime_indices_passes_with_three_indices(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            runtime_path = Path(tmp) / "intraday_runtime.json"
+            runtime_path.write_text(
+                json.dumps(
+                    {
+                        "indices": [
+                            {"name": "上证指数"},
+                            {"name": "深证成指"},
+                            {"name": "创业板指"},
+                        ],
+                        "asOf": {"indices": "14:26:01"},
+                    },
+                    ensure_ascii=False,
+                ),
+                encoding="utf-8",
+            )
+
+            result = validate_intraday_runtime_indices(runtime_path)
+
+        self.assertTrue(result["ok"])
+        self.assertEqual(result["count"], 3)
+        self.assertEqual(result["as_of"], "14:26:01")
+
+    def test_validate_intraday_runtime_indices_fails_when_incomplete(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            runtime_path = Path(tmp) / "intraday_runtime.json"
+            runtime_path.write_text(
+                json.dumps(
+                    {
+                        "indices": [
+                            {"name": "深证成指"},
+                            {"name": "创业板指"},
+                        ],
+                        "asOf": {"indices": ""},
+                    },
+                    ensure_ascii=False,
+                ),
+                encoding="utf-8",
+            )
+
+            result = validate_intraday_runtime_indices(runtime_path)
+
+        self.assertFalse(result["ok"])
+        self.assertIn("intraday_runtime_indices_incomplete", result["message"])
+
+    def test_validate_eod_stock_research_closeout_passes_when_closeout_fields_ready(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            market_path = Path(tmp) / "market_data.json"
+            market_path.write_text(
+                json.dumps(
+                    {
+                        "date": "2026-06-23",
+                        "ztAnalysis": {"relay": [{"code": "000001"}], "watch": []},
+                        "stockResearchBacktest": {
+                            "meta": {"latest_closed_trade_date": "2026-06-23"},
+                            "displayRecords": [
+                                {"trade_date10": "2026-06-23", "code": "000001", "close_price": 10.2, "close_pct": 2.1}
+                            ],
+                        },
+                    },
+                    ensure_ascii=False,
+                ),
+                encoding="utf-8",
+            )
+
+            result = validate_eod_stock_research_closeout(market_path, "2026-06-23")
+
+        self.assertTrue(result["ok"])
+        self.assertEqual(result["covered_count"], 1)
+
+    def test_validate_eod_stock_research_closeout_fails_when_latest_closed_trade_date_is_stale(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            market_path = Path(tmp) / "market_data.json"
+            market_path.write_text(
+                json.dumps(
+                    {
+                        "date": "2026-06-23",
+                        "ztAnalysis": {"relay": [{"code": "000001"}], "watch": []},
+                        "stockResearchBacktest": {
+                            "meta": {"latest_closed_trade_date": "2026-06-18"},
+                            "displayRecords": [],
+                        },
+                    },
+                    ensure_ascii=False,
+                ),
+                encoding="utf-8",
+            )
+
+            result = validate_eod_stock_research_closeout(market_path, "2026-06-23")
+
+        self.assertFalse(result["ok"])
+        self.assertIn("latest_closed_trade_date_stale", result["message"])
+
+    def test_validate_account_derivatives_passes_when_latest_trade_dates_match(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            ledger_path = Path(tmp) / "account_nav_history.jsonl"
+            metrics_path = Path(tmp) / "account_strategy_metrics.json"
+            ledger_path.write_text(
+                json.dumps({"trade_date": "2026-06-23", "nav": 1.02}, ensure_ascii=False) + "\n",
+                encoding="utf-8",
+            )
+            metrics_path.write_text(
+                json.dumps({"latest_trade_date": "2026-06-23"}, ensure_ascii=False),
+                encoding="utf-8",
+            )
+
+            result = validate_account_derivatives(
+                ledger_path=ledger_path,
+                metrics_path=metrics_path,
+                run_date10="2026-06-23",
+            )
+
+        self.assertTrue(result["ok"])
+        self.assertEqual(result["ledger_latest_trade_date"], "2026-06-23")
+        self.assertEqual(result["metrics_latest_trade_date"], "2026-06-23")
+
+    def test_validate_account_derivatives_fails_when_ledger_is_stale(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            ledger_path = Path(tmp) / "account_nav_history.jsonl"
+            metrics_path = Path(tmp) / "account_strategy_metrics.json"
+            ledger_path.write_text(
+                json.dumps({"trade_date": "2026-06-22", "nav": 1.01}, ensure_ascii=False) + "\n",
+                encoding="utf-8",
+            )
+            metrics_path.write_text(
+                json.dumps({"latest_trade_date": "2026-06-23"}, ensure_ascii=False),
+                encoding="utf-8",
+            )
+
+            result = validate_account_derivatives(
+                ledger_path=ledger_path,
+                metrics_path=metrics_path,
+                run_date10="2026-06-23",
+            )
+
+        self.assertFalse(result["ok"])
+        self.assertIn("account_nav_ledger_stale", result["message"])
 
 
 if __name__ == "__main__":

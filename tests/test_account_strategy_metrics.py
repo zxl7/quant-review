@@ -26,6 +26,22 @@ class AccountStrategyMetricsTest(unittest.TestCase):
         self.assertEqual(payload["generated_at_bj"], "2026-06-23 15:01:00")
         self.assertIsNone(os.environ.get("QR_DISABLE_STOCK_RESEARCH_HISTORY_FETCH"))
 
+    def test_build_account_strategy_metrics_respects_explicit_history_fetch_enable(self) -> None:
+        def fake_payload_builder() -> dict:
+            self.assertEqual(os.environ.get("QR_DISABLE_STOCK_RESEARCH_HISTORY_FETCH"), "0")
+            return {
+                "meta": {"generated_at_bj": "2026-06-24 15:01:00"},
+                "records": [],
+            }
+
+        with patch.dict(metrics.os.environ, {"QR_DISABLE_STOCK_RESEARCH_HISTORY_FETCH": "0"}, clear=False):
+            with patch("scripts.build_stock_research_backtest.build_stock_research_backtest_payload", side_effect=fake_payload_builder):
+                payload = metrics.build_account_strategy_metrics()
+
+        self.assertEqual(payload["records"], [])
+        self.assertEqual(payload["generated_at_bj"], "2026-06-24 15:01:00")
+        self.assertIsNone(os.environ.get("QR_DISABLE_STOCK_RESEARCH_HISTORY_FETCH"))
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -1403,6 +1403,46 @@ class StockResearchBacktestPublishFreshnessTest(unittest.TestCase):
 
         self.assertNotIn("stockResearchBacktest", md)
 
+    def test_fresh_backtest_requires_latest_closed_trade_date_to_reach_source_trade_date(self) -> None:
+        payload = {
+            "schema": "stock_research_backtest_v2",
+            "meta": {
+                "latest_recommendation_date": "2026-06-23",
+                "active_trade_date": "2026-06-24",
+                "latest_closed_trade_date": "2026-06-18",
+            },
+            "summary": {
+                "total_samples": 8,
+                "source_samples": 8,
+                "filtered_non_backtest_samples": 0,
+                "eligible_samples": 4,
+                "realtime_candidate_count": 8,
+                "realtime_buy_count": 0,
+                "realtime_pending_count": 8,
+                "realtime_unavailable_count": 0,
+            },
+            "lifecycle": {
+                "stage": "post_close_wait_auction",
+                "quote_state": "missing",
+            },
+            "realtimeBuy": {"trade_date": "2026-06-24"},
+            "currentPoolRecords": [{"code": "000001"} for _ in range(8)],
+            "displayRecords": [{"code": "000001"}],
+            "historicalSnapshots": [],
+            "records": [{"code": "000001"}],
+        }
+
+        self.assertFalse(
+            web_bundle._is_fresh_stock_research_backtest(
+                payload,
+                latest_source_snapshot={
+                    "trade_date": "2026-06-24",
+                    "recommendation_date": "2026-06-23",
+                    "rows_count": 8,
+                },
+            )
+        )
+
 
 class TradeDateResolveTest(unittest.TestCase):
     def test_after_close_today_keeps_today_even_if_kline_list_lags(self) -> None:
