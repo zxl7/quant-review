@@ -458,6 +458,24 @@ def fetch_stock_history_k(
         K线数据列表
     端点: hsstock/history/{code}/{period}/{adjust}/{token}?st=&et=
     """
+    def _unwrap(resp: Any) -> list:
+        if isinstance(resp, list):
+            return resp
+        if not isinstance(resp, dict):
+            return []
+        for key in ("data", "items", "list", "result", "rows", "klines", "kline", "resultObj"):
+            value = resp.get(key)
+            if isinstance(value, list):
+                return value
+            if isinstance(value, dict):
+                nested_items = value.get("items")
+                if isinstance(nested_items, list):
+                    return nested_items
+        for value in resp.values():
+            if isinstance(value, list):
+                return value
+        return []
+
     try:
         base_url = f"{client.base_url}/hsstock/history/{code}/{period}/{adjust}/{client.token}"
         params = []
@@ -467,7 +485,7 @@ def fetch_stock_history_k(
             params.append(f"et={et}")
         url = f"{base_url}?{'&'.join(params)}"
         data = client.get_json(url)
-        return data if isinstance(data, list) else []
+        return _unwrap(data)
     except Exception:
         return []
 

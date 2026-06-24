@@ -6,7 +6,7 @@ from __future__ import annotations
 import unittest
 from unittest.mock import patch
 
-from daily_review.data.biying import extract_money_flow_day_map, fetch_indices_realtime
+from daily_review.data.biying import extract_money_flow_day_map, fetch_indices_realtime, fetch_stock_history_k
 
 
 class MoneyFlowMapTest(unittest.TestCase):
@@ -72,6 +72,31 @@ class FetchIndicesRealtimeTest(unittest.TestCase):
         self.assertEqual(rows[1]["name"], "深证成指")
         self.assertEqual(rows[1]["val"], 3500.0)
         self.assertEqual(as_of, "14:30:01")
+
+
+class FetchStockHistoryKTest(unittest.TestCase):
+    def test_fetch_stock_history_k_unwraps_dict_wrapped_rows(self) -> None:
+        class FakeClient:
+            base_url = "https://example.test"
+            token = "token"
+
+            def get_json(self, url: str) -> dict:
+                return {
+                    "data": [
+                        {"t": "2026-06-23 15:00:00", "o": 10.0, "c": 10.5},
+                        {"t": "2026-06-24 15:00:00", "o": 10.5, "c": 10.8},
+                    ]
+                }
+
+        rows = fetch_stock_history_k(
+            FakeClient(),
+            code="000001.SZ",
+            st="20260623",
+            et="20260624",
+        )
+
+        self.assertEqual(len(rows), 2)
+        self.assertEqual(rows[0]["t"], "2026-06-23 15:00:00")
 
 
 if __name__ == "__main__":
