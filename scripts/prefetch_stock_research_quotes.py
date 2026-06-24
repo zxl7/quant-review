@@ -39,16 +39,39 @@ def _pick_reference_date(rows: list[dict], *, before_date10: str = "") -> str:
     return dates[-1] if dates else ""
 
 
-def main() -> int:
+def _collect_reference_codes(rows: list[dict], *, reference_date: str) -> list[str]:
+    if len(reference_date) != 10:
+        return []
+    return sorted(
+        {
+            normalize_stock_code(str(row.get("code") or ""))
+            for row in rows
+            if str(row.get("date10") or "") == reference_date and normalize_stock_code(str(row.get("code") or ""))
+        }
+    )
+
+
+def _fetch_and_save_snapshot(*, reference_date: str, codes: list[str], source: str) -> Path | None:
+    if len(reference_date) != 10 or not codes:
+        return None
+    cfg = load_config_from_env()
+    client = HttpClient(base_url=cfg.base_url, token=cfg.token, timeout=12, retries=0)
+    quotes_map, as_of = fetch_stocks_realtime_map(client, codes)
+    if not quotes_map:
+        return None
+    return save_prefetched_realtime_quotes(
+        date10=reference_date,
+        items=quotes_map,
+        as_of=as_of or _now_bj().strftime("%Y-%m-%d %H:%M:%S"),
+        source=source,
+    )
+
+
+def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--date", default="", help="当前运行日期 YYYY-MM-DD；若提供，则优先抓取早于该日期的最新研究池")
     ap.add_argument("--must-succeed", action="store_true", help="仅用于 09:25-09:30 守窗场景；窗口内没抓到则返回非 0")
-    args = ap.parse_args()
-
-    now_bj = _now_bj()
-    if not _is_entry_window(now_bj):
-        print("skip: outside 09:25-09:30 window")
-        return 2 if args.must_succeed else 0
+    args = ap.parse_args(argv)
 
     rows, _ = _load_stock_research_rows()
     if not rows:
@@ -60,33 +83,35 @@ def main() -> int:
         print("skip: no valid reference date")
         return 2 if args.must_succeed else 0
 
-    codes = sorted(
-        {
-            normalize_stock_code(str(row.get("code") or ""))
-            for row in rows
-            if str(row.get("date10") or "") == reference_date and normalize_stock_code(str(row.get("code") or ""))
-        }
-    )
+    codes = _collect_reference_codes(rows, reference_date=reference_date)
     if not codes:
         print(f"skip: no codes for {reference_date}")
         return 2 if args.must_succeed else 0
 
-    cfg = load_config_from_env()
-    client = HttpClient(base_url=cfg.base_url, token=cfg.token, timeout=12, retries=0)
-    quotes_map, as_of = fetch_stocks_realtime_map(client, codes)
-
-    if not quotes_map:
+    now_bj = _now_bj()
+    if _is_entry_window(now_bj):
+        path = _fetch_and_save_snapshot(reference_date=reference_date, codes=codes, source="workflow_prefetch")
+        if path:
+            print(f"ok: {path} codes={len(codes)} reference_date={reference_date}")
+            return 0
         print(f"skip: no realtime quotes fetched for {reference_date}")
         return 2 if args.must_succeed else 0
 
-    path = save_prefetched_realtime_quotes(
-        date10=reference_date,
-        items=quotes_map,
-        as_of=as_of or now_bj.strftime("%Y-%m-%d %H:%M:%S"),
-        source="workflow_prefetch",
-    )
-    print(f"ok: {path} codes={len(quotes_map)} reference_date={reference_date}")
-    return 0
+    if not args.must_succeed:
+        print("skip: outside 09:25-09:30 window")
+        return 0
+
+    path = _fetch_and_save_snapshot(reference_date=reference_date, codes=codes, source="forced_query")
+    if path:
+        print(
+            "ok: "
+            f"{path} codes={len(codes)} reference_date={reference_date} "
+            "mode=forced_query reason=delayed_schedule_recovery"
+        )
+        return 0
+
+    print(f"skip: outside 09:25-09:30 window and forced fallback failed for {reference_date}")
+    return 2
 
 
 if __name__ == "__main__":
