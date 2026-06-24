@@ -22,6 +22,8 @@ SCHEDULE_MODE_BY_CRON: dict[str, str] = {
 
 INVALID_QUOTE_SOURCES = {"unavailable", "forced_query_unavailable"}
 
+INTRADAY_CUTOFF_HOUR_BJ = 15
+
 
 def _now_bj() -> datetime:
     return datetime.now(TZ_BJ)
@@ -57,6 +59,12 @@ def resolve_publish_schedule_mode(
 
     mode = SCHEDULE_MODE_BY_CRON.get(schedule_text)
     if mode:
+        if mode == "intraday" and current.hour >= INTRADAY_CUTOFF_HOUR_BJ:
+            result["mode"] = "eod"
+            result["reason"] = (
+                f"promoted_delayed_intraday_to_eod:{schedule_text}@{result['beijing_now']}"
+            )
+            return result
         result["mode"] = mode
         result["reason"] = f"resolved_from_schedule:{schedule_text}"
         return result

@@ -37,6 +37,16 @@ class WorkflowScheduleTest(unittest.TestCase):
         self.assertEqual(result["mode"], "open_fore")
         self.assertEqual(result["beijing_now"], "10:27")
 
+    def test_intraday_schedule_promotes_to_eod_after_close_when_runner_starts_late(self) -> None:
+        delayed_now = datetime(2026, 6, 24, 15, 43, tzinfo=TZ_BJ)
+        result = resolve_publish_schedule_mode("schedule", "*/5 5-6 * * 1-5", now=delayed_now)
+        self.assertEqual(result["mode"], "eod")
+        self.assertEqual(result["beijing_now"], "15:43")
+        self.assertEqual(
+            result["reason"],
+            "promoted_delayed_intraday_to_eod:*/5 5-6 * * 1-5@15:43",
+        )
+
     def test_resolve_full_publish_source_cache_prefers_requested_day(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             cache_dir = Path(tmp) / "cache"
