@@ -536,7 +536,7 @@ jobs:
           QR_SKIP_WATCHLIST_REFRESH: "1"
           QR_SKIP_ACCOUNT_METRICS_SYNC: "1"
           QR_DISABLE_PRD_V2_NETWORK: "1"
-          QR_DISABLE_STOCK_RESEARCH_HISTORY_FETCH: "1"
+          QR_DISABLE_STOCK_RESEARCH_HISTORY_FETCH: ${{ steps.pushmode.outputs.mode == 'eod' && '0' || '1' }}
           QR_SKIP_WEB_BUILD: "1"
           QR_DISABLE_STOCK_RESEARCH_BACKTEST_REFRESH: ${{ steps.stockresearchfinal.outputs.refresh_backtest != 'true' && '1' || '0' }}
           QR_ENABLE_CORE_QUOTES_REFRESH: ${{ github.event_name == 'schedule' && steps.timecheck.outputs.mode == 'eod' && '1' || '0' }}

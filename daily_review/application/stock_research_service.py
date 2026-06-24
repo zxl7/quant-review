@@ -182,6 +182,7 @@ def attach_stock_research_backtest(
 
         sync_stock_research_backtest_source(market_data=market_data)
     previous_disable_history_fetch = os.environ.get("QR_DISABLE_STOCK_RESEARCH_HISTORY_FETCH")
+    normalized_disable_history_fetch = str(previous_disable_history_fetch or "").strip().lower()
     if previous_disable_history_fetch is None:
         os.environ["QR_DISABLE_STOCK_RESEARCH_HISTORY_FETCH"] = "1"
     try:
@@ -193,5 +194,7 @@ def attach_stock_research_backtest(
     finally:
         if previous_disable_history_fetch is None:
             os.environ.pop("QR_DISABLE_STOCK_RESEARCH_HISTORY_FETCH", None)
+        elif normalized_disable_history_fetch in {"0", "false", "no", "off"}:
+            os.environ["QR_DISABLE_STOCK_RESEARCH_HISTORY_FETCH"] = previous_disable_history_fetch
     if log_fn:
         log_fn(f"stockResearchBacktest 已按个股研究推送历史源派生{f' (tag={query_tag})' if query_tag else ''}")
