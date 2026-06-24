@@ -420,7 +420,7 @@ jobs:
 
       - name: Resolve stock research query tag
         id: stockresearch
-        if: ${{ (github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true') && steps.warmup.outputs.skip != 'true' && (github.event_name != 'schedule' || steps.tradeday.outputs.is_trade_today == 'true') && steps.pushmode.outputs.mode != 'intraday' && github.event_name != 'push' && ((github.event_name == 'schedule' && (steps.timecheck.outputs.mode == 'open_fore' || steps.timecheck.outputs.mode == 'eod')) || (github.event_name == 'workflow_dispatch' && github.event.inputs.stock_research_query_tag != '')) }}
+        if: ${{ (github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true') && steps.warmup.outputs.skip != 'true' && (github.event_name != 'schedule' || steps.tradeday.outputs.is_trade_today == 'true') && steps.pushmode.outputs.mode != 'intraday' && github.event_name != 'push' && ((github.event_name == 'schedule' && (steps.timecheck.outputs.mode == 'open_fore' || steps.timecheck.outputs.mode == 'eod')) || (github.event_name == 'workflow_dispatch' && (github.event.inputs.stock_research_query_tag != '' || steps.pushmode.outputs.mode == 'eod'))) }}
         run: |
           set -euo pipefail
           mode="${{ steps.pushmode.outputs.mode }}"
@@ -489,7 +489,7 @@ jobs:
 
       - name: Default stock research strategy
         id: stockresearchdefault
-        if: ${{ (github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true') && steps.warmup.outputs.skip != 'true' && (github.event_name != 'schedule' || steps.tradeday.outputs.is_trade_today == 'true') && steps.pushmode.outputs.mode != 'intraday' && (github.event_name == 'push' || (github.event_name == 'schedule' && steps.timecheck.outputs.mode != 'open_fore' && steps.timecheck.outputs.mode != 'eod') || (github.event_name == 'workflow_dispatch' && github.event.inputs.stock_research_query_tag == '')) }}
+        if: ${{ (github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true') && steps.warmup.outputs.skip != 'true' && (github.event_name != 'schedule' || steps.tradeday.outputs.is_trade_today == 'true') && steps.pushmode.outputs.mode != 'intraday' && (github.event_name == 'push' || (github.event_name == 'schedule' && steps.timecheck.outputs.mode != 'open_fore' && steps.timecheck.outputs.mode != 'eod') || (github.event_name == 'workflow_dispatch' && github.event.inputs.stock_research_query_tag == '' && steps.pushmode.outputs.mode != 'eod')) }}
         run: |
           set -euo pipefail
           {
@@ -808,7 +808,7 @@ jobs:
           PY
 
       - name: Validate eod stock research prediction pool
-        if: ${{ github.event_name == 'schedule' && steps.timecheck.outputs.mode == 'eod' && steps.timecheck.outputs.skip != 'true' && steps.warmup.outputs.skip != 'true' && steps.tradeday.outputs.is_trade_today == 'true' && steps.pushmode.outputs.mode != 'intraday' }}
+        if: ${{ ((github.event_name == 'schedule' && steps.timecheck.outputs.mode == 'eod') || (github.event_name == 'workflow_dispatch' && steps.pushmode.outputs.mode == 'eod')) && steps.timecheck.outputs.skip != 'true' && steps.warmup.outputs.skip != 'true' && steps.tradeday.outputs.is_trade_today == 'true' && steps.pushmode.outputs.mode != 'intraday' }}
         env:
           RUN_DATE: ${{ steps.pushmode.outputs.date10 }}
         run: |
@@ -846,7 +846,7 @@ jobs:
           PY
 
       - name: Validate eod stock research closeout
-        if: ${{ github.event_name == 'schedule' && steps.timecheck.outputs.mode == 'eod' && steps.timecheck.outputs.skip != 'true' && steps.warmup.outputs.skip != 'true' && steps.tradeday.outputs.is_trade_today == 'true' && steps.pushmode.outputs.mode != 'intraday' }}
+        if: ${{ ((github.event_name == 'schedule' && steps.timecheck.outputs.mode == 'eod') || (github.event_name == 'workflow_dispatch' && steps.pushmode.outputs.mode == 'eod')) && steps.timecheck.outputs.skip != 'true' && steps.warmup.outputs.skip != 'true' && steps.tradeday.outputs.is_trade_today == 'true' && steps.pushmode.outputs.mode != 'intraday' }}
         env:
           RUN_DATE: ${{ steps.pushmode.outputs.date10 }}
         run: |
@@ -865,7 +865,7 @@ jobs:
           PY
 
       - name: Validate eod account derivatives
-        if: ${{ github.event_name == 'schedule' && steps.timecheck.outputs.mode == 'eod' && steps.timecheck.outputs.skip != 'true' && steps.warmup.outputs.skip != 'true' && steps.tradeday.outputs.is_trade_today == 'true' && steps.pushmode.outputs.mode != 'intraday' }}
+        if: ${{ ((github.event_name == 'schedule' && steps.timecheck.outputs.mode == 'eod') || (github.event_name == 'workflow_dispatch' && steps.pushmode.outputs.mode == 'eod')) && steps.timecheck.outputs.skip != 'true' && steps.warmup.outputs.skip != 'true' && steps.tradeday.outputs.is_trade_today == 'true' && steps.pushmode.outputs.mode != 'intraday' }}
         env:
           RUN_DATE: ${{ steps.pushmode.outputs.date10 }}
         run: |
