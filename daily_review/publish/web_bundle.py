@@ -2872,6 +2872,8 @@ def _build_intraday_runtime_payload_from_market_data(md: dict) -> str:
     date10 = str((latest or {}).get("date") or md.get("date") or "").strip()
     updated_at = str((latest or {}).get("ts_bj") or snapshots_box.get("updated_at") or "").strip()
     source = str((latest or {}).get("provider") or (latest or {}).get("source") or "market_data.intradaySnapshots").strip()
+    indices = [dict(row) for row in (md.get("indices") or []) if isinstance(row, dict)][:3]
+    as_of = ((md.get("meta") or {}).get("asOf") if isinstance(md.get("meta"), dict) else {}) or {}
     payload = {
         "schema": "intraday_runtime_v1",
         "date": date10,
@@ -2883,6 +2885,10 @@ def _build_intraday_runtime_payload_from_market_data(md: dict) -> str:
             "market": ((md.get("live") or {}).get("market") if isinstance(md.get("live"), dict) else {}) or {},
             "alerts": ((md.get("live") or {}).get("alerts") if isinstance(md.get("live"), dict) else []) or [],
             "concepts": ((md.get("live") or {}).get("concepts") if isinstance(md.get("live"), dict) else []) or [],
+        },
+        "indices": indices,
+        "asOf": {
+            "indices": str(as_of.get("indices") or "").strip(),
         },
     }
     return json.dumps(payload, ensure_ascii=False)

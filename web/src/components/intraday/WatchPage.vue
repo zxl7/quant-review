@@ -172,6 +172,26 @@ const watchMarket = computed(() => {
   return { zt, zab, dt, lianban, max_lianban, zab_rate, amount }
 })
 
+const watchIndices = computed(() => {
+  const runtimeRows = Array.isArray((intradayRuntime.intradayRuntime.value as any)?.indices)
+    ? (intradayRuntime.intradayRuntime.value as any).indices
+    : []
+  const fallbackRows = Array.isArray(marketData.value?.indices) ? marketData.value.indices : []
+  const rows = (runtimeRows.length ? runtimeRows : fallbackRows).slice(0, 3)
+  return rows.map((row: any) => ({
+    code: String(row?.code || "").trim(),
+    name: String(row?.name || "").trim(),
+    val: String(row?.val || row?.price || "-").trim(),
+    chg: String(row?.chg || "").trim(),
+  }))
+})
+
+const watchIndicesAsOf = computed(() => {
+  const runtimeAsOf = String((intradayRuntime.intradayRuntime.value as any)?.asOf?.indices || "").trim()
+  if (runtimeAsOf) return runtimeAsOf
+  return String(marketData.value?.meta?.asOf?.indices || "").trim()
+})
+
 const watchTempCards = computed(() => {
   const rows = watchSnapshots.value || []
   const curr = watchCurrentSnap.value || {}
@@ -493,6 +513,19 @@ onBeforeUnmount(() => {
             </div>
             <div class="wb-alerts" v-if="((intradayRuntime.live.value?.alerts || marketData.live?.alerts) || []).length">
               <span class="wb-alert" v-for="(a, i) in (intradayRuntime.live.value?.alerts || marketData.live?.alerts || [])" :key="'wba-' + i" :class="a.level">{{ a.text }}</span>
+            </div>
+            <div class="wb-index-strip" v-if="watchIndices.length">
+              <div class="wb-index-strip-head">
+                <span>三大指数</span>
+                <span v-if="watchIndicesAsOf">{{ watchIndicesAsOf }}</span>
+              </div>
+              <div class="wb-index-strip-list">
+                <div class="wb-index-pill" v-for="idx in watchIndices" :key="idx.code || idx.name">
+                  <span class="wb-index-pill-name">{{ idx.name }}</span>
+                  <span class="wb-index-pill-val">{{ idx.val }}</span>
+                  <span class="wb-index-pill-chg" :class="{ up: idx.chg.startsWith('+'), down: idx.chg.startsWith('-') }">{{ idx.chg || '--' }}</span>
+                </div>
+              </div>
             </div>
             <div class="wb-alerts" v-if="liveError">
               <span class="wb-alert error">{{ liveError }}</span>

@@ -294,6 +294,29 @@ def build_base_market_data(
     codes_entry: dict[str, dict[str, Any]],
     theme_trend_by_day: dict[str, dict[str, int]],
 ) -> MarketData:
+    index_rows = [dict(row) for row in (indices_for_report or []) if isinstance(row, dict)]
+    if len(index_rows) < 3 and isinstance(indices_rt, list):
+        seen_codes = {str(row.get("code") or "").strip() for row in index_rows if str(row.get("code") or "").strip()}
+        for row in indices_rt:
+            if not isinstance(row, dict):
+                continue
+            code = str(row.get("code") or "").strip()
+            name = str(row.get("name") or "").strip()
+            if not code or code in seen_codes or not name:
+                continue
+            index_rows.append(
+                {
+                    "name": name,
+                    "code": code,
+                    "val": format_index_val(row.get("val", "")),
+                    "chg": format_index_pct(row.get("chg", "")),
+                    "cje": row.get("cje", 0),
+                }
+            )
+            seen_codes.add(code)
+            if len(index_rows) >= 3:
+                break
+
     market_data: MarketData = {
         "date": actual_date,
         "dateNote": date_note,
@@ -302,7 +325,7 @@ def build_base_market_data(
             "version": "1.0",
             "generatedAt": generated_at,
         },
-        "indices": indices_for_report or [
+        "indices": index_rows or [
             {
                 "name": row.get("name", ""),
                 "code": row.get("code", ""),

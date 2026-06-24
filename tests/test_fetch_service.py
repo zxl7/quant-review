@@ -96,5 +96,32 @@ class UpdateIndexKlineCacheTest(unittest.TestCase):
         self.assertEqual(result["399006.SZ"]["items"][0]["pc"], "1.4")
 
 
+class BuildBaseMarketDataTest(unittest.TestCase):
+    def test_build_base_market_data_backfills_missing_report_index_from_realtime(self) -> None:
+        market_data = fetch_service.build_base_market_data(
+            actual_date="2026-06-24",
+            date_note="trade_day",
+            indices_asof="14:26:01",
+            generated_at="2026-06-24 14:26:01",
+            indices_for_report=[
+                {"name": "深证成指", "code": "399001.SZ", "val": "10888.12", "chg": "-0.23%"},
+                {"name": "创业板指", "code": "399006.SZ", "val": "2211.09", "chg": "+1.02%"},
+            ],
+            indices_rt=[
+                {"name": "上证指数", "code": "000001.SH", "val": 3501.23, "chg": 0.56, "cje": 123456789},
+                {"name": "深证成指", "code": "399001.SZ", "val": 10888.12, "chg": -0.23, "cje": 223456789},
+                {"name": "创业板指", "code": "399006.SZ", "val": 2211.09, "chg": 1.02, "cje": 323456789},
+            ],
+            raw_pools={},
+            codes_map={},
+            codes_entry={},
+            theme_trend_by_day={},
+        )
+
+        self.assertEqual([row["name"] for row in market_data["indices"]], ["深证成指", "创业板指", "上证指数"])
+        self.assertEqual(market_data["indices"][-1]["code"], "000001.SH")
+        self.assertEqual(market_data["indices"][-1]["val"], "3501.23")
+
+
 if __name__ == "__main__":
     unittest.main()

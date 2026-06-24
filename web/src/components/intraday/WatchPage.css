@@ -304,6 +304,67 @@
           font-weight: 850;
           color: var(--text-secondary);
 }
+.wb-index-strip {
+  margin-top: 10px;
+          padding: 10px 12px;
+          border-radius: 12px;
+          border: 1px solid rgba(148, 163, 184, 0.14);
+          background: rgba(255, 255, 255, 0.48);
+}
+[data-theme="dark"] .wb-index-strip {
+  background: rgba(15, 23, 42, 0.35);
+          border-color: rgba(148, 163, 184, 0.18);
+}
+.wb-index-strip-head {
+  display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 8px;
+          font-size: 10px;
+          font-weight: 900;
+          color: var(--text-muted);
+          margin-bottom: 8px;
+}
+.wb-index-strip-list {
+  display: grid;
+          gap: 6px;
+}
+.wb-index-pill {
+  display: grid;
+          grid-template-columns: minmax(0, 1fr) auto auto;
+          align-items: center;
+          gap: 8px;
+          padding: 7px 8px;
+          border-radius: 10px;
+          background: rgba(148, 163, 184, 0.08);
+}
+.wb-index-pill-name {
+  min-width: 0;
+          font-size: 11px;
+          font-weight: 950;
+          color: var(--text-primary);
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+}
+.wb-index-pill-val {
+  font-size: 11px;
+          font-weight: 900;
+          color: var(--text-secondary);
+          font-variant-numeric: tabular-nums;
+}
+.wb-index-pill-chg {
+  font-size: 11px;
+          font-weight: 1000;
+          font-variant-numeric: tabular-nums;
+          color: var(--text-muted);
+}
+.wb-index-pill-chg.up {
+  color: #e60012;
+}
+.wb-index-pill-chg.down {
+  color: #00a63e;
+}
 .wb-sidebar-empty {
   margin-top: 10px;
           font-size: 11px;
