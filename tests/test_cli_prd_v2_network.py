@@ -310,7 +310,14 @@ class RunFetchAndRebuildDailySnapshotLimitTest(unittest.TestCase):
                 market_path.write_text(json.dumps(market_data, ensure_ascii=False, indent=2), encoding="utf-8")
                 return market_path
 
-            def fake_attach_stock_research_backtest(*, market_data: dict, sync_source: bool, query_tag: str, log_fn) -> None:
+            def fake_attach_stock_research_backtest(
+                *,
+                market_data: dict,
+                sync_source: bool,
+                query_tag: str,
+                allow_history_fetch,
+                log_fn,
+            ) -> None:
                 market_data["stockResearchBacktest"] = {
                     "realtimeBuy": {
                         "trade_date": "2026-06-23",

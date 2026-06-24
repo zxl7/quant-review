@@ -1076,13 +1076,13 @@ def run_fetch_and_rebuild(date: str | None, stock_research_query_tag: str = "") 
             if isinstance(final_market_data, dict):
                 inject_intraday_snapshots(root=root, date=actual_date, market_data=final_market_data)
                 if refresh_stock_research_backtest:
-                attach_stock_research_backtest(
-                    market_data=final_market_data,
-                    sync_source=True,
-                    query_tag=stock_research_query_tag,
-                    allow_history_fetch=allow_network,
-                    log_fn=lambda msg: _log(f"[final-sync] {msg}"),
-                )
+                    attach_stock_research_backtest(
+                        market_data=final_market_data,
+                        sync_source=True,
+                        query_tag=stock_research_query_tag,
+                        allow_history_fetch=True,
+                        log_fn=lambda msg: _log(f"[final-sync] {msg}"),
+                    )
                     _log("最终 market_data 已同步最新盯盘切片/个股回测快照")
                 else:
                     preserved_today_backtest = _same_day_stock_research_backtest(final_market_data, actual_date)

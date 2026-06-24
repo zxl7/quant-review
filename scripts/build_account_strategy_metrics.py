@@ -85,7 +85,6 @@ def build_account_strategy_metrics() -> dict[str, Any]:
     from scripts.build_stock_research_backtest import build_stock_research_backtest_payload
 
     previous_disable_history_fetch = os.environ.get("QR_DISABLE_STOCK_RESEARCH_HISTORY_FETCH")
-    normalized_disable_history_fetch = str(previous_disable_history_fetch or "").strip().lower()
     if previous_disable_history_fetch is None:
         os.environ["QR_DISABLE_STOCK_RESEARCH_HISTORY_FETCH"] = "1"
     try:
@@ -93,7 +92,7 @@ def build_account_strategy_metrics() -> dict[str, Any]:
     finally:
         if previous_disable_history_fetch is None:
             os.environ.pop("QR_DISABLE_STOCK_RESEARCH_HISTORY_FETCH", None)
-        elif normalized_disable_history_fetch in {"0", "false", "no", "off"}:
+        else:
             os.environ["QR_DISABLE_STOCK_RESEARCH_HISTORY_FETCH"] = previous_disable_history_fetch
     records = payload.get("records") if isinstance(payload, dict) else []
     valid_records = [row for row in records if isinstance(row, dict)]
