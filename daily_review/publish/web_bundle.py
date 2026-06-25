@@ -2959,8 +2959,10 @@ def build_web_data(date8: str, source: Optional[str] = None) -> Path:
     (dist_dir / "intraday_runtime.json").write_text(intraday_runtime_payload, encoding="utf-8")
     if tp_payload != "{}":
         (dist_dir / "tomorrow_picks.json").write_text(tp_payload, encoding="utf-8")
+        (dist_dir / "tomorrow_picks.js").write_text(f"window.__TOMORROW_PICKS_DATA__={tp_payload};", encoding="utf-8")
     if em_payload != "{}":
         (dist_dir / "eastmoney_tomorrow.json").write_text(em_payload, encoding="utf-8")
+        (dist_dir / "eastmoney_tomorrow.js").write_text(f"window.__EASTMONEY_TOMORROW_DATA__={em_payload};", encoding="utf-8")
     if resonance_payload != "[]":
         (dist_dir / "intraday_resonance.json").write_text(resonance_payload, encoding="utf-8")
 

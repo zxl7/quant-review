@@ -82,12 +82,77 @@ async function hydrateStocksWithQuote(stocks: TomorrowStock[]): Promise<Tomorrow
   }
 }
 
+async function tryLoadEastmoneyScript(src: string) {
+  return await new Promise<boolean>((resolve) => {
+    const existed = document.querySelector(`script[data-eastmoney-data="${src}"]`) as HTMLScriptElement | null;
+    if (existed) {
+      existed.addEventListener('load', () => resolve(true), { once: true });
+      existed.addEventListener('error', () => resolve(false), { once: true });
+      resolve(Boolean((window as any).__EASTMONEY_TOMORROW_DATA__));
+      return;
+    }
+
+    const script = document.createElement('script');
+    script.src = src;
+    script.async = true;
+    script.dataset.eastmoneyData = src;
+    script.onload = () => resolve(Boolean((window as any).__EASTMONEY_TOMORROW_DATA__));
+    script.onerror = () => resolve(false);
+    document.head.appendChild(script);
+  });
+}
+
 /** 读取注入的东方财富明日主题数据 */
-function getInjectedData(): { themes: TomorrowTheme[]; stocksByTheme: Record<string, TomorrowStock[]> } | null {
+async function getInjectedData(): Promise<{ themes: TomorrowTheme[]; stocksByTheme: Record<string, TomorrowStock[]> } | null> {
   try {
-    const w = window as any;
-    const injected = w.__EASTMONEY_TOMORROW_DATA__;
+    // 首先尝试直接从 window 读取已注入的数据
+    let injected = (window as any).__EASTMONEY_TOMORROW_DATA__;
+    if (!injected || !injected.themes || !injected.themes.length) {
+      // 尝试通过 script 加载
+      const scriptUrls = [
+        './eastmoney_tomorrow.js',
+        'eastmoney_tomorrow.js',
+        '/eastmoney_tomorrow.js',
+      ];
+      for (const src of scriptUrls) {
+        try {
+          const ok = await tryLoadEastmoneyScript(src);
+          if (ok) {
+            injected = (window as any).__EASTMONEY_TOMORROW_DATA__;
+            if (injected && injected.themes && injected.themes.length) {
+              break;
+            }
+          }
+        } catch {
+          // 继续尝试下一个
+        }
+      }
+    }
+
+    // 如果还是没有，尝试直接 fetch 读取 json 文件
+    if (!injected || !injected.themes || !injected.themes.length) {
+      const jsonUrls = [
+        './eastmoney_tomorrow.json',
+        'eastmoney_tomorrow.json',
+        '/eastmoney_tomorrow.json',
+      ];
+      for (const url of jsonUrls) {
+        try {
+          const resp = await fetch(url);
+          if (resp.ok) {
+            injected = await resp.json();
+            if (injected && injected.themes && injected.themes.length) {
+              break;
+            }
+          }
+        } catch {
+          // 继续尝试下一个
+        }
+      }
+    }
+
     if (!injected || !injected.themes || !injected.themes.length) return null;
+    
     // 校验基础字段完整性
     const themes: TomorrowTheme[] = injected.themes.map((t: any) => ({
       id: t.id || '',
@@ -147,7 +212,7 @@ export function useTomorrowPicks() {
     isUsingInjected.value = false;
 
     // Tier 1: 预注入数据（17:00全量fetch下载好，最可靠）
-    const injected = getInjectedData();
+    const injected = await getInjectedData();
     if (injected && injected.themes.length) {
       themes.value = injected.themes;
       isUsingInjected.value = true;
@@ -240,7 +305,7 @@ export function useTomorrowPicks() {
 
     // Tier 1: 先查预注入数据
     if (isUsingInjected.value) {
-      const injected = getInjectedData();
+      const injected = await getInjectedData();
       if (injected && injected.stocksByTheme[themeCode]) {
         stocks.value = await hydrateStocksWithQuote(injected.stocksByTheme[themeCode]);
         stocksLoading.value = false;
@@ -297,7 +362,7 @@ export function useTomorrowPicks() {
 
     // 预注入数据中查找
     if (isUsingInjected.value) {
-      const injected = getInjectedData();
+      const injected = await getInjectedData();
       if (injected && injected.stocksByTheme[themeCode]) {
         stocks.value = await hydrateStocksWithQuote(injected.stocksByTheme[themeCode]);
         return;
