@@ -631,8 +631,6 @@ const metrics = computed(() => {
   const record = selectedStrategyMetricRecord.value
   const defs = [
     { key: "next_day", label: "隔日收益" },
-    { key: "hold_2d", label: "2日收益" },
-    { key: "hold_3d", label: "3日收益" },
   ]
   if (record?.metrics && typeof record.metrics === "object") {
     return defs.map((item) => ({
@@ -758,8 +756,6 @@ function buildDateScopedMetrics(rows: any[]) {
   const tradableRows = rows.filter((row) => !!row?.performance?.open_check?.can_enter)
   const defs = [
     { key: "next_day", label: "隔日收益" },
-    { key: "hold_2d", label: "2日收益" },
-    { key: "hold_3d", label: "3日收益" },
   ]
   return defs.map((item) => {
     const coveredRows = tradableRows.filter((row) => String(row?.performance?.[item.key]?.status || "") === "covered")
@@ -1120,22 +1116,22 @@ function rowOpenPrice(row: any) {
       <div class="bt-metrics-grid">
         <div class="bt-metric-card" v-for="item in metrics" :key="item.key">
           <div class="section-header">{{ item.label }}</div>
-          <div class="bt-metric-rows" style="border:none">
-            <div class="bt-metric-row">
+          <div class="bt-metric-inline-grid">
+            <div class="bt-metric-inline-card">
               <div>
                 <div class="bt-metric-k">覆盖样本</div>
                 <div class="bt-metric-note">可执行 {{ metricScope(item, 'tradable')?.eligible ?? 0 }} 笔，已覆盖 {{ metricScope(item, 'tradable')?.covered ?? 0 }} 笔</div>
               </div>
               <div class="bt-metric-v">{{ metricScope(item, "tradable")?.coverage ?? 0 }}%</div>
             </div>
-            <div class="bt-metric-row">
+            <div class="bt-metric-inline-card">
               <div>
                 <div class="bt-metric-k">胜率</div>
                 <div class="bt-metric-note">上涨 {{ metricScope(item, 'tradable')?.win_count ?? 0 }} ｜ 平 {{ metricScope(item, 'tradable')?.flat_count ?? 0 }} ｜ 下跌 {{ metricScope(item, 'tradable')?.loss_count ?? 0 }}</div>
               </div>
               <div class="bt-metric-v">{{ metricScope(item, "tradable")?.win_rate ?? 0 }}%</div>
             </div>
-            <div class="bt-metric-row">
+            <div class="bt-metric-inline-card">
               <div>
                 <div class="bt-metric-k">平均收益</div>
                 <div class="bt-metric-note">平均盈利 {{ metricScope(item, 'tradable')?.avg_win_return ?? 0 }}% ｜ 平均回撤 {{ metricScope(item, 'tradable')?.avg_loss_return ?? 0 }}%</div>

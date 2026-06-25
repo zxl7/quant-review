@@ -1140,6 +1140,18 @@ def _is_fresh_stock_research_backtest(
         first = current_pool_records[0] if isinstance(current_pool_records[0], dict) else {}
         if "placement_label" not in first or "relay_rank" not in first or "watch_rank" not in first:
             return False
+
+    lifecycle = payload.get("lifecycle") if isinstance(payload.get("lifecycle"), dict) else {}
+    quote_state = str(lifecycle.get("quote_state") or "").strip()
+    if quote_state == "missing" and source_trade_date:
+        try:
+            from daily_review.application.workflow_schedule import resolve_auction_snapshot_prefetch_plan
+
+            prefetch_plan = resolve_auction_snapshot_prefetch_plan(ROOT / "cache", source_trade_date)
+        except Exception:
+            prefetch_plan = {}
+        if isinstance(prefetch_plan, dict) and not bool(prefetch_plan.get("should_prefetch", True)):
+            return False
     return True
 
 

@@ -346,6 +346,34 @@
   white-space: nowrap;
 }
 
+.bt-metric-inline-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 10px;
+}
+
+.bt-metric-inline-card {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  min-width: 0;
+  padding: 14px;
+  border-radius: 14px;
+  border: 1px solid color-mix(in oklab, var(--border) 78%, transparent);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+[data-theme="dark"] .bt-metric-inline-card {
+  border-color: rgba(148, 163, 184, 0.16);
+  background: rgba(15, 23, 42, 0.18);
+}
+
+.bt-metric-inline-card > div:first-child {
+  min-width: 0;
+}
+
 .bt-split-row {
   margin-top: 12px;
   display: grid;
@@ -556,6 +584,10 @@
     grid-template-columns: 1fr;
   }
 
+  .bt-metric-inline-grid {
+    grid-template-columns: 1fr;
+  }
+
   .bt-filter-box {
     width: 100%;
     min-width: 0;
@@ -570,7 +602,6 @@
     grid-template-columns: 1fr;
   }
 
-  .bt-metric-row,
   .bt-live-head,
   .bt-mini-head,
   .bt-spotlight-item {

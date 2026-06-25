@@ -1507,6 +1507,69 @@ class StockResearchBacktestPublishFreshnessTest(unittest.TestCase):
             )
         )
 
+    def test_publish_missing_payload_is_not_fresh_when_same_day_snapshot_is_already_ready(self) -> None:
+        payload = {
+            "schema": "stock_research_backtest_v2",
+            "meta": {
+                "latest_recommendation_date": "2026-06-24",
+                "active_trade_date": "2026-06-25",
+                "latest_closed_trade_date": "2026-06-25",
+            },
+            "summary": {
+                "total_samples": 10,
+                "source_samples": 10,
+                "filtered_non_backtest_samples": 0,
+                "eligible_samples": 10,
+                "realtime_candidate_count": 10,
+                "realtime_buy_count": 0,
+                "realtime_pending_count": 0,
+                "realtime_unavailable_count": 10,
+            },
+            "lifecycle": {
+                "stage": "auction_snapshot_missing",
+                "quote_state": "missing",
+            },
+            "realtimeBuy": {
+                "trade_date": "2026-06-25",
+                "reference_date": "2026-06-24",
+                "candidate_count": 10,
+                "quoted_count": 0,
+                "quote_time": "",
+                "diagnostics": {"source": "unavailable"},
+            },
+            "currentPoolRecords": [
+                {"code": "000001", "placement_label": "接力候选", "relay_rank": 1, "watch_rank": 0}
+                for _ in range(10)
+            ],
+            "displayRecords": [{"code": "000001"}],
+            "historicalSnapshots": [],
+            "records": [{"code": "000001"}],
+        }
+
+        with patch.object(
+            web_bundle,
+            "ROOT",
+            Path("/tmp/quant-review-test"),
+        ), patch(
+            "daily_review.application.workflow_schedule.resolve_auction_snapshot_prefetch_plan",
+            return_value={
+                "trade_date10": "2026-06-25",
+                "should_prefetch": False,
+                "status": "auction_snapshot_ready_skip",
+                "ready_source": "prefetched_snapshot",
+            },
+        ):
+            self.assertFalse(
+                web_bundle._is_fresh_stock_research_backtest(
+                    payload,
+                    latest_source_snapshot={
+                        "trade_date": "2026-06-25",
+                        "recommendation_date": "2026-06-24",
+                        "rows_count": 10,
+                    },
+                )
+            )
+
 
 class TradeDateResolveTest(unittest.TestCase):
     def test_after_close_today_keeps_today_even_if_kline_list_lags(self) -> None:
