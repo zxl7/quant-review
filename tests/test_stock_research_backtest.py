@@ -548,9 +548,10 @@ class StockResearchBacktestRowsTest(unittest.TestCase):
 
         self.assertEqual(anchors["latest_closed_trade_date"], "2026-06-22")
         self.assertEqual(anchors["latest_closed_recommendation_date"], "2026-06-19")
-        self.assertEqual(anchors["default_display_trade_date"], "2026-06-23")
-        self.assertEqual(anchors["default_display_recommendation_date"], "2026-06-22")
+        self.assertEqual(anchors["default_display_trade_date"], "2026-06-22")
+        self.assertEqual(anchors["default_display_recommendation_date"], "2026-06-19")
         self.assertTrue(anchors["has_pending_next_trade_day"])
+        self.assertIn("已生成下一交易日 2026-06-23 的待验证池", anchors["default_display_note"])
 
     def test_default_display_anchors_prefer_same_day_realtime_snapshot_when_ready(self) -> None:
         realtime_buy = {
@@ -1287,8 +1288,8 @@ class StockResearchBacktestPublishFreshnessTest(unittest.TestCase):
         with patch.object(backtest, "_now_bj", return_value=real_datetime(2026, 6, 22, 16, 0, 0, tzinfo=backtest.TZ_BJ)):
             upgraded = backtest.upgrade_stock_research_backtest_payload(payload)
 
-        self.assertEqual(upgraded["meta"]["default_display_trade_date"], "2026-06-23")
-        self.assertEqual(upgraded["meta"]["default_display_recommendation_date"], "2026-06-22")
+        self.assertEqual(upgraded["meta"]["default_display_trade_date"], "2026-06-22")
+        self.assertEqual(upgraded["meta"]["default_display_recommendation_date"], "2026-06-19")
         self.assertTrue(upgraded["meta"]["has_pending_next_trade_day"])
 
     def test_upgrade_corrects_invalid_trade_dates_before_recomputing_anchors(self) -> None:
@@ -1330,8 +1331,8 @@ class StockResearchBacktestPublishFreshnessTest(unittest.TestCase):
 
         self.assertEqual(upgraded["records"][0]["trade_date10"], "2026-06-22")
         self.assertEqual(upgraded["historicalSnapshots"][0]["trade_date"], "2026-06-22")
-        self.assertEqual(upgraded["meta"]["default_display_trade_date"], "2026-06-23")
-        self.assertEqual(upgraded["meta"]["default_display_recommendation_date"], "2026-06-22")
+        self.assertEqual(upgraded["meta"]["default_display_trade_date"], "2026-06-22")
+        self.assertEqual(upgraded["meta"]["default_display_recommendation_date"], "2026-06-18")
 
     def test_upgrade_prefers_today_pending_batch_over_historical_closed_loop(self) -> None:
         payload = {
@@ -1371,6 +1372,50 @@ class StockResearchBacktestPublishFreshnessTest(unittest.TestCase):
         self.assertEqual(upgraded["lifecycle"]["stage"], "auction_snapshot_missing")
         self.assertIn("不再自动跳到历史闭环结果", upgraded["lifecycle"]["stage_note"])
         self.assertIn("当前仅保留今日待验证池", upgraded["lifecycle"]["quote_state_note"])
+
+    def test_upgrade_prefers_latest_closed_day_when_future_pending_next_day_exists(self) -> None:
+        payload = {
+            "schema": "stock_research_backtest_v2",
+            "meta": {
+                "latest_recommendation_date": "2026-06-25",
+                "active_trade_date": "2026-06-26",
+                "latest_closed_trade_date": "2026-06-25",
+            },
+            "summary": {
+                "total_samples": 2,
+                "source_samples": 2,
+                "filtered_non_backtest_samples": 0,
+                "eligible_samples": 2,
+                "realtime_candidate_count": 1,
+                "realtime_buy_count": 0,
+                "realtime_pending_count": 1,
+                "realtime_unavailable_count": 0,
+            },
+            "lifecycle": {"stage": "post_close_wait_auction", "quote_state": "waiting_trade_day"},
+            "realtimeBuy": {
+                "trade_date": "2026-06-26",
+                "reference_date": "2026-06-25",
+                "quoted_count": 0,
+                "quote_time": "",
+                "diagnostics": {"source": "future_trade_day_guard"},
+            },
+            "currentPoolRecords": [{"code": "000002", "date10": "2026-06-25", "trade_date10": "2026-06-26"}],
+            "displayRecords": [{"code": "000001", "date10": "2026-06-24", "trade_date10": "2026-06-25"}],
+            "historicalSnapshots": [{"reference_date": "2026-06-24", "trade_date": "2026-06-25"}],
+            "records": [{"code": "000001", "date10": "2026-06-24", "trade_date10": "2026-06-25"}],
+        }
+
+        with patch.object(backtest, "_now_bj", return_value=real_datetime(2026, 6, 25, 16, 0, 0, tzinfo=backtest.TZ_BJ)):
+            upgraded = backtest.upgrade_stock_research_backtest_payload(payload)
+
+        self.assertEqual(upgraded["meta"]["active_trade_date"], "2026-06-26")
+        self.assertEqual(upgraded["meta"]["latest_closed_trade_date"], "2026-06-25")
+        self.assertEqual(upgraded["meta"]["default_display_trade_date"], "2026-06-25")
+        self.assertEqual(upgraded["meta"]["default_display_recommendation_date"], "2026-06-24")
+        self.assertTrue(upgraded["meta"]["has_pending_next_trade_day"])
+        self.assertEqual(upgraded["lifecycle"]["quote_state"], "waiting_trade_day")
+        self.assertEqual(upgraded["lifecycle"]["stage"], "post_close_wait_auction")
+        self.assertIn("页面默认仍展示最近已闭环日 2026-06-25", upgraded["lifecycle"]["quote_state_note"])
 
     def test_publish_rebuilds_when_source_history_is_newer_than_payload(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
@@ -1502,6 +1547,49 @@ class StockResearchBacktestPublishFreshnessTest(unittest.TestCase):
                 latest_source_snapshot={
                     "trade_date": "2026-06-24",
                     "recommendation_date": "2026-06-23",
+                    "rows_count": 8,
+                },
+            )
+        )
+
+    def test_fresh_backtest_allows_waiting_trade_day_when_closed_day_matches_latest_recommendation(self) -> None:
+        payload = {
+            "schema": "stock_research_backtest_v2",
+            "meta": {
+                "latest_recommendation_date": "2026-06-25",
+                "active_trade_date": "2026-06-26",
+                "latest_closed_trade_date": "2026-06-25",
+            },
+            "summary": {
+                "total_samples": 8,
+                "source_samples": 8,
+                "filtered_non_backtest_samples": 0,
+                "eligible_samples": 4,
+                "realtime_candidate_count": 8,
+                "realtime_buy_count": 0,
+                "realtime_pending_count": 8,
+                "realtime_unavailable_count": 0,
+            },
+            "lifecycle": {
+                "stage": "post_close_wait_auction",
+                "quote_state": "waiting_trade_day",
+            },
+            "realtimeBuy": {"trade_date": "2026-06-26", "reference_date": "2026-06-25"},
+            "currentPoolRecords": [
+                {"code": "000001", "placement_label": "接力候选", "relay_rank": 1, "watch_rank": 0}
+                for _ in range(8)
+            ],
+            "displayRecords": [{"code": "000001", "date10": "2026-06-24", "trade_date10": "2026-06-25"}],
+            "historicalSnapshots": [{"reference_date": "2026-06-24", "trade_date": "2026-06-25"}],
+            "records": [{"code": "000001", "date10": "2026-06-24", "trade_date10": "2026-06-25"}],
+        }
+
+        self.assertTrue(
+            web_bundle._is_fresh_stock_research_backtest(
+                payload,
+                latest_source_snapshot={
+                    "trade_date": "2026-06-26",
+                    "recommendation_date": "2026-06-25",
                     "rows_count": 8,
                 },
             )

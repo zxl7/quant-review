@@ -349,6 +349,9 @@ const defaultRecommendationDate = computed(() => {
   if (defaultDisplayRecommendationDateMeta.value && availableRecommendationDates.value.includes(defaultDisplayRecommendationDateMeta.value)) {
     return defaultDisplayRecommendationDateMeta.value
   }
+  if (hasPendingNextTradeDay.value && latestClosedRecommendationDate.value) {
+    return latestClosedRecommendationDate.value
+  }
   if (latestClosedRecommendationDate.value) {
     return latestClosedRecommendationDate.value
   }
@@ -517,6 +520,9 @@ const summaryHeaderSubtitle = computed(() => {
   if (!isViewingCurrentRecommendation.value && selectedRecommendationDate.value) {
     const latestLabel = hasPendingNextTradeDay.value && latestRecommendationDate.value ? `；切到 ${latestRecommendationDate.value} 可看下一交易日待验证推荐` : ""
     const tradeDate = selectedResultTradeDate.value || "-"
+    if (hasPendingNextTradeDay.value && defaultDisplayRecommendationDateMeta.value === selectedRecommendationDate.value) {
+      return `今天是 ${marketSessionDate.value || tradeDate}，页面默认先展示最近已闭环结果 ${tradeDate}（对应推荐日 ${selectedRecommendationDate.value}）；${latestRecommendationDate.value} 这批只作为下一交易日待验证推荐保留${latestLabel}。`
+    }
     if (isDefaultSelection.value && marketSessionDate.value) {
       if (isSkippedMissingClosedDay.value) {
         return `今天是 ${marketSessionDate.value}，当天闭环缺失时会自动跳过；当前展示最近一个有数据的闭环日 ${tradeDate}（对应推荐日 ${selectedRecommendationDate.value}）${latestLabel}。`
@@ -584,11 +590,11 @@ function recommendationOptionLabel(date10: string) {
   if (recommendationDate === latestRecommendationDate.value && isTodaySnapshotMissing.value) {
     return tradeDate ? `${tradeDate} 快照缺失（推荐于 ${recommendationDate}）` : `${recommendationDate} · 快照缺失`
   }
+  if (hasPendingNextTradeDay.value && recommendationDate === latestRecommendationDate.value) {
+    return tradeDate ? `${tradeDate} 待验证（推荐于 ${recommendationDate}）` : `${recommendationDate} · 待验证`
+  }
   if (recommendationDate === defaultDisplayRecommendationDateMeta.value) {
     return tradeDate ? `${tradeDate} 闭环（默认，推荐于 ${recommendationDate}）` : `${recommendationDate} · 闭环（默认）`
-  }
-  if (recommendationDate === latestRecommendationDate.value && hasPendingNextTradeDay.value) {
-    return tradeDate ? `${tradeDate} 待验证（推荐于 ${recommendationDate}）` : `${recommendationDate} · 待验证`
   }
   return tradeDate ? `${tradeDate} 闭环（推荐于 ${recommendationDate}）` : recommendationDate
 }

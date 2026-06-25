@@ -1127,10 +1127,10 @@ def _is_fresh_stock_research_backtest(
     source_trade_date = str(latest_source_snapshot.get("trade_date") or "").strip()
     source_recommendation_date = str(latest_source_snapshot.get("recommendation_date") or "").strip()
     source_rows_count = _to_int(latest_source_snapshot.get("rows_count"), 0)
+    lifecycle = payload.get("lifecycle") if isinstance(payload.get("lifecycle"), dict) else {}
+    quote_state = str(lifecycle.get("quote_state") or "").strip()
 
     if source_trade_date and active_trade_date != source_trade_date:
-        return False
-    if source_trade_date and latest_closed_trade_date and latest_closed_trade_date < source_trade_date:
         return False
     if source_recommendation_date and latest_recommendation_date != source_recommendation_date:
         return False
@@ -1140,9 +1140,14 @@ def _is_fresh_stock_research_backtest(
         first = current_pool_records[0] if isinstance(current_pool_records[0], dict) else {}
         if "placement_label" not in first or "relay_rank" not in first or "watch_rank" not in first:
             return False
+    if source_trade_date and latest_closed_trade_date and latest_closed_trade_date < source_trade_date:
+        if not (
+            quote_state == "waiting_trade_day"
+            and source_recommendation_date
+            and latest_closed_trade_date >= source_recommendation_date
+        ):
+            return False
 
-    lifecycle = payload.get("lifecycle") if isinstance(payload.get("lifecycle"), dict) else {}
-    quote_state = str(lifecycle.get("quote_state") or "").strip()
     if quote_state == "missing" and source_trade_date:
         try:
             from daily_review.application.workflow_schedule import resolve_auction_snapshot_prefetch_plan

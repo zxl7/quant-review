@@ -920,7 +920,8 @@ def _resolve_display_anchors(
         and active_trade_date10 <= today10
         and not _has_valid_current_realtime_snapshot_payload(realtime_buy, active_trade_date10=active_trade_date10)
     )
-    if has_current_plan:
+    has_pending_next_trade_day = bool(current_pool_rows and active_trade_date10 and active_trade_date10 > today10)
+    if has_current_plan and not has_pending_next_trade_day:
         current_reference_dates = sorted(
             {
                 str(row.get("date10") or "").strip()
@@ -948,12 +949,16 @@ def _resolve_display_anchors(
     latest_closed_recommendation_date10 = str(latest_closed.get("recommendation_date") or "").strip()
     default_display_trade_date10 = str(default_display.get("trade_date") or "").strip()
     default_display_recommendation_date10 = str(default_display.get("recommendation_date") or "").strip()
-    has_pending_next_trade_day = bool(current_pool_rows and active_trade_date10 and active_trade_date10 > today10)
 
     if is_today_pending_or_missing and default_display_trade_date10 and default_display_recommendation_date10:
         default_display_note = (
             f"页面默认停留在 {default_display_trade_date10} 这批待验证结果（对应推荐日 {default_display_recommendation_date10}），"
             "不会自动回退到历史闭环。"
+        )
+    elif has_pending_next_trade_day and latest_closed_trade_date10 and default_display_trade_date10 and default_display_recommendation_date10:
+        default_display_note = (
+            f"已生成下一交易日 {active_trade_date10 or '-'} 的待验证池，"
+            f"页面默认仍展示最近已闭环日 {default_display_trade_date10}（对应推荐日 {default_display_recommendation_date10}）。"
         )
     elif default_display_trade_date10 and default_display_recommendation_date10:
         default_display_note = (
@@ -1022,7 +1027,8 @@ def _build_lifecycle(
             quote_state = "waiting_trade_day"
             quote_state_label = "等待明日竞价"
             quote_state_note = (
-                f"盘后样本已经推到推荐日 {latest_recommendation_date10 or '-'}，等待 {active_trade_date10} 的 09:25-09:30 竞价快照。"
+                f"盘后样本已经推到推荐日 {latest_recommendation_date10 or '-'}，已生成 {active_trade_date10} 的待验证池；"
+                "等待明日 09:25-09:30 竞价快照。"
                 f" {default_display_note}"
             ).strip()
         elif active_trade_date10 and active_trade_date10 == today10:
@@ -1063,8 +1069,8 @@ def _build_lifecycle(
             stage = "post_close_wait_auction"
             stage_label = "盘后待验证"
             stage_note = (
-                f"收盘后样本已经更新到推荐日 {latest_recommendation_date10 or '-'}，当前先展示待验证池；"
-                f"到 {active_trade_date10 or '-'} 09:25-09:30 再补真实竞价结果。 {default_display_note}"
+                f"收盘后样本已经更新到推荐日 {latest_recommendation_date10 or '-'}；"
+                f"{active_trade_date10 or '-'} 这批待验证推荐已准备好，明日 09:25-09:30 再补真实竞价结果。 {default_display_note}"
             ).strip()
         else:
             stage = "auction_snapshot_missing"
