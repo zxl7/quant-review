@@ -259,6 +259,42 @@ class WorkflowScheduleTest(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             cache_dir = Path(tmp) / "cache"
             cache_dir.mkdir()
+            (cache_dir / "market_data-20260622.json").write_text(
+                json.dumps(
+                    {
+                        "date": "2026-06-22",
+                        "stockResearchBacktest": {
+                            "realtimeBuy": {
+                                "trade_date": "2026-06-22",
+                                "reference_date": "2026-06-19",
+                                "candidate_count": 1,
+                                "quote_time": "2026-06-22 09:25:03",
+                                "diagnostics": {"source": "forced_query"},
+                            }
+                        },
+                    },
+                    ensure_ascii=False,
+                ),
+                encoding="utf-8",
+            )
+
+            plan = resolve_stock_research_query_plan(
+                mode="full",
+                trade_date10="2026-06-22",
+                is_trade_today=True,
+                input_query_tag="fore",
+                cache_dir=cache_dir,
+            )
+
+        self.assertEqual(plan["effective_query_tag"], "")
+        self.assertEqual(plan["resolution_reason"], "manual_fore_snapshot_ready_reuse")
+        self.assertTrue(plan["refresh_backtest"])
+        self.assertTrue(plan["validate_snapshot"])
+
+    def test_query_plan_manual_fore_keeps_fore_when_only_prefetched_snapshot_exists(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            cache_dir = Path(tmp) / "cache"
+            cache_dir.mkdir()
             (cache_dir / "stock_research_realtime_quotes-20260619.json").write_text(
                 json.dumps(
                     {
@@ -282,8 +318,8 @@ class WorkflowScheduleTest(unittest.TestCase):
                 cache_dir=cache_dir,
             )
 
-        self.assertEqual(plan["effective_query_tag"], "")
-        self.assertEqual(plan["resolution_reason"], "manual_fore_snapshot_ready_reuse")
+        self.assertEqual(plan["effective_query_tag"], "fore")
+        self.assertEqual(plan["resolution_reason"], "manual_fore_prefetch_required")
         self.assertTrue(plan["refresh_backtest"])
         self.assertTrue(plan["validate_snapshot"])
 

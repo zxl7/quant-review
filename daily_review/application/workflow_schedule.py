@@ -260,12 +260,12 @@ def resolve_stock_research_query_plan(
     market_data = prefetch_plan["market_data_snapshot"]
 
     if normalized_input == "fore":
-        if prefetch_plan["should_prefetch"]:
-            effective_query_tag = normalized_input
-            reason = "manual_fore_prefetch_required"
-        else:
+        if market_data["found"]:
             effective_query_tag = ""
             reason = "manual_fore_snapshot_ready_reuse"
+        else:
+            effective_query_tag = normalized_input
+            reason = "manual_fore_prefetch_required"
         refresh_backtest = True
         validate_snapshot = True
     elif normalized_input:
