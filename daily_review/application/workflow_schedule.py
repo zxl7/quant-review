@@ -194,8 +194,9 @@ def describe_market_data_snapshot(path: Path, trade_date10: str) -> dict[str, An
     reference_date = str(realtime_buy.get("reference_date") or "").strip()
     candidate_count = int(realtime_buy.get("candidate_count") or 0)
     future_trade_day_guard = bool(diagnostics.get("future_trade_day_guard")) or source == "future_trade_day_guard"
+    quote_time_matches_trade_date = quote_time.startswith(f"{trade_date10} ") if trade_date10 and quote_time else False
     valid = (
-        quote_time.startswith(trade_date10)
+        quote_time_matches_trade_date
         and len(quote_time) >= 19
         and trade_date == trade_date10
         and source not in INVALID_QUOTE_SOURCES
@@ -209,6 +210,7 @@ def describe_market_data_snapshot(path: Path, trade_date10: str) -> dict[str, An
             "reference_date": reference_date,
             "candidate_count": candidate_count,
             "future_trade_day_guard": future_trade_day_guard,
+            "quote_time_matches_trade_date": quote_time_matches_trade_date,
         }
     )
     return result

@@ -418,6 +418,33 @@ class WorkflowScheduleTest(unittest.TestCase):
         self.assertTrue(result["required"])
         self.assertEqual(result["message"], "snapshot_ready")
 
+    def test_validate_market_data_snapshot_rejects_cross_day_forced_query_quote(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            market_path = Path(tmp) / "market_data.json"
+            market_path.write_text(
+                json.dumps(
+                    {
+                        "stockResearchBacktest": {
+                            "realtimeBuy": {
+                                "trade_date": "2026-06-25",
+                                "reference_date": "2026-06-24",
+                                "candidate_count": 2,
+                                "quote_time": "2026-06-24 15:00:00",
+                                "diagnostics": {"source": "forced_query_cache", "forced_query": True},
+                            }
+                        }
+                    },
+                    ensure_ascii=False,
+                ),
+                encoding="utf-8",
+            )
+
+            result = validate_market_data_stock_research_snapshot(market_path, "2026-06-25")
+
+        self.assertTrue(result["required"])
+        self.assertFalse(result["ok"])
+        self.assertFalse(result["found"])
+
     def test_published_market_data_date_must_match_target_trade_day_for_schedule_manual(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             market_path = Path(tmp) / "market_data.json"

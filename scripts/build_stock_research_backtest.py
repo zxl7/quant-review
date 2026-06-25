@@ -826,13 +826,36 @@ def _pick_active_trade_date(rows: list[dict[str, Any]], *, now: datetime | None 
 
 
 def _has_realtime_snapshot_payload(realtime_buy: dict[str, Any] | None) -> bool:
+    return _has_valid_current_realtime_snapshot_payload(realtime_buy)
+
+
+def _quote_time_matches_trade_date(quote_time: str, trade_date10: str) -> bool:
+    quote_text = str(quote_time or "").strip()
+    trade_date_text = str(trade_date10 or "").strip()
+    return len(trade_date_text) == 10 and quote_text.startswith(f"{trade_date_text} ")
+
+
+def _has_valid_current_realtime_snapshot_payload(
+    realtime_buy: dict[str, Any] | None,
+    *,
+    active_trade_date10: str = "",
+) -> bool:
     if not isinstance(realtime_buy, dict):
         return False
+    reference_date = str(realtime_buy.get("reference_date") or "").strip()
+    trade_date10 = str(realtime_buy.get("trade_date") or "").strip()
+    expected_trade_date10 = str(active_trade_date10 or trade_date10).strip()
     quote_time = str(realtime_buy.get("quote_time") or "").strip()
     quoted_count = int(realtime_buy.get("quoted_count") or 0)
     diagnostics = realtime_buy.get("diagnostics") if isinstance(realtime_buy.get("diagnostics"), dict) else {}
     forced_query = bool(diagnostics.get("forced_query"))
-    return bool(realtime_buy.get("reference_date")) and quoted_count > 0 and (forced_query or _is_entry_window_time(quote_time))
+    if not reference_date or quoted_count <= 0 or not quote_time or len(expected_trade_date10) != 10:
+        return False
+    if trade_date10 and trade_date10 != expected_trade_date10:
+        return False
+    if not _quote_time_matches_trade_date(quote_time, expected_trade_date10):
+        return False
+    return forced_query or _is_entry_window_time(quote_time)
 
 
 def _resolve_display_anchors(
@@ -895,7 +918,7 @@ def _resolve_display_anchors(
         has_current_plan
         and active_trade_date10
         and active_trade_date10 <= today10
-        and not _has_realtime_snapshot_payload(realtime_buy)
+        and not _has_valid_current_realtime_snapshot_payload(realtime_buy, active_trade_date10=active_trade_date10)
     )
     if has_current_plan:
         current_reference_dates = sorted(
@@ -911,7 +934,7 @@ def _resolve_display_anchors(
             "trade_date": active_trade_date10,
         }
     elif (
-        _has_realtime_snapshot_payload(realtime_buy)
+        _has_valid_current_realtime_snapshot_payload(realtime_buy, active_trade_date10=active_trade_date10)
         and len(realtime_reference_date10) == 10
         and len(realtime_trade_date10) == 10
         and realtime_trade_date10 <= today10
@@ -977,7 +1000,10 @@ def _build_lifecycle(
     forced_query = bool(diagnostics.get("forced_query"))
     has_current_plan = bool(current_pool_rows)
     has_historical_records = bool(backtest_rows)
-    has_realtime_snapshot = _has_realtime_snapshot_payload(realtime_buy)
+    has_realtime_snapshot = _has_valid_current_realtime_snapshot_payload(
+        realtime_buy,
+        active_trade_date10=active_trade_date10,
+    )
 
     quote_state = "pending_source"
     quote_state_label = "等待推送"
@@ -1091,12 +1117,6 @@ def upgrade_stock_research_backtest_payload(payload: dict[str, Any] | None) -> d
     backtest_rows = _upgrade_rows_trade_dates(backtest_rows, trade_days=trade_days)
     display_rows = _upgrade_rows_trade_dates(display_rows or backtest_rows, trade_days=trade_days)
     realtime_buy = _upgrade_realtime_buy_trade_date(realtime_buy, trade_days=trade_days)
-    quote_time = str(realtime_buy.get("quote_time") or "").strip()
-    quoted_count = int(realtime_buy.get("quoted_count") or 0)
-    diagnostics = realtime_buy.get("diagnostics") if isinstance(realtime_buy.get("diagnostics"), dict) else {}
-    forced_query = bool(diagnostics.get("forced_query"))
-    if quoted_count <= 0 or (not forced_query and not _is_entry_window_time(quote_time)):
-        realtime_buy["quote_time"] = ""
     latest_recommendation_date10 = str(meta.get("latest_recommendation_date") or realtime_buy.get("reference_date") or "").strip()
     active_trade_date10 = str(meta.get("active_trade_date") or realtime_buy.get("trade_date") or "").strip()
     historical_snapshots = (
@@ -1110,6 +1130,17 @@ def upgrade_stock_research_backtest_payload(payload: dict[str, Any] | None) -> d
         active_trade_date10,
         trade_days=trade_days,
     )
+    quote_time = str(realtime_buy.get("quote_time") or "").strip()
+    quoted_count = int(realtime_buy.get("quoted_count") or 0)
+    diagnostics = realtime_buy.get("diagnostics") if isinstance(realtime_buy.get("diagnostics"), dict) else {}
+    forced_query = bool(diagnostics.get("forced_query"))
+    if (
+        quoted_count <= 0
+        or not quote_time
+        or not _quote_time_matches_trade_date(quote_time, active_trade_date10)
+        or (not forced_query and not _is_entry_window_time(quote_time))
+    ):
+        realtime_buy["quote_time"] = ""
     historical_dates = sorted({str(row.get("date10") or "").strip() for row in backtest_rows if str(row.get("date10") or "").strip()})
     latest_backtest_date10 = historical_dates[-1] if historical_dates else ""
     anchors = _resolve_display_anchors(
@@ -1898,7 +1929,12 @@ def _build_realtime_buy_payload(
                 continue
             quote_time = str(quote.get("time") or "").strip()
             if not _is_entry_window_time(quote_time):
-                if not (allow_forced_prefetched and code6 in prefetched_codes and quote_time):
+                if not (
+                    allow_forced_prefetched
+                    and code6 in prefetched_codes
+                    and quote_time
+                    and _quote_time_matches_trade_date(quote_time, trade_date10)
+                ):
                     continue
             quotes_map[code6] = quote
             if quote_time and not as_of:
@@ -1906,6 +1942,8 @@ def _build_realtime_buy_payload(
         source = "cache.raw.quotes" if quotes_map else "unavailable"
         if allow_forced_prefetched and quotes_map:
             source = "forced_query_cache"
+        if not quotes_map:
+            as_of = ""
         quote_diag: dict[str, Any] = {
             "requested": len(codes),
             "received": len(quotes_map),
@@ -1919,7 +1957,7 @@ def _build_realtime_buy_payload(
         }
         if allow_forced_prefetched and quotes_map:
             quote_diag["forced_query"] = True
-            quote_diag["error"] = "已复用此前补齐成功的快照，当前不在 09:25-09:30 也继续沿用该结果。"
+            quote_diag["error"] = "已复用同一交易日内此前补齐成功的快照，当前不在 09:25-09:30 也继续沿用该结果。"
         elif quotes_map:
             quote_diag["error"] = "窗口外无 preserved 快照，使用本地缓存数据（无远端请求）"
         else:

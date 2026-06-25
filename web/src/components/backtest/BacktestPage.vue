@@ -112,6 +112,12 @@ function isEntryWindowTime(text: unknown) {
   return total >= 9 * 3600 + 25 * 60 && total < 9 * 3600 + 30 * 60
 }
 
+function quoteTimeMatchesTradeDate(quoteTime: unknown, tradeDate: unknown) {
+  const quote = String(quoteTime || "").trim()
+  const trade = String(tradeDate || "").trim()
+  return !!trade && quote.startsWith(`${trade} `)
+}
+
 function isCompleteBacktestPayload(raw: any) {
   if (!raw || typeof raw !== "object") return false
   if (String(raw.schema || "") !== "stock_research_backtest_v2") return false
@@ -215,6 +221,8 @@ const realtimeCandidates = computed<any[]>(() => {
 const hasAnyRealtimeSnapshot = computed(() => {
   if (!hasValidPayload.value) return false
   if (!realtimeBuy.value?.reference_date) return false
+  const tradeDate = String(realtimeBuy.value?.trade_date || activeTradeDate.value || "").trim()
+  if (!tradeDate || !quoteTimeMatchesTradeDate(realtimeBuy.value?.quote_time, tradeDate)) return false
   if (!isForcedQuerySnapshot.value && !isEntryWindowTime(realtimeBuy.value?.quote_time)) return false
   return realtimeCandidates.value.length > 0
 })
@@ -454,12 +462,12 @@ const realtimeSubtitle = computed(() => {
   }
   if (hasRealtimeSnapshot.value && quoteUpdatedAt.value && quoteUpdatedAt.value !== "-") {
     if (isForcedQuerySnapshot.value) {
-      return `今日缺失的竞价快照已在 ${quoteUpdatedAt.value} 补齐，当前按正常闭环结果展示。`
+      return `当前展示的是 ${realtimeTitleDate.value || "-"} 当日补齐后的竞价结果；这类补齐快照仅对所属交易日有效，不会跨日占用今天视图。`
     }
     return `竞价快照：${quoteUpdatedAt.value}｜高开超5%先观察，不直接追。`
   }
   if (selectedHistoricalSnapshot.value) {
-    return `这里根据收盘后回测记录恢复 ${effectiveHistoricalDate.value} 推荐在 ${selectedHistoricalSnapshot.value?.trade_date || "-"} 开盘的命中结果与当日收益。`
+    return `这里展示 ${effectiveHistoricalDate.value} 这批历史推荐在 ${selectedHistoricalSnapshot.value?.trade_date || "-"} 的闭环结果；若原始 9:25 快照缺失，也只按历史补齐/历史恢复口径查看。`
   }
   if (hasCurrentPlan.value && latestRecommendationDate.value) {
     return `盘后样本已更新到 ${latestRecommendationDate.value}，明日 09:25-09:30 再补真实竞价命中结果。`
@@ -563,7 +571,7 @@ const emptyStateText = computed(() => {
   if (!hasValidPayload.value) return "当前暂无有效回测数据，明天 09:25-09:30 落地后会自动显示对应内容。"
   if (hasCurrentPlan.value) return "收盘后推送的个股研究样本已经落进回测 JSON，当前先展示待验证推荐；到下一交易日 09:25-09:30 再补真实竞价命中结果。"
   if (!realtimeBuy.value?.reference_date) return "当前推荐还没到次日 09:25-09:30，明天窗口内会落地实时行情。"
-  if (isForcedQuerySnapshot.value) return "今日缺失的竞价快照正在补齐，补齐后会按正常闭环结果展示。"
+  if (isForcedQuerySnapshot.value) return "当前批次还没拿到属于今天的有效 09:25 快照；历史补齐结果只保留给对应历史批次查看。"
   if (isTodaySnapshotMissing.value) return "今日竞价快照缺失，当前仅展示今日待验证池；补抓成功后才会显示真实闭环结果。"
   if (!isEntryWindowTime(realtimeBuy.value?.quote_time)) return "当前暂无有效竞价快照，等对应交易日 09:25-09:30 落地后再显示命中结果。"
   return "当前没有可展示的回测结果。"
@@ -573,7 +581,7 @@ const realtimeEmptyText = computed(() => {
   if (!isViewingCurrentRecommendation.value) return "所选推荐日没有原始 9:25 快照，但如果历史回测已落地，会在这里恢复命中结果。"
   if (!hasCurrentPlan.value) return "当前还没有待验证推荐数据，先执行一次复盘脚本生成个股回测 JSON。"
   if (!realtimeBuy.value?.reference_date) return "当前是收盘后待验证阶段，会在对应交易日 09:25-09:30 补充实时量价和命中结果。"
-  if (isForcedQuerySnapshot.value) return "今日缺失的竞价快照补齐仍未拿到可用实时行情。"
+  if (isForcedQuerySnapshot.value) return "当前批次仍未拿到属于今天的有效 09:25 快照；历史补齐结果不会自动顶替今天视图。"
   if (isTodaySnapshotMissing.value) return "今日竞价快照缺失，当前不会自动回退展示昨天闭环结果；请补抓后再查看真实命中结果。"
   if (!isEntryWindowTime(realtimeBuy.value?.quote_time)) return "当前还没到有效竞价快照时间，会在对应交易日 09:25-09:30 自动显示真实命中结果。"
   return "当前没有命中结果。"

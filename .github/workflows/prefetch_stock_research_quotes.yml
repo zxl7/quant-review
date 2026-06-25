@@ -9,7 +9,9 @@ on:
         default: ""
         type: string
   schedule:
+    # 北京时间 09:25 / 09:26 双触发；GitHub cron 使用 UTC，runner 延迟时仍会走 forced_query 兜底。
     - cron: "25 1 * * 1-5"
+    - cron: "26 1 * * 1-5"
 
 permissions:
   contents: write
