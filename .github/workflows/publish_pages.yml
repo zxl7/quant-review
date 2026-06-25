@@ -397,7 +397,7 @@ jobs:
 
       - name: Resolve stock research query tag
         id: stockresearch
-        if: ${{ (github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true') && steps.warmup.outputs.skip != 'true' && (github.event_name != 'schedule' || steps.tradeday.outputs.is_trade_today == 'true') && steps.pushmode.outputs.mode != 'intraday' && github.event_name != 'push' && ((github.event_name == 'schedule' && (steps.timecheck.outputs.mode == 'open_fore' || steps.timecheck.outputs.mode == 'eod')) || (github.event_name == 'workflow_dispatch' && github.event.inputs.stock_research_query_tag != '')) }}
+        if: ${{ (github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true') && steps.warmup.outputs.skip != 'true' && (github.event_name != 'schedule' || steps.tradeday.outputs.is_trade_today == 'true') && steps.pushmode.outputs.mode != 'intraday' && ((github.event_name == 'schedule' && (steps.timecheck.outputs.mode == 'open_fore' || steps.timecheck.outputs.mode == 'eod')) || github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && github.event.inputs.stock_research_query_tag != '')) }}
         run: |
           set -euo pipefail
           mode="${{ steps.pushmode.outputs.mode }}"
@@ -466,7 +466,7 @@ jobs:
 
       - name: Default stock research strategy
         id: stockresearchdefault
-        if: ${{ (github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true') && steps.warmup.outputs.skip != 'true' && (github.event_name != 'schedule' || steps.tradeday.outputs.is_trade_today == 'true') && steps.pushmode.outputs.mode != 'intraday' && (github.event_name == 'push' || (github.event_name == 'schedule' && steps.timecheck.outputs.mode != 'open_fore' && steps.timecheck.outputs.mode != 'eod') || (github.event_name == 'workflow_dispatch' && github.event.inputs.stock_research_query_tag == '')) }}
+        if: ${{ (github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true') && steps.warmup.outputs.skip != 'true' && (github.event_name != 'schedule' || steps.tradeday.outputs.is_trade_today == 'true') && steps.pushmode.outputs.mode != 'intraday' && ((github.event_name == 'schedule' && steps.timecheck.outputs.mode != 'open_fore' && steps.timecheck.outputs.mode != 'eod') || (github.event_name == 'workflow_dispatch' && github.event.inputs.stock_research_query_tag == '')) }}
         run: |
           set -euo pipefail
           {
@@ -504,7 +504,7 @@ jobs:
           echo "Final stock research strategy: refresh_backtest=${refresh_backtest} validate_snapshot=${validate_snapshot} query_tag=${effective_query_tag:-<none>} reason=${resolution_reason}"
 
       - name: Generate latest full report (online fetch -> offline pipeline rebuild)
-        if: ${{ (github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true') && steps.warmup.outputs.skip != 'true' && (github.event_name != 'schedule' || steps.tradeday.outputs.is_trade_today == 'true') && steps.pushmode.outputs.mode != 'intraday' && github.event_name != 'push' }}
+        if: ${{ (github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true') && steps.warmup.outputs.skip != 'true' && (github.event_name != 'schedule' || steps.tradeday.outputs.is_trade_today == 'true') && steps.pushmode.outputs.mode != 'intraday' }}
         timeout-minutes: 20
         env:
           BIYING_TOKEN: ${{ secrets.BIYING_TOKEN }}
@@ -535,21 +535,15 @@ jobs:
           echo "Prefetched snapshot hit=${{ steps.stockresearchfinal.outputs.prefetched_found || 'false' }} as_of=${{ steps.stockresearchfinal.outputs.prefetched_as_of || '' }} source=${{ steps.stockresearchfinal.outputs.prefetched_source || '' }}"
           echo "Final stock_research_query_tag=${query_tag:-<none>} reason=${{ steps.stockresearchfinal.outputs.resolution_reason || '' }}"
           run_date="${{ steps.pushmode.outputs.date10 }}"
-          if [ "${event_name}" = "push" ]; then
-            echo "Push event: default full publish prefers offline rebuild from restored cache"
-            PYTHONPATH=. python3 -u -m daily_review.cli --date "${run_date}" --rebuild
+          if [ -z "${BIYING_TOKEN}" ]; then
+            echo "Missing secrets.BIYING_TOKEN"
+            exit 2
+          fi
+          # push / workflow_dispatch / schedule full 链路默认都走在线全量 fetch。
+          if [ -n "${query_tag}" ]; then
+            ./qr.sh fetch "${run_date}" "${query_tag}"
           else
-            if [ -z "${BIYING_TOKEN}" ]; then
-              echo "Missing secrets.BIYING_TOKEN"
-              exit 2
-            fi
-            # 默认手动触发走全量更新；只有显式 tag 或 open_fore 缺快照时才补 fore。
-            if [ -n "${query_tag}" ]; then
-              ./qr.sh fetch "${run_date}" "${query_tag}"
-            else
-              # 手动触发与 schedule full 链路默认都走在线全量 fetch。
-              ./qr.sh fetch "${run_date}"
-            fi
+            ./qr.sh fetch "${run_date}"
           fi
           expected_d8="$(echo "${run_date}" | tr -d '-')"
           # 盘中共振事件检测（从 xuangubao 缓存生成）
@@ -600,7 +594,7 @@ jobs:
           PY
 
       - name: Post-fetch cache sync and derived data
-        if: ${{ (github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true') && steps.warmup.outputs.skip != 'true' && (github.event_name != 'schedule' || steps.tradeday.outputs.is_trade_today == 'true') && steps.pushmode.outputs.mode != 'intraday' && github.event_name != 'push' }}
+        if: ${{ (github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true') && steps.warmup.outputs.skip != 'true' && (github.event_name != 'schedule' || steps.tradeday.outputs.is_trade_today == 'true') && steps.pushmode.outputs.mode != 'intraday' }}
         timeout-minutes: 6
         run: |
           set -euo pipefail
@@ -612,12 +606,10 @@ jobs:
             echo "Schedule event (eod): sync account derived data"
             PYTHONPATH=. python3 scripts/build_account_nav_ledger.py >/dev/null
             PYTHONPATH=. python3 scripts/build_account_strategy_metrics.py >/dev/null
-          elif [ "${{ github.event_name }}" != "push" ]; then
+          else
             PYTHONPATH=. python3 tools/fetch_watchlist.py --date "${run_date}" --skip-fetch || echo "⚠ watchlist rebuild failed, using cache"
             PYTHONPATH=. python3 scripts/build_account_nav_ledger.py >/dev/null || echo "⚠ account nav ledger sync failed"
             PYTHONPATH=. python3 scripts/build_account_strategy_metrics.py >/dev/null || echo "⚠ account strategy metrics sync failed"
-          else
-            echo "Push event: skip heavy derived rebuilds and reuse restored caches"
           fi
 
       - name: Generate intraday lightweight runtime snapshot only
@@ -674,15 +666,13 @@ jobs:
           cp -f ./cache_online/intraday_resonance-"${D8}".json ./web/public/intraday_resonance.json 2>/dev/null || true
 
       - name: Pre-fetch external data (明日策略池 + 东方财富今日题材)
-        if: ${{ (github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true') && steps.warmup.outputs.skip != 'true' && (github.event_name != 'schedule' || steps.tradeday.outputs.is_trade_today == 'true') && steps.pushmode.outputs.mode != 'intraday' && github.event_name != 'push' }}
+        if: ${{ (github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true') && steps.warmup.outputs.skip != 'true' && (github.event_name != 'schedule' || steps.tradeday.outputs.is_trade_today == 'true') && steps.pushmode.outputs.mode != 'intraday' }}
         run: |
           if [ "${{ github.event_name }}" = "schedule" ]; then
             echo "Schedule event: skip tomorrow-data prefetch and reuse published artifacts if present"
-          elif [ "${{ github.event_name }}" != "push" ]; then
+          else
             python3 tools/fetch_tomorrow_picks.py web/public/tomorrow_picks.json || echo "⚠ tomorrow picks fetch failed, using cache"
             python3 tools/fetch_eastmoney_tomorrow.py web/public/eastmoney_tomorrow.json || echo "⚠ eastmoney tomorrow fetch failed, using cache"
-          else
-            echo "Push event: skip external tomorrow-data fetch and reuse published artifacts if present"
           fi
 
       - name: Resolve full publish source cache
