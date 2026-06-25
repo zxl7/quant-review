@@ -28,6 +28,25 @@ def _normalize_code(code: str) -> str:
     return str(code or "").replace(".SH", "").replace(".SZ", "").strip()
 
 
+def _normalize_reason_text(value: Any) -> str:
+    if value is None:
+        return ""
+    if isinstance(value, str):
+        return value.strip()
+    if isinstance(value, (int, float, bool)):
+        return str(value).strip()
+    if isinstance(value, dict):
+        for key in ("introduction", "title", "text", "content", "value", "name"):
+            text = _normalize_reason_text(value.get(key))
+            if text:
+                return text
+        return ""
+    if isinstance(value, list):
+        parts = [_normalize_reason_text(item) for item in value]
+        return "；".join(part for part in parts if part)
+    return str(value).strip()
+
+
 def _flatten_themes(themes_resp: dict) -> list[dict]:
     """将 East Money 原始返回拍平为前端 TomorrowTheme[] 格式"""
     raw = themes_resp.get("raw") if isinstance(themes_resp, dict) else None
@@ -95,10 +114,11 @@ def _flatten_stocks_by_theme(stocks_resp: dict) -> dict[str, list[dict]]:
             if not isinstance(s, dict):
                 continue
             reasons = [
-                k.get("introduction", "")
+                _normalize_reason_text(k.get("introduction"))
                 for k in (s.get("keywordList") or [])
                 if isinstance(k, dict) and k.get("keyword") == "入选理由"
             ]
+            reasons = [reason for reason in reasons if reason]
             parsed.append({
                 "code": _normalize_code(str(s.get("securityCode") or "")),
                 "name": str(s.get("securityName") or ""),
