@@ -224,7 +224,7 @@ class WorkflowScheduleTest(unittest.TestCase):
             cache_dir.mkdir()
 
             plan = resolve_stock_research_query_plan(
-                mode="fetch",
+                mode="full",
                 trade_date10="2026-06-22",
                 is_trade_today=True,
                 input_query_tag="",
@@ -242,7 +242,7 @@ class WorkflowScheduleTest(unittest.TestCase):
             cache_dir.mkdir()
 
             plan = resolve_stock_research_query_plan(
-                mode="fetch",
+                mode="full",
                 trade_date10="2026-06-22",
                 is_trade_today=True,
                 input_query_tag="fore",

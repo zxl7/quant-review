@@ -1,11 +1,11 @@
 #!/bin/bash
 # simulate_ci.sh
 # 本地模拟 GitHub Actions CI 执行环境（轻量级，无需 Docker）
-# 使用：./simulate_ci.sh [fetch|intraday|push] [YYYY-MM-DD]
+# 使用：./simulate_ci.sh [full|fetch|intraday|push] [YYYY-MM-DD]
 
 set -euo pipefail
 
-MODE="${1:-fetch}"
+MODE="${1:-full}"
 RUN_DATE="${2:-}"
 DRY_RUN=false
 
@@ -14,6 +14,26 @@ RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 NC='\033[0m' # No Color
+
+case "${MODE}" in
+    full)
+        CLI_MODE="full"
+        ;;
+    fetch)
+        CLI_MODE="full"
+        ;;
+    intraday)
+        CLI_MODE="intraday"
+        ;;
+    push)
+        CLI_MODE="push"
+        ;;
+    *)
+        echo -e "${RED}❌ 不支持的模式: ${MODE}${NC}"
+        echo "可选: full | fetch | intraday | push"
+        exit 2
+        ;;
+esac
 
 echo "=========================================="
 echo "本地 CI 模拟"
@@ -138,17 +158,21 @@ echo ""
 
 # ─── 步骤 4: 执行核心流程（模拟 CI 的 "Generate latest report"）──
 echo -e "${YELLOW}[4/6]${NC} 执行核心流程"
-echo "  命令: ./qr.sh ${MODE} ${RUN_DATE}"
+if [ "${CLI_MODE}" = "intraday" ]; then
+    echo "  命令: ./qr.sh watch-slice ${RUN_DATE}"
+else
+    echo "  命令: ./qr.sh fetch ${RUN_DATE}"
+fi
 echo "------------------------------------------"
 chmod +x ./qr.sh 2>/dev/null || true
 
-if [ "${MODE}" = "intraday" ]; then
-    ./qr.sh fetch "${RUN_DATE}"
-elif [ "${MODE}" = "push" ]; then
-    # push 模式：强制在线拉取
+if [ "${CLI_MODE}" = "intraday" ]; then
+    ./qr.sh watch-slice "${RUN_DATE}"
+elif [ "${CLI_MODE}" = "push" ]; then
+    # push 模式：模拟默认全量发布
     ./qr.sh fetch "${RUN_DATE}"
 else
-    # fetch 模式（默认）
+    # full/fetch 模式：模拟默认全量发布
     ./qr.sh fetch "${RUN_DATE}"
 fi
 echo "------------------------------------------"

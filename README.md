@@ -86,7 +86,7 @@ cd web && npm run build       # 产出 dist/index.html（单文件）
 **触发**：
 - `push` 到 `main` 分支自动发布
 - GitHub Actions `schedule` 在工作日北京时间盘中/收盘时段自动跑
-- `workflow_dispatch` 可手动补跑
+- `workflow_dispatch` 可手动补跑，默认就是全量更新；只有需要竞价补抓时才传 `stock_research_query_tag=fore`
 
 现在建议以 GitHub Actions 为唯一生产调度入口，本地不再依赖 `launchd`/`gh workflow run` 常驻触发。
 

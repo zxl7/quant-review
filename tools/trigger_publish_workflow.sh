@@ -28,18 +28,7 @@ hour="$(date '+%H')"
 minute="$(date '+%M')"
 now_min=$((10#${hour} * 60 + 10#${minute}))
 
-mode="skip"
-if [ "${now_min}" -ge $((9 * 60 + 30)) ] && [ "${now_min}" -le $((11 * 60 + 30)) ]; then
-  mode="intraday"
-elif [ "${now_min}" -ge $((13 * 60)) ] && [ "${now_min}" -lt $((15 * 60)) ]; then
-  mode="intraday"
-elif [ "${now_min}" -ge $((15 * 60 + 12)) ] && [ "${now_min}" -le $((15 * 60 + 31)) ]; then
-  mode="eod"
-elif [ "${now_min}" -ge $((16 * 60 + 55)) ] && [ "${now_min}" -le $((17 * 60 + 5)) ]; then
-  mode="fetch"
-fi
-
-if [ "${mode}" = "skip" ]; then
+if [ "${now_min}" -lt $((9 * 60 + 25)) ] || [ "${now_min}" -gt $((18 * 60 + 5)) ]; then
   log "skip: outside trading window"
   exit 0
 fi
@@ -60,7 +49,7 @@ if ! gh auth status >/dev/null 2>&1; then
   exit 2
 fi
 
-log "trigger: repo=${REPO} workflow=${WORKFLOW} ref=${REF} mode=${mode}"
+log "trigger: repo=${REPO} workflow=${WORKFLOW} ref=${REF} mode=full"
 gh workflow run "${WORKFLOW}" --repo "${REPO}" --ref "${REF}"
 printf '%s' "${slot}" > "${STATE_FILE}"
-log "ok: workflow dispatch requested"
+log "ok: workflow dispatch requested (default full publish)"
