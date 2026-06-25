@@ -288,6 +288,11 @@ def resolve_stock_research_query_plan(
         reason = "eod_refresh_prediction_pool"
         refresh_backtest = True
         validate_snapshot = False
+    elif mode == "full":
+        effective_query_tag = ""
+        reason = "default_full_refresh"
+        refresh_backtest = True
+        validate_snapshot = False
     elif mode != "open_fore":
         effective_query_tag = ""
         reason = "non_open_fore_mode"

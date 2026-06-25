@@ -469,16 +469,23 @@ jobs:
         if: ${{ (github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true') && steps.warmup.outputs.skip != 'true' && (github.event_name != 'schedule' || steps.tradeday.outputs.is_trade_today == 'true') && steps.pushmode.outputs.mode != 'intraday' && ((github.event_name == 'schedule' && steps.timecheck.outputs.mode != 'open_fore' && steps.timecheck.outputs.mode != 'eod') || (github.event_name == 'workflow_dispatch' && github.event.inputs.stock_research_query_tag == '')) }}
         run: |
           set -euo pipefail
+          refresh_backtest="false"
+          validate_snapshot="false"
+          resolution_reason="default_no_stock_research_refresh"
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ] && [ "${{ steps.pushmode.outputs.mode }}" = "full" ]; then
+            refresh_backtest="true"
+            resolution_reason="default_full_refresh"
+          fi
           {
             echo "effective_query_tag="
-            echo "resolution_reason=default_no_stock_research_refresh"
-            echo "refresh_backtest=false"
-            echo "validate_snapshot=false"
+            echo "resolution_reason=${resolution_reason}"
+            echo "refresh_backtest=${refresh_backtest}"
+            echo "validate_snapshot=${validate_snapshot}"
             echo "prefetched_found=false"
             echo "prefetched_as_of="
             echo "prefetched_source="
           } >> "$GITHUB_OUTPUT"
-          echo "Stock research strategy: refresh_backtest=false validate_snapshot=false reason=default_no_stock_research_refresh"
+          echo "Stock research strategy: refresh_backtest=${refresh_backtest} validate_snapshot=${validate_snapshot} reason=${resolution_reason}"
 
       - name: Finalize stock research strategy
         id: stockresearchfinal

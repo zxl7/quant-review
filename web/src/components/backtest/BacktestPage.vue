@@ -494,11 +494,17 @@ const realtimeSubtitle = computed(() => {
   return "高开超5%先观察，不直接追。"
 })
 const strategySubtitle = computed(() => {
-  const dateLabel = selectedResultTradeDate.value ? `结果口径 ${selectedResultTradeDate.value}｜` : ""
+  const metricTradeDate = String(selectedStrategyMetricRecord.value?.trade_date || selectedResultTradeDate.value || "").trim()
+  const metricRecommendationDate = String(selectedStrategyMetricRecord.value?.recommendation_date || selectedRecommendationDate.value || effectiveHistoricalDate.value || "").trim()
+  const dateParts = [
+    metricTradeDate ? `结果日 ${metricTradeDate}` : "",
+    metricRecommendationDate ? `推荐日 ${metricRecommendationDate}` : "",
+  ].filter(Boolean)
+  const dateLabel = dateParts.length ? `${dateParts.join("｜")}｜` : ""
   const updatedAt = String(backtestUpdatedAt.value || "").trim()
   return updatedAt && updatedAt !== "-"
-    ? `${dateLabel}收益口径：高开超5%样本先观察，不计入直接开盘买入，再统计 T+1 / T+2 / T+3 收盘卖出。最新刷新：${updatedAt}`
-    : `${dateLabel}收益口径：高开超5%样本先观察，不计入直接开盘买入，再统计 T+1 / T+2 / T+3 收盘卖出。`
+    ? `${dateLabel}收益口径：高开超5%样本先观察，不计入直接开盘买入，只统计隔日收盘卖出。最新刷新：${updatedAt}`
+    : `${dateLabel}收益口径：高开超5%样本先观察，不计入直接开盘买入，只统计隔日收盘卖出。`
 })
 const summaryHeaderSubtitle = computed(() => {
   if (showingRealtimeSnapshot.value && realtimeReferenceDate.value) {
@@ -623,9 +629,25 @@ const accountStrategyMetricMap = computed<Record<string, any>>(() => {
   }
   return out
 })
+const accountStrategyMetricTradeDateMap = computed<Record<string, any>>(() => {
+  const out: Record<string, any> = {}
+  const rows = Array.isArray(accountStrategyMetricsPayload.value?.records) ? accountStrategyMetricsPayload.value.records : []
+  for (const item of rows) {
+    const key = String(item?.trade_date || "").trim()
+    if (key) out[key] = item
+  }
+  return out
+})
 const selectedStrategyMetricRecord = computed<any | null>(() => {
-  const key = selectedRecommendationDate.value || effectiveHistoricalDate.value
-  return key ? accountStrategyMetricMap.value[key] || null : null
+  const tradeKey = String(selectedResultTradeDate.value || "").trim()
+  if (tradeKey && accountStrategyMetricTradeDateMap.value[tradeKey]) return accountStrategyMetricTradeDateMap.value[tradeKey] || null
+  const recommendationKey = String(selectedRecommendationDate.value || effectiveHistoricalDate.value || "").trim()
+  if (recommendationKey && accountStrategyMetricMap.value[recommendationKey]) return accountStrategyMetricMap.value[recommendationKey] || null
+  return null
+})
+const strategyMetricRows = computed<any[]>(() => {
+  if (showingRealtimeSnapshot.value || showingPredictionTable.value) return currentRecords.value
+  return selectedDayRecordsAll.value
 })
 const metrics = computed(() => {
   const record = selectedStrategyMetricRecord.value
@@ -644,7 +666,7 @@ const metrics = computed(() => {
       },
     }))
   }
-  return buildDateScopedMetrics(selectedDayRecordsAll.value)
+  return buildDateScopedMetrics(strategyMetricRows.value)
 })
 const accountCurveBase = computed(() => {
   const md = marketData.value as any

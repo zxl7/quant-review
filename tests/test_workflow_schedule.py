@@ -219,7 +219,7 @@ class WorkflowScheduleTest(unittest.TestCase):
         self.assertTrue(plan["refresh_backtest"])
         self.assertFalse(plan["validate_snapshot"])
 
-    def test_query_plan_manual_without_tag_keeps_stock_research_disabled(self) -> None:
+    def test_query_plan_manual_without_tag_runs_default_full_refresh(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             cache_dir = Path(tmp) / "cache"
             cache_dir.mkdir()
@@ -233,8 +233,8 @@ class WorkflowScheduleTest(unittest.TestCase):
             )
 
         self.assertEqual(plan["effective_query_tag"], "")
-        self.assertEqual(plan["resolution_reason"], "non_open_fore_mode")
-        self.assertFalse(plan["refresh_backtest"])
+        self.assertEqual(plan["resolution_reason"], "default_full_refresh")
+        self.assertTrue(plan["refresh_backtest"])
         self.assertFalse(plan["validate_snapshot"])
 
     def test_query_plan_manual_fore_enables_refresh_and_validation(self) -> None:
