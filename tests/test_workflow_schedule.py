@@ -12,6 +12,7 @@ from pathlib import Path
 from daily_review.application.workflow_schedule import (
     SCHEDULE_MODE_BY_CRON,
     describe_prefetched_quotes_snapshot,
+    resolve_auction_snapshot_prefetch_plan,
     resolve_publish_schedule_mode,
     resolve_full_publish_source_cache,
     resolve_stock_research_query_plan,
@@ -250,9 +251,134 @@ class WorkflowScheduleTest(unittest.TestCase):
             )
 
         self.assertEqual(plan["effective_query_tag"], "fore")
-        self.assertEqual(plan["resolution_reason"], "manual_input")
+        self.assertEqual(plan["resolution_reason"], "manual_fore_prefetch_required")
         self.assertTrue(plan["refresh_backtest"])
         self.assertTrue(plan["validate_snapshot"])
+
+    def test_query_plan_manual_fore_reuses_existing_same_day_snapshot(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            cache_dir = Path(tmp) / "cache"
+            cache_dir.mkdir()
+            (cache_dir / "stock_research_realtime_quotes-20260619.json").write_text(
+                json.dumps(
+                    {
+                        "schema": "stock_research_realtime_quotes_v1",
+                        "date": "2026-06-19",
+                        "as_of": "2026-06-22 09:25:03",
+                        "source": "forced_query",
+                        "count": 1,
+                        "items": {"000001": {"dm": "000001", "t": "2026-06-22 09:25:03"}},
+                    },
+                    ensure_ascii=False,
+                ),
+                encoding="utf-8",
+            )
+
+            plan = resolve_stock_research_query_plan(
+                mode="full",
+                trade_date10="2026-06-22",
+                is_trade_today=True,
+                input_query_tag="fore",
+                cache_dir=cache_dir,
+            )
+
+        self.assertEqual(plan["effective_query_tag"], "")
+        self.assertEqual(plan["resolution_reason"], "manual_fore_snapshot_ready_reuse")
+        self.assertTrue(plan["refresh_backtest"])
+        self.assertTrue(plan["validate_snapshot"])
+
+    def test_auction_prefetch_plan_skips_when_prefetched_snapshot_exists(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            cache_dir = Path(tmp) / "cache"
+            cache_dir.mkdir()
+            (cache_dir / "stock_research_realtime_quotes-20260619.json").write_text(
+                json.dumps(
+                    {
+                        "schema": "stock_research_realtime_quotes_v1",
+                        "date": "2026-06-19",
+                        "as_of": "2026-06-22 09:25:03",
+                        "source": "workflow_prefetch",
+                        "count": 1,
+                        "items": {"000001": {"dm": "000001", "t": "2026-06-22 09:25:03"}},
+                    },
+                    ensure_ascii=False,
+                ),
+                encoding="utf-8",
+            )
+
+            plan = resolve_auction_snapshot_prefetch_plan(cache_dir, "2026-06-22")
+
+        self.assertFalse(plan["should_prefetch"])
+        self.assertEqual(plan["status"], "auction_snapshot_ready_skip")
+        self.assertEqual(plan["ready_source"], "prefetched_snapshot")
+
+    def test_auction_prefetch_plan_skips_when_market_data_snapshot_exists(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            cache_dir = Path(tmp) / "cache"
+            cache_dir.mkdir()
+            (cache_dir / "market_data-20260622.json").write_text(
+                json.dumps(
+                    {
+                        "date": "2026-06-22",
+                        "stockResearchBacktest": {
+                            "realtimeBuy": {
+                                "trade_date": "2026-06-22",
+                                "reference_date": "2026-06-19",
+                                "candidate_count": 2,
+                                "quote_time": "2026-06-22 09:25:01",
+                                "diagnostics": {"source": "forced_query"},
+                            }
+                        },
+                    },
+                    ensure_ascii=False,
+                ),
+                encoding="utf-8",
+            )
+
+            plan = resolve_auction_snapshot_prefetch_plan(cache_dir, "2026-06-22")
+
+        self.assertFalse(plan["should_prefetch"])
+        self.assertEqual(plan["status"], "auction_snapshot_ready_skip")
+        self.assertEqual(plan["ready_source"], "market_data_snapshot")
+
+    def test_auction_prefetch_plan_requires_prefetch_when_same_day_snapshot_missing(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            cache_dir = Path(tmp) / "cache"
+            cache_dir.mkdir()
+
+            plan = resolve_auction_snapshot_prefetch_plan(cache_dir, "2026-06-22")
+
+        self.assertTrue(plan["should_prefetch"])
+        self.assertEqual(plan["status"], "auction_snapshot_missing_prefetch_required")
+        self.assertEqual(plan["ready_source"], "")
+
+    def test_auction_prefetch_plan_rejects_cross_day_forced_query_cache_as_ready(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            cache_dir = Path(tmp) / "cache"
+            cache_dir.mkdir()
+            (cache_dir / "market_data-20260625.json").write_text(
+                json.dumps(
+                    {
+                        "date": "2026-06-25",
+                        "stockResearchBacktest": {
+                            "realtimeBuy": {
+                                "trade_date": "2026-06-25",
+                                "reference_date": "2026-06-24",
+                                "candidate_count": 2,
+                                "quote_time": "2026-06-24 15:00:00",
+                                "diagnostics": {"source": "forced_query_cache", "forced_query": True},
+                            }
+                        },
+                    },
+                    ensure_ascii=False,
+                ),
+                encoding="utf-8",
+            )
+
+            plan = resolve_auction_snapshot_prefetch_plan(cache_dir, "2026-06-25")
+
+        self.assertTrue(plan["should_prefetch"])
+        self.assertEqual(plan["status"], "auction_snapshot_missing_prefetch_required")
 
     def test_describe_prefetched_quotes_snapshot_matches_trade_day_by_as_of(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

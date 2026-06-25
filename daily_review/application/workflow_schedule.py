@@ -216,6 +216,36 @@ def describe_market_data_snapshot(path: Path, trade_date10: str) -> dict[str, An
     return result
 
 
+def resolve_auction_snapshot_prefetch_plan(cache_dir: Path, trade_date10: str) -> dict[str, Any]:
+    prefetched = describe_prefetched_quotes_snapshot(cache_dir, trade_date10)
+    market_data = describe_market_data_snapshot(
+        cache_dir / f"market_data-{trade_date10.replace('-', '')}.json",
+        trade_date10,
+    )
+
+    if prefetched["found"]:
+        should_prefetch = False
+        status = "auction_snapshot_ready_skip"
+        ready_source = "prefetched_snapshot"
+    elif market_data["found"]:
+        should_prefetch = False
+        status = "auction_snapshot_ready_skip"
+        ready_source = "market_data_snapshot"
+    else:
+        should_prefetch = True
+        status = "auction_snapshot_missing_prefetch_required"
+        ready_source = ""
+
+    return {
+        "trade_date10": str(trade_date10 or "").strip(),
+        "should_prefetch": should_prefetch,
+        "status": status,
+        "ready_source": ready_source,
+        "prefetched_snapshot": prefetched,
+        "market_data_snapshot": market_data,
+    }
+
+
 def resolve_stock_research_query_plan(
     *,
     mode: str,
@@ -225,10 +255,20 @@ def resolve_stock_research_query_plan(
     cache_dir: Path,
 ) -> dict[str, Any]:
     normalized_input = str(input_query_tag or "").strip().lower()
-    prefetched = describe_prefetched_quotes_snapshot(cache_dir, trade_date10)
-    market_data = describe_market_data_snapshot(cache_dir / f"market_data-{trade_date10.replace('-', '')}.json", trade_date10)
+    prefetch_plan = resolve_auction_snapshot_prefetch_plan(cache_dir, trade_date10)
+    prefetched = prefetch_plan["prefetched_snapshot"]
+    market_data = prefetch_plan["market_data_snapshot"]
 
-    if normalized_input:
+    if normalized_input == "fore":
+        if prefetch_plan["should_prefetch"]:
+            effective_query_tag = normalized_input
+            reason = "manual_fore_prefetch_required"
+        else:
+            effective_query_tag = ""
+            reason = "manual_fore_snapshot_ready_reuse"
+        refresh_backtest = True
+        validate_snapshot = True
+    elif normalized_input:
         effective_query_tag = normalized_input
         reason = "manual_input"
         refresh_backtest = True

@@ -16,6 +16,61 @@ TZ_BJ = timezone(timedelta(hours=8))
 
 
 class PrefetchStockResearchQuotesTest(unittest.TestCase):
+    def test_build_prefetch_execution_plan_skips_when_today_snapshot_ready(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            cache_dir = Path(tmp) / "cache"
+            cache_dir.mkdir()
+            (cache_dir / "stock_research_realtime_quotes-20260623.json").write_text(
+                """
+                {
+                  "schema": "stock_research_realtime_quotes_v1",
+                  "date": "2026-06-23",
+                  "as_of": "2026-06-24 09:25:02",
+                  "source": "workflow_prefetch",
+                  "count": 1,
+                  "items": {"000001": {"dm": "000001", "t": "2026-06-24 09:25:02"}}
+                }
+                """.strip(),
+                encoding="utf-8",
+            )
+            fake_rows = [{"date10": "2026-06-23", "code": "000001"}]
+
+            with patch.object(prefetch, "_load_stock_research_rows", return_value=(fake_rows, {})):
+                plan = prefetch.build_prefetch_execution_plan(trade_date10="2026-06-24", cache_dir=cache_dir)
+
+        self.assertFalse(plan["should_prefetch"])
+        self.assertEqual(plan["status"], "auction_snapshot_ready_skip")
+        self.assertEqual(plan["ready_source"], "prefetched_snapshot")
+        self.assertEqual(plan["reference_date"], "2026-06-23")
+        self.assertEqual(plan["codes"], ["000001"])
+
+    def test_main_skips_when_today_snapshot_already_ready(self) -> None:
+        fake_rows = [{"date10": "2026-06-23", "code": "000001"}]
+        fake_plan = {
+            "trade_date10": "2026-06-24",
+            "should_prefetch": False,
+            "status": "auction_snapshot_ready_skip",
+            "ready_source": "prefetched_snapshot",
+            "prefetched_snapshot": {"found": True},
+            "market_data_snapshot": {"found": False},
+            "has_rows": True,
+            "reference_date": "2026-06-23",
+            "codes": ["000001"],
+            "codes_count": 1,
+        }
+        with patch.object(prefetch, "_now_bj", return_value=datetime(2026, 6, 24, 9, 25, 1, tzinfo=TZ_BJ)), patch.object(
+            prefetch, "_load_stock_research_rows", return_value=(fake_rows, {})
+        ), patch.object(
+            prefetch, "build_prefetch_execution_plan", return_value=fake_plan
+        ), patch.object(prefetch, "_fetch_and_save_snapshot") as mock_fetch, patch("builtins.print") as mock_print:
+            rc = prefetch.main(["--date", "2026-06-24", "--must-succeed"])
+
+        self.assertEqual(rc, 0)
+        mock_fetch.assert_not_called()
+        self.assertTrue(
+            any("auction_snapshot_ready_skip" in str(call.args[0]) for call in mock_print.call_args_list if call.args)
+        )
+
     def test_outside_window_without_must_succeed_still_skips(self) -> None:
         fake_rows = [{"date10": "2026-06-23", "code": "000001"}]
         with patch.object(prefetch, "_now_bj", return_value=datetime(2026, 6, 24, 9, 34, 0, tzinfo=TZ_BJ)), patch.object(

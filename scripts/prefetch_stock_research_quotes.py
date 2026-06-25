@@ -13,6 +13,7 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 from daily_review.config import load_config_from_env
+from daily_review.application.workflow_schedule import resolve_auction_snapshot_prefetch_plan
 from daily_review.data.biying import fetch_stocks_realtime_map, normalize_stock_code
 from daily_review.http import HttpClient
 from scripts.build_stock_research_backtest import _load_stock_research_rows, save_prefetched_realtime_quotes
@@ -67,23 +68,50 @@ def _fetch_and_save_snapshot(*, reference_date: str, codes: list[str], source: s
     )
 
 
+def build_prefetch_execution_plan(*, trade_date10: str, cache_dir: Path) -> dict[str, object]:
+    auction_plan = resolve_auction_snapshot_prefetch_plan(cache_dir, trade_date10)
+    rows, _ = _load_stock_research_rows()
+    reference_date = _pick_reference_date(rows, before_date10=str(trade_date10 or "").strip())
+    codes = _collect_reference_codes(rows, reference_date=reference_date)
+    return {
+        **auction_plan,
+        "has_rows": bool(rows),
+        "reference_date": reference_date,
+        "codes": codes,
+        "codes_count": len(codes),
+    }
+
+
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--date", default="", help="当前运行日期 YYYY-MM-DD；若提供，则优先抓取早于该日期的最新研究池")
     ap.add_argument("--must-succeed", action="store_true", help="仅用于 09:25-09:30 守窗场景；窗口内没抓到则返回非 0")
     args = ap.parse_args(argv)
 
-    rows, _ = _load_stock_research_rows()
-    if not rows:
+    run_date = str(args.date or "").strip()
+    if len(run_date) != 10:
+        run_date = _now_bj().strftime("%Y-%m-%d")
+
+    plan = build_prefetch_execution_plan(trade_date10=run_date, cache_dir=ROOT / "cache")
+    if not plan["should_prefetch"]:
+        print(
+            f"{plan['status']}: trade_date={run_date} "
+            f"ready_source={plan['ready_source'] or '-'} "
+            f"reference_date={plan['reference_date'] or '-'} "
+            f"codes={plan['codes_count']}"
+        )
+        return 0
+
+    if not plan["has_rows"]:
         print("skip: no stock research rows in cache")
         return 2 if args.must_succeed else 0
 
-    reference_date = _pick_reference_date(rows, before_date10=str(args.date or "").strip())
+    reference_date = str(plan["reference_date"] or "")
     if not reference_date:
         print("skip: no valid reference date")
         return 2 if args.must_succeed else 0
 
-    codes = _collect_reference_codes(rows, reference_date=reference_date)
+    codes = list(plan["codes"]) if isinstance(plan["codes"], list) else []
     if not codes:
         print(f"skip: no codes for {reference_date}")
         return 2 if args.must_succeed else 0

@@ -9,9 +9,11 @@ on:
         default: ""
         type: string
   schedule:
-    # 北京时间 09:25 / 09:26 双触发；GitHub cron 使用 UTC，runner 延迟时仍会走 forced_query 兜底。
+    # 北京时间 09:25 / 09:26 / 09:27 三次幂等触发；GitHub cron 使用 UTC。
+    # 09:25=01:25 UTC，09:26=01:26 UTC，09:27=01:27 UTC。
     - cron: "25 1 * * 1-5"
     - cron: "26 1 * * 1-5"
+    - cron: "27 1 * * 1-5"
 
 permissions:
   contents: write
@@ -177,8 +179,35 @@ jobs:
         run: |
           echo "Skip prefetch: target_date=${{ steps.tradeday.outputs.target_date }} today_bj=${{ steps.tradeday.outputs.today_bj }} reason=${{ steps.tradeday.outputs.skip_reason }}"
 
-      - name: Run 09:25 stock research quote prefetch
+      - name: Resolve auction snapshot prefetch plan
+        id: prefetchplan
         if: ${{ steps.tradeday.outputs.should_run == 'true' }}
+        env:
+          RUN_DATE: ${{ steps.tradeday.outputs.target_date }}
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          from daily_review.application.workflow_schedule import resolve_auction_snapshot_prefetch_plan
+
+          run_date = os.environ["RUN_DATE"]
+          plan = resolve_auction_snapshot_prefetch_plan(Path("cache"), run_date)
+          print("auction_snapshot_prefetch_plan=" + json.dumps(plan, ensure_ascii=False, sort_keys=True))
+          print(
+              f"{plan['status']}: trade_date={run_date} "
+              f"ready_source={plan.get('ready_source') or '-'}"
+          )
+          with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as fh:
+              fh.write(f"should_prefetch={'true' if plan['should_prefetch'] else 'false'}\n")
+              fh.write(f"status={plan['status']}\n")
+              fh.write(f"ready_source={plan.get('ready_source') or ''}\n")
+          PY
+
+      - name: Run 09:25 stock research quote prefetch
+        if: ${{ steps.tradeday.outputs.should_run == 'true' && steps.prefetchplan.outputs.should_prefetch == 'true' }}
         env:
           BIYING_TOKEN: ${{ secrets.BIYING_TOKEN }}
           BIYING_BASE_URL: ${{ secrets.BIYING_BASE_URL }}
@@ -188,7 +217,7 @@ jobs:
           python3 scripts/prefetch_stock_research_quotes.py --date "${run_date}" --must-succeed
 
       - name: Verify snapshot file exists
-        if: ${{ steps.tradeday.outputs.should_run == 'true' }}
+        if: ${{ steps.tradeday.outputs.should_run == 'true' && steps.prefetchplan.outputs.should_prefetch == 'true' }}
         env:
           RUN_DATE: ${{ steps.tradeday.outputs.target_date }}
         run: |
@@ -208,7 +237,7 @@ jobs:
           PY
 
       - name: Commit prefetched snapshot to gh-pages
-        if: ${{ steps.tradeday.outputs.should_run == 'true' }}
+        if: ${{ steps.tradeday.outputs.should_run == 'true' && steps.prefetchplan.outputs.should_prefetch == 'true' }}
         run: |
           set -euo pipefail
           mkdir -p site_prev/cache

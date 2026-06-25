@@ -625,10 +625,37 @@ jobs:
         env:
           BIYING_TOKEN: ${{ secrets.BIYING_TOKEN }}
           BIYING_BASE_URL: ${{ secrets.BIYING_BASE_URL }}
+          RUN_DATE: ${{ steps.pushmode.outputs.date10 }}
         run: |
           set -euo pipefail
-          run_date="${{ steps.pushmode.outputs.date10 }}"
+          run_date="${RUN_DATE}"
           echo "Intraday mode: runtime-only lightweight snapshot"
+          set +e
+          python3 - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          from daily_review.application.workflow_schedule import resolve_auction_snapshot_prefetch_plan
+
+          run_date = os.environ["RUN_DATE"]
+          plan = resolve_auction_snapshot_prefetch_plan(Path("cache"), run_date)
+          print("auction_snapshot_prefetch_plan=" + json.dumps(plan, ensure_ascii=False, sort_keys=True))
+          print(
+              f"{plan['status']}: trade_date={run_date} "
+              f"ready_source={plan.get('ready_source') or '-'}"
+          )
+          if plan["should_prefetch"]:
+              raise SystemExit(10)
+          PY
+          prefetch_rc=$?
+          set -e
+          if [ "${prefetch_rc}" = "10" ]; then
+            echo "auction_snapshot_missing_prefetch_required: trade_date=${run_date}"
+            python3 scripts/prefetch_stock_research_quotes.py --date "${run_date}" --must-succeed
+          elif [ "${prefetch_rc}" != "0" ]; then
+            exit "${prefetch_rc}"
+          fi
           ./qr.sh watch-slice "${run_date}"
           D8="$(echo "${run_date}" | tr -d '-')"
           D8="${D8}" PYTHONPATH=. python3 - <<'PY'
