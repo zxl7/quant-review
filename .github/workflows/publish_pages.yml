@@ -651,9 +651,16 @@ jobs:
           set -e
           if [ "${prefetch_rc}" = "10" ]; then
             echo "auction_snapshot_missing_prefetch_required: trade_date=${run_date}"
-            python3 scripts/prefetch_stock_research_quotes.py --date "${run_date}" --must-succeed
+            if python3 scripts/prefetch_stock_research_quotes.py --date "${run_date}" --must-succeed; then
+              echo "prefetch_plan_required_and_fetch_succeeded: trade_date=${run_date}"
+            else
+              echo "prefetch_plan_required_but_fetch_failed: trade_date=${run_date}"
+              exit 1
+            fi
           elif [ "${prefetch_rc}" != "0" ]; then
             exit "${prefetch_rc}"
+          else
+            echo "prefetch_plan_skip_snapshot_ready: trade_date=${run_date}"
           fi
           ./qr.sh watch-slice "${run_date}"
           D8="$(echo "${run_date}" | tr -d '-')"

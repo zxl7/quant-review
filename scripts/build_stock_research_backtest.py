@@ -40,6 +40,7 @@ FORCED_QUERY_TAGS = {"fore"}
 SOURCE_HISTORY_SCHEMA = "stock_research_backtest_source_v1"
 SOURCE_HISTORY_CLOSE_PUSH = "ztAnalysis.relay/watch.close_push"
 MARKET_CLOSE_SECONDS = 15 * 3600
+REALTIME_HTTP_RETRIES = 2
 
 
 def _now_bj() -> datetime:
@@ -1572,6 +1573,7 @@ def _fetch_realtime_quotes(codes: list[str], *, fallback_quotes: dict[str, Any] 
         "as_of": "",
         "error": "",
         "request_window": "09:25-09:30",
+        "request_batches": 0,
     }
     quotes_map: dict[str, dict[str, Any]] = {}
 
@@ -1579,10 +1581,11 @@ def _fetch_realtime_quotes(codes: list[str], *, fallback_quotes: dict[str, Any] 
     if forced_query or _should_request_realtime_quotes():
         try:
             cfg = load_config_from_env()
-            client = HttpClient(base_url=cfg.base_url, token=cfg.token, timeout=12, retries=0)
+            client = HttpClient(base_url=cfg.base_url, token=cfg.token, timeout=12, retries=REALTIME_HTTP_RETRIES)
             step = 20
             for i in range(0, len(uniq_codes), step):
                 batch = uniq_codes[i : i + step]
+                diagnostics["request_batches"] = int(diagnostics["request_batches"] or 0) + 1
                 rows = fetch_stocks_realtime(client, ",".join(batch)) if batch else []
                 if not isinstance(rows, list):
                     continue
@@ -1599,7 +1602,11 @@ def _fetch_realtime_quotes(codes: list[str], *, fallback_quotes: dict[str, Any] 
                     quotes_map[quote["code"]] = quote
             diagnostics["remote_received"] = len(quotes_map)
         except Exception as exc:
-            diagnostics["error"] = str(exc)
+            err_type = type(exc).__name__
+            if "timeout" in err_type.lower():
+                diagnostics["error"] = f"remote_timeout: {exc}; request_batches={diagnostics['request_batches']}"
+            else:
+                diagnostics["error"] = f"remote_http_error: {exc}; request_batches={diagnostics['request_batches']}"
     else:
         diagnostics["source"] = "window_closed"
         diagnostics["error"] = "仅允许在 09:25-09:30 请求批量竞价接口，当前时段跳过远端请求。"
@@ -1637,8 +1644,10 @@ def _fetch_realtime_quotes(codes: list[str], *, fallback_quotes: dict[str, Any] 
         diagnostics["source"] = "forced_query" if quotes_map else "forced_query_unavailable"
         diagnostics["forced_query"] = True
         diagnostics["request_window"] = "forced"
-        if not diagnostics["error"]:
+        if quotes_map:
             diagnostics["error"] = "已跳过 09:25-09:30 时间窗限制，尝试补齐今天缺失的竞价快照。"
+        elif not diagnostics["error"]:
+            diagnostics["error"] = f"forced_query_unavailable: request_batches={diagnostics['request_batches']}"
     return quotes_map, diagnostics
 
 

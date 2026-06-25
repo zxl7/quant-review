@@ -7,6 +7,7 @@ import json
 import os
 import tempfile
 import unittest
+import urllib.error
 from datetime import datetime as real_datetime
 from pathlib import Path
 from unittest.mock import patch
@@ -594,6 +595,41 @@ class StockResearchBacktestRowsTest(unittest.TestCase):
         self.assertEqual(payload["diagnostics"]["source"], "future_trade_day_guard")
         self.assertTrue(payload["diagnostics"]["future_trade_day_guard"])
         self.assertTrue(payload["diagnostics"]["forced_query"])
+
+    def test_fetch_realtime_quotes_uses_retrying_http_client(self) -> None:
+        captured = {}
+
+        class FakeClient:
+            def __init__(self, **kwargs):
+                captured.update(kwargs)
+
+        with patch.object(backtest, "load_config_from_env", return_value=type("Cfg", (), {"base_url": "https://example.test", "token": "token"})()), patch.object(
+            backtest,
+            "HttpClient",
+            side_effect=lambda **kwargs: FakeClient(**kwargs),
+        ), patch.object(
+            backtest,
+            "fetch_stocks_realtime",
+            return_value=[{"dm": "000001", "t": "2026-06-23 09:25:01", "yc": 10.0, "o": 10.2, "p": 10.2, "cje": 100000000}],
+        ), patch.object(backtest, "_should_request_realtime_quotes", return_value=True):
+            quotes_map, diagnostics = backtest._fetch_realtime_quotes(["000001"])
+
+        self.assertIn("000001", quotes_map)
+        self.assertEqual(diagnostics["received"], 1)
+        self.assertEqual(diagnostics["request_batches"], 1)
+        self.assertEqual(captured["retries"], backtest.REALTIME_HTTP_RETRIES)
+
+    def test_fetch_realtime_quotes_reports_remote_http_error_when_request_fails(self) -> None:
+        with patch.object(backtest, "load_config_from_env", return_value=type("Cfg", (), {"base_url": "https://example.test", "token": "token"})()), patch.object(
+            backtest,
+            "fetch_stocks_realtime",
+            side_effect=urllib.error.URLError("temporary timeout"),
+        ), patch.object(backtest, "_should_request_realtime_quotes", return_value=True):
+            quotes_map, diagnostics = backtest._fetch_realtime_quotes(["000001"])
+
+        self.assertEqual(quotes_map, {})
+        self.assertEqual(diagnostics["source"], "unavailable")
+        self.assertIn("remote_http_error", diagnostics["error"])
 
 
 class PicksAdvisorStabilityTest(unittest.TestCase):

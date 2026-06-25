@@ -200,6 +200,20 @@ jobs:
               f"{plan['status']}: trade_date={run_date} "
               f"ready_source={plan.get('ready_source') or '-'}"
           )
+          print(
+              "prefetch_plan_context="
+              + json.dumps(
+                  {
+                      "today_bj": os.environ.get("RUN_DATE", ""),
+                      "target_date": run_date,
+                      "status": plan["status"],
+                      "should_prefetch": plan["should_prefetch"],
+                      "ready_source": plan.get("ready_source") or "",
+                  },
+                  ensure_ascii=False,
+                  sort_keys=True,
+              )
+          )
           with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as fh:
               fh.write(f"should_prefetch={'true' if plan['should_prefetch'] else 'false'}\n")
               fh.write(f"status={plan['status']}\n")
@@ -214,6 +228,7 @@ jobs:
         run: |
           set -euo pipefail
           run_date="${{ steps.tradeday.outputs.target_date }}"
+          echo "prefetch_execute_context: today_bj=${{ steps.tradeday.outputs.today_bj }} target_date=${run_date} skip_reason=${{ steps.tradeday.outputs.skip_reason }} status=${{ steps.prefetchplan.outputs.status }}"
           python3 scripts/prefetch_stock_research_quotes.py --date "${run_date}" --must-succeed
 
       - name: Verify snapshot file exists
@@ -234,6 +249,19 @@ jobs:
           print("prefetched_snapshot=" + json.dumps(snapshot, ensure_ascii=False, sort_keys=True))
           if not snapshot["found"]:
               raise SystemExit(f"Missing valid prefetched quote snapshot for {run_date}")
+          print(
+              "prefetched_snapshot_summary="
+              + json.dumps(
+                  {
+                      "target_date": run_date,
+                      "found": snapshot["found"],
+                      "source": snapshot.get("source") or "",
+                      "as_of": snapshot.get("as_of") or "",
+                  },
+                  ensure_ascii=False,
+                  sort_keys=True,
+              )
+          )
           PY
 
       - name: Commit prefetched snapshot to gh-pages

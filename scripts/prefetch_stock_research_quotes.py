@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import time
 import sys
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
@@ -20,6 +21,9 @@ from scripts.build_stock_research_backtest import _load_stock_research_rows, sav
 
 
 TZ_BJ = timezone(timedelta(hours=8))
+PREFETCH_HTTP_RETRIES = 2
+PREFETCH_FETCH_ATTEMPTS = 2
+PREFETCH_RETRY_SLEEP_SECONDS = 1.2
 
 
 def _now_bj() -> datetime:
@@ -52,20 +56,46 @@ def _collect_reference_codes(rows: list[dict], *, reference_date: str) -> list[s
     )
 
 
-def _fetch_and_save_snapshot(*, reference_date: str, codes: list[str], source: str) -> Path | None:
+def _fetch_and_save_snapshot(*, reference_date: str, codes: list[str], source: str) -> tuple[Path | None, dict[str, object]]:
+    diag: dict[str, object] = {
+        "reference_date": str(reference_date or "").strip(),
+        "codes_count": len(codes),
+        "attempts": 0,
+        "success": False,
+        "as_of": "",
+        "last_error": "",
+        "source": source,
+    }
     if len(reference_date) != 10 or not codes:
-        return None
+        diag["last_error"] = "invalid_reference_or_codes"
+        return None, diag
     cfg = load_config_from_env()
-    client = HttpClient(base_url=cfg.base_url, token=cfg.token, timeout=12, retries=0)
-    quotes_map, as_of = fetch_stocks_realtime_map(client, codes)
+    client = HttpClient(base_url=cfg.base_url, token=cfg.token, timeout=12, retries=PREFETCH_HTTP_RETRIES)
+    quotes_map = {}
+    as_of = ""
+    for attempt in range(1, PREFETCH_FETCH_ATTEMPTS + 1):
+        diag["attempts"] = attempt
+        try:
+            quotes_map, as_of = fetch_stocks_realtime_map(client, codes)
+            if quotes_map:
+                diag["success"] = True
+                diag["as_of"] = as_of or ""
+                break
+            diag["last_error"] = "empty_quotes_map"
+        except Exception as exc:
+            diag["last_error"] = f"{type(exc).__name__}: {exc}"
+        if attempt < PREFETCH_FETCH_ATTEMPTS:
+            time.sleep(PREFETCH_RETRY_SLEEP_SECONDS)
     if not quotes_map:
-        return None
-    return save_prefetched_realtime_quotes(
+        return None, diag
+    path = save_prefetched_realtime_quotes(
         date10=reference_date,
         items=quotes_map,
         as_of=as_of or _now_bj().strftime("%Y-%m-%d %H:%M:%S"),
         source=source,
     )
+    diag["as_of"] = as_of or ""
+    return path, diag
 
 
 def build_prefetch_execution_plan(*, trade_date10: str, cache_dir: Path) -> dict[str, object]:
@@ -118,27 +148,37 @@ def main(argv: list[str] | None = None) -> int:
 
     now_bj = _now_bj()
     if _is_entry_window(now_bj):
-        path = _fetch_and_save_snapshot(reference_date=reference_date, codes=codes, source="workflow_prefetch")
+        path, diag = _fetch_and_save_snapshot(reference_date=reference_date, codes=codes, source="workflow_prefetch")
         if path:
-            print(f"ok: {path} codes={len(codes)} reference_date={reference_date}")
+            print(
+                f"ok: {path} codes={len(codes)} reference_date={reference_date} "
+                f"attempts={diag['attempts']} as_of={diag['as_of'] or '-'} last_error={diag['last_error'] or '-'}"
+            )
             return 0
-        print(f"skip: no realtime quotes fetched for {reference_date}")
+        print(
+            f"skip: no realtime quotes fetched for {reference_date} "
+            f"attempts={diag['attempts']} last_error={diag['last_error'] or '-'}"
+        )
         return 2 if args.must_succeed else 0
 
     if not args.must_succeed:
         print("skip: outside 09:25-09:30 window")
         return 0
 
-    path = _fetch_and_save_snapshot(reference_date=reference_date, codes=codes, source="forced_query")
+    path, diag = _fetch_and_save_snapshot(reference_date=reference_date, codes=codes, source="forced_query")
     if path:
         print(
             "ok: "
             f"{path} codes={len(codes)} reference_date={reference_date} "
-            "mode=forced_query reason=delayed_schedule_recovery"
+            f"mode=forced_query reason=delayed_schedule_recovery attempts={diag['attempts']} "
+            f"as_of={diag['as_of'] or '-'} last_error={diag['last_error'] or '-'}"
         )
         return 0
 
-    print(f"skip: outside 09:25-09:30 window and forced fallback failed for {reference_date}")
+    print(
+        f"skip: outside 09:25-09:30 window and forced fallback failed for {reference_date} "
+        f"attempts={diag['attempts']} last_error={diag['last_error'] or '-'}"
+    )
     return 2
 
 
