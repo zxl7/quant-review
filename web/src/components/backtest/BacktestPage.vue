@@ -127,6 +127,25 @@ function isCompleteBacktestPayload(raw: any) {
   return true
 }
 
+function hasRenderableBacktestContent(raw: any) {
+  if (isCompleteBacktestPayload(raw)) return true
+  if (!raw || typeof raw !== "object") return false
+  const currentPoolRecords = Array.isArray(raw.currentPoolRecords) ? raw.currentPoolRecords : []
+  const displayRecords = Array.isArray(raw.displayRecords) ? raw.displayRecords : []
+  const historicalSnapshots = Array.isArray(raw.historicalSnapshots) ? raw.historicalSnapshots : []
+  const records = Array.isArray(raw.records) ? raw.records : []
+  const lifecycle = raw.lifecycle && typeof raw.lifecycle === "object" ? raw.lifecycle : {}
+  const realtimeBuy = raw.realtimeBuy && typeof raw.realtimeBuy === "object" ? raw.realtimeBuy : {}
+  return (
+    currentPoolRecords.length > 0 ||
+    displayRecords.length > 0 ||
+    historicalSnapshots.length > 0 ||
+    records.length > 0 ||
+    !!String(lifecycle?.stage || "").trim() ||
+    !!String(realtimeBuy?.reference_date || "").trim()
+  )
+}
+
 const payload = computed<any>(() => {
   const raw = backtestSource.value?.stockResearchBacktest
   return isCompleteBacktestPayload(raw) ? raw : emptyPayload
@@ -146,7 +165,7 @@ const realtimeBuy = computed<any>(() => {
   return raw && typeof raw === "object" ? raw : emptyPayload.realtimeBuy
 })
 const historicalSnapshots = computed<any[]>(() => (Array.isArray(payload.value?.historicalSnapshots) ? payload.value.historicalSnapshots : []))
-const hasValidPayload = computed(() => isCompleteBacktestPayload(backtestSource.value?.stockResearchBacktest))
+const hasValidPayload = computed(() => hasRenderableBacktestContent(backtestSource.value?.stockResearchBacktest))
 const activeTradeDate = computed(() => String(meta.value?.active_trade_date || realtimeBuy.value?.trade_date || "").trim())
 const realtimeReferenceDate = computed(() => String(realtimeBuy.value?.reference_date || latestRecommendationDate.value || "").trim())
 const realtimeTitleDate = computed(() => {

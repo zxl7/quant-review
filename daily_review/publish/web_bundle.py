@@ -1168,6 +1168,24 @@ def _ensure_stock_research_backtest(md: dict) -> None:
         return
     preserved = ((md.get("preservedResearch") or {}) if isinstance(md.get("preservedResearch"), dict) else {}).get("marketData")
     preserved_backtest = preserved.get("stockResearchBacktest") if isinstance(preserved, dict) else None
+    if not isinstance(preserved_backtest, dict):
+        try:
+            from daily_review.application.stock_research_service import load_latest_valid_research_snapshot
+
+            current_date = str(md.get("date") or "").strip()
+            preserved_snapshot = load_latest_valid_research_snapshot(root=ROOT, current_date=current_date)
+            preserved_market = (
+                preserved_snapshot.get("marketData")
+                if isinstance(preserved_snapshot, dict) and isinstance(preserved_snapshot.get("marketData"), dict)
+                else None
+            )
+            preserved_backtest = (
+                preserved_market.get("stockResearchBacktest") if isinstance(preserved_market, dict) else None
+            )
+            if preserved_snapshot and "preservedResearch" not in md:
+                md["preservedResearch"] = preserved_snapshot
+        except Exception:
+            preserved_backtest = None
     if callable(upgrade_stock_research_backtest_payload) and isinstance(preserved_backtest, dict):
         preserved_backtest = upgrade_stock_research_backtest_payload(preserved_backtest)
     if _is_fresh_stock_research_backtest(preserved_backtest, latest_source_snapshot=latest_source_snapshot):
