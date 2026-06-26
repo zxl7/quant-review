@@ -57,12 +57,6 @@ class WorkflowScheduleTest(unittest.TestCase):
         self.assertEqual(result["mode"], "auction_prefetch_retry")
         self.assertEqual(result["reason"], "resolved_from_schedule:27 1 * * 1-5")
 
-    def test_1045_schedule_maps_to_prefetch_retry_only_path(self) -> None:
-        result = resolve_publish_schedule_mode("schedule", "45 2 * * 1-5", now=datetime(2026, 6, 22, 10, 45, tzinfo=TZ_BJ))
-        self.assertEqual(result["skip"], "false")
-        self.assertEqual(result["mode"], "auction_prefetch_retry")
-        self.assertEqual(result["reason"], "resolved_from_schedule:45 2 * * 1-5")
-
     def test_prefetch_only_modes_are_explicit(self) -> None:
         self.assertEqual(AUCTION_PREFETCH_ONLY_MODES, {"auction_prefetch", "auction_prefetch_retry"})
 

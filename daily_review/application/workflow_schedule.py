@@ -13,7 +13,6 @@ SCHEDULE_MODE_BY_CRON: dict[str, str] = {
     "25 1 * * 1-5": "auction_prefetch",
     "26 1 * * 1-5": "open_fore",
     "27 1 * * 1-5": "auction_prefetch_retry",
-    "45 2 * * 1-5": "auction_prefetch_retry",
     "35-55/5 1 * * 1-5": "intraday",
     "*/5 2 * * 1-5": "intraday",
     "0-30/5 3 * * 1-5": "intraday",

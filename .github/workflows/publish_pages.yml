@@ -18,14 +18,12 @@ on:
   # - 09:25：仅做轻量竞价快照预抓，不跑 full publish
   # - 09:26：早盘主链执行一次正式 fetch，进入前先确保今日竞价快照
   # - 09:27：仅做一次轻量竞价预抓兜底
-  # - 10:45：临时测试时点，复用 retry-only 竞价补抓链路
   # - 09:35-11:30 / 13:00-14:59：仅执行盘中轻量任务快照（runtime/slices）
   # - 15:00 / 16:00 / 17:00 / 18:00：执行收盘后全量复盘发布
   schedule:
     - cron: "25 1 * * 1-5"
     - cron: "26 1 * * 1-5"
     - cron: "27 1 * * 1-5"
-    - cron: "45 2 * * 1-5"
     - cron: "35-55/5 1 * * 1-5"
     - cron: "*/5 2 * * 1-5"
     - cron: "0-30/5 3 * * 1-5"
@@ -404,7 +402,7 @@ jobs:
         if: ${{ (github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true') && steps.warmup.outputs.skip != 'true' && steps.pushmode.outputs.mode != 'intraday' && steps.pushmode.outputs.mode != 'auction_prefetch' && steps.pushmode.outputs.mode != 'auction_prefetch_retry' }}
         run: cd web && npm ci
 
-      - name: 09:25/09:27/10:45 auction snapshot prefetch only
+      - name: 09:25/09:27 auction snapshot prefetch only
         if: ${{ github.event_name == 'schedule' && (steps.pushmode.outputs.mode == 'auction_prefetch' || steps.pushmode.outputs.mode == 'auction_prefetch_retry') && steps.timecheck.outputs.skip != 'true' && steps.tradeday.outputs.is_trade_today == 'true' }}
         env:
           BIYING_TOKEN: ${{ secrets.BIYING_TOKEN }}
