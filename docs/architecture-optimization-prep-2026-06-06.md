@@ -15,9 +15,9 @@
 - Python 运行入口：`daily_review/cli.py`、`qr.sh`
 - 模块执行框架：`daily_review/pipeline/*`、`daily_review/modules_v2/*`
 - 数据注入与发布桥接：`inject_data.py`
-- 个股研究/回测旁路：`scripts/build_stock_research_backtest.py`、`scripts/prefetch_stock_research_quotes.py`
+- 个股研究/回测旁路：`scripts/build_stock_research_backtest.py`
 - 缓存同步：`manage_cache.py`
-- 线上发布：`.github/workflows/publish_pages.yml`、`.github/workflows/prefetch_stock_research_quotes.yml`
+- 线上发布：`.github/workflows/publish_pages.yml`
 - 前端消费层：`web/src/App.vue`、`web/src/composables/useMarketData.ts`
 
 ## 2. 当前系统总览
@@ -114,7 +114,7 @@
 而且：
 
 - `publish_pages.yml` 本身约 620 行
-- `prefetch_stock_research_quotes.yml` 又维护了一条独立的 quote 预抓链路
+- `publish_pages.yml` 内部还承担 09:25/09:27 竞价快照预抓阶段，需要继续保持和主发布链的一致性
 - `manage_cache.py`、`qr.sh`、workflow 都在各自管理保留/同步规则
 
 直接问题：

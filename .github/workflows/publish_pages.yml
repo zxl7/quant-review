@@ -14,13 +14,18 @@ on:
         required: false
         default: ""
         type: string
-  # 工作日北京时间固定保留 3 条自动链路：
-  # - 09:25：独立 prefetch 预抓竞价快照（见 prefetch_stock_research_quotes.yml）
-  # - 09:26：早盘主链执行一次正式 fetch，若当天快照缺失则补 fore（只补一次）
+  # 工作日北京时间固定保留 4 条自动链路：
+  # - 09:25：仅做轻量竞价快照预抓，不跑 full publish
+  # - 09:26：早盘主链执行一次正式 fetch，进入前先确保今日竞价快照
+  # - 09:27：仅做一次轻量竞价预抓兜底
+  # - 10:45：临时测试时点，复用 retry-only 竞价补抓链路
   # - 09:35-11:30 / 13:00-14:59：仅执行盘中轻量任务快照（runtime/slices）
   # - 15:00 / 16:00 / 17:00 / 18:00：执行收盘后全量复盘发布
   schedule:
+    - cron: "25 1 * * 1-5"
     - cron: "26 1 * * 1-5"
+    - cron: "27 1 * * 1-5"
+    - cron: "45 2 * * 1-5"
     - cron: "35-55/5 1 * * 1-5"
     - cron: "*/5 2 * * 1-5"
     - cron: "0-30/5 3 * * 1-5"
@@ -307,7 +312,7 @@ jobs:
           # - 9:26 的 schedule 会先做快照预检，再决定是否补 fore；
           # - push / workflow_dispatch 允许立即进入主流程，并在缺快照时自动补 fore。
           warmup_hit=false
-          if [ "${event_name}" = "schedule" ] && [ "${schedule_mode}" = "open_fore" ]; then
+          if [ "${event_name}" = "schedule" ] && { [ "${schedule_mode}" = "open_fore" ] || [ "${schedule_mode}" = "auction_prefetch" ] || [ "${schedule_mode}" = "auction_prefetch_retry" ]; }; then
             warmup_hit=false
           elif [ "${event_name}" = "push" ]; then
             warmup_hit=false
@@ -360,7 +365,11 @@ jobs:
           fi
           mode="full"
           if [ "${{ github.event_name }}" = "schedule" ]; then
-            if [ "${schedule_mode}" = "intraday" ]; then
+            if [ "${schedule_mode}" = "auction_prefetch" ]; then
+              mode="auction_prefetch"
+            elif [ "${schedule_mode}" = "auction_prefetch_retry" ]; then
+              mode="auction_prefetch_retry"
+            elif [ "${schedule_mode}" = "intraday" ]; then
               mode="intraday"
             elif [ "${schedule_mode}" = "eod" ]; then
               mode="eod"
@@ -381,23 +390,98 @@ jobs:
         run: |
           chmod +x ./qr.sh || true
 
-      - name: Install Python dependencies (full publish only)
-        if: ${{ (github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true') && steps.warmup.outputs.skip != 'true' && steps.pushmode.outputs.mode != 'intraday' }}
+      - name: Install Python dependencies
+        if: ${{ github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true' }}
         run: pip install -r requirements.txt
 
       - name: Setup Node.js (full publish only)
-        if: ${{ (github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true') && steps.warmup.outputs.skip != 'true' && steps.pushmode.outputs.mode != 'intraday' }}
+        if: ${{ (github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true') && steps.warmup.outputs.skip != 'true' && steps.pushmode.outputs.mode != 'intraday' && steps.pushmode.outputs.mode != 'auction_prefetch' && steps.pushmode.outputs.mode != 'auction_prefetch_retry' }}
         uses: actions/setup-node@v4
         with:
           node-version: "22"
 
       - name: Install web dependencies (full publish only)
-        if: ${{ (github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true') && steps.warmup.outputs.skip != 'true' && steps.pushmode.outputs.mode != 'intraday' }}
+        if: ${{ (github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true') && steps.warmup.outputs.skip != 'true' && steps.pushmode.outputs.mode != 'intraday' && steps.pushmode.outputs.mode != 'auction_prefetch' && steps.pushmode.outputs.mode != 'auction_prefetch_retry' }}
         run: cd web && npm ci
+
+      - name: 09:25/09:27/10:45 auction snapshot prefetch only
+        if: ${{ github.event_name == 'schedule' && (steps.pushmode.outputs.mode == 'auction_prefetch' || steps.pushmode.outputs.mode == 'auction_prefetch_retry') && steps.timecheck.outputs.skip != 'true' && steps.tradeday.outputs.is_trade_today == 'true' }}
+        env:
+          BIYING_TOKEN: ${{ secrets.BIYING_TOKEN }}
+          BIYING_BASE_URL: ${{ secrets.BIYING_BASE_URL }}
+          RUN_DATE: ${{ steps.pushmode.outputs.date10 }}
+          FORCE_OUTSIDE_WINDOW: ${{ steps.pushmode.outputs.mode == 'auction_prefetch_retry' && 'true' || 'false' }}
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          from daily_review.application.workflow_schedule import execute_auction_snapshot_prefetch
+
+          run_date = os.environ["RUN_DATE"]
+          force_outside_window = os.environ.get("FORCE_OUTSIDE_WINDOW", "false") == "true"
+          result = execute_auction_snapshot_prefetch(
+              cache_dir=Path("cache"),
+              trade_date10=run_date,
+              force_outside_window=force_outside_window,
+          )
+          print("auction_snapshot_prefetch_execution=" + json.dumps(result, ensure_ascii=False, sort_keys=True))
+          if result["ok"] and result["reason"] == "snapshot_ready_skip":
+              print(f"auction_snapshot_ready_skip: trade_date={run_date} ready_source={result.get('ready_source') or '-'}")
+              raise SystemExit(0)
+          if result["ok"]:
+              marker = "09:27_prefetch_retry_only" if force_outside_window else "09:25_prefetch_only_succeeded"
+              print(f"{marker}: trade_date={run_date} path={result.get('path') or '-'} as_of={result.get('as_of') or '-'}")
+              raise SystemExit(0)
+          marker = "09:27_prefetch_retry_only" if force_outside_window else "09:25_prefetch_only_failed"
+          raise SystemExit(f"{marker}: trade_date={run_date} reason={result.get('reason') or '-'} last_error={result.get('last_error') or '-'}")
+          PY
+
+      - name: Commit auction snapshot prefetch cache only to gh-pages
+        if: ${{ github.event_name == 'schedule' && (steps.pushmode.outputs.mode == 'auction_prefetch' || steps.pushmode.outputs.mode == 'auction_prefetch_retry') && steps.timecheck.outputs.skip != 'true' && steps.tradeday.outputs.is_trade_today == 'true' }}
+        run: |
+          set -euo pipefail
+          mkdir -p site_prev/cache
+          cp -f cache/stock_research_realtime_quotes-*.json site_prev/cache/ 2>/dev/null || true
+          cp -f cache/trade_days_cache.json site_prev/cache/ 2>/dev/null || true
+          rfiles=( $(ls -1 site_prev/cache/stock_research_realtime_quotes-*.json 2>/dev/null | sort || true) )
+          if [ ${#rfiles[@]} -gt 7 ]; then
+            rm -f "${rfiles[@]:0:${#rfiles[@]}-7}"
+          fi
+          if git -C site_prev diff --quiet; then
+            echo "No auction snapshot cache changes to commit."
+            exit 0
+          fi
+          git -C site_prev status --porcelain
+          git -C site_prev config user.name "github-actions[bot]"
+          git -C site_prev config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git -C site_prev add cache/stock_research_realtime_quotes-*.json cache/trade_days_cache.json 2>/dev/null || true
+          git -C site_prev commit -m "deploy: auction snapshot cache" || true
+          push_rc=1
+          for attempt in 1 2 3; do
+            if git -C site_prev push origin HEAD:gh-pages; then
+              echo "Push auction snapshot cache to gh-pages succeeded on attempt ${attempt}"
+              push_rc=0
+              break
+            fi
+            push_rc=$?
+            echo "Push auction snapshot cache failed on attempt ${attempt} (rc=${push_rc})"
+            if [ "${attempt}" -lt 3 ]; then
+              sleep $((attempt * 5))
+              git -C site_prev fetch origin gh-pages || true
+              git -C site_prev rebase origin/gh-pages || {
+                git -C site_prev rebase --abort || true
+                echo "Rebase against origin/gh-pages failed; retrying push without rebase"
+              }
+            fi
+          done
+          exit "${push_rc}"
 
       - name: Resolve stock research query tag
         id: stockresearch
-        if: ${{ (github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true') && steps.warmup.outputs.skip != 'true' && (github.event_name != 'schedule' || steps.tradeday.outputs.is_trade_today == 'true') && steps.pushmode.outputs.mode != 'intraday' && ((github.event_name == 'schedule' && (steps.timecheck.outputs.mode == 'open_fore' || steps.timecheck.outputs.mode == 'eod')) || github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && github.event.inputs.stock_research_query_tag != '')) }}
+        if: ${{ (github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true') && steps.warmup.outputs.skip != 'true' && (github.event_name != 'schedule' || steps.tradeday.outputs.is_trade_today == 'true') && steps.pushmode.outputs.mode != 'intraday' && steps.pushmode.outputs.mode != 'auction_prefetch' && steps.pushmode.outputs.mode != 'auction_prefetch_retry' && ((github.event_name == 'schedule' && (steps.timecheck.outputs.mode == 'open_fore' || steps.timecheck.outputs.mode == 'eod')) || github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && github.event.inputs.stock_research_query_tag != '')) }}
         run: |
           set -euo pipefail
           mode="${{ steps.pushmode.outputs.mode }}"
@@ -466,7 +550,7 @@ jobs:
 
       - name: Default stock research strategy
         id: stockresearchdefault
-        if: ${{ (github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true') && steps.warmup.outputs.skip != 'true' && (github.event_name != 'schedule' || steps.tradeday.outputs.is_trade_today == 'true') && steps.pushmode.outputs.mode != 'intraday' && ((github.event_name == 'schedule' && steps.timecheck.outputs.mode != 'open_fore' && steps.timecheck.outputs.mode != 'eod') || (github.event_name == 'workflow_dispatch' && github.event.inputs.stock_research_query_tag == '')) }}
+        if: ${{ (github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true') && steps.warmup.outputs.skip != 'true' && (github.event_name != 'schedule' || steps.tradeday.outputs.is_trade_today == 'true') && steps.pushmode.outputs.mode != 'intraday' && steps.pushmode.outputs.mode != 'auction_prefetch' && steps.pushmode.outputs.mode != 'auction_prefetch_retry' && ((github.event_name == 'schedule' && steps.timecheck.outputs.mode != 'open_fore' && steps.timecheck.outputs.mode != 'eod') || (github.event_name == 'workflow_dispatch' && github.event.inputs.stock_research_query_tag == '')) }}
         run: |
           set -euo pipefail
           refresh_backtest="false"
@@ -489,7 +573,7 @@ jobs:
 
       - name: Finalize stock research strategy
         id: stockresearchfinal
-        if: ${{ (github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true') && steps.warmup.outputs.skip != 'true' && (github.event_name != 'schedule' || steps.tradeday.outputs.is_trade_today == 'true') && steps.pushmode.outputs.mode != 'intraday' }}
+        if: ${{ (github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true') && steps.warmup.outputs.skip != 'true' && (github.event_name != 'schedule' || steps.tradeday.outputs.is_trade_today == 'true') && steps.pushmode.outputs.mode != 'intraday' && steps.pushmode.outputs.mode != 'auction_prefetch' && steps.pushmode.outputs.mode != 'auction_prefetch_retry' }}
         run: |
           set -euo pipefail
           effective_query_tag="${{ steps.stockresearch.outputs.effective_query_tag || steps.stockresearchdefault.outputs.effective_query_tag || '' }}"
@@ -510,8 +594,41 @@ jobs:
           } >> "$GITHUB_OUTPUT"
           echo "Final stock research strategy: refresh_backtest=${refresh_backtest} validate_snapshot=${validate_snapshot} query_tag=${effective_query_tag:-<none>} reason=${resolution_reason}"
 
+      - name: Ensure today auction snapshot before full publish
+        if: ${{ (github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true') && steps.warmup.outputs.skip != 'true' && (github.event_name != 'schedule' || steps.tradeday.outputs.is_trade_today == 'true') && steps.pushmode.outputs.mode != 'intraday' && steps.pushmode.outputs.mode != 'auction_prefetch' && steps.pushmode.outputs.mode != 'auction_prefetch_retry' }}
+        env:
+          BIYING_TOKEN: ${{ secrets.BIYING_TOKEN }}
+          BIYING_BASE_URL: ${{ secrets.BIYING_BASE_URL }}
+          RUN_DATE: ${{ steps.pushmode.outputs.date10 }}
+          FORCE_OUTSIDE_WINDOW: ${{ github.event_name == 'schedule' && steps.timecheck.outputs.mode == 'open_fore' && 'true' || 'false' }}
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          from daily_review.application.workflow_schedule import execute_auction_snapshot_prefetch
+
+          run_date = os.environ["RUN_DATE"]
+          force_outside_window = os.environ.get("FORCE_OUTSIDE_WINDOW", "false") == "true"
+          result = execute_auction_snapshot_prefetch(
+              cache_dir=Path("cache"),
+              trade_date10=run_date,
+              force_outside_window=force_outside_window,
+          )
+          print("auction_snapshot_prefetch_execution=" + json.dumps(result, ensure_ascii=False, sort_keys=True))
+          if result["ok"] and result["reason"] == "snapshot_ready_skip":
+              print(f"auction_snapshot_ready_skip: trade_date={run_date} ready_source={result.get('ready_source') or '-'}")
+              raise SystemExit(0)
+          if result["ok"]:
+              print(f"09:26_prefetch_then_full_publish: trade_date={run_date} path={result.get('path') or '-'} as_of={result.get('as_of') or '-'}")
+              raise SystemExit(0)
+          raise SystemExit(f"prefetch_plan_required_but_fetch_failed: trade_date={run_date} reason={result.get('reason') or '-'} last_error={result.get('last_error') or '-'}")
+          PY
+
       - name: Generate latest full report (online fetch -> offline pipeline rebuild)
-        if: ${{ (github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true') && steps.warmup.outputs.skip != 'true' && (github.event_name != 'schedule' || steps.tradeday.outputs.is_trade_today == 'true') && steps.pushmode.outputs.mode != 'intraday' }}
+        if: ${{ (github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true') && steps.warmup.outputs.skip != 'true' && (github.event_name != 'schedule' || steps.tradeday.outputs.is_trade_today == 'true') && steps.pushmode.outputs.mode != 'intraday' && steps.pushmode.outputs.mode != 'auction_prefetch' && steps.pushmode.outputs.mode != 'auction_prefetch_retry' }}
         timeout-minutes: 20
         env:
           BIYING_TOKEN: ${{ secrets.BIYING_TOKEN }}
@@ -629,39 +746,28 @@ jobs:
           set -euo pipefail
           run_date="${RUN_DATE}"
           echo "Intraday mode: runtime-only lightweight snapshot"
-          set +e
           python3 - <<'PY'
           import json
           import os
           from pathlib import Path
 
-          from daily_review.application.workflow_schedule import resolve_auction_snapshot_prefetch_plan
+          from daily_review.application.workflow_schedule import execute_auction_snapshot_prefetch
 
           run_date = os.environ["RUN_DATE"]
-          plan = resolve_auction_snapshot_prefetch_plan(Path("cache"), run_date)
-          print("auction_snapshot_prefetch_plan=" + json.dumps(plan, ensure_ascii=False, sort_keys=True))
-          print(
-              f"{plan['status']}: trade_date={run_date} "
-              f"ready_source={plan.get('ready_source') or '-'}"
+          result = execute_auction_snapshot_prefetch(
+              cache_dir=Path("cache"),
+              trade_date10=run_date,
+              force_outside_window=True,
           )
-          if plan["should_prefetch"]:
-              raise SystemExit(10)
+          print("auction_snapshot_prefetch_execution=" + json.dumps(result, ensure_ascii=False, sort_keys=True))
+          if result["ok"] and result["reason"] == "snapshot_ready_skip":
+              print(f"prefetch_plan_skip_snapshot_ready: trade_date={run_date}")
+              raise SystemExit(0)
+          if result["ok"]:
+              print(f"prefetch_plan_required_and_fetch_succeeded: trade_date={run_date} path={result.get('path') or '-'}")
+              raise SystemExit(0)
+          raise SystemExit(f"prefetch_plan_required_but_fetch_failed: trade_date={run_date} reason={result.get('reason') or '-'} last_error={result.get('last_error') or '-'}")
           PY
-          prefetch_rc=$?
-          set -e
-          if [ "${prefetch_rc}" = "10" ]; then
-            echo "auction_snapshot_missing_prefetch_required: trade_date=${run_date}"
-            if python3 scripts/prefetch_stock_research_quotes.py --date "${run_date}" --must-succeed; then
-              echo "prefetch_plan_required_and_fetch_succeeded: trade_date=${run_date}"
-            else
-              echo "prefetch_plan_required_but_fetch_failed: trade_date=${run_date}"
-              exit 1
-            fi
-          elif [ "${prefetch_rc}" != "0" ]; then
-            exit "${prefetch_rc}"
-          else
-            echo "prefetch_plan_skip_snapshot_ready: trade_date=${run_date}"
-          fi
           ./qr.sh watch-slice "${run_date}"
           D8="$(echo "${run_date}" | tr -d '-')"
           D8="${D8}" PYTHONPATH=. python3 - <<'PY'

@@ -6,12 +6,16 @@ from __future__ import annotations
 import json
 import tempfile
 import unittest
+import urllib.error
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
+from unittest.mock import patch
 
 from daily_review.application.workflow_schedule import (
+    AUCTION_PREFETCH_ONLY_MODES,
     SCHEDULE_MODE_BY_CRON,
     describe_prefetched_quotes_snapshot,
+    execute_auction_snapshot_prefetch,
     resolve_auction_snapshot_prefetch_plan,
     resolve_publish_schedule_mode,
     resolve_full_publish_source_cache,
@@ -40,6 +44,27 @@ class WorkflowScheduleTest(unittest.TestCase):
         result = resolve_publish_schedule_mode("schedule", "26 1 * * 1-5", now=delayed_now)
         self.assertEqual(result["mode"], "open_fore")
         self.assertEqual(result["beijing_now"], "10:27")
+
+    def test_0925_schedule_maps_to_prefetch_only_path(self) -> None:
+        result = resolve_publish_schedule_mode("schedule", "25 1 * * 1-5", now=datetime(2026, 6, 22, 9, 25, tzinfo=TZ_BJ))
+        self.assertEqual(result["skip"], "false")
+        self.assertEqual(result["mode"], "auction_prefetch")
+        self.assertEqual(result["reason"], "resolved_from_schedule:25 1 * * 1-5")
+
+    def test_0927_schedule_maps_to_prefetch_retry_only_path(self) -> None:
+        result = resolve_publish_schedule_mode("schedule", "27 1 * * 1-5", now=datetime(2026, 6, 22, 9, 27, tzinfo=TZ_BJ))
+        self.assertEqual(result["skip"], "false")
+        self.assertEqual(result["mode"], "auction_prefetch_retry")
+        self.assertEqual(result["reason"], "resolved_from_schedule:27 1 * * 1-5")
+
+    def test_1045_schedule_maps_to_prefetch_retry_only_path(self) -> None:
+        result = resolve_publish_schedule_mode("schedule", "45 2 * * 1-5", now=datetime(2026, 6, 22, 10, 45, tzinfo=TZ_BJ))
+        self.assertEqual(result["skip"], "false")
+        self.assertEqual(result["mode"], "auction_prefetch_retry")
+        self.assertEqual(result["reason"], "resolved_from_schedule:45 2 * * 1-5")
+
+    def test_prefetch_only_modes_are_explicit(self) -> None:
+        self.assertEqual(AUCTION_PREFETCH_ONLY_MODES, {"auction_prefetch", "auction_prefetch_retry"})
 
     def test_intraday_schedule_promotes_to_eod_after_close_when_runner_starts_late(self) -> None:
         delayed_now = datetime(2026, 6, 24, 15, 43, tzinfo=TZ_BJ)
@@ -440,6 +465,93 @@ class WorkflowScheduleTest(unittest.TestCase):
         self.assertTrue(snapshot["found"])
         self.assertEqual(snapshot["reference_date"], "2026-06-19")
         self.assertEqual(snapshot["as_of"], "2026-06-22 09:25:03")
+
+    def test_execute_auction_snapshot_prefetch_skips_when_today_snapshot_ready(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            cache_dir = Path(tmp) / "cache"
+            cache_dir.mkdir()
+            (cache_dir / "stock_research_realtime_quotes-20260619.json").write_text(
+                json.dumps(
+                    {
+                        "schema": "stock_research_realtime_quotes_v1",
+                        "date": "2026-06-19",
+                        "as_of": "2026-06-22 09:25:03",
+                        "source": "workflow_prefetch",
+                        "count": 1,
+                        "items": {"000001": {"dm": "000001", "t": "2026-06-22 09:25:03"}},
+                    },
+                    ensure_ascii=False,
+                ),
+                encoding="utf-8",
+            )
+
+            result = execute_auction_snapshot_prefetch(cache_dir=cache_dir, trade_date10="2026-06-22")
+
+        self.assertTrue(result["ok"])
+        self.assertEqual(result["reason"], "snapshot_ready_skip")
+        self.assertEqual(result["ready_source"], "prefetched_snapshot")
+
+    def test_execute_auction_snapshot_prefetch_retries_once_then_succeeds(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            cache_dir = Path(tmp) / "cache"
+            cache_dir.mkdir()
+            fake_rows = [{"date10": "2026-06-19", "code": "000001"}]
+            with patch(
+                "daily_review.application.workflow_schedule._load_stock_research_rows_for_prefetch",
+                return_value=(fake_rows, []),
+            ), patch(
+                "daily_review.application.workflow_schedule._load_prefetch_runtime_config",
+                return_value=type("Cfg", (), {"base_url": "https://example.test", "token": "token"})(),
+            ), patch(
+                "daily_review.application.workflow_schedule._build_prefetch_http_client",
+                return_value=object(),
+            ), patch(
+                "daily_review.application.workflow_schedule._fetch_prefetch_quotes_map",
+                side_effect=[
+                    urllib.error.URLError("boom"),
+                    ({"000001": {"dm": "000001", "t": "2026-06-22 09:25:03"}}, "2026-06-22 09:25:03"),
+                ],
+            ), patch(
+                "daily_review.application.workflow_schedule._save_prefetched_quotes_snapshot",
+                return_value=cache_dir / "stock_research_realtime_quotes-20260619.json",
+            ):
+                result = execute_auction_snapshot_prefetch(
+                    cache_dir=cache_dir,
+                    trade_date10="2026-06-22",
+                    now=datetime(2026, 6, 22, 9, 25, 1, tzinfo=TZ_BJ),
+                )
+
+        self.assertTrue(result["ok"])
+        self.assertEqual(result["attempts"], 2)
+        self.assertEqual(result["reason"], "prefetch_saved")
+
+    def test_execute_auction_snapshot_prefetch_returns_failure_when_all_attempts_fail(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            cache_dir = Path(tmp) / "cache"
+            cache_dir.mkdir()
+            fake_rows = [{"date10": "2026-06-19", "code": "000001"}]
+            with patch(
+                "daily_review.application.workflow_schedule._load_stock_research_rows_for_prefetch",
+                return_value=(fake_rows, []),
+            ), patch(
+                "daily_review.application.workflow_schedule._load_prefetch_runtime_config",
+                return_value=type("Cfg", (), {"base_url": "https://example.test", "token": "token"})(),
+            ), patch(
+                "daily_review.application.workflow_schedule._build_prefetch_http_client",
+                return_value=object(),
+            ), patch(
+                "daily_review.application.workflow_schedule._fetch_prefetch_quotes_map",
+                side_effect=urllib.error.URLError("boom"),
+            ):
+                result = execute_auction_snapshot_prefetch(
+                    cache_dir=cache_dir,
+                    trade_date10="2026-06-22",
+                    now=datetime(2026, 6, 22, 9, 25, 1, tzinfo=TZ_BJ),
+                )
+
+        self.assertFalse(result["ok"])
+        self.assertEqual(result["reason"], "prefetch_failed")
+        self.assertIn("URLError", result["last_error"])
 
     def test_validate_market_data_snapshot_requires_quote_time_when_candidates_exist(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

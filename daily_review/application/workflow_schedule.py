@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import time
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any
@@ -9,7 +10,10 @@ from typing import Any
 TZ_BJ = timezone(timedelta(hours=8))
 
 SCHEDULE_MODE_BY_CRON: dict[str, str] = {
+    "25 1 * * 1-5": "auction_prefetch",
     "26 1 * * 1-5": "open_fore",
+    "27 1 * * 1-5": "auction_prefetch_retry",
+    "45 2 * * 1-5": "auction_prefetch_retry",
     "35-55/5 1 * * 1-5": "intraday",
     "*/5 2 * * 1-5": "intraday",
     "0-30/5 3 * * 1-5": "intraday",
@@ -23,6 +27,11 @@ SCHEDULE_MODE_BY_CRON: dict[str, str] = {
 INVALID_QUOTE_SOURCES = {"unavailable", "forced_query_unavailable"}
 
 INTRADAY_CUTOFF_HOUR_BJ = 15
+AUCTION_PREFETCH_ONLY_MODES = {"auction_prefetch", "auction_prefetch_retry"}
+PREFETCH_HTTP_TIMEOUT = 12
+PREFETCH_HTTP_RETRIES = 2
+PREFETCH_FETCH_ATTEMPTS = 2
+PREFETCH_RETRY_SLEEP_SECONDS = 1.2
 
 
 def _now_bj() -> datetime:
@@ -35,6 +44,159 @@ def _read_json(path: Path) -> dict[str, Any]:
     except Exception:
         return {}
     return data if isinstance(data, dict) else {}
+
+
+def _load_stock_research_rows_for_prefetch() -> tuple[list[dict[str, Any]], list[str]]:
+    from scripts.build_stock_research_backtest import _load_stock_research_rows
+
+    return _load_stock_research_rows()
+
+
+def _normalize_prefetch_code(raw_code: str) -> str:
+    from daily_review.data.biying import normalize_stock_code
+
+    return normalize_stock_code(raw_code)
+
+
+def _load_prefetch_runtime_config() -> Any:
+    from daily_review.config import load_config_from_env
+
+    return load_config_from_env()
+
+
+def _fetch_prefetch_quotes_map(client: Any, codes: list[str]) -> tuple[dict[str, Any], str]:
+    from daily_review.data.biying import fetch_stocks_realtime_map
+
+    return fetch_stocks_realtime_map(client, codes)
+
+
+def _build_prefetch_http_client(*, base_url: str, token: str) -> Any:
+    from daily_review.http import HttpClient
+
+    return HttpClient(
+        base_url=base_url,
+        token=token,
+        timeout=PREFETCH_HTTP_TIMEOUT,
+        retries=PREFETCH_HTTP_RETRIES,
+    )
+
+
+def _save_prefetched_quotes_snapshot(*, date10: str, items: dict[str, Any], as_of: str, source: str) -> Path:
+    from scripts.build_stock_research_backtest import save_prefetched_realtime_quotes
+
+    return save_prefetched_realtime_quotes(date10=date10, items=items, as_of=as_of, source=source)
+
+
+def _pick_prefetch_reference_date(rows: list[dict[str, Any]], *, before_date10: str = "") -> str:
+    dates = sorted({str(row.get("date10") or "") for row in rows if str(row.get("date10") or "")})
+    if before_date10:
+        older = [d for d in dates if d < before_date10]
+        if older:
+            return older[-1]
+    return dates[-1] if dates else ""
+
+
+def _collect_prefetch_codes(rows: list[dict[str, Any]], *, reference_date: str) -> list[str]:
+    if len(reference_date) != 10:
+        return []
+
+    return sorted(
+        {
+            _normalize_prefetch_code(str(row.get("code") or ""))
+            for row in rows
+            if str(row.get("date10") or "") == reference_date and _normalize_prefetch_code(str(row.get("code") or ""))
+        }
+    )
+
+
+def execute_auction_snapshot_prefetch(
+    *,
+    cache_dir: Path,
+    trade_date10: str,
+    force_outside_window: bool = False,
+    now: datetime | None = None,
+) -> dict[str, Any]:
+    result: dict[str, Any] = {
+        "ok": False,
+        "trade_date10": str(trade_date10 or "").strip(),
+        "reference_date": "",
+        "codes": [],
+        "codes_count": 0,
+        "attempts": 0,
+        "should_prefetch": False,
+        "status": "",
+        "ready_source": "",
+        "path": "",
+        "as_of": "",
+        "source": "",
+        "last_error": "",
+        "reason": "",
+    }
+    plan = resolve_auction_snapshot_prefetch_plan(cache_dir, trade_date10)
+    result["should_prefetch"] = bool(plan["should_prefetch"])
+    result["status"] = str(plan["status"] or "")
+    result["ready_source"] = str(plan.get("ready_source") or "")
+    if not plan["should_prefetch"]:
+        result["ok"] = True
+        result["reason"] = "snapshot_ready_skip"
+        return result
+
+    rows, _ = _load_stock_research_rows_for_prefetch()
+    reference_date = _pick_prefetch_reference_date(rows, before_date10=str(trade_date10 or "").strip())
+    codes = _collect_prefetch_codes(rows, reference_date=reference_date)
+    result["reference_date"] = reference_date
+    result["codes"] = codes
+    result["codes_count"] = len(codes)
+    if not rows:
+        result["reason"] = "no_stock_research_rows"
+        result["last_error"] = "no_stock_research_rows"
+        return result
+    if not reference_date:
+        result["reason"] = "no_reference_date"
+        result["last_error"] = "no_reference_date"
+        return result
+    if not codes:
+        result["reason"] = "no_codes_for_reference_date"
+        result["last_error"] = "no_codes_for_reference_date"
+        return result
+
+    current = now.astimezone(TZ_BJ) if now else _now_bj()
+    total = current.hour * 3600 + current.minute * 60 + current.second
+    in_window = 9 * 3600 + 25 * 60 <= total < 9 * 3600 + 30 * 60
+    if not in_window and not force_outside_window:
+        result["reason"] = "outside_entry_window"
+        result["last_error"] = "outside 09:25-09:30 window"
+        return result
+
+    cfg = _load_prefetch_runtime_config()
+    client = _build_prefetch_http_client(base_url=cfg.base_url, token=cfg.token)
+    quotes_map: dict[str, Any] = {}
+    as_of = ""
+    for attempt in range(1, PREFETCH_FETCH_ATTEMPTS + 1):
+        result["attempts"] = attempt
+        try:
+            quotes_map, as_of = _fetch_prefetch_quotes_map(client, codes)
+            if quotes_map:
+                path = _save_prefetched_quotes_snapshot(
+                    date10=reference_date,
+                    items=quotes_map,
+                    as_of=as_of or current.strftime("%Y-%m-%d %H:%M:%S"),
+                    source="forced_query" if force_outside_window and not in_window else "workflow_prefetch",
+                )
+                result["ok"] = True
+                result["path"] = str(path)
+                result["as_of"] = as_of or ""
+                result["source"] = "forced_query" if force_outside_window and not in_window else "workflow_prefetch"
+                result["reason"] = "prefetch_saved"
+                return result
+            result["last_error"] = "empty_quotes_map"
+        except Exception as exc:
+            result["last_error"] = f"{type(exc).__name__}: {exc}"
+        if attempt < PREFETCH_FETCH_ATTEMPTS:
+            time.sleep(PREFETCH_RETRY_SLEEP_SECONDS)
+
+    result["reason"] = "prefetch_failed"
+    return result
 
 
 def resolve_publish_schedule_mode(
