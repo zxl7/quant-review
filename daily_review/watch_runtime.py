@@ -49,6 +49,10 @@ def _date10_to_8(date10: str) -> str:
     return str(date10 or "").replace("-", "")
 
 
+def _market_data_cache_path(root: Path, date10: str) -> Path:
+    return root / "cache" / f"market_data-{_date10_to_8(date10)}.json"
+
+
 def _intraday_slices_path(root: Path, date10: str) -> Path:
     return root / "cache" / f"intraday_slices-{_date10_to_8(date10)}.json"
 
@@ -132,6 +136,54 @@ def _normalize_slice_row(row: dict[str, Any], date10: str) -> dict[str, Any]:
     if not r.get("date"):
         r["date"] = date10
     return r
+
+
+def _pick_runtime_indices(*, root: Path, date10: str) -> tuple[list[dict[str, Any]], str]:
+    required = ("上证指数", "深证成指", "创业板指")
+
+    def extract(payload: dict[str, Any]) -> tuple[list[dict[str, Any]], str]:
+        rows = payload.get("indices") if isinstance(payload.get("indices"), list) else []
+        as_of = str(((payload.get("meta") or {}) if isinstance(payload.get("meta"), dict) else {}).get("asOf", {}).get("indices") or "").strip()
+        picked: list[dict[str, Any]] = []
+        by_name: dict[str, dict[str, Any]] = {}
+        for row in rows:
+            if not isinstance(row, dict):
+                continue
+            name = str(row.get("name") or "").strip()
+            if name:
+                by_name[name] = dict(row)
+        for name in required:
+            row = by_name.get(name)
+            if row:
+                picked.append(row)
+        return picked, as_of
+
+    current = _read_json(_market_data_cache_path(root, date10), {})
+    current_rows, current_as_of = extract(current if isinstance(current, dict) else {})
+    if len(current_rows) == 3:
+        return current_rows, current_as_of
+
+    fallback_rows = list(current_rows)
+    fallback_as_of = current_as_of
+    for path in sorted((root / "cache").glob("market_data-*.json"), reverse=True):
+        payload = _read_json(path, {})
+        if not isinstance(payload, dict):
+            continue
+        rows, as_of = extract(payload)
+        if len(rows) != 3:
+            continue
+        existing = {str(row.get("name") or "").strip() for row in fallback_rows}
+        for row in rows:
+            name = str(row.get("name") or "").strip()
+            if name and name not in existing:
+                fallback_rows.append(row)
+        if not fallback_as_of:
+            fallback_as_of = as_of
+        if len({str(row.get("name") or "").strip() for row in fallback_rows}) == 3:
+            by_name = {str(row.get("name") or "").strip(): row for row in fallback_rows}
+            return [by_name[name] for name in required if name in by_name], fallback_as_of
+
+    return current_rows, current_as_of
 
 
 def _prev_row_for_ts(rows: list[dict[str, Any]], curr_ts_bj: str, date10: str) -> dict[str, Any] | None:
@@ -270,13 +322,19 @@ def append_intraday_slice(*, root: Path, snapshot: dict[str, Any]) -> dict[str, 
 
 def write_intraday_runtime(*, root: Path, snapshot: dict[str, Any], envelope: dict[str, Any]) -> dict[str, Any]:
     market = snapshot.get("market") if isinstance(snapshot.get("market"), dict) else {}
+    date10 = str(snapshot.get("date") or "")
+    indices_rows, indices_as_of = _pick_runtime_indices(root=root, date10=date10)
     payload = {
         "schema": "intraday_runtime_v1",
-        "date": str(snapshot.get("date") or ""),
+        "date": date10,
         "updated_at": str(snapshot.get("ts_bj") or ""),
         "source": str(snapshot.get("source") or "intraday_live"),
         "latest": (envelope.get("latest") if isinstance(envelope, dict) else None),
         "snapshots": (envelope.get("snapshots") if isinstance(envelope, dict) else []),
+        "indices": indices_rows,
+        "asOf": {
+            "indices": indices_as_of,
+        },
         "live": {
             "market": {
                 "zt": market.get("zt"),

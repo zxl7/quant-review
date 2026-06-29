@@ -254,7 +254,23 @@ class WorkflowScheduleTest(unittest.TestCase):
         self.assertEqual(plan["effective_query_tag"], "")
         self.assertEqual(plan["resolution_reason"], "default_full_refresh")
         self.assertTrue(plan["refresh_backtest"])
-        self.assertFalse(plan["validate_snapshot"])
+        self.assertTrue(plan["validate_snapshot"])
+
+    def test_query_plan_full_today_keeps_snapshot_validation_enabled(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            cache_dir = Path(tmp) / "cache"
+            cache_dir.mkdir()
+
+            plan = resolve_stock_research_query_plan(
+                mode="full",
+                trade_date10="2026-06-22",
+                is_trade_today=True,
+                input_query_tag="",
+                cache_dir=cache_dir,
+            )
+
+        self.assertTrue(plan["refresh_backtest"])
+        self.assertTrue(plan["validate_snapshot"])
 
     def test_query_plan_manual_fore_enables_refresh_and_validation(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
