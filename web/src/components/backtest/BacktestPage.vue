@@ -128,7 +128,6 @@ function isCompleteBacktestPayload(raw: any) {
 }
 
 function hasRenderableBacktestContent(raw: any) {
-  if (isCompleteBacktestPayload(raw)) return true
   if (!raw || typeof raw !== "object") return false
   const currentPoolRecords = Array.isArray(raw.currentPoolRecords) ? raw.currentPoolRecords : []
   const displayRecords = Array.isArray(raw.displayRecords) ? raw.displayRecords : []
@@ -146,9 +145,43 @@ function hasRenderableBacktestContent(raw: any) {
   )
 }
 
+function normalizeBacktestPayload(raw: any) {
+  if (!raw || typeof raw !== "object") return emptyPayload
+  if (isCompleteBacktestPayload(raw)) return raw
+  if (!hasRenderableBacktestContent(raw)) return emptyPayload
+  return {
+    ...emptyPayload,
+    ...raw,
+    meta: {
+      ...emptyPayload.meta,
+      ...(raw.meta && typeof raw.meta === "object" ? raw.meta : {}),
+    },
+    summary: {
+      ...emptyPayload.summary,
+      ...(raw.summary && typeof raw.summary === "object" ? raw.summary : {}),
+    },
+    lifecycle: {
+      ...emptyPayload.lifecycle,
+      ...(raw.lifecycle && typeof raw.lifecycle === "object" ? raw.lifecycle : {}),
+    },
+    breakdowns: {
+      ...emptyPayload.breakdowns,
+      ...(raw.breakdowns && typeof raw.breakdowns === "object" ? raw.breakdowns : {}),
+    },
+    realtimeBuy: {
+      ...emptyPayload.realtimeBuy,
+      ...(raw.realtimeBuy && typeof raw.realtimeBuy === "object" ? raw.realtimeBuy : {}),
+    },
+    currentPoolRecords: Array.isArray(raw.currentPoolRecords) ? raw.currentPoolRecords : [],
+    displayRecords: Array.isArray(raw.displayRecords) ? raw.displayRecords : [],
+    historicalSnapshots: Array.isArray(raw.historicalSnapshots) ? raw.historicalSnapshots : [],
+    records: Array.isArray(raw.records) ? raw.records : [],
+  }
+}
+
 const payload = computed<any>(() => {
   const raw = backtestSource.value?.stockResearchBacktest
-  return isCompleteBacktestPayload(raw) ? raw : emptyPayload
+  return normalizeBacktestPayload(raw)
 })
 
 const marketSessionDate = computed(() => String((marketData.value as any)?.date || backtestSource.value?.date || "").trim())

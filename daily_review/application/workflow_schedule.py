@@ -717,12 +717,37 @@ def validate_account_derivatives(*, ledger_path: Path, metrics_path: Path, run_d
 
 def validate_market_data_stock_research_snapshot(path: Path, trade_date10: str) -> dict[str, Any]:
     snapshot = describe_market_data_snapshot(path, trade_date10)
+    payload = _read_json(path)
+    backtest = payload.get("stockResearchBacktest") if isinstance(payload.get("stockResearchBacktest"), dict) else {}
+    current_pool_records = backtest.get("currentPoolRecords") if isinstance(backtest.get("currentPoolRecords"), list) else []
+    display_records = backtest.get("displayRecords") if isinstance(backtest.get("displayRecords"), list) else []
+    historical_snapshots = backtest.get("historicalSnapshots") if isinstance(backtest.get("historicalSnapshots"), list) else []
+    records = backtest.get("records") if isinstance(backtest.get("records"), list) else []
+    lifecycle = backtest.get("lifecycle") if isinstance(backtest.get("lifecycle"), dict) else {}
+    renderability = {
+        "has_current_plan_section": bool(current_pool_records),
+        "has_history_section": bool(display_records) or bool(historical_snapshots) or bool(records),
+        "has_renderable_backtest": (
+            bool(current_pool_records)
+            or bool(display_records)
+            or bool(historical_snapshots)
+            or bool(records)
+            or bool(str(lifecycle.get("stage") or "").strip())
+            or bool(str(snapshot.get("reference_date") or "").strip())
+        ),
+    }
     result: dict[str, Any] = {
         "ok": True,
         "required": False,
         "message": "no_candidate_rows",
         **snapshot,
+        **renderability,
     }
+    if not renderability["has_renderable_backtest"]:
+        result["ok"] = False
+        result["required"] = True
+        result["message"] = "renderable_stock_research_backtest_missing"
+        return result
     candidate_count = int(snapshot.get("candidate_count") or 0)
     if candidate_count <= 0:
         return result

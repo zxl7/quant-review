@@ -690,6 +690,70 @@ class WorkflowScheduleTest(unittest.TestCase):
         self.assertFalse(result["required"])
         self.assertTrue(result["ok"])
 
+    def test_validate_market_data_snapshot_blocks_publish_when_renderable_backtest_missing(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            market_path = Path(tmp) / "market_data.json"
+            market_path.write_text(
+                json.dumps(
+                    {
+                        "stockResearchBacktest": {
+                            "lifecycle": {"stage": "", "quote_state": ""},
+                            "realtimeBuy": {
+                                "trade_date": "2026-06-22",
+                                "reference_date": "",
+                                "candidate_count": 0,
+                                "quote_time": "",
+                                "diagnostics": {"source": "unavailable"},
+                            },
+                            "currentPoolRecords": [],
+                            "displayRecords": [],
+                            "historicalSnapshots": [],
+                            "records": [],
+                        }
+                    },
+                    ensure_ascii=False,
+                ),
+                encoding="utf-8",
+            )
+
+            result = validate_market_data_stock_research_snapshot(market_path, "2026-06-22")
+
+        self.assertTrue(result["required"])
+        self.assertFalse(result["ok"])
+        self.assertEqual(result["message"], "renderable_stock_research_backtest_missing")
+
+    def test_validate_market_data_snapshot_keeps_publishable_when_history_section_exists(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            market_path = Path(tmp) / "market_data.json"
+            market_path.write_text(
+                json.dumps(
+                    {
+                        "stockResearchBacktest": {
+                            "lifecycle": {"stage": "auction_snapshot_missing", "quote_state": "missing"},
+                            "realtimeBuy": {
+                                "trade_date": "2026-06-22",
+                                "reference_date": "2026-06-19",
+                                "candidate_count": 0,
+                                "quote_time": "",
+                                "diagnostics": {"source": "unavailable"},
+                            },
+                            "currentPoolRecords": [],
+                            "displayRecords": [{"code": "000001"}],
+                            "historicalSnapshots": [{"reference_date": "2026-06-18", "trade_date": "2026-06-19"}],
+                            "records": [{"code": "000001"}],
+                        }
+                    },
+                    ensure_ascii=False,
+                ),
+                encoding="utf-8",
+            )
+
+            result = validate_market_data_stock_research_snapshot(market_path, "2026-06-22")
+
+        self.assertTrue(result["has_history_section"])
+        self.assertTrue(result["ok"])
+        self.assertFalse(result["required"])
+
     def test_validate_market_data_snapshot_passes_with_same_day_quote(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             market_path = Path(tmp) / "market_data.json"

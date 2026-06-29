@@ -1097,6 +1097,44 @@ def _is_complete_stock_research_backtest(payload: object) -> bool:
     return True
 
 
+def _has_renderable_stock_research_backtest_content(payload: object) -> bool:
+    """判断个股回测 payload 是否至少包含一个前端可展示区块。"""
+    if not isinstance(payload, dict):
+        return False
+    current_pool_records = payload.get("currentPoolRecords") if isinstance(payload.get("currentPoolRecords"), list) else []
+    display_records = payload.get("displayRecords") if isinstance(payload.get("displayRecords"), list) else []
+    historical_snapshots = payload.get("historicalSnapshots") if isinstance(payload.get("historicalSnapshots"), list) else []
+    records = payload.get("records") if isinstance(payload.get("records"), list) else []
+    lifecycle = payload.get("lifecycle") if isinstance(payload.get("lifecycle"), dict) else {}
+    realtime_buy = payload.get("realtimeBuy") if isinstance(payload.get("realtimeBuy"), dict) else {}
+    return (
+        bool(current_pool_records)
+        or bool(display_records)
+        or bool(historical_snapshots)
+        or bool(records)
+        or bool(str(lifecycle.get("stage") or "").strip())
+        or bool(str(realtime_buy.get("reference_date") or "").strip())
+    )
+
+
+def _describe_stock_research_backtest_renderability(payload: object) -> dict[str, Any]:
+    current_pool_records = payload.get("currentPoolRecords") if isinstance(payload, dict) and isinstance(payload.get("currentPoolRecords"), list) else []
+    display_records = payload.get("displayRecords") if isinstance(payload, dict) and isinstance(payload.get("displayRecords"), list) else []
+    historical_snapshots = payload.get("historicalSnapshots") if isinstance(payload, dict) and isinstance(payload.get("historicalSnapshots"), list) else []
+    records = payload.get("records") if isinstance(payload, dict) and isinstance(payload.get("records"), list) else []
+    realtime_buy = payload.get("realtimeBuy") if isinstance(payload, dict) and isinstance(payload.get("realtimeBuy"), dict) else {}
+    return {
+        "has_renderable_content": _has_renderable_stock_research_backtest_content(payload),
+        "has_current_plan_section": bool(current_pool_records),
+        "has_history_section": bool(display_records) or bool(historical_snapshots) or bool(records),
+        "has_realtime_reference": bool(str(realtime_buy.get("reference_date") or "").strip()),
+        "current_pool_records_count": len(current_pool_records),
+        "display_records_count": len(display_records),
+        "historical_snapshots_count": len(historical_snapshots),
+        "records_count": len(records),
+    }
+
+
 def _latest_stock_research_source_snapshot() -> dict[str, object]:
     try:
         from scripts.build_stock_research_backtest import get_latest_stock_research_source_snapshot
@@ -1112,6 +1150,8 @@ def _is_fresh_stock_research_backtest(
     latest_source_snapshot: Optional[dict[str, object]] = None,
 ) -> bool:
     if not _is_complete_stock_research_backtest(payload):
+        return False
+    if not _has_renderable_stock_research_backtest_content(payload):
         return False
     latest_source_snapshot = latest_source_snapshot or _latest_stock_research_source_snapshot()
     if not latest_source_snapshot:
@@ -1134,11 +1174,15 @@ def _is_fresh_stock_research_backtest(
         return False
     if source_recommendation_date and latest_recommendation_date != source_recommendation_date:
         return False
+    renderability = _describe_stock_research_backtest_renderability(payload)
     if source_rows_count > 0 and len(current_pool_records) < source_rows_count:
         return False
     if source_rows_count > 0 and current_pool_records:
         first = current_pool_records[0] if isinstance(current_pool_records[0], dict) else {}
         if "placement_label" not in first or "relay_rank" not in first or "watch_rank" not in first:
+            return False
+    if source_trade_date and source_recommendation_date:
+        if not renderability["has_current_plan_section"] and not renderability["has_history_section"]:
             return False
     if source_trade_date and latest_closed_trade_date and latest_closed_trade_date < source_trade_date:
         if not (
@@ -1207,13 +1251,6 @@ def _ensure_stock_research_backtest(md: dict) -> None:
         preserved_backtest = upgrade_stock_research_backtest_payload(preserved_backtest)
     if _is_fresh_stock_research_backtest(preserved_backtest, latest_source_snapshot=latest_source_snapshot):
         md["stockResearchBacktest"] = preserved_backtest
-        return
-    if str(os.environ.get("QR_DISABLE_STOCK_RESEARCH_BACKTEST_REBUILD") or "").strip().lower() in {
-        "1",
-        "true",
-        "yes",
-        "on",
-    }:
         return
     try:
         from scripts.build_stock_research_backtest import build_stock_research_backtest_payload

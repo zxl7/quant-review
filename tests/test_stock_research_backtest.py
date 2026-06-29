@@ -1535,18 +1535,90 @@ class StockResearchBacktestPublishFreshnessTest(unittest.TestCase):
         self.assertIsNotNone(snapshot)
         self.assertEqual(snapshot["marketData"]["stockResearchBacktest"]["meta"]["latest_recommendation_date"], "2026-06-15")
 
-    def test_publish_can_skip_live_backtest_rebuild(self) -> None:
-        md = {}
+    def test_publish_still_rebuilds_live_backtest_when_disable_env_is_set(self) -> None:
+        md = {"date": "2026-06-25"}
+        rebuilt = {
+            "schema": "stock_research_backtest_v2",
+            "meta": {"latest_recommendation_date": "2026-06-24", "active_trade_date": "2026-06-25"},
+            "summary": {
+                "total_samples": 1,
+                "source_samples": 1,
+                "filtered_non_backtest_samples": 0,
+                "eligible_samples": 1,
+                "realtime_candidate_count": 1,
+                "realtime_buy_count": 0,
+                "realtime_pending_count": 1,
+                "realtime_unavailable_count": 0,
+            },
+            "lifecycle": {"stage": "auction_snapshot_missing", "quote_state": "missing"},
+            "realtimeBuy": {"trade_date": "2026-06-25", "reference_date": "2026-06-24"},
+            "currentPoolRecords": [{"code": "000001", "placement_label": "接力候选", "relay_rank": 1, "watch_rank": 0}],
+            "displayRecords": [],
+            "historicalSnapshots": [],
+            "records": [],
+        }
         with patch.dict(web_bundle.os.environ, {"QR_DISABLE_STOCK_RESEARCH_BACKTEST_REBUILD": "1"}, clear=False), patch.object(
             web_bundle, "_latest_stock_research_source_snapshot", return_value={}
         ), patch.object(
             web_bundle, "_is_fresh_stock_research_backtest", return_value=False
-        ), patch.object(
-            web_bundle, "_is_complete_stock_research_backtest", return_value=False
+        ), patch(
+            "daily_review.application.stock_research_service.load_latest_valid_research_snapshot",
+            return_value=None,
+        ), patch(
+            "scripts.build_stock_research_backtest.build_stock_research_backtest_payload",
+            return_value=rebuilt,
         ):
             web_bundle._ensure_stock_research_backtest(md)
 
-        self.assertNotIn("stockResearchBacktest", md)
+        self.assertEqual(md["stockResearchBacktest"], rebuilt)
+
+    def test_incomplete_but_renderable_backtest_is_not_fresh(self) -> None:
+        payload = {
+            "schema": "stock_research_backtest_v2",
+            "meta": {
+                "latest_recommendation_date": "2026-06-24",
+                "active_trade_date": "2026-06-25",
+                "latest_closed_trade_date": "2026-06-24",
+            },
+            "summary": {
+                "total_samples": 2,
+                "source_samples": 2,
+                "filtered_non_backtest_samples": 0,
+                "eligible_samples": 2,
+                "realtime_candidate_count": 2,
+                "realtime_buy_count": 0,
+                "realtime_pending_count": 2,
+                "realtime_unavailable_count": 0,
+            },
+            "lifecycle": {
+                "stage": "auction_snapshot_missing",
+                "quote_state": "missing",
+            },
+            "realtimeBuy": {
+                "trade_date": "2026-06-25",
+                "reference_date": "2026-06-24",
+                "candidate_count": 2,
+                "quoted_count": 0,
+                "quote_time": "",
+                "diagnostics": {"source": "unavailable"},
+            },
+            "currentPoolRecords": [],
+            "displayRecords": [],
+            "historicalSnapshots": [],
+            "records": [],
+        }
+
+        self.assertFalse(
+            web_bundle._is_fresh_stock_research_backtest(
+                payload,
+                latest_source_snapshot={
+                    "trade_date": "2026-06-25",
+                    "recommendation_date": "2026-06-24",
+                    "rows_count": 2,
+                },
+            )
+        )
+
 
     def test_fresh_backtest_requires_latest_closed_trade_date_to_reach_source_trade_date(self) -> None:
         payload = {

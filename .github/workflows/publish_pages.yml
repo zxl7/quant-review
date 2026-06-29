@@ -849,7 +849,6 @@ jobs:
           EFFECTIVE_DATE8: ${{ steps.publishsource.outputs.effective_date8 }}
           EFFECTIVE_SOURCE_PATH: ${{ steps.publishsource.outputs.effective_source_path }}
           EFFECTIVE_REASON: ${{ steps.publishsource.outputs.effective_reason }}
-          QR_DISABLE_STOCK_RESEARCH_BACKTEST_REBUILD: "1"
           QR_DISABLE_STOCK_RESEARCH_HISTORY_FETCH: "1"
         run: |
           run_date="${RUN_DATE}"
@@ -910,6 +909,20 @@ jobs:
                   f"published market_data date mismatch: expected {enforce_trade_date}, got {published_date or '<missing>'}"
               )
           result = validate_market_data_stock_research_snapshot(market_path, enforce_trade_date)
+          diagnostics = (
+              ((payload.get("stockResearchBacktest") or {}).get("realtimeBuy") or {}).get("diagnostics")
+              if isinstance((payload.get("stockResearchBacktest") or {}).get("realtimeBuy"), dict)
+              else {}
+          )
+          source_label = str((diagnostics or {}).get("source") or "").strip()
+          if result["ok"]:
+              result["publish_backtest_resolution"] = (
+                  "source_backtest_rebuilt_at_publish"
+                  if source_label in {"rebuilt_at_publish", "publish_rebuild", "forced_query", "workflow_prefetch"}
+                  else "source_backtest_reused"
+              )
+          else:
+              result["publish_backtest_resolution"] = "source_backtest_invalid_publish_blocked"
           result["requested_run_date"] = run_date
           result["effective_date10"] = effective_date
           result["effective_reason"] = effective_reason
