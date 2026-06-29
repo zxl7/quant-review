@@ -162,7 +162,9 @@ def execute_auction_snapshot_prefetch(
     current = now.astimezone(TZ_BJ) if now else _now_bj()
     total = current.hour * 3600 + current.minute * 60 + current.second
     in_window = 9 * 3600 + 25 * 60 <= total < 9 * 3600 + 30 * 60
-    if not in_window and not force_outside_window:
+    after_window = total >= 9 * 3600 + 30 * 60
+    allow_outside_window_fetch = force_outside_window or after_window
+    if not in_window and not allow_outside_window_fetch:
         result["reason"] = "outside_entry_window"
         result["last_error"] = "outside 09:25-09:30 window"
         return result
@@ -180,12 +182,12 @@ def execute_auction_snapshot_prefetch(
                     date10=reference_date,
                     items=quotes_map,
                     as_of=as_of or current.strftime("%Y-%m-%d %H:%M:%S"),
-                    source="forced_query" if force_outside_window and not in_window else "workflow_prefetch",
+                    source="forced_query" if allow_outside_window_fetch and not in_window else "workflow_prefetch",
                 )
                 result["ok"] = True
                 result["path"] = str(path)
                 result["as_of"] = as_of or ""
-                result["source"] = "forced_query" if force_outside_window and not in_window else "workflow_prefetch"
+                result["source"] = "forced_query" if allow_outside_window_fetch and not in_window else "workflow_prefetch"
                 result["reason"] = "prefetch_saved"
                 return result
             result["last_error"] = "empty_quotes_map"

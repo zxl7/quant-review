@@ -598,7 +598,7 @@ jobs:
           BIYING_TOKEN: ${{ secrets.BIYING_TOKEN }}
           BIYING_BASE_URL: ${{ secrets.BIYING_BASE_URL }}
           RUN_DATE: ${{ steps.pushmode.outputs.date10 }}
-          FORCE_OUTSIDE_WINDOW: ${{ github.event_name == 'schedule' && steps.timecheck.outputs.mode == 'open_fore' && 'true' || 'false' }}
+          FORCE_OUTSIDE_WINDOW: ${{ github.event_name == 'schedule' && steps.pushmode.outputs.mode == 'open_fore' && 'true' || 'false' }}
         run: |
           set -euo pipefail
           python3 - <<'PY'

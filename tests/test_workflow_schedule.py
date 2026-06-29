@@ -547,6 +547,37 @@ class WorkflowScheduleTest(unittest.TestCase):
         self.assertEqual(result["reason"], "prefetch_failed")
         self.assertIn("URLError", result["last_error"])
 
+    def test_execute_auction_snapshot_prefetch_auto_forces_after_0930_when_today_snapshot_missing(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            cache_dir = Path(tmp) / "cache"
+            cache_dir.mkdir()
+            fake_rows = [{"date10": "2026-06-19", "code": "000001"}]
+            with patch(
+                "daily_review.application.workflow_schedule._load_stock_research_rows_for_prefetch",
+                return_value=(fake_rows, []),
+            ), patch(
+                "daily_review.application.workflow_schedule._load_prefetch_runtime_config",
+                return_value=type("Cfg", (), {"base_url": "https://example.test", "token": "token"})(),
+            ), patch(
+                "daily_review.application.workflow_schedule._build_prefetch_http_client",
+                return_value=object(),
+            ), patch(
+                "daily_review.application.workflow_schedule._fetch_prefetch_quotes_map",
+                return_value=({"000001": {"dm": "000001", "t": "2026-06-22 09:25:03"}}, "2026-06-22 09:25:03"),
+            ), patch(
+                "daily_review.application.workflow_schedule._save_prefetched_quotes_snapshot",
+                return_value=cache_dir / "stock_research_realtime_quotes-20260619.json",
+            ):
+                result = execute_auction_snapshot_prefetch(
+                    cache_dir=cache_dir,
+                    trade_date10="2026-06-22",
+                    now=datetime(2026, 6, 22, 9, 30, 1, tzinfo=TZ_BJ),
+                )
+
+        self.assertTrue(result["ok"])
+        self.assertEqual(result["reason"], "prefetch_saved")
+        self.assertEqual(result["source"], "forced_query")
+
     def test_validate_market_data_snapshot_requires_quote_time_when_candidates_exist(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             market_path = Path(tmp) / "market_data.json"
