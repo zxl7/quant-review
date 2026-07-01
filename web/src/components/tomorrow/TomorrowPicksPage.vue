@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import { onMounted, computed, ref, watch } from 'vue';
+import { DatePicker } from 'ant-design-vue';
+import dayjs, { type Dayjs } from 'dayjs';
 import { useTomorrowPicks } from './useTomorrowPicks';
 import ShortReminderFooter from '../common/ShortReminderFooter.vue';
 
@@ -40,6 +42,19 @@ const dateGroups = computed(() => {
 
 const selectedTheme = computed(() => themes.value.find((t) => t.themeCode === selectedThemeCode.value));
 
+const availableDateSet = computed(() => new Set(dates.value));
+const selectedDateValue = computed<Dayjs | undefined>({
+  get: () => (selectedDate.value ? dayjs(selectedDate.value, 'YYYY-MM-DD') : undefined),
+  set: (value) => {
+    selectedDate.value = value ? value.format('YYYY-MM-DD') : '';
+  },
+});
+
+const disableUnavailableDate = (current: Dayjs) => {
+  const dateText = current.format('YYYY-MM-DD');
+  return !availableDateSet.value.has(dateText);
+};
+
 // 自动选中最新日期
 watch(dates, (val) => {
   if (val.length && !selectedDate.value) selectedDate.value = val[0];
@@ -68,9 +83,15 @@ const xqUrl = (code: string) => {
         <div class="tp-date-picker" v-show="!loading && dates.length">
           <div class="tp-date-left">
             <span class="tp-date-label">日期</span>
-            <select v-model="selectedDate" class="tp-date-select">
-              <option v-for="d in dates" :key="d" :value="d">{{ d }}</option>
-            </select>
+            <DatePicker
+              v-model:value="selectedDateValue"
+              class="tp-date-select"
+              format="YYYY-MM-DD"
+              :allow-clear="false"
+              :input-read-only="true"
+              :disabled-date="disableUnavailableDate"
+              popup-class-name="tp-date-dropdown"
+            />
           </div>
           <button class="tp-refresh-btn" @click="fetchThemes(true)" :disabled="loading">
             {{ loading ? '刷新中...' : '刷新' }}

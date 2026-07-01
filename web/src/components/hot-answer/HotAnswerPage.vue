@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue';
+import { DatePicker } from 'ant-design-vue';
+import dayjs, { type Dayjs } from 'dayjs';
 import ShortReminderFooter from '../common/ShortReminderFooter.vue';
 import { useThemeHotStore } from '../../composables/useThemeHotStore';
 
@@ -43,6 +45,12 @@ const hotLastUpdated = ref('');
 const hotExpandedCodes = ref<string[]>([]);
 
 const hotDateParam = computed(() => hotDate.value.replace(/-/g, ''));
+const hotDateValue = computed<Dayjs | undefined>({
+  get: () => (hotDate.value ? dayjs(hotDate.value, 'YYYY-MM-DD') : undefined),
+  set: (value) => {
+    hotDate.value = value ? value.format('YYYY-MM-DD') : todayText();
+  },
+});
 const isToday = computed(() => hotDate.value === todayText());
 const selectedPlate = computed(() => hotPlates.value.find((x) => x.id === hotSelectedPlateId.value));
 const sortedStocks = computed(() => [...hotStocks.value].sort((a, b) => Number(b.changePct || 0) - Number(a.changePct || 0)));
@@ -447,7 +455,14 @@ onMounted(() => {
         <div class="hot-toolbar-left">
           <label class="hot-date">
             <span>日期</span>
-            <input v-model="hotDate" type="date" @change="loadHotPlates(false)" />
+            <DatePicker
+              v-model:value="hotDateValue"
+              class="hot-date-picker"
+              format="YYYY-MM-DD"
+              :allow-clear="false"
+              :input-read-only="true"
+              @change="loadHotPlates(false)"
+            />
           </label>
           <button class="hot-btn" type="button" @click="refreshHotAnswer()">刷新</button>
           <button class="hot-btn" :class="{ active: hotMode === 'leader' }" type="button" @click="loadHotStocks('leader')">领涨</button>

@@ -77,13 +77,32 @@
           font-weight: 900;
           color: var(--text-secondary);
 }
-.hot-date input {
+.hot-date-picker {
+  min-width: 132px;
+}
+.hot-date-picker.ant-picker {
   border: 0;
-          outline: none;
           background: transparent;
-          color: var(--text-primary);
+          box-shadow: none;
+          padding: 0;
+}
+.hot-date-picker.ant-picker:hover,
+.hot-date-picker.ant-picker-focused {
+  border: 0;
+          box-shadow: none;
+}
+.hot-date-picker .ant-picker-input > input {
+  color: var(--text-primary);
           font-size: 11px;
           font-weight: 900;
+          font-variant-numeric: tabular-nums;
+}
+.hot-date-picker .ant-picker-input > input::placeholder {
+  color: var(--text-muted);
+}
+.hot-date-picker .ant-picker-suffix,
+.hot-date-picker .ant-picker-clear {
+  color: var(--text-muted);
 }
 .hot-btn {
   appearance: none;

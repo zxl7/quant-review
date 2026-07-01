@@ -34,7 +34,7 @@
 }
 .tp-date-select {
   flex: 1;
-  padding: 4px 8px;
+  min-height: 32px;
   border-radius: 6px;
   border: 1px solid color-mix(in oklab, rgba(148, 163, 184, 0.18) 65%, var(--theme-glow) 35%);
   background: color-mix(in oklab, var(--theme-soft) 8%, rgba(255, 255, 255, 0.5));
@@ -44,6 +44,27 @@
   outline: none;
   cursor: pointer;
   font-variant-numeric: tabular-nums;
+}
+.tp-date-select.ant-picker {
+  padding: 0 10px;
+  box-shadow: none;
+}
+.tp-date-select.ant-picker:hover,
+.tp-date-select.ant-picker-focused {
+  border-color: var(--theme-accent);
+}
+.tp-date-select .ant-picker-input > input {
+  color: var(--text-primary);
+  font-size: 12px;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+.tp-date-select .ant-picker-input > input::placeholder {
+  color: var(--text-muted);
+}
+.tp-date-select .ant-picker-suffix,
+.tp-date-select .ant-picker-clear {
+  color: var(--text-muted);
 }
 .tp-refresh-btn {
   appearance: none;
@@ -71,7 +92,11 @@
   border-color: rgba(148, 163, 184, 0.22);
   color: var(--text-primary);
 }
-.tp-date-select:focus {
+[data-theme="dark"] .tp-date-select .ant-picker-input > input {
+  color: var(--text-primary);
+}
+.tp-date-select:focus,
+.tp-date-select.ant-picker-focused {
   border-color: var(--theme-accent);
 }
 
