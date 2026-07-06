@@ -1683,11 +1683,11 @@ def _inject_prd_v2_metrics(*, root: Path, date: str, market_data: dict, allow_ne
 
     def _should_refresh_plate_rotate_cache(*, cache: dict, report_date: str) -> bool:
         """
-        是否允许在线刷新板块轮动缓存：
+        是否应在“全量复盘 + 允许联网”场景下主动刷新板块轮动缓存：
         - 历史日期：不刷新，只读本地
         - 非北京时间今天：不刷新
         - 今天但未收盘：不刷新
-        - 今天且已收盘：若今天数据不存在/不完整，则刷新一次
+        - 今天且已收盘：主动刷新一次，避免沿用旧缓存导致板块强度长期不更新
         """
         try:
             bj = datetime.now(_SH_TZ)
@@ -1698,19 +1698,7 @@ def _inject_prd_v2_metrics(*, root: Path, date: str, market_data: dict, allow_ne
             hm = int(bj.strftime("%H%M"))
             if hm < 1510:
                 return False
-            by_day = cache.get("by_day") if isinstance(cache, dict) else {}
-            if not isinstance(by_day, dict):
-                by_day = {}
-            day_obj = by_day.get(today) or by_day.get(today.replace("-", "")) or {}
-            if not isinstance(day_obj, dict):
-                return True
-            rows = day_obj.get("rows")
-            if not isinstance(rows, list) or len(rows) < 10:
-                return True
-            # 已有 10 条，并且前几条含明细，则认为今天已抓过
-            sample = rows[:3]
-            has_detail = any(isinstance(x, dict) and (x.get("lead") or x.get("volume") is not None) for x in sample)
-            return not has_detail
+            return True
         except Exception:
             return False
 
@@ -2054,11 +2042,17 @@ def _inject_prd_v2_metrics(*, root: Path, date: str, market_data: dict, allow_ne
             pass
 
     # 4.2) plateRotateTop（短线侠板块轮动强度）：
-    # - 优先读取本地缓存
-    # - 缓存没有报告日期的数据则在线刷新
+    # - 全量复盘且允许联网时，收盘后优先主动刷新当天缓存
+    # - 抓取失败/历史日期时回退到本地缓存
     # - 命中后直接替换"板块题材排行 TOP10"模块的数据源
     try:
         plate_cache = _load_plate_rotate_cache(root=root)
+        if allow_network and _should_refresh_plate_rotate_cache(cache=plate_cache, report_date=date):
+            try:
+                _log("全量复盘主动刷新板块轮动缓存...")
+                plate_cache = _refresh_plate_rotate_cache(root=root)
+            except Exception as e:
+                _log_stage_failed("板块轮动缓存刷新", e)
         plate_by_day = plate_cache.get("by_day") if isinstance(plate_cache, dict) else {}
         if not isinstance(plate_by_day, dict):
             plate_by_day = {}

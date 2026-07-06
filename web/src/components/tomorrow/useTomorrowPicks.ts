@@ -1,16 +1,7 @@
 import { ref } from 'vue';
-import { useThemeHotStore } from '../../composables/useThemeHotStore';
+import { useThemeHotStore, type TomorrowThemeStockLite } from '../../composables/useThemeHotStore';
 
-export interface TomorrowStock {
-  code: string
-  name: string
-  gain: number
-  price: number
-  marketCap: number
-  industry: string
-  label: string
-  reason: string
-}
+export type TomorrowStock = TomorrowThemeStockLite;
 
 export interface TomorrowTheme {
   id: string
@@ -195,7 +186,14 @@ async function getInjectedData(): Promise<{ themes: TomorrowTheme[]; stocksByThe
 }
 
 export function useTomorrowPicks() {
-  const { setTomorrowThemes } = useThemeHotStore();
+  const {
+    setTomorrowThemes,
+    selectedTomorrowThemeCode,
+    setSelectedTomorrowThemeCode,
+    tmrStocksByThemeCode,
+    setTomorrowThemeStocks,
+    ensureTomorrowThemeStocksLoaded,
+  } = useThemeHotStore();
   const themes = ref<TomorrowTheme[]>([]);
   const loading = ref(false);
   const error = ref('');
@@ -204,6 +202,20 @@ export function useTomorrowPicks() {
   const stocksLoading = ref(false);
   const isUsingInjected = ref(false); // 标记当前用的是预注入还是实时数据
   const injectedThemesDate = ref('');
+
+  const syncSelectedThemeCode = (themeCode: string) => {
+    const next = String(themeCode || '').trim();
+    selectedThemeCode.value = next;
+    setSelectedTomorrowThemeCode(next);
+  };
+
+  const resolvePreferredThemeCode = (items: TomorrowTheme[]) => {
+    const storeCode = String(selectedTomorrowThemeCode.value || '').trim();
+    if (storeCode && items.some((item) => item.themeCode === storeCode)) return storeCode;
+    const localCode = String(selectedThemeCode.value || '').trim();
+    if (localCode && items.some((item) => item.themeCode === localCode)) return localCode;
+    return String(items[0]?.themeCode || '').trim();
+  };
 
   async function fetchThemes(force = false) {
     if (themes.value.length && !force) return;
@@ -219,16 +231,21 @@ export function useTomorrowPicks() {
       injectedThemesDate.value = injected.themes[0].tradeDate || '';
       setTomorrowThemes(injected.themes);
       if (injected.themes.length) {
-        if (!selectedThemeCode.value || !injected.themes.some(x => x.themeCode === selectedThemeCode.value)) {
-          selectedThemeCode.value = injected.themes[0].themeCode;
-          // 预注入数据可能已有该主题的成份股
-          const preloaded = injected.stocksByTheme[injected.themes[0].themeCode];
+        const targetThemeCode = resolvePreferredThemeCode(injected.themes);
+        if (targetThemeCode) {
+          syncSelectedThemeCode(targetThemeCode);
+          const preloaded = injected.stocksByTheme[targetThemeCode];
           if (preloaded && preloaded.length) {
-            stocks.value = preloaded;
+            const hydrated = await hydrateStocksWithQuote(preloaded);
+            stocks.value = hydrated;
+            setTomorrowThemeStocks(targetThemeCode, hydrated);
             stocksLoading.value = false;
           } else {
-            fetchStockList(injected.themes[0].themeCode);
+            void fetchStockList(targetThemeCode, force);
           }
+        } else {
+          syncSelectedThemeCode('');
+          stocks.value = [];
         }
       }
       loading.value = false;
@@ -285,12 +302,17 @@ export function useTomorrowPicks() {
       themes.value = items;
       setTomorrowThemes(items);
       if (items.length) {
-        if (!selectedThemeCode.value || !items.some(x => x.themeCode === selectedThemeCode.value)) {
-          selectedThemeCode.value = items[0].themeCode;
-          fetchStockList(items[0].themeCode);
-        } else if (force) {
-          fetchStockList(selectedThemeCode.value);
+        const previousThemeCode = String(selectedThemeCode.value || '').trim();
+        const targetThemeCode = resolvePreferredThemeCode(items);
+        if (targetThemeCode) {
+          syncSelectedThemeCode(targetThemeCode);
+          if (force || stocks.value.length === 0 || targetThemeCode !== previousThemeCode) {
+            void fetchStockList(targetThemeCode, force);
+          }
         }
+      } else {
+        syncSelectedThemeCode('');
+        stocks.value = [];
       }
     } catch (e: any) {
       error.value = e.message || '实时请求失败';
@@ -299,15 +321,23 @@ export function useTomorrowPicks() {
     }
   }
 
-  async function fetchStockList(themeCode: string) {
+  async function fetchStockList(themeCode: string, force = false) {
     stocksLoading.value = true;
-    selectedThemeCode.value = themeCode;
+    syncSelectedThemeCode(themeCode);
+    const cached = tmrStocksByThemeCode.value[themeCode];
+    if (!force && cached && cached.length) {
+      stocks.value = cached;
+      stocksLoading.value = false;
+      return;
+    }
 
     // Tier 1: 先查预注入数据
     if (isUsingInjected.value) {
       const injected = await getInjectedData();
       if (injected && injected.stocksByTheme[themeCode]) {
-        stocks.value = await hydrateStocksWithQuote(injected.stocksByTheme[themeCode]);
+        const hydrated = await hydrateStocksWithQuote(injected.stocksByTheme[themeCode]);
+        stocks.value = hydrated;
+        setTomorrowThemeStocks(themeCode, hydrated);
         stocksLoading.value = false;
         return;
       }
@@ -315,41 +345,7 @@ export function useTomorrowPicks() {
 
     // Tier 2: 运行时 API 调用
     try {
-      const { timestamp, randomCode } = makeAuth();
-      const resp = await fetch(`${API_BASE}/getStockList`, {
-        method: 'POST',
-        headers: makeHeaders(),
-        body: JSON.stringify({
-          args: { themeCode, pageSize: 200, pageNum: 1, sort: -1, sortField: 'f3' },
-          client: 'web',
-          clientType: 'cfw',
-          clientVersion: '8.3',
-          randomCode: randomCode.substring(0, 20),
-          timestamp,
-        }),
-        signal: AbortSignal.timeout(10000),
-      });
-
-      const json = await resp.json();
-      if (json.code !== 0) return;
-
-      const list = json.data?.stockList || [];
-      const rawStocks = list.map((s: any) => {
-        const reasons = (s.keywordList || [])
-          .filter((k: any) => k.keyword === '入选理由')
-          .map((k: any) => k.introduction || '');
-        return {
-          code: (s.securityCode || '').replace(/\.(SH|SZ)$/, ''),
-          name: s.securityName || '',
-          gain: s.f3 || 0,
-          price: s.f2 || 0,
-          marketCap: s.f20 || 0,
-          industry: s.f100 || '',
-          label: s.label || '',
-          reason: reasons.join('；') || '涨停',
-        };
-      });
-      stocks.value = await hydrateStocksWithQuote(rawStocks);
+      stocks.value = await ensureTomorrowThemeStocksLoaded(themeCode, force);
     } catch {
       // ignore
     } finally {
@@ -358,13 +354,20 @@ export function useTomorrowPicks() {
   }
 
   async function selectTheme(themeCode: string) {
-    selectedThemeCode.value = themeCode;
+    syncSelectedThemeCode(themeCode);
+    const cached = tmrStocksByThemeCode.value[themeCode];
+    if (cached && cached.length) {
+      stocks.value = cached;
+      return;
+    }
 
     // 预注入数据中查找
     if (isUsingInjected.value) {
       const injected = await getInjectedData();
       if (injected && injected.stocksByTheme[themeCode]) {
-        stocks.value = await hydrateStocksWithQuote(injected.stocksByTheme[themeCode]);
+        const hydrated = await hydrateStocksWithQuote(injected.stocksByTheme[themeCode]);
+        stocks.value = hydrated;
+        setTomorrowThemeStocks(themeCode, hydrated);
         return;
       }
     }
