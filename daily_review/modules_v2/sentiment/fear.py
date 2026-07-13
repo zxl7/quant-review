@@ -17,6 +17,7 @@ from typing import Any, Dict
 
 from daily_review.pipeline.context import Context
 from daily_review.pipeline.module import Module
+from daily_review.utils.stock import filter_non_st_stocks
 
 
 def _to_float(v: Any, default: float = 0.0) -> float:
@@ -26,22 +27,19 @@ def _to_float(v: Any, default: float = 0.0) -> float:
         return default
 
 
-def _is_st(name: str) -> bool:
-    s = (name or "").upper()
-    return ("ST" in s) or ("*ST" in s)
-
-
 def _compute(ctx: Context) -> Dict[str, Any]:
     mi = (ctx.features.get("mood_inputs") or {}) if isinstance(ctx.features, dict) else {}
     pools = (ctx.raw.get("pools") or {}) if isinstance(ctx.raw, dict) else {}
     dt = pools.get("dtgc") or []
     dt = dt if isinstance(dt, list) else []
 
-    dt_non_st = [s for s in dt if isinstance(s, dict) and not _is_st(str(s.get("mc") or ""))]
+    # 风险页同时保留“总跌停”和“非 ST 跌停”，便于解释全局口径。
+    dt_non_st = filter_non_st_stocks(dt)
 
     bf_count = int(mi.get("bf_count", 0) or 0)
     bf_names = str(mi.get("bf_names", "") or "")
-    dt_count = int(mi.get("dt_count", 0) or 0)
+    dt_count = len(dt_non_st)
+    total_dt_count = len(dt)
     zt_count = int(mi.get("zt_count", 0) or 0)
 
     zb_rate = float(mi.get("zb_rate", 0) or 0)
@@ -66,8 +64,8 @@ def _compute(ctx: Context) -> Dict[str, Any]:
         "marketData.fear": {
             "bigFace": f"{bf_count}只",
             "bigFaceNote": bf_names if bf_names else "无大面股",
-            "limitDown": f"{len(dt_non_st)}只",
-            "limitDownNote": f"总跌停{dt_count}，剔除ST后{len(dt_non_st)}",
+            "limitDown": f"{dt_count}只",
+            "limitDownNote": f"总跌停{total_dt_count}，剔除ST后{dt_count}",
             "risk": risk_level,
             "riskNote": note,
             "broken": f"{zb_rate:.1f}%",
@@ -84,4 +82,3 @@ FEAR_MODULE = Module(
     provides=["marketData.fear"],
     compute=_compute,
 )
-

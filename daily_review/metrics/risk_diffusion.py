@@ -14,6 +14,8 @@ from __future__ import annotations
 from collections import defaultdict
 from typing import Any
 
+from daily_review.utils.stock import filter_non_st_stocks
+
 
 def _to_num(v: Any, d: float = 0.0) -> float:
     try:
@@ -71,10 +73,10 @@ def build_risk_engine(market_data: dict[str, Any], *, date: str) -> dict[str, An
     md = market_data or {}
     pools = ((md.get("raw") or {}).get("pools") or {}) if isinstance(md.get("raw"), dict) else {}
     ztgc = pools.get("ztgc") or []
-    dtgc = pools.get("dtgc") or []
+    dtgc = filter_non_st_stocks(pools.get("dtgc") or [])
     qsgc = pools.get("qsgc") or []
     yest_ztgc = pools.get("yest_ztgc") or []
-    yest_dtgc = pools.get("yest_dtgc") or []
+    yest_dtgc = filter_non_st_stocks(pools.get("yest_dtgc") or [])
 
     # themes：code6 -> [themeName...]
     raw_themes = (md.get("raw") or {}).get("themes") or {}
@@ -243,4 +245,3 @@ def build_risk_engine(market_data: dict[str, Any], *, date: str) -> dict[str, An
             ],
         },
     }
-

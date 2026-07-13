@@ -21,6 +21,7 @@ from typing import Any, Dict, List, Tuple
 from daily_review.config import DEFAULT_CONFIG
 from daily_review.pipeline.context import Context
 from daily_review.pipeline.module import Module
+from daily_review.utils.stock import filter_non_st_stocks
 
 
 def _as_list(v: Any) -> List[Dict[str, Any]]:
@@ -369,7 +370,7 @@ def _compute(ctx: Context) -> Dict[str, Any]:
     pools = (ctx.raw.get("pools") or {}) if isinstance(ctx.raw, dict) else {}
     zt = _as_list(pools.get("ztgc"))
     zb = _as_list(pools.get("zbgc"))
-    dt = _as_list(pools.get("dtgc"))
+    dt = filter_non_st_stocks(_as_list(pools.get("dtgc")))
     zt_by_day = (pools.get("ztgc_by_day") or {}) if isinstance(pools, dict) else {}
 
     themes = (ctx.raw.get("themes") or {}) if isinstance(ctx.raw, dict) else {}

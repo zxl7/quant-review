@@ -17,6 +17,8 @@ from __future__ import annotations
 
 from typing import Any, Dict, List, Mapping, Sequence, Tuple
 
+from daily_review.utils.stock import filter_non_st_stocks, is_st_stock
+
 
 def _to_float(v: Any, default: float = 0.0) -> float:
     try:
@@ -88,9 +90,12 @@ def build_mood_inputs(*, pools: Mapping[str, Any], quotes: Mapping[str, Any] | N
     yest_zt = yest_zt if isinstance(yest_zt, list) else []
     qsgc = qsgc if isinstance(qsgc, list) else []
 
+    # 跌停家数统一按“非 ST”口径统计，避免情绪/风控页面把 ST 跌停混进来。
+    dt_non_st = filter_non_st_stocks(dt)
+
     zt_count = len(zt)
     zb_count = len(zb)
-    dt_count = len(dt)
+    dt_count = len(dt_non_st)
 
     fb_rate = (zt_count / (zt_count + zb_count) * 100.0) if (zt_count + zb_count) else 0.0
     zb_rate = (zb_count / (zt_count + zb_count) * 100.0) if (zt_count + zb_count) else 0.0
@@ -179,7 +184,7 @@ def build_mood_inputs(*, pools: Mapping[str, Any], quotes: Mapping[str, Any] | N
 
     # bf_count（大面/负反馈）：对齐 gen_report_v4 口径（跌停池 + 强势股池中 <= -5%）
     big_face = []
-    for s in dt:
+    for s in dt_non_st:
         if not isinstance(s, dict):
             continue
         zf = _to_float(s.get("zf"), 0.0)
@@ -187,6 +192,8 @@ def build_mood_inputs(*, pools: Mapping[str, Any], quotes: Mapping[str, Any] | N
             big_face.append((_code6(s), str(s.get("mc") or "")))
     for s in qsgc:
         if not isinstance(s, dict):
+            continue
+        if is_st_stock(s):
             continue
         zf = _to_float(s.get("zf"), 0.0)
         if zf <= -5:

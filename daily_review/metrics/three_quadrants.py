@@ -21,6 +21,8 @@ from __future__ import annotations
 
 from typing import Any, Dict, List, Optional
 
+from daily_review.utils.stock import filter_non_st_stocks
+
 
 def _to_num(v: Any, d: float = 0.0) -> float:
     try:
@@ -182,7 +184,7 @@ def build_three_quadrants(market_data: dict[str, Any]) -> dict[str, Any]:
     pools = ((md.get("raw") or {}).get("pools") or {}) if isinstance(md.get("raw"), dict) else {}
     ztgc = pools.get("ztgc") or md.get("ztgc") or []
     zbgc = pools.get("zbgc") or []
-    dtgc = pools.get("dtgc") or []
+    dtgc = filter_non_st_stocks(pools.get("dtgc") or [])
 
     # X: 承接（晋级率）
     jj = _to_num(mi.get("jj_rate_adj", mi.get("jj_rate")), 0.0) / 100.0
@@ -261,4 +263,3 @@ def build_three_quadrants(market_data: dict[str, Any]) -> dict[str, Any]:
         ],
     }
     return out
-

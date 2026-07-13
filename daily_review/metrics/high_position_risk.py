@@ -14,6 +14,7 @@ from __future__ import annotations
 from typing import Any, Optional
 
 from daily_review.http import HttpClient
+from daily_review.utils.stock import filter_non_st_stocks
 
 
 def _to_num(v: Any, d: float = 0.0) -> float:
@@ -98,7 +99,7 @@ def build_high_position_risk(
     pools = ((md.get("raw") or {}).get("pools") or {}) if isinstance(md.get("raw"), dict) else {}
     ztgc = pools.get("ztgc") or []
     zbgc = pools.get("zbgc") or []
-    dtgc = pools.get("dtgc") or []
+    dtgc = filter_non_st_stocks(pools.get("dtgc") or [])
 
     raw_themes = (md.get("raw") or {}).get("themes") or {}
     theme_map = raw_themes if isinstance(raw_themes, dict) else {}
@@ -218,4 +219,3 @@ def build_high_position_risk(
         "fund": {"highNetBigOrderFlowYi": high_flow, "meta": flow_meta},
         "meta": {"precision": "strict_with_sample_fund", "asOf": date},
     }
-

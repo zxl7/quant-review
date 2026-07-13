@@ -18,6 +18,7 @@ from typing import Any, Dict
 
 from daily_review.pipeline.context import Context
 from daily_review.pipeline.module import Module
+from daily_review.utils.stock import filter_non_st_stocks
 
 
 def _to_float(v: Any, default: float = 0.0) -> float:
@@ -88,7 +89,7 @@ def _compute(ctx: Context) -> Dict[str, Any]:
     pools = (ctx.raw.get("pools") or {}) if isinstance(ctx.raw, dict) else {}
 
     ztgc = [x for x in (pools.get("ztgc") or []) if isinstance(x, dict)]
-    dtgc = [x for x in (pools.get("dtgc") or []) if isinstance(x, dict)]
+    dtgc = filter_non_st_stocks(pools.get("dtgc") or [])
     zbgc = [x for x in (pools.get("zbgc") or []) if isinstance(x, dict)]
     qsgc = [x for x in (pools.get("qsgc") or []) if isinstance(x, dict)]
 

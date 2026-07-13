@@ -19,6 +19,8 @@ from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
 from typing import Any, Dict, List
 
+from daily_review.utils.stock import filter_non_st_stocks
+
 
 BJ_TZ = timezone(timedelta(hours=8))
 
@@ -278,7 +280,8 @@ def _market_from_biying(date10: str) -> Dict[str, Any]:
 
     zt_cnt = len(zt) if isinstance(zt, list) else 0
     zab_cnt = len(zb) if isinstance(zb, list) else 0
-    dt_cnt = len(dt) if isinstance(dt, list) else 0
+    # 盘中风控统一看非 ST 跌停，避免 ST 把风险预警抬高。
+    dt_cnt = len(filter_non_st_stocks(dt if isinstance(dt, list) else []))
 
     lianban_cnt = 0
     max_lianban = 0

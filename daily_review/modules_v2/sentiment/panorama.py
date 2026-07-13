@@ -19,6 +19,7 @@ from typing import Any, Dict, List
 
 from daily_review.pipeline.context import Context
 from daily_review.pipeline.module import Module
+from daily_review.utils.stock import filter_non_st_stocks
 
 
 def _as_list(v: Any) -> List[Dict[str, Any]]:
@@ -28,7 +29,7 @@ def _as_list(v: Any) -> List[Dict[str, Any]]:
 def _compute(ctx: Context) -> Dict[str, Any]:
     pools = (ctx.raw.get("pools") or {}) if isinstance(ctx.raw, dict) else {}
     zt = _as_list(pools.get("ztgc"))
-    dt = _as_list(pools.get("dtgc"))
+    dt = filter_non_st_stocks(_as_list(pools.get("dtgc")))
     zb = _as_list(pools.get("zbgc"))
 
     if not (zt or dt or zb):
@@ -57,4 +58,3 @@ PANORAMA_MODULE = Module(
     provides=["marketData.panorama"],
     compute=_compute,
 )
-

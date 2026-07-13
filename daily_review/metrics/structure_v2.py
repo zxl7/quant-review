@@ -16,6 +16,8 @@ from __future__ import annotations
 
 from typing import Any
 
+from daily_review.utils.stock import filter_non_st_stocks
+
 
 def _to_num(v: Any, d: float = 0.0) -> float:
     try:
@@ -47,7 +49,8 @@ def build_structure_v2(market_data: dict[str, Any], *, date: str) -> dict[str, A
     pools = ((md.get("raw") or {}).get("pools") or {}) if isinstance(md.get("raw"), dict) else {}
     ztgc = pools.get("ztgc") or []
     zbgc = pools.get("zbgc") or []
-    dtgc = pools.get("dtgc") or []
+    # 结构里“跌停/穿透”只统计非 ST，和情绪主链保持同一口径。
+    dtgc = filter_non_st_stocks(pools.get("dtgc") or [])
     qsgc = pools.get("qsgc") or []
     yest_ztgc = pools.get("yest_ztgc") or []
 
@@ -197,4 +200,3 @@ def build_structure_v2(market_data: dict[str, Any], *, date: str) -> dict[str, A
         "evidence": evidence,
         "meta": {"precision": "strict", "asOf": date},
     }
-
