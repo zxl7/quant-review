@@ -559,7 +559,21 @@ usage() {
   ./qr.sh watch-slice [YYYY-MM-DD]  仅生成实时盯盘切片 JSON（供页面动态读取）
   ./qr.sh deploy-intraday        （可选）仅发布盘中轻量运行时到 gh-pages
   ./qr.sh deploy               （可选）发布 web/dist/index.html 到 gh-pages/index.html
+  ./qr.sh catalyst --event "事件文本" [--catalyst-date YYYY-MM-DD]   写入题材催化草稿到 cache
+  ./qr.sh catalyst --catalyst-json path/to/input.json [--catalyst-date YYYY-MM-DD]   写入完整 CatalystInput
 EOF
+}
+
+cmd_catalyst() {
+  # 用法: ./qr.sh catalyst --event "事件文本" [--catalyst-date YYYY-MM-DD]
+  #   或: ./qr.sh catalyst --catalyst-json path/to/input.json [--catalyst-date YYYY-MM-DD]
+  # 写入 cache/catalyst_input-YYYYMMDD.json，供 pipeline 的 catalyst_analysis 模块消费。
+  # 注意：直接调用 cli，不经过 run_daily_review_cli —— 后者会依据
+  # normalize_optional_args 把位置参数（如 --event）误判为 STOCK_RESEARCH_QUERY_TAG 并追加
+  # --stock-research-query-tag，导致 argparse 报 "expected one argument"。
+  shift  # 去掉 cmd 名(catalyst)，剩余参数透传给 daily_review.cli --catalyst
+  unset STOCK_RESEARCH_QUERY_TAG 2>/dev/null || true
+  PYTHONPATH=. python3 -u -m daily_review.cli --catalyst "$@"
 }
 
 main() {
@@ -575,6 +589,7 @@ main() {
     watch-slice) cmd_watch_slice ;;
     deploy-intraday) cmd_deploy_intraday ;;
     deploy) cmd_deploy ;;
+    catalyst) cmd_catalyst "$@" ;;
     -h|--help|help) usage ;;
     *) die "未知命令：${cmd}（用 ./qr.sh help 查看用法）" ;;
   esac

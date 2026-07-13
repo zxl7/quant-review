@@ -51,6 +51,7 @@ from .plan.rebound_v2 import REBOUND_V2_MODULE
 from .plan.resonance_v2 import RESONANCE_V2_MODULE
 from .plan.rightside_v2 import RIGHTSIDE_V2_MODULE
 from .plan.trade_nature_v2 import TRADE_NATURE_V2_MODULE
+from .plan.catalyst_analysis import CATALYST_ANALYSIS_MODULE
 
 # ════════════════ v3 模块(对标v3.0算法规格书) ════════════════
 
@@ -121,5 +122,6 @@ ALL_MODULES = [
     ZT_ANALYSIS_MODULE,
     ACTION_SHEET_MODULE,
     LEARNING_NOTES_MODULE,
+    CATALYST_ANALYSIS_MODULE,
     # v3 模块追加到执行链末尾（不替换旧模块，新旧并存）
 ] + (V3_MODULES if V3_MODULES else [])

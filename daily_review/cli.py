@@ -1540,6 +1540,9 @@ def run_rebuild(
     - 跑 v2 pipeline（modules=None 表示全量重建）
     - 写回 market_data 缓存
     """
+    # 日期规范化：qr.sh render 20260508 传入紧凑格式，需统一为 YYYY-MM-DD
+    # 以匹配 pools_cache 等缓存键（否则四池查空 → mood_inputs 全零）。
+    date = _normalize_date(date)
     root = _workspace_root()
     bundle = build_rebuild_context(root=root, date=date, source_market_path=source_market_path)
     ctx = bundle.ctx
@@ -1628,13 +1631,6 @@ def _inject_prd_v2_metrics(*, root: Path, date: str, market_data: dict, allow_ne
             by_day = {}
         return {"version": 1, "by_day": by_day}
 
-    def _write_concept_fund_flow_cache(*, root: Path, data: dict) -> None:
-        """
-        写回概念资金流缓存（副作用）。
-        """
-        p = _concept_fund_flow_cache_path(root=root)
-        write_json(p, data)
-
     def _plate_rotate_cache_path(*, root: Path) -> Path:
         """
         纯函数：短线侠板块轮动缓存路径。
@@ -1711,55 +1707,6 @@ def _inject_prd_v2_metrics(*, root: Path, date: str, market_data: dict, allow_ne
 
         bj = timezone(timedelta(hours=8))
         return _dt.datetime.now(bj).strftime("%Y-%m-%d")
-
-    def _fetch_concept_fund_flow_top(*, topn: int = 40) -> list[dict]:
-        """
-        在线抓取“概念/题材级资金流向榜”（AkShare -> 东财）。
-
-        说明：
-        - 这是板块/概念级数据源，比“个股资金流再聚合”更接近你要的“板块流入”
-        - AkShare 不需要 BIYING_TOKEN，但需要联网
-        - 返回字段尽量收敛为可渲染的结构（单位按数据源原样保留）
-        """
-        try:
-            import akshare as ak  # type: ignore
-        except Exception:
-            return []
-
-        try:
-            df = ak.stock_fund_flow_concept()
-        except Exception:
-            return []
-
-        if df is None or getattr(df, "empty", True):
-            return []
-
-        def pick(row: dict) -> dict:
-            """
-            纯函数：行 -> 规范化 dict。
-            """
-            name = str(row.get("行业") or row.get("板块") or row.get("名称") or "").strip()
-            return {
-                "name": name,
-                "index": row.get("行业指数"),
-                "chg_pct": row.get("行业-涨跌幅"),
-                "inflow": row.get("流入资金"),
-                "outflow": row.get("流出资金"),
-                "net": row.get("净额"),
-                "companies": row.get("公司家数"),
-                "lead": row.get("领涨股") or row.get("领涨股票") or "",
-                "lead_chg_pct": row.get("领涨股-涨跌幅") or row.get("领涨股票-涨跌幅"),
-                "price": row.get("当前价"),
-            }
-
-        # 兼容列名：AkShare 当前使用中文列
-        rows = []
-        for _, r in df.head(max(int(topn), 1)).iterrows():
-            if hasattr(r, "to_dict"):
-                it = pick(r.to_dict())
-                if it.get("name"):
-                    rows.append(it)
-        return rows
 
     def _code_with_market(code6: str) -> str:
         """
@@ -2128,7 +2075,8 @@ def _inject_prd_v2_metrics(*, root: Path, date: str, market_data: dict, allow_ne
         pass
 
     # 4.3) conceptFundFlow（概念级资金流向榜）：
-    # - 仅读本地缓存（不上线抓取；AkShare 单次 >2min 不应阻塞 pipeline）
+    # - 设计上仅读本地缓存，绝不在 pipeline 内联网抓取（AkShare 单次 >2min 会阻塞 CI）
+    # - 在线抓取函数 _fetch_concept_fund_flow_top 已作为死代码删除，避免误接回活跃路径
     # - 前端已有 surge_stock/plates（选股宝实时）和 plateRotateTop（短线侠缓存）兜底
     try:
         cache = _load_concept_fund_flow_cache(root=root)
@@ -2180,6 +2128,8 @@ def run_partial(date: str, modules: list[str]) -> int:
     """
     部分更新：读取缓存的 market_data，然后只重算指定模块，并用模板重新渲染。
     """
+    # 日期规范化：与 run_rebuild 同因，保证 --date 兼容 20260508 / 2026-05-08 两种格式
+    date = _normalize_date(date)
     root = _workspace_root()
     bundle = build_rebuild_context(root=root, date=date)
     ctx = bundle.ctx
@@ -2214,6 +2164,81 @@ def run_partial(date: str, modules: list[str]) -> int:
     return 0
 
 
+def run_catalyst_cli(*, event: str, json_path: str, date: str) -> int:
+    """题材催化输入写入器：把事件/完整 JSON 写入 cache/catalyst_input-YYYYMMDD.json。
+
+    用法：
+      python3 -m daily_review.cli --catalyst --event "事件文本"
+      python3 -m daily_review.cli --catalyst --catalyst-json path/to/input.json
+      ./qr.sh catalyst --event "事件文本"
+
+    纯本地写缓存，不触发网络。完整 CatalystInput（含 sectors/个股）建议由
+    AI 助手联网检索后构造，或用 --catalyst-json 注入。
+    """
+    import json as _json
+    from pathlib import Path as _Path
+
+    from daily_review.metrics.catalyst import (
+        ClaimType,
+        CatalystInput,
+        analyze_catalyst,
+        catalyst_input_from_dict,
+        catalyst_input_to_dict,
+    )
+
+    root = _workspace_root()
+    date8 = (str(date).replace("-", "") if date else _now_bj_date8()) or ""
+    if not date8:
+        print("❌ 无法确定日期（请显式传 --catalyst-date 或 --date）")
+        return 2
+    out_path = root / "cache" / f"catalyst_input-{date8}.json"
+
+    if json_path:
+        p = _Path(json_path)
+        if not p.exists():
+            print(f"❌ 未找到 JSON 文件：{json_path}")
+            return 2
+        raw = _json.loads(p.read_text(encoding="utf-8"))
+        inp = catalyst_input_from_dict(raw)
+        print(f"▶ 从 JSON 载入 CatalystInput：{inp.event_summary}")
+    elif event:
+        # 草稿：仅有事件摘要，其余留默认/空，等待联网填充或手动补全
+        inp = CatalystInput(
+            event_summary=event,
+            claim_type=ClaimType.RUMOR,
+            is_fact=False,
+            affected_sectors=[],
+            narrative_strength=5.0,
+            persistence_days=1,
+            beneficiary_stocks=[],
+            risk_stocks=[],
+        )
+        print(f"▶ 写入事件草稿（请补全 affected_sectors / beneficiary_stocks）：{event}")
+    else:
+        print("用法：")
+        print('  python3 -m daily_review.cli --catalyst --event "事件文本"')
+        print('  python3 -m daily_review.cli --catalyst --catalyst-json path/to/input.json')
+        print('  ./qr.sh catalyst --event "事件文本"')
+        return 1
+
+    out_path.parent.mkdir(parents=True, exist_ok=True)
+    out_path.write_text(
+        _json.dumps(catalyst_input_to_dict(inp), ensure_ascii=False, indent=2),
+        encoding="utf-8",
+    )
+    print(f"✅ 已写入 {out_path}")
+
+    # 立即跑引擎验证（若已具备足够字段）
+    try:
+        res = analyze_catalyst(inp)
+        print(f"   题材强度={res.theme_strength} 政策级={res.policy_level.value} 置信={res.confidence}")
+        if not res.sectors or not inp.beneficiary_stocks:
+            print("   ⚠ 当前为草稿（sectors/个股为空），主线判定仍会 NO_THEME；请用 --catalyst-json 或让 AI 助手联网填充。")
+    except Exception as e:
+        print(f"   ⚠ 引擎校验跳过：{e}")
+    return 0
+
+
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--date", help="报告日期 YYYY-MM-DD（缺省则走全量模式的默认逻辑）")
@@ -2234,7 +2259,18 @@ def main(argv: list[str] | None = None) -> int:
         help="运行模式：eod=收盘版（默认），intraday=盘中快照版（数据截止当前时刻）",
     )
     ap.add_argument("--stock-research-query-tag", default="", help="个股研究竞价查询 tag，例如 fore 表示忽略 09:25 时间窗强制按当前行情匹配")
+    ap.add_argument("--catalyst", action="store_true", help="题材催化模式：写入/校验 cache/catalyst_input-YYYYMMDD.json（配合 --event 或 --catalyst-json）")
+    ap.add_argument("--event", default="", help="catalyst 模式：事件摘要文本（写入草稿）")
+    ap.add_argument("--catalyst-json", default="", help="catalyst 模式：从 JSON 文件读取完整 CatalystInput 并写入缓存")
+    ap.add_argument("--catalyst-date", default="", help="catalyst 模式：指定日期 YYYY-MM-DD（缺省=今天），仅用于缓存文件名")
     args = ap.parse_args(argv)
+
+    if args.catalyst:
+        return run_catalyst_cli(
+            event=args.event,
+            json_path=args.catalyst_json,
+            date=args.catalyst_date or args.date,
+        )
 
     stock_research_query_tag = str(args.stock_research_query_tag or "").strip().lower()
     if stock_research_query_tag:

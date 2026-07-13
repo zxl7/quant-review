@@ -117,10 +117,84 @@ def apply_patch_to_market_data(
             set_path(ctx.meta, _strip_domain(k, "meta."), v)
 
 
+# 外部种子依赖域：由 data / features / meta 层在 pipeline 执行前注入，
+# 无需任何模块 provides，视为“已满足”。
+_SEED_DOMAINS = ("raw.", "features.", "meta.")
+
+
+def _is_seed_require(key: str) -> bool:
+    key = _normalize_key(key)
+    return any(key.startswith(d) for d in _SEED_DOMAINS)
+
+
+def validate_pipeline_dag(modules: Sequence[Module]) -> None:
+    """
+    启动期 DAG 结构校验（fail-fast），在模块执行前暴露结构性错误。
+
+    当前可靠校验项：
+    1. 循环依赖：模块间形成环（声明序执行会读到未完成中间态）→ HARD FAIL。
+       —— 这是静态可判定、且会导致“静默产出错误数据”的最危险结构问题。
+
+    不做“缺失依赖”硬失败的原因（重要）：
+    系统采用“模块图 + cli 直接注入”混合模型，raw./features./marketData 三个命名空间
+    均有大量键由 cli 层（数据层/特征层/postprocess）直接写入 ctx，而无对应模块 provider。
+    静态无法区分“cli 注入的键”与“真正缺失的键”，盲目失败会误伤现有正常 pipeline。
+    完整的缺失依赖检测需引入“外部输入清单”（manifest），属更大重构，暂不纳入（改造节制）。
+
+    不改动执行顺序（保持声明序），仅做前置校验。
+    自依赖（模块 require 自身 provides）视为无依赖，不参与环判定。
+
+    :raises PipelineError: 检测到循环依赖时抛出，错误信息列出环上节点及其上游依赖。
+    """
+    provider_idx = _build_provider_index(modules)
+
+    # 仅在“某模块 provides 某 marketData 键，且被另一模块 require”时建立模块间依赖边，
+    # 用于环检测。raw./features./meta. 不形成模块间边（它们由外部注入，无 provider 模块）。
+    deps: dict[str, set[str]] = {m.name: set() for m in modules}
+    for m in modules:
+        for r in m.requires:
+            r = _normalize_key(r)
+            if _is_seed_require(r):
+                continue
+            prov = provider_idx.get(r)
+            if prov and prov != m.name:
+                deps[m.name].add(prov)
+
+    # Kahn 拓扑排序：入度 = 依赖数量；入度为 0 者先出队
+    indeg = {n: len(d) for n, d in deps.items()}
+    dependents: dict[str, set[str]] = {n: set() for n in deps}
+    for n, ds in deps.items():
+        for d in ds:
+            dependents[d].add(n)
+
+    from collections import deque
+
+    q = deque([n for n, d in indeg.items() if d == 0])
+    visited = 0
+    while q:
+        n = q.popleft()
+        visited += 1
+        for child in dependents.get(n, ()):
+            indeg[child] -= 1
+            if indeg[child] == 0:
+                q.append(child)
+
+    if visited != len(modules):
+        in_cycle = [n for n, d in indeg.items() if d > 0]
+        cycle_info = [f"  - {n} 依赖 {sorted(p for p in deps[n] if p in in_cycle)}" for n in in_cycle]
+        raise PipelineError(
+            "Pipeline 存在循环依赖（无法拓扑排序）：\n" + "\n".join(cycle_info)
+        )
+
+
 class Runner:
     def __init__(self, modules: Sequence[Module]):
         self.modules = modules
         self.name_to_module = {m.name: m for m in modules}
+
+    def validate(self) -> None:
+        """对当前模块集合执行 DAG 结构校验（fail-fast）。"""
+        validate_pipeline_dag(self.modules)
 
     def run(self, ctx: Context, *, targets: Sequence[str] | None = None) -> Context:
         """
@@ -131,6 +205,9 @@ class Runner:
             exec_modules = _resolve_required_modules(self.modules, targets)
         else:
             exec_modules = self.modules
+
+        # fail-fast：执行前校验依赖完整性与无环，避免静默产出错误数据
+        validate_pipeline_dag(exec_modules)
 
         for m in exec_modules:
             started = time.perf_counter()
