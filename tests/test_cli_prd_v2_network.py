@@ -53,6 +53,45 @@ class RunRebuildPrdV2NetworkTest(unittest.TestCase):
         self.assertTrue(mock_postprocess.call_args.kwargs["allow_network"])
         self.assertFalse(mock_postprocess.call_args.kwargs["prd_v2_allow_network"])
 
+
+class PlateRotateRefreshContractTest(unittest.TestCase):
+    def test_plate_rotate_refresh_runs_when_secondary_prd_network_is_disabled(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / "cache").mkdir()
+            market_data = {"date": "2026-06-23", "raw": {"pools": {}, "themes": {}}, "sectors": []}
+            plate_fetcher = MagicMock()
+            plate_fetcher.fetch_kaipan_days.return_value = {
+                "source": "mock",
+                "by_day": {"2026-06-23": {"rows": [{"code": "BK001", "name": "机器人", "strength": 95}]}},
+            }
+
+            with patch.object(cli, "PlateRotateFetcher", return_value=plate_fetcher), patch(
+                "daily_review.metrics.sector_heatmap.build_sector_heatmap", return_value={"rows": [], "meta": {}}
+            ), patch(
+                "daily_review.metrics.three_quadrants.build_three_quadrants", side_effect=_fake_three_quadrants
+            ), patch(
+                "daily_review.metrics.risk_diffusion.build_risk_engine", return_value={"score": 0}
+            ), patch(
+                "daily_review.metrics.divergence.build_divergence_engine", return_value={"overallScore": 0}
+            ), patch(
+                "daily_review.metrics.high_position_risk.build_high_position_risk", return_value={"triggered": False}
+            ), patch(
+                "daily_review.metrics.structure_v2.build_structure_v2", return_value={"cards": []}
+            ), patch(
+                "daily_review.metrics.action_sheet.build_action_sheet", return_value={"actions": []}
+            ):
+                cli._inject_prd_v2_metrics(
+                    root=root,
+                    date="2026-06-23",
+                    market_data=market_data,
+                    allow_network=False,
+                    refresh_plate_rotate=True,
+                )
+
+        self.assertTrue(plate_fetcher.fetch_kaipan_days.called)
+        self.assertEqual((market_data.get("plateRotateTop") or [])[0]["name"], "机器人")
+
     def test_main_returns_130_when_fetch_is_interrupted(self) -> None:
         with patch.object(cli, "run_fetch_and_rebuild", side_effect=KeyboardInterrupt), patch(
             "builtins.print"

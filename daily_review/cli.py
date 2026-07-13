@@ -1510,6 +1510,8 @@ def _postprocess_market_data(
                     date=date,
                     market_data=market_data,
                     allow_network=prd_v2_allow_network,
+                    # 板块轮动是全量复盘的基础数据，不能被 PRD 的次级联网开关一并禁用。
+                    refresh_plate_rotate=allow_network,
                 )
             _log(f"{log_prefix}PRD v2 指标已注入 (sectorHeatmap/threeQuadrants)")
         except Exception as e:
@@ -1592,7 +1594,14 @@ def run_rebuild(
     return 0
 
 
-def _inject_prd_v2_metrics(*, root: Path, date: str, market_data: dict, allow_network: bool = False) -> None:
+def _inject_prd_v2_metrics(
+    *,
+    root: Path,
+    date: str,
+    market_data: dict,
+    allow_network: bool = False,
+    refresh_plate_rotate: bool | None = None,
+) -> None:
     """
     PRD v2 派生字段注入：
     - 严格使用现有 marketData + raw.pools + 缓存历史文件复算
@@ -1629,7 +1638,7 @@ def _inject_prd_v2_metrics(*, root: Path, date: str, market_data: dict, allow_ne
         by_day = data.get("by_day") or {}
         if not isinstance(by_day, dict):
             by_day = {}
-        return {"version": 1, "by_day": by_day}
+        return {**data, "version": data.get("version", 1), "by_day": by_day}
 
     def _plate_rotate_cache_path(*, root: Path) -> Path:
         """
@@ -1673,7 +1682,22 @@ def _inject_prd_v2_metrics(*, root: Path, date: str, market_data: dict, allow_ne
         fetcher = PlateRotateFetcher()
         payload = fetcher.fetch_kaipan_days(days=20)
         by_day = payload.get("by_day") or {}
-        cache = {"version": 2, "by_day": by_day, "source": payload.get("source") or ""}
+        valid_days = {
+            str(day): value
+            for day, value in by_day.items()
+            if isinstance(value, dict) and isinstance(value.get("rows"), list) and value.get("rows")
+        }
+        # 源站偶发空响应时保留原缓存，不能把最后一份可用板块数据覆盖成空文件。
+        if not valid_days:
+            raise RuntimeError("板块轮动抓取未返回有效排行，保留现有缓存")
+        from datetime import datetime, timedelta, timezone
+
+        cache = {
+            "version": 2,
+            "by_day": valid_days,
+            "source": payload.get("source") or "",
+            "refreshedAt": datetime.now(timezone(timedelta(hours=8))).isoformat(timespec="seconds"),
+        }
         _write_plate_rotate_cache(root=root, data=cache)
         return cache
 
@@ -1686,7 +1710,9 @@ def _inject_prd_v2_metrics(*, root: Path, date: str, market_data: dict, allow_ne
         - 今天且已收盘：主动刷新一次，避免沿用旧缓存导致板块强度长期不更新
         """
         try:
-            bj = datetime.now(_SH_TZ)
+            from datetime import datetime, timedelta, timezone
+
+            bj = datetime.now(timezone(timedelta(hours=8)))
             today = bj.strftime("%Y-%m-%d")
             if str(report_date or "") != today:
                 return False
@@ -1697,6 +1723,9 @@ def _inject_prd_v2_metrics(*, root: Path, date: str, market_data: dict, allow_ne
             return True
         except Exception:
             return False
+
+    # 默认兼容原调用；全量复盘可单独开启板块轮动刷新，而不放开其余 PRD 二次联网。
+    plate_rotate_network_allowed = allow_network if refresh_plate_rotate is None else bool(refresh_plate_rotate)
 
     def _now_bj_date10() -> str:
         """
@@ -1994,7 +2023,7 @@ def _inject_prd_v2_metrics(*, root: Path, date: str, market_data: dict, allow_ne
     # - 命中后直接替换"板块题材排行 TOP10"模块的数据源
     try:
         plate_cache = _load_plate_rotate_cache(root=root)
-        if allow_network and _should_refresh_plate_rotate_cache(cache=plate_cache, report_date=date):
+        if plate_rotate_network_allowed and _should_refresh_plate_rotate_cache(cache=plate_cache, report_date=date):
             try:
                 _log("全量复盘主动刷新板块轮动缓存...")
                 plate_cache = _refresh_plate_rotate_cache(root=root)
@@ -2005,6 +2034,7 @@ def _inject_prd_v2_metrics(*, root: Path, date: str, market_data: dict, allow_ne
             plate_by_day = {}
         date8 = date.replace("-", "")
         # 精确匹配 date / date8，回退到最近可用日期
+        plate_day_key = date if isinstance(plate_by_day.get(date), dict) else date8
         plate_day = plate_by_day.get(date) or plate_by_day.get(date8) or {}
         if not (isinstance(plate_day, dict) and plate_day.get("rows")):
             all_keys = sorted(plate_by_day.keys(), reverse=True)
@@ -2013,16 +2043,18 @@ def _inject_prd_v2_metrics(*, root: Path, date: str, market_data: dict, allow_ne
                     candidate = plate_by_day[k]
                     if isinstance(candidate, dict) and candidate.get("rows"):
                         plate_day = candidate
+                        plate_day_key = str(k)
                         break
         # 缓存中无精确匹配数据 → 在线刷新
         exact_match = plate_by_day.get(date) or plate_by_day.get(date8) or {}
-        if allow_network and not (isinstance(exact_match, dict) and exact_match.get("rows")):
+        if plate_rotate_network_allowed and not (isinstance(exact_match, dict) and exact_match.get("rows")):
             try:
                 _log("板块轮动缓存无精确数据，在线刷新...")
                 plate_cache = _refresh_plate_rotate_cache(root=root)
                 plate_by_day = plate_cache.get("by_day") if isinstance(plate_cache, dict) else {}
                 if not isinstance(plate_by_day, dict):
                     plate_by_day = {}
+                plate_day_key = date if isinstance(plate_by_day.get(date), dict) else date8
                 plate_day = plate_by_day.get(date) or plate_by_day.get(date8) or {}
                 if not (isinstance(plate_day, dict) and plate_day.get("rows")):
                     all_keys2 = sorted(plate_by_day.keys(), reverse=True)
@@ -2031,6 +2063,7 @@ def _inject_prd_v2_metrics(*, root: Path, date: str, market_data: dict, allow_ne
                             candidate = plate_by_day[k]
                             if isinstance(candidate, dict) and candidate.get("rows"):
                                 plate_day = candidate
+                                plate_day_key = str(k)
                                 break
             except Exception:
                 pass
@@ -2069,8 +2102,16 @@ def _inject_prd_v2_metrics(*, root: Path, date: str, market_data: dict, allow_ne
                 if isinstance(meta, dict):
                     meta.setdefault("asOf", {})
                     if isinstance(meta.get("asOf"), dict):
-                        meta["asOf"]["plate_rotate"] = date
+                        # 缓存回退时标记真实数据日，避免前端把旧排行误认为当日抓取结果。
+                        meta["asOf"]["plate_rotate"] = plate_day_key
                     market_data["meta"] = meta
+                market_data["plateRotateMeta"] = {
+                    "asOf": plate_day_key,
+                    "requestedDate": date,
+                    "source": plate_cache.get("source") if isinstance(plate_cache, dict) else "",
+                    "refreshedAt": plate_cache.get("refreshedAt") if isinstance(plate_cache, dict) else "",
+                    "stale": str(plate_day_key).replace("-", "") != date8,
+                }
     except Exception:
         pass
 
