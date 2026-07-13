@@ -2,7 +2,7 @@
   "schema": "intraday_snapshot_v1",
   "render_mode": "snapshot_stream",
   "date": "2026-07-13",
-  "count": 23,
+  "count": 24,
   "interval_min": 5,
   "simulated": false,
   "snapshots": [
@@ -1170,27 +1170,91 @@
       "shift_score": 66,
       "shift_label": "修复",
       "note": "炸板/跌停抬升，情绪明显走弱。"
+    },
+    {
+      "time": "14:25:13",
+      "ts_bj": "2026-07-13 14:25:13",
+      "date": "2026-07-13",
+      "source": "intraday_live",
+      "provider": "必盈(实时)",
+      "zt": 25,
+      "dt": 129,
+      "zab": 17,
+      "zb": 40.5,
+      "fb": 59.5,
+      "jj": 36.0,
+      "lianban": 9,
+      "max_lb": 3,
+      "amount": "24982.5亿",
+      "bf": 0,
+      "heat": 44,
+      "risk": 60,
+      "headline": "走弱",
+      "concepts": [
+        {
+          "name": "芯片",
+          "lead": "有研新材",
+          "chg_pct": null
+        },
+        {
+          "name": "化工",
+          "lead": "黑猫股份",
+          "chg_pct": null
+        },
+        {
+          "name": "有色金属",
+          "lead": "江钨装备",
+          "chg_pct": null
+        },
+        {
+          "name": "证券",
+          "lead": "东方财富",
+          "chg_pct": null
+        },
+        {
+          "name": "保险",
+          "lead": "新华保险",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "warn",
+          "text": "本地缓存数据不完整，启用必盈实时拉取"
+        },
+        {
+          "level": "danger",
+          "text": "跌停偏多（129）→ 亏钱扩散风险上升"
+        },
+        {
+          "level": "danger",
+          "text": "炸板率高（40.5%）→ 分歧偏强，谨慎接力"
+        }
+      ],
+      "shift_score": 42,
+      "shift_label": "走弱",
+      "note": "炸板/跌停抬升，情绪明显走弱。"
     }
   ],
   "latest": {
-    "time": "14:20:43",
-    "ts_bj": "2026-07-13 14:20:43",
+    "time": "14:25:13",
+    "ts_bj": "2026-07-13 14:25:13",
     "date": "2026-07-13",
     "source": "intraday_live",
-    "provider": "fetch",
-    "zt": 92,
-    "dt": 4,
+    "provider": "必盈(实时)",
+    "zt": 25,
+    "dt": 129,
     "zab": 17,
-    "zb": 15.6,
-    "fb": 84.4,
-    "jj": 10.9,
-    "lianban": 10,
-    "max_lb": 2,
-    "amount": "24399.99亿",
+    "zb": 40.5,
+    "fb": 59.5,
+    "jj": 36.0,
+    "lianban": 9,
+    "max_lb": 3,
+    "amount": "24982.5亿",
     "bf": 0,
-    "heat": 57,
-    "risk": 22,
-    "headline": "修复",
+    "heat": 44,
+    "risk": 60,
+    "headline": "走弱",
     "concepts": [
       {
         "name": "芯片",
@@ -1218,11 +1282,24 @@
         "chg_pct": null
       }
     ],
-    "alerts": [],
-    "shift_score": 66,
-    "shift_label": "修复",
+    "alerts": [
+      {
+        "level": "warn",
+        "text": "本地缓存数据不完整，启用必盈实时拉取"
+      },
+      {
+        "level": "danger",
+        "text": "跌停偏多（129）→ 亏钱扩散风险上升"
+      },
+      {
+        "level": "danger",
+        "text": "炸板率高（40.5%）→ 分歧偏强，谨慎接力"
+      }
+    ],
+    "shift_score": 42,
+    "shift_label": "走弱",
     "note": "炸板/跌停抬升，情绪明显走弱。"
   },
-  "updated_at": "2026-07-13 14:20:43",
-  "snapshot_sig": "2026-07-13|2026-07-13 14:20:43|23"
+  "updated_at": "2026-07-13 14:25:13",
+  "snapshot_sig": "2026-07-13|2026-07-13 14:25:13|24"
 }
