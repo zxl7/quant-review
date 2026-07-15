@@ -18,8 +18,14 @@ function toMoodScore(data: MarketData): number {
   return Number.isFinite(score) ? score : 0;
 }
 
+function toMarketScore(data: MarketData): number {
+  const score = Number(data?.mood?.market_score ?? data?.mood?.score ?? 0);
+  return Number.isFinite(score) ? score : 0;
+}
+
 export function resolveMarketToneByScore(data: MarketData): MarketTone {
-  const score = toMoodScore(data);
+  // 外层视觉表达大盘环境，短线接力分仍在情绪卡与交易闸门中独立展示。
+  const score = toMarketScore(data);
   if (score >= 68) return 'good';
   if (score <= 45) return 'fire';
   return 'warn';

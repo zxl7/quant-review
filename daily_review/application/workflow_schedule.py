@@ -573,6 +573,31 @@ def validate_intraday_runtime_indices(path: Path) -> dict[str, Any]:
             "intraday_runtime_indices_incomplete: "
             f"count={len(names)} names={names} as_of={as_of or '<missing>'}"
         )
+        return result
+
+    # 发布前拒绝把午休、空池或与 latest 不一致的旧轨迹重新带回线上。
+    snapshots = payload.get("snapshots") if isinstance(payload.get("snapshots"), list) else []
+    if snapshots:
+        latest = payload.get("latest") if isinstance(payload.get("latest"), dict) else {}
+        last = snapshots[-1] if isinstance(snapshots[-1], dict) else {}
+        for row in snapshots:
+            if not isinstance(row, dict):
+                result.update({"ok": False, "message": "intraday_runtime_invalid_snapshot_row"})
+                return result
+            ts = str(row.get("ts_bj") or row.get("time") or "")
+            time_text = ts[11:16] if len(ts) >= 16 else ts[:5]
+            in_session = ("09:30" <= time_text <= "11:30") or ("13:00" <= time_text <= "15:00")
+            if not in_session or (not row.get("zt") and not row.get("lianban") and not row.get("max_lb")):
+                result.update({"ok": False, "message": "intraday_runtime_polluted_snapshot"})
+                return result
+        if str(latest.get("ts_bj") or latest.get("time") or "") != str(last.get("ts_bj") or last.get("time") or ""):
+            result.update({"ok": False, "message": "intraday_runtime_latest_mismatch"})
+            return result
+        live_market = ((payload.get("live") or {}).get("market") if isinstance(payload.get("live"), dict) else {}) or {}
+        for latest_key, live_key in (("zt", "zt"), ("dt", "dt"), ("zab", "zab"), ("lianban", "lianban"), ("max_lb", "max_lianban")):
+            if live_market.get(live_key) != latest.get(latest_key):
+                result.update({"ok": False, "message": f"intraday_runtime_live_mismatch:{live_key}"})
+                return result
     return result
 
 

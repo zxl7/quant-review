@@ -212,6 +212,7 @@ const watchIndicesAsOf = computed(() => {
   if (runtimeAsOf) return runtimeAsOf
   return String(marketData.value?.meta?.asOf?.indices || "").trim()
 })
+const watchRuntimeHealth = computed<any>(() => (intradayRuntime.intradayRuntime.value as any)?.health || {})
 
 const watchTempCards = computed(() => {
   const rows = watchSnapshots.value || []
@@ -635,6 +636,7 @@ onBeforeUnmount(() => {
                 <div class="wb-trend-now" v-if="watchCurrentSnap?.time">
                   <span>当前高亮</span>
                   <strong>{{ watchCurrentSnap.time }}</strong>
+                  <em v-if="watchRuntimeHealth.status === 'stale'">最近有效</em>
                 </div>
 
                 <div class="wb-trend-legend">

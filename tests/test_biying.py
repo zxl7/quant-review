@@ -6,7 +6,7 @@ from __future__ import annotations
 import unittest
 from unittest.mock import patch
 
-from daily_review.data.biying import extract_money_flow_day_map, fetch_indices_realtime, fetch_stock_history_k
+from daily_review.data.biying import extract_money_flow_day_map, fetch_indices_realtime, fetch_pool_result, fetch_stock_history_k
 
 
 class MoneyFlowMapTest(unittest.TestCase):
@@ -72,6 +72,22 @@ class FetchIndicesRealtimeTest(unittest.TestCase):
         self.assertEqual(rows[1]["name"], "深证成指")
         self.assertEqual(rows[1]["val"], 3500.0)
         self.assertEqual(as_of, "14:30:01")
+
+
+class FetchPoolResultTest(unittest.TestCase):
+    def test_fetch_pool_result_keeps_failure_distinct_from_valid_empty(self) -> None:
+        class FailedClient:
+            def api(self, *args, **kwargs):
+                raise RuntimeError("timeout")
+
+        class EmptyClient:
+            def api(self, *args, **kwargs):
+                return []
+
+        failed = fetch_pool_result(FailedClient(), pool_name="ztgc", date="2026-07-14")
+        empty = fetch_pool_result(EmptyClient(), pool_name="ztgc", date="2026-07-14")
+        self.assertEqual(failed["status"], "failed")
+        self.assertEqual(empty["status"], "valid_empty")
 
 
 class FetchStockHistoryKTest(unittest.TestCase):

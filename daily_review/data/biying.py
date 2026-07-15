@@ -240,9 +240,21 @@ def fetch_pool(client: HttpClient, *, pool_name: str, date: str) -> list[dict[st
     """
     三池/强势池：hslt/{pool}/{date}
     """
+    return fetch_pool_result(client, pool_name=pool_name, date=date)["rows"]
+
+
+def fetch_pool_result(client: HttpClient, *, pool_name: str, date: str) -> dict[str, Any]:
+    """读取资金池并保留失败语义，供盘中链路拒绝伪造的零值。"""
     path = f"hslt/{pool_name}/{date}"
-    data = client.api(path, exit_on_404=False, quiet_404=True)
-    return data if isinstance(data, list) else []
+    try:
+        data = client.api(path, exit_on_404=False, quiet_404=True)
+    except Exception as exc:
+        return {"status": "failed", "rows": [], "error": str(exc)[:160]}
+    if data is None:
+        return {"status": "failed", "rows": [], "error": "empty_response"}
+    if not isinstance(data, list):
+        return {"status": "partial", "rows": [], "error": f"unexpected_{type(data).__name__}"}
+    return {"status": "valid" if data else "valid_empty", "rows": data, "error": ""}
 
 
 def fetch_index_latest_k(client: HttpClient, *, code: str, lt: int = 5) -> list[dict[str, Any]]:

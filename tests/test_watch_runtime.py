@@ -60,28 +60,60 @@ class WatchRuntimeTest(unittest.TestCase):
         self.assertEqual(payload["count"], 1)
         self.assertEqual(payload["latest"]["dt"], 2)
 
-    def test_write_intraday_runtime_includes_required_indices_and_asof(self) -> None:
+    def test_append_intraday_slice_cleans_preexisting_polluted_rows(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
-            (root / "cache").mkdir()
-            (root / "web" / "public").mkdir(parents=True)
-            (root / "web" / "dist").mkdir(parents=True)
-            (root / "cache" / "market_data-20260629.json").write_text(
+            cache = root / "cache"
+            cache.mkdir()
+            (cache / "intraday_slices-20260714.json").write_text(
                 json.dumps(
                     {
-                        "date": "2026-06-29",
-                        "meta": {"asOf": {"indices": "09:36:00"}},
-                        "indices": [
-                            {"name": "上证指数", "code": "000001.SH", "val": "3400.01", "chg": "+0.10%"},
-                            {"name": "深证成指", "code": "399001.SZ", "val": "10100.22", "chg": "-0.20%"},
-                            {"name": "创业板指", "code": "399006.SZ", "val": "2010.33", "chg": "+0.30%"},
-                        ],
+                        "snapshots": [
+                            {"date": "2026-07-14", "time": "10:00:00", "zt": 20, "dt": 2, "zab": 4, "lianban": 5, "max_lb": 3},
+                            {"date": "2026-07-14", "time": "10:10:00", "zt": 0, "dt": 17, "zab": 8, "lianban": 0, "max_lb": 0},
+                            {"date": "2026-07-14", "time": "12:20:00", "zt": 25, "dt": 2, "zab": 4, "lianban": 6, "max_lb": 3},
+                        ]
                     },
                     ensure_ascii=False,
                 ),
                 encoding="utf-8",
             )
+            payload = watch_runtime.append_intraday_slice(
+                root=root,
+                snapshot={
+                    "date": "2026-07-14", "ts_bj": "2026-07-14 10:20:00",
+                    "market": {"zt": 24, "dt": 2, "zab": 5, "lianban": 6, "max_lianban": 3},
+                },
+            )
 
+        self.assertEqual([row["time"] for row in payload["snapshots"]], ["10:00:00", "10:20:00"])
+
+    def test_rejected_snapshot_keeps_last_valid_live_market(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / "web" / "public").mkdir(parents=True)
+            valid = {
+                "date": "2026-07-14", "ts_bj": "2026-07-14 10:00:00",
+                "market": {"zt": 20, "dt": 2, "zab": 4, "lianban": 5, "max_lianban": 3},
+            }
+            envelope = watch_runtime.append_intraday_slice(root=root, snapshot=valid)
+            rejected = {
+                "date": "2026-07-14", "ts_bj": "2026-07-14 10:10:00",
+                "health": {"status": "partial"},
+                "market": {"zt": 0, "dt": 17, "zab": 8, "lianban": 0, "max_lianban": 0},
+            }
+            envelope = watch_runtime.append_intraday_slice(root=root, snapshot=rejected)
+            runtime = watch_runtime.write_intraday_runtime(root=root, snapshot=rejected, envelope=envelope)
+
+        self.assertEqual(runtime["latest"]["zt"], 20)
+        self.assertEqual(runtime["live"]["market"]["zt"], 20)
+        self.assertEqual(runtime["health"]["status"], "stale")
+
+    def test_write_intraday_runtime_includes_required_indices_and_asof(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / "web" / "public").mkdir(parents=True)
+            (root / "web" / "dist").mkdir(parents=True)
             payload = watch_runtime.write_intraday_runtime(
                 root=root,
                 snapshot={
@@ -91,6 +123,12 @@ class WatchRuntimeTest(unittest.TestCase):
                     "market": {"zt": 10, "dt": 1, "zab": 2, "zab_rate": 16.7, "lianban": 3, "max_lianban": 2, "amount": "1234亿"},
                     "alerts": [],
                     "concepts": [],
+                    "indices": [
+                        {"name": "上证指数", "code": "000001.SH", "val": "3400.01", "chg": "+0.10%"},
+                        {"name": "深证成指", "code": "399001.SZ", "val": "10100.22", "chg": "-0.20%"},
+                        {"name": "创业板指", "code": "399006.SZ", "val": "2010.33", "chg": "+0.30%"},
+                    ],
+                    "asOf": {"indices": "09:36:00"},
                 },
                 envelope={"latest": {"time": "09:36:00"}, "snapshots": [{"time": "09:36:00"}]},
             )

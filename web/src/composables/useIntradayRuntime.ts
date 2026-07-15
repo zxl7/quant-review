@@ -9,6 +9,7 @@ type IntradayRuntime = {
   latest?: Record<string, any> | null
   snapshots?: Record<string, any>[]
   live?: Record<string, any> | null
+  health?: { status?: string; last_valid_at?: string; rejected_reason?: string } | null
 }
 
 const runtimeState = ref<IntradayRuntime>({})
@@ -124,6 +125,8 @@ export function useIntradayRuntime() {
     if (row && typeof row === 'object') return row
     return fallbackLive.value
   })
+  const health = computed<any>(() => effectiveRuntime.value?.health || null)
+  const isStale = computed(() => String(health.value?.status || '') === 'stale')
 
   onMounted(() => {
     startIntradayRuntimePolling()
@@ -138,6 +141,8 @@ export function useIntradayRuntime() {
     snapshots,
     latest,
     live,
+    health,
+    isStale,
     loading: runtimeLoading,
     error: runtimeError,
     refresh: fetchIntradayRuntime,

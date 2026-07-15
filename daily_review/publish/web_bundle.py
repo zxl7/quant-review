@@ -2969,6 +2969,36 @@ def _build_intraday_runtime_payload_from_market_data(md: dict) -> str:
     return json.dumps(payload, ensure_ascii=False)
 
 
+def _is_publishable_intraday_runtime(payload: object, date10: str) -> bool:
+    """全量打包只能复用已校验的同日盘中流，避免旧快照覆盖实时运行时。"""
+    if not isinstance(payload, dict) or str(payload.get("date") or "") != date10:
+        return False
+    rows = payload.get("snapshots") if isinstance(payload.get("snapshots"), list) else []
+    latest = payload.get("latest") if isinstance(payload.get("latest"), dict) else None
+    if not rows or not latest:
+        return False
+    for row in rows:
+        if not isinstance(row, dict):
+            return False
+        time_text = str(row.get("time") or row.get("ts_bj") or "")[0:5] if len(str(row.get("time") or row.get("ts_bj") or "")) <= 8 else str(row.get("ts_bj") or "")[11:16]
+        in_session = ("09:30" <= time_text <= "11:30") or ("13:00" <= time_text <= "15:00")
+        if not in_session or (not row.get("zt") and not row.get("lianban") and not row.get("max_lb")):
+            return False
+    return True
+
+
+def _preferred_intraday_runtime_payload(md: dict) -> str:
+    date10 = str(md.get("date") or "").strip()
+    canonical_path = ROOT / "web" / "public" / "intraday_runtime.json"
+    try:
+        canonical = json.loads(canonical_path.read_text(encoding="utf-8"))
+    except Exception:
+        canonical = None
+    if _is_publishable_intraday_runtime(canonical, date10):
+        return json.dumps(canonical, ensure_ascii=False)
+    return _build_intraday_runtime_payload_from_market_data(md)
+
+
 def _latest_cache_date8() -> Optional[str]:
     files = sorted((ROOT / "cache").glob("market_data-*.json"))
     for path in reversed(files):
@@ -2990,7 +3020,7 @@ def build_web_data(date8: str, source: Optional[str] = None) -> Path:
     )
     em_payload = _read_optional_payload(path=_resolve_eastmoney_tomorrow_path(), default="{}")
     resonance_payload = _read_optional_payload(path=_resolve_intraday_resonance_path(date8), default="[]")
-    intraday_runtime_payload = _build_intraday_runtime_payload_from_market_data(md_for_runtime)
+    intraday_runtime_payload = _preferred_intraday_runtime_payload(md_for_runtime)
 
     dist_dir = ROOT / "web" / "dist"
     if not (dist_dir / "index.html").exists():
@@ -3020,7 +3050,7 @@ def refresh_dev_data(date8: str, source: Optional[str] = None) -> None:
     """刷新 web/public 数据文件（供 Vite dev 和 dist 直开使用）"""
     payload = _build_publish_payload(date8, source, warn_context="dev ")
     md_for_runtime = json.loads(payload)
-    intraday_runtime_payload = _build_intraday_runtime_payload_from_market_data(md_for_runtime)
+    intraday_runtime_payload = _preferred_intraday_runtime_payload(md_for_runtime)
 
     dev_file = ROOT / "web" / "public" / "market_data.json"
     dev_script = ROOT / "web" / "public" / "market_data.js"

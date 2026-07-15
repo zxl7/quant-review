@@ -86,9 +86,7 @@ def _purge_previous_day_slices(*, root: Path, keep_date10: str) -> None:
                 continue
 
 
-# 盘中快照粒度（分钟）
-INTRADAY_INTERVAL_MIN = 5
-# 单日最多保留的盘中节点（5 分钟粒度下可覆盖一个完整交易日，并为延迟重试留余量）
+# 单日最多保留的盘中节点；Actions 实际触发时间可能偏离 cron，不承诺固定分钟粒度。
 INTRADAY_SLICE_MAX = 96
 
 
@@ -122,6 +120,19 @@ def _is_market_snapshot_credible(snapshot: dict[str, Any], prev: dict[str, Any] 
     if prev_zt >= 10 and zt >= 10 and prev_dt <= 50 and dt >= 100:
         return False
     return True
+
+
+def _snapshot_rejection_reason(snapshot: dict[str, Any], prev: dict[str, Any] | None) -> str:
+    """给运行时健康状态提供可审计的拒绝原因。"""
+    health = snapshot.get("health") if isinstance(snapshot.get("health"), dict) else {}
+    if health and str(health.get("status") or "") not in {"valid", ""}:
+        return f"source_{health.get('status')}"
+    ts_bj = str(snapshot.get("ts_bj") or "")
+    if not _is_trading_session(ts_bj):
+        return "outside_trading_session"
+    if not _is_market_snapshot_credible(snapshot, prev):
+        return "market_snapshot_not_credible"
+    return ""
 
 
 def _read_slices_rows(path: Path) -> list[dict[str, Any]]:
@@ -170,7 +181,30 @@ def _normalize_slice_row(row: dict[str, Any], date10: str) -> dict[str, Any]:
     return r
 
 
-def _pick_runtime_indices(*, root: Path, date10: str) -> tuple[list[dict[str, Any]], str]:
+def _row_as_snapshot(row: dict[str, Any]) -> dict[str, Any]:
+    return {
+        "ts_bj": row.get("ts_bj"),
+        "market": {
+            "zt": row.get("zt"), "dt": row.get("dt"), "zab": row.get("zab"),
+            "lianban": row.get("lianban"), "max_lianban": row.get("max_lb"),
+        },
+    }
+
+
+def _sanitize_slice_rows(rows: list[dict[str, Any]], date10: str) -> list[dict[str, Any]]:
+    """发布前再次清洗旧切片，避免历史污染在后续运行中永久保留。"""
+    valid: list[dict[str, Any]] = []
+    for raw in sorted(rows, key=lambda x: _row_ts_bj(x, date10)):
+        row = _normalize_slice_row(raw, date10)
+        if _row_ts_bj(row, date10)[:10] != date10:
+            continue
+        if _snapshot_rejection_reason(_row_as_snapshot(row), valid[-1] if valid else None):
+            continue
+        valid.append(row)
+    return valid
+
+
+def _pick_runtime_indices(*, root: Path, date10: str, snapshot: dict[str, Any]) -> tuple[list[dict[str, Any]], str]:
     required = ("上证指数", "深证成指", "创业板指")
 
     def extract(payload: dict[str, Any]) -> tuple[list[dict[str, Any]], str]:
@@ -190,32 +224,18 @@ def _pick_runtime_indices(*, root: Path, date10: str) -> tuple[list[dict[str, An
                 picked.append(row)
         return picked, as_of
 
-    current = _read_json(_market_data_cache_path(root, date10), {})
-    current_rows, current_as_of = extract(current if isinstance(current, dict) else {})
-    if len(current_rows) == 3:
-        return current_rows, current_as_of
+    direct = {"indices": snapshot.get("indices"), "meta": {"asOf": (snapshot.get("asOf") or {})}}
+    rows, as_of = extract(direct)
+    if len(rows) == 3 and as_of and as_of != "收盘":
+        return rows, as_of
 
-    fallback_rows = list(current_rows)
-    fallback_as_of = current_as_of
-    for path in sorted((root / "cache").glob("market_data-*.json"), reverse=True):
-        payload = _read_json(path, {})
-        if not isinstance(payload, dict):
-            continue
-        rows, as_of = extract(payload)
-        if len(rows) != 3:
-            continue
-        existing = {str(row.get("name") or "").strip() for row in fallback_rows}
-        for row in rows:
-            name = str(row.get("name") or "").strip()
-            if name and name not in existing:
-                fallback_rows.append(row)
-        if not fallback_as_of:
-            fallback_as_of = as_of
-        if len({str(row.get("name") or "").strip() for row in fallback_rows}) == 3:
-            by_name = {str(row.get("name") or "").strip(): row for row in fallback_rows}
-            return [by_name[name] for name in required if name in by_name], fallback_as_of
-
-    return current_rows, current_as_of
+    # 指数接口短暂失败时，保留同日最后一份实时指数；绝不回退到收盘缓存伪装盘中数据。
+    previous = _read_json(_intraday_runtime_paths(root)[0], {})
+    if str(previous.get("date") or "") == date10:
+        rows, as_of = extract(previous)
+        if len(rows) == 3 and as_of and as_of != "收盘":
+            return rows, as_of
+    return [], ""
 
 
 def _prev_row_for_ts(rows: list[dict[str, Any]], curr_ts_bj: str, date10: str) -> dict[str, Any] | None:
@@ -311,14 +331,15 @@ def _build_slice(snapshot: dict[str, Any], prev: dict[str, Any] | None = None) -
 def append_intraday_slice(*, root: Path, snapshot: dict[str, Any]) -> dict[str, Any]:
     date10 = str(snapshot.get("date") or "")
     path = _intraday_slices_path(root, date10)
-    rows = [_normalize_slice_row(r, date10) for r in _read_slices_rows(path)]
+    rows = _sanitize_slice_rows(_read_slices_rows(path), date10)
     ts_bj = str(snapshot.get("ts_bj") or "").strip()
     if not ts_bj:
         ts_bj = datetime.now(BJ_TZ).strftime("%Y-%m-%d %H:%M:%S")
     snap2 = dict(snapshot)
     snap2["ts_bj"] = ts_bj
     prev = _prev_row_for_ts(rows, ts_bj, date10)
-    should_append = _is_trading_session(ts_bj) and _is_market_snapshot_credible(snap2, prev)
+    rejection_reason = _snapshot_rejection_reason(snap2, prev)
+    should_append = not rejection_reason
     rec = _build_slice(snap2, prev) if should_append else None
     merged: list[dict[str, Any]] = []
     seen_ts = rec.get("ts_bj") if rec else ""
@@ -326,10 +347,6 @@ def append_intraday_slice(*, root: Path, snapshot: dict[str, Any]) -> dict[str, 
         if not isinstance(row, dict):
             continue
         if seen_ts and _row_ts_bj(row, date10) == seen_ts:
-            continue
-        # 过滤掉非当天的旧数据（ts_bj 前 10 位是日期 YYYY-MM-DD）
-        row_ts = _row_ts_bj(row, date10)
-        if row_ts[:10] != date10:
             continue
         merged.append(row)
     if rec:
@@ -344,25 +361,34 @@ def append_intraday_slice(*, root: Path, snapshot: dict[str, Any]) -> dict[str, 
         "render_mode": "snapshot_stream",
         "date": date10,
         "count": len(merged),
-        "interval_min": INTRADAY_INTERVAL_MIN,
+        "interval_min": None,
         "simulated": False,
         "snapshots": merged,
         "latest": latest,
         "updated_at": latest_ts,
         "snapshot_sig": f"{date10}|{latest_ts}|{len(merged)}",
+        "health": {
+            "status": "valid" if rec else "stale",
+            "last_valid_at": latest_ts,
+            "rejected_reason": rejection_reason,
+            "source": (snap2.get("health") if isinstance(snap2.get("health"), dict) else {}),
+        },
     }
     _write_json(path, envelope)
     return envelope
 
 
 def write_intraday_runtime(*, root: Path, snapshot: dict[str, Any], envelope: dict[str, Any]) -> dict[str, Any]:
-    market = snapshot.get("market") if isinstance(snapshot.get("market"), dict) else {}
     date10 = str(snapshot.get("date") or "")
-    indices_rows, indices_as_of = _pick_runtime_indices(root=root, date10=date10)
+    latest = envelope.get("latest") if isinstance(envelope, dict) and isinstance(envelope.get("latest"), dict) else None
+    indices_rows, indices_as_of = _pick_runtime_indices(root=root, date10=date10, snapshot=snapshot)
+    # live 与 latest 使用同一个已验收节点，拒绝原始响应穿透到顶部实时数值。
+    latest_market = latest or {}
+    health = envelope.get("health") if isinstance(envelope, dict) and isinstance(envelope.get("health"), dict) else {}
     payload = {
         "schema": "intraday_runtime_v1",
         "date": date10,
-        "updated_at": str(snapshot.get("ts_bj") or ""),
+        "updated_at": str((latest or {}).get("ts_bj") or ""),
         "source": str(snapshot.get("source") or "intraday_live"),
         "latest": (envelope.get("latest") if isinstance(envelope, dict) else None),
         "snapshots": (envelope.get("snapshots") if isinstance(envelope, dict) else []),
@@ -370,18 +396,15 @@ def write_intraday_runtime(*, root: Path, snapshot: dict[str, Any], envelope: di
         "asOf": {
             "indices": indices_as_of,
         },
+        "health": health,
         "live": {
             "market": {
-                "zt": market.get("zt"),
-                "dt": market.get("dt"),
-                "zab": market.get("zab"),
-                "zab_rate": market.get("zab_rate"),
-                "lianban": market.get("lianban"),
-                "max_lianban": market.get("max_lianban"),
-                "amount": market.get("amount"),
+                "zt": latest_market.get("zt"), "dt": latest_market.get("dt"), "zab": latest_market.get("zab"),
+                "zab_rate": latest_market.get("zb"), "lianban": latest_market.get("lianban"),
+                "max_lianban": latest_market.get("max_lb"), "amount": latest_market.get("amount"),
             },
-            "alerts": snapshot.get("alerts") or [],
-            "concepts": snapshot.get("concepts") or [],
+            "alerts": latest_market.get("alerts") or [],
+            "concepts": latest_market.get("concepts") or [],
         },
     }
     public_path, dist_path = _intraday_runtime_paths(root)

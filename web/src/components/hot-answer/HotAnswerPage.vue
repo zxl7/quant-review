@@ -17,7 +17,7 @@ const {
   setSelectedTomorrowThemeCode,
 } = useThemeHotStore();
 const { marketData } = useMarketData();
-const { latest: intradayLatest, live: intradayLive, error: intradayRuntimeError } = useIntradayRuntime();
+const { latest: intradayLatest, live: intradayLive, isStale: intradayRuntimeStale, error: intradayRuntimeError } = useIntradayRuntime();
 
 type HotPlate = {
   id: string;
@@ -562,6 +562,8 @@ const hotMarketSnapshot = computed(() => {
 });
 const hasIntradayDecision = computed(() => {
   if (!isToday.value) return false;
+  // 盘中链路拒绝本次采集时，只保留最后有效值供观察，不能继续当作下单确认。
+  if (intradayRuntimeStale.value) return false;
   const latest = intradayLatest.value && typeof intradayLatest.value === 'object' ? intradayLatest.value : {};
   const liveMarket = intradayLive.value?.market && typeof intradayLive.value.market === 'object'
     ? intradayLive.value.market
@@ -1184,6 +1186,7 @@ const hotDecisionGate = computed<HotDecisionGate>(() => {
         String(tradePlan.value?.tideGate || '').trim(),
         String(actionAdvisor.value?.posture || '').trim(),
         intradayRuntimeError.value || '',
+        intradayRuntimeStale.value ? '盘中数据已过期' : '',
       ], 3),
       vetoReasons: takeTexts([
         '缺少有效盘中快照',

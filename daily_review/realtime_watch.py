@@ -73,6 +73,9 @@ class LiveSnapshot:
     market: Dict[str, Any]
     concepts: List[Dict[str, Any]]
     alerts: List[Dict[str, Any]]
+    indices: List[Dict[str, Any]] | None = None
+    indices_as_of: str = ""
+    health: Dict[str, Any] | None = None
 
     def to_dict(self) -> Dict[str, Any]:
         return {
@@ -82,6 +85,9 @@ class LiveSnapshot:
             "market": self.market,
             "concepts": self.concepts,
             "alerts": self.alerts,
+            "indices": self.indices or [],
+            "asOf": {"indices": self.indices_as_of},
+            "health": self.health or {},
         }
 
 
@@ -263,7 +269,7 @@ def _market_from_biying(date10: str) -> Dict[str, Any]:
     try:
         from daily_review.config import load_config_from_env
         from daily_review.http import HttpClient
-        from daily_review.data.biying import fetch_pool
+        from daily_review.data.biying import fetch_pool_result, fetch_indices_realtime
     except Exception:
         return {}
 
@@ -272,11 +278,20 @@ def _market_from_biying(date10: str) -> Dict[str, Any]:
         if not cfg.token:
             return {}
         client = HttpClient(base_url=cfg.base_url, token=cfg.token, timeout=25)
-        zt = fetch_pool(client, pool_name="ztgc", date=date10) or []
-        zb = fetch_pool(client, pool_name="zbgc", date=date10) or []
-        dt = fetch_pool(client, pool_name="dtgc", date=date10) or []
+        pool_results = {
+            "ztgc": fetch_pool_result(client, pool_name="ztgc", date=date10),
+            "zbgc": fetch_pool_result(client, pool_name="zbgc", date=date10),
+            "dtgc": fetch_pool_result(client, pool_name="dtgc", date=date10),
+        }
+        zt = pool_results["ztgc"]["rows"]
+        zb = pool_results["zbgc"]["rows"]
+        dt = pool_results["dtgc"]["rows"]
+        indices, indices_as_of = fetch_indices_realtime(
+            client,
+            [("000001.SH", "上证指数"), ("399001.SZ", "深证成指"), ("399006.SZ", "创业板指")],
+        )
     except Exception:
-        return {}
+        return {"quality": "failed", "pool_status": {}, "indices": [], "indices_as_of": ""}
 
     zt_cnt = len(zt) if isinstance(zt, list) else 0
     zab_cnt = len(zb) if isinstance(zb, list) else 0
@@ -311,6 +326,11 @@ def _market_from_biying(date10: str) -> Dict[str, Any]:
         "lianban": lianban_cnt,
         "max_lianban": max_lianban,
         "amount": amount_str,
+        "quality": "valid" if all(x["status"] in {"valid", "valid_empty"} for x in pool_results.values()) else "partial",
+        "pool_status": {key: value["status"] for key, value in pool_results.items()},
+        "pool_errors": {key: value["error"] for key, value in pool_results.items() if value.get("error")},
+        "indices": indices if len(indices) == 3 and all(_to_float(x.get("val"), 0) > 0 for x in indices) else [],
+        "indices_as_of": indices_as_of if len(indices) == 3 else "",
     }
 
 def build_live_snapshot(date8: str | None = None, *, intraday: bool = True) -> "LiveSnapshot":
@@ -329,6 +349,9 @@ def build_live_snapshot(date8: str | None = None, *, intraday: bool = True) -> "
     market: Dict[str, Any] = {}
     concepts: List[Dict[str, Any]] = []
     amount: str = ""
+    indices: List[Dict[str, Any]] = []
+    indices_as_of = ""
+    health: Dict[str, Any] = {"status": "fallback", "pool_status": {}, "pool_errors": {}}
 
     # 始终尝试读取本地缓存（用于获取 amount 等补充字段）
     cache_data = _read_local_cache(date8)
@@ -362,7 +385,7 @@ def build_live_snapshot(date8: str | None = None, *, intraday: bool = True) -> "
             alerts.append({"level": "info", "text": "盘中模式：强制实时拉取"})
 
         m2 = _market_from_biying(date10)
-        if m2:
+        if m2 and m2.get("quality") == "valid":
             zt_cnt = int(m2.get("zt", 0) or 0)
             dt_cnt = int(m2.get("dt", 0) or 0)
             zab_cnt = int(m2.get("zab", 0) or 0)
@@ -377,6 +400,17 @@ def build_live_snapshot(date8: str | None = None, *, intraday: bool = True) -> "
             amount = amount_from_biying
             if "必盈" not in sources:
                 sources.append("必盈(实时)")
+            indices = m2.get("indices") if isinstance(m2.get("indices"), list) else []
+            indices_as_of = str(m2.get("indices_as_of") or "")
+            health = {"status": "valid", "pool_status": m2.get("pool_status") or {}, "pool_errors": {}}
+        elif m2:
+            # 三池任一请求失败时不把缺失池解释为 0，沿用上一次完整缓存。
+            health = {
+                "status": "partial",
+                "pool_status": m2.get("pool_status") or {},
+                "pool_errors": m2.get("pool_errors") or {},
+            }
+            alerts.append({"level": "warn", "text": "盘中三池响应不完整，保留最近有效数据"})
         elif cache_data:
             # API 也失败了，回退到缓存
             sources.append("必盈(失败，使用缓存兜底)")
@@ -430,6 +464,9 @@ def build_live_snapshot(date8: str | None = None, *, intraday: bool = True) -> "
         market=market,
         concepts=concepts,
         alerts=alerts,
+        indices=indices,
+        indices_as_of=indices_as_of,
+        health=health,
     )
 
 
