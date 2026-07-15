@@ -137,7 +137,28 @@ const compressFlatSeries = (series: unknown[], eps = 0.05) => {
   return out
 }
 
-const watchSnapshots = computed(() => intradayRuntime.snapshots.value || [])
+const isTradingSnapshot = (row: any) => {
+  const time = String(row?.time || row?.ts_bj || '').slice(-8).slice(0, 5)
+  return (time >= '09:30' && time <= '11:30') || (time >= '13:00' && time <= '15:00')
+}
+
+const isCredibleSnapshot = (row: any, prev: any) => {
+  const zt = toNum(row?.zt, 0)
+  const dt = toNum(row?.dt, 0)
+  const lianban = toNum(row?.lianban, 0)
+  const maxLb = toNum(row?.max_lb, 0)
+  if (!isTradingSnapshot(row) || (zt === 0 && lianban === 0 && maxLb === 0)) return false
+  // 兼容已发布的旧切片：过滤单个跌停池异常造成的伪跳水。
+  return !(toNum(prev?.zt, 0) >= 10 && zt >= 10 && toNum(prev?.dt, 0) <= 50 && dt >= 100)
+}
+
+const watchSnapshots = computed(() => {
+  const valid: any[] = []
+  for (const row of intradayRuntime.snapshots.value || []) {
+    if (isCredibleSnapshot(row, valid[valid.length - 1])) valid.push(row)
+  }
+  return valid
+})
 const watchCurrentSnap = computed(() => {
   const rows = watchSnapshots.value
   return rows.length ? rows[rows.length - 1] : null

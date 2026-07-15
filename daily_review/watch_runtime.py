@@ -92,6 +92,38 @@ INTRADAY_INTERVAL_MIN = 5
 INTRADAY_SLICE_MAX = 96
 
 
+def _is_trading_session(ts_bj: str) -> bool:
+    """只让连续盘中交易时段进入轨迹，收盘重建不应制造新的盘中节点。"""
+    text = str(ts_bj or "").strip()
+    time_text = text[11:16] if len(text) >= 16 else text[:5]
+    return ("09:30" <= time_text <= "11:30") or ("13:00" <= time_text <= "15:00")
+
+
+def _is_market_snapshot_credible(snapshot: dict[str, Any], prev: dict[str, Any] | None) -> bool:
+    """过滤接口空池和单池异常响应，避免它们被误画成盘中情绪急变。"""
+    market = snapshot.get("market") if isinstance(snapshot.get("market"), dict) else {}
+    zt = int(round(_to_num(market.get("zt"), 0)))
+    dt = int(round(_to_num(market.get("dt"), 0)))
+    zab = int(round(_to_num(market.get("zab"), 0)))
+    lianban = int(round(_to_num(market.get("lianban"), 0)))
+    max_lb = int(round(_to_num(market.get("max_lianban"), 0)))
+
+    if min(zt, dt, zab, lianban, max_lb) < 0:
+        return False
+    # 涨停池为空时，连板和高度也不应同时归零后被当作市场真实状态。
+    if zt == 0 and lianban == 0 and max_lb == 0:
+        return False
+    if not prev:
+        return True
+
+    prev_zt = int(round(_to_num(prev.get("zt"), 0)))
+    prev_dt = int(round(_to_num(prev.get("dt"), 0)))
+    # 盘中十分钟内涨停保持活跃而跌停突然从低位跳到三位数，是单池异常而非情绪反转。
+    if prev_zt >= 10 and zt >= 10 and prev_dt <= 50 and dt >= 100:
+        return False
+    return True
+
+
 def _read_slices_rows(path: Path) -> list[dict[str, Any]]:
     raw = _read_json(path, default=None)
     if raw is None:
@@ -286,24 +318,27 @@ def append_intraday_slice(*, root: Path, snapshot: dict[str, Any]) -> dict[str, 
     snap2 = dict(snapshot)
     snap2["ts_bj"] = ts_bj
     prev = _prev_row_for_ts(rows, ts_bj, date10)
-    rec = _build_slice(snap2, prev)
+    should_append = _is_trading_session(ts_bj) and _is_market_snapshot_credible(snap2, prev)
+    rec = _build_slice(snap2, prev) if should_append else None
     merged: list[dict[str, Any]] = []
-    seen_ts = rec.get("ts_bj") or ts_bj
+    seen_ts = rec.get("ts_bj") if rec else ""
     for row in rows:
         if not isinstance(row, dict):
             continue
-        if _row_ts_bj(row, date10) == seen_ts:
+        if seen_ts and _row_ts_bj(row, date10) == seen_ts:
             continue
         # 过滤掉非当天的旧数据（ts_bj 前 10 位是日期 YYYY-MM-DD）
         row_ts = _row_ts_bj(row, date10)
         if row_ts[:10] != date10:
             continue
         merged.append(row)
-    merged.append(rec)
+    if rec:
+        merged.append(rec)
     merged.sort(key=lambda x: _row_ts_bj(x, date10))
     if len(merged) > INTRADAY_SLICE_MAX:
         merged = merged[-INTRADAY_SLICE_MAX:]
-    latest_ts = str(rec.get("ts_bj") or "")
+    latest = merged[-1] if merged else None
+    latest_ts = str((latest or {}).get("ts_bj") or "")
     envelope: dict[str, Any] = {
         "schema": "intraday_snapshot_v1",
         "render_mode": "snapshot_stream",
@@ -312,7 +347,7 @@ def append_intraday_slice(*, root: Path, snapshot: dict[str, Any]) -> dict[str, 
         "interval_min": INTRADAY_INTERVAL_MIN,
         "simulated": False,
         "snapshots": merged,
-        "latest": merged[-1] if merged else None,
+        "latest": latest,
         "updated_at": latest_ts,
         "snapshot_sig": f"{date10}|{latest_ts}|{len(merged)}",
     }

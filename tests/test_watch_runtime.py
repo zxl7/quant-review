@@ -12,6 +12,54 @@ import daily_review.watch_runtime as watch_runtime
 
 
 class WatchRuntimeTest(unittest.TestCase):
+    def test_append_intraday_slice_skips_empty_and_after_close_snapshots(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            valid = {
+                "date": "2026-07-14",
+                "ts_bj": "2026-07-14 10:00:00",
+                "market": {"zt": 20, "dt": 2, "zab": 4, "lianban": 5, "max_lianban": 3},
+            }
+            empty = {
+                "date": "2026-07-14",
+                "ts_bj": "2026-07-14 10:10:00",
+                "market": {"zt": 0, "dt": 0, "zab": 0, "lianban": 0, "max_lianban": 0},
+            }
+            after_close = {
+                "date": "2026-07-14",
+                "ts_bj": "2026-07-14 15:16:00",
+                "market": {"zt": 80, "dt": 20, "zab": 20, "lianban": 6, "max_lianban": 3},
+            }
+
+            first = watch_runtime.append_intraday_slice(root=root, snapshot=valid)
+            second = watch_runtime.append_intraday_slice(root=root, snapshot=empty)
+            third = watch_runtime.append_intraday_slice(root=root, snapshot=after_close)
+
+        self.assertEqual(first["count"], 1)
+        self.assertEqual(second["count"], 1)
+        self.assertEqual(third["count"], 1)
+        self.assertEqual(third["latest"]["ts_bj"], "2026-07-14 10:00:00")
+
+    def test_append_intraday_slice_skips_single_pool_spike(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            baseline = {
+                "date": "2026-07-14",
+                "ts_bj": "2026-07-14 10:00:00",
+                "market": {"zt": 29, "dt": 2, "zab": 5, "lianban": 10, "max_lianban": 3},
+            }
+            spike = {
+                "date": "2026-07-14",
+                "ts_bj": "2026-07-14 10:10:00",
+                "market": {"zt": 29, "dt": 172, "zab": 5, "lianban": 10, "max_lianban": 3},
+            }
+
+            watch_runtime.append_intraday_slice(root=root, snapshot=baseline)
+            payload = watch_runtime.append_intraday_slice(root=root, snapshot=spike)
+
+        self.assertEqual(payload["count"], 1)
+        self.assertEqual(payload["latest"]["dt"], 2)
+
     def test_write_intraday_runtime_includes_required_indices_and_asof(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
