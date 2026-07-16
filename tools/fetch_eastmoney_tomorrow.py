@@ -182,6 +182,11 @@ def main() -> int:
     print(f"  ✅ 题材列表: {theme_cnt} 条")
     print(f"  ✅ 成份股: {stock_cnt} 只")
 
+    # 空返回不能覆盖上一次有效发布，否则前端会把接口故障显示成“今日没有题材”。
+    if not themes or not stocks:
+        print("⚠ 东财题材或成份股为空，保留已有发布文件", file=sys.stderr)
+        return 1
+
     # 3) 写出前端可用 JSON
     payload = {
         "schema": "eastmoney_tomorrow_v1",

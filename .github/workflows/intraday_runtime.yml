@@ -1,0 +1,114 @@
+name: Publish intraday runtime
+
+on:
+  # GitHub Actions 的最小调度粒度为 5 分钟；此链路不再等待全量复盘初始化。
+  schedule:
+    - cron: "35-55/5 1 * * 1-5"
+    - cron: "*/5 2 * * 1-5"
+    - cron: "0-30/5 3 * * 1-5"
+    - cron: "*/5 5-6 * * 1-5"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  # 盘中快照只保留最新一轮，避免延迟任务排队后反而降低实际更新频率。
+  group: intraday-runtime-publish
+  cancel-in-progress: true
+
+env:
+  TZ: Asia/Shanghai
+  PYTHONUNBUFFERED: "1"
+
+jobs:
+  runtime:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Resolve live trade date
+        id: trade
+        env:
+          BIYING_TOKEN: ${{ secrets.BIYING_TOKEN }}
+          BIYING_BASE_URL: ${{ secrets.BIYING_BASE_URL }}
+        run: |
+          set -euo pipefail
+          test -n "${BIYING_TOKEN}" || { echo "Missing secrets.BIYING_TOKEN"; exit 2; }
+          PYTHONPATH=. python3 - <<'PY'
+          import datetime as dt
+          import os
+          from daily_review.config import load_config_from_env
+          from daily_review.data.biying import resolve_trade_date_intraday
+          from daily_review.http import HttpClient
+
+          today = dt.datetime.now().strftime("%Y-%m-%d")
+          cfg = load_config_from_env()
+          client = HttpClient(base_url=cfg.base_url, token=cfg.token, timeout=20, retries=0)
+          resolved, note = resolve_trade_date_intraday(client, today)
+          with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as fh:
+              fh.write(f"date10={resolved}\n")
+              fh.write(f"skip={'true' if resolved != today else 'false'}\n")
+          print(f"intraday_trade_date={resolved} requested={today} {note}")
+          PY
+
+      - name: Checkout published runtime history
+        if: ${{ steps.trade.outputs.skip != 'true' }}
+        uses: actions/checkout@v4
+        with:
+          ref: gh-pages
+          path: site_prev
+          fetch-depth: 1
+          persist-credentials: true
+
+      - name: Restore latest runtime slices
+        if: ${{ steps.trade.outputs.skip != 'true' }}
+        run: |
+          set -euo pipefail
+          mkdir -p cache web/public site_prev/cache
+          cp -f site_prev/cache/intraday_slices-*.json cache/ 2>/dev/null || true
+          cp -f site_prev/intraday_runtime.json web/public/intraday_runtime.json 2>/dev/null || true
+
+      - name: Fetch and validate intraday runtime
+        if: ${{ steps.trade.outputs.skip != 'true' }}
+        env:
+          BIYING_TOKEN: ${{ secrets.BIYING_TOKEN }}
+          BIYING_BASE_URL: ${{ secrets.BIYING_BASE_URL }}
+          RUN_DATE: ${{ steps.trade.outputs.date10 }}
+        run: |
+          set -euo pipefail
+          ./qr.sh watch-slice "${RUN_DATE}"
+          PYTHONPATH=. python3 - <<'PY'
+          import json
+          from pathlib import Path
+          from daily_review.application.workflow_schedule import validate_intraday_runtime_indices
+
+          result = validate_intraday_runtime_indices(Path("web/public/intraday_runtime.json"))
+          print("intraday_runtime_validation=" + json.dumps(result, ensure_ascii=False, sort_keys=True))
+          if not result["ok"]:
+              raise SystemExit(result["message"])
+          PY
+
+      - name: Publish runtime only
+        if: ${{ steps.trade.outputs.skip != 'true' }}
+        run: |
+          set -euo pipefail
+          cp -f web/public/intraday_runtime.json site_prev/intraday_runtime.json
+          mkdir -p site_prev/cache
+          cp -f cache/intraday_slices-*.json site_prev/cache/ 2>/dev/null || true
+          git -C site_prev add intraday_runtime.json cache/intraday_slices-*.json
+          if git -C site_prev diff --cached --quiet; then
+            echo "No effective intraday runtime update."
+            exit 0
+          fi
+          git -C site_prev config user.name "github-actions[bot]"
+          git -C site_prev config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git -C site_prev commit -m "deploy: intraday runtime"
+          git -C site_prev push origin HEAD:gh-pages

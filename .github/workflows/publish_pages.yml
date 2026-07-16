@@ -18,16 +18,11 @@ on:
   # - 09:25：仅做轻量竞价快照预抓，不跑 full publish
   # - 09:26：早盘主链执行一次正式 fetch，进入前先确保今日竞价快照
   # - 09:27：仅做一次轻量竞价预抓兜底
-  # - 09:35-11:30 / 13:00-14:59：仅执行盘中轻量任务快照（runtime/slices）
   # - 15:00 / 16:00 / 17:00 / 18:00：执行收盘后全量复盘发布
   schedule:
     - cron: "25 1 * * 1-5"
     - cron: "26 1 * * 1-5"
     - cron: "27 1 * * 1-5"
-    - cron: "35-55/5 1 * * 1-5"
-    - cron: "*/5 2 * * 1-5"
-    - cron: "0-30/5 3 * * 1-5"
-    - cron: "*/5 5-6 * * 1-5"
     - cron: "0 7 * * 1-5"
     - cron: "0 9 * * 1-5"
     - cron: "0 8 * * 1-5"
@@ -722,14 +717,33 @@ jobs:
           set -euo pipefail
           run_date="${{ steps.pushmode.outputs.date10 }}"
           python3 manage_cache.py --date "${run_date}" --mode minimal --retention-days 7 --apply >/dev/null
-          if [ "${{ github.event_name }}" = "schedule" ] && [ "${{ steps.timecheck.outputs.mode }}" != "eod" ]; then
-            echo "Schedule event (non-eod): skip watchlist/account derived sync for daily snapshot limit"
-          elif [ "${{ github.event_name }}" = "schedule" ]; then
-            echo "Schedule event (eod): sync account derived data"
+          refresh_external="false"
+          if [ "${{ github.event_name }}" = "schedule" ] && [ "${{ steps.timecheck.outputs.mode }}" = "eod" ]; then
+            refresh_external="true"
+          elif [ "${{ github.event_name }}" != "schedule" ]; then
+            refresh_external="true"
+          fi
+          if [ "${refresh_external}" = "true" ]; then
+            # 收盘/手动恢复必须完整刷新题材证据，不能只用昨日缓存重算推票。
+            PYTHONPATH=. python3 tools/fetch_watchlist.py --date "${run_date}" --mode eod
+            python3 tools/fetch_tomorrow_picks.py web/public/tomorrow_picks.json
+            python3 tools/fetch_eastmoney_tomorrow.py web/public/eastmoney_tomorrow.json
+            RUN_DATE="${run_date}" PYTHONPATH=. python3 - <<'PY'
+            import json
+            import os
+            from pathlib import Path
+            from daily_review.application.workflow_schedule import validate_external_data_freshness
+
+            result = validate_external_data_freshness(root=Path('.'), date10=os.environ['RUN_DATE'])
+            print('external_data_freshness=' + json.dumps(result, ensure_ascii=False, sort_keys=True))
+            if not result['ok']:
+                raise SystemExit(result['message'])
+            PY
+          fi
+          if [ "${{ github.event_name }}" = "schedule" ] && [ "${{ steps.timecheck.outputs.mode }}" = "eod" ]; then
             PYTHONPATH=. python3 scripts/build_account_nav_ledger.py >/dev/null
             PYTHONPATH=. python3 scripts/build_account_strategy_metrics.py >/dev/null
-          else
-            PYTHONPATH=. python3 tools/fetch_watchlist.py --date "${run_date}" --skip-fetch || echo "⚠ watchlist rebuild failed, using cache"
+          elif [ "${{ github.event_name }}" != "schedule" ]; then
             PYTHONPATH=. python3 scripts/build_account_nav_ledger.py >/dev/null || echo "⚠ account nav ledger sync failed"
             PYTHONPATH=. python3 scripts/build_account_strategy_metrics.py >/dev/null || echo "⚠ account strategy metrics sync failed"
           fi
@@ -786,12 +800,8 @@ jobs:
       - name: Pre-fetch external data (明日策略池 + 东方财富今日题材)
         if: ${{ (github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true') && steps.warmup.outputs.skip != 'true' && (github.event_name != 'schedule' || steps.tradeday.outputs.is_trade_today == 'true') && steps.pushmode.outputs.mode != 'intraday' && steps.pushmode.outputs.mode != 'auction_prefetch' && steps.pushmode.outputs.mode != 'auction_prefetch_retry' }}
         run: |
-          if [ "${{ github.event_name }}" = "schedule" ]; then
-            echo "Schedule event: skip tomorrow-data prefetch and reuse published artifacts if present"
-          else
-            python3 tools/fetch_tomorrow_picks.py web/public/tomorrow_picks.json || echo "⚠ tomorrow picks fetch failed, using cache"
-            python3 tools/fetch_eastmoney_tomorrow.py web/public/eastmoney_tomorrow.json || echo "⚠ eastmoney tomorrow fetch failed, using cache"
-          fi
+          # 已在 Post-fetch cache sync 阶段以同日校验完成，避免二次请求覆盖有效缓存。
+          echo "External theme chain already refreshed and validated."
 
       - name: Resolve full publish source cache
         id: publishsource

@@ -601,6 +601,33 @@ def validate_intraday_runtime_indices(path: Path) -> dict[str, Any]:
     return result
 
 
+def validate_external_data_freshness(*, root: Path, date10: str) -> dict[str, Any]:
+    """收盘发布只接受同日外部题材链，防止主报告更新而证据仍停在昨日。"""
+    date8 = str(date10 or "").replace("-", "")
+    required = {
+        "xuangubao_abnormal": root / "cache_online" / f"xuangubao_abnormal-{date8}.json",
+        "xuangubao_surge": root / "cache_online" / f"xuangubao_surge_plates-{date8}.json",
+        "eastmoney_themes": root / "cache_online" / f"eastmoney_tomorrow_themes-{date8}.json",
+        "eastmoney_stocks": root / "cache_online" / f"eastmoney_theme_stocks-{date8}.json",
+        "watchlist": root / "cache_online" / f"watchlist_cache-{date8}.json",
+        "tomorrow_picks": root / "web" / "public" / "tomorrow_picks.json",
+        "eastmoney_public": root / "web" / "public" / "eastmoney_tomorrow.json",
+    }
+    result: dict[str, Any] = {"ok": True, "date": date10, "sources": {}, "message": "external_data_fresh"}
+    for name, path in required.items():
+        payload = _read_json(path)
+        payload_date = str(payload.get("data_date") or payload.get("date") or "").strip()
+        updated_at = str(payload.get("updated_at_bj") or payload.get("updatedAt") or payload.get("generatedAt") or payload.get("generated_at_bj") or "").strip()
+        fresh = bool(payload) and payload_date == date10
+        result["sources"][name] = {"path": str(path), "date": payload_date, "updated_at": updated_at, "fresh": fresh}
+        if not fresh:
+            result["ok"] = False
+    if not result["ok"]:
+        stale = [name for name, item in result["sources"].items() if not item["fresh"]]
+        result["message"] = "external_data_stale_or_missing:" + ",".join(stale)
+    return result
+
+
 def validate_eod_stock_research_closeout(path: Path, run_date10: str) -> dict[str, Any]:
     result: dict[str, Any] = {
         "ok": True,

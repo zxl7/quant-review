@@ -24,6 +24,7 @@ from daily_review.application.workflow_schedule import (
     validate_eod_stock_research_prediction_pool,
     validate_eod_stock_research_closeout,
     validate_intraday_runtime_indices,
+    validate_external_data_freshness,
     validate_market_data_stock_research_snapshot,
 )
 
@@ -32,6 +33,44 @@ TZ_BJ = timezone(timedelta(hours=8))
 
 
 class WorkflowScheduleTest(unittest.TestCase):
+    def test_validate_external_data_freshness_requires_all_same_day_artifacts(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            cache = root / "cache_online"
+            public = root / "web" / "public"
+            cache.mkdir(parents=True)
+            public.mkdir(parents=True)
+            date = "2026-06-23"
+            date8 = "20260623"
+            for name in ("xuangubao_abnormal", "xuangubao_surge_plates", "eastmoney_tomorrow_themes", "eastmoney_theme_stocks"):
+                (cache / f"{name}-{date8}.json").write_text(json.dumps({"date": date, "updated_at_bj": f"{date} 15:10:00"}), encoding="utf-8")
+            (cache / f"watchlist_cache-{date8}.json").write_text(json.dumps({"data_date": date, "generated_at_bj": f"{date} 15:10:00"}), encoding="utf-8")
+            for name in ("tomorrow_picks.json", "eastmoney_tomorrow.json"):
+                (public / name).write_text(json.dumps({"date": date, "updatedAt": f"{date} 15:10:00"}), encoding="utf-8")
+
+            result = validate_external_data_freshness(root=root, date10=date)
+
+        self.assertTrue(result["ok"])
+
+    def test_validate_external_data_freshness_rejects_stale_public_payload(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            cache = root / "cache_online"
+            public = root / "web" / "public"
+            cache.mkdir(parents=True)
+            public.mkdir(parents=True)
+            date = "2026-06-23"
+            date8 = "20260623"
+            for name in ("xuangubao_abnormal", "xuangubao_surge_plates", "eastmoney_tomorrow_themes", "eastmoney_theme_stocks"):
+                (cache / f"{name}-{date8}.json").write_text(json.dumps({"date": date}), encoding="utf-8")
+            (cache / f"watchlist_cache-{date8}.json").write_text(json.dumps({"data_date": date}), encoding="utf-8")
+            (public / "tomorrow_picks.json").write_text(json.dumps({"date": date}), encoding="utf-8")
+            (public / "eastmoney_tomorrow.json").write_text(json.dumps({"date": "2026-06-20"}), encoding="utf-8")
+
+            result = validate_external_data_freshness(root=root, date10=date)
+
+        self.assertFalse(result["ok"])
+        self.assertIn("eastmoney_public", result["message"])
     def test_schedule_mapping_covers_every_known_cron(self) -> None:
         fake_now = datetime(2026, 6, 22, 10, 27, tzinfo=TZ_BJ)
         for cron_expr, expected_mode in SCHEDULE_MODE_BY_CRON.items():

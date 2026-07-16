@@ -238,6 +238,10 @@ def save_surge_plates_snapshot(
     """
     plates_resp = fetch_surge_plates()
     plates_path = cache_path_surge_plates(root, date)
+    raw_rows = plates_resp.get("data") if isinstance(plates_resp, dict) else None
+    if not raw_rows and plates_path.exists():
+        # 实时接口空响应时保留同日最后有效板块快照，避免覆盖成空壳缓存。
+        return plates_path
     now_bj = _now_bj_str()
     write_json(
         plates_path,

@@ -2921,6 +2921,7 @@ def _build_publish_payload(date8: str, source: Optional[str] = None, *, warn_con
     md["sentimentDecision"] = _build_sentiment_decision(md)
     md["planDecision"] = _build_plan_decision(md)
     md["shortlineDecision"] = _build_shortline_decision(md)
+    md["dataHealth"] = _build_data_health(md, date8=date8)
     preserved_market = ((md.get("preservedResearch") or {}) if isinstance(md.get("preservedResearch"), dict) else {}).get("marketData")
     if isinstance(preserved_market, dict):
         preserved_market["planThemeResolver"] = _build_plan_theme_resolver(preserved_market)
@@ -2929,6 +2930,37 @@ def _build_publish_payload(date8: str, source: Optional[str] = None, *, warn_con
         preserved_market["planDecision"] = _build_plan_decision(preserved_market)
         preserved_market["shortlineDecision"] = _build_shortline_decision(preserved_market)
     return json.dumps(md, ensure_ascii=False)
+
+
+def _build_data_health(md: dict, *, date8: str) -> dict:
+    """把缓存真实时间暴露给前端，不能用浏览器请求时间冒充数据更新时间。"""
+    date10 = f"{date8[:4]}-{date8[4:6]}-{date8[6:8]}" if len(date8) == 8 else str(md.get("date") or "")
+
+    def inspect(name: str, path: Path, *, date_key: str = "date") -> dict:
+        try:
+            payload = json.loads(path.read_text(encoding="utf-8"))
+        except Exception:
+            payload = {}
+        payload_date = str(payload.get(date_key) or payload.get("date") or "").strip() if isinstance(payload, dict) else ""
+        updated_at = ""
+        if isinstance(payload, dict):
+            updated_at = str(payload.get("updated_at_bj") or payload.get("updatedAt") or payload.get("generatedAt") or payload.get("generated_at_bj") or "").strip()
+        return {"name": name, "date": payload_date, "updatedAt": updated_at, "status": "fresh" if payload_date == date10 else "stale" if payload else "missing"}
+
+    cache_online = ROOT / "cache_online"
+    meta = md.get("meta") if isinstance(md.get("meta"), dict) else {}
+    as_of = meta.get("asOf") if isinstance(meta.get("asOf"), dict) else {}
+    plate_meta = md.get("plateRotateMeta") if isinstance(md.get("plateRotateMeta"), dict) else {}
+    return {
+        "market": {"date": str(md.get("date") or ""), "updatedAt": str(meta.get("generatedAt") or ""), "status": "fresh" if str(md.get("date") or "") == date10 else "stale"},
+        "intraday": inspect("intraday", ROOT / "web" / "public" / "intraday_runtime.json"),
+        "xuangubaoSurge": inspect("xuangubaoSurge", cache_online / f"xuangubao_surge_plates-{date8}.json"),
+        "xuangubaoAbnormal": inspect("xuangubaoAbnormal", cache_online / f"xuangubao_abnormal-{date8}.json"),
+        "eastmoneyThemes": inspect("eastmoneyThemes", cache_online / f"eastmoney_tomorrow_themes-{date8}.json"),
+        "eastmoneyStocks": inspect("eastmoneyStocks", cache_online / f"eastmoney_theme_stocks-{date8}.json"),
+        "watchlist": inspect("watchlist", cache_online / f"watchlist_cache-{date8}.json", date_key="data_date"),
+        "plateRotate": {"date": str(plate_meta.get("asOf") or as_of.get("plate_rotate") or ""), "updatedAt": str(plate_meta.get("refreshedAt") or ""), "status": "stale" if plate_meta.get("stale") else "fresh"},
+    }
 
 
 def _read_optional_payload(*, path: Path, fallback: Optional[Path] = None, default: str) -> str:

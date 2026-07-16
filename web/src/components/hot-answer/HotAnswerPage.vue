@@ -613,6 +613,10 @@ const fetchJson = async (url: string) => {
   return JSON.parse(text);
 };
 
+const sourceUpdatedAt = (payload: any) => String(
+  payload?.updated_at_bj || payload?.updatedAt || payload?.updated_at || payload?.generatedAt || '',
+).trim();
+
 const fetchHotEvents = async () => fetchJson('https://flash-api.xuangubao.cn/api/event/history?count=120');
 
 const hydrateStocksWithQuote = async (stocks: HotStock[]) => {
@@ -1053,6 +1057,7 @@ const mergePlateEnhancements = (plates: HotPlate[]) => plates.map((plate) => {
 const loadHotPlates = async (keepSelection = false) => {
   hotLoading.value = true;
   hotError.value = '';
+  const previousPlates = hotPlates.value;
   resetHotDerivedState();
   try {
     const url = isToday.value
@@ -1076,9 +1081,11 @@ const loadHotPlates = async (keepSelection = false) => {
       hotSelectedPlateId.value = first?.id || '';
       hotSelectedPlateName.value = first?.name || '';
     }
-    hotLastUpdated.value = new Date().toLocaleTimeString('zh-CN', { hour12: false });
+    // 只显示来源提供的时间，不能把浏览器请求完成时间伪装成数据更新时间。
+    hotLastUpdated.value = sourceUpdatedAt(json);
     if (hotSelectedPlateId.value) await loadHotStocks(hotMode.value);
   } catch (e: any) {
+    if (previousPlates.length) hotPlates.value = previousPlates;
     hotError.value = `热点解答获取失败：${String(e?.message || e)}`;
   } finally {
     hotLoading.value = false;
