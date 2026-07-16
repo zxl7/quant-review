@@ -267,7 +267,19 @@
   "health": {
     "status": "stale",
     "last_valid_at": "2026-07-16 11:29:43",
-    "rejected_reason": "market_snapshot_not_credible",
-    "source": {}
+    "rejected_reason": "source_partial",
+    "source": {
+      "status": "partial",
+      "pool_status": {
+        "ztgc": "failed",
+        "zbgc": "failed",
+        "dtgc": "failed"
+      },
+      "pool_errors": {
+        "ztgc": "HTTP Error 429: Too Many Requests",
+        "zbgc": "HTTP Error 429: Too Many Requests",
+        "dtgc": "HTTP Error 429: Too Many Requests"
+      }
+    }
   }
 }
