@@ -1,6 +1,6 @@
 {
   "schema": "watchlist_v2",
-  "generated_at_bj": "2026-07-20 18:53:33",
+  "generated_at_bj": "2026-07-20 19:57:36",
   "data_date": "2026-07-20",
   "pools_date": "2026-07-20",
   "sector_resolution": {
@@ -19929,11 +19929,11 @@
         "prev_zt": null,
         "pre_prev_zt": null,
         "resilience": null,
-        "strength": 53.0,
-        "strength_rank": null,
-        "strength_score": 53.0,
-        "strength_source": "sector_heatmap",
-        "tide_score": 51,
+        "strength": 517.0,
+        "strength_rank": 10,
+        "strength_score": 5.17,
+        "strength_source": "plate_rank",
+        "tide_score": 41,
         "confidence": "medium",
         "warning_level": "none",
         "action_hint": "潮汐中性，按梯队和辨识度判断"
@@ -20184,12 +20184,12 @@
         "prev_zt": null,
         "pre_prev_zt": null,
         "resilience": null,
-        "strength": null,
+        "strength": 53.0,
         "strength_rank": null,
-        "strength_score": null,
-        "strength_source": "",
-        "tide_score": 50,
-        "confidence": "low",
+        "strength_score": 53.0,
+        "strength_source": "sector_heatmap",
+        "tide_score": 51,
+        "confidence": "medium",
         "warning_level": "none",
         "action_hint": "潮汐中性，按梯队和辨识度判断"
       },
@@ -23722,8 +23722,8 @@
         "action_hint": "AI应用（游戏传媒）核心潮汐中性，按梯队和个股辨识度处理。"
       },
       {
-        "name": "互联金融",
-        "canonical_name": "互联金融",
+        "name": "成渝城市群",
+        "canonical_name": "成渝城市群",
         "status": "neutral_wait",
         "base_tide_status": "neutral",
         "action": "watch",
@@ -23752,7 +23752,7 @@
         "cautions": [
           "市场退潮"
         ],
-        "action_hint": "互联金融核心潮汐中性，按梯队和个股辨识度处理。"
+        "action_hint": "成渝城市群核心潮汐中性，按梯队和个股辨识度处理。"
       },
       {
         "name": "芯片概念",
@@ -25402,39 +25402,6 @@
           "市场退潮"
         ],
         "action_hint": "征信概念核心潮汐中性，按梯队和个股辨识度处理。"
-      },
-      {
-        "name": "成渝城市群",
-        "canonical_name": "成渝城市群",
-        "status": "neutral_wait",
-        "base_tide_status": "neutral",
-        "action": "watch",
-        "tide_zone": "neutral",
-        "tide_phase": "neutral",
-        "core_score": 51,
-        "ebb_score": 42,
-        "tide_score": 50,
-        "emotion_score": 47,
-        "strength_score": 47,
-        "volume_score": 62,
-        "news_score": 50,
-        "market_score": 42,
-        "structure_score": 70,
-        "confidence": "low",
-        "confirms": {
-          "emotion": false,
-          "strength": false,
-          "volume": true,
-          "news": false,
-          "market": false
-        },
-        "reasons": [
-          "低位连板承接"
-        ],
-        "cautions": [
-          "市场退潮"
-        ],
-        "action_hint": "成渝城市群核心潮汐中性，按梯队和个股辨识度处理。"
       },
       {
         "name": "手游",
@@ -32535,6 +32502,39 @@
           "市场退潮"
         ],
         "action_hint": "高血压防治核心潮汐偏弱，降低权重，避免追高。"
+      },
+      {
+        "name": "互联金融",
+        "canonical_name": "互联金融",
+        "status": "avoid_weak",
+        "base_tide_status": "neutral",
+        "action": "avoid",
+        "tide_zone": "ebbing",
+        "tide_phase": "ebbing",
+        "core_score": 37,
+        "ebb_score": 64,
+        "tide_score": 41,
+        "emotion_score": 47,
+        "strength_score": 5,
+        "volume_score": 62,
+        "news_score": 50,
+        "market_score": 42,
+        "structure_score": 70,
+        "confidence": "low",
+        "confirms": {
+          "emotion": false,
+          "strength": false,
+          "volume": true,
+          "news": false,
+          "market": false
+        },
+        "reasons": [
+          "低位连板承接"
+        ],
+        "cautions": [
+          "市场退潮"
+        ],
+        "action_hint": "互联金融核心潮汐偏弱，降低权重，避免追高。"
       },
       {
         "name": "金融机具",
