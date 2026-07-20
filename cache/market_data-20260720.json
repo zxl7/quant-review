@@ -4,49 +4,49 @@
   "meta": {
     "asOf": {
       "indices": "收盘",
-      "pools": "14:16:03",
-      "themes": "14:16:03"
+      "pools": "14:26:02",
+      "themes": "14:26:02"
     },
     "version": "1.0",
-    "generatedAt": "2026-07-20 14:16:03"
+    "generatedAt": "2026-07-20 14:26:02"
   },
   "indices": [
     {
       "name": "上证指数",
       "code": "000001.SH",
-      "val": "3754.76",
-      "chg": "-0.25%",
-      "price": 3754.763,
+      "val": "3748.97",
+      "chg": "-0.40%",
+      "price": 3748.966,
       "ma5": 3875.532,
       "ma20": null,
-      "cje": 1090715889600.0
+      "cje": 1122685020700.0
     },
     {
       "name": "深证成指",
       "code": "399001.SZ",
-      "val": "13459.86",
-      "chg": "-1.80%",
-      "price": 13459.861,
+      "val": "13425.73",
+      "chg": "-2.05%",
+      "price": 13425.729,
       "ma5": 14327.122,
       "ma20": null,
-      "cje": 1199086447700.0
+      "cje": 1231446514300.0
     },
     {
       "name": "创业板指",
       "code": "399006.SZ",
-      "val": "3387.74",
-      "chg": "-1.19%",
-      "price": 3387.743,
+      "val": "3376.55",
+      "chg": "-1.52%",
+      "price": 3376.552,
       "ma5": 3648.85,
       "ma20": null,
-      "cje": 562502526500.0
+      "cje": 579070680900.0
     }
   ],
   "panorama": {},
   "volume": {
-    "total": "22898.02亿",
-    "change": "-13.75%",
-    "increase": "大幅缩量 3651.57亿",
+    "total": "23541.32亿",
+    "change": "-11.33%",
+    "increase": "大幅缩量 3008.27亿",
     "dates": [
       "07-10",
       "07-13",
@@ -63,7 +63,7 @@
       25711.54,
       24035.65,
       26549.59,
-      22898.02
+      23541.32
     ]
   },
   "sectors": [],
@@ -4553,8 +4553,8 @@
     },
     "themes": [
       {
-        "name": "光通信",
-        "canonical_name": "光模块",
+        "name": "AI应用（医药医疗）",
+        "canonical_name": "AI应用（医药医疗）",
         "status": "avoid_weak",
         "base_tide_status": "neutral",
         "action": "avoid",
@@ -4581,7 +4581,38 @@
           "消息催化"
         ],
         "cautions": [],
-        "action_hint": "光通信核心潮汐偏弱，降低权重，避免追高。"
+        "action_hint": "AI应用（医药医疗）核心潮汐偏弱，降低权重，避免追高。"
+      },
+      {
+        "name": "医药电商",
+        "canonical_name": "医药电商",
+        "status": "avoid_weak",
+        "base_tide_status": "neutral",
+        "action": "avoid",
+        "tide_zone": "ebbing",
+        "tide_phase": "ebbing",
+        "core_score": 54,
+        "ebb_score": 56,
+        "tide_score": 50,
+        "emotion_score": 50,
+        "strength_score": 44,
+        "volume_score": 50,
+        "news_score": 80,
+        "market_score": 57,
+        "structure_score": 52,
+        "confidence": "medium",
+        "confirms": {
+          "emotion": false,
+          "strength": false,
+          "volume": false,
+          "news": true,
+          "market": true
+        },
+        "reasons": [
+          "消息催化"
+        ],
+        "cautions": [],
+        "action_hint": "医药电商核心潮汐偏弱，降低权重，避免追高。"
       },
       {
         "name": "半导体",
@@ -4708,37 +4739,6 @@
         "action_hint": "电力物联网核心潮汐偏弱，降低权重，避免追高。"
       },
       {
-        "name": "AI应用（医药医疗）",
-        "canonical_name": "AI应用（医药医疗）",
-        "status": "avoid_weak",
-        "base_tide_status": "neutral",
-        "action": "avoid",
-        "tide_zone": "ebbing",
-        "tide_phase": "ebbing",
-        "core_score": 53,
-        "ebb_score": 56,
-        "tide_score": 50,
-        "emotion_score": 50,
-        "strength_score": 44,
-        "volume_score": 50,
-        "news_score": 74,
-        "market_score": 57,
-        "structure_score": 52,
-        "confidence": "medium",
-        "confirms": {
-          "emotion": false,
-          "strength": false,
-          "volume": false,
-          "news": true,
-          "market": true
-        },
-        "reasons": [
-          "消息催化"
-        ],
-        "cautions": [],
-        "action_hint": "AI应用（医药医疗）核心潮汐偏弱，降低权重，避免追高。"
-      },
-      {
         "name": "交换机",
         "canonical_name": "交换机",
         "status": "avoid_weak",
@@ -4770,8 +4770,8 @@
         "action_hint": "交换机核心潮汐偏弱，降低权重，避免追高。"
       },
       {
-        "name": "医药电商",
-        "canonical_name": "医药电商",
+        "name": "光通信",
+        "canonical_name": "光模块",
         "status": "avoid_weak",
         "base_tide_status": "neutral",
         "action": "avoid",
@@ -4798,7 +4798,7 @@
           "消息催化"
         ],
         "cautions": [],
-        "action_hint": "医药电商核心潮汐偏弱，降低权重，避免追高。"
+        "action_hint": "光通信核心潮汐偏弱，降低权重，避免追高。"
       },
       {
         "name": "新能源车",
@@ -4907,15 +4907,15 @@
         "emotion_score": 50,
         "strength_score": 44,
         "volume_score": 50,
-        "news_score": 64,
+        "news_score": 58,
         "market_score": 57,
         "structure_score": 52,
-        "confidence": "medium",
+        "confidence": "low",
         "confirms": {
           "emotion": false,
           "strength": false,
           "volume": false,
-          "news": true,
+          "news": false,
           "market": true
         },
         "reasons": [
@@ -4938,15 +4938,15 @@
         "emotion_score": 50,
         "strength_score": 44,
         "volume_score": 50,
-        "news_score": 64,
+        "news_score": 58,
         "market_score": 57,
         "structure_score": 52,
-        "confidence": "medium",
+        "confidence": "low",
         "confirms": {
           "emotion": false,
           "strength": false,
           "volume": false,
-          "news": true,
+          "news": false,
           "market": true
         },
         "reasons": [
@@ -5111,37 +5111,6 @@
         "action_hint": "东数西算核心潮汐偏弱，降低权重，避免追高。"
       },
       {
-        "name": "中药",
-        "canonical_name": "中药",
-        "status": "avoid_weak",
-        "base_tide_status": "neutral",
-        "action": "avoid",
-        "tide_zone": "ebbing",
-        "tide_phase": "ebbing",
-        "core_score": 51,
-        "ebb_score": 57,
-        "tide_score": 50,
-        "emotion_score": 50,
-        "strength_score": 44,
-        "volume_score": 50,
-        "news_score": 58,
-        "market_score": 57,
-        "structure_score": 52,
-        "confidence": "low",
-        "confirms": {
-          "emotion": false,
-          "strength": false,
-          "volume": false,
-          "news": false,
-          "market": true
-        },
-        "reasons": [
-          "消息催化"
-        ],
-        "cautions": [],
-        "action_hint": "中药核心潮汐偏弱，降低权重，避免追高。"
-      },
-      {
         "name": "云计算",
         "canonical_name": "云计算",
         "status": "avoid_weak",
@@ -5186,15 +5155,15 @@
         "emotion_score": 50,
         "strength_score": 44,
         "volume_score": 50,
-        "news_score": 64,
+        "news_score": 58,
         "market_score": 57,
         "structure_score": 52,
-        "confidence": "medium",
+        "confidence": "low",
         "confirms": {
           "emotion": false,
           "strength": false,
           "volume": false,
-          "news": true,
+          "news": false,
           "market": true
         },
         "reasons": [
@@ -5372,15 +5341,15 @@
         "emotion_score": 50,
         "strength_score": 44,
         "volume_score": 50,
-        "news_score": 64,
+        "news_score": 58,
         "market_score": 57,
         "structure_score": 52,
-        "confidence": "medium",
+        "confidence": "low",
         "confirms": {
           "emotion": false,
           "strength": false,
           "volume": false,
-          "news": true,
+          "news": false,
           "market": true
         },
         "reasons": [
@@ -5589,15 +5558,15 @@
         "emotion_score": 50,
         "strength_score": 44,
         "volume_score": 50,
-        "news_score": 58,
+        "news_score": 64,
         "market_score": 57,
         "structure_score": 52,
-        "confidence": "low",
+        "confidence": "medium",
         "confirms": {
           "emotion": false,
           "strength": false,
           "volume": false,
-          "news": false,
+          "news": true,
           "market": true
         },
         "reasons": [
@@ -5793,6 +5762,37 @@
         "action_hint": "一带一路核心潮汐偏弱，降低权重，避免追高。"
       },
       {
+        "name": "中药",
+        "canonical_name": "中药",
+        "status": "avoid_weak",
+        "base_tide_status": "neutral",
+        "action": "avoid",
+        "tide_zone": "ebbing",
+        "tide_phase": "ebbing",
+        "core_score": 50,
+        "ebb_score": 57,
+        "tide_score": 50,
+        "emotion_score": 50,
+        "strength_score": 44,
+        "volume_score": 50,
+        "news_score": 56,
+        "market_score": 57,
+        "structure_score": 52,
+        "confidence": "low",
+        "confirms": {
+          "emotion": false,
+          "strength": false,
+          "volume": false,
+          "news": false,
+          "market": true
+        },
+        "reasons": [
+          "消息催化"
+        ],
+        "cautions": [],
+        "action_hint": "中药核心潮汐偏弱，降低权重，避免追高。"
+      },
+      {
         "name": "京津冀",
         "canonical_name": "京津冀",
         "status": "avoid_weak",
@@ -5855,8 +5855,8 @@
         "action_hint": "传感器核心潮汐偏弱，降低权重，避免追高。"
       },
       {
-        "name": "信息安全",
-        "canonical_name": "信息安全",
+        "name": "低空经济",
+        "canonical_name": "低空经济",
         "status": "avoid_weak",
         "base_tide_status": "neutral",
         "action": "avoid",
@@ -5883,11 +5883,11 @@
           "消息催化"
         ],
         "cautions": [],
-        "action_hint": "信息安全核心潮汐偏弱，降低权重，避免追高。"
+        "action_hint": "低空经济核心潮汐偏弱，降低权重，避免追高。"
       },
       {
-        "name": "元宇宙概念",
-        "canonical_name": "元宇宙",
+        "name": "体外诊断",
+        "canonical_name": "体外诊断",
         "status": "avoid_weak",
         "base_tide_status": "neutral",
         "action": "avoid",
@@ -5914,7 +5914,7 @@
           "消息催化"
         ],
         "cautions": [],
-        "action_hint": "元宇宙概念核心潮汐偏弱，降低权重，避免追高。"
+        "action_hint": "体外诊断核心潮汐偏弱，降低权重，避免追高。"
       },
       {
         "name": "光伏玻璃",
@@ -6072,8 +6072,8 @@
         "action_hint": "华为鸿蒙核心潮汐偏弱，降低权重，避免追高。"
       },
       {
-        "name": "固态电池",
-        "canonical_name": "固态电池",
+        "name": "固废处理",
+        "canonical_name": "固废处理",
         "status": "avoid_weak",
         "base_tide_status": "neutral",
         "action": "avoid",
@@ -6100,7 +6100,69 @@
           "消息催化"
         ],
         "cautions": [],
-        "action_hint": "固态电池核心潮汐偏弱，降低权重，避免追高。"
+        "action_hint": "固废处理核心潮汐偏弱，降低权重，避免追高。"
+      },
+      {
+        "name": "增持回购",
+        "canonical_name": "增持回购",
+        "status": "avoid_weak",
+        "base_tide_status": "neutral",
+        "action": "avoid",
+        "tide_zone": "ebbing",
+        "tide_phase": "ebbing",
+        "core_score": 50,
+        "ebb_score": 57,
+        "tide_score": 50,
+        "emotion_score": 50,
+        "strength_score": 44,
+        "volume_score": 50,
+        "news_score": 56,
+        "market_score": 57,
+        "structure_score": 52,
+        "confidence": "low",
+        "confirms": {
+          "emotion": false,
+          "strength": false,
+          "volume": false,
+          "news": false,
+          "market": true
+        },
+        "reasons": [
+          "消息催化"
+        ],
+        "cautions": [],
+        "action_hint": "增持回购核心潮汐偏弱，降低权重，避免追高。"
+      },
+      {
+        "name": "大数据",
+        "canonical_name": "大数据",
+        "status": "avoid_weak",
+        "base_tide_status": "neutral",
+        "action": "avoid",
+        "tide_zone": "ebbing",
+        "tide_phase": "ebbing",
+        "core_score": 50,
+        "ebb_score": 57,
+        "tide_score": 50,
+        "emotion_score": 50,
+        "strength_score": 44,
+        "volume_score": 50,
+        "news_score": 56,
+        "market_score": 57,
+        "structure_score": 52,
+        "confidence": "low",
+        "confirms": {
+          "emotion": false,
+          "strength": false,
+          "volume": false,
+          "news": false,
+          "market": true
+        },
+        "reasons": [
+          "消息催化"
+        ],
+        "cautions": [],
+        "action_hint": "大数据核心潮汐偏弱，降低权重，避免追高。"
       },
       {
         "name": "太阳能（光伏）",
@@ -6165,68 +6227,6 @@
         "action_hint": "央企改革核心潮汐偏弱，降低权重，避免追高。"
       },
       {
-        "name": "字节跳动概念",
-        "canonical_name": "字节跳动",
-        "status": "avoid_weak",
-        "base_tide_status": "neutral",
-        "action": "avoid",
-        "tide_zone": "ebbing",
-        "tide_phase": "ebbing",
-        "core_score": 50,
-        "ebb_score": 57,
-        "tide_score": 50,
-        "emotion_score": 50,
-        "strength_score": 44,
-        "volume_score": 50,
-        "news_score": 56,
-        "market_score": 57,
-        "structure_score": 52,
-        "confidence": "low",
-        "confirms": {
-          "emotion": false,
-          "strength": false,
-          "volume": false,
-          "news": false,
-          "market": true
-        },
-        "reasons": [
-          "消息催化"
-        ],
-        "cautions": [],
-        "action_hint": "字节跳动概念核心潮汐偏弱，降低权重，避免追高。"
-      },
-      {
-        "name": "宁德时代概念",
-        "canonical_name": "宁德时代",
-        "status": "avoid_weak",
-        "base_tide_status": "neutral",
-        "action": "avoid",
-        "tide_zone": "ebbing",
-        "tide_phase": "ebbing",
-        "core_score": 50,
-        "ebb_score": 57,
-        "tide_score": 50,
-        "emotion_score": 50,
-        "strength_score": 44,
-        "volume_score": 50,
-        "news_score": 56,
-        "market_score": 57,
-        "structure_score": 52,
-        "confidence": "low",
-        "confirms": {
-          "emotion": false,
-          "strength": false,
-          "volume": false,
-          "news": false,
-          "market": true
-        },
-        "reasons": [
-          "消息催化"
-        ],
-        "cautions": [],
-        "action_hint": "宁德时代概念核心潮汐偏弱，降低权重，避免追高。"
-      },
-      {
         "name": "小米概念",
         "canonical_name": "小米",
         "status": "avoid_weak",
@@ -6256,6 +6256,68 @@
         ],
         "cautions": [],
         "action_hint": "小米概念核心潮汐偏弱，降低权重，避免追高。"
+      },
+      {
+        "name": "影视传媒",
+        "canonical_name": "影视传媒",
+        "status": "avoid_weak",
+        "base_tide_status": "neutral",
+        "action": "avoid",
+        "tide_zone": "ebbing",
+        "tide_phase": "ebbing",
+        "core_score": 50,
+        "ebb_score": 57,
+        "tide_score": 50,
+        "emotion_score": 50,
+        "strength_score": 44,
+        "volume_score": 50,
+        "news_score": 56,
+        "market_score": 57,
+        "structure_score": 52,
+        "confidence": "low",
+        "confirms": {
+          "emotion": false,
+          "strength": false,
+          "volume": false,
+          "news": false,
+          "market": true
+        },
+        "reasons": [
+          "消息催化"
+        ],
+        "cautions": [],
+        "action_hint": "影视传媒核心潮汐偏弱，降低权重，避免追高。"
+      },
+      {
+        "name": "影视动漫",
+        "canonical_name": "影视动漫",
+        "status": "avoid_weak",
+        "base_tide_status": "neutral",
+        "action": "avoid",
+        "tide_zone": "ebbing",
+        "tide_phase": "ebbing",
+        "core_score": 50,
+        "ebb_score": 57,
+        "tide_score": 50,
+        "emotion_score": 50,
+        "strength_score": 44,
+        "volume_score": 50,
+        "news_score": 56,
+        "market_score": 57,
+        "structure_score": 52,
+        "confidence": "low",
+        "confirms": {
+          "emotion": false,
+          "strength": false,
+          "volume": false,
+          "news": false,
+          "market": true
+        },
+        "reasons": [
+          "消息催化"
+        ],
+        "cautions": [],
+        "action_hint": "影视动漫核心潮汐偏弱，降低权重，避免追高。"
       },
       {
         "name": "新型城镇化",
@@ -6318,6 +6380,37 @@
         ],
         "cautions": [],
         "action_hint": "新零售核心潮汐偏弱，降低权重，避免追高。"
+      },
+      {
+        "name": "无人驾驶",
+        "canonical_name": "智能驾驶",
+        "status": "avoid_weak",
+        "base_tide_status": "neutral",
+        "action": "avoid",
+        "tide_zone": "ebbing",
+        "tide_phase": "ebbing",
+        "core_score": 50,
+        "ebb_score": 57,
+        "tide_score": 50,
+        "emotion_score": 50,
+        "strength_score": 44,
+        "volume_score": 50,
+        "news_score": 56,
+        "market_score": 57,
+        "structure_score": 52,
+        "confidence": "low",
+        "confirms": {
+          "emotion": false,
+          "strength": false,
+          "volume": false,
+          "news": false,
+          "market": true
+        },
+        "reasons": [
+          "消息催化"
+        ],
+        "cautions": [],
+        "action_hint": "无人驾驶核心潮汐偏弱，降低权重，避免追高。"
       },
       {
         "name": "无线耳机",
@@ -6444,37 +6537,6 @@
         "action_hint": "智慧灯杆核心潮汐偏弱，降低权重，避免追高。"
       },
       {
-        "name": "智慧物流",
-        "canonical_name": "智慧物流",
-        "status": "avoid_weak",
-        "base_tide_status": "neutral",
-        "action": "avoid",
-        "tide_zone": "ebbing",
-        "tide_phase": "ebbing",
-        "core_score": 50,
-        "ebb_score": 57,
-        "tide_score": 50,
-        "emotion_score": 50,
-        "strength_score": 44,
-        "volume_score": 50,
-        "news_score": 56,
-        "market_score": 57,
-        "structure_score": 52,
-        "confidence": "low",
-        "confirms": {
-          "emotion": false,
-          "strength": false,
-          "volume": false,
-          "news": false,
-          "market": true
-        },
-        "reasons": [
-          "消息催化"
-        ],
-        "cautions": [],
-        "action_hint": "智慧物流核心潮汐偏弱，降低权重，避免追高。"
-      },
-      {
         "name": "智能手机",
         "canonical_name": "智能手机",
         "status": "avoid_weak",
@@ -6506,8 +6568,8 @@
         "action_hint": "智能手机核心潮汐偏弱，降低权重，避免追高。"
       },
       {
-        "name": "机械",
-        "canonical_name": "机械",
+        "name": "智能眼镜",
+        "canonical_name": "智能眼镜",
         "status": "avoid_weak",
         "base_tide_status": "neutral",
         "action": "avoid",
@@ -6534,7 +6596,38 @@
           "消息催化"
         ],
         "cautions": [],
-        "action_hint": "机械核心潮汐偏弱，降低权重，避免追高。"
+        "action_hint": "智能眼镜核心潮汐偏弱，降低权重，避免追高。"
+      },
+      {
+        "name": "核聚变",
+        "canonical_name": "核聚变",
+        "status": "avoid_weak",
+        "base_tide_status": "neutral",
+        "action": "avoid",
+        "tide_zone": "ebbing",
+        "tide_phase": "ebbing",
+        "core_score": 50,
+        "ebb_score": 57,
+        "tide_score": 50,
+        "emotion_score": 50,
+        "strength_score": 44,
+        "volume_score": 50,
+        "news_score": 56,
+        "market_score": 57,
+        "structure_score": 52,
+        "confidence": "low",
+        "confirms": {
+          "emotion": false,
+          "strength": false,
+          "volume": false,
+          "news": false,
+          "market": true
+        },
+        "reasons": [
+          "消息催化"
+        ],
+        "cautions": [],
+        "action_hint": "核聚变核心潮汐偏弱，降低权重，避免追高。"
       },
       {
         "name": "毫米波雷达",
@@ -6568,8 +6661,8 @@
         "action_hint": "毫米波雷达核心潮汐偏弱，降低权重，避免追高。"
       },
       {
-        "name": "氢能源",
-        "canonical_name": "氢能源",
+        "name": "污水处理",
+        "canonical_name": "污水处理",
         "status": "avoid_weak",
         "base_tide_status": "neutral",
         "action": "avoid",
@@ -6596,7 +6689,69 @@
           "消息催化"
         ],
         "cautions": [],
-        "action_hint": "氢能源核心潮汐偏弱，降低权重，避免追高。"
+        "action_hint": "污水处理核心潮汐偏弱，降低权重，避免追高。"
+      },
+      {
+        "name": "汽车热管理",
+        "canonical_name": "汽车热管理",
+        "status": "avoid_weak",
+        "base_tide_status": "neutral",
+        "action": "avoid",
+        "tide_zone": "ebbing",
+        "tide_phase": "ebbing",
+        "core_score": 50,
+        "ebb_score": 57,
+        "tide_score": 50,
+        "emotion_score": 50,
+        "strength_score": 44,
+        "volume_score": 50,
+        "news_score": 56,
+        "market_score": 57,
+        "structure_score": 52,
+        "confidence": "low",
+        "confirms": {
+          "emotion": false,
+          "strength": false,
+          "volume": false,
+          "news": false,
+          "market": true
+        },
+        "reasons": [
+          "消息催化"
+        ],
+        "cautions": [],
+        "action_hint": "汽车热管理核心潮汐偏弱，降低权重，避免追高。"
+      },
+      {
+        "name": "汽车芯片",
+        "canonical_name": "汽车芯片",
+        "status": "avoid_weak",
+        "base_tide_status": "neutral",
+        "action": "avoid",
+        "tide_zone": "ebbing",
+        "tide_phase": "ebbing",
+        "core_score": 50,
+        "ebb_score": 57,
+        "tide_score": 50,
+        "emotion_score": 50,
+        "strength_score": 44,
+        "volume_score": 50,
+        "news_score": 56,
+        "market_score": 57,
+        "structure_score": 52,
+        "confidence": "low",
+        "confirms": {
+          "emotion": false,
+          "strength": false,
+          "volume": false,
+          "news": false,
+          "market": true
+        },
+        "reasons": [
+          "消息催化"
+        ],
+        "cautions": [],
+        "action_hint": "汽车芯片核心潮汐偏弱，降低权重，避免追高。"
       },
       {
         "name": "汽车零部件",
@@ -6630,37 +6785,6 @@
         "action_hint": "汽车零部件核心潮汐偏弱，降低权重，避免追高。"
       },
       {
-        "name": "燃料电池",
-        "canonical_name": "燃料电池",
-        "status": "avoid_weak",
-        "base_tide_status": "neutral",
-        "action": "avoid",
-        "tide_zone": "ebbing",
-        "tide_phase": "ebbing",
-        "core_score": 50,
-        "ebb_score": 57,
-        "tide_score": 50,
-        "emotion_score": 50,
-        "strength_score": 44,
-        "volume_score": 50,
-        "news_score": 56,
-        "market_score": 57,
-        "structure_score": 52,
-        "confidence": "low",
-        "confirms": {
-          "emotion": false,
-          "strength": false,
-          "volume": false,
-          "news": false,
-          "market": true
-        },
-        "reasons": [
-          "消息催化"
-        ],
-        "cautions": [],
-        "action_hint": "燃料电池核心潮汐偏弱，降低权重，避免追高。"
-      },
-      {
         "name": "物联网",
         "canonical_name": "物联网",
         "status": "avoid_weak",
@@ -6692,8 +6816,8 @@
         "action_hint": "物联网核心潮汐偏弱，降低权重，避免追高。"
       },
       {
-        "name": "甲醇概念",
-        "canonical_name": "甲醇",
+        "name": "眼科概念",
+        "canonical_name": "眼科",
         "status": "avoid_weak",
         "base_tide_status": "neutral",
         "action": "avoid",
@@ -6720,11 +6844,11 @@
           "消息催化"
         ],
         "cautions": [],
-        "action_hint": "甲醇概念核心潮汐偏弱，降低权重，避免追高。"
+        "action_hint": "眼科概念核心潮汐偏弱，降低权重，避免追高。"
       },
       {
-        "name": "碳中和",
-        "canonical_name": "碳中和",
+        "name": "短剧概念",
+        "canonical_name": "短剧",
         "status": "avoid_weak",
         "base_tide_status": "neutral",
         "action": "avoid",
@@ -6751,7 +6875,7 @@
           "消息催化"
         ],
         "cautions": [],
-        "action_hint": "碳中和核心潮汐偏弱，降低权重，避免追高。"
+        "action_hint": "短剧概念核心潮汐偏弱，降低权重，避免追高。"
       },
       {
         "name": "腾讯概念",
@@ -6816,37 +6940,6 @@
         "action_hint": "航天军工核心潮汐偏弱，降低权重，避免追高。"
       },
       {
-        "name": "航母产业",
-        "canonical_name": "航母产业",
-        "status": "avoid_weak",
-        "base_tide_status": "neutral",
-        "action": "avoid",
-        "tide_zone": "ebbing",
-        "tide_phase": "ebbing",
-        "core_score": 50,
-        "ebb_score": 57,
-        "tide_score": 50,
-        "emotion_score": 50,
-        "strength_score": 44,
-        "volume_score": 50,
-        "news_score": 56,
-        "market_score": 57,
-        "structure_score": 52,
-        "confidence": "low",
-        "confirms": {
-          "emotion": false,
-          "strength": false,
-          "volume": false,
-          "news": false,
-          "market": true
-        },
-        "reasons": [
-          "消息催化"
-        ],
-        "cautions": [],
-        "action_hint": "航母产业核心潮汐偏弱，降低权重，避免追高。"
-      },
-      {
         "name": "节能环保",
         "canonical_name": "节能环保",
         "status": "avoid_weak",
@@ -6878,8 +6971,8 @@
         "action_hint": "节能环保核心潮汐偏弱，降低权重，避免追高。"
       },
       {
-        "name": "苹果产业链",
-        "canonical_name": "苹果产业链",
+        "name": "超级电容",
+        "canonical_name": "超级电容",
         "status": "avoid_weak",
         "base_tide_status": "neutral",
         "action": "avoid",
@@ -6906,38 +6999,7 @@
           "消息催化"
         ],
         "cautions": [],
-        "action_hint": "苹果产业链核心潮汐偏弱，降低权重，避免追高。"
-      },
-      {
-        "name": "跨境电商",
-        "canonical_name": "跨境电商",
-        "status": "avoid_weak",
-        "base_tide_status": "neutral",
-        "action": "avoid",
-        "tide_zone": "ebbing",
-        "tide_phase": "ebbing",
-        "core_score": 50,
-        "ebb_score": 57,
-        "tide_score": 50,
-        "emotion_score": 50,
-        "strength_score": 44,
-        "volume_score": 50,
-        "news_score": 56,
-        "market_score": 57,
-        "structure_score": 52,
-        "confidence": "low",
-        "confirms": {
-          "emotion": false,
-          "strength": false,
-          "volume": false,
-          "news": false,
-          "market": true
-        },
-        "reasons": [
-          "消息催化"
-        ],
-        "cautions": [],
-        "action_hint": "跨境电商核心潮汐偏弱，降低权重，避免追高。"
+        "action_hint": "超级电容核心潮汐偏弱，降低权重，避免追高。"
       },
       {
         "name": "锂电池",
@@ -7002,8 +7064,8 @@
         "action_hint": "长三角一体化核心潮汐偏弱，降低权重，避免追高。"
       },
       {
-        "name": "黑龙江自贸区",
-        "canonical_name": "黑龙江自贸区",
+        "name": "雄安新区",
+        "canonical_name": "雄安新区",
         "status": "avoid_weak",
         "base_tide_status": "neutral",
         "action": "avoid",
@@ -7030,7 +7092,38 @@
           "消息催化"
         ],
         "cautions": [],
-        "action_hint": "黑龙江自贸区核心潮汐偏弱，降低权重，避免追高。"
+        "action_hint": "雄安新区核心潮汐偏弱，降低权重，避免追高。"
+      },
+      {
+        "name": "首发经济",
+        "canonical_name": "首发经济",
+        "status": "avoid_weak",
+        "base_tide_status": "neutral",
+        "action": "avoid",
+        "tide_zone": "ebbing",
+        "tide_phase": "ebbing",
+        "core_score": 50,
+        "ebb_score": 57,
+        "tide_score": 50,
+        "emotion_score": 50,
+        "strength_score": 44,
+        "volume_score": 50,
+        "news_score": 56,
+        "market_score": 57,
+        "structure_score": 52,
+        "confidence": "low",
+        "confirms": {
+          "emotion": false,
+          "strength": false,
+          "volume": false,
+          "news": false,
+          "market": true
+        },
+        "reasons": [
+          "消息催化"
+        ],
+        "cautions": [],
+        "action_hint": "首发经济核心潮汐偏弱，降低权重，避免追高。"
       },
       {
         "name": "BIPV概念",
@@ -7642,64 +7735,6 @@
         "action_hint": "低价核心潮汐偏弱，降低权重，避免追高。"
       },
       {
-        "name": "低空经济",
-        "canonical_name": "低空经济",
-        "status": "avoid_weak",
-        "base_tide_status": "neutral",
-        "action": "avoid",
-        "tide_zone": "ebbing",
-        "tide_phase": "ebbing",
-        "core_score": 49,
-        "ebb_score": 57,
-        "tide_score": 50,
-        "emotion_score": 50,
-        "strength_score": 44,
-        "volume_score": 50,
-        "news_score": 50,
-        "market_score": 57,
-        "structure_score": 52,
-        "confidence": "low",
-        "confirms": {
-          "emotion": false,
-          "strength": false,
-          "volume": false,
-          "news": false,
-          "market": true
-        },
-        "reasons": [],
-        "cautions": [],
-        "action_hint": "低空经济核心潮汐偏弱，降低权重，避免追高。"
-      },
-      {
-        "name": "体外诊断",
-        "canonical_name": "体外诊断",
-        "status": "avoid_weak",
-        "base_tide_status": "neutral",
-        "action": "avoid",
-        "tide_zone": "ebbing",
-        "tide_phase": "ebbing",
-        "core_score": 49,
-        "ebb_score": 57,
-        "tide_score": 50,
-        "emotion_score": 50,
-        "strength_score": 44,
-        "volume_score": 50,
-        "news_score": 50,
-        "market_score": 57,
-        "structure_score": 52,
-        "confidence": "low",
-        "confirms": {
-          "emotion": false,
-          "strength": false,
-          "volume": false,
-          "news": false,
-          "market": true
-        },
-        "reasons": [],
-        "cautions": [],
-        "action_hint": "体外诊断核心潮汐偏弱，降低权重，避免追高。"
-      },
-      {
         "name": "体育产业",
         "canonical_name": "体育产业",
         "status": "avoid_weak",
@@ -7785,6 +7820,64 @@
         "reasons": [],
         "cautions": [],
         "action_hint": "信创概念核心潮汐偏弱，降低权重，避免追高。"
+      },
+      {
+        "name": "信息安全",
+        "canonical_name": "信息安全",
+        "status": "avoid_weak",
+        "base_tide_status": "neutral",
+        "action": "avoid",
+        "tide_zone": "ebbing",
+        "tide_phase": "ebbing",
+        "core_score": 49,
+        "ebb_score": 57,
+        "tide_score": 50,
+        "emotion_score": 50,
+        "strength_score": 44,
+        "volume_score": 50,
+        "news_score": 50,
+        "market_score": 57,
+        "structure_score": 52,
+        "confidence": "low",
+        "confirms": {
+          "emotion": false,
+          "strength": false,
+          "volume": false,
+          "news": false,
+          "market": true
+        },
+        "reasons": [],
+        "cautions": [],
+        "action_hint": "信息安全核心潮汐偏弱，降低权重，避免追高。"
+      },
+      {
+        "name": "元宇宙概念",
+        "canonical_name": "元宇宙",
+        "status": "avoid_weak",
+        "base_tide_status": "neutral",
+        "action": "avoid",
+        "tide_zone": "ebbing",
+        "tide_phase": "ebbing",
+        "core_score": 49,
+        "ebb_score": 57,
+        "tide_score": 50,
+        "emotion_score": 50,
+        "strength_score": 44,
+        "volume_score": 50,
+        "news_score": 50,
+        "market_score": 57,
+        "structure_score": 52,
+        "confidence": "low",
+        "confirms": {
+          "emotion": false,
+          "strength": false,
+          "volume": false,
+          "news": false,
+          "market": true
+        },
+        "reasons": [],
+        "cautions": [],
+        "action_hint": "元宇宙概念核心潮汐偏弱，降低权重，避免追高。"
       },
       {
         "name": "充电桩",
@@ -8222,8 +8315,8 @@
         "action_hint": "参股新三板核心潮汐偏弱，降低权重，避免追高。"
       },
       {
-        "name": "固废处理",
-        "canonical_name": "固废处理",
+        "name": "固态电池",
+        "canonical_name": "固态电池",
         "status": "avoid_weak",
         "base_tide_status": "neutral",
         "action": "avoid",
@@ -8248,7 +8341,7 @@
         },
         "reasons": [],
         "cautions": [],
-        "action_hint": "固废处理核心潮汐偏弱，降低权重，避免追高。"
+        "action_hint": "固态电池核心潮汐偏弱，降低权重，避免追高。"
       },
       {
         "name": "国资改革",
@@ -8512,35 +8605,6 @@
         "action_hint": "增强现实核心潮汐偏弱，降低权重，避免追高。"
       },
       {
-        "name": "增持回购",
-        "canonical_name": "增持回购",
-        "status": "avoid_weak",
-        "base_tide_status": "neutral",
-        "action": "avoid",
-        "tide_zone": "ebbing",
-        "tide_phase": "ebbing",
-        "core_score": 49,
-        "ebb_score": 57,
-        "tide_score": 50,
-        "emotion_score": 50,
-        "strength_score": 44,
-        "volume_score": 50,
-        "news_score": 50,
-        "market_score": 57,
-        "structure_score": 52,
-        "confidence": "low",
-        "confirms": {
-          "emotion": false,
-          "strength": false,
-          "volume": false,
-          "news": false,
-          "market": true
-        },
-        "reasons": [],
-        "cautions": [],
-        "action_hint": "增持回购核心潮汐偏弱，降低权重，避免追高。"
-      },
-      {
         "name": "多胎概念",
         "canonical_name": "多胎",
         "status": "avoid_weak",
@@ -8599,35 +8663,6 @@
         "action_hint": "大唐集团核心潮汐偏弱，降低权重，避免追高。"
       },
       {
-        "name": "大数据",
-        "canonical_name": "大数据",
-        "status": "avoid_weak",
-        "base_tide_status": "neutral",
-        "action": "avoid",
-        "tide_zone": "ebbing",
-        "tide_phase": "ebbing",
-        "core_score": 49,
-        "ebb_score": 57,
-        "tide_score": 50,
-        "emotion_score": 50,
-        "strength_score": 44,
-        "volume_score": 50,
-        "news_score": 50,
-        "market_score": 57,
-        "structure_score": 52,
-        "confidence": "low",
-        "confirms": {
-          "emotion": false,
-          "strength": false,
-          "volume": false,
-          "news": false,
-          "market": true
-        },
-        "reasons": [],
-        "cautions": [],
-        "action_hint": "大数据核心潮汐偏弱，降低权重，避免追高。"
-      },
-      {
         "name": "天然气",
         "canonical_name": "天然气",
         "status": "avoid_weak",
@@ -8684,6 +8719,64 @@
         "reasons": [],
         "cautions": [],
         "action_hint": "奇瑞汽车概念核心潮汐偏弱，降低权重，避免追高。"
+      },
+      {
+        "name": "字节跳动概念",
+        "canonical_name": "字节跳动",
+        "status": "avoid_weak",
+        "base_tide_status": "neutral",
+        "action": "avoid",
+        "tide_zone": "ebbing",
+        "tide_phase": "ebbing",
+        "core_score": 49,
+        "ebb_score": 57,
+        "tide_score": 50,
+        "emotion_score": 50,
+        "strength_score": 44,
+        "volume_score": 50,
+        "news_score": 50,
+        "market_score": 57,
+        "structure_score": 52,
+        "confidence": "low",
+        "confirms": {
+          "emotion": false,
+          "strength": false,
+          "volume": false,
+          "news": false,
+          "market": true
+        },
+        "reasons": [],
+        "cautions": [],
+        "action_hint": "字节跳动概念核心潮汐偏弱，降低权重，避免追高。"
+      },
+      {
+        "name": "宁德时代概念",
+        "canonical_name": "宁德时代",
+        "status": "avoid_weak",
+        "base_tide_status": "neutral",
+        "action": "avoid",
+        "tide_zone": "ebbing",
+        "tide_phase": "ebbing",
+        "core_score": 49,
+        "ebb_score": 57,
+        "tide_score": 50,
+        "emotion_score": 50,
+        "strength_score": 44,
+        "volume_score": 50,
+        "news_score": 50,
+        "market_score": 57,
+        "structure_score": 52,
+        "confidence": "low",
+        "confirms": {
+          "emotion": false,
+          "strength": false,
+          "volume": false,
+          "news": false,
+          "market": true
+        },
+        "reasons": [],
+        "cautions": [],
+        "action_hint": "宁德时代概念核心潮汐偏弱，降低权重，避免追高。"
       },
       {
         "name": "安防",
@@ -8916,64 +9009,6 @@
         "reasons": [],
         "cautions": [],
         "action_hint": "幽门螺杆概念核心潮汐偏弱，降低权重，避免追高。"
-      },
-      {
-        "name": "影视传媒",
-        "canonical_name": "影视传媒",
-        "status": "avoid_weak",
-        "base_tide_status": "neutral",
-        "action": "avoid",
-        "tide_zone": "ebbing",
-        "tide_phase": "ebbing",
-        "core_score": 49,
-        "ebb_score": 57,
-        "tide_score": 50,
-        "emotion_score": 50,
-        "strength_score": 44,
-        "volume_score": 50,
-        "news_score": 50,
-        "market_score": 57,
-        "structure_score": 52,
-        "confidence": "low",
-        "confirms": {
-          "emotion": false,
-          "strength": false,
-          "volume": false,
-          "news": false,
-          "market": true
-        },
-        "reasons": [],
-        "cautions": [],
-        "action_hint": "影视传媒核心潮汐偏弱，降低权重，避免追高。"
-      },
-      {
-        "name": "影视动漫",
-        "canonical_name": "影视动漫",
-        "status": "avoid_weak",
-        "base_tide_status": "neutral",
-        "action": "avoid",
-        "tide_zone": "ebbing",
-        "tide_phase": "ebbing",
-        "core_score": 49,
-        "ebb_score": 57,
-        "tide_score": 50,
-        "emotion_score": 50,
-        "strength_score": 44,
-        "volume_score": 50,
-        "news_score": 50,
-        "market_score": 57,
-        "structure_score": 52,
-        "confidence": "low",
-        "confirms": {
-          "emotion": false,
-          "strength": false,
-          "volume": false,
-          "news": false,
-          "market": true
-        },
-        "reasons": [],
-        "cautions": [],
-        "action_hint": "影视动漫核心潮汐偏弱，降低权重，避免追高。"
       },
       {
         "name": "快手概念",
@@ -9411,35 +9446,6 @@
         "action_hint": "无人机核心潮汐偏弱，降低权重，避免追高。"
       },
       {
-        "name": "无人驾驶",
-        "canonical_name": "智能驾驶",
-        "status": "avoid_weak",
-        "base_tide_status": "neutral",
-        "action": "avoid",
-        "tide_zone": "ebbing",
-        "tide_phase": "ebbing",
-        "core_score": 49,
-        "ebb_score": 57,
-        "tide_score": 50,
-        "emotion_score": 50,
-        "strength_score": 44,
-        "volume_score": 50,
-        "news_score": 50,
-        "market_score": 57,
-        "structure_score": 52,
-        "confidence": "low",
-        "confirms": {
-          "emotion": false,
-          "strength": false,
-          "volume": false,
-          "news": false,
-          "market": true
-        },
-        "reasons": [],
-        "cautions": [],
-        "action_hint": "无人驾驶核心潮汐偏弱，降低权重，避免追高。"
-      },
-      {
         "name": "智慧医疗",
         "canonical_name": "智慧医疗",
         "status": "avoid_weak",
@@ -9467,6 +9473,35 @@
         "reasons": [],
         "cautions": [],
         "action_hint": "智慧医疗核心潮汐偏弱，降低权重，避免追高。"
+      },
+      {
+        "name": "智慧物流",
+        "canonical_name": "智慧物流",
+        "status": "avoid_weak",
+        "base_tide_status": "neutral",
+        "action": "avoid",
+        "tide_zone": "ebbing",
+        "tide_phase": "ebbing",
+        "core_score": 49,
+        "ebb_score": 57,
+        "tide_score": 50,
+        "emotion_score": 50,
+        "strength_score": 44,
+        "volume_score": 50,
+        "news_score": 50,
+        "market_score": 57,
+        "structure_score": 52,
+        "confidence": "low",
+        "confirms": {
+          "emotion": false,
+          "strength": false,
+          "volume": false,
+          "news": false,
+          "market": true
+        },
+        "reasons": [],
+        "cautions": [],
+        "action_hint": "智慧物流核心潮汐偏弱，降低权重，避免追高。"
       },
       {
         "name": "智能交通",
@@ -9614,35 +9649,6 @@
         "action_hint": "智能汽车核心潮汐偏弱，降低权重，避免追高。"
       },
       {
-        "name": "智能眼镜",
-        "canonical_name": "智能眼镜",
-        "status": "avoid_weak",
-        "base_tide_status": "neutral",
-        "action": "avoid",
-        "tide_zone": "ebbing",
-        "tide_phase": "ebbing",
-        "core_score": 49,
-        "ebb_score": 57,
-        "tide_score": 50,
-        "emotion_score": 50,
-        "strength_score": 44,
-        "volume_score": 50,
-        "news_score": 50,
-        "market_score": 57,
-        "structure_score": 52,
-        "confidence": "low",
-        "confirms": {
-          "emotion": false,
-          "strength": false,
-          "volume": false,
-          "news": false,
-          "market": true
-        },
-        "reasons": [],
-        "cautions": [],
-        "action_hint": "智能眼镜核心潮汐偏弱，降低权重，避免追高。"
-      },
-      {
         "name": "智能穿戴",
         "canonical_name": "智能穿戴",
         "status": "avoid_weak",
@@ -9730,8 +9736,8 @@
         "action_hint": "服务器核心潮汐偏弱，降低权重，避免追高。"
       },
       {
-        "name": "核聚变",
-        "canonical_name": "核聚变",
+        "name": "机械",
+        "canonical_name": "机械",
         "status": "avoid_weak",
         "base_tide_status": "neutral",
         "action": "avoid",
@@ -9756,7 +9762,7 @@
         },
         "reasons": [],
         "cautions": [],
-        "action_hint": "核聚变核心潮汐偏弱，降低权重，避免追高。"
+        "action_hint": "机械核心潮汐偏弱，降低权重，避免追高。"
       },
       {
         "name": "比亚迪概念",
@@ -9817,6 +9823,35 @@
         "action_hint": "民营医院核心潮汐偏弱，降低权重，避免追高。"
       },
       {
+        "name": "氢能源",
+        "canonical_name": "氢能源",
+        "status": "avoid_weak",
+        "base_tide_status": "neutral",
+        "action": "avoid",
+        "tide_zone": "ebbing",
+        "tide_phase": "ebbing",
+        "core_score": 49,
+        "ebb_score": 57,
+        "tide_score": 50,
+        "emotion_score": 50,
+        "strength_score": 44,
+        "volume_score": 50,
+        "news_score": 50,
+        "market_score": 57,
+        "structure_score": 52,
+        "confidence": "low",
+        "confirms": {
+          "emotion": false,
+          "strength": false,
+          "volume": false,
+          "news": false,
+          "market": true
+        },
+        "reasons": [],
+        "cautions": [],
+        "action_hint": "氢能源核心潮汐偏弱，降低权重，避免追高。"
+      },
+      {
         "name": "水利建设",
         "canonical_name": "水利建设",
         "status": "avoid_weak",
@@ -9875,64 +9910,6 @@
         "action_hint": "水泥核心潮汐偏弱，降低权重，避免追高。"
       },
       {
-        "name": "污水处理",
-        "canonical_name": "污水处理",
-        "status": "avoid_weak",
-        "base_tide_status": "neutral",
-        "action": "avoid",
-        "tide_zone": "ebbing",
-        "tide_phase": "ebbing",
-        "core_score": 49,
-        "ebb_score": 57,
-        "tide_score": 50,
-        "emotion_score": 50,
-        "strength_score": 44,
-        "volume_score": 50,
-        "news_score": 50,
-        "market_score": 57,
-        "structure_score": 52,
-        "confidence": "low",
-        "confirms": {
-          "emotion": false,
-          "strength": false,
-          "volume": false,
-          "news": false,
-          "market": true
-        },
-        "reasons": [],
-        "cautions": [],
-        "action_hint": "污水处理核心潮汐偏弱，降低权重，避免追高。"
-      },
-      {
-        "name": "汽车热管理",
-        "canonical_name": "汽车热管理",
-        "status": "avoid_weak",
-        "base_tide_status": "neutral",
-        "action": "avoid",
-        "tide_zone": "ebbing",
-        "tide_phase": "ebbing",
-        "core_score": 49,
-        "ebb_score": 57,
-        "tide_score": 50,
-        "emotion_score": 50,
-        "strength_score": 44,
-        "volume_score": 50,
-        "news_score": 50,
-        "market_score": 57,
-        "structure_score": 52,
-        "confidence": "low",
-        "confirms": {
-          "emotion": false,
-          "strength": false,
-          "volume": false,
-          "news": false,
-          "market": true
-        },
-        "reasons": [],
-        "cautions": [],
-        "action_hint": "汽车热管理核心潮汐偏弱，降低权重，避免追高。"
-      },
-      {
         "name": "汽车电子",
         "canonical_name": "汽车电子",
         "status": "avoid_weak",
@@ -9960,35 +9937,6 @@
         "reasons": [],
         "cautions": [],
         "action_hint": "汽车电子核心潮汐偏弱，降低权重，避免追高。"
-      },
-      {
-        "name": "汽车芯片",
-        "canonical_name": "汽车芯片",
-        "status": "avoid_weak",
-        "base_tide_status": "neutral",
-        "action": "avoid",
-        "tide_zone": "ebbing",
-        "tide_phase": "ebbing",
-        "core_score": 49,
-        "ebb_score": 57,
-        "tide_score": 50,
-        "emotion_score": 50,
-        "strength_score": 44,
-        "volume_score": 50,
-        "news_score": 50,
-        "market_score": 57,
-        "structure_score": 52,
-        "confidence": "low",
-        "confirms": {
-          "emotion": false,
-          "strength": false,
-          "volume": false,
-          "news": false,
-          "market": true
-        },
-        "reasons": [],
-        "cautions": [],
-        "action_hint": "汽车芯片核心潮汐偏弱，降低权重，避免追高。"
       },
       {
         "name": "浙江国资",
@@ -10105,6 +10053,35 @@
         "reasons": [],
         "cautions": [],
         "action_hint": "煤化工核心潮汐偏弱，降低权重，避免追高。"
+      },
+      {
+        "name": "燃料电池",
+        "canonical_name": "燃料电池",
+        "status": "avoid_weak",
+        "base_tide_status": "neutral",
+        "action": "avoid",
+        "tide_zone": "ebbing",
+        "tide_phase": "ebbing",
+        "core_score": 49,
+        "ebb_score": 57,
+        "tide_score": 50,
+        "emotion_score": 50,
+        "strength_score": 44,
+        "volume_score": 50,
+        "news_score": 50,
+        "market_score": 57,
+        "structure_score": 52,
+        "confidence": "low",
+        "confirms": {
+          "emotion": false,
+          "strength": false,
+          "volume": false,
+          "news": false,
+          "market": true
+        },
+        "reasons": [],
+        "cautions": [],
+        "action_hint": "燃料电池核心潮汐偏弱，降低权重，避免追高。"
       },
       {
         "name": "爱奇艺概念",
@@ -10252,6 +10229,35 @@
         "action_hint": "生物质能核心潮汐偏弱，降低权重，避免追高。"
       },
       {
+        "name": "甲醇概念",
+        "canonical_name": "甲醇",
+        "status": "avoid_weak",
+        "base_tide_status": "neutral",
+        "action": "avoid",
+        "tide_zone": "ebbing",
+        "tide_phase": "ebbing",
+        "core_score": 49,
+        "ebb_score": 57,
+        "tide_score": 50,
+        "emotion_score": 50,
+        "strength_score": 44,
+        "volume_score": 50,
+        "news_score": 50,
+        "market_score": 57,
+        "structure_score": 52,
+        "confidence": "low",
+        "confirms": {
+          "emotion": false,
+          "strength": false,
+          "volume": false,
+          "news": false,
+          "market": true
+        },
+        "reasons": [],
+        "cautions": [],
+        "action_hint": "甲醇概念核心潮汐偏弱，降低权重，避免追高。"
+      },
+      {
         "name": "电子商务",
         "canonical_name": "电子商务",
         "status": "avoid_weak",
@@ -10397,64 +10403,6 @@
         "action_hint": "百度概念核心潮汐偏弱，降低权重，避免追高。"
       },
       {
-        "name": "眼科概念",
-        "canonical_name": "眼科",
-        "status": "avoid_weak",
-        "base_tide_status": "neutral",
-        "action": "avoid",
-        "tide_zone": "ebbing",
-        "tide_phase": "ebbing",
-        "core_score": 49,
-        "ebb_score": 57,
-        "tide_score": 50,
-        "emotion_score": 50,
-        "strength_score": 44,
-        "volume_score": 50,
-        "news_score": 50,
-        "market_score": 57,
-        "structure_score": 52,
-        "confidence": "low",
-        "confirms": {
-          "emotion": false,
-          "strength": false,
-          "volume": false,
-          "news": false,
-          "market": true
-        },
-        "reasons": [],
-        "cautions": [],
-        "action_hint": "眼科概念核心潮汐偏弱，降低权重，避免追高。"
-      },
-      {
-        "name": "短剧概念",
-        "canonical_name": "短剧",
-        "status": "avoid_weak",
-        "base_tide_status": "neutral",
-        "action": "avoid",
-        "tide_zone": "ebbing",
-        "tide_phase": "ebbing",
-        "core_score": 49,
-        "ebb_score": 57,
-        "tide_score": 50,
-        "emotion_score": 50,
-        "strength_score": 44,
-        "volume_score": 50,
-        "news_score": 50,
-        "market_score": 57,
-        "structure_score": 52,
-        "confidence": "low",
-        "confirms": {
-          "emotion": false,
-          "strength": false,
-          "volume": false,
-          "news": false,
-          "market": true
-        },
-        "reasons": [],
-        "cautions": [],
-        "action_hint": "短剧概念核心潮汐偏弱，降低权重，避免追高。"
-      },
-      {
         "name": "短视频",
         "canonical_name": "短视频",
         "status": "avoid_weak",
@@ -10511,6 +10459,35 @@
         "reasons": [],
         "cautions": [],
         "action_hint": "石墨烯核心潮汐偏弱，降低权重，避免追高。"
+      },
+      {
+        "name": "碳中和",
+        "canonical_name": "碳中和",
+        "status": "avoid_weak",
+        "base_tide_status": "neutral",
+        "action": "avoid",
+        "tide_zone": "ebbing",
+        "tide_phase": "ebbing",
+        "core_score": 49,
+        "ebb_score": 57,
+        "tide_score": 50,
+        "emotion_score": 50,
+        "strength_score": 44,
+        "volume_score": 50,
+        "news_score": 50,
+        "market_score": 57,
+        "structure_score": 52,
+        "confidence": "low",
+        "confirms": {
+          "emotion": false,
+          "strength": false,
+          "volume": false,
+          "news": false,
+          "market": true
+        },
+        "reasons": [],
+        "cautions": [],
+        "action_hint": "碳中和核心潮汐偏弱，降低权重，避免追高。"
       },
       {
         "name": "社保重仓",
@@ -10890,6 +10867,64 @@
         "action_hint": "脸书概念核心潮汐偏弱，降低权重，避免追高。"
       },
       {
+        "name": "航母产业",
+        "canonical_name": "航母产业",
+        "status": "avoid_weak",
+        "base_tide_status": "neutral",
+        "action": "avoid",
+        "tide_zone": "ebbing",
+        "tide_phase": "ebbing",
+        "core_score": 49,
+        "ebb_score": 57,
+        "tide_score": 50,
+        "emotion_score": 50,
+        "strength_score": 44,
+        "volume_score": 50,
+        "news_score": 50,
+        "market_score": 57,
+        "structure_score": 52,
+        "confidence": "low",
+        "confirms": {
+          "emotion": false,
+          "strength": false,
+          "volume": false,
+          "news": false,
+          "market": true
+        },
+        "reasons": [],
+        "cautions": [],
+        "action_hint": "航母产业核心潮汐偏弱，降低权重，避免追高。"
+      },
+      {
+        "name": "苹果产业链",
+        "canonical_name": "苹果产业链",
+        "status": "avoid_weak",
+        "base_tide_status": "neutral",
+        "action": "avoid",
+        "tide_zone": "ebbing",
+        "tide_phase": "ebbing",
+        "core_score": 49,
+        "ebb_score": 57,
+        "tide_score": 50,
+        "emotion_score": 50,
+        "strength_score": 44,
+        "volume_score": 50,
+        "news_score": 50,
+        "market_score": 57,
+        "structure_score": 52,
+        "confidence": "low",
+        "confirms": {
+          "emotion": false,
+          "strength": false,
+          "volume": false,
+          "news": false,
+          "market": true
+        },
+        "reasons": [],
+        "cautions": [],
+        "action_hint": "苹果产业链核心潮汐偏弱，降低权重，避免追高。"
+      },
+      {
         "name": "荣耀概念",
         "canonical_name": "荣耀",
         "status": "avoid_weak",
@@ -11122,35 +11157,6 @@
         "action_hint": "贵州国资核心潮汐偏弱，降低权重，避免追高。"
       },
       {
-        "name": "超级电容",
-        "canonical_name": "超级电容",
-        "status": "avoid_weak",
-        "base_tide_status": "neutral",
-        "action": "avoid",
-        "tide_zone": "ebbing",
-        "tide_phase": "ebbing",
-        "core_score": 49,
-        "ebb_score": 57,
-        "tide_score": 50,
-        "emotion_score": 50,
-        "strength_score": 44,
-        "volume_score": 50,
-        "news_score": 50,
-        "market_score": 57,
-        "structure_score": 52,
-        "confidence": "low",
-        "confirms": {
-          "emotion": false,
-          "strength": false,
-          "volume": false,
-          "news": false,
-          "market": true
-        },
-        "reasons": [],
-        "cautions": [],
-        "action_hint": "超级电容核心潮汐偏弱，降低权重，避免追高。"
-      },
-      {
         "name": "超超临界发电",
         "canonical_name": "超超临界发电",
         "status": "avoid_weak",
@@ -11236,6 +11242,35 @@
         "reasons": [],
         "cautions": [],
         "action_hint": "足球概念核心潮汐偏弱，降低权重，避免追高。"
+      },
+      {
+        "name": "跨境电商",
+        "canonical_name": "跨境电商",
+        "status": "avoid_weak",
+        "base_tide_status": "neutral",
+        "action": "avoid",
+        "tide_zone": "ebbing",
+        "tide_phase": "ebbing",
+        "core_score": 49,
+        "ebb_score": 57,
+        "tide_score": 50,
+        "emotion_score": 50,
+        "strength_score": 44,
+        "volume_score": 50,
+        "news_score": 50,
+        "market_score": 57,
+        "structure_score": 52,
+        "confidence": "low",
+        "confirms": {
+          "emotion": false,
+          "strength": false,
+          "volume": false,
+          "news": false,
+          "market": true
+        },
+        "reasons": [],
+        "cautions": [],
+        "action_hint": "跨境电商核心潮汐偏弱，降低权重，避免追高。"
       },
       {
         "name": "车联网（车路云）",
@@ -11528,35 +11563,6 @@
         "action_hint": "阿里概念核心潮汐偏弱，降低权重，避免追高。"
       },
       {
-        "name": "雄安新区",
-        "canonical_name": "雄安新区",
-        "status": "avoid_weak",
-        "base_tide_status": "neutral",
-        "action": "avoid",
-        "tide_zone": "ebbing",
-        "tide_phase": "ebbing",
-        "core_score": 49,
-        "ebb_score": 57,
-        "tide_score": 50,
-        "emotion_score": 50,
-        "strength_score": 44,
-        "volume_score": 50,
-        "news_score": 50,
-        "market_score": 57,
-        "structure_score": 52,
-        "confidence": "low",
-        "confirms": {
-          "emotion": false,
-          "strength": false,
-          "volume": false,
-          "news": false,
-          "market": true
-        },
-        "reasons": [],
-        "cautions": [],
-        "action_hint": "雄安新区核心潮汐偏弱，降低权重，避免追高。"
-      },
-      {
         "name": "预盈预增",
         "canonical_name": "预盈预增",
         "status": "avoid_weak",
@@ -11584,35 +11590,6 @@
         "reasons": [],
         "cautions": [],
         "action_hint": "预盈预增核心潮汐偏弱，降低权重，避免追高。"
-      },
-      {
-        "name": "首发经济",
-        "canonical_name": "首发经济",
-        "status": "avoid_weak",
-        "base_tide_status": "neutral",
-        "action": "avoid",
-        "tide_zone": "ebbing",
-        "tide_phase": "ebbing",
-        "core_score": 49,
-        "ebb_score": 57,
-        "tide_score": 50,
-        "emotion_score": 50,
-        "strength_score": 44,
-        "volume_score": 50,
-        "news_score": 50,
-        "market_score": 57,
-        "structure_score": 52,
-        "confidence": "low",
-        "confirms": {
-          "emotion": false,
-          "strength": false,
-          "volume": false,
-          "news": false,
-          "market": true
-        },
-        "reasons": [],
-        "cautions": [],
-        "action_hint": "首发经济核心潮汐偏弱，降低权重，避免追高。"
       },
       {
         "name": "香港股市-A+H",
@@ -11729,34 +11706,63 @@
         "reasons": [],
         "cautions": [],
         "action_hint": "高送转核心潮汐偏弱，降低权重，避免追高。"
+      },
+      {
+        "name": "黑龙江自贸区",
+        "canonical_name": "黑龙江自贸区",
+        "status": "avoid_weak",
+        "base_tide_status": "neutral",
+        "action": "avoid",
+        "tide_zone": "ebbing",
+        "tide_phase": "ebbing",
+        "core_score": 49,
+        "ebb_score": 57,
+        "tide_score": 50,
+        "emotion_score": 50,
+        "strength_score": 44,
+        "volume_score": 50,
+        "news_score": 50,
+        "market_score": 57,
+        "structure_score": 52,
+        "confidence": "low",
+        "confirms": {
+          "emotion": false,
+          "strength": false,
+          "volume": false,
+          "news": false,
+          "market": true
+        },
+        "reasons": [],
+        "cautions": [],
+        "action_hint": "黑龙江自贸区核心潮汐偏弱，降低权重，避免追高。"
       }
     ],
     "summary": {
       "confirmed": [],
       "watch": [],
       "avoid": [
-        "光通信",
+        "AI应用（医药医疗）",
+        "医药电商",
         "半导体",
         "机器人概念",
         "核电",
         "电力物联网",
-        "AI应用（医药医疗）",
         "交换机",
-        "医药电商"
+        "光通信"
       ],
       "rising": [],
       "neutral": [],
       "ebbing": [
-        "光通信",
+        "AI应用（医药医疗）",
+        "医药电商",
         "半导体",
         "机器人概念",
         "核电",
         "电力物联网",
-        "AI应用（医药医疗）",
         "交换机",
-        "医药电商"
+        "光通信"
       ],
-      "action_hint": "退潮方向：光通信, 半导体, 机器人概念，反抽不开新仓，优先看兑现。"
+      "action_hint": "退潮方向：AI应用（医药医疗）, 医药电商, 半导体，反抽不开新仓，优先看兑现。"
     }
   },
   "fear": {
@@ -11778,7 +11784,7 @@
   },
   "themeLayers": [],
   "moodSignals": {
-    "updatedAt": "2026-07-20 14:16:03",
+    "updatedAt": "2026-07-20 14:26:02",
     "headline": "震荡中性，等待确认点",
     "pos": [
       {
@@ -12166,7 +12172,7 @@
         "2026-07-16",
         "2026-07-17"
       ],
-      "generated_at_bj": "2026-07-20 14:21:50",
+      "generated_at_bj": "2026-07-20 14:31:05",
       "generated_from": [
         "ztAnalysis.relay/watch.close_push",
         "ztAnalysis.relay/watch.close_push",
@@ -90230,15 +90236,15 @@
       {
         "key": "volume",
         "label": "两市成交",
-        "current": "22898.02亿",
+        "current": "23541.32亿",
         "max": "33885.50亿",
-        "min": "22898.02亿",
+        "min": "23541.32亿",
         "maxDate": "07-10",
         "minDate": "07-20",
         "note": "当前就是7日最低｜高点日 07-10｜排序第7/7",
-        "currentValue": 22898.02,
+        "currentValue": 23541.32,
         "maxValue": 33885.5,
-        "minValue": 22898.02,
+        "minValue": 23541.32,
         "kind": "yi"
       },
       {
