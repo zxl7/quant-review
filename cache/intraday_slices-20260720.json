@@ -2,7 +2,7 @@
   "schema": "intraday_snapshot_v1",
   "render_mode": "snapshot_stream",
   "date": "2026-07-20",
-  "count": 4,
+  "count": 3,
   "interval_min": null,
   "simulated": false,
   "snapshots": [
@@ -158,150 +158,65 @@
       "shift_score": 48,
       "shift_label": "分歧",
       "note": "情绪整体平稳，维持当前节奏。"
-    },
-    {
-      "time": "13:29:31",
-      "ts_bj": "2026-07-20 13:29:31",
-      "date": "2026-07-20",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "zt": 56,
-      "dt": 82,
-      "zab": 26,
-      "zb": 31.7,
-      "fb": 68.3,
-      "jj": 10.7,
-      "lianban": 6,
-      "max_lb": 5,
-      "amount": "18942.8亿",
-      "bf": 0,
-      "heat": 51,
-      "risk": 59,
-      "headline": "走弱",
-      "concepts": [
-        {
-          "name": "电力",
-          "lead": "立新能源",
-          "chg_pct": null
-        },
-        {
-          "name": "煤炭开采",
-          "lead": "兖矿能源",
-          "chg_pct": null
-        },
-        {
-          "name": "化学原料",
-          "lead": "金牛化工",
-          "chg_pct": null
-        },
-        {
-          "name": "IT服务Ⅱ",
-          "lead": "浙大网新",
-          "chg_pct": null
-        },
-        {
-          "name": "专用设备",
-          "lead": "山东墨龙",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        },
-        {
-          "level": "danger",
-          "text": "跌停偏多（82）→ 亏钱扩散风险上升"
-        },
-        {
-          "level": "warn",
-          "text": "炸板率偏高（31.7%）→ 注意回封质量"
-        }
-      ],
-      "shift_score": 47,
-      "shift_label": "走弱",
-      "note": "情绪整体平稳，维持当前节奏。"
     }
   ],
   "latest": {
-    "time": "13:29:31",
-    "ts_bj": "2026-07-20 13:29:31",
+    "time": "13:03:05",
+    "ts_bj": "2026-07-20 13:03:05",
     "date": "2026-07-20",
     "source": "intraday_live",
-    "provider": "必盈(实时)+必盈(实时)",
-    "zt": 56,
-    "dt": 82,
-    "zab": 26,
-    "zb": 31.7,
-    "fb": 68.3,
-    "jj": 10.7,
-    "lianban": 6,
+    "provider": "fetch",
+    "zt": 52,
+    "dt": 38,
+    "zab": 23,
+    "zb": 30.7,
+    "fb": 69.3,
+    "jj": 15.4,
+    "lianban": 8,
     "max_lb": 5,
-    "amount": "18942.8亿",
+    "amount": "16704.32亿",
     "bf": 0,
-    "heat": 51,
-    "risk": 59,
-    "headline": "走弱",
+    "heat": 52,
+    "risk": 57,
+    "headline": "分歧",
     "concepts": [
       {
         "name": "电力",
-        "lead": "立新能源",
+        "lead": "湖南发展",
         "chg_pct": null
       },
       {
-        "name": "煤炭开采",
-        "lead": "兖矿能源",
+        "name": "并购重组",
+        "lead": "中岩大地",
         "chg_pct": null
       },
       {
-        "name": "化学原料",
-        "lead": "金牛化工",
+        "name": "银行",
+        "lead": "",
         "chg_pct": null
       },
       {
-        "name": "IT服务Ⅱ",
-        "lead": "浙大网新",
+        "name": "股权转让",
+        "lead": "亚泰集团",
         "chg_pct": null
       },
       {
-        "name": "专用设备",
-        "lead": "山东墨龙",
+        "name": "港口",
+        "lead": "恒通股份",
         "chg_pct": null
       }
     ],
-    "alerts": [
-      {
-        "level": "info",
-        "text": "盘中模式：强制实时拉取"
-      },
-      {
-        "level": "danger",
-        "text": "跌停偏多（82）→ 亏钱扩散风险上升"
-      },
-      {
-        "level": "warn",
-        "text": "炸板率偏高（31.7%）→ 注意回封质量"
-      }
-    ],
-    "shift_score": 47,
-    "shift_label": "走弱",
+    "alerts": [],
+    "shift_score": 48,
+    "shift_label": "分歧",
     "note": "情绪整体平稳，维持当前节奏。"
   },
-  "updated_at": "2026-07-20 13:29:31",
-  "snapshot_sig": "2026-07-20|2026-07-20 13:29:31|4",
+  "updated_at": "2026-07-20 13:03:05",
+  "snapshot_sig": "2026-07-20|2026-07-20 13:03:05|3",
   "health": {
-    "status": "valid",
-    "last_valid_at": "2026-07-20 13:29:31",
-    "rejected_reason": "",
-    "source": {
-      "status": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid"
-      },
-      "pool_errors": {}
-    }
+    "status": "stale",
+    "last_valid_at": "2026-07-20 13:03:05",
+    "rejected_reason": "market_snapshot_not_credible",
+    "source": {}
   }
 }
