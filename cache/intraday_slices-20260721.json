@@ -318,7 +318,17 @@
   "health": {
     "status": "stale",
     "last_valid_at": "2026-07-21 11:21:01",
-    "rejected_reason": "market_snapshot_not_credible",
-    "source": {}
+    "rejected_reason": "source_partial",
+    "source": {
+      "status": "partial",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "failed"
+      },
+      "pool_errors": {
+        "dtgc": "IncompleteRead(6217 bytes read, 701 more expected)"
+      }
+    }
   }
 }
