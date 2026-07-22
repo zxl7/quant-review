@@ -4,13 +4,13 @@
   "meta": {
     "asOf": {
       "indices": "收盘",
-      "pools": "17:32:30",
-      "themes": "17:32:30",
+      "pools": "18:21:47",
+      "themes": "18:21:47",
       "quotes": "15:00:03",
       "plate_rotate": "2026-07-22"
     },
     "version": "1.0",
-    "generatedAt": "2026-07-22 17:32:30"
+    "generatedAt": "2026-07-22 18:21:47"
   },
   "indices": [
     {
@@ -313,16 +313,6 @@
         "riskClass": "orange-text"
       },
       {
-        "name": "无人驾驶",
-        "zt": 4,
-        "zb": 2,
-        "dt": 0,
-        "net": 2.6,
-        "risk": 1.4,
-        "netClass": "orange-text",
-        "riskClass": "orange-text"
-      },
-      {
         "name": "东数西算",
         "zt": 4,
         "zb": 2,
@@ -333,7 +323,17 @@
         "riskClass": "orange-text"
       },
       {
-        "name": "算力概念",
+        "name": "无人驾驶",
+        "zt": 4,
+        "zb": 2,
+        "dt": 0,
+        "net": 2.6,
+        "risk": 1.4,
+        "netClass": "orange-text",
+        "riskClass": "orange-text"
+      },
+      {
+        "name": "充电桩",
         "zt": 3,
         "zb": 1,
         "dt": 0,
@@ -343,7 +343,7 @@
         "riskClass": "green-text"
       },
       {
-        "name": "充电桩",
+        "name": "算力概念",
         "zt": 3,
         "zb": 1,
         "dt": 0,
@@ -9109,40 +9109,6 @@
         "action_hint": "IDC概念（数据中心）有观察价值，等待情绪/量能/消息继续共振。"
       },
       {
-        "name": "光通信",
-        "canonical_name": "光模块",
-        "status": "observe_candidate",
-        "base_tide_status": "neutral",
-        "action": "watch",
-        "tide_zone": "neutral",
-        "tide_phase": "neutral",
-        "core_score": 56,
-        "ebb_score": 41,
-        "tide_score": 50,
-        "emotion_score": 50,
-        "strength_score": 53,
-        "volume_score": 50,
-        "news_score": 74,
-        "market_score": 54,
-        "structure_score": 74,
-        "confidence": "low",
-        "confirms": {
-          "emotion": false,
-          "strength": false,
-          "volume": false,
-          "news": true,
-          "market": false
-        },
-        "reasons": [
-          "消息催化",
-          "低位连板承接"
-        ],
-        "cautions": [
-          "市场分歧"
-        ],
-        "action_hint": "光通信有观察价值，等待情绪/量能/消息继续共振。"
-      },
-      {
         "name": "医药电商",
         "canonical_name": "医药电商",
         "status": "observe_candidate",
@@ -9414,6 +9380,40 @@
           "市场分歧"
         ],
         "action_hint": "中药核心潮汐中性，按梯队和个股辨识度处理。"
+      },
+      {
+        "name": "光通信",
+        "canonical_name": "光模块",
+        "status": "neutral_wait",
+        "base_tide_status": "neutral",
+        "action": "watch",
+        "tide_zone": "neutral",
+        "tide_phase": "neutral",
+        "core_score": 54,
+        "ebb_score": 41,
+        "tide_score": 50,
+        "emotion_score": 50,
+        "strength_score": 53,
+        "volume_score": 50,
+        "news_score": 58,
+        "market_score": 54,
+        "structure_score": 74,
+        "confidence": "low",
+        "confirms": {
+          "emotion": false,
+          "strength": false,
+          "volume": false,
+          "news": false,
+          "market": false
+        },
+        "reasons": [
+          "消息催化",
+          "低位连板承接"
+        ],
+        "cautions": [
+          "市场分歧"
+        ],
+        "action_hint": "光通信核心潮汐中性，按梯队和个股辨识度处理。"
       },
       {
         "name": "算力概念",
@@ -14250,40 +14250,6 @@
         "action_hint": "动力煤核心潮汐偏弱，降低权重，避免追高。"
       },
       {
-        "name": "核聚变",
-        "canonical_name": "核聚变",
-        "status": "avoid_weak",
-        "base_tide_status": "neutral",
-        "action": "avoid",
-        "tide_zone": "ebbing",
-        "tide_phase": "ebbing",
-        "core_score": 52,
-        "ebb_score": 56,
-        "tide_score": 50,
-        "emotion_score": 50,
-        "strength_score": 44,
-        "volume_score": 50,
-        "news_score": 66,
-        "market_score": 54,
-        "structure_score": 74,
-        "confidence": "low",
-        "confirms": {
-          "emotion": false,
-          "strength": false,
-          "volume": false,
-          "news": true,
-          "market": false
-        },
-        "reasons": [
-          "消息催化",
-          "低位连板承接"
-        ],
-        "cautions": [
-          "市场分歧"
-        ],
-        "action_hint": "核聚变核心潮汐偏弱，降低权重，避免追高。"
-      },
-      {
         "name": "氟化工",
         "canonical_name": "氟化工",
         "status": "avoid_weak",
@@ -18930,6 +18896,39 @@
         "action_hint": "柔性电子核心潮汐偏弱，降低权重，避免追高。"
       },
       {
+        "name": "核聚变",
+        "canonical_name": "核聚变",
+        "status": "avoid_weak",
+        "base_tide_status": "neutral",
+        "action": "avoid",
+        "tide_zone": "ebbing",
+        "tide_phase": "ebbing",
+        "core_score": 50,
+        "ebb_score": 57,
+        "tide_score": 50,
+        "emotion_score": 50,
+        "strength_score": 44,
+        "volume_score": 50,
+        "news_score": 50,
+        "market_score": 54,
+        "structure_score": 74,
+        "confidence": "low",
+        "confirms": {
+          "emotion": false,
+          "strength": false,
+          "volume": false,
+          "news": false,
+          "market": false
+        },
+        "reasons": [
+          "低位连板承接"
+        ],
+        "cautions": [
+          "市场分歧"
+        ],
+        "action_hint": "核聚变核心潮汐偏弱，降低权重，避免追高。"
+      },
+      {
         "name": "植物照明",
         "canonical_name": "植物照明",
         "status": "avoid_weak",
@@ -22062,7 +22061,7 @@
     }
   ],
   "moodSignals": {
-    "updatedAt": "2026-07-22 17:32:30",
+    "updatedAt": "2026-07-22 18:21:47",
     "headline": "分歧/扩散偏大，优先防守",
     "pos": [
       {
@@ -22239,7 +22238,7 @@
         "highMarkEligible": 0,
         "oneToTwoEligible": 0,
         "relaxedEligible": 0,
-        "broadEligible": 22,
+        "broadEligible": 23,
         "emergencyEligible": 36,
         "riskBlocked": 47,
         "openBlocked": 6,
@@ -22465,7 +22464,7 @@
             "themeLadderLabel": "中位承接",
             "themeLadderGapCount": 0.0,
             "open": 4.0,
-            "factorHint": "环境76(接力可做) / 板块43 / 龙头76 / 接力79 / 容量87 / 风险33 / 潮汐+2 / 梯队42 / 重点候选",
+            "factorHint": "环境76(接力可做) / 板块42 / 龙头76 / 接力79 / 容量87 / 风险33 / 潮汐+2 / 梯队42 / 重点候选",
             "tideStatus": "neutral_wait",
             "tideAction": "watch",
             "tidePhase": "neutral",
@@ -23330,53 +23329,6 @@
             "isShrinkSeal": false
           },
           {
-            "name": "瑞芯微",
-            "code": "603893",
-            "placement": "watch",
-            "placementLabel": "观察池",
-            "score": 57.0,
-            "scoreBand": "只观察",
-            "lbc": 1.0,
-            "nextStep": "1进2",
-            "predTheme": "",
-            "marketGateLabel": "接力可做",
-            "qualityScore": 45.26680661280187,
-            "environmentScore": 76.0,
-            "leaderFactorScore": 52.0,
-            "relayFactorScore": 62.0,
-            "capacityFactorScore": 68.0,
-            "riskControlScore": 0.0,
-            "leaderPhilosophyScore": 20.0,
-            "stepContextScore": 78.0,
-            "breakRisk": 100.0,
-            "themeLadderScore": 0.0,
-            "themeLadderLabel": "",
-            "themeLadderGapCount": 0.0,
-            "open": 17.0,
-            "factorHint": "环境76(接力可做) / 板块39 / 龙头52 / 接力62 / 容量68 / 风险0 / 潮汐+4 / 梯队0 / 只观察",
-            "tideStatus": "observe_candidate",
-            "tideAction": "watch",
-            "tidePhase": "neutral",
-            "tideCoreScore": 57.0,
-            "tideEbbScore": 41.0,
-            "tideAdjust": 4.0,
-            "tideRelayGate": 3.0,
-            "tideHint": "芯片概念有观察价值，等待情绪/量能/消息继续共振。",
-            "tideCaution": "",
-            "leaderRole": "follower",
-            "hitRules": [],
-            "blockReasons": [
-              "无主线题材",
-              "开板过多",
-              "断板风险高"
-            ],
-            "isThemeLeader": false,
-            "isNewHigh": false,
-            "isMain": false,
-            "isYizi": false,
-            "isShrinkSeal": false
-          },
-          {
             "name": "新中港",
             "code": "605162",
             "placement": "excluded",
@@ -23426,6 +23378,56 @@
             "isMain": false,
             "isYizi": false,
             "isShrinkSeal": true
+          },
+          {
+            "name": "金牛化工",
+            "code": "600722",
+            "placement": "watch",
+            "placementLabel": "观察池",
+            "score": 56.0,
+            "scoreBand": "只观察",
+            "lbc": 1.0,
+            "nextStep": "1进2",
+            "predTheme": "风能",
+            "marketGateLabel": "接力可做",
+            "qualityScore": 58.05541800473995,
+            "environmentScore": 76.0,
+            "leaderFactorScore": 52.0,
+            "relayFactorScore": 66.0,
+            "capacityFactorScore": 76.0,
+            "riskControlScore": 10.0,
+            "leaderPhilosophyScore": 22.0,
+            "stepContextScore": 78.0,
+            "breakRisk": 90.0,
+            "themeLadderScore": 43.0,
+            "themeLadderLabel": "中位承接",
+            "themeLadderGapCount": 2.0,
+            "open": 6.0,
+            "factorHint": "环境76(接力可做) / 板块35 / 龙头52 / 接力66 / 容量76 / 风险10 / 潮汐+4 / 梯队43 / 只观察",
+            "tideStatus": "observe_candidate",
+            "tideAction": "watch",
+            "tidePhase": "neutral",
+            "tideCoreScore": 59.0,
+            "tideEbbScore": 40.0,
+            "tideAdjust": 4.0,
+            "tideRelayGate": 3.0,
+            "tideHint": "绿色电力有观察价值，等待情绪/量能/消息继续共振。",
+            "tideCaution": "",
+            "leaderRole": "follower",
+            "hitRules": [
+              "兜底候选",
+              "应急兜底"
+            ],
+            "blockReasons": [
+              "开板过多",
+              "断板风险高",
+              "梯队断层"
+            ],
+            "isThemeLeader": false,
+            "isNewHigh": false,
+            "isMain": false,
+            "isYizi": false,
+            "isShrinkSeal": false
           },
           {
             "name": "群兴玩具",
@@ -23672,55 +23674,6 @@
             "isShrinkSeal": false
           },
           {
-            "name": "金牛化工",
-            "code": "600722",
-            "placement": "watch",
-            "placementLabel": "观察池",
-            "score": 54.0,
-            "scoreBand": "只观察",
-            "lbc": 1.0,
-            "nextStep": "1进2",
-            "predTheme": "风能",
-            "marketGateLabel": "接力可做",
-            "qualityScore": 58.05541800473995,
-            "environmentScore": 76.0,
-            "leaderFactorScore": 48.0,
-            "relayFactorScore": 63.0,
-            "capacityFactorScore": 76.0,
-            "riskControlScore": 10.0,
-            "leaderPhilosophyScore": 22.0,
-            "stepContextScore": 78.0,
-            "breakRisk": 90.0,
-            "themeLadderScore": 43.0,
-            "themeLadderLabel": "中位承接",
-            "themeLadderGapCount": 2.0,
-            "open": 6.0,
-            "factorHint": "环境76(接力可做) / 板块35 / 龙头48 / 接力63 / 容量76 / 风险10 / 潮汐+4 / 梯队43 / 只观察",
-            "tideStatus": "observe_candidate",
-            "tideAction": "watch",
-            "tidePhase": "neutral",
-            "tideCoreScore": 59.0,
-            "tideEbbScore": 40.0,
-            "tideAdjust": 4.0,
-            "tideRelayGate": 3.0,
-            "tideHint": "绿色电力有观察价值，等待情绪/量能/消息继续共振。",
-            "tideCaution": "",
-            "leaderRole": "follower",
-            "hitRules": [
-              "应急兜底"
-            ],
-            "blockReasons": [
-              "开板过多",
-              "断板风险高",
-              "梯队断层"
-            ],
-            "isThemeLeader": false,
-            "isNewHigh": false,
-            "isMain": false,
-            "isYizi": false,
-            "isShrinkSeal": false
-          },
-          {
             "name": "哈三联",
             "code": "002900",
             "placement": "excluded",
@@ -23762,6 +23715,53 @@
               "无主线题材",
               "断板风险高",
               "容量承接偏弱"
+            ],
+            "isThemeLeader": false,
+            "isNewHigh": false,
+            "isMain": false,
+            "isYizi": false,
+            "isShrinkSeal": false
+          },
+          {
+            "name": "瑞芯微",
+            "code": "603893",
+            "placement": "watch",
+            "placementLabel": "观察池",
+            "score": 54.0,
+            "scoreBand": "只观察",
+            "lbc": 1.0,
+            "nextStep": "1进2",
+            "predTheme": "",
+            "marketGateLabel": "接力可做",
+            "qualityScore": 45.26680661280187,
+            "environmentScore": 76.0,
+            "leaderFactorScore": 49.0,
+            "relayFactorScore": 59.0,
+            "capacityFactorScore": 68.0,
+            "riskControlScore": 0.0,
+            "leaderPhilosophyScore": 20.0,
+            "stepContextScore": 78.0,
+            "breakRisk": 100.0,
+            "themeLadderScore": 0.0,
+            "themeLadderLabel": "",
+            "themeLadderGapCount": 0.0,
+            "open": 17.0,
+            "factorHint": "环境76(接力可做) / 板块39 / 龙头49 / 接力59 / 容量68 / 风险0 / 潮汐+4 / 梯队0 / 只观察",
+            "tideStatus": "observe_candidate",
+            "tideAction": "watch",
+            "tidePhase": "neutral",
+            "tideCoreScore": 57.0,
+            "tideEbbScore": 41.0,
+            "tideAdjust": 4.0,
+            "tideRelayGate": 3.0,
+            "tideHint": "芯片概念有观察价值，等待情绪/量能/消息继续共振。",
+            "tideCaution": "",
+            "leaderRole": "follower",
+            "hitRules": [],
+            "blockReasons": [
+              "无主线题材",
+              "开板过多",
+              "断板风险高"
             ],
             "isThemeLeader": false,
             "isNewHigh": false,
@@ -24624,8 +24624,14 @@
         "themePersistScore": 46,
         "leaderPhilosophyScore": 60,
         "recentHighSignal": {
-          "available": false,
-          "window": 7
+          "available": true,
+          "window": 7,
+          "currentDate": "2026-07-22",
+          "currentHigh": 16.42,
+          "prevHigh": 16.45,
+          "sampleSize": 6,
+          "isRecentHigh": false,
+          "breakoutPct": -0.18
         },
         "thsNewhigh": {},
         "themeLadderProfile": {
@@ -24651,7 +24657,7 @@
           "market": 77,
           "themeEnv": 65,
           "marketGate": 0,
-          "sector": 43,
+          "sector": 42,
           "leader": 76,
           "relay": 79,
           "capacity": 87,
@@ -24661,7 +24667,7 @@
           "heightBreakout": 0,
           "tide": 2
         },
-        "factorHint": "环境76(接力可做) / 板块43 / 龙头76 / 接力79 / 容量87 / 风险33 / 潮汐+2 / 梯队42 / 重点候选",
+        "factorHint": "环境76(接力可做) / 板块42 / 龙头76 / 接力79 / 容量87 / 风险33 / 潮汐+2 / 梯队42 / 重点候选",
         "scoreBand": "重点候选",
         "scoreBandTone": "good",
         "superLeaderTone": "",
@@ -24671,8 +24677,8 @@
           "label": "接力可做",
           "action": "优先核心确认"
         },
-        "sectorTrendScore": 52,
-        "sectorRankScore": 61,
+        "sectorTrendScore": 51,
+        "sectorRankScore": 56,
         "plateRank": 0,
         "plateName": "",
         "plateNameCanonical": "",
@@ -24894,8 +24900,14 @@
         "themePersistScore": 46,
         "leaderPhilosophyScore": 46,
         "recentHighSignal": {
-          "available": false,
-          "window": 7
+          "available": true,
+          "window": 7,
+          "currentDate": "2026-07-22",
+          "currentHigh": 27.49,
+          "prevHigh": 31.79,
+          "sampleSize": 6,
+          "isRecentHigh": false,
+          "breakoutPct": -13.53
         },
         "thsNewhigh": {},
         "themeLadderProfile": {
@@ -24941,8 +24953,8 @@
           "label": "接力可做",
           "action": "优先核心确认"
         },
-        "sectorTrendScore": 48,
-        "sectorRankScore": 61,
+        "sectorTrendScore": 47,
+        "sectorRankScore": 56,
         "plateRank": 0,
         "plateName": "",
         "plateNameCanonical": "",
@@ -25453,11 +25465,11 @@
           "available": true,
           "window": 7,
           "currentDate": "2026-07-22",
-          "currentHigh": 7.66,
+          "currentHigh": 7.94,
           "prevHigh": 7.22,
           "sampleSize": 6,
           "isRecentHigh": true,
-          "breakoutPct": 6.09
+          "breakoutPct": 9.97
         },
         "thsNewhigh": {},
         "themeLadderProfile": {
@@ -26656,24 +26668,24 @@
         "promoEcology": 100,
         "heightContextScore": 97,
         "environmentScore": 76,
-        "leaderFactorScore": 52,
-        "relayFactorScore": 62,
+        "leaderFactorScore": 49,
+        "relayFactorScore": 59,
         "capacityFactorScore": 68,
         "riskControlScore": 0,
         "breakRisk": 100,
         "themePersistScore": 0,
         "leaderPhilosophyScore": 20,
         "recentHighSignal": {
-          "available": false,
-          "window": 7
+          "available": true,
+          "window": 7,
+          "currentDate": "2026-07-22",
+          "currentHigh": 228.86,
+          "prevHigh": 231.55,
+          "sampleSize": 6,
+          "isRecentHigh": false,
+          "breakoutPct": -1.16
         },
-        "thsNewhigh": {
-          "board": 3,
-          "boardLabel": "一年新高",
-          "preHigh": "8.82%",
-          "preHighDate": "228.86",
-          "intervalDays": "222.24"
-        },
+        "thsNewhigh": {},
         "themeLadderProfile": {
           "score": 0,
           "label": "",
@@ -26690,24 +26702,24 @@
         "_isRecentHigh7d": false,
         "_breakoutDoubleConfirm": false,
         "leaderRole": "follower",
-        "score": 57,
-        "factorScore": 57,
+        "score": 54,
+        "factorScore": 54,
         "factorBreakdown": {
           "environment": 76,
           "market": 77,
           "themeEnv": 65,
           "marketGate": 0,
           "sector": 39,
-          "leader": 52,
-          "relay": 62,
+          "leader": 49,
+          "relay": 59,
           "capacity": 68,
           "risk": 0,
-          "opportunity": 56,
-          "edge": 0,
+          "opportunity": 52,
+          "edge": -2,
           "heightBreakout": 0,
           "tide": 4
         },
-        "factorHint": "环境76(接力可做) / 板块39 / 龙头52 / 接力62 / 容量68 / 风险0 / 潮汐+4 / 梯队0 / 只观察",
+        "factorHint": "环境76(接力可做) / 板块39 / 龙头49 / 接力59 / 容量68 / 风险0 / 潮汐+4 / 梯队0 / 只观察",
         "scoreBand": "只观察",
         "scoreBandTone": "cool",
         "superLeaderTone": "",
@@ -26800,10 +26812,6 @@
             "cls": "ladder-chip-cool muted-text"
           },
           {
-            "text": "一年新高",
-            "cls": "ladder-chip-cool muted-text"
-          },
-          {
             "text": "半导体×3",
             "cls": "ladder-chip-cool muted-text"
           },
@@ -26887,10 +26895,6 @@
                 "cls": "ladder-chip-cool muted-text"
               },
               {
-                "text": "一年新高",
-                "cls": "ladder-chip-cool muted-text"
-              },
-              {
                 "text": "半导体×3",
                 "cls": "ladder-chip-cool muted-text"
               }
@@ -26898,8 +26902,8 @@
           }
         ],
         "capacityLabel": "容量核",
-        "reason": "<span class=\"reason-bits\">一年新高 · 高度修复 · 温和放量 · 早封 · 容量够 · 断板风险高 · 强分歧(多开板)</span><div class=\"exp-wrap\"><div class=\"exp-row\"><span class=\"exp-pill pill-pre\">预期</span>高开（+0%~+2%%）+ 竞价量能≥3.75亿</div><div class=\"exp-row\"><span class=\"exp-pill pill-hi\">超预期</span>高开≥+2%% + 竞价量能≥3.75亿</div><div class=\"exp-row\"><span class=\"exp-pill pill-lo\">低预期</span>低于+0%% 或 竞价量能<2.63亿</div></div>",
-        "factorRank": 22,
+        "reason": "<span class=\"reason-bits\">高度修复 · 温和放量 · 早封 · 容量够 · 断板风险高 · 强分歧(多开板)</span><div class=\"exp-wrap\"><div class=\"exp-row\"><span class=\"exp-pill pill-pre\">预期</span>高开（+0%~+2%%）+ 竞价量能≥3.75亿</div><div class=\"exp-row\"><span class=\"exp-pill pill-hi\">超预期</span>高开≥+2%% + 竞价量能≥3.75亿</div><div class=\"exp-row\"><span class=\"exp-pill pill-lo\">低预期</span>低于+0%% 或 竞价量能<2.63亿</div></div>",
+        "factorRank": 30,
         "watchRank": 6,
         "watchGroup": "容量核心",
         "scoreLabel": "观察因子",
@@ -26924,16 +26928,22 @@
         "promoEcology": 100,
         "heightContextScore": 97,
         "environmentScore": 76,
-        "leaderFactorScore": 48,
-        "relayFactorScore": 63,
+        "leaderFactorScore": 52,
+        "relayFactorScore": 66,
         "capacityFactorScore": 76,
         "riskControlScore": 10,
         "breakRisk": 90,
         "themePersistScore": 47,
         "leaderPhilosophyScore": 22,
         "recentHighSignal": {
-          "available": false,
-          "window": 7
+          "available": true,
+          "window": 7,
+          "currentDate": "2026-07-22",
+          "currentHigh": 9.91,
+          "prevHigh": 9.56,
+          "sampleSize": 6,
+          "isRecentHigh": true,
+          "breakoutPct": 3.66
         },
         "thsNewhigh": {},
         "themeLadderProfile": {
@@ -26949,27 +26959,27 @@
           "hasCarry": true,
           "leaderName": "立新能源"
         },
-        "_isRecentHigh7d": false,
+        "_isRecentHigh7d": true,
         "_breakoutDoubleConfirm": false,
         "leaderRole": "follower",
-        "score": 54,
-        "factorScore": 54,
+        "score": 56,
+        "factorScore": 56,
         "factorBreakdown": {
           "environment": 76,
           "market": 77,
           "themeEnv": 65,
           "marketGate": 0,
           "sector": 35,
-          "leader": 48,
-          "relay": 63,
+          "leader": 52,
+          "relay": 66,
           "capacity": 76,
           "risk": 10,
-          "opportunity": 54,
-          "edge": -3,
+          "opportunity": 58,
+          "edge": -2,
           "heightBreakout": 0,
           "tide": 4
         },
-        "factorHint": "环境76(接力可做) / 板块35 / 龙头48 / 接力63 / 容量76 / 风险10 / 潮汐+4 / 梯队43 / 只观察",
+        "factorHint": "环境76(接力可做) / 板块35 / 龙头52 / 接力66 / 容量76 / 风险10 / 潮汐+4 / 梯队43 / 只观察",
         "scoreBand": "只观察",
         "scoreBandTone": "cool",
         "superLeaderTone": "",
@@ -27062,6 +27072,10 @@
             "cls": "ladder-chip-cool muted-text"
           },
           {
+            "text": "近7日新高",
+            "cls": "ladder-chip-cool muted-text"
+          },
+          {
             "text": "风能",
             "cls": "ladder-chip-cool muted-text"
           }
@@ -27137,6 +27151,10 @@
                 "cls": "ladder-chip-cool muted-text"
               },
               {
+                "text": "近7日新高",
+                "cls": "ladder-chip-cool muted-text"
+              },
+              {
                 "text": "风能",
                 "cls": "ladder-chip-cool muted-text"
               }
@@ -27144,8 +27162,8 @@
           }
         ],
         "capacityLabel": "弹性票",
-        "reason": "<span class=\"reason-bits\">梯队跟随 · 高度修复 · 早封 · 容量够 · 晋级生态强(60%/40%) · 梯队断层 · 断板风险高</span><div class=\"exp-wrap\"><div class=\"exp-row\"><span class=\"exp-pill pill-pre\">预期</span>高开（+0%~+2%%）+ 竞价量能≥0.60亿</div><div class=\"exp-row\"><span class=\"exp-pill pill-hi\">超预期</span>高开≥+2%% + 竞价量能≥0.60亿</div><div class=\"exp-row\"><span class=\"exp-pill pill-lo\">低预期</span>低于+0%% 或 竞价量能<0.42亿</div></div>",
-        "factorRank": 29,
+        "reason": "<span class=\"reason-bits\">梯队跟随 · 近7日新高 · 高度修复 · 早封 · 容量够 · 晋级生态强(60%/40%) · 梯队断层 · 断板风险高</span><div class=\"exp-wrap\"><div class=\"exp-row\"><span class=\"exp-pill pill-pre\">预期</span>高开（+0%~+2%%）+ 竞价量能≥0.60亿</div><div class=\"exp-row\"><span class=\"exp-pill pill-hi\">超预期</span>高开≥+2%% + 竞价量能≥0.60亿</div><div class=\"exp-row\"><span class=\"exp-pill pill-lo\">低预期</span>低于+0%% 或 竞价量能<0.42亿</div></div>",
+        "factorRank": 23,
         "watchRank": 7,
         "watchGroup": "容量核心",
         "scoreLabel": "观察因子",
@@ -27178,8 +27196,14 @@
         "themePersistScore": 50,
         "leaderPhilosophyScore": 27,
         "recentHighSignal": {
-          "available": false,
-          "window": 7
+          "available": true,
+          "window": 7,
+          "currentDate": "2026-07-22",
+          "currentHigh": 8.18,
+          "prevHigh": 9.04,
+          "sampleSize": 6,
+          "isRecentHigh": false,
+          "breakoutPct": -9.51
         },
         "thsNewhigh": {},
         "themeLadderProfile": {
@@ -27632,7 +27656,7 @@
         "2026-07-20",
         "2026-07-21"
       ],
-      "generated_at_bj": "2026-07-22 17:38:09",
+      "generated_at_bj": "2026-07-22 18:27:15",
       "generated_from": [
         "ztAnalysis.relay/watch.close_push",
         "ztAnalysis.relay/watch.close_push",
@@ -28515,7 +28539,7 @@
         "next_step": "2进3",
         "plate_name": "",
         "hy": "通信设备",
-        "factor_hint": "环境76(接力可做) / 板块43 / 龙头76 / 接力79 / 容量87 / 风险33 / 潮汐+2 / 梯队42 / 重点候选",
+        "factor_hint": "环境76(接力可做) / 板块42 / 龙头76 / 接力79 / 容量87 / 风险33 / 潮汐+2 / 梯队42 / 重点候选",
         "relay_rank": 2,
         "watch_rank": 0,
         "relay_selection_mode": "broad",
@@ -29119,7 +29143,7 @@
         "name": "瑞芯微",
         "bucket": "watch",
         "bucket_label": "观察池",
-        "score": 57,
+        "score": 54,
         "score_band": "只观察",
         "score_sub_label": "容量核心 · 只观察",
         "main_line": "",
@@ -29131,15 +29155,15 @@
         "next_step": "1进2",
         "plate_name": "",
         "hy": "半导体",
-        "factor_hint": "环境76(接力可做) / 板块39 / 龙头52 / 接力62 / 容量68 / 风险0 / 潮汐+4 / 梯队0 / 只观察",
+        "factor_hint": "环境76(接力可做) / 板块39 / 龙头49 / 接力59 / 容量68 / 风险0 / 潮汐+4 / 梯队0 / 只观察",
         "relay_rank": 0,
         "watch_rank": 6,
         "relay_selection_mode": "",
         "watch_group": "容量核心",
         "score_label": "观察因子",
         "placement_label": "观察池",
-        "leader_factor_score": 52.0,
-        "relay_factor_score": 62.0,
+        "leader_factor_score": 49.0,
+        "relay_factor_score": 59.0,
         "leader_philosophy_score": 20.0,
         "break_risk": 100.0,
         "environment_score": 76.0,
@@ -29156,8 +29180,8 @@
         },
         "hit_rules": [],
         "block_reasons": [],
-        "reason_html": "<span class=\"reason-bits\">一年新高 · 高度修复 · 温和放量 · 早封 · 容量够 · 断板风险高 · 强分歧(多开板)</span><div class=\"exp-wrap\"><div class=\"exp-row\"><span class=\"exp-pill pill-pre\">预期</span>高开（+0%~+2%%）+ 竞价量能≥3.75亿</div><div class=\"exp-row\"><span class=\"exp-pill pill-hi\">超预期</span>高开≥+2%% + 竞价量能≥3.75亿</div><div class=\"exp-row\"><span class=\"exp-pill pill-lo\">低预期</span>低于+0%% 或 竞价量能<2.63亿</div></div>",
-        "reason_text": "一年新高 · 高度修复 · 温和放量 · 早封 · 容量够 · 断板风险高 · 强分歧(多开板) 预期 高开（+0%~+2%%）+ 竞价量能≥3.75亿 超预期 高开≥+2%% + 竞价量能≥3.75亿 低预期 低于+0%% 或 竞价量能",
+        "reason_html": "<span class=\"reason-bits\">高度修复 · 温和放量 · 早封 · 容量够 · 断板风险高 · 强分歧(多开板)</span><div class=\"exp-wrap\"><div class=\"exp-row\"><span class=\"exp-pill pill-pre\">预期</span>高开（+0%~+2%%）+ 竞价量能≥3.75亿</div><div class=\"exp-row\"><span class=\"exp-pill pill-hi\">超预期</span>高开≥+2%% + 竞价量能≥3.75亿</div><div class=\"exp-row\"><span class=\"exp-pill pill-lo\">低预期</span>低于+0%% 或 竞价量能<2.63亿</div></div>",
+        "reason_text": "高度修复 · 温和放量 · 早封 · 容量够 · 断板风险高 · 强分歧(多开板) 预期 高开（+0%~+2%%）+ 竞价量能≥3.75亿 超预期 高开≥+2%% + 竞价量能≥3.75亿 低预期 低于+0%% 或 竞价量能",
         "expectation": {
           "expected_text": "高开（+0%~+2%%）+ 竞价量能≥3.75亿",
           "super_text": "高开≥+2%% + 竞价量能≥3.75亿",
@@ -29173,7 +29197,7 @@
           "super_requires_reseal": false,
           "super_requires_open_board_limit": null,
           "seal_amount_min_yi": null,
-          "raw_text": "一年新高 · 高度修复 · 温和放量 · 早封 · 容量够 · 断板风险高 · 强分歧(多开板) 预期 高开（+0%~+2%%）+ 竞价量能≥3.75亿 超预期 高开≥+2%% + 竞价量能≥3.75亿 低预期 低于+0%% 或 竞价量能"
+          "raw_text": "高度修复 · 温和放量 · 早封 · 容量够 · 断板风险高 · 强分歧(多开板) 预期 高开（+0%~+2%%）+ 竞价量能≥3.75亿 超预期 高开≥+2%% + 竞价量能≥3.75亿 低预期 低于+0%% 或 竞价量能"
         },
         "trade_date10": "2026-07-23",
         "daily_rank": 9,
@@ -29207,7 +29231,7 @@
         "name": "金牛化工",
         "bucket": "watch",
         "bucket_label": "观察池",
-        "score": 54,
+        "score": 56,
         "score_band": "只观察",
         "score_sub_label": "容量核心 · 只观察",
         "main_line": "风能",
@@ -29219,15 +29243,15 @@
         "next_step": "1进2",
         "plate_name": "",
         "hy": "化学原料",
-        "factor_hint": "环境76(接力可做) / 板块35 / 龙头48 / 接力63 / 容量76 / 风险10 / 潮汐+4 / 梯队43 / 只观察",
+        "factor_hint": "环境76(接力可做) / 板块35 / 龙头52 / 接力66 / 容量76 / 风险10 / 潮汐+4 / 梯队43 / 只观察",
         "relay_rank": 0,
         "watch_rank": 7,
         "relay_selection_mode": "",
         "watch_group": "容量核心",
         "score_label": "观察因子",
         "placement_label": "观察池",
-        "leader_factor_score": 48.0,
-        "relay_factor_score": 63.0,
+        "leader_factor_score": 52.0,
+        "relay_factor_score": 66.0,
         "leader_philosophy_score": 22.0,
         "break_risk": 90.0,
         "environment_score": 76.0,
@@ -29244,8 +29268,8 @@
         },
         "hit_rules": [],
         "block_reasons": [],
-        "reason_html": "<span class=\"reason-bits\">梯队跟随 · 高度修复 · 早封 · 容量够 · 晋级生态强(60%/40%) · 梯队断层 · 断板风险高</span><div class=\"exp-wrap\"><div class=\"exp-row\"><span class=\"exp-pill pill-pre\">预期</span>高开（+0%~+2%%）+ 竞价量能≥0.60亿</div><div class=\"exp-row\"><span class=\"exp-pill pill-hi\">超预期</span>高开≥+2%% + 竞价量能≥0.60亿</div><div class=\"exp-row\"><span class=\"exp-pill pill-lo\">低预期</span>低于+0%% 或 竞价量能<0.42亿</div></div>",
-        "reason_text": "梯队跟随 · 高度修复 · 早封 · 容量够 · 晋级生态强(60%/40%) · 梯队断层 · 断板风险高 预期 高开（+0%~+2%%）+ 竞价量能≥0.60亿 超预期 高开≥+2%% + 竞价量能≥0.60亿 低预期 低于+0%% 或 竞价量能",
+        "reason_html": "<span class=\"reason-bits\">梯队跟随 · 近7日新高 · 高度修复 · 早封 · 容量够 · 晋级生态强(60%/40%) · 梯队断层 · 断板风险高</span><div class=\"exp-wrap\"><div class=\"exp-row\"><span class=\"exp-pill pill-pre\">预期</span>高开（+0%~+2%%）+ 竞价量能≥0.60亿</div><div class=\"exp-row\"><span class=\"exp-pill pill-hi\">超预期</span>高开≥+2%% + 竞价量能≥0.60亿</div><div class=\"exp-row\"><span class=\"exp-pill pill-lo\">低预期</span>低于+0%% 或 竞价量能<0.42亿</div></div>",
+        "reason_text": "梯队跟随 · 近7日新高 · 高度修复 · 早封 · 容量够 · 晋级生态强(60%/40%) · 梯队断层 · 断板风险高 预期 高开（+0%~+2%%）+ 竞价量能≥0.60亿 超预期 高开≥+2%% + 竞价量能≥0.60亿 低预期 低于+0%% 或 竞价量能",
         "expectation": {
           "expected_text": "高开（+0%~+2%%）+ 竞价量能≥0.60亿",
           "super_text": "高开≥+2%% + 竞价量能≥0.60亿",
@@ -29261,7 +29285,7 @@
           "super_requires_reseal": false,
           "super_requires_open_board_limit": null,
           "seal_amount_min_yi": null,
-          "raw_text": "梯队跟随 · 高度修复 · 早封 · 容量够 · 晋级生态强(60%/40%) · 梯队断层 · 断板风险高 预期 高开（+0%~+2%%）+ 竞价量能≥0.60亿 超预期 高开≥+2%% + 竞价量能≥0.60亿 低预期 低于+0%% 或 竞价量能"
+          "raw_text": "梯队跟随 · 近7日新高 · 高度修复 · 早封 · 容量够 · 晋级生态强(60%/40%) · 梯队断层 · 断板风险高 预期 高开（+0%~+2%%）+ 竞价量能≥0.60亿 超预期 高开≥+2%% + 竞价量能≥0.60亿 低预期 低于+0%% 或 竞价量能"
         },
         "trade_date10": "2026-07-23",
         "daily_rank": 10,
@@ -30894,7 +30918,7 @@
         "next_step": "2进3",
         "plate_name": "",
         "hy": "通信设备",
-        "factor_hint": "环境76(接力可做) / 板块43 / 龙头76 / 接力79 / 容量87 / 风险33 / 潮汐+2 / 梯队42 / 重点候选",
+        "factor_hint": "环境76(接力可做) / 板块42 / 龙头76 / 接力79 / 容量87 / 风险33 / 潮汐+2 / 梯队42 / 重点候选",
         "relay_rank": 2,
         "watch_rank": 0,
         "relay_selection_mode": "broad",
@@ -48817,94 +48841,6 @@
         }
       },
       {
-        "date": "20260722",
-        "date10": "2026-07-22",
-        "code": "603893",
-        "name": "瑞芯微",
-        "bucket": "watch",
-        "bucket_label": "观察池",
-        "score": 57,
-        "score_band": "只观察",
-        "score_sub_label": "容量核心 · 只观察",
-        "main_line": "",
-        "style_tag": "",
-        "lbc": 1,
-        "cje_yi": 83.37,
-        "turnover": 68.0,
-        "tide_status": "接力可做",
-        "next_step": "1进2",
-        "plate_name": "",
-        "hy": "半导体",
-        "factor_hint": "环境76(接力可做) / 板块39 / 龙头52 / 接力62 / 容量68 / 风险0 / 潮汐+4 / 梯队0 / 只观察",
-        "relay_rank": 0,
-        "watch_rank": 6,
-        "relay_selection_mode": "",
-        "watch_group": "容量核心",
-        "score_label": "观察因子",
-        "placement_label": "观察池",
-        "leader_factor_score": 52.0,
-        "relay_factor_score": 62.0,
-        "leader_philosophy_score": 20.0,
-        "break_risk": 100.0,
-        "environment_score": 76.0,
-        "capacity_factor_score": 68.0,
-        "step_context_score": 78.0,
-        "tide_relay_gate": 3.0,
-        "theme_ladder_profile": {
-          "label": "",
-          "score": 0.0,
-          "gap_count": 0,
-          "front_count": 0,
-          "leader_boards": 0,
-          "has_carry": false
-        },
-        "hit_rules": [],
-        "block_reasons": [],
-        "reason_html": "<span class=\"reason-bits\">一年新高 · 高度修复 · 温和放量 · 早封 · 容量够 · 断板风险高 · 强分歧(多开板)</span><div class=\"exp-wrap\"><div class=\"exp-row\"><span class=\"exp-pill pill-pre\">预期</span>高开（+0%~+2%%）+ 竞价量能≥3.75亿</div><div class=\"exp-row\"><span class=\"exp-pill pill-hi\">超预期</span>高开≥+2%% + 竞价量能≥3.75亿</div><div class=\"exp-row\"><span class=\"exp-pill pill-lo\">低预期</span>低于+0%% 或 竞价量能<2.63亿</div></div>",
-        "reason_text": "一年新高 · 高度修复 · 温和放量 · 早封 · 容量够 · 断板风险高 · 强分歧(多开板) 预期 高开（+0%~+2%%）+ 竞价量能≥3.75亿 超预期 高开≥+2%% + 竞价量能≥3.75亿 低预期 低于+0%% 或 竞价量能",
-        "expectation": {
-          "expected_text": "高开（+0%~+2%%）+ 竞价量能≥3.75亿",
-          "super_text": "高开≥+2%% + 竞价量能≥3.75亿",
-          "low_text": "低于+0%% 或 竞价量能",
-          "expected_range": [
-            0.0,
-            2.0
-          ],
-          "super_gap_min": 2.0,
-          "auction_amount_min_yi": null,
-          "surge_pct_min": null,
-          "volume_expand_ratio": null,
-          "super_requires_reseal": false,
-          "super_requires_open_board_limit": null,
-          "seal_amount_min_yi": null,
-          "raw_text": "一年新高 · 高度修复 · 温和放量 · 早封 · 容量够 · 断板风险高 · 强分歧(多开板) 预期 高开（+0%~+2%%）+ 竞价量能≥3.75亿 超预期 高开≥+2%% + 竞价量能≥3.75亿 低预期 低于+0%% 或 竞价量能"
-        },
-        "trade_date10": "2026-07-23",
-        "daily_rank": 9,
-        "performance": {
-          "open_check": {
-            "status": "missing",
-            "label": "无后续价格",
-            "note": "推荐日后没有可用交易日价格"
-          },
-          "next_day": {
-            "status": "missing",
-            "label": "隔日收益",
-            "note": "推荐日后没有可用交易日价格"
-          },
-          "hold_2d": {
-            "status": "missing",
-            "label": "2日收益",
-            "note": "推荐日后没有可用交易日价格"
-          },
-          "hold_3d": {
-            "status": "missing",
-            "label": "3日收益",
-            "note": "推荐日后没有可用交易日价格"
-          }
-        }
-      },
-      {
         "date": "20260629",
         "date10": "2026-06-29",
         "code": "002549",
@@ -49020,6 +48956,94 @@
             "flat": false,
             "loss": true,
             "days_after_pick": 3
+          }
+        }
+      },
+      {
+        "date": "20260722",
+        "date10": "2026-07-22",
+        "code": "603893",
+        "name": "瑞芯微",
+        "bucket": "watch",
+        "bucket_label": "观察池",
+        "score": 54,
+        "score_band": "只观察",
+        "score_sub_label": "容量核心 · 只观察",
+        "main_line": "",
+        "style_tag": "",
+        "lbc": 1,
+        "cje_yi": 83.37,
+        "turnover": 68.0,
+        "tide_status": "接力可做",
+        "next_step": "1进2",
+        "plate_name": "",
+        "hy": "半导体",
+        "factor_hint": "环境76(接力可做) / 板块39 / 龙头49 / 接力59 / 容量68 / 风险0 / 潮汐+4 / 梯队0 / 只观察",
+        "relay_rank": 0,
+        "watch_rank": 6,
+        "relay_selection_mode": "",
+        "watch_group": "容量核心",
+        "score_label": "观察因子",
+        "placement_label": "观察池",
+        "leader_factor_score": 49.0,
+        "relay_factor_score": 59.0,
+        "leader_philosophy_score": 20.0,
+        "break_risk": 100.0,
+        "environment_score": 76.0,
+        "capacity_factor_score": 68.0,
+        "step_context_score": 78.0,
+        "tide_relay_gate": 3.0,
+        "theme_ladder_profile": {
+          "label": "",
+          "score": 0.0,
+          "gap_count": 0,
+          "front_count": 0,
+          "leader_boards": 0,
+          "has_carry": false
+        },
+        "hit_rules": [],
+        "block_reasons": [],
+        "reason_html": "<span class=\"reason-bits\">高度修复 · 温和放量 · 早封 · 容量够 · 断板风险高 · 强分歧(多开板)</span><div class=\"exp-wrap\"><div class=\"exp-row\"><span class=\"exp-pill pill-pre\">预期</span>高开（+0%~+2%%）+ 竞价量能≥3.75亿</div><div class=\"exp-row\"><span class=\"exp-pill pill-hi\">超预期</span>高开≥+2%% + 竞价量能≥3.75亿</div><div class=\"exp-row\"><span class=\"exp-pill pill-lo\">低预期</span>低于+0%% 或 竞价量能<2.63亿</div></div>",
+        "reason_text": "高度修复 · 温和放量 · 早封 · 容量够 · 断板风险高 · 强分歧(多开板) 预期 高开（+0%~+2%%）+ 竞价量能≥3.75亿 超预期 高开≥+2%% + 竞价量能≥3.75亿 低预期 低于+0%% 或 竞价量能",
+        "expectation": {
+          "expected_text": "高开（+0%~+2%%）+ 竞价量能≥3.75亿",
+          "super_text": "高开≥+2%% + 竞价量能≥3.75亿",
+          "low_text": "低于+0%% 或 竞价量能",
+          "expected_range": [
+            0.0,
+            2.0
+          ],
+          "super_gap_min": 2.0,
+          "auction_amount_min_yi": null,
+          "surge_pct_min": null,
+          "volume_expand_ratio": null,
+          "super_requires_reseal": false,
+          "super_requires_open_board_limit": null,
+          "seal_amount_min_yi": null,
+          "raw_text": "高度修复 · 温和放量 · 早封 · 容量够 · 断板风险高 · 强分歧(多开板) 预期 高开（+0%~+2%%）+ 竞价量能≥3.75亿 超预期 高开≥+2%% + 竞价量能≥3.75亿 低预期 低于+0%% 或 竞价量能"
+        },
+        "trade_date10": "2026-07-23",
+        "daily_rank": 9,
+        "performance": {
+          "open_check": {
+            "status": "missing",
+            "label": "无后续价格",
+            "note": "推荐日后没有可用交易日价格"
+          },
+          "next_day": {
+            "status": "missing",
+            "label": "隔日收益",
+            "note": "推荐日后没有可用交易日价格"
+          },
+          "hold_2d": {
+            "status": "missing",
+            "label": "2日收益",
+            "note": "推荐日后没有可用交易日价格"
+          },
+          "hold_3d": {
+            "status": "missing",
+            "label": "3日收益",
+            "note": "推荐日后没有可用交易日价格"
           }
         }
       },
@@ -51783,6 +51807,94 @@
         }
       },
       {
+        "date": "20260722",
+        "date10": "2026-07-22",
+        "code": "600722",
+        "name": "金牛化工",
+        "bucket": "watch",
+        "bucket_label": "观察池",
+        "score": 56,
+        "score_band": "只观察",
+        "score_sub_label": "容量核心 · 只观察",
+        "main_line": "风能",
+        "style_tag": "",
+        "lbc": 1,
+        "cje_yi": 13.3,
+        "turnover": 76.0,
+        "tide_status": "接力可做",
+        "next_step": "1进2",
+        "plate_name": "",
+        "hy": "化学原料",
+        "factor_hint": "环境76(接力可做) / 板块35 / 龙头52 / 接力66 / 容量76 / 风险10 / 潮汐+4 / 梯队43 / 只观察",
+        "relay_rank": 0,
+        "watch_rank": 7,
+        "relay_selection_mode": "",
+        "watch_group": "容量核心",
+        "score_label": "观察因子",
+        "placement_label": "观察池",
+        "leader_factor_score": 52.0,
+        "relay_factor_score": 66.0,
+        "leader_philosophy_score": 22.0,
+        "break_risk": 90.0,
+        "environment_score": 76.0,
+        "capacity_factor_score": 76.0,
+        "step_context_score": 78.0,
+        "tide_relay_gate": 3.0,
+        "theme_ladder_profile": {
+          "label": "中位承接",
+          "score": 43.0,
+          "gap_count": 2,
+          "front_count": 1,
+          "leader_boards": 5,
+          "has_carry": true
+        },
+        "hit_rules": [],
+        "block_reasons": [],
+        "reason_html": "<span class=\"reason-bits\">梯队跟随 · 近7日新高 · 高度修复 · 早封 · 容量够 · 晋级生态强(60%/40%) · 梯队断层 · 断板风险高</span><div class=\"exp-wrap\"><div class=\"exp-row\"><span class=\"exp-pill pill-pre\">预期</span>高开（+0%~+2%%）+ 竞价量能≥0.60亿</div><div class=\"exp-row\"><span class=\"exp-pill pill-hi\">超预期</span>高开≥+2%% + 竞价量能≥0.60亿</div><div class=\"exp-row\"><span class=\"exp-pill pill-lo\">低预期</span>低于+0%% 或 竞价量能<0.42亿</div></div>",
+        "reason_text": "梯队跟随 · 近7日新高 · 高度修复 · 早封 · 容量够 · 晋级生态强(60%/40%) · 梯队断层 · 断板风险高 预期 高开（+0%~+2%%）+ 竞价量能≥0.60亿 超预期 高开≥+2%% + 竞价量能≥0.60亿 低预期 低于+0%% 或 竞价量能",
+        "expectation": {
+          "expected_text": "高开（+0%~+2%%）+ 竞价量能≥0.60亿",
+          "super_text": "高开≥+2%% + 竞价量能≥0.60亿",
+          "low_text": "低于+0%% 或 竞价量能",
+          "expected_range": [
+            0.0,
+            2.0
+          ],
+          "super_gap_min": 2.0,
+          "auction_amount_min_yi": null,
+          "surge_pct_min": null,
+          "volume_expand_ratio": null,
+          "super_requires_reseal": false,
+          "super_requires_open_board_limit": null,
+          "seal_amount_min_yi": null,
+          "raw_text": "梯队跟随 · 近7日新高 · 高度修复 · 早封 · 容量够 · 晋级生态强(60%/40%) · 梯队断层 · 断板风险高 预期 高开（+0%~+2%%）+ 竞价量能≥0.60亿 超预期 高开≥+2%% + 竞价量能≥0.60亿 低预期 低于+0%% 或 竞价量能"
+        },
+        "trade_date10": "2026-07-23",
+        "daily_rank": 10,
+        "performance": {
+          "open_check": {
+            "status": "missing",
+            "label": "无后续价格",
+            "note": "推荐日后没有可用交易日价格"
+          },
+          "next_day": {
+            "status": "missing",
+            "label": "隔日收益",
+            "note": "推荐日后没有可用交易日价格"
+          },
+          "hold_2d": {
+            "status": "missing",
+            "label": "2日收益",
+            "note": "推荐日后没有可用交易日价格"
+          },
+          "hold_3d": {
+            "status": "missing",
+            "label": "3日收益",
+            "note": "推荐日后没有可用交易日价格"
+          }
+        }
+      },
+      {
         "date": "20260715",
         "date10": "2026-07-15",
         "code": "002891",
@@ -52017,94 +52129,6 @@
             "flat": false,
             "loss": true,
             "days_after_pick": 3
-          }
-        }
-      },
-      {
-        "date": "20260722",
-        "date10": "2026-07-22",
-        "code": "600722",
-        "name": "金牛化工",
-        "bucket": "watch",
-        "bucket_label": "观察池",
-        "score": 54,
-        "score_band": "只观察",
-        "score_sub_label": "容量核心 · 只观察",
-        "main_line": "风能",
-        "style_tag": "",
-        "lbc": 1,
-        "cje_yi": 13.3,
-        "turnover": 76.0,
-        "tide_status": "接力可做",
-        "next_step": "1进2",
-        "plate_name": "",
-        "hy": "化学原料",
-        "factor_hint": "环境76(接力可做) / 板块35 / 龙头48 / 接力63 / 容量76 / 风险10 / 潮汐+4 / 梯队43 / 只观察",
-        "relay_rank": 0,
-        "watch_rank": 7,
-        "relay_selection_mode": "",
-        "watch_group": "容量核心",
-        "score_label": "观察因子",
-        "placement_label": "观察池",
-        "leader_factor_score": 48.0,
-        "relay_factor_score": 63.0,
-        "leader_philosophy_score": 22.0,
-        "break_risk": 90.0,
-        "environment_score": 76.0,
-        "capacity_factor_score": 76.0,
-        "step_context_score": 78.0,
-        "tide_relay_gate": 3.0,
-        "theme_ladder_profile": {
-          "label": "中位承接",
-          "score": 43.0,
-          "gap_count": 2,
-          "front_count": 1,
-          "leader_boards": 5,
-          "has_carry": true
-        },
-        "hit_rules": [],
-        "block_reasons": [],
-        "reason_html": "<span class=\"reason-bits\">梯队跟随 · 高度修复 · 早封 · 容量够 · 晋级生态强(60%/40%) · 梯队断层 · 断板风险高</span><div class=\"exp-wrap\"><div class=\"exp-row\"><span class=\"exp-pill pill-pre\">预期</span>高开（+0%~+2%%）+ 竞价量能≥0.60亿</div><div class=\"exp-row\"><span class=\"exp-pill pill-hi\">超预期</span>高开≥+2%% + 竞价量能≥0.60亿</div><div class=\"exp-row\"><span class=\"exp-pill pill-lo\">低预期</span>低于+0%% 或 竞价量能<0.42亿</div></div>",
-        "reason_text": "梯队跟随 · 高度修复 · 早封 · 容量够 · 晋级生态强(60%/40%) · 梯队断层 · 断板风险高 预期 高开（+0%~+2%%）+ 竞价量能≥0.60亿 超预期 高开≥+2%% + 竞价量能≥0.60亿 低预期 低于+0%% 或 竞价量能",
-        "expectation": {
-          "expected_text": "高开（+0%~+2%%）+ 竞价量能≥0.60亿",
-          "super_text": "高开≥+2%% + 竞价量能≥0.60亿",
-          "low_text": "低于+0%% 或 竞价量能",
-          "expected_range": [
-            0.0,
-            2.0
-          ],
-          "super_gap_min": 2.0,
-          "auction_amount_min_yi": null,
-          "surge_pct_min": null,
-          "volume_expand_ratio": null,
-          "super_requires_reseal": false,
-          "super_requires_open_board_limit": null,
-          "seal_amount_min_yi": null,
-          "raw_text": "梯队跟随 · 高度修复 · 早封 · 容量够 · 晋级生态强(60%/40%) · 梯队断层 · 断板风险高 预期 高开（+0%~+2%%）+ 竞价量能≥0.60亿 超预期 高开≥+2%% + 竞价量能≥0.60亿 低预期 低于+0%% 或 竞价量能"
-        },
-        "trade_date10": "2026-07-23",
-        "daily_rank": 10,
-        "performance": {
-          "open_check": {
-            "status": "missing",
-            "label": "无后续价格",
-            "note": "推荐日后没有可用交易日价格"
-          },
-          "next_day": {
-            "status": "missing",
-            "label": "隔日收益",
-            "note": "推荐日后没有可用交易日价格"
-          },
-          "hold_2d": {
-            "status": "missing",
-            "label": "2日收益",
-            "note": "推荐日后没有可用交易日价格"
-          },
-          "hold_3d": {
-            "status": "missing",
-            "label": "3日收益",
-            "note": "推荐日后没有可用交易日价格"
           }
         }
       },
@@ -111624,7 +111648,7 @@
     "globalScore": 47,
     "rows": [
       {
-        "name": "充电桩",
+        "name": "算力概念",
         "score": 56,
         "level": "cool",
         "icon": "☆☆☆",
@@ -111639,21 +111663,21 @@
         "leader": "",
         "tags": "—",
         "advice": "偏弱，低位试错",
-        "isFocus": false
+        "isFocus": true
       }
     ],
-    "focusCount": 0,
-    "focusTopName": "",
-    "focusTopScore": 0,
+    "focusCount": 1,
+    "focusTopName": "算力概念",
+    "focusTopScore": 56,
     "alpha": "",
-    "hint": "关注方向今日无涨停",
+    "hint": "关注方向(1个)：算力概念，最强56分",
     "meta": {
       "precision": "strict_derived",
       "asOf": "",
       "notes": [
         "热力图按「关注方向优先→分数排序」，FOCUS_SECTORS=['光通信', 'CPO', '光模块', '航天', '军工', '卫星', '商业航天', '新材料', '碳纤维', '锂电池', '储能', '固态电池', '华为', '鸿蒙', '昇腾', 'AI', '人工智能', '算力']",
         "龙头来自 leaders（若当日缺失则不展示）。",
-        "今日命中0个关注方向板块"
+        "今日命中1个关注方向板块"
       ]
     }
   },
@@ -112987,7 +113011,7 @@
     "asOf": "2026-07-22",
     "requestedDate": "2026-07-22",
     "source": "https://www.duanxianxia.com/web/platerotat",
-    "refreshedAt": "2026-07-22T17:38:04+08:00",
+    "refreshedAt": "2026-07-22T18:27:09+08:00",
     "stale": false
   },
   "conceptFundFlowTop": [
