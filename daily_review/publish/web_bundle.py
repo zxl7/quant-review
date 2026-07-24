@@ -2944,7 +2944,7 @@ def _build_data_health(md: dict, *, date8: str) -> dict:
         payload_date = str(payload.get(date_key) or payload.get("date") or "").strip() if isinstance(payload, dict) else ""
         updated_at = ""
         if isinstance(payload, dict):
-            updated_at = str(payload.get("updated_at_bj") or payload.get("updatedAt") or payload.get("generatedAt") or payload.get("generated_at_bj") or "").strip()
+            updated_at = str(payload.get("updated_at_bj") or payload.get("updated_at") or payload.get("updatedAt") or payload.get("generatedAt") or payload.get("generated_at_bj") or "").strip()
         return {"name": name, "date": payload_date, "updatedAt": updated_at, "status": "fresh" if payload_date == date10 else "stale" if payload else "missing"}
 
     cache_online = ROOT / "cache_online"

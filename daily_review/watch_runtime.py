@@ -384,7 +384,8 @@ def write_intraday_runtime(*, root: Path, snapshot: dict[str, Any], envelope: di
     indices_rows, indices_as_of = _pick_runtime_indices(root=root, date10=date10, snapshot=snapshot)
     # live 与 latest 使用同一个已验收节点，拒绝原始响应穿透到顶部实时数值。
     latest_market = latest or {}
-    health = envelope.get("health") if isinstance(envelope, dict) and isinstance(envelope.get("health"), dict) else {}
+    health = dict(envelope.get("health") or {}) if isinstance(envelope, dict) and isinstance(envelope.get("health"), dict) else {}
+    health["indices_status"] = "valid" if indices_rows else "unavailable"
     payload = {
         "schema": "intraday_runtime_v1",
         "date": date10,

@@ -143,6 +143,14 @@ jobs:
           cp -f site_prev/cache/stock_research_realtime_quotes-*.json cache/ 2>/dev/null || true
           cp -f site_prev/cache/intraday_slices-*.json cache/ 2>/dev/null || true
           cp -f site_prev/cache/intraday_snapshots-*.json cache/ 2>/dev/null || true
+          # 全量构建也必须从部署分支恢复已验收的运行时，避免仓库内旧样例污染 dataHealth。
+          cp -f site_prev/intraday_runtime.json web/public/intraday_runtime.json 2>/dev/null || true
+          # 外部题材/异动结果也需要跨工作流保留；否则收盘任务会在下一轮从旧仓库缓存退化。
+          cp -f site_prev/cache/xuangubao_abnormal-*.json cache_online/ 2>/dev/null || true
+          cp -f site_prev/cache/xuangubao_surge_plates-*.json cache_online/ 2>/dev/null || true
+          cp -f site_prev/cache/eastmoney_tomorrow_themes-*.json cache_online/ 2>/dev/null || true
+          cp -f site_prev/cache/eastmoney_theme_stocks-*.json cache_online/ 2>/dev/null || true
+          cp -f site_prev/cache/watchlist_cache-*.json cache_online/ 2>/dev/null || true
           # 个股回测价格历史缓存实际读取自 cache_online/，需要从 gh-pages 恢复以避免每次冷启动重拉历史 K 线。
           cp -f site_prev/cache/recommendation_price_history.json cache_online/ 2>/dev/null || true
 
@@ -729,16 +737,16 @@ jobs:
             python3 tools/fetch_tomorrow_picks.py web/public/tomorrow_picks.json
             python3 tools/fetch_eastmoney_tomorrow.py web/public/eastmoney_tomorrow.json
             RUN_DATE="${run_date}" PYTHONPATH=. python3 - <<'PY'
-            import json
-            import os
-            from pathlib import Path
-            from daily_review.application.workflow_schedule import validate_external_data_freshness
+          import json
+          import os
+          from pathlib import Path
+          from daily_review.application.workflow_schedule import validate_external_data_freshness
 
-            result = validate_external_data_freshness(root=Path('.'), date10=os.environ['RUN_DATE'])
-            print('external_data_freshness=' + json.dumps(result, ensure_ascii=False, sort_keys=True))
-            if not result['ok']:
-                raise SystemExit(result['message'])
-            PY
+          result = validate_external_data_freshness(root=Path('.'), date10=os.environ['RUN_DATE'])
+          print('external_data_freshness=' + json.dumps(result, ensure_ascii=False, sort_keys=True))
+          if not result['ok']:
+              raise SystemExit(result['message'])
+          PY
           fi
           if [ "${{ github.event_name }}" = "schedule" ] && [ "${{ steps.timecheck.outputs.mode }}" = "eod" ]; then
             PYTHONPATH=. python3 scripts/build_account_nav_ledger.py >/dev/null
@@ -747,55 +755,6 @@ jobs:
             PYTHONPATH=. python3 scripts/build_account_nav_ledger.py >/dev/null || echo "⚠ account nav ledger sync failed"
             PYTHONPATH=. python3 scripts/build_account_strategy_metrics.py >/dev/null || echo "⚠ account strategy metrics sync failed"
           fi
-
-      - name: Generate intraday lightweight runtime snapshot only
-        if: ${{ (github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true') && steps.pushmode.outputs.mode == 'intraday' && steps.warmup.outputs.skip != 'true' && (github.event_name != 'schedule' || steps.tradeday.outputs.is_trade_today == 'true') }}
-        env:
-          BIYING_TOKEN: ${{ secrets.BIYING_TOKEN }}
-          BIYING_BASE_URL: ${{ secrets.BIYING_BASE_URL }}
-          RUN_DATE: ${{ steps.pushmode.outputs.date10 }}
-        run: |
-          set -euo pipefail
-          run_date="${RUN_DATE}"
-          echo "Intraday mode: runtime-only lightweight snapshot"
-          python3 - <<'PY'
-          import json
-          import os
-          from pathlib import Path
-
-          from daily_review.application.workflow_schedule import execute_auction_snapshot_prefetch
-
-          run_date = os.environ["RUN_DATE"]
-          result = execute_auction_snapshot_prefetch(
-              cache_dir=Path("cache"),
-              trade_date10=run_date,
-              force_outside_window=True,
-          )
-          print("auction_snapshot_prefetch_execution=" + json.dumps(result, ensure_ascii=False, sort_keys=True))
-          if result["ok"] and result["reason"] == "snapshot_ready_skip":
-              print(f"prefetch_plan_skip_snapshot_ready: trade_date={run_date}")
-              raise SystemExit(0)
-          if result["ok"]:
-              print(f"prefetch_plan_required_and_fetch_succeeded: trade_date={run_date} path={result.get('path') or '-'}")
-              raise SystemExit(0)
-          raise SystemExit(f"prefetch_plan_required_but_fetch_failed: trade_date={run_date} reason={result.get('reason') or '-'} last_error={result.get('last_error') or '-'}")
-          PY
-          ./qr.sh watch-slice "${run_date}"
-          D8="$(echo "${run_date}" | tr -d '-')"
-          D8="${D8}" PYTHONPATH=. python3 - <<'PY'
-          import os
-          from pathlib import Path
-          from daily_review.metrics.intraday_resonance import detect_resonance_from_cache, save_resonance_cache
-          root = Path('.')
-          d8 = os.environ['D8']
-          results = detect_resonance_from_cache(root, d8)
-          if results:
-              p = save_resonance_cache(root, d8, results)
-              print(f'Resonance saved: {p} ({len(results)} events)')
-          else:
-              print('No resonance events detected')
-          PY
-          cp -f ./cache_online/intraday_resonance-"${D8}".json ./web/public/intraday_resonance.json 2>/dev/null || true
 
       - name: Pre-fetch external data (明日策略池 + 东方财富今日题材)
         if: ${{ (github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true') && steps.warmup.outputs.skip != 'true' && (github.event_name != 'schedule' || steps.tradeday.outputs.is_trade_today == 'true') && steps.pushmode.outputs.mode != 'intraday' && steps.pushmode.outputs.mode != 'auction_prefetch' && steps.pushmode.outputs.mode != 'auction_prefetch_retry' }}
@@ -1070,8 +1029,8 @@ jobs:
             ls -la ./web/dist || true
             exit 4
           fi
-          # 旁路数据（前端有兜底逻辑，缺失不致命）：优先 web/dist，回退 web/public
-          for f in tomorrow_picks.json tomorrow_picks.js eastmoney_tomorrow.json intraday_resonance.json intraday_runtime.json; do
+          # 盘中运行时由独立工作流唯一发布；全量构建只发布复盘侧旁路数据。
+          for f in tomorrow_picks.json tomorrow_picks.js eastmoney_tomorrow.json intraday_resonance.json; do
             if [ -f "./web/dist/${f}" ]; then
               cp -f "./web/dist/${f}" "./site/${f}"
             elif [ -f "./web/public/${f}" ]; then
@@ -1084,49 +1043,6 @@ jobs:
           echo "site data files:"
           ls -la ./site/ | grep -E '\.(json|js|html)$' || true
 
-      - name: Commit intraday lightweight runtime snapshot only to gh-pages
-        if: ${{ (github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true') && steps.pushmode.outputs.mode == 'intraday' && steps.warmup.outputs.skip != 'true' && (github.event_name != 'schedule' || steps.tradeday.outputs.is_trade_today == 'true') }}
-        run: |
-          set -euo pipefail
-          cp -f ./web/public/intraday_runtime.json site_prev/intraday_runtime.json
-          if [ -f ./web/public/intraday_resonance.json ]; then
-            cp -f ./web/public/intraday_resonance.json site_prev/intraday_resonance.json
-          fi
-          mkdir -p site_prev/cache
-          cp -f cache/intraday_slices-*.json site_prev/cache/ 2>/dev/null || true
-          sfiles=( $(ls -1 site_prev/cache/intraday_slices-*.json 2>/dev/null | sort || true) )
-          if [ ${#sfiles[@]} -gt 2 ]; then
-            rm -f "${sfiles[@]:0:${#sfiles[@]}-2}"
-          fi
-          if git -C site_prev diff --quiet; then
-            echo "No intraday runtime changes to commit."
-            exit 0
-          fi
-          git -C site_prev status --porcelain
-          git -C site_prev config user.name "github-actions[bot]"
-          git -C site_prev config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git -C site_prev add intraday_runtime.json intraday_resonance.json cache/intraday_slices-*.json 2>/dev/null || true
-          git -C site_prev commit -m "deploy: intraday runtime" || true
-          push_rc=1
-          for attempt in 1 2 3; do
-            if git -C site_prev push origin HEAD:gh-pages; then
-              echo "Push intraday runtime to gh-pages succeeded on attempt ${attempt}"
-              push_rc=0
-              break
-            fi
-            push_rc=$?
-            echo "Push intraday runtime failed on attempt ${attempt} (rc=${push_rc})"
-            if [ "${attempt}" -lt 3 ]; then
-              sleep $((attempt * 5))
-              git -C site_prev fetch origin gh-pages || true
-              git -C site_prev rebase origin/gh-pages || {
-                git -C site_prev rebase --abort || true
-                echo "Rebase against origin/gh-pages failed; retrying push without rebase"
-              }
-            fi
-          done
-          exit "${push_rc}"
-
       - name: Commit & push to gh-pages
         if: ${{ (github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true') && steps.warmup.outputs.skip != 'true' && (github.event_name != 'schedule' || steps.tradeday.outputs.is_trade_today == 'true') && steps.pushmode.outputs.mode != 'intraday' && steps.pushmode.outputs.mode != 'auction_prefetch' && steps.pushmode.outputs.mode != 'auction_prefetch_retry' }}
         run: |
@@ -1138,9 +1054,9 @@ jobs:
           for f in ./site/*.html; do
             if [ -f "$f" ]; then cp -f "$f" site_prev/; fi
           done
-          # 运行时数据文件（market_data 是必需，其余有兜底）一律从 ./site/ 镜像到 gh-pages
+          # 盘中运行时与切片由 intraday_runtime.yml 独占；全量发布不能覆盖它们。
           for f in market_data.json market_data.js \
-                   tomorrow_picks.json tomorrow_picks.js eastmoney_tomorrow.json intraday_resonance.json intraday_runtime.json; do
+                   tomorrow_picks.json tomorrow_picks.js eastmoney_tomorrow.json intraday_resonance.json; do
             if [ -f "./site/${f}" ]; then
               cp -f "./site/${f}" "site_prev/${f}"
             fi
@@ -1176,14 +1092,15 @@ jobs:
             cp -f cache/account_strategy_metrics.json site_prev/cache/account_strategy_metrics.json
           fi
           cp -f cache/stock_research_realtime_quotes-*.json site_prev/cache/ 2>/dev/null || true
-          cp -f cache/intraday_slices-*.json site_prev/cache/ 2>/dev/null || true
+          # 持久化收盘在线抓取结果，供后续全量发布和页面降级复用。
+          cp -f cache_online/xuangubao_abnormal-*.json site_prev/cache/ 2>/dev/null || true
+          cp -f cache_online/xuangubao_surge_plates-*.json site_prev/cache/ 2>/dev/null || true
+          cp -f cache_online/eastmoney_tomorrow_themes-*.json site_prev/cache/ 2>/dev/null || true
+          cp -f cache_online/eastmoney_theme_stocks-*.json site_prev/cache/ 2>/dev/null || true
+          cp -f cache_online/watchlist_cache-*.json site_prev/cache/ 2>/dev/null || true
           cfiles=( $(ls -1 site_prev/cache/market_data-*.json 2>/dev/null | sort || true) )
           if [ ${#cfiles[@]} -gt 7 ]; then
             rm -f "${cfiles[@]:0:${#cfiles[@]}-7}"
-          fi
-          sfiles=( $(ls -1 site_prev/cache/intraday_slices-*.json 2>/dev/null | sort || true) )
-          if [ ${#sfiles[@]} -gt 2 ]; then
-            rm -f "${sfiles[@]:0:${#sfiles[@]}-2}"
           fi
           rfiles=( $(ls -1 site_prev/cache/stock_research_realtime_quotes-*.json 2>/dev/null | sort || true) )
           if [ ${#rfiles[@]} -gt 7 ]; then
@@ -1192,31 +1109,58 @@ jobs:
 
           cp -f ./cache_online/intraday_resonance-*.json site_prev/ 2>/dev/null || true
 
-          if git -C site_prev diff --quiet; then
-            echo "No changes to commit."
-            exit 0
-          fi
-          git -C site_prev status --porcelain
-          git -C site_prev config user.name "github-actions[bot]"
-          git -C site_prev config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git -C site_prev add -A
-          git -C site_prev commit -m "deploy: update report" || true
           push_rc=1
           for attempt in 1 2 3; do
+            # Full site artifacts cannot be rebased over an intraday JSON commit. Rebuild the
+            # deployment tree from the current remote head on every attempt, then overlay this run.
+            git -C site_prev fetch origin gh-pages
+            git -C site_prev reset --hard origin/gh-pages
+            git -C site_prev clean -fd
+            cp -f ./site/.nojekyll site_prev/.nojekyll
+            cp -f ./site/index.html site_prev/index.html
+            for f in ./site/*.html; do
+              if [ -f "$f" ]; then cp -f "$f" site_prev/; fi
+            done
+            for f in market_data.json market_data.js \
+                     tomorrow_picks.json tomorrow_picks.js eastmoney_tomorrow.json intraday_resonance.json; do
+              if [ -f "./site/${f}" ]; then cp -f "./site/${f}" "site_prev/${f}"; fi
+            done
+            cp -f cache/market_data-*.json site_prev/cache/ 2>/dev/null || true
+            cp -f cache/pools_cache.json cache/theme_cache.json cache/plate_rotate_cache.json site_prev/cache/ 2>/dev/null || true
+            cp -f cache/index_kline_cache.json cache/height_trend_cache.json cache/theme_trend_cache.json site_prev/cache/ 2>/dev/null || true
+            cp -f cache/concept_fund_flow_cache.json cache/money_flow_cache.json cache/trade_days_cache.json site_prev/cache/ 2>/dev/null || true
+            cp -f cache/stock_research_backtest_source.json cache/stock_research_realtime_quotes-*.json site_prev/cache/ 2>/dev/null || true
+            cp -f cache_online/recommendation_price_history.json cache_online/xuangubao_abnormal-*.json cache_online/xuangubao_surge_plates-*.json site_prev/cache/ 2>/dev/null || true
+            cp -f cache_online/eastmoney_tomorrow_themes-*.json cache_online/eastmoney_theme_stocks-*.json cache_online/watchlist_cache-*.json site_prev/cache/ 2>/dev/null || true
+            cp -f ./cache_online/intraday_resonance-*.json site_prev/ 2>/dev/null || true
+
+            # The full-report overlay must leave live runtime artifacts byte-for-byte unchanged.
+            if ! git -C site_prev diff --quiet -- intraday_runtime.json ':(glob)cache/intraday_slices-*.json'; then
+              echo "FATAL: full publish attempted to modify intraday runtime artifacts"
+              git -C site_prev diff -- intraday_runtime.json ':(glob)cache/intraday_slices-*.json'
+              exit 6
+            fi
+
+            if git -C site_prev diff --quiet; then
+              echo "No changes to commit."
+              push_rc=0
+              break
+            fi
+            git -C site_prev status --porcelain
+            git -C site_prev config user.name "github-actions[bot]"
+            git -C site_prev config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git -C site_prev add -A
+            git -C site_prev commit -m "deploy: update report"
             if git -C site_prev push origin HEAD:gh-pages; then
               echo "Push to gh-pages succeeded on attempt ${attempt}"
               push_rc=0
               break
+            else
+              push_rc=$?
             fi
-            push_rc=$?
             echo "Push to gh-pages failed on attempt ${attempt} (rc=${push_rc})"
             if [ "${attempt}" -lt 3 ]; then
               sleep $((attempt * 10))
-              git -C site_prev fetch origin gh-pages || true
-              git -C site_prev rebase origin/gh-pages || {
-                git -C site_prev rebase --abort || true
-                echo "Rebase against origin/gh-pages failed; retrying push without rebase"
-              }
             fi
           done
           exit "${push_rc}"

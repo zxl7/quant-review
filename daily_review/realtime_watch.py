@@ -260,6 +260,29 @@ def _fetch_index_amount(client, code: str) -> float:
     return 0.0
 
 
+def _fetch_indices_from_api(client) -> tuple[List[Dict[str, Any]], str]:
+    """实时指数备用读取，避免单个 URL 形态异常阻塞已验证的盘中市场快照。"""
+    rows: List[Dict[str, Any]] = []
+    as_of = ""
+    for code, name in (("000001.SH", "上证指数"), ("399001.SZ", "深证成指"), ("399006.SZ", "创业板指")):
+        try:
+            raw = client.api(f"hsindex/real/time/{code}")
+        except Exception:
+            raw = None
+        if not isinstance(raw, dict):
+            continue
+        price = _to_float(raw.get("p"), 0.0)
+        prev_close = _to_float(raw.get("yc"), 0.0)
+        if price <= 0:
+            continue
+        chg = ((price - prev_close) / prev_close * 100.0) if prev_close > 0 else _to_float(raw.get("pc"), 0.0)
+        stamp = str(raw.get("t") or "").strip()
+        if stamp:
+            as_of = stamp[11:19] if len(stamp) >= 19 else stamp
+        rows.append({"name": name, "code": code, "val": price, "chg": chg, "cje": _to_float(raw.get("cje"), 0.0), "t": stamp})
+    return rows, as_of
+
+
 
 def _market_from_biying(date10: str) -> Dict[str, Any]:
     """
@@ -290,6 +313,8 @@ def _market_from_biying(date10: str) -> Dict[str, Any]:
             client,
             [("000001.SH", "上证指数"), ("399001.SZ", "深证成指"), ("399006.SZ", "创业板指")],
         )
+        if len(indices) != 3 or not all(_to_float(x.get("val"), 0) > 0 for x in indices):
+            indices, indices_as_of = _fetch_indices_from_api(client)
     except Exception:
         return {"quality": "failed", "pool_status": {}, "indices": [], "indices_as_of": ""}
 

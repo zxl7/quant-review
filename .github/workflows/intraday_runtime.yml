@@ -1,21 +1,21 @@
 name: Publish intraday runtime
 
 on:
-  # GitHub Actions 的最小调度粒度为 5 分钟；此链路不再等待全量复盘初始化。
+  # 每个交易时段由一个 GitHub-hosted 会话持续采集；错峰任务用于主 cron 漏投递时接管。
   schedule:
-    - cron: "35-55/5 1 * * 1-5"
-    - cron: "*/5 2 * * 1-5"
-    - cron: "0-30/5 3 * * 1-5"
-    - cron: "*/5 5-6 * * 1-5"
+    - cron: "30 1 * * 1-5"
+    - cron: "40 1 * * 1-5"
+    - cron: "0 5 * * 1-5"
+    - cron: "10 5 * * 1-5"
   workflow_dispatch:
 
 permissions:
   contents: write
 
 concurrency:
-  # 盘中快照只保留最新一轮，避免延迟任务排队后反而降低实际更新频率。
-  group: intraday-runtime-publish
-  cancel-in-progress: true
+  # 主启动与补启动共享会话锁；手动单次恢复使用独立锁，不会等待完整会话结束。
+  group: ${{ github.event_name == 'workflow_dispatch' && format('intraday-runtime-manual-{0}', github.run_id) || (contains(github.event.schedule, ' 1 ') && 'intraday-runtime-morning' || 'intraday-runtime-afternoon') }}
+  cancel-in-progress: false
 
 env:
   TZ: Asia/Shanghai
@@ -24,7 +24,7 @@ env:
 jobs:
   runtime:
     runs-on: ubuntu-latest
-    timeout-minutes: 8
+    timeout-minutes: 150
     steps:
       - name: Checkout source
         uses: actions/checkout@v4
@@ -34,8 +34,31 @@ jobs:
         with:
           python-version: "3.11"
 
+      - name: Resolve session window
+        id: session
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          SCHEDULE_EXPR: ${{ github.event.schedule || '' }}
+        run: |
+          set -euo pipefail
+          PYTHONPATH=. python3 - <<'PY'
+          import json
+          import os
+          from daily_review.application.workflow_schedule import resolve_intraday_session
+
+          result = resolve_intraday_session(os.environ["EVENT_NAME"], os.environ["SCHEDULE_EXPR"])
+          print("intraday_session=" + json.dumps(result, ensure_ascii=False, sort_keys=True))
+          with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as fh:
+              for key in ("mode", "skip", "reason", "is_fallback", "end_epoch", "expected_iterations"):
+                  value = result[key]
+                  if isinstance(value, bool):
+                      value = str(value).lower()
+                  fh.write(f"{key}={value}\n")
+          PY
+
       - name: Resolve live trade date
         id: trade
+        if: ${{ steps.session.outputs.skip != 'true' }}
         env:
           BIYING_TOKEN: ${{ secrets.BIYING_TOKEN }}
           BIYING_BASE_URL: ${{ secrets.BIYING_BASE_URL }}
@@ -60,7 +83,7 @@ jobs:
           PY
 
       - name: Checkout published runtime history
-        if: ${{ steps.trade.outputs.skip != 'true' }}
+        if: ${{ steps.session.outputs.skip != 'true' && steps.trade.outputs.skip != 'true' }}
         uses: actions/checkout@v4
         with:
           ref: gh-pages
@@ -69,46 +92,158 @@ jobs:
           persist-credentials: true
 
       - name: Restore latest runtime slices
-        if: ${{ steps.trade.outputs.skip != 'true' }}
+        if: ${{ steps.session.outputs.skip != 'true' && steps.trade.outputs.skip != 'true' }}
         run: |
           set -euo pipefail
           mkdir -p cache web/public site_prev/cache
           cp -f site_prev/cache/intraday_slices-*.json cache/ 2>/dev/null || true
           cp -f site_prev/intraday_runtime.json web/public/intraday_runtime.json 2>/dev/null || true
 
-      - name: Fetch and validate intraday runtime
-        if: ${{ steps.trade.outputs.skip != 'true' }}
+      - name: Run intraday session
+        if: ${{ steps.session.outputs.skip != 'true' && steps.trade.outputs.skip != 'true' }}
         env:
           BIYING_TOKEN: ${{ secrets.BIYING_TOKEN }}
           BIYING_BASE_URL: ${{ secrets.BIYING_BASE_URL }}
           RUN_DATE: ${{ steps.trade.outputs.date10 }}
+          SESSION_MODE: ${{ steps.session.outputs.mode }}
+          SESSION_END_EPOCH: ${{ steps.session.outputs.end_epoch }}
+          EXPECTED_ITERATIONS: ${{ steps.session.outputs.expected_iterations }}
         run: |
           set -euo pipefail
-          ./qr.sh watch-slice "${RUN_DATE}"
-          PYTHONPATH=. python3 - <<'PY'
+          accepted_rounds=0
+          rejected_rounds=0
+          failed_rounds=0
+          completed_rounds=0
+
+          publish_runtime() {
+            local push_rc=1
+            local attempt
+            for attempt in 1 2 3; do
+              # site_prev is an ephemeral deployment checkout; reset before overlaying this iteration.
+              git -C site_prev fetch origin gh-pages
+              git -C site_prev reset --hard origin/gh-pages
+              cp -f web/public/intraday_runtime.json site_prev/intraday_runtime.json
+              mkdir -p site_prev/cache
+              cp -f cache/intraday_slices-*.json site_prev/cache/ 2>/dev/null || true
+              git -C site_prev add intraday_runtime.json cache/intraday_slices-*.json
+              if git -C site_prev diff --cached --quiet; then
+                return 0
+              fi
+              git -C site_prev config user.name "github-actions[bot]"
+              git -C site_prev config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+              git -C site_prev commit -m "deploy: intraday runtime"
+              if git -C site_prev push origin HEAD:gh-pages; then
+                return 0
+              else
+                push_rc=$?
+                echo "Intraday push failed on attempt ${attempt} (rc=${push_rc})"
+                sleep $((attempt * 3))
+              fi
+            done
+            return "${push_rc}"
+          }
+
+          run_iteration() {
+            local started_at before_count after_count before_date after_date elapsed rejected_reason last_valid_at runtime_backup
+            started_at="$(date +%s)"
+            before_count="$(python3 -c 'import json; from pathlib import Path; p = Path("web/public/intraday_runtime.json"); d = json.loads(p.read_text()) if p.exists() else {}; print(len(d.get("snapshots") or []))')"
+            before_date="$(python3 -c 'import json; from pathlib import Path; p = Path("web/public/intraday_runtime.json"); d = json.loads(p.read_text()) if p.exists() else {}; print(d.get("date") or "")')"
+            runtime_backup="$(mktemp)"
+            cp -f web/public/intraday_runtime.json "${runtime_backup}" 2>/dev/null || true
+
+            if ! ./qr.sh watch-slice "${RUN_DATE}"; then
+              elapsed=$(( $(date +%s) - started_at ))
+              echo "intraday_iteration_failed={\"beforeCount\":${before_count},\"elapsedSeconds\":${elapsed},\"reason\":\"watch_slice_failed\"}"
+              rm -f "${runtime_backup}"
+              return 1
+            fi
+            after_count="$(python3 -c 'import json; from pathlib import Path; d=json.loads(Path("web/public/intraday_runtime.json").read_text()); print(len(d.get("snapshots") or []))')"
+            after_date="$(python3 -c 'import json; from pathlib import Path; d=json.loads(Path("web/public/intraday_runtime.json").read_text()); print(d.get("date") or "")')"
+            if [ "${after_count}" -eq 0 ]; then
+              # 新交易日首轮空池不能替换昨日最后有效运行时；等首个可信节点后再切换日期。
+              if [ -s "${runtime_backup}" ]; then
+                cp -f "${runtime_backup}" web/public/intraday_runtime.json
+              fi
+              elapsed=$(( $(date +%s) - started_at ))
+              echo "intraday_snapshot_progress={\"beforeCount\":${before_count},\"afterCount\":${before_count},\"lastValidAt\":\"\",\"rejectedReason\":\"no_valid_snapshot_preserved\",\"elapsedSeconds\":${elapsed}}"
+              rm -f "${runtime_backup}"
+              return 2
+            fi
+            rm -f "${runtime_backup}"
+            if ! PYTHONPATH=. python3 - <<'PY'
           import json
           from pathlib import Path
           from daily_review.application.workflow_schedule import validate_intraday_runtime_indices
 
-          result = validate_intraday_runtime_indices(Path("web/public/intraday_runtime.json"))
+          result = validate_intraday_runtime_indices(Path("web/public/intraday_runtime.json"), require_indices=False)
           print("intraday_runtime_validation=" + json.dumps(result, ensure_ascii=False, sort_keys=True))
           if not result["ok"]:
               raise SystemExit(result["message"])
           PY
+            then
+              return 1
+            fi
 
-      - name: Publish runtime only
-        if: ${{ steps.trade.outputs.skip != 'true' }}
-        run: |
-          set -euo pipefail
-          cp -f web/public/intraday_runtime.json site_prev/intraday_runtime.json
-          mkdir -p site_prev/cache
-          cp -f cache/intraday_slices-*.json site_prev/cache/ 2>/dev/null || true
-          git -C site_prev add intraday_runtime.json cache/intraday_slices-*.json
-          if git -C site_prev diff --cached --quiet; then
-            echo "No effective intraday runtime update."
-            exit 0
+            rejected_reason="$(python3 -c 'import json; from pathlib import Path; d=json.loads(Path("web/public/intraday_runtime.json").read_text()); print((d.get("health") or {}).get("rejected_reason") or "")')"
+            last_valid_at="$(python3 -c 'import json; from pathlib import Path; d=json.loads(Path("web/public/intraday_runtime.json").read_text()); print((d.get("health") or {}).get("last_valid_at") or d.get("updated_at") or "")')"
+            if ! publish_runtime; then
+              return 1
+            fi
+            elapsed=$(( $(date +%s) - started_at ))
+            BEFORE_COUNT="${before_count}" AFTER_COUNT="${after_count}" LAST_VALID_AT="${last_valid_at}" REJECTED_REASON="${rejected_reason}" ELAPSED="${elapsed}" python3 - <<'PY'
+          import json
+          import os
+
+          print("intraday_snapshot_progress=" + json.dumps({
+              "beforeCount": int(os.environ["BEFORE_COUNT"]),
+              "afterCount": int(os.environ["AFTER_COUNT"]),
+              "lastValidAt": os.environ["LAST_VALID_AT"],
+              "rejectedReason": os.environ["REJECTED_REASON"],
+              "elapsedSeconds": int(os.environ["ELAPSED"]),
+          }, ensure_ascii=False, sort_keys=True))
+          PY
+            if [ "${after_date}" = "${RUN_DATE}" ] && { [ "${before_date}" != "${RUN_DATE}" ] || [ "${after_count}" -gt "${before_count}" ]; }; then
+              return 0
+            fi
+            return 2
+          }
+
+          run_and_count() {
+            local rc=0
+            set +e
+            run_iteration
+            rc=$?
+            set -e
+            completed_rounds=$((completed_rounds + 1))
+            if [ "${rc}" -eq 0 ]; then
+              accepted_rounds=$((accepted_rounds + 1))
+            elif [ "${rc}" -eq 2 ]; then
+              rejected_rounds=$((rejected_rounds + 1))
+            else
+              failed_rounds=$((failed_rounds + 1))
+            fi
+          }
+
+          if [ "${SESSION_MODE}" = "once" ]; then
+            run_and_count
+          else
+            next_run_epoch="$(date +%s)"
+            while [ "$(date +%s)" -le "${SESSION_END_EPOCH}" ]; do
+              now_epoch="$(date +%s)"
+              if [ "${now_epoch}" -lt "${next_run_epoch}" ]; then
+                sleep $((next_run_epoch - now_epoch))
+              fi
+              if [ "$(date +%s)" -gt "${SESSION_END_EPOCH}" ]; then
+                break
+              fi
+              run_and_count
+              # 首轮立即恢复数据，后续回到自然的 10 分钟刻度，避免调度延迟累积成整日偏移。
+              now_epoch="$(date +%s)"
+              next_run_epoch=$(( (now_epoch / 600 + 1) * 600 ))
+            done
           fi
-          git -C site_prev config user.name "github-actions[bot]"
-          git -C site_prev config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git -C site_prev commit -m "deploy: intraday runtime"
-          git -C site_prev push origin HEAD:gh-pages
+
+          echo "intraday_session_summary={\"mode\":\"${SESSION_MODE}\",\"expectedRounds\":${EXPECTED_ITERATIONS},\"completedRounds\":${completed_rounds},\"acceptedRounds\":${accepted_rounds},\"rejectedRounds\":${rejected_rounds},\"failedRounds\":${failed_rounds}}"
+          if [ "${accepted_rounds}" -eq 0 ] && [ "${rejected_rounds}" -eq 0 ]; then
+            exit 1
+          fi

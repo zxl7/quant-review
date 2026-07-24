@@ -17,6 +17,7 @@ from daily_review.application.workflow_schedule import (
     describe_prefetched_quotes_snapshot,
     execute_auction_snapshot_prefetch,
     resolve_auction_snapshot_prefetch_plan,
+    resolve_intraday_session,
     resolve_publish_schedule_mode,
     resolve_full_publish_source_cache,
     resolve_stock_research_query_plan,
@@ -33,6 +34,24 @@ TZ_BJ = timezone(timedelta(hours=8))
 
 
 class WorkflowScheduleTest(unittest.TestCase):
+    def test_full_publish_never_writes_intraday_runtime_artifacts(self) -> None:
+        root = Path(__file__).resolve().parents[1]
+        workflow = (root / ".github" / "workflows" / "publish_pages.yml").read_text(encoding="utf-8")
+        full_publish = workflow.split("- name: Commit & push to gh-pages", 1)[1]
+
+        self.assertNotIn("cp -f cache/intraday_slices", full_publish)
+        self.assertNotIn("intraday_runtime.json; do", full_publish)
+        self.assertIn("FATAL: full publish attempted to modify intraday runtime artifacts", full_publish)
+        self.assertNotIn("./qr.sh watch-slice", workflow)
+
+        intraday_workflow = (root / ".github" / "workflows" / "intraday_runtime.yml").read_text(encoding="utf-8")
+        self.assertEqual(intraday_workflow.count("./qr.sh watch-slice"), 1)
+        for cron in ("30 1 * * 1-5", "40 1 * * 1-5", "0 5 * * 1-5", "10 5 * * 1-5"):
+            self.assertIn(f'cron: "{cron}"', intraday_workflow)
+        self.assertIn("timeout-minutes: 150", intraday_workflow)
+        self.assertIn("next_run_epoch=$(( (now_epoch / 600 + 1) * 600 ))", intraday_workflow)
+        self.assertIn("no_valid_snapshot_preserved", intraday_workflow)
+
     def test_validate_external_data_freshness_requires_all_same_day_artifacts(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
@@ -99,15 +118,34 @@ class WorkflowScheduleTest(unittest.TestCase):
     def test_prefetch_only_modes_are_explicit(self) -> None:
         self.assertEqual(AUCTION_PREFETCH_ONLY_MODES, {"auction_prefetch", "auction_prefetch_retry"})
 
-    def test_intraday_schedule_promotes_to_eod_after_close_when_runner_starts_late(self) -> None:
-        delayed_now = datetime(2026, 6, 24, 15, 43, tzinfo=TZ_BJ)
-        result = resolve_publish_schedule_mode("schedule", "*/5 5-6 * * 1-5", now=delayed_now)
-        self.assertEqual(result["mode"], "eod")
-        self.assertEqual(result["beijing_now"], "15:43")
-        self.assertEqual(
-            result["reason"],
-            "promoted_delayed_intraday_to_eod:*/5 5-6 * * 1-5@15:43",
+    def test_intraday_session_fallback_takes_over_remaining_morning(self) -> None:
+        result = resolve_intraday_session(
+            "schedule",
+            "40 1 * * 1-5",
+            now=datetime(2026, 6, 24, 9, 44, tzinfo=TZ_BJ),
         )
+        self.assertFalse(result["skip"])
+        self.assertEqual(result["mode"], "morning")
+        self.assertEqual(result["expected_iterations"], 11)
+
+    def test_intraday_session_queued_fallback_exits_after_window(self) -> None:
+        result = resolve_intraday_session(
+            "schedule",
+            "40 1 * * 1-5",
+            now=datetime(2026, 6, 24, 11, 31, tzinfo=TZ_BJ),
+        )
+        self.assertTrue(result["skip"])
+        self.assertEqual(result["reason"], "session_finished")
+
+    def test_intraday_manual_dispatch_is_one_iteration(self) -> None:
+        result = resolve_intraday_session(
+            "workflow_dispatch",
+            "",
+            now=datetime(2026, 6, 24, 10, 8, tzinfo=TZ_BJ),
+        )
+        self.assertFalse(result["skip"])
+        self.assertEqual(result["mode"], "once")
+        self.assertEqual(result["expected_iterations"], 1)
 
     def test_resolve_full_publish_source_cache_prefers_requested_day(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

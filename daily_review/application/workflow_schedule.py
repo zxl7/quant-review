@@ -13,14 +13,21 @@ SCHEDULE_MODE_BY_CRON: dict[str, str] = {
     "25 1 * * 1-5": "auction_prefetch",
     "26 1 * * 1-5": "open_fore",
     "27 1 * * 1-5": "auction_prefetch_retry",
-    "35-55/5 1 * * 1-5": "intraday",
-    "*/5 2 * * 1-5": "intraday",
-    "0-30/5 3 * * 1-5": "intraday",
-    "*/5 5-6 * * 1-5": "intraday",
     "0 7 * * 1-5": "eod",
     "0 8 * * 1-5": "eod",
     "0 9 * * 1-5": "eod",
     "0 10 * * 1-5": "eod",
+}
+
+INTRADAY_SESSION_BY_CRON: dict[str, str] = {
+    "30 1 * * 1-5": "morning",
+    "40 1 * * 1-5": "morning",
+    "0 5 * * 1-5": "afternoon",
+    "10 5 * * 1-5": "afternoon",
+}
+INTRADAY_SESSION_WINDOWS: dict[str, tuple[tuple[int, int], tuple[int, int]]] = {
+    "morning": ((9, 30), (11, 30)),
+    "afternoon": ((13, 0), (14, 50)),
 }
 
 INVALID_QUOTE_SOURCES = {"unavailable", "forced_query_unavailable"}
@@ -35,6 +42,42 @@ PREFETCH_RETRY_SLEEP_SECONDS = 1.2
 
 def _now_bj() -> datetime:
     return datetime.now(TZ_BJ)
+
+
+def resolve_intraday_session(event_name: str, schedule_expr: str, *, now: datetime | None = None) -> dict[str, Any]:
+    """Resolve one GitHub-hosted session; delayed fallback jobs exit after the trading window."""
+    current = (now or _now_bj()).astimezone(TZ_BJ)
+    if str(event_name or "").strip() == "workflow_dispatch":
+        return {
+            "mode": "once",
+            "skip": False,
+            "reason": "manual_once",
+            "is_fallback": False,
+            "end_epoch": 0,
+            "expected_iterations": 1,
+        }
+
+    session = INTRADAY_SESSION_BY_CRON.get(str(schedule_expr or "").strip(), "")
+    if not session:
+        return {"mode": "", "skip": True, "reason": "unknown_schedule", "is_fallback": False, "end_epoch": 0, "expected_iterations": 0}
+
+    (start_hour, start_minute), (end_hour, end_minute) = INTRADAY_SESSION_WINDOWS[session]
+    start = current.replace(hour=start_hour, minute=start_minute, second=0, microsecond=0)
+    end = current.replace(hour=end_hour, minute=end_minute, second=59, microsecond=0)
+    if current < start:
+        return {"mode": session, "skip": True, "reason": "before_session", "is_fallback": schedule_expr in {"40 1 * * 1-5", "10 5 * * 1-5"}, "end_epoch": int(end.timestamp()), "expected_iterations": 0}
+    if current > end:
+        return {"mode": session, "skip": True, "reason": "session_finished", "is_fallback": schedule_expr in {"40 1 * * 1-5", "10 5 * * 1-5"}, "end_epoch": int(end.timestamp()), "expected_iterations": 0}
+
+    expected = int((end - current).total_seconds()) // 600 + 1
+    return {
+        "mode": session,
+        "skip": False,
+        "reason": "session_active",
+        "is_fallback": schedule_expr in {"40 1 * * 1-5", "10 5 * * 1-5"},
+        "end_epoch": int(end.timestamp()),
+        "expected_iterations": expected,
+    }
 
 
 def _read_json(path: Path) -> dict[str, Any]:
@@ -545,7 +588,7 @@ def validate_eod_stock_research_prediction_pool(path: Path, run_date10: str) -> 
     return result
 
 
-def validate_intraday_runtime_indices(path: Path) -> dict[str, Any]:
+def validate_intraday_runtime_indices(path: Path, *, require_indices: bool = True) -> dict[str, Any]:
     result: dict[str, Any] = {
         "ok": True,
         "message": "indices_ready",
@@ -568,12 +611,14 @@ def validate_intraday_runtime_indices(path: Path) -> dict[str, Any]:
     result["as_of"] = as_of
     required = {"上证指数", "深证成指", "创业板指"}
     if len(names) < 3 or not required.issubset(set(names)) or not as_of:
-        result["ok"] = False
         result["message"] = (
             "intraday_runtime_indices_incomplete: "
             f"count={len(names)} names={names} as_of={as_of or '<missing>'}"
         )
-        return result
+        if require_indices:
+            result["ok"] = False
+            return result
+        result["message"] = "market_snapshot_valid_indices_unavailable"
 
     # 发布前拒绝把午休、空池或与 latest 不一致的旧轨迹重新带回线上。
     snapshots = payload.get("snapshots") if isinstance(payload.get("snapshots"), list) else []
