@@ -46,8 +46,17 @@ class WorkflowScheduleTest(unittest.TestCase):
 
         intraday_workflow = (root / ".github" / "workflows" / "intraday_runtime.yml").read_text(encoding="utf-8")
         self.assertEqual(intraday_workflow.count("./qr.sh watch-slice"), 1)
-        for cron in ("30 1 * * 1-5", "40 1 * * 1-5", "0 5 * * 1-5", "10 5 * * 1-5"):
+        compacted_crons = (
+            "30,40,50 1 * * 1-5",
+            "0,10,20,30,40,50 2 * * 1-5",
+            "0,10,20,30 3 * * 1-5",
+            "0,10,20,30,40,50 5 * * 1-5",
+            "0,10,20,30,40,50 6 * * 1-5",
+            "0 7 * * 1-5",
+        )
+        for cron in compacted_crons:
             self.assertIn(f'cron: "{cron}"', intraday_workflow)
+        self.assertEqual(intraday_workflow.count('    - cron: "'), len(compacted_crons))
         self.assertIn("timeout-minutes: 150", intraday_workflow)
         self.assertIn("next_run_epoch=$(( (now_epoch / 600 + 1) * 600 ))", intraday_workflow)
         self.assertIn("no_valid_snapshot_preserved", intraday_workflow)
@@ -146,6 +155,22 @@ class WorkflowScheduleTest(unittest.TestCase):
         self.assertFalse(result["skip"])
         self.assertEqual(result["mode"], "once")
         self.assertEqual(result["expected_iterations"], 1)
+
+    def test_compacted_intraday_crons_resolve_to_one_iteration(self) -> None:
+        cases = (
+            ("30,40,50 1 * * 1-5", datetime(2026, 6, 24, 9, 40, tzinfo=TZ_BJ)),
+            ("0,10,20,30,40,50 2 * * 1-5", datetime(2026, 6, 24, 10, 20, tzinfo=TZ_BJ)),
+            ("0,10,20,30 3 * * 1-5", datetime(2026, 6, 24, 11, 30, tzinfo=TZ_BJ)),
+            ("0,10,20,30,40,50 5 * * 1-5", datetime(2026, 6, 24, 13, 20, tzinfo=TZ_BJ)),
+            ("0,10,20,30,40,50 6 * * 1-5", datetime(2026, 6, 24, 14, 20, tzinfo=TZ_BJ)),
+            ("0 7 * * 1-5", datetime(2026, 6, 24, 15, 0, tzinfo=TZ_BJ)),
+        )
+        for cron, now in cases:
+            with self.subTest(cron=cron):
+                result = resolve_intraday_session("schedule", cron, now=now)
+                self.assertFalse(result["skip"])
+                self.assertEqual(result["mode"], "once")
+                self.assertEqual(result["expected_iterations"], 1)
 
     def test_resolve_full_publish_source_cache_prefers_requested_day(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

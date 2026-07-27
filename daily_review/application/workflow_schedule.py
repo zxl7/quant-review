@@ -30,33 +30,12 @@ INTRADAY_SESSION_BY_CRON: dict[str, str] = {
 # 任一 cron 漏投/延迟只丢该槽位，相邻 10 分钟 cron 仍补上，从而“保证 10 分钟一帧”
 # （区别于会话模型——会话依赖单个启动 cron 准时，启动被延迟即整段缺失）。
 INTRADAY_ONCE_BY_CRON: dict[str, str] = {
-    # 上午盘 09:30-11:30（北京时间），每 10 分钟一次
-    "30 1 * * 1-5": "morning",
-    "40 1 * * 1-5": "morning",
-    "50 1 * * 1-5": "morning",
-    "0 2 * * 1-5": "morning",
-    "10 2 * * 1-5": "morning",
-    "20 2 * * 1-5": "morning",
-    "30 2 * * 1-5": "morning",
-    "40 2 * * 1-5": "morning",
-    "50 2 * * 1-5": "morning",
-    "0 3 * * 1-5": "morning",
-    "10 3 * * 1-5": "morning",
-    "20 3 * * 1-5": "morning",
-    "30 3 * * 1-5": "morning",
-    # 下午盘 13:00-15:00（北京时间），每 10 分钟一次
-    "0 5 * * 1-5": "afternoon",
-    "10 5 * * 1-5": "afternoon",
-    "20 5 * * 1-5": "afternoon",
-    "30 5 * * 1-5": "afternoon",
-    "40 5 * * 1-5": "afternoon",
-    "50 5 * * 1-5": "afternoon",
-    "0 6 * * 1-5": "afternoon",
-    "10 6 * * 1-5": "afternoon",
-    "20 6 * * 1-5": "afternoon",
-    "30 6 * * 1-5": "afternoon",
-    "40 6 * * 1-5": "afternoon",
-    "50 6 * * 1-5": "afternoon",
+    # YAML 将同一小时的分钟槽位合并，控制 schedule 总数不超过 GitHub Actions 上限。
+    "30,40,50 1 * * 1-5": "morning",
+    "0,10,20,30,40,50 2 * * 1-5": "morning",
+    "0,10,20,30 3 * * 1-5": "morning",
+    "0,10,20,30,40,50 5 * * 1-5": "afternoon",
+    "0,10,20,30,40,50 6 * * 1-5": "afternoon",
     "0 7 * * 1-5": "afternoon",
 }
 INTRADAY_SESSION_WINDOWS: dict[str, tuple[tuple[int, int], tuple[int, int]]] = {
