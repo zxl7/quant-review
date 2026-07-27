@@ -35,6 +35,11 @@ function latestSnapshotTs(source: unknown): string {
 }
 
 function isRuntimePayloadFresh(runtime: IntradayRuntime, fallback: Record<string, any> | null, marketDate: string) {
+  const runtimeRows = Array.isArray(runtime?.snapshots) ? runtime.snapshots : []
+  const fallbackRows = Array.isArray(fallback?.snapshots) ? fallback.snapshots : []
+  if (!runtimeRows.length) return false
+  // 收盘、周末全量发布可能生成日期更新但节点为空的回退数据，此时必须保留最后可信盘中轨迹。
+  if (!fallbackRows.length) return true
   const runtimeDate = String(runtime?.date || '').trim()
   if (runtimeDate && marketDate && runtimeDate < marketDate) return false
   const runtimeTs = latestSnapshotTs(runtime)
