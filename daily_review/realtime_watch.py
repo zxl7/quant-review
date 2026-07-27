@@ -318,20 +318,22 @@ def _market_from_biying(date10: str) -> Dict[str, Any]:
     except Exception:
         return {"quality": "failed", "pool_status": {}, "indices": [], "indices_as_of": ""}
 
-    zt_cnt = len(zt) if isinstance(zt, list) else 0
-    zab_cnt = len(zb) if isinstance(zb, list) else 0
+    pool_status = {key: value["status"] for key, value in pool_results.items()}
+    pool_valid = {key: status in {"valid", "valid_empty"} for key, status in pool_status.items()}
+    zt_cnt = len(zt) if pool_valid["ztgc"] and isinstance(zt, list) else None
+    zab_cnt = len(zb) if pool_valid["zbgc"] and isinstance(zb, list) else None
     # 盘中风控统一看非 ST 跌停，避免 ST 把风险预警抬高。
-    dt_cnt = len(filter_non_st_stocks(dt if isinstance(dt, list) else []))
+    dt_cnt = len(filter_non_st_stocks(dt)) if pool_valid["dtgc"] and isinstance(dt, list) else None
 
-    lianban_cnt = 0
-    max_lianban = 0
-    if isinstance(zt, list):
+    lianban_cnt = None
+    max_lianban = None
+    if pool_valid["ztgc"] and isinstance(zt, list):
         lbs = [_to_int(x.get("lbc"), 1) for x in zt if isinstance(x, dict)]
         lianban_cnt = sum(1 for lb in lbs if lb >= 2)
         max_lianban = max(lbs) if lbs else 0
 
-    try_total = zt_cnt + zab_cnt
-    zab_rate = (zab_cnt / try_total * 100.0) if try_total > 0 else 0.0
+    try_total = (zt_cnt or 0) + (zab_cnt or 0)
+    zab_rate = (zab_cnt / try_total * 100.0) if zab_cnt is not None and zt_cnt is not None and try_total > 0 else None
 
     # 成交额：直接获取上证(000001.SH) + 深证(399001.SZ) 实时成交额
     amount_val = 0.0
@@ -347,12 +349,12 @@ def _market_from_biying(date10: str) -> Dict[str, Any]:
         "zt": zt_cnt,
         "dt": dt_cnt,
         "zab": zab_cnt,
-        "zab_rate": round(zab_rate, 1),
+        "zab_rate": round(zab_rate, 1) if zab_rate is not None else None,
         "lianban": lianban_cnt,
         "max_lianban": max_lianban,
         "amount": amount_str,
-        "quality": "valid" if all(x["status"] in {"valid", "valid_empty"} for x in pool_results.values()) else "partial",
-        "pool_status": {key: value["status"] for key, value in pool_results.items()},
+        "quality": "valid" if all(pool_valid.values()) else "partial",
+        "pool_status": pool_status,
         "pool_errors": {key: value["error"] for key, value in pool_results.items() if value.get("error")},
         "indices": indices if len(indices) == 3 and all(_to_float(x.get("val"), 0) > 0 for x in indices) else [],
         "indices_as_of": indices_as_of if len(indices) == 3 else "",
@@ -429,10 +431,28 @@ def build_live_snapshot(date8: str | None = None, *, intraday: bool = True) -> "
             indices_as_of = str(m2.get("indices_as_of") or "")
             health = {"status": "valid", "pool_status": m2.get("pool_status") or {}, "pool_errors": {}}
         elif m2:
-            # 三池任一请求失败时不把缺失池解释为 0，沿用上一次完整缓存。
+            # 核心涨停池有效时保留部分可信节点；失败的辅助池字段保持为空，绝不伪造为 0。
+            pool_status = m2.get("pool_status") or {}
+            valid_status = {"valid", "valid_empty"}
+            if pool_status.get("ztgc") in valid_status:
+                zt_cnt = m2.get("zt")
+                lianban_cnt = m2.get("lianban")
+                max_lianban = m2.get("max_lianban")
+            if pool_status.get("dtgc") in valid_status:
+                dt_cnt = m2.get("dt")
+            else:
+                dt_cnt = None
+            if pool_status.get("zbgc") in valid_status:
+                zab_cnt = m2.get("zab")
+                zab_rate = m2.get("zab_rate")
+            else:
+                zab_cnt = None
+                zab_rate = None
+            indices = m2.get("indices") if isinstance(m2.get("indices"), list) else []
+            indices_as_of = str(m2.get("indices_as_of") or "")
             health = {
                 "status": "partial",
-                "pool_status": m2.get("pool_status") or {},
+                "pool_status": pool_status,
                 "pool_errors": m2.get("pool_errors") or {},
             }
             alerts.append({"level": "warn", "text": "盘中三池响应不完整，保留最近有效数据"})
@@ -452,17 +472,17 @@ def build_live_snapshot(date8: str | None = None, *, intraday: bool = True) -> "
             alerts.append({"level": "warn", "text": "板块数据获取失败或为空（稍后重试）"})
 
     # 负反馈：跌停/炸板过多
-    if dt_cnt >= 20:
+    if dt_cnt is not None and dt_cnt >= 20:
         alerts.append({"level": "danger", "text": f"跌停偏多（{dt_cnt}）→ 亏钱扩散风险上升"})
-    elif dt_cnt >= 10:
+    elif dt_cnt is not None and dt_cnt >= 10:
         alerts.append({"level": "warn", "text": f"跌停偏多（{dt_cnt}）→ 控制追高"})
 
-    if zab_rate >= 35:
+    if zab_rate is not None and zab_rate >= 35:
         alerts.append({"level": "danger", "text": f"炸板率高（{zab_rate:.1f}%）→ 分歧偏强，谨慎接力"})
-    elif zab_rate >= 25:
+    elif zab_rate is not None and zab_rate >= 25:
         alerts.append({"level": "warn", "text": f"炸板率偏高（{zab_rate:.1f}%）→ 注意回封质量"})
 
-    if max_lianban >= 6 and zab_rate >= 25:
+    if max_lianban is not None and zab_rate is not None and max_lianban >= 6 and zab_rate >= 25:
         alerts.append({"level": "warn", "text": f"高度{max_lianban}板 + 分歧不低 → 高位兑现/炸板风险"})
 
     # 主线不明：仅在 AkShare 有涨跌幅时判断

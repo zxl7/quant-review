@@ -125,8 +125,12 @@ def _is_market_snapshot_credible(snapshot: dict[str, Any], prev: dict[str, Any] 
 def _snapshot_rejection_reason(snapshot: dict[str, Any], prev: dict[str, Any] | None) -> str:
     """给运行时健康状态提供可审计的拒绝原因。"""
     health = snapshot.get("health") if isinstance(snapshot.get("health"), dict) else {}
-    if health and str(health.get("status") or "") not in {"valid", ""}:
-        return f"source_{health.get('status')}"
+    source_status = str(health.get("status") or "")
+    pool_status = health.get("pool_status") if isinstance(health.get("pool_status"), dict) else {}
+    # 核心涨停池完整即可形成部分可信节点；辅助池失败字段保持为空，不影响十分钟轨迹连续性。
+    partial_core_valid = source_status == "partial" and str(pool_status.get("ztgc") or "") in {"valid", "valid_empty"}
+    if health and source_status not in {"valid", ""} and not partial_core_valid:
+        return f"source_{source_status}"
     ts_bj = str(snapshot.get("ts_bj") or "")
     if not _is_trading_session(ts_bj):
         return "outside_trading_session"
@@ -268,6 +272,8 @@ def _shift_label(score: int) -> str:
 
 
 def _shift_note(curr: dict[str, Any], prev: dict[str, Any] | None) -> str:
+    if curr.get("shift_score") is None:
+        return "核心涨停池有效，辅助池暂时缺失；节点已保留，缺失指标不参与判断。"
     if not prev:
         return "盘中实时切片已接入，可逐点观察情绪变化。"
     diff = int(curr.get("shift_score", 0) or 0) - int(prev.get("shift_score", 0) or 0)
@@ -286,15 +292,17 @@ def _build_slice(snapshot: dict[str, Any], prev: dict[str, Any] | None = None) -
     market = snapshot.get("market") or {}
     ts_bj = str(snapshot.get("ts_bj") or "")
     zt = int(round(_to_num(market.get("zt"), 0)))
-    zab = int(round(_to_num(market.get("zab"), 0)))
-    dt = int(round(_to_num(market.get("dt"), 0)))
+    zab_known = market.get("zab") is not None
+    dt_known = market.get("dt") is not None
+    zab = int(round(_to_num(market.get("zab"), 0))) if zab_known else None
+    dt = int(round(_to_num(market.get("dt"), 0))) if dt_known else None
     lianban = int(round(_to_num(market.get("lianban"), 0)))
     max_lb = int(round(_to_num(market.get("max_lianban"), 0)))
-    zb = round(_to_num(market.get("zab_rate"), 0), 1)
-    fb = round(zt / max(zt + zab, 1) * 100.0, 1)
+    zb = round(_to_num(market.get("zab_rate"), 0), 1) if market.get("zab_rate") is not None else None
+    fb = round(zt / max(zt + zab, 1) * 100.0, 1) if zab is not None else None
     jj = round(lianban / max(zt, 1) * 100.0, 1)
-    heat = int(round(max(0.0, min(100.0, 0.42 * fb + 0.24 * jj + min(zt, 100) * 0.16 + min(max_lb * 12.0, 100) * 0.18))))
-    risk = int(round(max(0.0, min(100.0, zb * 0.55 + min(dt * 5.0, 100.0) * 0.30 + min(zab * 3.0, 100.0) * 0.15))))
+    heat = int(round(max(0.0, min(100.0, 0.42 * fb + 0.24 * jj + min(zt, 100) * 0.16 + min(max_lb * 12.0, 100) * 0.18)))) if fb is not None else None
+    risk = int(round(max(0.0, min(100.0, zb * 0.55 + min(dt * 5.0, 100.0) * 0.30 + min(zab * 3.0, 100.0) * 0.15)))) if zb is not None and dt is not None and zab is not None else None
     rec = {
         "time": _display_time_from_ts_bj(ts_bj),
         "ts_bj": ts_bj,
@@ -321,8 +329,8 @@ def _build_slice(snapshot: dict[str, Any], prev: dict[str, Any] | None = None) -
         ],
         "alerts": snapshot.get("alerts") or [],
     }
-    rec["shift_score"] = _calc_shift_score(rec)
-    rec["shift_label"] = _shift_label(rec["shift_score"])
+    rec["shift_score"] = _calc_shift_score(rec) if heat is not None and risk is not None else None
+    rec["shift_label"] = _shift_label(rec["shift_score"]) if rec["shift_score"] is not None else "数据部分可用"
     rec["headline"] = rec["shift_label"]
     rec["note"] = _shift_note(rec, prev)
     return rec

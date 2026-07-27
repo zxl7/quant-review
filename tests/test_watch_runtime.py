@@ -60,6 +60,37 @@ class WatchRuntimeTest(unittest.TestCase):
         self.assertEqual(payload["count"], 1)
         self.assertEqual(payload["latest"]["dt"], 2)
 
+    def test_append_intraday_slice_accepts_partial_snapshot_with_valid_core_pool(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            payload = watch_runtime.append_intraday_slice(
+                root=Path(tmp),
+                snapshot={
+                    "date": "2026-07-27",
+                    "ts_bj": "2026-07-27 11:20:00",
+                    "health": {"status": "partial", "pool_status": {"ztgc": "valid", "zbgc": "failed", "dtgc": "valid"}},
+                    "market": {"zt": 31, "dt": 2, "zab": None, "lianban": 12, "max_lianban": 5},
+                },
+            )
+
+        self.assertEqual(payload["count"], 1)
+        self.assertEqual(payload["latest"]["zt"], 31)
+        self.assertEqual(payload["latest"]["zab"], None)
+
+    def test_append_intraday_slice_rejects_partial_snapshot_without_core_pool(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            payload = watch_runtime.append_intraday_slice(
+                root=Path(tmp),
+                snapshot={
+                    "date": "2026-07-27",
+                    "ts_bj": "2026-07-27 11:20:00",
+                    "health": {"status": "partial", "pool_status": {"ztgc": "failed", "zbgc": "valid", "dtgc": "valid"}},
+                    "market": {"zt": 0, "dt": 2, "zab": 4, "lianban": 0, "max_lianban": 0},
+                },
+            )
+
+        self.assertEqual(payload["count"], 0)
+        self.assertEqual(payload["health"]["rejected_reason"], "source_partial")
+
     def test_append_intraday_slice_cleans_preexisting_polluted_rows(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
