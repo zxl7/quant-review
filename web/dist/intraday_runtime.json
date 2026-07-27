@@ -1,1 +1,65 @@
-{"schema": "intraday_runtime_v1", "date": "2026-07-03", "updated_at": "", "source": "market_data.intradaySnapshots", "latest": null, "snapshots": [], "live": {"market": {}, "alerts": [], "concepts": []}, "indices": [{"name": "上证指数", "code": "000001.SH", "val": "4043.64", "chg": "+0.37%", "price": 4043.643, "ma5": 4070.656, "ma20": null, "cje": 1465563104900.0}, {"name": "深证成指", "code": "399001.SZ", "val": "15597.51", "chg": "+0.64%", "price": 15597.512, "ma5": 15846.784, "ma20": null, "cje": 1716890416200.0}, {"name": "创业板指", "code": "399006.SZ", "val": "4019.93", "chg": "+0.07%", "price": 4019.934, "cje": 809250391400.0}], "asOf": {"indices": "收盘"}}
+{
+  "schema": "intraday_runtime_v1",
+  "date": "2026-07-24",
+  "updated_at": "",
+  "source": "必盈(实时)+必盈(实时)",
+  "latest": null,
+  "snapshots": [],
+  "indices": [
+    {
+      "name": "上证指数",
+      "code": "000001.SH",
+      "val": 3814.198,
+      "chg": -1.6142016938296988,
+      "cje": 915366398300.0,
+      "t": "2026-07-24 15:00:09"
+    },
+    {
+      "name": "深证成指",
+      "code": "399001.SZ",
+      "val": 13774.676,
+      "chg": -2.4684799388698497,
+      "cje": 1015773624000.0,
+      "t": "2026-07-24 15:00:03"
+    },
+    {
+      "name": "创业板指",
+      "code": "399006.SZ",
+      "val": 3480.87,
+      "chg": -2.6471674050208107,
+      "cje": 449292067300.0,
+      "t": "2026-07-24 15:00:03"
+    }
+  ],
+  "asOf": {
+    "indices": "15:00:03"
+  },
+  "health": {
+    "status": "stale",
+    "last_valid_at": "",
+    "rejected_reason": "outside_trading_session",
+    "source": {
+      "status": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid"
+      },
+      "pool_errors": {}
+    },
+    "indices_status": "valid"
+  },
+  "live": {
+    "market": {
+      "zt": null,
+      "dt": null,
+      "zab": null,
+      "zab_rate": null,
+      "lianban": null,
+      "max_lianban": null,
+      "amount": null
+    },
+    "alerts": [],
+    "concepts": []
+  }
+}

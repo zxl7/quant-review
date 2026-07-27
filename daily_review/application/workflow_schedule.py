@@ -25,9 +25,43 @@ INTRADAY_SESSION_BY_CRON: dict[str, str] = {
     "0 5 * * 1-5": "afternoon",
     "10 5 * * 1-5": "afternoon",
 }
+
+# 单帧模式：交易时段内每 10 分钟一个 cron，各自抓一帧并发布。
+# 任一 cron 漏投/延迟只丢该槽位，相邻 10 分钟 cron 仍补上，从而“保证 10 分钟一帧”
+# （区别于会话模型——会话依赖单个启动 cron 准时，启动被延迟即整段缺失）。
+INTRADAY_ONCE_BY_CRON: dict[str, str] = {
+    # 上午盘 09:30-11:30（北京时间），每 10 分钟一次
+    "30 1 * * 1-5": "morning",
+    "40 1 * * 1-5": "morning",
+    "50 1 * * 1-5": "morning",
+    "0 2 * * 1-5": "morning",
+    "10 2 * * 1-5": "morning",
+    "20 2 * * 1-5": "morning",
+    "30 2 * * 1-5": "morning",
+    "40 2 * * 1-5": "morning",
+    "50 2 * * 1-5": "morning",
+    "0 3 * * 1-5": "morning",
+    "10 3 * * 1-5": "morning",
+    "20 3 * * 1-5": "morning",
+    "30 3 * * 1-5": "morning",
+    # 下午盘 13:00-15:00（北京时间），每 10 分钟一次
+    "0 5 * * 1-5": "afternoon",
+    "10 5 * * 1-5": "afternoon",
+    "20 5 * * 1-5": "afternoon",
+    "30 5 * * 1-5": "afternoon",
+    "40 5 * * 1-5": "afternoon",
+    "50 5 * * 1-5": "afternoon",
+    "0 6 * * 1-5": "afternoon",
+    "10 6 * * 1-5": "afternoon",
+    "20 6 * * 1-5": "afternoon",
+    "30 6 * * 1-5": "afternoon",
+    "40 6 * * 1-5": "afternoon",
+    "50 6 * * 1-5": "afternoon",
+    "0 7 * * 1-5": "afternoon",
+}
 INTRADAY_SESSION_WINDOWS: dict[str, tuple[tuple[int, int], tuple[int, int]]] = {
     "morning": ((9, 30), (11, 30)),
-    "afternoon": ((13, 0), (14, 50)),
+    "afternoon": ((13, 0), (15, 0)),
 }
 
 INVALID_QUOTE_SOURCES = {"unavailable", "forced_query_unavailable"}
@@ -45,7 +79,11 @@ def _now_bj() -> datetime:
 
 
 def resolve_intraday_session(event_name: str, schedule_expr: str, *, now: datetime | None = None) -> dict[str, Any]:
-    """Resolve one GitHub-hosted session; delayed fallback jobs exit after the trading window."""
+    """Resolve one GitHub-hosted session; delayed fallback jobs exit after the trading window.
+
+    单帧模式（INTRADAY_ONCE_BY_CRON）优先：交易时段内每 10 分钟一个 cron，各自抓一帧并发布，
+    从而“保证 10 分钟一帧”——漏投/延迟只丢该槽位，不被放大成整段缺失。
+    """
     current = (now or _now_bj()).astimezone(TZ_BJ)
     if str(event_name or "").strip() == "workflow_dispatch":
         return {
@@ -54,6 +92,24 @@ def resolve_intraday_session(event_name: str, schedule_expr: str, *, now: dateti
             "reason": "manual_once",
             "is_fallback": False,
             "end_epoch": 0,
+            "expected_iterations": 1,
+        }
+
+    once_session = INTRADAY_ONCE_BY_CRON.get(str(schedule_expr or "").strip(), "")
+    if once_session:
+        (start_hour, start_minute), (end_hour, end_minute) = INTRADAY_SESSION_WINDOWS[once_session]
+        start = current.replace(hour=start_hour, minute=start_minute, second=0, microsecond=0)
+        end = current.replace(hour=end_hour, minute=end_minute, second=59, microsecond=0)
+        if current < start:
+            return {"mode": "once", "skip": True, "reason": "before_session", "is_fallback": False, "end_epoch": int(end.timestamp()), "expected_iterations": 0}
+        if current > end:
+            return {"mode": "once", "skip": True, "reason": "session_finished", "is_fallback": False, "end_epoch": int(end.timestamp()), "expected_iterations": 0}
+        return {
+            "mode": "once",
+            "skip": False,
+            "reason": "once_active",
+            "is_fallback": False,
+            "end_epoch": int(end.timestamp()),
             "expected_iterations": 1,
         }
 

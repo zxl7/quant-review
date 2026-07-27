@@ -159,7 +159,15 @@ const hotStats = computed(() => ({
   plates: hotPlates.value.length,
 }));
 const selectedLeaderStocks = computed(() => {
-  const rows = hotLeaderStocksByPlateId.value[hotSelectedPlateId.value] || [];
+  const raw = hotLeaderStocksByPlateId.value[hotSelectedPlateId.value] || [];
+  // 展示层防御去重：按 normalizeCode 去重，避免同一股票在"代表股详情"里重复出现。
+  const seen = new Set<string>();
+  const rows = raw.filter((stock) => {
+    const code = normalizeCode(stock.code);
+    if (!code || seen.has(code)) return false;
+    seen.add(code);
+    return true;
+  });
   return [...rows].sort((a, b) => {
     const limitDiff = Number(b.limitUpDays || 0) - Number(a.limitUpDays || 0);
     if (limitDiff !== 0) return limitDiff;
@@ -1125,8 +1133,17 @@ const loadHotStocks = async (mode = hotMode.value, force = false) => {
       const stockIndex = new Map(hydratedStocks.map((stock) => [normalizeCode(stock.code), stock]));
       const nextLeaderStocksByPlateId: Record<string, HotStock[]> = {};
       Object.entries(stocksByPlateId).forEach(([plateId, stocks]) => {
+        // 去重：上游解析层用原始 code 去重，若同一股票返回格式不一致（如 600000 / 600000.SH）
+        // 会漏拦；此处用 normalizeCode 统一 key，确保单个板块内的代表股不重复。
+        const seenCodes = new Set<string>();
+        const deduped = (stocks || []).filter((stock) => {
+          const code = normalizeCode(stock.code);
+          if (!code || seenCodes.has(code)) return false;
+          seenCodes.add(code);
+          return true;
+        });
         nextLeaderStocksByPlateId[plateId] = applyStockEventEnhancements(
-          stocks.map((stock) => stockIndex.get(normalizeCode(stock.code)) || stock),
+          deduped.map((stock) => stockIndex.get(normalizeCode(stock.code)) || stock),
         );
       });
       hotLeaderStocksByPlateId.value = nextLeaderStocksByPlateId;

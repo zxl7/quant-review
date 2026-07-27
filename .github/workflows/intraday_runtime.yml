@@ -1,20 +1,48 @@
 name: Publish intraday runtime
 
 on:
-  # 每个交易时段由一个 GitHub-hosted 会话持续采集；错峰任务用于主 cron 漏投递时接管。
+  # 单帧模式：交易时段内每 10 分钟一个 cron（上午 09:30-11:30、下午 13:00-15:00，北京时间），
+  # 各自抓一帧并发布。任一 cron 漏投/延迟只丢该 10 分钟槽位，相邻槽位仍补上，从而“保证 10 分钟一帧”
+  # （resolve_intraday_session 对 INTRADAY_ONCE_BY_CRON 返回 mode=once，工作流单次迭代即退出）。
+  # 收盘后的全量更新由 publish_pages.yml 独立负责，此处不改。
   schedule:
+    # 上午盘 09:30-11:30，每 10 分钟一次
     - cron: "30 1 * * 1-5"
     - cron: "40 1 * * 1-5"
+    - cron: "50 1 * * 1-5"
+    - cron: "0 2 * * 1-5"
+    - cron: "10 2 * * 1-5"
+    - cron: "20 2 * * 1-5"
+    - cron: "30 2 * * 1-5"
+    - cron: "40 2 * * 1-5"
+    - cron: "50 2 * * 1-5"
+    - cron: "0 3 * * 1-5"
+    - cron: "10 3 * * 1-5"
+    - cron: "20 3 * * 1-5"
+    - cron: "30 3 * * 1-5"
+    # 下午盘 13:00-15:00，每 10 分钟一次
     - cron: "0 5 * * 1-5"
     - cron: "10 5 * * 1-5"
+    - cron: "20 5 * * 1-5"
+    - cron: "30 5 * * 1-5"
+    - cron: "40 5 * * 1-5"
+    - cron: "50 5 * * 1-5"
+    - cron: "0 6 * * 1-5"
+    - cron: "10 6 * * 1-5"
+    - cron: "20 6 * * 1-5"
+    - cron: "30 6 * * 1-5"
+    - cron: "40 6 * * 1-5"
+    - cron: "50 6 * * 1-5"
+    - cron: "0 7 * * 1-5"
   workflow_dispatch:
 
 permissions:
   contents: write
 
 concurrency:
-  # 主启动与补启动共享会话锁；手动单次恢复使用独立锁，不会等待完整会话结束。
-  group: ${{ github.event_name == 'workflow_dispatch' && format('intraday-runtime-manual-{0}', github.run_id) || (contains(github.event.schedule, ' 1 ') && 'intraday-runtime-morning' || 'intraday-runtime-afternoon') }}
+  # 单帧模式所有定时运行共享一把锁串行执行，避免并行 push 互相覆盖丢失切片；
+  # 单次运行约 1-3 分钟，10 分钟间隔内可完成，不会造成级联积压。手动单次恢复使用独立锁。
+  group: ${{ github.event_name == 'workflow_dispatch' && format('intraday-runtime-manual-{0}', github.run_id) || 'intraday-runtime-once' }}
   cancel-in-progress: false
 
 env:
