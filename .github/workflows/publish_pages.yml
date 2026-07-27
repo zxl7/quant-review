@@ -940,7 +940,9 @@ jobs:
           PY
 
       - name: Validate eod stock research closeout
-        if: ${{ github.event_name == 'schedule' && steps.timecheck.outputs.mode == 'eod' && steps.timecheck.outputs.skip != 'true' && steps.warmup.outputs.skip != 'true' && steps.tradeday.outputs.is_trade_today == 'true' && steps.pushmode.outputs.mode != 'intraday' }}
+        # 收盘闭环价格有时晚于 15:00/16:00/17:00 发布任务落地；早 EOD 先恢复线上产物，
+        # 只在北京时间 18:00 的最终兜底 cron 强制拦截缺失闭环。
+        if: ${{ github.event_name == 'schedule' && github.event.schedule == '0 10 * * 1-5' && steps.timecheck.outputs.mode == 'eod' && steps.timecheck.outputs.skip != 'true' && steps.warmup.outputs.skip != 'true' && steps.tradeday.outputs.is_trade_today == 'true' && steps.pushmode.outputs.mode != 'intraday' }}
         env:
           RUN_DATE: ${{ steps.pushmode.outputs.date10 }}
         run: |
