@@ -496,7 +496,8 @@ def build_live_snapshot(date8: str | None = None, *, intraday: bool = True) -> "
         "zt": zt_cnt,
         "dt": dt_cnt,
         "zab": zab_cnt,
-        "zab_rate": round(zab_rate, 1),
+        # 辅助炸板池失败时保留 None，避免既伪造 0 又因 round(None) 中断整帧。
+        "zab_rate": round(zab_rate, 1) if zab_rate is not None else None,
         "lianban": lianban_cnt,
         "max_lianban": max_lianban,
         "amount": str(amount) if amount else "",
