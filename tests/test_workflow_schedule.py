@@ -73,6 +73,20 @@ class WorkflowScheduleTest(unittest.TestCase):
         self.assertIn("::warning title=Stock research closeout delayed::", closeout_step)
         self.assertNotIn('raise SystemExit(result["message"])', closeout_step)
 
+    def test_push_publish_does_not_require_time_sensitive_auction_snapshot(self) -> None:
+        root = Path(__file__).resolve().parents[1]
+        workflow = (root / ".github" / "workflows" / "publish_pages.yml").read_text(encoding="utf-8")
+        ensure_step = workflow.split("- name: Ensure today auction snapshot before full publish", 1)[1].split(
+            "- name: Generate latest full report", 1
+        )[0]
+        validate_step = workflow.split("- name: Validate stock research snapshot in published market data", 1)[1].split(
+            "- name: Validate eod stock research prediction pool", 1
+        )[0]
+
+        # 代码 push 可以发生在竞价窗口外，不能依赖尚未生成的 09:25 快照。
+        self.assertIn("github.event_name != 'push'", ensure_step)
+        self.assertIn("github.event_name != 'push'", validate_step)
+
     def test_validate_external_data_freshness_requires_all_same_day_artifacts(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)

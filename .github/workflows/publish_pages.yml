@@ -596,7 +596,8 @@ jobs:
           echo "Final stock research strategy: refresh_backtest=${refresh_backtest} validate_snapshot=${validate_snapshot} query_tag=${effective_query_tag:-<none>} reason=${resolution_reason}"
 
       - name: Ensure today auction snapshot before full publish
-        if: ${{ (github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true') && steps.warmup.outputs.skip != 'true' && (github.event_name != 'schedule' || steps.tradeday.outputs.is_trade_today == 'true') && steps.pushmode.outputs.mode != 'intraday' && steps.pushmode.outputs.mode != 'auction_prefetch' && steps.pushmode.outputs.mode != 'auction_prefetch_retry' }}
+        # push 只负责部署代码，可能发生在 09:25 竞价窗口之前；不得因业务快照尚未生成而阻断部署。
+        if: ${{ github.event_name != 'push' && (github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true') && steps.warmup.outputs.skip != 'true' && (github.event_name != 'schedule' || steps.tradeday.outputs.is_trade_today == 'true') && steps.pushmode.outputs.mode != 'intraday' && steps.pushmode.outputs.mode != 'auction_prefetch' && steps.pushmode.outputs.mode != 'auction_prefetch_retry' }}
         env:
           BIYING_TOKEN: ${{ secrets.BIYING_TOKEN }}
           BIYING_BASE_URL: ${{ secrets.BIYING_BASE_URL }}
@@ -827,7 +828,8 @@ jobs:
           python3 inject_data.py "${d8}" --source "${source_path}"
 
       - name: Validate stock research snapshot in published market data
-        if: ${{ (github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true') && steps.warmup.outputs.skip != 'true' && (github.event_name != 'schedule' || steps.tradeday.outputs.is_trade_today == 'true') && steps.pushmode.outputs.mode != 'intraday' && steps.pushmode.outputs.mode != 'auction_prefetch' && steps.pushmode.outputs.mode != 'auction_prefetch_retry' && steps.stockresearchfinal.outputs.validate_snapshot == 'true' }}
+        # push 不对竞价时窗数据做强校验；业务 schedule/显式手动任务仍按策略严格校验。
+        if: ${{ github.event_name != 'push' && (github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true') && steps.warmup.outputs.skip != 'true' && (github.event_name != 'schedule' || steps.tradeday.outputs.is_trade_today == 'true') && steps.pushmode.outputs.mode != 'intraday' && steps.pushmode.outputs.mode != 'auction_prefetch' && steps.pushmode.outputs.mode != 'auction_prefetch_retry' && steps.stockresearchfinal.outputs.validate_snapshot == 'true' }}
         env:
           EVENT_NAME: ${{ github.event_name }}
           RUN_DATE: ${{ steps.pushmode.outputs.date10 }}
