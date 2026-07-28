@@ -14,12 +14,15 @@ on:
         required: false
         default: ""
         type: string
-  # 工作日北京时间固定保留 4 条自动链路：
+  # 工作日北京时间保留开盘控制、竞价兜底和收盘复盘链路：
+  # - 08:55 / 09:15：提前启动开盘控制器，任务内等待到 09:25
   # - 09:25：仅做轻量竞价快照预抓，不跑 full publish
   # - 09:26：早盘主链执行一次正式 fetch，进入前先确保今日竞价快照
-  # - 09:27：仅做一次轻量竞价预抓兜底
+  # - 09:27：完整开盘发布兜底，保证并发队列最终保留的是可发布任务
   # - 15:00 / 16:00 / 17:00 / 18:00：执行收盘后全量复盘发布
   schedule:
+    - cron: "55 0 * * 1-5"
+    - cron: "15 1 * * 1-5"
     - cron: "25 1 * * 1-5"
     - cron: "26 1 * * 1-5"
     - cron: "27 1 * * 1-5"
@@ -42,7 +45,7 @@ concurrency:
   # push 与 workflow_dispatch 分通道串行：
   # - 各自通道内仍按分支串行，避免同一来源的重复发布互相覆盖；
   # - 手动触发不再和同分支 push 共用一个等待队列，避免 queued run 被“更高优先级等待项”顶掉。
-  group: ${{ github.event_name == 'schedule' && format('gh-pages-publish-schedule-{0}', github.event.schedule) || github.event_name == 'workflow_dispatch' && format('gh-pages-publish-dispatch-{0}', github.ref_name) || format('gh-pages-publish-push-{0}', github.ref_name) }}
+  group: ${{ github.event_name == 'schedule' && (github.event.schedule == '55 0 * * 1-5' || github.event.schedule == '15 1 * * 1-5' || github.event.schedule == '25 1 * * 1-5' || github.event.schedule == '26 1 * * 1-5' || github.event.schedule == '27 1 * * 1-5') && 'gh-pages-publish-open' || github.event_name == 'schedule' && format('gh-pages-publish-schedule-{0}', github.event.schedule) || github.event_name == 'workflow_dispatch' && format('gh-pages-publish-dispatch-{0}', github.ref_name) || format('gh-pages-publish-push-{0}', github.ref_name) }}
   # 不取消已在执行中的发布；仅让同通道的新请求接替旧的等待项。
   cancel-in-progress: false
 
@@ -57,7 +60,7 @@ env:
 jobs:
   build:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 75
     outputs:
       skip: ${{ steps.timecheck.outputs.skip }}
     steps:
@@ -90,6 +93,23 @@ jobs:
               fh.write(f"beijing_now={result['beijing_now']}\n")
               fh.write(f"schedule_expr={result['schedule_expr']}\n")
           PY
+
+      - name: Wait for 09:25 auction window (early open controller only)
+        if: ${{ github.event_name == 'schedule' && (github.event.schedule == '55 0 * * 1-5' || github.event.schedule == '15 1 * * 1-5') && steps.timecheck.outputs.skip != 'true' }}
+        run: |
+          set -euo pipefail
+          wait_seconds="$(python3 - <<'PY'
+          from datetime import datetime, timedelta, timezone
+
+          now = datetime.now(timezone(timedelta(hours=8)))
+          target = now.replace(hour=9, minute=25, second=0, microsecond=0)
+          print(max(0, int((target - now).total_seconds())))
+          PY
+          )"
+          if [ "${wait_seconds}" -gt 0 ]; then
+            echo "Waiting ${wait_seconds}s for the 09:25 auction window"
+            sleep "${wait_seconds}"
+          fi
 
       - name: Compute cache key (Beijing date)
         id: datekey
@@ -437,7 +457,7 @@ jobs:
               print(f"{marker}: trade_date={run_date} path={result.get('path') or '-'} as_of={result.get('as_of') or '-'}")
               raise SystemExit(0)
           marker = "09:27_prefetch_retry_only" if force_outside_window else "09:25_prefetch_only_failed"
-          raise SystemExit(f"{marker}: trade_date={run_date} reason={result.get('reason') or '-'} last_error={result.get('last_error') or '-'}")
+          print(f"::warning title=Auction prefetch unavailable::{marker}: trade_date={run_date} reason={result.get('reason') or '-'} last_error={result.get('last_error') or '-'}")
           PY
 
       - name: Commit auction snapshot prefetch cache only to gh-pages
@@ -602,7 +622,7 @@ jobs:
           BIYING_TOKEN: ${{ secrets.BIYING_TOKEN }}
           BIYING_BASE_URL: ${{ secrets.BIYING_BASE_URL }}
           RUN_DATE: ${{ steps.pushmode.outputs.date10 }}
-          FORCE_OUTSIDE_WINDOW: ${{ github.event_name == 'schedule' && steps.pushmode.outputs.mode == 'open_fore' && 'true' || 'false' }}
+          FORCE_OUTSIDE_WINDOW: ${{ github.event_name == 'schedule' && steps.timecheck.outputs.mode == 'open_fore' && 'true' || 'false' }}
         run: |
           set -euo pipefail
           python3 - <<'PY'
@@ -626,7 +646,7 @@ jobs:
           if result["ok"]:
               print(f"09:26_prefetch_then_full_publish: trade_date={run_date} path={result.get('path') or '-'} as_of={result.get('as_of') or '-'}")
               raise SystemExit(0)
-          raise SystemExit(f"prefetch_plan_required_but_fetch_failed: trade_date={run_date} reason={result.get('reason') or '-'} last_error={result.get('last_error') or '-'}")
+          print(f"::warning title=Auction prefetch unavailable::trade_date={run_date} reason={result.get('reason') or '-'} last_error={result.get('last_error') or '-'}; full publish will continue with the latest valid research history")
           PY
 
       - name: Generate latest full report (online fetch -> offline pipeline rebuild)
@@ -734,10 +754,15 @@ jobs:
           fi
           if [ "${refresh_external}" = "true" ]; then
             # 收盘/手动恢复必须完整刷新题材证据，不能只用昨日缓存重算推票。
-            PYTHONPATH=. python3 tools/fetch_watchlist.py --date "${run_date}" --mode eod
-            python3 tools/fetch_tomorrow_picks.py web/public/tomorrow_picks.json
-            python3 tools/fetch_eastmoney_tomorrow.py web/public/eastmoney_tomorrow.json
-            RUN_DATE="${run_date}" PYTHONPATH=. python3 - <<'PY'
+            external_backup="$(mktemp -d)"
+            mkdir -p "${external_backup}/cache_online" "${external_backup}/web_public"
+            cp -f cache_online/*.json "${external_backup}/cache_online/" 2>/dev/null || true
+            cp -f web/public/tomorrow_picks.json web/public/eastmoney_tomorrow.json "${external_backup}/web_public/" 2>/dev/null || true
+            external_ok=true
+            PYTHONPATH=. python3 tools/fetch_watchlist.py --date "${run_date}" --mode eod || { echo "::warning title=Auxiliary pool refresh failed::watchlist refresh failed; preserving last valid artifacts"; external_ok=false; }
+            python3 tools/fetch_tomorrow_picks.py web/public/tomorrow_picks.json || { echo "::warning title=Auxiliary pool refresh failed::tomorrow picks refresh failed; preserving last valid artifacts"; external_ok=false; }
+            python3 tools/fetch_eastmoney_tomorrow.py web/public/eastmoney_tomorrow.json || { echo "::warning title=Auxiliary pool refresh failed::eastmoney refresh failed; preserving last valid artifacts"; external_ok=false; }
+            if ! RUN_DATE="${run_date}" PYTHONPATH=. python3 - <<'PY'
           import json
           import os
           from pathlib import Path
@@ -748,10 +773,26 @@ jobs:
           if not result['ok']:
               raise SystemExit(result['message'])
           PY
+            then
+              external_ok=false
+            fi
+            if [ "${external_ok}" != "true" ]; then
+              # 任一辅助源失败都恢复整组旧文件，避免半新半旧或空文件污染线上页面。
+              date8="${run_date//-/}"
+              rm -f "cache_online/xuangubao_abnormal-${date8}.json" \
+                    "cache_online/xuangubao_surge_plates-${date8}.json" \
+                    "cache_online/eastmoney_tomorrow_themes-${date8}.json" \
+                    "cache_online/eastmoney_theme_stocks-${date8}.json" \
+                    "cache_online/watchlist_cache-${date8}.json"
+              cp -f "${external_backup}/cache_online/"*.json cache_online/ 2>/dev/null || true
+              cp -f "${external_backup}/web_public/"*.json web/public/ 2>/dev/null || true
+              echo "::warning title=External data degraded::Same-day auxiliary data is incomplete; latest valid artifacts were preserved"
+            fi
+            rm -rf "${external_backup}"
           fi
           if [ "${{ github.event_name }}" = "schedule" ] && [ "${{ steps.timecheck.outputs.mode }}" = "eod" ]; then
-            PYTHONPATH=. python3 scripts/build_account_nav_ledger.py >/dev/null
-            PYTHONPATH=. python3 scripts/build_account_strategy_metrics.py >/dev/null
+            PYTHONPATH=. python3 scripts/build_account_nav_ledger.py >/dev/null || echo "::warning title=Account review delayed::account nav ledger sync failed"
+            PYTHONPATH=. python3 scripts/build_account_strategy_metrics.py >/dev/null || echo "::warning title=Account review delayed::account strategy metrics sync failed"
           elif [ "${{ github.event_name }}" != "schedule" ]; then
             PYTHONPATH=. python3 scripts/build_account_nav_ledger.py >/dev/null || echo "⚠ account nav ledger sync failed"
             PYTHONPATH=. python3 scripts/build_account_strategy_metrics.py >/dev/null || echo "⚠ account strategy metrics sync failed"
@@ -900,7 +941,9 @@ jobs:
           result["published_date"] = published_date
           print("published_stock_research_snapshot=" + json.dumps(result, ensure_ascii=False, sort_keys=True))
           if not result["ok"]:
-              raise SystemExit(result["message"])
+              print(f"::warning title=Stock research snapshot degraded::{result['message']}; latest renderable history remains available")
+          elif result.get("quality") == "degraded":
+              print(f"::warning title=Auction quote delayed::{result['message']} quote_time={result.get('quote_time') or '-'} source={result.get('source') or '-'}")
           PY
 
       - name: Validate eod stock research prediction pool
@@ -922,7 +965,7 @@ jobs:
           )
           print("published_stock_research_prediction_pool=" + json.dumps(result, ensure_ascii=False, sort_keys=True))
           if not result["ok"]:
-              raise SystemExit(result["message"])
+              print(f"::warning title=Stock research prediction delayed::{result['message']}")
           PY
 
       - name: Validate intraday runtime indices in published artifacts
@@ -982,7 +1025,7 @@ jobs:
           )
           print("published_account_derivatives=" + json.dumps(result, ensure_ascii=False, sort_keys=True))
           if not result["ok"]:
-              raise SystemExit(result["message"])
+              print(f"::warning title=Account review delayed::{result['message']}")
           PY
 
       - name: Prepare Pages site

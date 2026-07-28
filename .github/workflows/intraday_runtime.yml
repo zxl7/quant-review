@@ -1,29 +1,20 @@
 name: Publish intraday runtime
 
 on:
-  # 单帧模式：交易时段内每 10 分钟一个 cron（上午 09:30-11:30、下午 13:00-15:00，北京时间），
-  # 各自抓一帧并发布。任一 cron 漏投/延迟只丢该 10 分钟槽位，相邻槽位仍补上，从而“保证 10 分钟一帧”
-  # （resolve_intraday_session 对 INTRADAY_ONCE_BY_CRON 返回 mode=once，工作流单次迭代即退出）。
-  # 收盘后的全量更新由 publish_pages.yml 独立负责，此处不改。
+  # GitHub cron 提前启动上午/下午会话，任务内等待开盘并按自然十分钟刻度循环。
+  # 第二条 cron 是同会话兜底；共享 concurrency 锁，避免两个长任务并行覆盖 gh-pages。
   schedule:
-    # 上午盘 09:30-11:30，每 10 分钟一次
-    # 合并同一小时的分钟槽位，避免超过 GitHub 单工作流最多 20 条 schedule 的限制。
-    - cron: "30,40,50 1 * * 1-5"
-    - cron: "0,10,20,30,40,50 2 * * 1-5"
-    - cron: "0,10,20,30 3 * * 1-5"
-    # 下午盘 13:00-15:00，每 10 分钟一次
-    - cron: "0,10,20,30,40,50 5 * * 1-5"
-    - cron: "0,10,20,30,40,50 6 * * 1-5"
-    - cron: "0 7 * * 1-5"
+    - cron: "5 1 * * 1-5"   # 北京时间 09:05，上午主任务
+    - cron: "17 1 * * 1-5"  # 北京时间 09:17，上午兜底
+    - cron: "35 4 * * 1-5"  # 北京时间 12:35，下午主任务
+    - cron: "47 4 * * 1-5"  # 北京时间 12:47，下午兜底
   workflow_dispatch:
 
 permissions:
   contents: write
 
 concurrency:
-  # 单帧模式所有定时运行共享一把锁串行执行，避免并行 push 互相覆盖丢失切片；
-  # 单次运行约 1-3 分钟，10 分钟间隔内可完成，不会造成级联积压。手动单次恢复使用独立锁。
-  group: ${{ github.event_name == 'workflow_dispatch' && format('intraday-runtime-manual-{0}', github.run_id) || 'intraday-runtime-once' }}
+  group: ${{ github.event_name == 'workflow_dispatch' && format('intraday-runtime-manual-{0}', github.run_id) || (github.event.schedule == '5 1 * * 1-5' || github.event.schedule == '17 1 * * 1-5') && 'intraday-runtime-morning' || 'intraday-runtime-afternoon' }}
   cancel-in-progress: false
 
 env:
@@ -33,7 +24,7 @@ env:
 jobs:
   runtime:
     runs-on: ubuntu-latest
-    timeout-minutes: 150
+    timeout-minutes: 165
     steps:
       - name: Checkout source
         uses: actions/checkout@v4
@@ -58,12 +49,25 @@ jobs:
           result = resolve_intraday_session(os.environ["EVENT_NAME"], os.environ["SCHEDULE_EXPR"])
           print("intraday_session=" + json.dumps(result, ensure_ascii=False, sort_keys=True))
           with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as fh:
-              for key in ("mode", "skip", "reason", "is_fallback", "end_epoch", "expected_iterations"):
+              for key in ("mode", "skip", "reason", "is_fallback", "start_epoch", "end_epoch", "next_slot_epoch", "wait_seconds", "expected_iterations"):
                   value = result[key]
                   if isinstance(value, bool):
                       value = str(value).lower()
                   fh.write(f"{key}={value}\n")
           PY
+
+      - name: Wait for first session slot
+        if: ${{ steps.session.outputs.skip != 'true' && steps.session.outputs.mode != 'once' }}
+        env:
+          NEXT_SLOT_EPOCH: ${{ steps.session.outputs.next_slot_epoch }}
+        run: |
+          set -euo pipefail
+          now_epoch="$(date +%s)"
+          if [ "${now_epoch}" -lt "${NEXT_SLOT_EPOCH}" ]; then
+            wait_seconds=$((NEXT_SLOT_EPOCH - now_epoch))
+            echo "Waiting ${wait_seconds}s for first intraday slot"
+            sleep "${wait_seconds}"
+          fi
 
       - name: Resolve live trade date
         id: trade
@@ -116,12 +120,14 @@ jobs:
           RUN_DATE: ${{ steps.trade.outputs.date10 }}
           SESSION_MODE: ${{ steps.session.outputs.mode }}
           SESSION_END_EPOCH: ${{ steps.session.outputs.end_epoch }}
+          SESSION_NEXT_SLOT_EPOCH: ${{ steps.session.outputs.next_slot_epoch }}
           EXPECTED_ITERATIONS: ${{ steps.session.outputs.expected_iterations }}
         run: |
           set -euo pipefail
           accepted_rounds=0
           rejected_rounds=0
           failed_rounds=0
+          fatal_rounds=0
           completed_rounds=0
 
           publish_runtime() {
@@ -190,13 +196,25 @@ jobs:
               raise SystemExit(result["message"])
           PY
             then
-              return 1
+              return 3
             fi
+
+            PYTHONPATH=. RUN_DATE="${RUN_DATE}" python3 - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+          from daily_review.application.workflow_schedule import annotate_intraday_runtime_coverage
+
+          result = annotate_intraday_runtime_coverage(Path("web/public/intraday_runtime.json"), os.environ["RUN_DATE"])
+          print("intraday_runtime_coverage=" + json.dumps(result, ensure_ascii=False, sort_keys=True))
+          if not result["ok"]:
+              print(f"::warning title=Intraday slots incomplete::{result['message']} missing={','.join(result['missing_slots'])}")
+          PY
 
             rejected_reason="$(python3 -c 'import json; from pathlib import Path; d=json.loads(Path("web/public/intraday_runtime.json").read_text()); print((d.get("health") or {}).get("rejected_reason") or "")')"
             last_valid_at="$(python3 -c 'import json; from pathlib import Path; d=json.loads(Path("web/public/intraday_runtime.json").read_text()); print((d.get("health") or {}).get("last_valid_at") or d.get("updated_at") or "")')"
             if ! publish_runtime; then
-              return 1
+              return 3
             fi
             elapsed=$(( $(date +%s) - started_at ))
             BEFORE_COUNT="${before_count}" AFTER_COUNT="${after_count}" LAST_VALID_AT="${last_valid_at}" REJECTED_REASON="${rejected_reason}" ELAPSED="${elapsed}" python3 - <<'PY'
@@ -228,6 +246,9 @@ jobs:
               accepted_rounds=$((accepted_rounds + 1))
             elif [ "${rc}" -eq 2 ]; then
               rejected_rounds=$((rejected_rounds + 1))
+            elif [ "${rc}" -eq 3 ]; then
+              failed_rounds=$((failed_rounds + 1))
+              fatal_rounds=$((fatal_rounds + 1))
             else
               failed_rounds=$((failed_rounds + 1))
             fi
@@ -236,23 +257,29 @@ jobs:
           if [ "${SESSION_MODE}" = "once" ]; then
             run_and_count
           else
-            next_run_epoch="$(date +%s)"
-            while [ "$(date +%s)" -le "${SESSION_END_EPOCH}" ]; do
+            next_run_epoch="${SESSION_NEXT_SLOT_EPOCH}"
+            while [ "${next_run_epoch}" -le "${SESSION_END_EPOCH}" ]; do
               now_epoch="$(date +%s)"
               if [ "${now_epoch}" -lt "${next_run_epoch}" ]; then
                 sleep $((next_run_epoch - now_epoch))
               fi
-              if [ "$(date +%s)" -gt "${SESSION_END_EPOCH}" ]; then
+              if [ "$(date +%s)" -gt $((SESSION_END_EPOCH + 120)) ]; then
                 break
               fi
               run_and_count
-              # 首轮立即恢复数据，后续回到自然的 10 分钟刻度，避免调度延迟累积成整日偏移。
+              # 始终推进目标槽位；若单轮耗时过长则跳过已经错过的槽位，不用当前报价伪造历史节点。
+              next_run_epoch=$((next_run_epoch + 600))
               now_epoch="$(date +%s)"
-              next_run_epoch=$(( (now_epoch / 600 + 1) * 600 ))
+              if [ "${now_epoch}" -gt $((next_run_epoch + 120)) ]; then
+                next_run_epoch=$(( (now_epoch / 600 + 1) * 600 ))
+              fi
             done
           fi
 
           echo "intraday_session_summary={\"mode\":\"${SESSION_MODE}\",\"expectedRounds\":${EXPECTED_ITERATIONS},\"completedRounds\":${completed_rounds},\"acceptedRounds\":${accepted_rounds},\"rejectedRounds\":${rejected_rounds},\"failedRounds\":${failed_rounds}}"
-          if [ "${accepted_rounds}" -eq 0 ] && [ "${rejected_rounds}" -eq 0 ]; then
+          if [ "${fatal_rounds}" -gt 0 ] && [ "${accepted_rounds}" -eq 0 ]; then
             exit 1
+          fi
+          if [ "${accepted_rounds}" -eq 0 ]; then
+            echo "::warning title=Intraday data unavailable::No valid snapshot was accepted; the latest published runtime was preserved."
           fi

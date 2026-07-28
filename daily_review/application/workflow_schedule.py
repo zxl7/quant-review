@@ -10,9 +10,11 @@ from typing import Any
 TZ_BJ = timezone(timedelta(hours=8))
 
 SCHEDULE_MODE_BY_CRON: dict[str, str] = {
+    "55 0 * * 1-5": "open_fore",
+    "15 1 * * 1-5": "open_fore",
     "25 1 * * 1-5": "auction_prefetch",
     "26 1 * * 1-5": "open_fore",
-    "27 1 * * 1-5": "auction_prefetch_retry",
+    "27 1 * * 1-5": "open_fore",
     "0 7 * * 1-5": "eod",
     "0 8 * * 1-5": "eod",
     "0 9 * * 1-5": "eod",
@@ -20,23 +22,10 @@ SCHEDULE_MODE_BY_CRON: dict[str, str] = {
 }
 
 INTRADAY_SESSION_BY_CRON: dict[str, str] = {
-    "30 1 * * 1-5": "morning",
-    "40 1 * * 1-5": "morning",
-    "0 5 * * 1-5": "afternoon",
-    "10 5 * * 1-5": "afternoon",
-}
-
-# 单帧模式：交易时段内每 10 分钟一个 cron，各自抓一帧并发布。
-# 任一 cron 漏投/延迟只丢该槽位，相邻 10 分钟 cron 仍补上，从而“保证 10 分钟一帧”
-# （区别于会话模型——会话依赖单个启动 cron 准时，启动被延迟即整段缺失）。
-INTRADAY_ONCE_BY_CRON: dict[str, str] = {
-    # YAML 将同一小时的分钟槽位合并，控制 schedule 总数不超过 GitHub Actions 上限。
-    "30,40,50 1 * * 1-5": "morning",
-    "0,10,20,30,40,50 2 * * 1-5": "morning",
-    "0,10,20,30 3 * * 1-5": "morning",
-    "0,10,20,30,40,50 5 * * 1-5": "afternoon",
-    "0,10,20,30,40,50 6 * * 1-5": "afternoon",
-    "0 7 * * 1-5": "afternoon",
+    "5 1 * * 1-5": "morning",
+    "17 1 * * 1-5": "morning",
+    "35 4 * * 1-5": "afternoon",
+    "47 4 * * 1-5": "afternoon",
 }
 INTRADAY_SESSION_WINDOWS: dict[str, tuple[tuple[int, int], tuple[int, int]]] = {
     "morning": ((9, 30), (11, 30)),
@@ -46,6 +35,8 @@ INTRADAY_SESSION_WINDOWS: dict[str, tuple[tuple[int, int], tuple[int, int]]] = {
 INVALID_QUOTE_SOURCES = {"unavailable", "forced_query_unavailable"}
 
 INTRADAY_CUTOFF_HOUR_BJ = 15
+INTRADAY_SLOT_SECONDS = 10 * 60
+INTRADAY_SLOT_GRACE_SECONDS = 2 * 60
 AUCTION_PREFETCH_ONLY_MODES = {"auction_prefetch", "auction_prefetch_retry"}
 PREFETCH_HTTP_TIMEOUT = 12
 PREFETCH_HTTP_RETRIES = 2
@@ -58,11 +49,7 @@ def _now_bj() -> datetime:
 
 
 def resolve_intraday_session(event_name: str, schedule_expr: str, *, now: datetime | None = None) -> dict[str, Any]:
-    """Resolve one GitHub-hosted session; delayed fallback jobs exit after the trading window.
-
-    单帧模式（INTRADAY_ONCE_BY_CRON）优先：交易时段内每 10 分钟一个 cron，各自抓一帧并发布，
-    从而“保证 10 分钟一帧”——漏投/延迟只丢该槽位，不被放大成整段缺失。
-    """
+    """解析 GitHub 托管的盘中会话，并把延迟启动对齐到下一个真实十分钟槽位。"""
     current = (now or _now_bj()).astimezone(TZ_BJ)
     if str(event_name or "").strip() == "workflow_dispatch":
         return {
@@ -70,47 +57,52 @@ def resolve_intraday_session(event_name: str, schedule_expr: str, *, now: dateti
             "skip": False,
             "reason": "manual_once",
             "is_fallback": False,
+            "start_epoch": 0,
             "end_epoch": 0,
-            "expected_iterations": 1,
-        }
-
-    once_session = INTRADAY_ONCE_BY_CRON.get(str(schedule_expr or "").strip(), "")
-    if once_session:
-        (start_hour, start_minute), (end_hour, end_minute) = INTRADAY_SESSION_WINDOWS[once_session]
-        start = current.replace(hour=start_hour, minute=start_minute, second=0, microsecond=0)
-        end = current.replace(hour=end_hour, minute=end_minute, second=59, microsecond=0)
-        if current < start:
-            return {"mode": "once", "skip": True, "reason": "before_session", "is_fallback": False, "end_epoch": int(end.timestamp()), "expected_iterations": 0}
-        if current > end:
-            return {"mode": "once", "skip": True, "reason": "session_finished", "is_fallback": False, "end_epoch": int(end.timestamp()), "expected_iterations": 0}
-        return {
-            "mode": "once",
-            "skip": False,
-            "reason": "once_active",
-            "is_fallback": False,
-            "end_epoch": int(end.timestamp()),
+            "next_slot_epoch": 0,
+            "wait_seconds": 0,
             "expected_iterations": 1,
         }
 
     session = INTRADAY_SESSION_BY_CRON.get(str(schedule_expr or "").strip(), "")
     if not session:
-        return {"mode": "", "skip": True, "reason": "unknown_schedule", "is_fallback": False, "end_epoch": 0, "expected_iterations": 0}
+        return {"mode": "", "skip": True, "reason": "unknown_schedule", "is_fallback": False, "start_epoch": 0, "end_epoch": 0, "next_slot_epoch": 0, "wait_seconds": 0, "expected_iterations": 0}
 
     (start_hour, start_minute), (end_hour, end_minute) = INTRADAY_SESSION_WINDOWS[session]
     start = current.replace(hour=start_hour, minute=start_minute, second=0, microsecond=0)
-    end = current.replace(hour=end_hour, minute=end_minute, second=59, microsecond=0)
-    if current < start:
-        return {"mode": session, "skip": True, "reason": "before_session", "is_fallback": schedule_expr in {"40 1 * * 1-5", "10 5 * * 1-5"}, "end_epoch": int(end.timestamp()), "expected_iterations": 0}
-    if current > end:
-        return {"mode": session, "skip": True, "reason": "session_finished", "is_fallback": schedule_expr in {"40 1 * * 1-5", "10 5 * * 1-5"}, "end_epoch": int(end.timestamp()), "expected_iterations": 0}
-
-    expected = int((end - current).total_seconds()) // 600 + 1
-    return {
+    end = current.replace(hour=end_hour, minute=end_minute, second=0, microsecond=0)
+    is_fallback = str(schedule_expr or "").strip() in {"17 1 * * 1-5", "47 4 * * 1-5"}
+    common = {
         "mode": session,
-        "skip": False,
-        "reason": "session_active",
-        "is_fallback": schedule_expr in {"40 1 * * 1-5", "10 5 * * 1-5"},
+        "is_fallback": is_fallback,
+        "start_epoch": int(start.timestamp()),
         "end_epoch": int(end.timestamp()),
+    }
+    if current.weekday() >= 5:
+        return {**common, "skip": True, "reason": "non_weekday", "next_slot_epoch": 0, "wait_seconds": 0, "expected_iterations": 0}
+    if current > end:
+        return {**common, "skip": True, "reason": "session_finished", "next_slot_epoch": 0, "wait_seconds": 0, "expected_iterations": 0}
+
+    if current <= start:
+        next_slot = start
+        reason = "session_wait"
+    else:
+        elapsed = int((current - start).total_seconds())
+        completed_slots, remainder = divmod(elapsed, INTRADAY_SLOT_SECONDS)
+        # Runner 在刻度后两分钟内启动时仍消费当前槽位，避免初始化耗时把 09:30 节点推迟到 09:40。
+        slot_index = completed_slots if remainder <= INTRADAY_SLOT_GRACE_SECONDS else completed_slots + 1
+        next_slot = start + timedelta(seconds=slot_index * INTRADAY_SLOT_SECONDS)
+        reason = "session_active" if next_slot <= end else "session_finished"
+    if next_slot > end:
+        return {**common, "skip": True, "reason": "session_finished", "next_slot_epoch": 0, "wait_seconds": 0, "expected_iterations": 0}
+
+    expected = int((end - next_slot).total_seconds()) // INTRADAY_SLOT_SECONDS + 1
+    return {
+        **common,
+        "skip": False,
+        "reason": reason,
+        "next_slot_epoch": int(next_slot.timestamp()),
+        "wait_seconds": max(0, int((next_slot - current).total_seconds())),
         "expected_iterations": expected,
     }
 
@@ -421,6 +413,8 @@ def describe_market_data_snapshot(path: Path, trade_date10: str) -> dict[str, An
         "reference_date": "",
         "candidate_count": 0,
         "future_trade_day_guard": False,
+        "auction_window": False,
+        "quality": "missing",
     }
     if len(trade_date10) != 10 or not path.exists():
         return result
@@ -436,6 +430,8 @@ def describe_market_data_snapshot(path: Path, trade_date10: str) -> dict[str, An
     candidate_count = int(realtime_buy.get("candidate_count") or 0)
     future_trade_day_guard = bool(diagnostics.get("future_trade_day_guard")) or source == "future_trade_day_guard"
     quote_time_matches_trade_date = quote_time.startswith(f"{trade_date10} ") if trade_date10 and quote_time else False
+    quote_clock = quote_time[11:19] if len(quote_time) >= 19 else ""
+    auction_window = "09:25:00" <= quote_clock <= "09:30:59"
     valid = (
         quote_time_matches_trade_date
         and len(quote_time) >= 19
@@ -452,6 +448,8 @@ def describe_market_data_snapshot(path: Path, trade_date10: str) -> dict[str, An
             "candidate_count": candidate_count,
             "future_trade_day_guard": future_trade_day_guard,
             "quote_time_matches_trade_date": quote_time_matches_trade_date,
+            "auction_window": auction_window,
+            "quality": "auction" if valid and auction_window else ("degraded" if valid else "missing"),
         }
     )
     return result
@@ -681,6 +679,119 @@ def validate_intraday_runtime_indices(path: Path, *, require_indices: bool = Tru
     return result
 
 
+def _intraday_expected_slots(trade_date10: str) -> list[datetime]:
+    try:
+        day = datetime.strptime(trade_date10, "%Y-%m-%d").replace(tzinfo=TZ_BJ)
+    except ValueError:
+        return []
+    slots: list[datetime] = []
+    for start_parts, end_parts in INTRADAY_SESSION_WINDOWS.values():
+        cursor = day.replace(hour=start_parts[0], minute=start_parts[1])
+        end = day.replace(hour=end_parts[0], minute=end_parts[1])
+        while cursor <= end:
+            slots.append(cursor)
+            cursor += timedelta(seconds=INTRADAY_SLOT_SECONDS)
+    return slots
+
+
+def validate_intraday_runtime_coverage(
+    path: Path,
+    trade_date10: str,
+    *,
+    now: datetime | None = None,
+) -> dict[str, Any]:
+    """检查盘中时间轴的日期、顺序和已到期十分钟槽位，不虚构错过的历史节点。"""
+    current = (now or _now_bj()).astimezone(TZ_BJ)
+    expected = _intraday_expected_slots(str(trade_date10 or "").strip())
+    result: dict[str, Any] = {
+        "ok": True,
+        "status": "collecting",
+        "message": "intraday_coverage_collecting",
+        "path": str(path),
+        "date": str(trade_date10 or "").strip(),
+        "expected_count": len(expected),
+        "due_count": 0,
+        "observed_count": 0,
+        "observed_slots": [],
+        "missing_slots": [],
+        "duplicate_slots": [],
+        "out_of_session": [],
+        "monotonic": True,
+        "morning_coverage": 0,
+        "afternoon_coverage": 0,
+    }
+    if not expected:
+        result.update({"ok": False, "status": "invalid", "message": "invalid_trade_date"})
+        return result
+    if not path.exists():
+        result.update({"ok": False, "status": "missing", "message": "intraday_runtime_missing"})
+        return result
+
+    payload = _read_json(path)
+    if str(payload.get("date") or "").strip() != result["date"]:
+        result.update({"ok": False, "status": "stale", "message": "intraday_runtime_date_mismatch"})
+        return result
+
+    due = [slot for slot in expected if slot <= current]
+    result["due_count"] = len(due)
+    snapshots = payload.get("snapshots") if isinstance(payload.get("snapshots"), list) else []
+    raw_times: list[datetime] = []
+    slot_counts: dict[str, int] = {}
+    out_of_session: list[str] = []
+    for row in snapshots:
+        if not isinstance(row, dict):
+            out_of_session.append("<invalid-row>")
+            continue
+        raw = str(row.get("ts_bj") or row.get("time") or "").strip()
+        if len(raw) <= 8:
+            raw = f"{result['date']} {raw}"
+        try:
+            timestamp = datetime.strptime(raw[:19], "%Y-%m-%d %H:%M:%S").replace(tzinfo=TZ_BJ)
+        except ValueError:
+            out_of_session.append(raw or "<missing-time>")
+            continue
+        raw_times.append(timestamp)
+        nearest = min(expected, key=lambda slot: abs((timestamp - slot).total_seconds()))
+        if abs((timestamp - nearest).total_seconds()) > INTRADAY_SLOT_SECONDS // 2:
+            out_of_session.append(timestamp.strftime("%H:%M:%S"))
+            continue
+        slot_text = nearest.strftime("%H:%M")
+        slot_counts[slot_text] = slot_counts.get(slot_text, 0) + 1
+
+    observed = sorted(slot_counts)
+    due_text = [slot.strftime("%H:%M") for slot in due]
+    result["observed_count"] = len(observed)
+    result["observed_slots"] = observed
+    result["missing_slots"] = [slot for slot in due_text if slot not in slot_counts]
+    result["duplicate_slots"] = sorted(slot for slot, count in slot_counts.items() if count > 1)
+    result["out_of_session"] = out_of_session
+    result["monotonic"] = raw_times == sorted(raw_times)
+    result["morning_coverage"] = sum(1 for slot in observed if "09:30" <= slot <= "11:30")
+    result["afternoon_coverage"] = sum(1 for slot in observed if "13:00" <= slot <= "15:00")
+
+    healthy = not result["missing_slots"] and not result["duplicate_slots"] and not out_of_session and result["monotonic"]
+    result["ok"] = healthy
+    if healthy and len(due) == len(expected):
+        result.update({"status": "complete", "message": "intraday_coverage_complete"})
+    elif healthy:
+        result.update({"status": "collecting", "message": "intraday_coverage_collecting"})
+    else:
+        result.update({"status": "degraded", "message": "intraday_coverage_incomplete"})
+    return result
+
+
+def annotate_intraday_runtime_coverage(path: Path, trade_date10: str, *, now: datetime | None = None) -> dict[str, Any]:
+    """把非阻断式覆盖诊断写回运行时，供页面和 Actions 日志共同展示。"""
+    result = validate_intraday_runtime_coverage(path, trade_date10, now=now)
+    if path.exists() and str(_read_json(path).get("date") or "") == str(trade_date10 or ""):
+        payload = _read_json(path)
+        health = dict(payload.get("health") or {}) if isinstance(payload.get("health"), dict) else {}
+        health["coverage"] = {key: value for key, value in result.items() if key != "path"}
+        payload["health"] = health
+        path.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
+    return result
+
+
 def validate_external_data_freshness(*, root: Path, date10: str) -> dict[str, Any]:
     """收盘发布只接受同日外部题材链，防止主报告更新而证据仍停在昨日。"""
     date8 = str(date10 or "").replace("-", "")
@@ -886,7 +997,7 @@ def validate_market_data_stock_research_snapshot(path: Path, trade_date10: str) 
 
     result["required"] = True
     if snapshot["found"]:
-        result["message"] = "snapshot_ready"
+        result["message"] = "snapshot_ready" if snapshot.get("auction_window") else "snapshot_degraded_outside_auction_window"
         return result
 
     trade_date = str(snapshot.get("trade_date") or "").strip()

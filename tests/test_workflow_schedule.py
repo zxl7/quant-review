@@ -14,6 +14,7 @@ from unittest.mock import patch
 from daily_review.application.workflow_schedule import (
     AUCTION_PREFETCH_ONLY_MODES,
     SCHEDULE_MODE_BY_CRON,
+    annotate_intraday_runtime_coverage,
     describe_prefetched_quotes_snapshot,
     execute_auction_snapshot_prefetch,
     resolve_auction_snapshot_prefetch_plan,
@@ -25,6 +26,7 @@ from daily_review.application.workflow_schedule import (
     validate_eod_stock_research_prediction_pool,
     validate_eod_stock_research_closeout,
     validate_intraday_runtime_indices,
+    validate_intraday_runtime_coverage,
     validate_external_data_freshness,
     validate_market_data_stock_research_snapshot,
 )
@@ -46,19 +48,17 @@ class WorkflowScheduleTest(unittest.TestCase):
 
         intraday_workflow = (root / ".github" / "workflows" / "intraday_runtime.yml").read_text(encoding="utf-8")
         self.assertEqual(intraday_workflow.count("./qr.sh watch-slice"), 1)
-        compacted_crons = (
-            "30,40,50 1 * * 1-5",
-            "0,10,20,30,40,50 2 * * 1-5",
-            "0,10,20,30 3 * * 1-5",
-            "0,10,20,30,40,50 5 * * 1-5",
-            "0,10,20,30,40,50 6 * * 1-5",
-            "0 7 * * 1-5",
+        session_crons = (
+            "5 1 * * 1-5",
+            "17 1 * * 1-5",
+            "35 4 * * 1-5",
+            "47 4 * * 1-5",
         )
-        for cron in compacted_crons:
+        for cron in session_crons:
             self.assertIn(f'cron: "{cron}"', intraday_workflow)
-        self.assertEqual(intraday_workflow.count('    - cron: "'), len(compacted_crons))
-        self.assertIn("timeout-minutes: 150", intraday_workflow)
-        self.assertIn("next_run_epoch=$(( (now_epoch / 600 + 1) * 600 ))", intraday_workflow)
+        self.assertEqual(intraday_workflow.count('    - cron: "'), len(session_crons))
+        self.assertIn("timeout-minutes: 165", intraday_workflow)
+        self.assertIn('next_run_epoch="${SESSION_NEXT_SLOT_EPOCH}"', intraday_workflow)
         self.assertIn("no_valid_snapshot_preserved", intraday_workflow)
 
     def test_eod_closeout_guard_warns_without_blocking_final_evening_publish(self) -> None:
@@ -72,6 +72,22 @@ class WorkflowScheduleTest(unittest.TestCase):
         self.assertIn("github.event.schedule == '0 10 * * 1-5'", closeout_step)
         self.assertIn("::warning title=Stock research closeout delayed::", closeout_step)
         self.assertNotIn('raise SystemExit(result["message"])', closeout_step)
+
+    def test_business_data_guards_warn_without_blocking_publish(self) -> None:
+        root = Path(__file__).resolve().parents[1]
+        workflow = (root / ".github" / "workflows" / "publish_pages.yml").read_text(encoding="utf-8")
+        prediction_step = workflow.split("- name: Validate eod stock research prediction pool", 1)[1].split(
+            "- name: Validate intraday runtime indices", 1
+        )[0]
+        account_step = workflow.split("- name: Validate eod account derivatives", 1)[1].split(
+            "- name: Prepare Pages site", 1
+        )[0]
+
+        self.assertIn("::warning title=Stock research prediction delayed::", prediction_step)
+        self.assertNotIn('raise SystemExit(result["message"])', prediction_step)
+        self.assertIn("::warning title=Account review delayed::", account_step)
+        self.assertNotIn('raise SystemExit(result["message"])', account_step)
+        self.assertIn("latest valid artifacts were preserved", workflow)
 
     def test_push_publish_does_not_require_time_sensitive_auction_snapshot(self) -> None:
         root = Path(__file__).resolve().parents[1]
@@ -138,16 +154,23 @@ class WorkflowScheduleTest(unittest.TestCase):
         self.assertEqual(result["mode"], "open_fore")
         self.assertEqual(result["beijing_now"], "10:27")
 
+    def test_early_open_controllers_map_to_open_publish(self) -> None:
+        for cron in ("55 0 * * 1-5", "15 1 * * 1-5"):
+            with self.subTest(cron=cron):
+                result = resolve_publish_schedule_mode("schedule", cron, now=datetime(2026, 6, 22, 9, 0, tzinfo=TZ_BJ))
+                self.assertEqual(result["skip"], "false")
+                self.assertEqual(result["mode"], "open_fore")
+
     def test_0925_schedule_maps_to_prefetch_only_path(self) -> None:
         result = resolve_publish_schedule_mode("schedule", "25 1 * * 1-5", now=datetime(2026, 6, 22, 9, 25, tzinfo=TZ_BJ))
         self.assertEqual(result["skip"], "false")
         self.assertEqual(result["mode"], "auction_prefetch")
         self.assertEqual(result["reason"], "resolved_from_schedule:25 1 * * 1-5")
 
-    def test_0927_schedule_maps_to_prefetch_retry_only_path(self) -> None:
+    def test_0927_schedule_maps_to_full_open_retry(self) -> None:
         result = resolve_publish_schedule_mode("schedule", "27 1 * * 1-5", now=datetime(2026, 6, 22, 9, 27, tzinfo=TZ_BJ))
         self.assertEqual(result["skip"], "false")
-        self.assertEqual(result["mode"], "auction_prefetch_retry")
+        self.assertEqual(result["mode"], "open_fore")
         self.assertEqual(result["reason"], "resolved_from_schedule:27 1 * * 1-5")
 
     def test_prefetch_only_modes_are_explicit(self) -> None:
@@ -156,17 +179,18 @@ class WorkflowScheduleTest(unittest.TestCase):
     def test_intraday_session_fallback_takes_over_remaining_morning(self) -> None:
         result = resolve_intraday_session(
             "schedule",
-            "40 1 * * 1-5",
+            "17 1 * * 1-5",
             now=datetime(2026, 6, 24, 9, 44, tzinfo=TZ_BJ),
         )
         self.assertFalse(result["skip"])
         self.assertEqual(result["mode"], "morning")
         self.assertEqual(result["expected_iterations"], 11)
+        self.assertEqual(datetime.fromtimestamp(result["next_slot_epoch"], TZ_BJ).strftime("%H:%M"), "09:50")
 
     def test_intraday_session_queued_fallback_exits_after_window(self) -> None:
         result = resolve_intraday_session(
             "schedule",
-            "40 1 * * 1-5",
+            "17 1 * * 1-5",
             now=datetime(2026, 6, 24, 11, 31, tzinfo=TZ_BJ),
         )
         self.assertTrue(result["skip"])
@@ -182,21 +206,35 @@ class WorkflowScheduleTest(unittest.TestCase):
         self.assertEqual(result["mode"], "once")
         self.assertEqual(result["expected_iterations"], 1)
 
-    def test_compacted_intraday_crons_resolve_to_one_iteration(self) -> None:
-        cases = (
-            ("30,40,50 1 * * 1-5", datetime(2026, 6, 24, 9, 40, tzinfo=TZ_BJ)),
-            ("0,10,20,30,40,50 2 * * 1-5", datetime(2026, 6, 24, 10, 20, tzinfo=TZ_BJ)),
-            ("0,10,20,30 3 * * 1-5", datetime(2026, 6, 24, 11, 30, tzinfo=TZ_BJ)),
-            ("0,10,20,30,40,50 5 * * 1-5", datetime(2026, 6, 24, 13, 20, tzinfo=TZ_BJ)),
-            ("0,10,20,30,40,50 6 * * 1-5", datetime(2026, 6, 24, 14, 20, tzinfo=TZ_BJ)),
-            ("0 7 * * 1-5", datetime(2026, 6, 24, 15, 0, tzinfo=TZ_BJ)),
+    def test_intraday_primary_waits_for_open_and_covers_full_morning(self) -> None:
+        result = resolve_intraday_session(
+            "schedule",
+            "5 1 * * 1-5",
+            now=datetime(2026, 6, 24, 9, 5, tzinfo=TZ_BJ),
         )
-        for cron, now in cases:
-            with self.subTest(cron=cron):
-                result = resolve_intraday_session("schedule", cron, now=now)
-                self.assertFalse(result["skip"])
-                self.assertEqual(result["mode"], "once")
-                self.assertEqual(result["expected_iterations"], 1)
+        self.assertFalse(result["skip"])
+        self.assertEqual(result["reason"], "session_wait")
+        self.assertEqual(result["wait_seconds"], 25 * 60)
+        self.assertEqual(result["expected_iterations"], 13)
+
+    def test_intraday_afternoon_controller_never_collects_during_lunch(self) -> None:
+        result = resolve_intraday_session(
+            "schedule",
+            "35 4 * * 1-5",
+            now=datetime(2026, 6, 24, 12, 45, tzinfo=TZ_BJ),
+        )
+        self.assertFalse(result["skip"])
+        self.assertEqual(datetime.fromtimestamp(result["next_slot_epoch"], TZ_BJ).strftime("%H:%M"), "13:00")
+        self.assertEqual(result["expected_iterations"], 13)
+
+    def test_intraday_schedule_skips_non_weekday(self) -> None:
+        result = resolve_intraday_session(
+            "schedule",
+            "5 1 * * 1-5",
+            now=datetime(2026, 6, 27, 9, 5, tzinfo=TZ_BJ),
+        )
+        self.assertTrue(result["skip"])
+        self.assertEqual(result["reason"], "non_weekday")
 
     def test_resolve_full_publish_source_cache_prefers_requested_day(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
@@ -925,6 +963,33 @@ class WorkflowScheduleTest(unittest.TestCase):
         self.assertTrue(result["required"])
         self.assertEqual(result["message"], "snapshot_ready")
 
+    def test_validate_market_data_snapshot_marks_late_quote_degraded(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            market_path = Path(tmp) / "market_data.json"
+            market_path.write_text(
+                json.dumps(
+                    {
+                        "stockResearchBacktest": {
+                            "realtimeBuy": {
+                                "trade_date": "2026-06-22",
+                                "reference_date": "2026-06-19",
+                                "candidate_count": 2,
+                                "quote_time": "2026-06-22 10:01:12",
+                                "diagnostics": {"source": "forced_query"},
+                            }
+                        }
+                    },
+                    ensure_ascii=False,
+                ),
+                encoding="utf-8",
+            )
+
+            result = validate_market_data_stock_research_snapshot(market_path, "2026-06-22")
+
+        self.assertTrue(result["ok"])
+        self.assertEqual(result["quality"], "degraded")
+        self.assertEqual(result["message"], "snapshot_degraded_outside_auction_window")
+
     def test_validate_market_data_snapshot_rejects_cross_day_forced_query_quote(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             market_path = Path(tmp) / "market_data.json"
@@ -1111,6 +1176,56 @@ class WorkflowScheduleTest(unittest.TestCase):
 
         self.assertFalse(result["ok"])
         self.assertIn("intraday_runtime_indices_incomplete", result["message"])
+
+    def test_intraday_coverage_reports_all_26_slots_complete(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            runtime_path = Path(tmp) / "intraday_runtime.json"
+            times = [f"{hour:02d}:{minute:02d}:20" for hour, start, end in ((9, 30, 50), (10, 0, 50), (11, 0, 30), (13, 0, 50), (14, 0, 50), (15, 0, 0)) for minute in range(start, end + 1, 10)]
+            runtime_path.write_text(
+                json.dumps({"date": "2026-06-24", "snapshots": [{"ts_bj": f"2026-06-24 {value}"} for value in times]}),
+                encoding="utf-8",
+            )
+
+            result = validate_intraday_runtime_coverage(
+                runtime_path,
+                "2026-06-24",
+                now=datetime(2026, 6, 24, 15, 1, tzinfo=TZ_BJ),
+            )
+
+        self.assertTrue(result["ok"])
+        self.assertEqual(result["status"], "complete")
+        self.assertEqual(result["observed_count"], 26)
+        self.assertEqual(result["morning_coverage"], 13)
+        self.assertEqual(result["afternoon_coverage"], 13)
+
+    def test_intraday_coverage_marks_missing_and_duplicate_slots(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            runtime_path = Path(tmp) / "intraday_runtime.json"
+            runtime_path.write_text(
+                json.dumps(
+                    {
+                        "date": "2026-06-24",
+                        "snapshots": [
+                            {"ts_bj": "2026-06-24 09:30:10"},
+                            {"ts_bj": "2026-06-24 09:30:40"},
+                            {"ts_bj": "2026-06-24 09:50:10"},
+                        ],
+                    }
+                ),
+                encoding="utf-8",
+            )
+
+            result = annotate_intraday_runtime_coverage(
+                runtime_path,
+                "2026-06-24",
+                now=datetime(2026, 6, 24, 10, 0, tzinfo=TZ_BJ),
+            )
+            payload = json.loads(runtime_path.read_text(encoding="utf-8"))
+
+        self.assertFalse(result["ok"])
+        self.assertEqual(result["missing_slots"], ["09:40", "10:00"])
+        self.assertEqual(result["duplicate_slots"], ["09:30"])
+        self.assertEqual(payload["health"]["coverage"]["status"], "degraded")
 
     def test_validate_eod_stock_research_closeout_passes_when_closeout_fields_ready(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
