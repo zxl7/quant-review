@@ -48,10 +48,17 @@ def _now_bj() -> datetime:
     return datetime.now(TZ_BJ)
 
 
-def resolve_intraday_session(event_name: str, schedule_expr: str, *, now: datetime | None = None) -> dict[str, Any]:
+def resolve_intraday_session(
+    event_name: str,
+    schedule_expr: str,
+    *,
+    dispatch_mode: str = "once",
+    now: datetime | None = None,
+) -> dict[str, Any]:
     """解析 GitHub 托管的盘中会话，并把延迟启动对齐到下一个真实十分钟槽位。"""
     current = (now or _now_bj()).astimezone(TZ_BJ)
-    if str(event_name or "").strip() == "workflow_dispatch":
+    is_manual = str(event_name or "").strip() == "workflow_dispatch"
+    if is_manual and str(dispatch_mode or "").strip() != "remaining":
         return {
             "mode": "once",
             "skip": False,
@@ -65,13 +72,19 @@ def resolve_intraday_session(event_name: str, schedule_expr: str, *, now: dateti
         }
 
     session = INTRADAY_SESSION_BY_CRON.get(str(schedule_expr or "").strip(), "")
+    if is_manual:
+        clock = current.hour * 60 + current.minute
+        if 9 * 60 + 20 <= clock <= 11 * 60 + 30:
+            session = "morning"
+        elif 12 * 60 + 30 <= clock <= 15 * 60:
+            session = "afternoon"
     if not session:
         return {"mode": "", "skip": True, "reason": "unknown_schedule", "is_fallback": False, "start_epoch": 0, "end_epoch": 0, "next_slot_epoch": 0, "wait_seconds": 0, "expected_iterations": 0}
 
     (start_hour, start_minute), (end_hour, end_minute) = INTRADAY_SESSION_WINDOWS[session]
     start = current.replace(hour=start_hour, minute=start_minute, second=0, microsecond=0)
     end = current.replace(hour=end_hour, minute=end_minute, second=0, microsecond=0)
-    is_fallback = str(schedule_expr or "").strip() in {"17 1 * * 1-5", "47 4 * * 1-5"}
+    is_fallback = not is_manual and str(schedule_expr or "").strip() in {"17 1 * * 1-5", "47 4 * * 1-5"}
     common = {
         "mode": session,
         "is_fallback": is_fallback,

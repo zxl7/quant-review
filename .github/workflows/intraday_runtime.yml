@@ -9,6 +9,15 @@ on:
     - cron: "35 4 * * 1-5"  # 北京时间 12:35，下午主任务
     - cron: "47 4 * * 1-5"  # 北京时间 12:47，下午兜底
   workflow_dispatch:
+    inputs:
+      mode:
+        description: "恢复模式：once 单帧；remaining 接管当前剩余交易会话"
+        required: false
+        default: "once"
+        type: choice
+        options:
+          - once
+          - remaining
 
 permissions:
   contents: write
@@ -39,6 +48,7 @@ jobs:
         env:
           EVENT_NAME: ${{ github.event_name }}
           SCHEDULE_EXPR: ${{ github.event.schedule || '' }}
+          DISPATCH_MODE: ${{ github.event.inputs.mode || 'once' }}
         run: |
           set -euo pipefail
           PYTHONPATH=. python3 - <<'PY'
@@ -46,7 +56,11 @@ jobs:
           import os
           from daily_review.application.workflow_schedule import resolve_intraday_session
 
-          result = resolve_intraday_session(os.environ["EVENT_NAME"], os.environ["SCHEDULE_EXPR"])
+          result = resolve_intraday_session(
+              os.environ["EVENT_NAME"],
+              os.environ["SCHEDULE_EXPR"],
+              dispatch_mode=os.environ["DISPATCH_MODE"],
+          )
           print("intraday_session=" + json.dumps(result, ensure_ascii=False, sort_keys=True))
           with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as fh:
               for key in ("mode", "skip", "reason", "is_fallback", "start_epoch", "end_epoch", "next_slot_epoch", "wait_seconds", "expected_iterations"):

@@ -206,6 +206,18 @@ class WorkflowScheduleTest(unittest.TestCase):
         self.assertEqual(result["mode"], "once")
         self.assertEqual(result["expected_iterations"], 1)
 
+    def test_intraday_manual_remaining_dispatch_takes_over_current_session(self) -> None:
+        result = resolve_intraday_session(
+            "workflow_dispatch",
+            "",
+            dispatch_mode="remaining",
+            now=datetime(2026, 6, 24, 14, 34, tzinfo=TZ_BJ),
+        )
+        self.assertFalse(result["skip"])
+        self.assertEqual(result["mode"], "afternoon")
+        self.assertEqual(datetime.fromtimestamp(result["next_slot_epoch"], TZ_BJ).strftime("%H:%M"), "14:40")
+        self.assertEqual(result["expected_iterations"], 3)
+
     def test_intraday_primary_waits_for_open_and_covers_full_morning(self) -> None:
         result = resolve_intraday_session(
             "schedule",
