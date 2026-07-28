@@ -61,18 +61,17 @@ class WorkflowScheduleTest(unittest.TestCase):
         self.assertIn("next_run_epoch=$(( (now_epoch / 600 + 1) * 600 ))", intraday_workflow)
         self.assertIn("no_valid_snapshot_preserved", intraday_workflow)
 
-    def test_eod_closeout_guard_only_blocks_final_evening_cron(self) -> None:
+    def test_eod_closeout_guard_warns_without_blocking_final_evening_publish(self) -> None:
         root = Path(__file__).resolve().parents[1]
         workflow = (root / ".github" / "workflows" / "publish_pages.yml").read_text(encoding="utf-8")
         closeout_step = workflow.split("- name: Validate eod stock research closeout", 1)[1].split(
             "- name: Validate eod account derivatives", 1
         )[0]
 
-        # 收盘闭环行情可能晚于早 EOD 定时点，只有 18:00 兜底任务允许强拦发布。
+        # 18:00 仍检查闭环完整性，但行情商延迟不能阻断当天页面上线。
         self.assertIn("github.event.schedule == '0 10 * * 1-5'", closeout_step)
-        self.assertNotIn("github.event.schedule == '0 7 * * 1-5'", closeout_step)
-        self.assertNotIn("github.event.schedule == '0 8 * * 1-5'", closeout_step)
-        self.assertNotIn("github.event.schedule == '0 9 * * 1-5'", closeout_step)
+        self.assertIn("::warning title=Stock research closeout delayed::", closeout_step)
+        self.assertNotIn('raise SystemExit(result["message"])', closeout_step)
 
     def test_validate_external_data_freshness_requires_all_same_day_artifacts(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
