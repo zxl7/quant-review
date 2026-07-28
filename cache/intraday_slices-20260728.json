@@ -2,7 +2,7 @@
   "schema": "intraday_snapshot_v1",
   "render_mode": "snapshot_stream",
   "date": "2026-07-28",
-  "count": 1,
+  "count": 2,
   "interval_min": null,
   "simulated": false,
   "snapshots": [
@@ -65,85 +65,114 @@
       "shift_score": 56,
       "shift_label": "分歧",
       "note": "盘中实时切片已接入，可逐点观察情绪变化。"
+    },
+    {
+      "time": "15:00:17",
+      "ts_bj": "2026-07-28 15:00:17",
+      "date": "2026-07-28",
+      "source": "intraday_live",
+      "provider": "必盈(实时)",
+      "zt": 60,
+      "dt": 54,
+      "zab": 20,
+      "zb": 25.0,
+      "fb": 75.0,
+      "jj": 26.7,
+      "lianban": 16,
+      "max_lb": 6,
+      "amount": "20257.8亿",
+      "bf": 0,
+      "heat": 60,
+      "risk": 53,
+      "headline": "分歧",
+      "concepts": [],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        },
+        {
+          "level": "warn",
+          "text": "板块数据获取失败或为空（稍后重试）"
+        },
+        {
+          "level": "danger",
+          "text": "跌停偏多（54）→ 亏钱扩散风险上升"
+        },
+        {
+          "level": "warn",
+          "text": "炸板率偏高（25.0%）→ 注意回封质量"
+        },
+        {
+          "level": "warn",
+          "text": "高度6板 + 分歧不低 → 高位兑现/炸板风险"
+        }
+      ],
+      "shift_score": 55,
+      "shift_label": "分歧",
+      "note": "情绪整体平稳，维持当前节奏。"
     }
   ],
   "latest": {
-    "time": "14:29:36",
-    "ts_bj": "2026-07-28 14:29:36",
+    "time": "15:00:17",
+    "ts_bj": "2026-07-28 15:00:17",
     "date": "2026-07-28",
     "source": "intraday_live",
-    "provider": "必盈(实时)+必盈(实时)",
-    "zt": 59,
-    "dt": 39,
-    "zab": 19,
-    "zb": 24.4,
-    "fb": 75.6,
-    "jj": 27.1,
+    "provider": "必盈(实时)",
+    "zt": 60,
+    "dt": 54,
+    "zab": 20,
+    "zb": 25.0,
+    "fb": 75.0,
+    "jj": 26.7,
     "lianban": 16,
     "max_lb": 6,
-    "amount": "17785.7亿",
+    "amount": "20257.8亿",
     "bf": 0,
-    "heat": 61,
-    "risk": 52,
+    "heat": 60,
+    "risk": 53,
     "headline": "分歧",
-    "concepts": [
-      {
-        "name": "软件开发",
-        "lead": "科蓝软件",
-        "chg_pct": null
-      },
-      {
-        "name": "IT服务Ⅱ",
-        "lead": "岩山科技",
-        "chg_pct": null
-      },
-      {
-        "name": "汽车零部",
-        "lead": "华达科技",
-        "chg_pct": null
-      },
-      {
-        "name": "光学光电",
-        "lead": "波长光电",
-        "chg_pct": null
-      },
-      {
-        "name": "电力",
-        "lead": "东方新能",
-        "chg_pct": null
-      }
-    ],
+    "concepts": [],
     "alerts": [
       {
         "level": "info",
         "text": "盘中模式：强制实时拉取"
       },
       {
+        "level": "warn",
+        "text": "板块数据获取失败或为空（稍后重试）"
+      },
+      {
         "level": "danger",
-        "text": "跌停偏多（39）→ 亏钱扩散风险上升"
+        "text": "跌停偏多（54）→ 亏钱扩散风险上升"
+      },
+      {
+        "level": "warn",
+        "text": "炸板率偏高（25.0%）→ 注意回封质量"
+      },
+      {
+        "level": "warn",
+        "text": "高度6板 + 分歧不低 → 高位兑现/炸板风险"
       }
     ],
-    "shift_score": 56,
+    "shift_score": 55,
     "shift_label": "分歧",
-    "note": "盘中实时切片已接入，可逐点观察情绪变化。"
+    "note": "情绪整体平稳，维持当前节奏。"
   },
-  "updated_at": "2026-07-28 14:29:36",
-  "snapshot_sig": "2026-07-28|2026-07-28 14:29:36|1",
+  "updated_at": "2026-07-28 15:00:17",
+  "snapshot_sig": "2026-07-28|2026-07-28 15:00:17|2",
   "health": {
-    "status": "stale",
-    "last_valid_at": "2026-07-28 14:29:36",
-    "rejected_reason": "source_partial",
+    "status": "valid",
+    "last_valid_at": "2026-07-28 15:00:17",
+    "rejected_reason": "",
     "source": {
-      "status": "partial",
+      "status": "valid",
       "pool_status": {
-        "ztgc": "failed",
-        "zbgc": "failed",
+        "ztgc": "valid",
+        "zbgc": "valid",
         "dtgc": "valid"
       },
-      "pool_errors": {
-        "ztgc": "Expecting value: line 1004 column 5 (char 18729)",
-        "zbgc": "IncompleteRead(7049 bytes read, 1 more expected)"
-      }
+      "pool_errors": {}
     }
   }
 }
