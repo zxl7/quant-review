@@ -12,6 +12,7 @@ HTTP 层：封装 biyingapi 请求（GET + 超时 + JSON）
 from __future__ import annotations
 
 import json
+import http.client
 import socket
 import time
 import urllib.error
@@ -39,7 +40,16 @@ class HttpClient:
                     time.sleep(1.0 * (attempt + 1))
                     continue
                 raise
-            except (urllib.error.URLError, TimeoutError, socket.timeout) as e:
+            # 上游偶发截断响应体时会抛出 IncompleteRead、UTF-8 或 JSON 解析错误；
+            # 这些都属于可重试的传输故障，不能直接让整轮盘中快照失败。
+            except (
+                urllib.error.URLError,
+                TimeoutError,
+                socket.timeout,
+                http.client.IncompleteRead,
+                UnicodeDecodeError,
+                json.JSONDecodeError,
+            ) as e:
                 if attempt < self.retries:
                     last_err = e
                     time.sleep(1.0 * (attempt + 1))
