@@ -250,11 +250,21 @@ jobs:
           }
 
           run_and_count() {
-            local rc=0
-            set +e
-            run_iteration
-            rc=$?
-            set -e
+            local rc=0 request_attempt
+            # 一个槽位内允许完整重试三轮，抵抗上游连续返回截断 JSON；成功后立即停止重试。
+            for request_attempt in 1 2 3; do
+              set +e
+              run_iteration
+              rc=$?
+              set -e
+              if [ "${rc}" -eq 0 ] || [ "${rc}" -eq 3 ]; then
+                break
+              fi
+              if [ "${request_attempt}" -lt 3 ]; then
+                echo "::warning title=Intraday slot retry::attempt=${request_attempt} rc=${rc}; retrying complete snapshot request"
+                sleep $((request_attempt * 5))
+              fi
+            done
             completed_rounds=$((completed_rounds + 1))
             if [ "${rc}" -eq 0 ]; then
               accepted_rounds=$((accepted_rounds + 1))

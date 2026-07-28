@@ -60,6 +60,8 @@ class WorkflowScheduleTest(unittest.TestCase):
         self.assertIn("timeout-minutes: 165", intraday_workflow)
         self.assertIn('next_run_epoch="${SESSION_NEXT_SLOT_EPOCH}"', intraday_workflow)
         self.assertIn("no_valid_snapshot_preserved", intraday_workflow)
+        self.assertIn("for request_attempt in 1 2 3", intraday_workflow)
+        self.assertIn("Intraday slot retry", intraday_workflow)
 
     def test_eod_closeout_guard_warns_without_blocking_final_evening_publish(self) -> None:
         root = Path(__file__).resolve().parents[1]
