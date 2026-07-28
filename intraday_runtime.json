@@ -2,7 +2,7 @@
   "schema": "intraday_runtime_v1",
   "date": "2026-07-28",
   "updated_at": "2026-07-28 14:29:36",
-  "source": "必盈(实时)+必盈(实时)",
+  "source": "unknown",
   "latest": {
     "time": "14:29:36",
     "ts_bj": "2026-07-28 14:29:36",
@@ -129,43 +129,46 @@
     {
       "name": "上证指数",
       "code": "000001.SH",
-      "val": 3806.927,
-      "chg": -1.3300866067344028,
-      "cje": 826461933700.0,
-      "t": "2026-07-28 14:29:36"
+      "val": 3801.934,
+      "chg": -1.4594977768389437,
+      "cje": 865685987100.0,
+      "t": "2026-07-28 14:40:21"
     },
     {
       "name": "深证成指",
       "code": "399001.SZ",
-      "val": 13538.749,
-      "chg": -4.311213493280775,
-      "cje": 951904569400.0,
-      "t": "2026-07-28 14:29:30"
+      "val": 13507.436,
+      "chg": -4.53252662729965,
+      "cje": 991149270200.0,
+      "t": "2026-07-28 14:40:18"
     },
     {
       "name": "创业板指",
       "code": "399006.SZ",
-      "val": 3341.933,
-      "chg": -6.930347024203881,
-      "cje": 456046720300.0,
-      "t": "2026-07-28 14:29:30"
+      "val": 3330.539,
+      "chg": -7.24765907863651,
+      "cje": 477413796800.0,
+      "t": "2026-07-28 14:40:18"
     }
   ],
   "asOf": {
-    "indices": "14:29:30"
+    "indices": "14:40:18"
   },
   "health": {
-    "status": "valid",
+    "status": "stale",
     "last_valid_at": "2026-07-28 14:29:36",
-    "rejected_reason": "",
+    "rejected_reason": "source_partial",
     "source": {
-      "status": "valid",
+      "status": "partial",
       "pool_status": {
-        "ztgc": "valid",
+        "ztgc": "failed",
         "zbgc": "valid",
-        "dtgc": "valid"
+        "dtgc": "failed"
       },
-      "pool_errors": {}
+      "pool_errors": {
+        "ztgc": "IncompleteRead(19616 bytes read, 324 more expected)",
+        "dtgc": "'utf-8' codec can't decode bytes in position 15295-15296: unexpected end of data"
+      }
     },
     "indices_status": "valid",
     "coverage": {
@@ -174,7 +177,7 @@
       "message": "intraday_coverage_incomplete",
       "date": "2026-07-28",
       "expected_count": 26,
-      "due_count": 22,
+      "due_count": 24,
       "observed_count": 1,
       "observed_slots": [
         "14:30"
@@ -201,7 +204,8 @@
         "13:50",
         "14:00",
         "14:10",
-        "14:20"
+        "14:20",
+        "14:40"
       ],
       "duplicate_slots": [],
       "out_of_session": [],
