@@ -70,10 +70,36 @@ class WorkflowScheduleTest(unittest.TestCase):
             "- name: Validate eod account derivatives", 1
         )[0]
 
-        # 18:00 仍检查闭环完整性，但行情商延迟不能阻断当天页面上线。
+        # 18:00 与手动 eod 都检查闭环完整性，但行情商延迟不能阻断当天页面上线。
         self.assertIn("github.event.schedule == '0 10 * * 1-5'", closeout_step)
+        self.assertIn("github.event_name == 'workflow_dispatch'", closeout_step)
+        self.assertIn("steps.pushmode.outputs.mode == 'eod'", closeout_step)
         self.assertIn("::warning title=Stock research closeout delayed::", closeout_step)
         self.assertNotIn('raise SystemExit(result["message"])', closeout_step)
+
+    def test_manual_eod_dispatch_uses_complete_stock_research_closeout_path(self) -> None:
+        root = Path(__file__).resolve().parents[1]
+        workflow = (root / ".github" / "workflows" / "publish_pages.yml").read_text(encoding="utf-8")
+        mode_step = workflow.split("- name: Decide run mode/date", 1)[1].split("- name: Make scripts executable", 1)[0]
+        query_step = workflow.split("- name: Resolve stock research query tag", 1)[1].split(
+            "- name: Default stock research strategy", 1
+        )[0]
+        report_step = workflow.split("- name: Generate latest full report", 1)[1].split(
+            "- name: Build web assets", 1
+        )[0]
+        prediction_step = workflow.split("- name: Validate eod stock research prediction pool", 1)[1].split(
+            "- name: Validate intraday runtime indices", 1
+        )[0]
+
+        # 手动 eod 与 schedule eod 共享数据刷新和校验链，避免 Actions 成功但财富密码仍停留在前一交易日。
+        self.assertIn("run_stage:", workflow)
+        self.assertIn('if [ "${input_run_stage}" = "eod" ]', mode_step)
+        self.assertIn('mode="eod"', mode_step)
+        self.assertIn("steps.pushmode.outputs.mode == 'eod'", query_step)
+        self.assertIn("QR_DISABLE_STOCK_RESEARCH_HISTORY_FETCH: ${{ steps.pushmode.outputs.mode == 'eod' && '0' || '1' }}", report_step)
+        self.assertIn("QR_ENABLE_CORE_QUOTES_REFRESH: ${{ steps.pushmode.outputs.mode == 'eod' && '1' || '0' }}", report_step)
+        self.assertIn("steps.pushmode.outputs.mode == 'eod'", prediction_step)
+        self.assertIn("github.event_name != 'schedule'", prediction_step)
 
     def test_business_data_guards_warn_without_blocking_publish(self) -> None:
         root = Path(__file__).resolve().parents[1]

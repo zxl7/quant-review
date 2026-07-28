@@ -9,6 +9,15 @@ on:
         required: false
         default: ""
         type: string
+      run_stage:
+        description: "手动补跑阶段；eod 强制执行收盘复盘，open 补跑开盘发布"
+        required: true
+        default: "auto"
+        type: choice
+        options:
+          - auto
+          - open
+          - eod
       stock_research_query_tag:
         description: "个股研究竞价查询 tag；留空则自动预检今日快照，填 fore 可手动补抓一次"
         required: false
@@ -366,6 +375,7 @@ jobs:
           today_bj="${{ steps.tradeday.outputs.today_bj }}"
           realtime_market_date="${{ steps.tradeday.outputs.realtime_market_date }}"
           input_date10="${{ github.event.inputs.date10 || '' }}"
+          input_run_stage="${{ github.event.inputs.run_stage || 'auto' }}"
           input_query_tag="${{ github.event.inputs.stock_research_query_tag || '' }}"
           schedule_mode="${{ steps.timecheck.outputs.mode || '' }}"
 
@@ -385,7 +395,14 @@ jobs:
             exit 2
           fi
           mode="full"
-          if [ "${{ github.event_name }}" = "schedule" ]; then
+          # 手动补跑必须显式进入与定时任务相同的业务阶段，否则 eod 不会拉取收盘历史数据。
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            if [ "${input_run_stage}" = "eod" ]; then
+              mode="eod"
+            elif [ "${input_run_stage}" = "open" ]; then
+              mode="open_fore"
+            fi
+          elif [ "${{ github.event_name }}" = "schedule" ]; then
             if [ "${schedule_mode}" = "auction_prefetch" ]; then
               mode="auction_prefetch"
             elif [ "${schedule_mode}" = "auction_prefetch_retry" ]; then
@@ -400,7 +417,7 @@ jobs:
               mode="full"
             fi
           fi
-          echo "event=${{ github.event_name }} schedule=${{ github.event.schedule || '' }} query_tag=${input_query_tag:-none} -> mode=${mode} date10=${date10}"
+          echo "event=${{ github.event_name }} schedule=${{ github.event.schedule || '' }} run_stage=${input_run_stage} query_tag=${input_query_tag:-none} -> mode=${mode} date10=${date10}"
           echo "mode=${mode}" >> "$GITHUB_OUTPUT"
           echo "date10=${date10}" >> "$GITHUB_OUTPUT"
           echo "stock_research_query_tag=${input_query_tag}" >> "$GITHUB_OUTPUT"
@@ -502,7 +519,7 @@ jobs:
 
       - name: Resolve stock research query tag
         id: stockresearch
-        if: ${{ (github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true') && steps.warmup.outputs.skip != 'true' && (github.event_name != 'schedule' || steps.tradeday.outputs.is_trade_today == 'true') && steps.pushmode.outputs.mode != 'intraday' && steps.pushmode.outputs.mode != 'auction_prefetch' && steps.pushmode.outputs.mode != 'auction_prefetch_retry' && ((github.event_name == 'schedule' && (steps.timecheck.outputs.mode == 'open_fore' || steps.timecheck.outputs.mode == 'eod')) || github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && github.event.inputs.stock_research_query_tag != '')) }}
+        if: ${{ (github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true') && steps.warmup.outputs.skip != 'true' && (github.event_name != 'schedule' || steps.tradeday.outputs.is_trade_today == 'true') && steps.pushmode.outputs.mode != 'intraday' && steps.pushmode.outputs.mode != 'auction_prefetch' && steps.pushmode.outputs.mode != 'auction_prefetch_retry' && ((github.event_name == 'schedule' && (steps.timecheck.outputs.mode == 'open_fore' || steps.timecheck.outputs.mode == 'eod')) || github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && (github.event.inputs.stock_research_query_tag != '' || steps.pushmode.outputs.mode == 'eod' || steps.pushmode.outputs.mode == 'open_fore'))) }}
         run: |
           set -euo pipefail
           mode="${{ steps.pushmode.outputs.mode }}"
@@ -571,7 +588,7 @@ jobs:
 
       - name: Default stock research strategy
         id: stockresearchdefault
-        if: ${{ (github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true') && steps.warmup.outputs.skip != 'true' && (github.event_name != 'schedule' || steps.tradeday.outputs.is_trade_today == 'true') && steps.pushmode.outputs.mode != 'intraday' && steps.pushmode.outputs.mode != 'auction_prefetch' && steps.pushmode.outputs.mode != 'auction_prefetch_retry' && ((github.event_name == 'schedule' && steps.timecheck.outputs.mode != 'open_fore' && steps.timecheck.outputs.mode != 'eod') || (github.event_name == 'workflow_dispatch' && github.event.inputs.stock_research_query_tag == '')) }}
+        if: ${{ (github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true') && steps.warmup.outputs.skip != 'true' && (github.event_name != 'schedule' || steps.tradeday.outputs.is_trade_today == 'true') && steps.pushmode.outputs.mode != 'intraday' && steps.pushmode.outputs.mode != 'auction_prefetch' && steps.pushmode.outputs.mode != 'auction_prefetch_retry' && ((github.event_name == 'schedule' && steps.timecheck.outputs.mode != 'open_fore' && steps.timecheck.outputs.mode != 'eod') || (github.event_name == 'workflow_dispatch' && github.event.inputs.stock_research_query_tag == '' && steps.pushmode.outputs.mode != 'eod' && steps.pushmode.outputs.mode != 'open_fore')) }}
         run: |
           set -euo pipefail
           refresh_backtest="false"
@@ -662,7 +679,7 @@ jobs:
           QR_DISABLE_STOCK_RESEARCH_HISTORY_FETCH: ${{ steps.pushmode.outputs.mode == 'eod' && '0' || '1' }}
           QR_SKIP_WEB_BUILD: "1"
           QR_DISABLE_STOCK_RESEARCH_BACKTEST_REFRESH: ${{ steps.stockresearchfinal.outputs.refresh_backtest != 'true' && '1' || '0' }}
-          QR_ENABLE_CORE_QUOTES_REFRESH: ${{ github.event_name == 'schedule' && steps.timecheck.outputs.mode == 'eod' && '1' || '0' }}
+          QR_ENABLE_CORE_QUOTES_REFRESH: ${{ steps.pushmode.outputs.mode == 'eod' && '1' || '0' }}
         run: |
           set -euo pipefail
           mode="${{ steps.pushmode.outputs.mode }}"
@@ -947,7 +964,7 @@ jobs:
           PY
 
       - name: Validate eod stock research prediction pool
-        if: ${{ github.event_name == 'schedule' && steps.timecheck.outputs.mode == 'eod' && steps.timecheck.outputs.skip != 'true' && steps.warmup.outputs.skip != 'true' && steps.tradeday.outputs.is_trade_today == 'true' && steps.pushmode.outputs.mode != 'intraday' }}
+        if: ${{ steps.pushmode.outputs.mode == 'eod' && (github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true') && steps.warmup.outputs.skip != 'true' && steps.tradeday.outputs.is_trade_today == 'true' }}
         env:
           RUN_DATE: ${{ steps.pushmode.outputs.date10 }}
         run: |
@@ -987,7 +1004,7 @@ jobs:
       - name: Validate eod stock research closeout
         # 收盘闭环价格依赖行情商落库，延迟时只告警；预测池已有独立强校验，
         # 不能让非核心的历史回测闭环阻断当天页面发布。
-        if: ${{ github.event_name == 'schedule' && github.event.schedule == '0 10 * * 1-5' && steps.timecheck.outputs.mode == 'eod' && steps.timecheck.outputs.skip != 'true' && steps.warmup.outputs.skip != 'true' && steps.tradeday.outputs.is_trade_today == 'true' && steps.pushmode.outputs.mode != 'intraday' }}
+        if: ${{ steps.pushmode.outputs.mode == 'eod' && (github.event_name == 'workflow_dispatch' || github.event.schedule == '0 10 * * 1-5') && (github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true') && steps.warmup.outputs.skip != 'true' && steps.tradeday.outputs.is_trade_today == 'true' }}
         env:
           RUN_DATE: ${{ steps.pushmode.outputs.date10 }}
         run: |
@@ -1006,7 +1023,7 @@ jobs:
           PY
 
       - name: Validate eod account derivatives
-        if: ${{ github.event_name == 'schedule' && steps.timecheck.outputs.mode == 'eod' && steps.timecheck.outputs.skip != 'true' && steps.warmup.outputs.skip != 'true' && steps.tradeday.outputs.is_trade_today == 'true' && steps.pushmode.outputs.mode != 'intraday' }}
+        if: ${{ steps.pushmode.outputs.mode == 'eod' && (github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true') && steps.warmup.outputs.skip != 'true' && steps.tradeday.outputs.is_trade_today == 'true' }}
         env:
           RUN_DATE: ${{ steps.pushmode.outputs.date10 }}
         run: |
