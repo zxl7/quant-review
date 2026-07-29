@@ -1,26 +1,26 @@
 {
   "schema": "intraday_runtime_v1",
   "date": "2026-07-29",
-  "updated_at": "2026-07-29 11:00:05",
+  "updated_at": "2026-07-29 11:10:05",
   "source": "必盈(实时)+必盈(实时)",
   "latest": {
-    "time": "11:00:05",
-    "ts_bj": "2026-07-29 11:00:05",
+    "time": "11:10:05",
+    "ts_bj": "2026-07-29 11:10:05",
     "date": "2026-07-29",
     "source": "intraday_live",
     "provider": "必盈(实时)+必盈(实时)",
     "zt": 55,
-    "dt": 13,
+    "dt": 12,
     "zab": 15,
     "zb": 21.4,
     "fb": 78.6,
     "jj": 12.7,
     "lianban": 7,
     "max_lb": 7,
-    "amount": "13226.1亿",
+    "amount": "13870.7亿",
     "bf": 0,
     "heat": 60,
-    "risk": 38,
+    "risk": 37,
     "headline": "修复",
     "concepts": [
       {
@@ -56,12 +56,12 @@
       },
       {
         "level": "warn",
-        "text": "跌停偏多（13）→ 控制追高"
+        "text": "跌停偏多（12）→ 控制追高"
       }
     ],
     "shift_score": 61,
     "shift_label": "修复",
-    "note": "情绪略有回落，注意午后分歧。"
+    "note": "情绪整体平稳，维持当前节奏。"
   },
   "snapshots": [
     {
@@ -581,40 +581,100 @@
       "shift_score": 61,
       "shift_label": "修复",
       "note": "情绪略有回落，注意午后分歧。"
+    },
+    {
+      "time": "11:10:05",
+      "ts_bj": "2026-07-29 11:10:05",
+      "date": "2026-07-29",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "zt": 55,
+      "dt": 12,
+      "zab": 15,
+      "zb": 21.4,
+      "fb": 78.6,
+      "jj": 12.7,
+      "lianban": 7,
+      "max_lb": 7,
+      "amount": "13870.7亿",
+      "bf": 0,
+      "heat": 60,
+      "risk": 37,
+      "headline": "修复",
+      "concepts": [
+        {
+          "name": "饮料乳品",
+          "lead": "一鸣食品",
+          "chg_pct": null
+        },
+        {
+          "name": "电网设备",
+          "lead": "中电鑫龙",
+          "chg_pct": null
+        },
+        {
+          "name": "家居用品",
+          "lead": "爱丽家居",
+          "chg_pct": null
+        },
+        {
+          "name": "教育",
+          "lead": "传智教育",
+          "chg_pct": null
+        },
+        {
+          "name": "一般零售",
+          "lead": "东百集团",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        },
+        {
+          "level": "warn",
+          "text": "跌停偏多（12）→ 控制追高"
+        }
+      ],
+      "shift_score": 61,
+      "shift_label": "修复",
+      "note": "情绪整体平稳，维持当前节奏。"
     }
   ],
   "indices": [
     {
       "name": "上证指数",
       "code": "000001.SH",
-      "val": 3791.657,
-      "chg": -0.5679572760183699,
-      "cje": 611302405500.0,
-      "t": "2026-07-29 11:00:06"
+      "val": 3802.865,
+      "chg": -0.2740397790374064,
+      "cje": 642715602100.0,
+      "t": "2026-07-29 11:10:06"
     },
     {
       "name": "深证成指",
       "code": "399001.SZ",
-      "val": 13446.555,
-      "chg": -0.4672501841087401,
-      "cje": 711012260500.0,
-      "t": "2026-07-29 11:00:03"
+      "val": 13510.267,
+      "chg": 0.004352435020844966,
+      "cje": 743690065800.0,
+      "t": "2026-07-29 11:10:06"
     },
     {
       "name": "创业板指",
       "code": "399006.SZ",
-      "val": 3310.269,
-      "chg": -0.5037826529968297,
-      "cje": 332153353200.0,
-      "t": "2026-07-29 11:00:03"
+      "val": 3331.794,
+      "chg": 0.14319077375315728,
+      "cje": 348414848700.0,
+      "t": "2026-07-29 11:10:06"
     }
   ],
   "asOf": {
-    "indices": "11:00:03"
+    "indices": "11:10:06"
   },
   "health": {
     "status": "valid",
-    "last_valid_at": "2026-07-29 11:00:05",
+    "last_valid_at": "2026-07-29 11:10:05",
     "rejected_reason": "",
     "source": {
       "status": "valid",
@@ -632,8 +692,8 @@
       "message": "intraday_coverage_incomplete",
       "date": "2026-07-29",
       "expected_count": 26,
-      "due_count": 10,
-      "observed_count": 9,
+      "due_count": 11,
+      "observed_count": 10,
       "observed_slots": [
         "09:40",
         "09:50",
@@ -643,7 +703,8 @@
         "10:30",
         "10:40",
         "10:50",
-        "11:00"
+        "11:00",
+        "11:10"
       ],
       "missing_slots": [
         "09:30"
@@ -651,19 +712,19 @@
       "duplicate_slots": [],
       "out_of_session": [],
       "monotonic": true,
-      "morning_coverage": 9,
+      "morning_coverage": 10,
       "afternoon_coverage": 0
     }
   },
   "live": {
     "market": {
       "zt": 55,
-      "dt": 13,
+      "dt": 12,
       "zab": 15,
       "zab_rate": 21.4,
       "lianban": 7,
       "max_lianban": 7,
-      "amount": "13226.1亿"
+      "amount": "13870.7亿"
     },
     "alerts": [
       {
@@ -672,7 +733,7 @@
       },
       {
         "level": "warn",
-        "text": "跌停偏多（13）→ 控制追高"
+        "text": "跌停偏多（12）→ 控制追高"
       }
     ],
     "concepts": [
