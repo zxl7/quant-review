@@ -278,6 +278,7 @@ const hasAnyRealtimeSnapshot = computed(() => {
   if (!isForcedQuerySnapshot.value && !isEntryWindowTime(realtimeBuy.value?.quote_time)) return false
   return realtimeCandidates.value.length > 0
 })
+const isDelayedRealtimeSnapshot = computed(() => hasAnyRealtimeSnapshot.value && !isEntryWindowTime(realtimeBuy.value?.quote_time))
 
 function metricScope(item: any, scope: "all" | "tradable") {
   const scopes = item?.data?.scopes
@@ -500,6 +501,7 @@ const snapshotTradeDate = computed(() => {
 })
 const snapshotCardTitle = computed(() => {
   if (showingRealtimeSnapshot.value) {
+    if (isDelayedRealtimeSnapshot.value) return realtimeTitleDate.value ? `盘中补抓 — ${realtimeTitleDate.value}` : "盘中补抓"
     return realtimeTitleDate.value ? `闭环结果 — ${realtimeTitleDate.value}` : "闭环结果"
   }
   if (showingPredictionTable.value) return currentPlanTitleDate.value ? `待验证推荐 — ${currentPlanTitleDate.value}` : "待验证推荐"
@@ -516,8 +518,8 @@ const realtimeSubtitle = computed(() => {
     return `当前只保留最新推荐日 ${String(realtimeBuy.value?.reference_date || "-")} 的 9:25 竞价快照；所选推荐日请看下方开盘判断和收益表现。`
   }
   if (hasRealtimeSnapshot.value && quoteUpdatedAt.value && quoteUpdatedAt.value !== "-") {
-    if (isForcedQuerySnapshot.value) {
-      return `当前展示的是 ${realtimeTitleDate.value || "-"} 当日补齐后的竞价结果；这类补齐快照仅对所属交易日有效，不会跨日占用今天视图。`
+    if (isDelayedRealtimeSnapshot.value) {
+      return `当前展示 ${realtimeTitleDate.value || "-"} ${quoteUpdatedAt.value} 的盘中补抓报价，仅作降级观察，不作为 9:25 竞价结果。`
     }
     return `竞价快照：${quoteUpdatedAt.value}｜高开超5%先观察，不直接追。`
   }
@@ -548,6 +550,9 @@ const summaryHeaderSubtitle = computed(() => {
     const nextLabel = hasPendingNextTradeDay.value && latestRecommendationDate.value && latestRecommendationDate.value !== realtimeReferenceDate.value
       ? `；切换到 ${latestRecommendationDate.value} 可查看下一交易日待验证推荐`
       : ""
+    if (isDelayedRealtimeSnapshot.value) {
+      return `今天是 ${marketSessionDate.value || tradeDate}，页面当前展示 ${tradeDate} 的盘中补抓报价（对应推荐日 ${realtimeReferenceDate.value}），未计作 9:25 竞价快照${nextLabel}。`
+    }
     return `今天是 ${marketSessionDate.value || tradeDate}，页面当前展示 ${tradeDate} 的闭环结果（对应推荐日 ${realtimeReferenceDate.value}）${nextLabel}。`
   }
   if (!isViewingCurrentRecommendation.value && selectedRecommendationDate.value) {
@@ -569,6 +574,7 @@ const summaryHeaderSubtitle = computed(() => {
 const stageClass = computed(() => {
   const stage = lifecycleStage.value
   if (stage === "auction_snapshot_ready") return "is-super"
+  if (stage === "auction_snapshot_degraded") return "is-expected"
   if (stage === "post_close_wait_auction") return "is-expected"
   if (stage === "auction_snapshot_missing") return "is-reject"
   return "is-neutral"
@@ -576,6 +582,7 @@ const stageClass = computed(() => {
 const quoteClass = computed(() => {
   const state = String(lifecycle.value?.quote_state || "")
   if (state === "ready") return "is-super"
+  if (state === "degraded") return "is-expected"
   if (state === "window_live" || state === "waiting_trade_day" || state === "waiting_window") return "is-expected"
   if (state === "missing") return "is-reject"
   return "is-neutral"
@@ -593,7 +600,7 @@ const summaryCards = computed(() => [
   },
   {
     key: "history",
-    label: showingRealtimeSnapshot.value ? "当前闭环" : (isViewingCurrentRecommendation.value ? "待验证批次" : "当前闭环"),
+    label: showingRealtimeSnapshot.value ? (isDelayedRealtimeSnapshot.value ? "盘中观察" : "当前闭环") : (isViewingCurrentRecommendation.value ? "待验证批次" : "当前闭环"),
     value: selectedResultTradeDate.value || activeTradeDate.value || "-",
     note: selectedRecommendationDate.value
       ? `对应推荐日 ${selectedRecommendationDate.value}${availableRecommendationDates.value.length > 1 ? `｜可切换 ${availableRecommendationDates.value.length} 个批次` : ""}`
@@ -601,7 +608,7 @@ const summaryCards = computed(() => [
   },
   {
     key: "pool",
-    label: showingRealtimeSnapshot.value ? "当前结果样本" : (isViewingCurrentRecommendation.value ? "待验证样本" : "推荐池样本"),
+    label: showingRealtimeSnapshot.value ? (isDelayedRealtimeSnapshot.value ? "盘中报价样本" : "当前结果样本") : (isViewingCurrentRecommendation.value ? "待验证样本" : "推荐池样本"),
     value: `${currentRecords.value.length}`,
     note: isViewingCurrentRecommendation.value
       ? (currentEligibleCount.value > 0 ? `可入场候选 ${currentEligibleCount.value} 条` : "当前以盘后样本展示为主")
@@ -609,10 +616,10 @@ const summaryCards = computed(() => [
   },
   {
     key: "snapshot",
-    label: showingRealtimeSnapshot.value ? "9:25 快照" : "闭环结果",
+    label: showingRealtimeSnapshot.value ? (isDelayedRealtimeSnapshot.value ? "补抓报价" : "9:25 快照") : "闭环结果",
     value: hasSelectedSnapshot.value ? `${allCandidates.value.length}` : "-",
     note: showingRealtimeSnapshot.value
-      ? (isForcedQuerySnapshot.value ? `补齐时间 ${quoteUpdatedAt.value}` : `快照时间 ${quoteUpdatedAt.value}`)
+      ? (isDelayedRealtimeSnapshot.value ? `盘中补抓时间 ${quoteUpdatedAt.value}` : `快照时间 ${quoteUpdatedAt.value}`)
       : (showingPredictionTable.value ? "当前展示收盘后推送的待验证样本" : (selectedHistoricalSnapshot.value?.diagnostics?.note || "历史预测未恢复")),
   },
 ])

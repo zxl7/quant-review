@@ -1010,19 +1010,23 @@ def _build_lifecycle(
         realtime_buy,
         active_trade_date10=active_trade_date10,
     )
+    # fore 可在竞价窗口后补到盘中报价，但只能作为降级观察，不能伪装成 09:25 竞价快照。
+    snapshot_in_entry_window = bool(has_realtime_snapshot and _is_entry_window_time(quote_time))
+    snapshot_quality = "auction" if snapshot_in_entry_window else ("degraded" if has_realtime_snapshot else "missing")
 
     quote_state = "pending_source"
     quote_state_label = "等待推送"
     quote_state_note = "当前还没有落地到可读的竞价引用日。"
 
     if has_realtime_snapshot:
-        quote_state = "ready"
-        if forced_query:
-            quote_state_label = "快照已补齐"
-            quote_state_note = f"今日缺失的竞价快照已补齐，时间 {quote_time or '-'}。"
-        else:
+        if snapshot_in_entry_window:
+            quote_state = "ready"
             quote_state_label = "快照已落地"
             quote_state_note = f"9:25 竞价快照已生成，时间 {quote_time or '-'}。"
+        else:
+            quote_state = "degraded"
+            quote_state_label = "盘中补抓"
+            quote_state_note = f"竞价窗口已过，当前仅保留 {quote_time or '-'} 的盘中补抓报价，不作为 9:25 竞价结果。"
     elif has_current_plan:
         if active_trade_date10 and active_trade_date10 > today10:
             quote_state = "waiting_trade_day"
@@ -1058,13 +1062,14 @@ def _build_lifecycle(
     stage_label = "暂无数据"
     stage_note = "当前还没有可展示的个股回测样本。"
     if has_current_plan and has_realtime_snapshot:
-        stage = "auction_snapshot_ready"
-        if forced_query:
-            stage_label = "竞价结果已补齐"
-            stage_note = f"推荐日 {latest_recommendation_date10 or '-'} 的待验证池缺失快照已补齐，当前可按正常闭环查看竞价命中结果。"
-        else:
+        if snapshot_in_entry_window:
+            stage = "auction_snapshot_ready"
             stage_label = "竞价结果已落地"
             stage_note = f"推荐日 {latest_recommendation_date10 or '-'} 的待验证池已匹配到 {active_trade_date10 or '-'} 9:25 竞价结果，历史统计与当前快照都可同时查看。"
+        else:
+            stage = "auction_snapshot_degraded"
+            stage_label = "盘中报价降级"
+            stage_note = f"推荐日 {latest_recommendation_date10 or '-'} 未拿到有效 9:25 快照；当前展示 {quote_time or '-'} 的盘中补抓报价，仅供观察。"
     elif has_current_plan:
         if quote_state in {"waiting_trade_day", "waiting_window", "window_live"}:
             stage = "post_close_wait_auction"
@@ -1089,6 +1094,7 @@ def _build_lifecycle(
         "quote_state": quote_state,
         "quote_state_label": quote_state_label,
         "quote_state_note": quote_state_note,
+        "snapshot_quality": snapshot_quality,
         "has_current_plan": has_current_plan,
         "has_historical_records": has_historical_records,
         "has_realtime_snapshot": has_realtime_snapshot,

@@ -1093,7 +1093,10 @@ class PicksAdvisorStabilityTest(unittest.TestCase):
         self.assertEqual(payload["realtimeBuy"]["quote_time"], "2026-06-04 13:14:15")
         self.assertEqual(payload["realtimeBuy"]["diagnostics"]["source"], "forced_query_cache")
         self.assertTrue(payload["realtimeBuy"]["diagnostics"]["forced_query"])
-        self.assertEqual(payload["lifecycle"]["quote_state"], "ready")
+        self.assertEqual(payload["lifecycle"]["quote_state"], "degraded")
+        self.assertEqual(payload["lifecycle"]["stage"], "auction_snapshot_degraded")
+        self.assertEqual(payload["lifecycle"]["snapshot_quality"], "degraded")
+        self.assertIn("不作为 9:25 竞价结果", payload["lifecycle"]["quote_state_note"])
 
     def test_forced_query_cache_does_not_cross_trade_day_before_open(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
