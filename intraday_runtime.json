@@ -1,28 +1,54 @@
 {
   "schema": "intraday_runtime_v1",
   "date": "2026-07-29",
-  "updated_at": "2026-07-29 09:40:17",
-  "source": "必盈(实时)",
+  "updated_at": "2026-07-29 09:50:07",
+  "source": "必盈(实时)+必盈(实时)",
   "latest": {
-    "time": "09:40:17",
-    "ts_bj": "2026-07-29 09:40:17",
+    "time": "09:50:07",
+    "ts_bj": "2026-07-29 09:50:07",
     "date": "2026-07-29",
     "source": "intraday_live",
-    "provider": "必盈(实时)",
-    "zt": 18,
-    "dt": 3,
-    "zab": 5,
-    "zb": 21.7,
-    "fb": 78.3,
-    "jj": 44.4,
-    "lianban": 8,
+    "provider": "必盈(实时)+必盈(实时)",
+    "zt": 27,
+    "dt": 4,
+    "zab": 12,
+    "zb": 30.8,
+    "fb": 69.2,
+    "jj": 22.2,
+    "lianban": 6,
     "max_lb": 7,
-    "amount": "3426.6亿",
+    "amount": "5653.1亿",
     "bf": 0,
-    "heat": 62,
-    "risk": 19,
+    "heat": 54,
+    "risk": 28,
     "headline": "修复",
-    "concepts": [],
+    "concepts": [
+      {
+        "name": "教育",
+        "lead": "传智教育",
+        "chg_pct": null
+      },
+      {
+        "name": "饮料乳品",
+        "lead": "一鸣食品",
+        "chg_pct": null
+      },
+      {
+        "name": "汽车零部",
+        "lead": "明新旭腾",
+        "chg_pct": null
+      },
+      {
+        "name": "消费电子",
+        "lead": "国光电器",
+        "chg_pct": null
+      },
+      {
+        "name": "化学制品",
+        "lead": "高争民爆",
+        "chg_pct": null
+      }
+    ],
     "alerts": [
       {
         "level": "info",
@@ -30,12 +56,16 @@
       },
       {
         "level": "warn",
-        "text": "板块数据获取失败或为空（稍后重试）"
+        "text": "炸板率偏高（30.8%）→ 注意回封质量"
+      },
+      {
+        "level": "warn",
+        "text": "高度7板 + 分歧不低 → 高位兑现/炸板风险"
       }
     ],
-    "shift_score": 70,
+    "shift_score": 62,
     "shift_label": "修复",
-    "note": "盘中实时切片已接入，可逐点观察情绪变化。"
+    "note": "炸板/跌停抬升，情绪明显走弱。"
   },
   "snapshots": [
     {
@@ -71,40 +101,104 @@
       "shift_score": 70,
       "shift_label": "修复",
       "note": "盘中实时切片已接入，可逐点观察情绪变化。"
+    },
+    {
+      "time": "09:50:07",
+      "ts_bj": "2026-07-29 09:50:07",
+      "date": "2026-07-29",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "zt": 27,
+      "dt": 4,
+      "zab": 12,
+      "zb": 30.8,
+      "fb": 69.2,
+      "jj": 22.2,
+      "lianban": 6,
+      "max_lb": 7,
+      "amount": "5653.1亿",
+      "bf": 0,
+      "heat": 54,
+      "risk": 28,
+      "headline": "修复",
+      "concepts": [
+        {
+          "name": "教育",
+          "lead": "传智教育",
+          "chg_pct": null
+        },
+        {
+          "name": "饮料乳品",
+          "lead": "一鸣食品",
+          "chg_pct": null
+        },
+        {
+          "name": "汽车零部",
+          "lead": "明新旭腾",
+          "chg_pct": null
+        },
+        {
+          "name": "消费电子",
+          "lead": "国光电器",
+          "chg_pct": null
+        },
+        {
+          "name": "化学制品",
+          "lead": "高争民爆",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        },
+        {
+          "level": "warn",
+          "text": "炸板率偏高（30.8%）→ 注意回封质量"
+        },
+        {
+          "level": "warn",
+          "text": "高度7板 + 分歧不低 → 高位兑现/炸板风险"
+        }
+      ],
+      "shift_score": 62,
+      "shift_label": "修复",
+      "note": "炸板/跌停抬升，情绪明显走弱。"
     }
   ],
   "indices": [
     {
       "name": "上证指数",
       "code": "000001.SH",
-      "val": 3816.163,
-      "chg": 0.07468567375105273,
-      "cje": 154829103200.0,
-      "t": "2026-07-29 09:40:15"
+      "val": 3791.633,
+      "chg": -0.5685866496735844,
+      "cje": 254299822800.0,
+      "t": "2026-07-29 09:50:03"
     },
     {
       "name": "深证成指",
       "code": "399001.SZ",
-      "val": 13567.104,
-      "chg": 0.42506561406824894,
-      "cje": 186128037700.0,
-      "t": "2026-07-29 09:40:15"
+      "val": 13346.902,
+      "chg": -1.2048916928374098,
+      "cje": 309338918100.0,
+      "t": "2026-07-29 09:50:03"
     },
     {
       "name": "创业板指",
       "code": "399006.SZ",
-      "val": 3354.765,
-      "chg": 0.8336263874987503,
-      "cje": 86285383900.0,
-      "t": "2026-07-29 09:40:15"
+      "val": 3281.2,
+      "chg": -1.3775048616934737,
+      "cje": 142543442000.0,
+      "t": "2026-07-29 09:50:06"
     }
   ],
   "asOf": {
-    "indices": "09:40:15"
+    "indices": "09:50:06"
   },
   "health": {
     "status": "valid",
-    "last_valid_at": "2026-07-29 09:40:17",
+    "last_valid_at": "2026-07-29 09:50:07",
     "rejected_reason": "",
     "source": {
       "status": "valid",
@@ -122,10 +216,11 @@
       "message": "intraday_coverage_incomplete",
       "date": "2026-07-29",
       "expected_count": 26,
-      "due_count": 2,
-      "observed_count": 1,
+      "due_count": 3,
+      "observed_count": 2,
       "observed_slots": [
-        "09:40"
+        "09:40",
+        "09:50"
       ],
       "missing_slots": [
         "09:30"
@@ -133,19 +228,19 @@
       "duplicate_slots": [],
       "out_of_session": [],
       "monotonic": true,
-      "morning_coverage": 1,
+      "morning_coverage": 2,
       "afternoon_coverage": 0
     }
   },
   "live": {
     "market": {
-      "zt": 18,
-      "dt": 3,
-      "zab": 5,
-      "zab_rate": 21.7,
-      "lianban": 8,
+      "zt": 27,
+      "dt": 4,
+      "zab": 12,
+      "zab_rate": 30.8,
+      "lianban": 6,
       "max_lianban": 7,
-      "amount": "3426.6亿"
+      "amount": "5653.1亿"
     },
     "alerts": [
       {
@@ -154,9 +249,39 @@
       },
       {
         "level": "warn",
-        "text": "板块数据获取失败或为空（稍后重试）"
+        "text": "炸板率偏高（30.8%）→ 注意回封质量"
+      },
+      {
+        "level": "warn",
+        "text": "高度7板 + 分歧不低 → 高位兑现/炸板风险"
       }
     ],
-    "concepts": []
+    "concepts": [
+      {
+        "name": "教育",
+        "lead": "传智教育",
+        "chg_pct": null
+      },
+      {
+        "name": "饮料乳品",
+        "lead": "一鸣食品",
+        "chg_pct": null
+      },
+      {
+        "name": "汽车零部",
+        "lead": "明新旭腾",
+        "chg_pct": null
+      },
+      {
+        "name": "消费电子",
+        "lead": "国光电器",
+        "chg_pct": null
+      },
+      {
+        "name": "化学制品",
+        "lead": "高争民爆",
+        "chg_pct": null
+      }
+    ]
   }
 }

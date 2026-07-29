@@ -2,7 +2,7 @@
   "schema": "intraday_snapshot_v1",
   "render_mode": "snapshot_stream",
   "date": "2026-07-29",
-  "count": 1,
+  "count": 2,
   "interval_min": null,
   "simulated": false,
   "snapshots": [
@@ -39,28 +39,118 @@
       "shift_score": 70,
       "shift_label": "修复",
       "note": "盘中实时切片已接入，可逐点观察情绪变化。"
+    },
+    {
+      "time": "09:50:07",
+      "ts_bj": "2026-07-29 09:50:07",
+      "date": "2026-07-29",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "zt": 27,
+      "dt": 4,
+      "zab": 12,
+      "zb": 30.8,
+      "fb": 69.2,
+      "jj": 22.2,
+      "lianban": 6,
+      "max_lb": 7,
+      "amount": "5653.1亿",
+      "bf": 0,
+      "heat": 54,
+      "risk": 28,
+      "headline": "修复",
+      "concepts": [
+        {
+          "name": "教育",
+          "lead": "传智教育",
+          "chg_pct": null
+        },
+        {
+          "name": "饮料乳品",
+          "lead": "一鸣食品",
+          "chg_pct": null
+        },
+        {
+          "name": "汽车零部",
+          "lead": "明新旭腾",
+          "chg_pct": null
+        },
+        {
+          "name": "消费电子",
+          "lead": "国光电器",
+          "chg_pct": null
+        },
+        {
+          "name": "化学制品",
+          "lead": "高争民爆",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        },
+        {
+          "level": "warn",
+          "text": "炸板率偏高（30.8%）→ 注意回封质量"
+        },
+        {
+          "level": "warn",
+          "text": "高度7板 + 分歧不低 → 高位兑现/炸板风险"
+        }
+      ],
+      "shift_score": 62,
+      "shift_label": "修复",
+      "note": "炸板/跌停抬升，情绪明显走弱。"
     }
   ],
   "latest": {
-    "time": "09:40:17",
-    "ts_bj": "2026-07-29 09:40:17",
+    "time": "09:50:07",
+    "ts_bj": "2026-07-29 09:50:07",
     "date": "2026-07-29",
     "source": "intraday_live",
-    "provider": "必盈(实时)",
-    "zt": 18,
-    "dt": 3,
-    "zab": 5,
-    "zb": 21.7,
-    "fb": 78.3,
-    "jj": 44.4,
-    "lianban": 8,
+    "provider": "必盈(实时)+必盈(实时)",
+    "zt": 27,
+    "dt": 4,
+    "zab": 12,
+    "zb": 30.8,
+    "fb": 69.2,
+    "jj": 22.2,
+    "lianban": 6,
     "max_lb": 7,
-    "amount": "3426.6亿",
+    "amount": "5653.1亿",
     "bf": 0,
-    "heat": 62,
-    "risk": 19,
+    "heat": 54,
+    "risk": 28,
     "headline": "修复",
-    "concepts": [],
+    "concepts": [
+      {
+        "name": "教育",
+        "lead": "传智教育",
+        "chg_pct": null
+      },
+      {
+        "name": "饮料乳品",
+        "lead": "一鸣食品",
+        "chg_pct": null
+      },
+      {
+        "name": "汽车零部",
+        "lead": "明新旭腾",
+        "chg_pct": null
+      },
+      {
+        "name": "消费电子",
+        "lead": "国光电器",
+        "chg_pct": null
+      },
+      {
+        "name": "化学制品",
+        "lead": "高争民爆",
+        "chg_pct": null
+      }
+    ],
     "alerts": [
       {
         "level": "info",
@@ -68,18 +158,22 @@
       },
       {
         "level": "warn",
-        "text": "板块数据获取失败或为空（稍后重试）"
+        "text": "炸板率偏高（30.8%）→ 注意回封质量"
+      },
+      {
+        "level": "warn",
+        "text": "高度7板 + 分歧不低 → 高位兑现/炸板风险"
       }
     ],
-    "shift_score": 70,
+    "shift_score": 62,
     "shift_label": "修复",
-    "note": "盘中实时切片已接入，可逐点观察情绪变化。"
+    "note": "炸板/跌停抬升，情绪明显走弱。"
   },
-  "updated_at": "2026-07-29 09:40:17",
-  "snapshot_sig": "2026-07-29|2026-07-29 09:40:17|1",
+  "updated_at": "2026-07-29 09:50:07",
+  "snapshot_sig": "2026-07-29|2026-07-29 09:50:07|2",
   "health": {
     "status": "valid",
-    "last_valid_at": "2026-07-29 09:40:17",
+    "last_valid_at": "2026-07-29 09:50:07",
     "rejected_reason": "",
     "source": {
       "status": "valid",
