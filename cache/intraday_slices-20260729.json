@@ -2,7 +2,7 @@
   "schema": "intraday_snapshot_v1",
   "render_mode": "snapshot_stream",
   "date": "2026-07-29",
-  "count": 13,
+  "count": 14,
   "interval_min": null,
   "simulated": false,
   "snapshots": [
@@ -741,54 +741,66 @@
       "shift_score": 57,
       "shift_label": "分歧",
       "note": "情绪整体平稳，维持当前节奏。"
+    },
+    {
+      "time": "13:10:06",
+      "ts_bj": "2026-07-29 13:10:06",
+      "date": "2026-07-29",
+      "source": "intraday_live",
+      "provider": "必盈(实时)",
+      "zt": 61,
+      "dt": 18,
+      "zab": 15,
+      "zb": 19.7,
+      "fb": 80.3,
+      "jj": 11.5,
+      "lianban": 7,
+      "max_lb": 7,
+      "amount": "15707.6亿",
+      "bf": 0,
+      "heat": 61,
+      "risk": 45,
+      "headline": "分歧",
+      "concepts": [],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        },
+        {
+          "level": "warn",
+          "text": "板块数据获取失败或为空（稍后重试）"
+        },
+        {
+          "level": "warn",
+          "text": "跌停偏多（18）→ 控制追高"
+        }
+      ],
+      "shift_score": 58,
+      "shift_label": "分歧",
+      "note": "情绪整体平稳，维持当前节奏。"
     }
   ],
   "latest": {
-    "time": "13:00:16",
-    "ts_bj": "2026-07-29 13:00:16",
+    "time": "13:10:06",
+    "ts_bj": "2026-07-29 13:10:06",
     "date": "2026-07-29",
     "source": "intraday_live",
-    "provider": "必盈(实时)+必盈(实时)",
-    "zt": 58,
-    "dt": 19,
-    "zab": 16,
-    "zb": 21.6,
-    "fb": 78.4,
-    "jj": 12.1,
+    "provider": "必盈(实时)",
+    "zt": 61,
+    "dt": 18,
+    "zab": 15,
+    "zb": 19.7,
+    "fb": 80.3,
+    "jj": 11.5,
     "lianban": 7,
     "max_lb": 7,
-    "amount": "14919.8亿",
+    "amount": "15707.6亿",
     "bf": 0,
-    "heat": 60,
-    "risk": 48,
+    "heat": 61,
+    "risk": 45,
     "headline": "分歧",
-    "concepts": [
-      {
-        "name": "饮料乳品",
-        "lead": "一鸣食品",
-        "chg_pct": null
-      },
-      {
-        "name": "化学制品",
-        "lead": "闰土股份",
-        "chg_pct": null
-      },
-      {
-        "name": "电网设备",
-        "lead": "中电鑫龙",
-        "chg_pct": null
-      },
-      {
-        "name": "家居用品",
-        "lead": "爱丽家居",
-        "chg_pct": null
-      },
-      {
-        "name": "教育",
-        "lead": "传智教育",
-        "chg_pct": null
-      }
-    ],
+    "concepts": [],
     "alerts": [
       {
         "level": "info",
@@ -796,18 +808,22 @@
       },
       {
         "level": "warn",
-        "text": "跌停偏多（19）→ 控制追高"
+        "text": "板块数据获取失败或为空（稍后重试）"
+      },
+      {
+        "level": "warn",
+        "text": "跌停偏多（18）→ 控制追高"
       }
     ],
-    "shift_score": 57,
+    "shift_score": 58,
     "shift_label": "分歧",
     "note": "情绪整体平稳，维持当前节奏。"
   },
-  "updated_at": "2026-07-29 13:00:16",
-  "snapshot_sig": "2026-07-29|2026-07-29 13:00:16|13",
+  "updated_at": "2026-07-29 13:10:06",
+  "snapshot_sig": "2026-07-29|2026-07-29 13:10:06|14",
   "health": {
     "status": "valid",
-    "last_valid_at": "2026-07-29 13:00:16",
+    "last_valid_at": "2026-07-29 13:10:06",
     "rejected_reason": "",
     "source": {
       "status": "valid",
