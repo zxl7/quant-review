@@ -1,14 +1,14 @@
 {
   "schema": "intraday_runtime_v1",
   "date": "2026-07-29",
-  "updated_at": "2026-07-29 11:30:07",
-  "source": "必盈(实时)",
+  "updated_at": "2026-07-29 13:00:16",
+  "source": "必盈(实时)+必盈(实时)",
   "latest": {
-    "time": "11:30:07",
-    "ts_bj": "2026-07-29 11:30:07",
+    "time": "13:00:16",
+    "ts_bj": "2026-07-29 13:00:16",
     "date": "2026-07-29",
     "source": "intraday_live",
-    "provider": "必盈(实时)",
+    "provider": "必盈(实时)+必盈(实时)",
     "zt": 58,
     "dt": 19,
     "zab": 16,
@@ -17,20 +17,42 @@
     "jj": 12.1,
     "lianban": 7,
     "max_lb": 7,
-    "amount": "14794.2亿",
+    "amount": "14919.8亿",
     "bf": 0,
     "heat": 60,
     "risk": 48,
     "headline": "分歧",
-    "concepts": [],
+    "concepts": [
+      {
+        "name": "饮料乳品",
+        "lead": "一鸣食品",
+        "chg_pct": null
+      },
+      {
+        "name": "化学制品",
+        "lead": "闰土股份",
+        "chg_pct": null
+      },
+      {
+        "name": "电网设备",
+        "lead": "中电鑫龙",
+        "chg_pct": null
+      },
+      {
+        "name": "家居用品",
+        "lead": "爱丽家居",
+        "chg_pct": null
+      },
+      {
+        "name": "教育",
+        "lead": "传智教育",
+        "chg_pct": null
+      }
+    ],
     "alerts": [
       {
         "level": "info",
         "text": "盘中模式：强制实时拉取"
-      },
-      {
-        "level": "warn",
-        "text": "板块数据获取失败或为空（稍后重试）"
       },
       {
         "level": "warn",
@@ -39,7 +61,7 @@
     ],
     "shift_score": 57,
     "shift_label": "分歧",
-    "note": "情绪略有回落，注意午后分歧。"
+    "note": "情绪整体平稳，维持当前节奏。"
   },
   "snapshots": [
     {
@@ -717,40 +739,100 @@
       "shift_score": 57,
       "shift_label": "分歧",
       "note": "情绪略有回落，注意午后分歧。"
+    },
+    {
+      "time": "13:00:16",
+      "ts_bj": "2026-07-29 13:00:16",
+      "date": "2026-07-29",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "zt": 58,
+      "dt": 19,
+      "zab": 16,
+      "zb": 21.6,
+      "fb": 78.4,
+      "jj": 12.1,
+      "lianban": 7,
+      "max_lb": 7,
+      "amount": "14919.8亿",
+      "bf": 0,
+      "heat": 60,
+      "risk": 48,
+      "headline": "分歧",
+      "concepts": [
+        {
+          "name": "饮料乳品",
+          "lead": "一鸣食品",
+          "chg_pct": null
+        },
+        {
+          "name": "化学制品",
+          "lead": "闰土股份",
+          "chg_pct": null
+        },
+        {
+          "name": "电网设备",
+          "lead": "中电鑫龙",
+          "chg_pct": null
+        },
+        {
+          "name": "家居用品",
+          "lead": "爱丽家居",
+          "chg_pct": null
+        },
+        {
+          "name": "教育",
+          "lead": "传智教育",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        },
+        {
+          "level": "warn",
+          "text": "跌停偏多（19）→ 控制追高"
+        }
+      ],
+      "shift_score": 57,
+      "shift_label": "分歧",
+      "note": "情绪整体平稳，维持当前节奏。"
     }
   ],
   "indices": [
     {
       "name": "上证指数",
       "code": "000001.SH",
-      "val": 3793.181,
-      "chg": -0.5279920489128229,
-      "cje": 688925562600.0,
-      "t": "2026-07-29 11:30:03"
+      "val": 3785.081,
+      "chg": -0.7404056575446802,
+      "cje": 693744928800.0,
+      "t": "2026-07-29 13:00:18"
     },
     {
       "name": "深证成指",
       "code": "399001.SZ",
-      "val": 13452.052,
-      "chg": -0.42656083834412656,
-      "cje": 790494004600.0,
-      "t": "2026-07-29 11:30:03"
+      "val": 13392.329,
+      "chg": -0.8686364790754862,
+      "cje": 797623057600.0,
+      "t": "2026-07-29 13:00:15"
     },
     {
       "name": "创业板指",
       "code": "399006.SZ",
-      "val": 3311.319,
-      "chg": -0.47222297364316645,
-      "cje": 371092569500.0,
-      "t": "2026-07-29 11:30:03"
+      "val": 3292.568,
+      "chg": -1.0358187332245272,
+      "cje": 374398104000.0,
+      "t": "2026-07-29 13:00:15"
     }
   ],
   "asOf": {
-    "indices": "11:30:03"
+    "indices": "13:00:15"
   },
   "health": {
     "status": "valid",
-    "last_valid_at": "2026-07-29 11:30:07",
+    "last_valid_at": "2026-07-29 13:00:16",
     "rejected_reason": "",
     "source": {
       "status": "valid",
@@ -768,8 +850,8 @@
       "message": "intraday_coverage_incomplete",
       "date": "2026-07-29",
       "expected_count": 26,
-      "due_count": 13,
-      "observed_count": 12,
+      "due_count": 14,
+      "observed_count": 13,
       "observed_slots": [
         "09:40",
         "09:50",
@@ -782,7 +864,8 @@
         "11:00",
         "11:10",
         "11:20",
-        "11:30"
+        "11:30",
+        "13:00"
       ],
       "missing_slots": [
         "09:30"
@@ -791,7 +874,7 @@
       "out_of_session": [],
       "monotonic": true,
       "morning_coverage": 12,
-      "afternoon_coverage": 0
+      "afternoon_coverage": 1
     }
   },
   "live": {
@@ -802,7 +885,7 @@
       "zab_rate": 21.6,
       "lianban": 7,
       "max_lianban": 7,
-      "amount": "14794.2亿"
+      "amount": "14919.8亿"
     },
     "alerts": [
       {
@@ -811,13 +894,35 @@
       },
       {
         "level": "warn",
-        "text": "板块数据获取失败或为空（稍后重试）"
-      },
-      {
-        "level": "warn",
         "text": "跌停偏多（19）→ 控制追高"
       }
     ],
-    "concepts": []
+    "concepts": [
+      {
+        "name": "饮料乳品",
+        "lead": "一鸣食品",
+        "chg_pct": null
+      },
+      {
+        "name": "化学制品",
+        "lead": "闰土股份",
+        "chg_pct": null
+      },
+      {
+        "name": "电网设备",
+        "lead": "中电鑫龙",
+        "chg_pct": null
+      },
+      {
+        "name": "家居用品",
+        "lead": "爱丽家居",
+        "chg_pct": null
+      },
+      {
+        "name": "教育",
+        "lead": "传智教育",
+        "chg_pct": null
+      }
+    ]
   }
 }
