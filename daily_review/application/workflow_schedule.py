@@ -22,10 +22,10 @@ SCHEDULE_MODE_BY_CRON: dict[str, str] = {
 }
 
 INTRADAY_SESSION_BY_CRON: dict[str, str] = {
-    "5 1 * * 1-5": "morning",
-    "17 1 * * 1-5": "morning",
-    "35 4 * * 1-5": "afternoon",
-    "47 4 * * 1-5": "afternoon",
+    "15 22 * * 0-4": "morning",
+    "30 22 * * 0-4": "morning",
+    "45 1 * * 1-5": "afternoon",
+    "0 2 * * 1-5": "afternoon",
 }
 INTRADAY_SESSION_WINDOWS: dict[str, tuple[tuple[int, int], tuple[int, int]]] = {
     "morning": ((9, 30), (11, 30)),
@@ -84,7 +84,7 @@ def resolve_intraday_session(
     (start_hour, start_minute), (end_hour, end_minute) = INTRADAY_SESSION_WINDOWS[session]
     start = current.replace(hour=start_hour, minute=start_minute, second=0, microsecond=0)
     end = current.replace(hour=end_hour, minute=end_minute, second=0, microsecond=0)
-    is_fallback = not is_manual and str(schedule_expr or "").strip() in {"17 1 * * 1-5", "47 4 * * 1-5"}
+    is_fallback = not is_manual and str(schedule_expr or "").strip() in {"30 22 * * 0-4", "0 2 * * 1-5"}
     common = {
         "mode": session,
         "is_fallback": is_fallback,

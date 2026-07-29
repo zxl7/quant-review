@@ -1,13 +1,14 @@
 name: Publish intraday runtime
 
 on:
-  # GitHub cron 提前启动上午/下午会话，任务内等待开盘并按自然十分钟刻度循环。
-  # 第二条 cron 是同会话兜底；共享 concurrency 锁，避免两个长任务并行覆盖 gh-pages。
+  # GitHub cron 提前数小时启动上午/下午会话，任务内等待开盘并按自然十分钟刻度循环。
+  # 2026-07-28 实测 cron 最长延迟约 2 小时 44 分，因此预留 3 小时以上缓冲。
+  # 上午 cron 使用 UTC 前一日 0-4，对应北京时间周一至周五；第二条是同会话兜底。
   schedule:
-    - cron: "5 1 * * 1-5"   # 北京时间 09:05，上午主任务
-    - cron: "17 1 * * 1-5"  # 北京时间 09:17，上午兜底
-    - cron: "35 4 * * 1-5"  # 北京时间 12:35，下午主任务
-    - cron: "47 4 * * 1-5"  # 北京时间 12:47，下午兜底
+    - cron: "15 22 * * 0-4"  # 北京时间 06:15，上午主任务
+    - cron: "30 22 * * 0-4"  # 北京时间 06:30，上午兜底
+    - cron: "45 1 * * 1-5"   # 北京时间 09:45，下午主任务
+    - cron: "0 2 * * 1-5"    # 北京时间 10:00，下午兜底
   workflow_dispatch:
     inputs:
       mode:
@@ -23,7 +24,7 @@ permissions:
   contents: write
 
 concurrency:
-  group: ${{ github.event_name == 'workflow_dispatch' && format('intraday-runtime-manual-{0}', github.run_id) || (github.event.schedule == '5 1 * * 1-5' || github.event.schedule == '17 1 * * 1-5') && 'intraday-runtime-morning' || 'intraday-runtime-afternoon' }}
+  group: ${{ github.event_name == 'workflow_dispatch' && format('intraday-runtime-manual-{0}', github.run_id) || (github.event.schedule == '15 22 * * 0-4' || github.event.schedule == '30 22 * * 0-4') && 'intraday-runtime-morning' || 'intraday-runtime-afternoon' }}
   cancel-in-progress: false
 
 env:
@@ -33,7 +34,7 @@ env:
 jobs:
   runtime:
     runs-on: ubuntu-latest
-    timeout-minutes: 165
+    timeout-minutes: 350
     steps:
       - name: Checkout source
         uses: actions/checkout@v4

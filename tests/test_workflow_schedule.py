@@ -49,15 +49,15 @@ class WorkflowScheduleTest(unittest.TestCase):
         intraday_workflow = (root / ".github" / "workflows" / "intraday_runtime.yml").read_text(encoding="utf-8")
         self.assertEqual(intraday_workflow.count("./qr.sh watch-slice"), 1)
         session_crons = (
-            "5 1 * * 1-5",
-            "17 1 * * 1-5",
-            "35 4 * * 1-5",
-            "47 4 * * 1-5",
+            "15 22 * * 0-4",
+            "30 22 * * 0-4",
+            "45 1 * * 1-5",
+            "0 2 * * 1-5",
         )
         for cron in session_crons:
             self.assertIn(f'cron: "{cron}"', intraday_workflow)
         self.assertEqual(intraday_workflow.count('    - cron: "'), len(session_crons))
-        self.assertIn("timeout-minutes: 165", intraday_workflow)
+        self.assertIn("timeout-minutes: 350", intraday_workflow)
         self.assertIn('next_run_epoch="${SESSION_NEXT_SLOT_EPOCH}"', intraday_workflow)
         self.assertIn("no_valid_snapshot_preserved", intraday_workflow)
         self.assertIn("for request_attempt in 1 2 3", intraday_workflow)
@@ -207,7 +207,7 @@ class WorkflowScheduleTest(unittest.TestCase):
     def test_intraday_session_fallback_takes_over_remaining_morning(self) -> None:
         result = resolve_intraday_session(
             "schedule",
-            "17 1 * * 1-5",
+            "30 22 * * 0-4",
             now=datetime(2026, 6, 24, 9, 44, tzinfo=TZ_BJ),
         )
         self.assertFalse(result["skip"])
@@ -218,7 +218,7 @@ class WorkflowScheduleTest(unittest.TestCase):
     def test_intraday_session_queued_fallback_exits_after_window(self) -> None:
         result = resolve_intraday_session(
             "schedule",
-            "17 1 * * 1-5",
+            "30 22 * * 0-4",
             now=datetime(2026, 6, 24, 11, 31, tzinfo=TZ_BJ),
         )
         self.assertTrue(result["skip"])
@@ -246,22 +246,22 @@ class WorkflowScheduleTest(unittest.TestCase):
         self.assertEqual(datetime.fromtimestamp(result["next_slot_epoch"], TZ_BJ).strftime("%H:%M"), "14:40")
         self.assertEqual(result["expected_iterations"], 3)
 
-    def test_intraday_primary_waits_for_open_and_covers_full_morning(self) -> None:
+    def test_intraday_early_primary_waits_for_open_and_covers_full_morning(self) -> None:
         result = resolve_intraday_session(
             "schedule",
-            "5 1 * * 1-5",
-            now=datetime(2026, 6, 24, 9, 5, tzinfo=TZ_BJ),
+            "15 22 * * 0-4",
+            now=datetime(2026, 6, 24, 6, 15, tzinfo=TZ_BJ),
         )
         self.assertFalse(result["skip"])
         self.assertEqual(result["reason"], "session_wait")
-        self.assertEqual(result["wait_seconds"], 25 * 60)
+        self.assertEqual(result["wait_seconds"], 3 * 60 * 60 + 15 * 60)
         self.assertEqual(result["expected_iterations"], 13)
 
     def test_intraday_afternoon_controller_never_collects_during_lunch(self) -> None:
         result = resolve_intraday_session(
             "schedule",
-            "35 4 * * 1-5",
-            now=datetime(2026, 6, 24, 12, 45, tzinfo=TZ_BJ),
+            "45 1 * * 1-5",
+            now=datetime(2026, 6, 24, 9, 45, tzinfo=TZ_BJ),
         )
         self.assertFalse(result["skip"])
         self.assertEqual(datetime.fromtimestamp(result["next_slot_epoch"], TZ_BJ).strftime("%H:%M"), "13:00")
@@ -270,7 +270,7 @@ class WorkflowScheduleTest(unittest.TestCase):
     def test_intraday_schedule_skips_non_weekday(self) -> None:
         result = resolve_intraday_session(
             "schedule",
-            "5 1 * * 1-5",
+            "15 22 * * 0-4",
             now=datetime(2026, 6, 27, 9, 5, tzinfo=TZ_BJ),
         )
         self.assertTrue(result["skip"])
