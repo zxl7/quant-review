@@ -93,30 +93,30 @@
     {
       "name": "上证指数",
       "code": "000001.SH",
-      "val": 3784.643,
-      "chg": -1.1447395812790968,
-      "cje": 645860366300.0,
-      "t": "2026-07-30 11:21:15"
+      "val": 3784.552,
+      "chg": -1.1471165105424628,
+      "cje": 672042126200.0,
+      "t": "2026-07-30 11:30:03"
     },
     {
       "name": "深证成指",
       "code": "399001.SZ",
-      "val": 13144.536,
-      "chg": -3.762566219109581,
-      "cje": 755034108100.0,
-      "t": "2026-07-30 11:21:15"
+      "val": 13141.219,
+      "chg": -3.78685156230095,
+      "cje": 780991166300.0,
+      "t": "2026-07-30 11:30:03"
     },
     {
       "name": "创业板指",
       "code": "399006.SZ",
-      "val": 3183.162,
-      "chg": -5.78726230474716,
-      "cje": 357439920500.0,
-      "t": "2026-07-30 11:21:15"
+      "val": 3179.58,
+      "chg": -5.893279537431009,
+      "cje": 371022027400.0,
+      "t": "2026-07-30 11:30:03"
     }
   ],
   "asOf": {
-    "indices": "11:21:15"
+    "indices": "11:30:03"
   },
   "health": {
     "status": "stale",
@@ -126,11 +126,12 @@
       "status": "partial",
       "pool_status": {
         "ztgc": "failed",
-        "zbgc": "valid",
+        "zbgc": "failed",
         "dtgc": "valid"
       },
       "pool_errors": {
-        "ztgc": "Expecting value: line 818 column 1 (char 15248)"
+        "ztgc": "Expecting ',' delimiter: line 834 column 3 (char 15565)",
+        "zbgc": "Expecting property name enclosed in double quotes: line 152 column 30 (char 3053)"
       }
     },
     "indices_status": "valid",
@@ -140,7 +141,7 @@
       "message": "intraday_coverage_incomplete",
       "date": "2026-07-30",
       "expected_count": 26,
-      "due_count": 12,
+      "due_count": 13,
       "observed_count": 1,
       "observed_slots": [
         "11:10"
@@ -156,7 +157,8 @@
         "10:40",
         "10:50",
         "11:00",
-        "11:20"
+        "11:20",
+        "11:30"
       ],
       "duplicate_slots": [],
       "out_of_session": [],
