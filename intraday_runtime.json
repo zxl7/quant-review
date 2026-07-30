@@ -1,54 +1,28 @@
 {
   "schema": "intraday_runtime_v1",
   "date": "2026-07-30",
-  "updated_at": "2026-07-30 13:30:37",
+  "updated_at": "2026-07-30 13:40:07",
   "source": "必盈(实时)",
   "latest": {
-    "time": "13:30:37",
-    "ts_bj": "2026-07-30 13:30:37",
+    "time": "13:40:07",
+    "ts_bj": "2026-07-30 13:40:07",
     "date": "2026-07-30",
     "source": "intraday_live",
     "provider": "必盈(实时)",
     "zt": 50,
-    "dt": null,
-    "zab": null,
-    "zb": null,
-    "fb": null,
+    "dt": 35,
+    "zab": 15,
+    "zb": 23.1,
+    "fb": 76.9,
     "jj": 22.0,
     "lianban": 11,
     "max_lb": 8,
-    "amount": "",
+    "amount": "17994.5亿",
     "bf": 0,
-    "heat": null,
-    "risk": null,
-    "headline": "数据部分可用",
-    "concepts": [
-      {
-        "name": "汽车零部",
-        "lead": "明新旭腾",
-        "chg_pct": null
-      },
-      {
-        "name": "电网设备",
-        "lead": "金龙羽",
-        "chg_pct": null
-      },
-      {
-        "name": "教育",
-        "lead": "传智教育",
-        "chg_pct": null
-      },
-      {
-        "name": "酒店餐饮",
-        "lead": "华天酒店",
-        "chg_pct": null
-      },
-      {
-        "name": "饮料乳品",
-        "lead": "一鸣食品",
-        "chg_pct": null
-      }
-    ],
+    "heat": 63,
+    "risk": 49,
+    "headline": "分歧",
+    "concepts": [],
     "alerts": [
       {
         "level": "info",
@@ -56,12 +30,16 @@
       },
       {
         "level": "warn",
-        "text": "盘中三池响应不完整，保留最近有效数据"
+        "text": "板块数据获取失败或为空（稍后重试）"
+      },
+      {
+        "level": "danger",
+        "text": "跌停偏多（35）→ 亏钱扩散风险上升"
       }
     ],
-    "shift_score": null,
-    "shift_label": "数据部分可用",
-    "note": "核心涨停池有效，辅助池暂时缺失；节点已保留，缺失指标不参与判断。"
+    "shift_score": 58,
+    "shift_label": "分歧",
+    "note": "承接增强、分歧收敛，情绪明显回暖。"
   },
   "snapshots": [
     {
@@ -353,52 +331,87 @@
       "shift_score": null,
       "shift_label": "数据部分可用",
       "note": "核心涨停池有效，辅助池暂时缺失；节点已保留，缺失指标不参与判断。"
+    },
+    {
+      "time": "13:40:07",
+      "ts_bj": "2026-07-30 13:40:07",
+      "date": "2026-07-30",
+      "source": "intraday_live",
+      "provider": "必盈(实时)",
+      "zt": 50,
+      "dt": 35,
+      "zab": 15,
+      "zb": 23.1,
+      "fb": 76.9,
+      "jj": 22.0,
+      "lianban": 11,
+      "max_lb": 8,
+      "amount": "17994.5亿",
+      "bf": 0,
+      "heat": 63,
+      "risk": 49,
+      "headline": "分歧",
+      "concepts": [],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        },
+        {
+          "level": "warn",
+          "text": "板块数据获取失败或为空（稍后重试）"
+        },
+        {
+          "level": "danger",
+          "text": "跌停偏多（35）→ 亏钱扩散风险上升"
+        }
+      ],
+      "shift_score": 58,
+      "shift_label": "分歧",
+      "note": "承接增强、分歧收敛，情绪明显回暖。"
     }
   ],
   "indices": [
     {
       "name": "上证指数",
       "code": "000001.SH",
-      "val": 3800.52,
-      "chg": -0.7300307250757435,
-      "cje": 810811938200.0,
-      "t": "2026-07-30 13:30:51"
+      "val": 3789.677,
+      "chg": -1.0132509888417514,
+      "cje": 840563695700.0,
+      "t": "2026-07-30 13:40:09"
     },
     {
       "name": "深证成指",
       "code": "399001.SZ",
-      "val": 13311.176,
-      "chg": -2.5425150917630153,
-      "cje": 929872851400.0,
-      "t": "2026-07-30 13:30:51"
+      "val": 13237.596,
+      "chg": -3.0812294577625385,
+      "cje": 958637884400.0,
+      "t": "2026-07-30 13:40:06"
     },
     {
       "name": "创业板指",
       "code": "399006.SZ",
-      "val": 3249.515,
-      "chg": -3.823398139400527,
-      "cje": 446519889400.0,
-      "t": "2026-07-30 13:30:51"
+      "val": 3224.875,
+      "chg": -4.552673575841091,
+      "cje": 460369528500.0,
+      "t": "2026-07-30 13:40:06"
     }
   ],
   "asOf": {
-    "indices": "13:30:51"
+    "indices": "13:40:06"
   },
   "health": {
     "status": "valid",
-    "last_valid_at": "2026-07-30 13:30:37",
+    "last_valid_at": "2026-07-30 13:40:07",
     "rejected_reason": "",
     "source": {
-      "status": "partial",
+      "status": "valid",
       "pool_status": {
         "ztgc": "valid",
-        "zbgc": "failed",
-        "dtgc": "failed"
+        "zbgc": "valid",
+        "dtgc": "valid"
       },
-      "pool_errors": {
-        "zbgc": "IncompleteRead(5303 bytes read, 37 more expected)",
-        "dtgc": "Expecting ',' delimiter: line 326 column 19 (char 6320)"
-      }
+      "pool_errors": {}
     },
     "indices_status": "valid",
     "coverage": {
@@ -407,14 +420,15 @@
       "message": "intraday_coverage_incomplete",
       "date": "2026-07-30",
       "expected_count": 26,
-      "due_count": 17,
-      "observed_count": 5,
+      "due_count": 18,
+      "observed_count": 6,
       "observed_slots": [
         "11:10",
         "13:00",
         "13:10",
         "13:20",
-        "13:30"
+        "13:30",
+        "13:40"
       ],
       "missing_slots": [
         "09:30",
@@ -434,18 +448,18 @@
       "out_of_session": [],
       "monotonic": true,
       "morning_coverage": 1,
-      "afternoon_coverage": 4
+      "afternoon_coverage": 5
     }
   },
   "live": {
     "market": {
       "zt": 50,
-      "dt": null,
-      "zab": null,
-      "zab_rate": null,
+      "dt": 35,
+      "zab": 15,
+      "zab_rate": 23.1,
       "lianban": 11,
       "max_lianban": 8,
-      "amount": ""
+      "amount": "17994.5亿"
     },
     "alerts": [
       {
@@ -454,35 +468,13 @@
       },
       {
         "level": "warn",
-        "text": "盘中三池响应不完整，保留最近有效数据"
+        "text": "板块数据获取失败或为空（稍后重试）"
+      },
+      {
+        "level": "danger",
+        "text": "跌停偏多（35）→ 亏钱扩散风险上升"
       }
     ],
-    "concepts": [
-      {
-        "name": "汽车零部",
-        "lead": "明新旭腾",
-        "chg_pct": null
-      },
-      {
-        "name": "电网设备",
-        "lead": "金龙羽",
-        "chg_pct": null
-      },
-      {
-        "name": "教育",
-        "lead": "传智教育",
-        "chg_pct": null
-      },
-      {
-        "name": "酒店餐饮",
-        "lead": "华天酒店",
-        "chg_pct": null
-      },
-      {
-        "name": "饮料乳品",
-        "lead": "一鸣食品",
-        "chg_pct": null
-      }
-    ]
+    "concepts": []
   }
 }

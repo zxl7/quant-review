@@ -2,7 +2,7 @@
   "schema": "intraday_snapshot_v1",
   "render_mode": "snapshot_stream",
   "date": "2026-07-30",
-  "count": 5,
+  "count": 6,
   "interval_min": null,
   "simulated": false,
   "snapshots": [
@@ -295,54 +295,66 @@
       "shift_score": null,
       "shift_label": "数据部分可用",
       "note": "核心涨停池有效，辅助池暂时缺失；节点已保留，缺失指标不参与判断。"
+    },
+    {
+      "time": "13:40:07",
+      "ts_bj": "2026-07-30 13:40:07",
+      "date": "2026-07-30",
+      "source": "intraday_live",
+      "provider": "必盈(实时)",
+      "zt": 50,
+      "dt": 35,
+      "zab": 15,
+      "zb": 23.1,
+      "fb": 76.9,
+      "jj": 22.0,
+      "lianban": 11,
+      "max_lb": 8,
+      "amount": "17994.5亿",
+      "bf": 0,
+      "heat": 63,
+      "risk": 49,
+      "headline": "分歧",
+      "concepts": [],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        },
+        {
+          "level": "warn",
+          "text": "板块数据获取失败或为空（稍后重试）"
+        },
+        {
+          "level": "danger",
+          "text": "跌停偏多（35）→ 亏钱扩散风险上升"
+        }
+      ],
+      "shift_score": 58,
+      "shift_label": "分歧",
+      "note": "承接增强、分歧收敛，情绪明显回暖。"
     }
   ],
   "latest": {
-    "time": "13:30:37",
-    "ts_bj": "2026-07-30 13:30:37",
+    "time": "13:40:07",
+    "ts_bj": "2026-07-30 13:40:07",
     "date": "2026-07-30",
     "source": "intraday_live",
     "provider": "必盈(实时)",
     "zt": 50,
-    "dt": null,
-    "zab": null,
-    "zb": null,
-    "fb": null,
+    "dt": 35,
+    "zab": 15,
+    "zb": 23.1,
+    "fb": 76.9,
     "jj": 22.0,
     "lianban": 11,
     "max_lb": 8,
-    "amount": "",
+    "amount": "17994.5亿",
     "bf": 0,
-    "heat": null,
-    "risk": null,
-    "headline": "数据部分可用",
-    "concepts": [
-      {
-        "name": "汽车零部",
-        "lead": "明新旭腾",
-        "chg_pct": null
-      },
-      {
-        "name": "电网设备",
-        "lead": "金龙羽",
-        "chg_pct": null
-      },
-      {
-        "name": "教育",
-        "lead": "传智教育",
-        "chg_pct": null
-      },
-      {
-        "name": "酒店餐饮",
-        "lead": "华天酒店",
-        "chg_pct": null
-      },
-      {
-        "name": "饮料乳品",
-        "lead": "一鸣食品",
-        "chg_pct": null
-      }
-    ],
+    "heat": 63,
+    "risk": 49,
+    "headline": "分歧",
+    "concepts": [],
     "alerts": [
       {
         "level": "info",
@@ -350,30 +362,31 @@
       },
       {
         "level": "warn",
-        "text": "盘中三池响应不完整，保留最近有效数据"
+        "text": "板块数据获取失败或为空（稍后重试）"
+      },
+      {
+        "level": "danger",
+        "text": "跌停偏多（35）→ 亏钱扩散风险上升"
       }
     ],
-    "shift_score": null,
-    "shift_label": "数据部分可用",
-    "note": "核心涨停池有效，辅助池暂时缺失；节点已保留，缺失指标不参与判断。"
+    "shift_score": 58,
+    "shift_label": "分歧",
+    "note": "承接增强、分歧收敛，情绪明显回暖。"
   },
-  "updated_at": "2026-07-30 13:30:37",
-  "snapshot_sig": "2026-07-30|2026-07-30 13:30:37|5",
+  "updated_at": "2026-07-30 13:40:07",
+  "snapshot_sig": "2026-07-30|2026-07-30 13:40:07|6",
   "health": {
     "status": "valid",
-    "last_valid_at": "2026-07-30 13:30:37",
+    "last_valid_at": "2026-07-30 13:40:07",
     "rejected_reason": "",
     "source": {
-      "status": "partial",
+      "status": "valid",
       "pool_status": {
         "ztgc": "valid",
-        "zbgc": "failed",
-        "dtgc": "failed"
+        "zbgc": "valid",
+        "dtgc": "valid"
       },
-      "pool_errors": {
-        "zbgc": "IncompleteRead(5303 bytes read, 37 more expected)",
-        "dtgc": "Expecting ',' delimiter: line 326 column 19 (char 6320)"
-      }
+      "pool_errors": {}
     }
   }
 }
