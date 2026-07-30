@@ -1,26 +1,26 @@
 {
   "schema": "intraday_runtime_v1",
   "date": "2026-07-30",
-  "updated_at": "2026-07-30 13:50:04",
+  "updated_at": "2026-07-30 14:00:05",
   "source": "必盈(实时)+必盈(实时)",
   "latest": {
-    "time": "13:50:04",
-    "ts_bj": "2026-07-30 13:50:04",
+    "time": "14:00:05",
+    "ts_bj": "2026-07-30 14:00:05",
     "date": "2026-07-30",
     "source": "intraday_live",
     "provider": "必盈(实时)+必盈(实时)",
-    "zt": 50,
+    "zt": 51,
     "dt": 43,
-    "zab": 15,
-    "zb": 23.1,
-    "fb": 76.9,
-    "jj": 22.0,
-    "lianban": 11,
+    "zab": 16,
+    "zb": 23.9,
+    "fb": 76.1,
+    "jj": 23.5,
+    "lianban": 12,
     "max_lb": 8,
-    "amount": "18566.0亿",
+    "amount": "19064.9亿",
     "bf": 0,
     "heat": 63,
-    "risk": 49,
+    "risk": 50,
     "headline": "分歧",
     "concepts": [
       {
@@ -30,7 +30,7 @@
       },
       {
         "name": "电网设备",
-        "lead": "金龙羽",
+        "lead": "海兴电力",
         "chg_pct": null
       },
       {
@@ -451,40 +451,100 @@
       "shift_score": 58,
       "shift_label": "分歧",
       "note": "情绪整体平稳，维持当前节奏。"
+    },
+    {
+      "time": "14:00:05",
+      "ts_bj": "2026-07-30 14:00:05",
+      "date": "2026-07-30",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "zt": 51,
+      "dt": 43,
+      "zab": 16,
+      "zb": 23.9,
+      "fb": 76.1,
+      "jj": 23.5,
+      "lianban": 12,
+      "max_lb": 8,
+      "amount": "19064.9亿",
+      "bf": 0,
+      "heat": 63,
+      "risk": 50,
+      "headline": "分歧",
+      "concepts": [
+        {
+          "name": "汽车零部",
+          "lead": "明新旭腾",
+          "chg_pct": null
+        },
+        {
+          "name": "电网设备",
+          "lead": "海兴电力",
+          "chg_pct": null
+        },
+        {
+          "name": "教育",
+          "lead": "传智教育",
+          "chg_pct": null
+        },
+        {
+          "name": "酒店餐饮",
+          "lead": "华天酒店",
+          "chg_pct": null
+        },
+        {
+          "name": "饮料乳品",
+          "lead": "一鸣食品",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        },
+        {
+          "level": "danger",
+          "text": "跌停偏多（43）→ 亏钱扩散风险上升"
+        }
+      ],
+      "shift_score": 58,
+      "shift_label": "分歧",
+      "note": "情绪整体平稳，维持当前节奏。"
     }
   ],
   "indices": [
     {
       "name": "上证指数",
       "code": "000001.SH",
-      "val": 3802.203,
-      "chg": -0.6860705937543199,
-      "cje": 868693893100.0,
-      "t": "2026-07-30 13:50:06"
+      "val": 3803.364,
+      "chg": -0.6557451555700208,
+      "cje": 893489392400.0,
+      "t": "2026-07-30 14:00:06"
     },
     {
       "name": "深证成指",
       "code": "399001.SZ",
-      "val": 13318.575,
-      "chg": -2.4883434745568294,
-      "cje": 987667197700.0,
-      "t": "2026-07-30 13:50:03"
+      "val": 13342.499,
+      "chg": -2.313184430085885,
+      "cje": 1013001288100.0,
+      "t": "2026-07-30 14:00:03"
     },
     {
       "name": "创业板指",
       "code": "399006.SZ",
-      "val": 3254.239,
-      "chg": -3.6835808844595634,
-      "cje": 474753405600.0,
-      "t": "2026-07-30 13:50:03"
+      "val": 3268.547,
+      "chg": -3.260103898071916,
+      "cje": 488134787800.0,
+      "t": "2026-07-30 14:00:03"
     }
   ],
   "asOf": {
-    "indices": "13:50:03"
+    "indices": "14:00:03"
   },
   "health": {
     "status": "valid",
-    "last_valid_at": "2026-07-30 13:50:04",
+    "last_valid_at": "2026-07-30 14:00:05",
     "rejected_reason": "",
     "source": {
       "status": "valid",
@@ -502,8 +562,8 @@
       "message": "intraday_coverage_incomplete",
       "date": "2026-07-30",
       "expected_count": 26,
-      "due_count": 19,
-      "observed_count": 7,
+      "due_count": 20,
+      "observed_count": 8,
       "observed_slots": [
         "11:10",
         "13:00",
@@ -511,7 +571,8 @@
         "13:20",
         "13:30",
         "13:40",
-        "13:50"
+        "13:50",
+        "14:00"
       ],
       "missing_slots": [
         "09:30",
@@ -531,18 +592,18 @@
       "out_of_session": [],
       "monotonic": true,
       "morning_coverage": 1,
-      "afternoon_coverage": 6
+      "afternoon_coverage": 7
     }
   },
   "live": {
     "market": {
-      "zt": 50,
+      "zt": 51,
       "dt": 43,
-      "zab": 15,
-      "zab_rate": 23.1,
-      "lianban": 11,
+      "zab": 16,
+      "zab_rate": 23.9,
+      "lianban": 12,
       "max_lianban": 8,
-      "amount": "18566.0亿"
+      "amount": "19064.9亿"
     },
     "alerts": [
       {
@@ -562,7 +623,7 @@
       },
       {
         "name": "电网设备",
-        "lead": "金龙羽",
+        "lead": "海兴电力",
         "chg_pct": null
       },
       {
