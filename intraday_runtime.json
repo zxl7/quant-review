@@ -1,54 +1,28 @@
 {
   "schema": "intraday_runtime_v1",
-  "date": "2026-07-29",
-  "updated_at": "2026-07-29 15:00:04",
-  "source": "必盈(实时)+必盈(实时)",
+  "date": "2026-07-30",
+  "updated_at": "2026-07-30 11:10:05",
+  "source": "unknown",
   "latest": {
-    "time": "15:00:04",
-    "ts_bj": "2026-07-29 15:00:04",
-    "date": "2026-07-29",
+    "time": "11:10:05",
+    "ts_bj": "2026-07-30 11:10:05",
+    "date": "2026-07-30",
     "source": "intraday_live",
-    "provider": "必盈(实时)+必盈(实时)",
-    "zt": 81,
-    "dt": 10,
-    "zab": 14,
-    "zb": 14.7,
-    "fb": 85.3,
-    "jj": 13.6,
+    "provider": "unknown",
+    "zt": 48,
+    "dt": 22,
+    "zab": null,
+    "zb": null,
+    "fb": null,
+    "jj": 22.9,
     "lianban": 11,
-    "max_lb": 7,
-    "amount": "22965.8亿",
+    "max_lb": 8,
+    "amount": "",
     "bf": 0,
-    "heat": 67,
-    "risk": 29,
-    "headline": "修复",
-    "concepts": [
-      {
-        "name": "化学制品",
-        "lead": "兴欣新材",
-        "chg_pct": null
-      },
-      {
-        "name": "饮料乳品",
-        "lead": "一鸣食品",
-        "chg_pct": null
-      },
-      {
-        "name": "电网设备",
-        "lead": "汉缆股份",
-        "chg_pct": null
-      },
-      {
-        "name": "家居用品",
-        "lead": "爱丽家居",
-        "chg_pct": null
-      },
-      {
-        "name": "休闲食品",
-        "lead": "西麦食品",
-        "chg_pct": null
-      }
-    ],
+    "heat": null,
+    "risk": null,
+    "headline": "数据部分可用",
+    "concepts": [],
     "alerts": [
       {
         "level": "info",
@@ -56,1131 +30,41 @@
       },
       {
         "level": "warn",
-        "text": "跌停偏多（10）→ 控制追高"
+        "text": "盘中三池响应不完整，保留最近有效数据"
+      },
+      {
+        "level": "warn",
+        "text": "板块数据获取失败或为空（稍后重试）"
+      },
+      {
+        "level": "danger",
+        "text": "跌停偏多（22）→ 亏钱扩散风险上升"
       }
     ],
-    "shift_score": 69,
-    "shift_label": "修复",
-    "note": "情绪边际修复，但仍需确认持续性。"
+    "shift_score": null,
+    "shift_label": "数据部分可用",
+    "note": "核心涨停池有效，辅助池暂时缺失；节点已保留，缺失指标不参与判断。"
   },
   "snapshots": [
     {
-      "time": "09:40:17",
-      "ts_bj": "2026-07-29 09:40:17",
-      "date": "2026-07-29",
-      "source": "intraday_live",
-      "provider": "必盈(实时)",
-      "zt": 18,
-      "dt": 3,
-      "zab": 5,
-      "zb": 21.7,
-      "fb": 78.3,
-      "jj": 44.4,
-      "lianban": 8,
-      "max_lb": 7,
-      "amount": "3426.6亿",
-      "bf": 0,
-      "heat": 62,
-      "risk": 19,
-      "headline": "修复",
-      "concepts": [],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        },
-        {
-          "level": "warn",
-          "text": "板块数据获取失败或为空（稍后重试）"
-        }
-      ],
-      "shift_score": 70,
-      "shift_label": "修复",
-      "note": "盘中实时切片已接入，可逐点观察情绪变化。"
-    },
-    {
-      "time": "09:50:07",
-      "ts_bj": "2026-07-29 09:50:07",
-      "date": "2026-07-29",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "zt": 27,
-      "dt": 4,
-      "zab": 12,
-      "zb": 30.8,
-      "fb": 69.2,
-      "jj": 22.2,
-      "lianban": 6,
-      "max_lb": 7,
-      "amount": "5653.1亿",
-      "bf": 0,
-      "heat": 54,
-      "risk": 28,
-      "headline": "修复",
-      "concepts": [
-        {
-          "name": "教育",
-          "lead": "传智教育",
-          "chg_pct": null
-        },
-        {
-          "name": "饮料乳品",
-          "lead": "一鸣食品",
-          "chg_pct": null
-        },
-        {
-          "name": "汽车零部",
-          "lead": "明新旭腾",
-          "chg_pct": null
-        },
-        {
-          "name": "消费电子",
-          "lead": "国光电器",
-          "chg_pct": null
-        },
-        {
-          "name": "化学制品",
-          "lead": "高争民爆",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        },
-        {
-          "level": "warn",
-          "text": "炸板率偏高（30.8%）→ 注意回封质量"
-        },
-        {
-          "level": "warn",
-          "text": "高度7板 + 分歧不低 → 高位兑现/炸板风险"
-        }
-      ],
-      "shift_score": 62,
-      "shift_label": "修复",
-      "note": "炸板/跌停抬升，情绪明显走弱。"
-    },
-    {
-      "time": "10:00:05",
-      "ts_bj": "2026-07-29 10:00:05",
-      "date": "2026-07-29",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "zt": 32,
-      "dt": 10,
-      "zab": 12,
-      "zb": 27.3,
-      "fb": 72.7,
-      "jj": 18.8,
-      "lianban": 6,
-      "max_lb": 7,
-      "amount": "7253.2亿",
-      "bf": 0,
-      "heat": 55,
-      "risk": 35,
-      "headline": "分歧",
-      "concepts": [
-        {
-          "name": "饮料乳品",
-          "lead": "一鸣食品",
-          "chg_pct": null
-        },
-        {
-          "name": "教育",
-          "lead": "传智教育",
-          "chg_pct": null
-        },
-        {
-          "name": "汽车零部",
-          "lead": "明新旭腾",
-          "chg_pct": null
-        },
-        {
-          "name": "元件",
-          "lead": "风华高科",
-          "chg_pct": null
-        },
-        {
-          "name": "专业工程",
-          "lead": "中岩大地",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        },
-        {
-          "level": "warn",
-          "text": "跌停偏多（10）→ 控制追高"
-        },
-        {
-          "level": "warn",
-          "text": "炸板率偏高（27.3%）→ 注意回封质量"
-        },
-        {
-          "level": "warn",
-          "text": "高度7板 + 分歧不低 → 高位兑现/炸板风险"
-        }
-      ],
-      "shift_score": 59,
-      "shift_label": "分歧",
-      "note": "情绪略有回落，注意午后分歧。"
-    },
-    {
-      "time": "10:10:05",
-      "ts_bj": "2026-07-29 10:10:05",
-      "date": "2026-07-29",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "zt": 41,
-      "dt": 15,
-      "zab": 13,
-      "zb": 24.1,
-      "fb": 75.9,
-      "jj": 17.1,
-      "lianban": 7,
-      "max_lb": 7,
-      "amount": "8752.1亿",
-      "bf": 0,
-      "heat": 58,
-      "risk": 42,
-      "headline": "分歧",
-      "concepts": [
-        {
-          "name": "饮料乳品",
-          "lead": "一鸣食品",
-          "chg_pct": null
-        },
-        {
-          "name": "教育",
-          "lead": "传智教育",
-          "chg_pct": null
-        },
-        {
-          "name": "一般零售",
-          "lead": "东百集团",
-          "chg_pct": null
-        },
-        {
-          "name": "家居用品",
-          "lead": "爱丽家居",
-          "chg_pct": null
-        },
-        {
-          "name": "汽车零部",
-          "lead": "明新旭腾",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        },
-        {
-          "level": "warn",
-          "text": "跌停偏多（15）→ 控制追高"
-        }
-      ],
-      "shift_score": 58,
-      "shift_label": "分歧",
-      "note": "情绪整体平稳，维持当前节奏。"
-    },
-    {
-      "time": "10:20:05",
-      "ts_bj": "2026-07-29 10:20:05",
-      "date": "2026-07-29",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "zt": 44,
-      "dt": 13,
-      "zab": 11,
-      "zb": 20.0,
-      "fb": 80.0,
-      "jj": 15.9,
-      "lianban": 7,
-      "max_lb": 7,
-      "amount": "9783.3亿",
-      "bf": 0,
-      "heat": 60,
-      "risk": 35,
-      "headline": "修复",
-      "concepts": [
-        {
-          "name": "饮料乳品",
-          "lead": "一鸣食品",
-          "chg_pct": null
-        },
-        {
-          "name": "教育",
-          "lead": "传智教育",
-          "chg_pct": null
-        },
-        {
-          "name": "一般零售",
-          "lead": "东百集团",
-          "chg_pct": null
-        },
-        {
-          "name": "家居用品",
-          "lead": "爱丽家居",
-          "chg_pct": null
-        },
-        {
-          "name": "汽车零部",
-          "lead": "明新旭腾",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        },
-        {
-          "level": "warn",
-          "text": "跌停偏多（13）→ 控制追高"
-        }
-      ],
-      "shift_score": 62,
-      "shift_label": "修复",
-      "note": "情绪边际修复，但仍需确认持续性。"
-    },
-    {
-      "time": "10:30:05",
-      "ts_bj": "2026-07-29 10:30:05",
-      "date": "2026-07-29",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "zt": 46,
-      "dt": 14,
-      "zab": 13,
-      "zb": 22.0,
-      "fb": 78.0,
-      "jj": 15.2,
-      "lianban": 7,
-      "max_lb": 7,
-      "amount": "10921.8亿",
-      "bf": 0,
-      "heat": 59,
-      "risk": 39,
-      "headline": "修复",
-      "concepts": [
-        {
-          "name": "饮料乳品",
-          "lead": "一鸣食品",
-          "chg_pct": null
-        },
-        {
-          "name": "教育",
-          "lead": "传智教育",
-          "chg_pct": null
-        },
-        {
-          "name": "一般零售",
-          "lead": "东百集团",
-          "chg_pct": null
-        },
-        {
-          "name": "化学制品",
-          "lead": "闰土股份",
-          "chg_pct": null
-        },
-        {
-          "name": "家居用品",
-          "lead": "爱丽家居",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        },
-        {
-          "level": "warn",
-          "text": "跌停偏多（14）→ 控制追高"
-        }
-      ],
-      "shift_score": 60,
-      "shift_label": "修复",
-      "note": "情绪略有回落，注意午后分歧。"
-    },
-    {
-      "time": "10:40:05",
-      "ts_bj": "2026-07-29 10:40:05",
-      "date": "2026-07-29",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "zt": 52,
-      "dt": 5,
-      "zab": 14,
-      "zb": 21.2,
-      "fb": 78.8,
-      "jj": 13.5,
-      "lianban": 7,
-      "max_lb": 7,
-      "amount": "11946.0亿",
-      "bf": 0,
-      "heat": 60,
-      "risk": 25,
-      "headline": "修复",
-      "concepts": [
-        {
-          "name": "饮料乳品",
-          "lead": "一鸣食品",
-          "chg_pct": null
-        },
-        {
-          "name": "化学制品",
-          "lead": "闰土股份",
-          "chg_pct": null
-        },
-        {
-          "name": "教育",
-          "lead": "传智教育",
-          "chg_pct": null
-        },
-        {
-          "name": "一般零售",
-          "lead": "东百集团",
-          "chg_pct": null
-        },
-        {
-          "name": "电网设备",
-          "lead": "中电鑫龙",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        }
-      ],
-      "shift_score": 66,
-      "shift_label": "修复",
-      "note": "承接增强、分歧收敛，情绪明显回暖。"
-    },
-    {
-      "time": "10:50:04",
-      "ts_bj": "2026-07-29 10:50:04",
-      "date": "2026-07-29",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "zt": 53,
-      "dt": 6,
-      "zab": 15,
-      "zb": 22.1,
-      "fb": 77.9,
-      "jj": 13.2,
-      "lianban": 7,
-      "max_lb": 7,
-      "amount": "12626.3亿",
-      "bf": 0,
-      "heat": 59,
-      "risk": 28,
-      "headline": "修复",
-      "concepts": [
-        {
-          "name": "饮料乳品",
-          "lead": "一鸣食品",
-          "chg_pct": null
-        },
-        {
-          "name": "电网设备",
-          "lead": "中电鑫龙",
-          "chg_pct": null
-        },
-        {
-          "name": "教育",
-          "lead": "传智教育",
-          "chg_pct": null
-        },
-        {
-          "name": "一般零售",
-          "lead": "东百集团",
-          "chg_pct": null
-        },
-        {
-          "name": "化学制品",
-          "lead": "闰土股份",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        }
-      ],
-      "shift_score": 64,
-      "shift_label": "修复",
-      "note": "情绪略有回落，注意午后分歧。"
-    },
-    {
-      "time": "11:00:05",
-      "ts_bj": "2026-07-29 11:00:05",
-      "date": "2026-07-29",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "zt": 55,
-      "dt": 13,
-      "zab": 15,
-      "zb": 21.4,
-      "fb": 78.6,
-      "jj": 12.7,
-      "lianban": 7,
-      "max_lb": 7,
-      "amount": "13226.1亿",
-      "bf": 0,
-      "heat": 60,
-      "risk": 38,
-      "headline": "修复",
-      "concepts": [
-        {
-          "name": "饮料乳品",
-          "lead": "一鸣食品",
-          "chg_pct": null
-        },
-        {
-          "name": "电网设备",
-          "lead": "中电鑫龙",
-          "chg_pct": null
-        },
-        {
-          "name": "家居用品",
-          "lead": "爱丽家居",
-          "chg_pct": null
-        },
-        {
-          "name": "教育",
-          "lead": "传智教育",
-          "chg_pct": null
-        },
-        {
-          "name": "一般零售",
-          "lead": "东百集团",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        },
-        {
-          "level": "warn",
-          "text": "跌停偏多（13）→ 控制追高"
-        }
-      ],
-      "shift_score": 61,
-      "shift_label": "修复",
-      "note": "情绪略有回落，注意午后分歧。"
-    },
-    {
       "time": "11:10:05",
-      "ts_bj": "2026-07-29 11:10:05",
-      "date": "2026-07-29",
+      "ts_bj": "2026-07-30 11:10:05",
+      "date": "2026-07-30",
       "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "zt": 55,
-      "dt": 12,
-      "zab": 15,
-      "zb": 21.4,
-      "fb": 78.6,
-      "jj": 12.7,
-      "lianban": 7,
-      "max_lb": 7,
-      "amount": "13870.7亿",
-      "bf": 0,
-      "heat": 60,
-      "risk": 37,
-      "headline": "修复",
-      "concepts": [
-        {
-          "name": "饮料乳品",
-          "lead": "一鸣食品",
-          "chg_pct": null
-        },
-        {
-          "name": "电网设备",
-          "lead": "中电鑫龙",
-          "chg_pct": null
-        },
-        {
-          "name": "家居用品",
-          "lead": "爱丽家居",
-          "chg_pct": null
-        },
-        {
-          "name": "教育",
-          "lead": "传智教育",
-          "chg_pct": null
-        },
-        {
-          "name": "一般零售",
-          "lead": "东百集团",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        },
-        {
-          "level": "warn",
-          "text": "跌停偏多（12）→ 控制追高"
-        }
-      ],
-      "shift_score": 61,
-      "shift_label": "修复",
-      "note": "情绪整体平稳，维持当前节奏。"
-    },
-    {
-      "time": "11:20:05",
-      "ts_bj": "2026-07-29 11:20:05",
-      "date": "2026-07-29",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "zt": 57,
-      "dt": 15,
-      "zab": 15,
-      "zb": 20.8,
-      "fb": 79.2,
-      "jj": 12.3,
-      "lianban": 7,
-      "max_lb": 7,
-      "amount": "14412.5亿",
-      "bf": 0,
-      "heat": 60,
-      "risk": 41,
-      "headline": "修复",
-      "concepts": [
-        {
-          "name": "饮料乳品",
-          "lead": "一鸣食品",
-          "chg_pct": null
-        },
-        {
-          "name": "化学制品",
-          "lead": "闰土股份",
-          "chg_pct": null
-        },
-        {
-          "name": "电网设备",
-          "lead": "中电鑫龙",
-          "chg_pct": null
-        },
-        {
-          "name": "家居用品",
-          "lead": "爱丽家居",
-          "chg_pct": null
-        },
-        {
-          "name": "教育",
-          "lead": "传智教育",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        },
-        {
-          "level": "warn",
-          "text": "跌停偏多（15）→ 控制追高"
-        }
-      ],
-      "shift_score": 60,
-      "shift_label": "修复",
-      "note": "情绪整体平稳，维持当前节奏。"
-    },
-    {
-      "time": "11:30:07",
-      "ts_bj": "2026-07-29 11:30:07",
-      "date": "2026-07-29",
-      "source": "intraday_live",
-      "provider": "必盈(实时)",
-      "zt": 58,
-      "dt": 19,
-      "zab": 16,
-      "zb": 21.6,
-      "fb": 78.4,
-      "jj": 12.1,
-      "lianban": 7,
-      "max_lb": 7,
-      "amount": "14794.2亿",
-      "bf": 0,
-      "heat": 60,
-      "risk": 48,
-      "headline": "分歧",
-      "concepts": [],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        },
-        {
-          "level": "warn",
-          "text": "板块数据获取失败或为空（稍后重试）"
-        },
-        {
-          "level": "warn",
-          "text": "跌停偏多（19）→ 控制追高"
-        }
-      ],
-      "shift_score": 57,
-      "shift_label": "分歧",
-      "note": "情绪略有回落，注意午后分歧。"
-    },
-    {
-      "time": "13:00:16",
-      "ts_bj": "2026-07-29 13:00:16",
-      "date": "2026-07-29",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "zt": 58,
-      "dt": 19,
-      "zab": 16,
-      "zb": 21.6,
-      "fb": 78.4,
-      "jj": 12.1,
-      "lianban": 7,
-      "max_lb": 7,
-      "amount": "14919.8亿",
-      "bf": 0,
-      "heat": 60,
-      "risk": 48,
-      "headline": "分歧",
-      "concepts": [
-        {
-          "name": "饮料乳品",
-          "lead": "一鸣食品",
-          "chg_pct": null
-        },
-        {
-          "name": "化学制品",
-          "lead": "闰土股份",
-          "chg_pct": null
-        },
-        {
-          "name": "电网设备",
-          "lead": "中电鑫龙",
-          "chg_pct": null
-        },
-        {
-          "name": "家居用品",
-          "lead": "爱丽家居",
-          "chg_pct": null
-        },
-        {
-          "name": "教育",
-          "lead": "传智教育",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        },
-        {
-          "level": "warn",
-          "text": "跌停偏多（19）→ 控制追高"
-        }
-      ],
-      "shift_score": 57,
-      "shift_label": "分歧",
-      "note": "情绪整体平稳，维持当前节奏。"
-    },
-    {
-      "time": "13:10:06",
-      "ts_bj": "2026-07-29 13:10:06",
-      "date": "2026-07-29",
-      "source": "intraday_live",
-      "provider": "必盈(实时)",
-      "zt": 61,
-      "dt": 18,
-      "zab": 15,
-      "zb": 19.7,
-      "fb": 80.3,
-      "jj": 11.5,
-      "lianban": 7,
-      "max_lb": 7,
-      "amount": "15707.6亿",
-      "bf": 0,
-      "heat": 61,
-      "risk": 45,
-      "headline": "分歧",
-      "concepts": [],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        },
-        {
-          "level": "warn",
-          "text": "板块数据获取失败或为空（稍后重试）"
-        },
-        {
-          "level": "warn",
-          "text": "跌停偏多（18）→ 控制追高"
-        }
-      ],
-      "shift_score": 58,
-      "shift_label": "分歧",
-      "note": "情绪整体平稳，维持当前节奏。"
-    },
-    {
-      "time": "13:20:05",
-      "ts_bj": "2026-07-29 13:20:05",
-      "date": "2026-07-29",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "zt": 64,
-      "dt": 3,
-      "zab": 15,
-      "zb": 19.0,
-      "fb": 81.0,
-      "jj": 12.5,
-      "lianban": 8,
-      "max_lb": 7,
-      "amount": "16667.6亿",
-      "bf": 0,
-      "heat": 62,
-      "risk": 22,
-      "headline": "修复",
-      "concepts": [
-        {
-          "name": "饮料乳品",
-          "lead": "一鸣食品",
-          "chg_pct": null
-        },
-        {
-          "name": "化学制品",
-          "lead": "兴欣新材",
-          "chg_pct": null
-        },
-        {
-          "name": "电网设备",
-          "lead": "汉缆股份",
-          "chg_pct": null
-        },
-        {
-          "name": "休闲食品",
-          "lead": "西麦食品",
-          "chg_pct": null
-        },
-        {
-          "name": "家居用品",
-          "lead": "爱丽家居",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        }
-      ],
-      "shift_score": 69,
-      "shift_label": "修复",
-      "note": "承接增强、分歧收敛，情绪明显回暖。"
-    },
-    {
-      "time": "13:30:07",
-      "ts_bj": "2026-07-29 13:30:07",
-      "date": "2026-07-29",
-      "source": "intraday_live",
-      "provider": "必盈(实时)",
-      "zt": 67,
-      "dt": 7,
-      "zab": 15,
-      "zb": 18.3,
-      "fb": 81.7,
-      "jj": 13.4,
-      "lianban": 9,
-      "max_lb": 7,
-      "amount": "17321.0亿",
-      "bf": 0,
-      "heat": 63,
-      "risk": 27,
-      "headline": "修复",
-      "concepts": [],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        },
-        {
-          "level": "warn",
-          "text": "板块数据获取失败或为空（稍后重试）"
-        }
-      ],
-      "shift_score": 67,
-      "shift_label": "修复",
-      "note": "情绪略有回落，注意午后分歧。"
-    },
-    {
-      "time": "13:40:06",
-      "ts_bj": "2026-07-29 13:40:06",
-      "date": "2026-07-29",
-      "source": "intraday_live",
-      "provider": "必盈(实时)",
-      "zt": 71,
-      "dt": 5,
-      "zab": 14,
-      "zb": 16.5,
-      "fb": 83.5,
-      "jj": 12.7,
-      "lianban": 9,
-      "max_lb": 7,
-      "amount": "18171.5亿",
-      "bf": 0,
-      "heat": 65,
-      "risk": 23,
-      "headline": "修复",
-      "concepts": [],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        },
-        {
-          "level": "warn",
-          "text": "板块数据获取失败或为空（稍后重试）"
-        }
-      ],
-      "shift_score": 70,
-      "shift_label": "修复",
-      "note": "情绪边际修复，但仍需确认持续性。"
-    },
-    {
-      "time": "13:50:05",
-      "ts_bj": "2026-07-29 13:50:05",
-      "date": "2026-07-29",
-      "source": "intraday_live",
-      "provider": "必盈(实时)",
-      "zt": 74,
-      "dt": 4,
-      "zab": 14,
-      "zb": 15.9,
-      "fb": 84.1,
-      "jj": 12.2,
-      "lianban": 9,
-      "max_lb": 7,
-      "amount": "18958.4亿",
-      "bf": 0,
-      "heat": 65,
-      "risk": 21,
-      "headline": "修复",
-      "concepts": [],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        },
-        {
-          "level": "warn",
-          "text": "板块数据获取失败或为空（稍后重试）"
-        }
-      ],
-      "shift_score": 71,
-      "shift_label": "修复",
-      "note": "情绪整体平稳，维持当前节奏。"
-    },
-    {
-      "time": "14:00:06",
-      "ts_bj": "2026-07-29 14:00:06",
-      "date": "2026-07-29",
-      "source": "intraday_live",
-      "provider": "必盈(实时)",
-      "zt": 74,
-      "dt": 8,
-      "zab": 15,
-      "zb": 16.9,
-      "fb": 83.1,
-      "jj": 12.2,
-      "lianban": 9,
-      "max_lb": 7,
-      "amount": "19442.3亿",
-      "bf": 0,
-      "heat": 65,
-      "risk": 28,
-      "headline": "修复",
-      "concepts": [],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        },
-        {
-          "level": "warn",
-          "text": "板块数据获取失败或为空（稍后重试）"
-        }
-      ],
-      "shift_score": 68,
-      "shift_label": "修复",
-      "note": "情绪略有回落，注意午后分歧。"
-    },
-    {
-      "time": "14:10:06",
-      "ts_bj": "2026-07-29 14:10:06",
-      "date": "2026-07-29",
-      "source": "intraday_live",
-      "provider": "必盈(实时)",
-      "zt": 74,
-      "dt": 9,
-      "zab": 15,
-      "zb": 16.9,
-      "fb": 83.1,
-      "jj": 12.2,
-      "lianban": 9,
-      "max_lb": 7,
-      "amount": "19927.0亿",
-      "bf": 0,
-      "heat": 65,
-      "risk": 30,
-      "headline": "修复",
-      "concepts": [],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        },
-        {
-          "level": "warn",
-          "text": "板块数据获取失败或为空（稍后重试）"
-        }
-      ],
-      "shift_score": 67,
-      "shift_label": "修复",
-      "note": "情绪整体平稳，维持当前节奏。"
-    },
-    {
-      "time": "14:20:04",
-      "ts_bj": "2026-07-29 14:20:04",
-      "date": "2026-07-29",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "zt": 74,
-      "dt": 11,
-      "zab": 15,
-      "zb": 16.9,
-      "fb": 83.1,
-      "jj": 12.2,
-      "lianban": 9,
-      "max_lb": 7,
-      "amount": "20356.5亿",
-      "bf": 0,
-      "heat": 65,
-      "risk": 33,
-      "headline": "修复",
-      "concepts": [
-        {
-          "name": "饮料乳品",
-          "lead": "一鸣食品",
-          "chg_pct": null
-        },
-        {
-          "name": "化学制品",
-          "lead": "兴欣新材",
-          "chg_pct": null
-        },
-        {
-          "name": "电网设备",
-          "lead": "汉缆股份",
-          "chg_pct": null
-        },
-        {
-          "name": "家居用品",
-          "lead": "爱丽家居",
-          "chg_pct": null
-        },
-        {
-          "name": "休闲食品",
-          "lead": "西麦食品",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        },
-        {
-          "level": "warn",
-          "text": "跌停偏多（11）→ 控制追高"
-        }
-      ],
-      "shift_score": 66,
-      "shift_label": "修复",
-      "note": "情绪整体平稳，维持当前节奏。"
-    },
-    {
-      "time": "14:30:06",
-      "ts_bj": "2026-07-29 14:30:06",
-      "date": "2026-07-29",
-      "source": "intraday_live",
-      "provider": "必盈(实时)",
-      "zt": 74,
-      "dt": 10,
-      "zab": 15,
-      "zb": 16.9,
-      "fb": 83.1,
-      "jj": 12.2,
-      "lianban": 9,
-      "max_lb": 7,
-      "amount": "20774.3亿",
-      "bf": 0,
-      "heat": 65,
-      "risk": 31,
-      "headline": "修复",
-      "concepts": [],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        },
-        {
-          "level": "warn",
-          "text": "板块数据获取失败或为空（稍后重试）"
-        },
-        {
-          "level": "warn",
-          "text": "跌停偏多（10）→ 控制追高"
-        }
-      ],
-      "shift_score": 67,
-      "shift_label": "修复",
-      "note": "情绪整体平稳，维持当前节奏。"
-    },
-    {
-      "time": "14:40:06",
-      "ts_bj": "2026-07-29 14:40:06",
-      "date": "2026-07-29",
-      "source": "intraday_live",
-      "provider": "必盈(实时)",
-      "zt": 77,
-      "dt": 10,
-      "zab": 15,
-      "zb": 16.3,
-      "fb": 83.7,
-      "jj": 14.3,
+      "provider": "unknown",
+      "zt": 48,
+      "dt": 22,
+      "zab": null,
+      "zb": null,
+      "fb": null,
+      "jj": 22.9,
       "lianban": 11,
-      "max_lb": 7,
-      "amount": "21314.1亿",
+      "max_lb": 8,
+      "amount": "",
       "bf": 0,
-      "heat": 66,
-      "risk": 31,
-      "headline": "修复",
+      "heat": null,
+      "risk": null,
+      "headline": "数据部分可用",
       "concepts": [],
       "alerts": [
         {
@@ -1189,190 +73,80 @@
         },
         {
           "level": "warn",
+          "text": "盘中三池响应不完整，保留最近有效数据"
+        },
+        {
+          "level": "warn",
           "text": "板块数据获取失败或为空（稍后重试）"
         },
         {
-          "level": "warn",
-          "text": "跌停偏多（10）→ 控制追高"
+          "level": "danger",
+          "text": "跌停偏多（22）→ 亏钱扩散风险上升"
         }
       ],
-      "shift_score": 67,
-      "shift_label": "修复",
-      "note": "情绪整体平稳，维持当前节奏。"
-    },
-    {
-      "time": "14:50:05",
-      "ts_bj": "2026-07-29 14:50:05",
-      "date": "2026-07-29",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "zt": 78,
-      "dt": 11,
-      "zab": 15,
-      "zb": 16.1,
-      "fb": 83.9,
-      "jj": 14.1,
-      "lianban": 11,
-      "max_lb": 7,
-      "amount": "22018.8亿",
-      "bf": 0,
-      "heat": 66,
-      "risk": 32,
-      "headline": "修复",
-      "concepts": [
-        {
-          "name": "饮料乳品",
-          "lead": "一鸣食品",
-          "chg_pct": null
-        },
-        {
-          "name": "化学制品",
-          "lead": "兴欣新材",
-          "chg_pct": null
-        },
-        {
-          "name": "电网设备",
-          "lead": "汉缆股份",
-          "chg_pct": null
-        },
-        {
-          "name": "家居用品",
-          "lead": "爱丽家居",
-          "chg_pct": null
-        },
-        {
-          "name": "休闲食品",
-          "lead": "西麦食品",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        },
-        {
-          "level": "warn",
-          "text": "跌停偏多（11）→ 控制追高"
-        }
-      ],
-      "shift_score": 67,
-      "shift_label": "修复",
-      "note": "情绪整体平稳，维持当前节奏。"
-    },
-    {
-      "time": "15:00:04",
-      "ts_bj": "2026-07-29 15:00:04",
-      "date": "2026-07-29",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "zt": 81,
-      "dt": 10,
-      "zab": 14,
-      "zb": 14.7,
-      "fb": 85.3,
-      "jj": 13.6,
-      "lianban": 11,
-      "max_lb": 7,
-      "amount": "22965.8亿",
-      "bf": 0,
-      "heat": 67,
-      "risk": 29,
-      "headline": "修复",
-      "concepts": [
-        {
-          "name": "化学制品",
-          "lead": "兴欣新材",
-          "chg_pct": null
-        },
-        {
-          "name": "饮料乳品",
-          "lead": "一鸣食品",
-          "chg_pct": null
-        },
-        {
-          "name": "电网设备",
-          "lead": "汉缆股份",
-          "chg_pct": null
-        },
-        {
-          "name": "家居用品",
-          "lead": "爱丽家居",
-          "chg_pct": null
-        },
-        {
-          "name": "休闲食品",
-          "lead": "西麦食品",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        },
-        {
-          "level": "warn",
-          "text": "跌停偏多（10）→ 控制追高"
-        }
-      ],
-      "shift_score": 69,
-      "shift_label": "修复",
-      "note": "情绪边际修复，但仍需确认持续性。"
+      "shift_score": null,
+      "shift_label": "数据部分可用",
+      "note": "核心涨停池有效，辅助池暂时缺失；节点已保留，缺失指标不参与判断。"
     }
   ],
   "indices": [
     {
       "name": "上证指数",
       "code": "000001.SH",
-      "val": 3828.469,
-      "chg": 0.3973970154576791,
-      "cje": 1087407759100.0,
-      "t": "2026-07-29 15:00:06"
+      "val": 3796.767,
+      "chg": -0.8280594671133611,
+      "cje": 611748450400.0,
+      "t": "2026-07-30 11:10:09"
     },
     {
       "name": "深证成指",
       "code": "399001.SZ",
-      "val": 13664.638,
-      "chg": 1.1470220721010524,
-      "cje": 1199289266900.0,
-      "t": "2026-07-29 14:57:03"
+      "val": 13215.335,
+      "chg": -3.2442128839859095,
+      "cje": 718124142800.0,
+      "t": "2026-07-30 11:10:06"
     },
     {
       "name": "创业板指",
       "code": "399006.SZ",
-      "val": 3378.696,
-      "chg": 1.5529165652248313,
-      "cje": 569165205200.0,
-      "t": "2026-07-29 15:00:03"
+      "val": 3204.12,
+      "chg": -5.166963822729243,
+      "cje": 339418519900.0,
+      "t": "2026-07-30 11:10:06"
     }
   ],
   "asOf": {
-    "indices": "15:00:03"
+    "indices": "11:10:06"
   },
   "health": {
     "status": "valid",
-    "last_valid_at": "2026-07-29 15:00:04",
+    "last_valid_at": "2026-07-30 11:10:05",
     "rejected_reason": "",
     "source": {
-      "status": "valid",
+      "status": "partial",
       "pool_status": {
         "ztgc": "valid",
-        "zbgc": "valid",
+        "zbgc": "failed",
         "dtgc": "valid"
       },
-      "pool_errors": {}
+      "pool_errors": {
+        "zbgc": "IncompleteRead(3174 bytes read, 8 more expected)"
+      }
     },
     "indices_status": "valid",
     "coverage": {
       "ok": false,
       "status": "degraded",
       "message": "intraday_coverage_incomplete",
-      "date": "2026-07-29",
+      "date": "2026-07-30",
       "expected_count": 26,
-      "due_count": 26,
-      "observed_count": 25,
+      "due_count": 11,
+      "observed_count": 1,
       "observed_slots": [
+        "11:10"
+      ],
+      "missing_slots": [
+        "09:30",
         "09:40",
         "09:50",
         "10:00",
@@ -1381,43 +155,24 @@
         "10:30",
         "10:40",
         "10:50",
-        "11:00",
-        "11:10",
-        "11:20",
-        "11:30",
-        "13:00",
-        "13:10",
-        "13:20",
-        "13:30",
-        "13:40",
-        "13:50",
-        "14:00",
-        "14:10",
-        "14:20",
-        "14:30",
-        "14:40",
-        "14:50",
-        "15:00"
-      ],
-      "missing_slots": [
-        "09:30"
+        "11:00"
       ],
       "duplicate_slots": [],
       "out_of_session": [],
       "monotonic": true,
-      "morning_coverage": 12,
-      "afternoon_coverage": 13
+      "morning_coverage": 1,
+      "afternoon_coverage": 0
     }
   },
   "live": {
     "market": {
-      "zt": 81,
-      "dt": 10,
-      "zab": 14,
-      "zab_rate": 14.7,
+      "zt": 48,
+      "dt": 22,
+      "zab": null,
+      "zab_rate": null,
       "lianban": 11,
-      "max_lianban": 7,
-      "amount": "22965.8亿"
+      "max_lianban": 8,
+      "amount": ""
     },
     "alerts": [
       {
@@ -1426,35 +181,17 @@
       },
       {
         "level": "warn",
-        "text": "跌停偏多（10）→ 控制追高"
+        "text": "盘中三池响应不完整，保留最近有效数据"
+      },
+      {
+        "level": "warn",
+        "text": "板块数据获取失败或为空（稍后重试）"
+      },
+      {
+        "level": "danger",
+        "text": "跌停偏多（22）→ 亏钱扩散风险上升"
       }
     ],
-    "concepts": [
-      {
-        "name": "化学制品",
-        "lead": "兴欣新材",
-        "chg_pct": null
-      },
-      {
-        "name": "饮料乳品",
-        "lead": "一鸣食品",
-        "chg_pct": null
-      },
-      {
-        "name": "电网设备",
-        "lead": "汉缆股份",
-        "chg_pct": null
-      },
-      {
-        "name": "家居用品",
-        "lead": "爱丽家居",
-        "chg_pct": null
-      },
-      {
-        "name": "休闲食品",
-        "lead": "西麦食品",
-        "chg_pct": null
-      }
-    ]
+    "concepts": []
   }
 }
