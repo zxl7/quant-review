@@ -1,23 +1,23 @@
 {
   "schema": "intraday_runtime_v1",
   "date": "2026-07-30",
-  "updated_at": "2026-07-30 14:50:04",
+  "updated_at": "2026-07-30 15:00:05",
   "source": "必盈(实时)+必盈(实时)",
   "latest": {
-    "time": "14:50:04",
-    "ts_bj": "2026-07-30 14:50:04",
+    "time": "15:00:05",
+    "ts_bj": "2026-07-30 15:00:05",
     "date": "2026-07-30",
     "source": "intraday_live",
     "provider": "必盈(实时)+必盈(实时)",
     "zt": 52,
-    "dt": 67,
+    "dt": 78,
     "zab": 19,
     "zb": 26.8,
     "fb": 73.2,
-    "jj": 21.2,
-    "lianban": 11,
+    "jj": 19.2,
+    "lianban": 10,
     "max_lb": 8,
-    "amount": "22484.7亿",
+    "amount": "23428.1亿",
     "bf": 0,
     "heat": 61,
     "risk": 53,
@@ -44,8 +44,8 @@
         "chg_pct": null
       },
       {
-        "name": "软件开发",
-        "lead": "泛微网络",
+        "name": "化学制药",
+        "lead": "海南海药",
         "chg_pct": null
       }
     ],
@@ -56,7 +56,7 @@
       },
       {
         "level": "danger",
-        "text": "跌停偏多（67）→ 亏钱扩散风险上升"
+        "text": "跌停偏多（78）→ 亏钱扩散风险上升"
       },
       {
         "level": "warn",
@@ -813,40 +813,108 @@
       "shift_score": 55,
       "shift_label": "分歧",
       "note": "情绪整体平稳，维持当前节奏。"
+    },
+    {
+      "time": "15:00:05",
+      "ts_bj": "2026-07-30 15:00:05",
+      "date": "2026-07-30",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "zt": 52,
+      "dt": 78,
+      "zab": 19,
+      "zb": 26.8,
+      "fb": 73.2,
+      "jj": 19.2,
+      "lianban": 10,
+      "max_lb": 8,
+      "amount": "23428.1亿",
+      "bf": 0,
+      "heat": 61,
+      "risk": 53,
+      "headline": "分歧",
+      "concepts": [
+        {
+          "name": "汽车零部",
+          "lead": "明新旭腾",
+          "chg_pct": null
+        },
+        {
+          "name": "电网设备",
+          "lead": "海兴电力",
+          "chg_pct": null
+        },
+        {
+          "name": "教育",
+          "lead": "传智教育",
+          "chg_pct": null
+        },
+        {
+          "name": "饮料乳品",
+          "lead": "一鸣食品",
+          "chg_pct": null
+        },
+        {
+          "name": "化学制药",
+          "lead": "海南海药",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        },
+        {
+          "level": "danger",
+          "text": "跌停偏多（78）→ 亏钱扩散风险上升"
+        },
+        {
+          "level": "warn",
+          "text": "炸板率偏高（26.8%）→ 注意回封质量"
+        },
+        {
+          "level": "warn",
+          "text": "高度8板 + 分歧不低 → 高位兑现/炸板风险"
+        }
+      ],
+      "shift_score": 55,
+      "shift_label": "分歧",
+      "note": "情绪整体平稳，维持当前节奏。"
     }
   ],
   "indices": [
     {
       "name": "上证指数",
       "code": "000001.SH",
-      "val": 3798.423,
-      "chg": -0.7848045785404107,
-      "cje": 1058805808600.0,
-      "t": "2026-07-30 14:50:06"
+      "val": 3803.685,
+      "chg": -0.6473606028937443,
+      "cje": 1102111429200.0,
+      "t": "2026-07-30 15:00:03"
     },
     {
       "name": "深证成指",
       "code": "399001.SZ",
-      "val": 13301.719,
-      "chg": -2.6117543111060115,
-      "cje": 1189099901300.0,
-      "t": "2026-07-30 14:50:03"
+      "val": 13285.801,
+      "chg": -2.728297601103025,
+      "cje": 1236331989100.0,
+      "t": "2026-07-30 15:00:03"
     },
     {
       "name": "创业板指",
       "code": "399006.SZ",
-      "val": 3253.151,
-      "chg": -3.7157826569777237,
-      "cje": 577582713400.0,
-      "t": "2026-07-30 14:50:03"
+      "val": 3244.618,
+      "chg": -3.96833571294961,
+      "cje": 601843948600.0,
+      "t": "2026-07-30 15:00:03"
     }
   ],
   "asOf": {
-    "indices": "14:50:03"
+    "indices": "15:00:03"
   },
   "health": {
     "status": "valid",
-    "last_valid_at": "2026-07-30 14:50:04",
+    "last_valid_at": "2026-07-30 15:00:05",
     "rejected_reason": "",
     "source": {
       "status": "valid",
@@ -864,8 +932,8 @@
       "message": "intraday_coverage_incomplete",
       "date": "2026-07-30",
       "expected_count": 26,
-      "due_count": 25,
-      "observed_count": 13,
+      "due_count": 26,
+      "observed_count": 14,
       "observed_slots": [
         "11:10",
         "13:00",
@@ -879,7 +947,8 @@
         "14:20",
         "14:30",
         "14:40",
-        "14:50"
+        "14:50",
+        "15:00"
       ],
       "missing_slots": [
         "09:30",
@@ -899,18 +968,18 @@
       "out_of_session": [],
       "monotonic": true,
       "morning_coverage": 1,
-      "afternoon_coverage": 12
+      "afternoon_coverage": 13
     }
   },
   "live": {
     "market": {
       "zt": 52,
-      "dt": 67,
+      "dt": 78,
       "zab": 19,
       "zab_rate": 26.8,
-      "lianban": 11,
+      "lianban": 10,
       "max_lianban": 8,
-      "amount": "22484.7亿"
+      "amount": "23428.1亿"
     },
     "alerts": [
       {
@@ -919,7 +988,7 @@
       },
       {
         "level": "danger",
-        "text": "跌停偏多（67）→ 亏钱扩散风险上升"
+        "text": "跌停偏多（78）→ 亏钱扩散风险上升"
       },
       {
         "level": "warn",
@@ -952,8 +1021,8 @@
         "chg_pct": null
       },
       {
-        "name": "软件开发",
-        "lead": "泛微网络",
+        "name": "化学制药",
+        "lead": "海南海药",
         "chg_pct": null
       }
     ]
