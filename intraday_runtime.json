@@ -2,7 +2,7 @@
   "schema": "intraday_runtime_v1",
   "date": "2026-07-30",
   "updated_at": "2026-07-30 13:20:05",
-  "source": "必盈(实时)+必盈(实时)",
+  "source": "unknown",
   "latest": {
     "time": "13:20:05",
     "ts_bj": "2026-07-30 13:20:05",
@@ -307,43 +307,45 @@
     {
       "name": "上证指数",
       "code": "000001.SH",
-      "val": 3778.412,
-      "chg": -1.307493935565372,
-      "cje": 756779520100.0,
-      "t": "2026-07-30 13:20:03"
+      "val": 3804.044,
+      "chg": -0.6379834863492477,
+      "cje": 808037343600.0,
+      "t": "2026-07-30 13:30:12"
     },
     {
       "name": "深证成指",
       "code": "399001.SZ",
-      "val": 13192.677,
-      "chg": -3.4101029370549076,
-      "cje": 874880428800.0,
-      "t": "2026-07-30 13:20:03"
+      "val": 13335.367,
+      "chg": -2.3654012126125004,
+      "cje": 926904304200.0,
+      "t": "2026-07-30 13:30:06"
     },
     {
       "name": "创业板指",
       "code": "399006.SZ",
-      "val": 3211.782,
-      "chg": -4.940189943102302,
-      "cje": 418979382500.0,
-      "t": "2026-07-30 13:20:03"
+      "val": 3258.771,
+      "chg": -3.549446295257097,
+      "cje": 445093534900.0,
+      "t": "2026-07-30 13:30:06"
     }
   ],
   "asOf": {
-    "indices": "13:20:03"
+    "indices": "13:30:06"
   },
   "health": {
-    "status": "valid",
+    "status": "stale",
     "last_valid_at": "2026-07-30 13:20:05",
-    "rejected_reason": "",
+    "rejected_reason": "source_partial",
     "source": {
-      "status": "valid",
+      "status": "partial",
       "pool_status": {
-        "ztgc": "valid",
+        "ztgc": "failed",
         "zbgc": "valid",
         "dtgc": "valid"
       },
-      "pool_errors": {}
+      "pool_errors": {
+        "ztgc": "Expecting value: line 784 column 1 (char 14614)"
+      }
     },
     "indices_status": "valid",
     "coverage": {
@@ -352,7 +354,7 @@
       "message": "intraday_coverage_incomplete",
       "date": "2026-07-30",
       "expected_count": 26,
-      "due_count": 16,
+      "due_count": 17,
       "observed_count": 4,
       "observed_slots": [
         "11:10",
@@ -372,7 +374,8 @@
         "10:50",
         "11:00",
         "11:20",
-        "11:30"
+        "11:30",
+        "13:30"
       ],
       "duplicate_slots": [],
       "out_of_session": [],
