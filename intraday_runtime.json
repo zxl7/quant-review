@@ -81,34 +81,9 @@
       "note": "核心涨停池有效，辅助池暂时缺失；节点已保留，缺失指标不参与判断。"
     }
   ],
-  "indices": [
-    {
-      "name": "上证指数",
-      "code": "000001.SH",
-      "val": 3833.654,
-      "chg": 0.7611915074356796,
-      "cje": 826277855400.0,
-      "t": "2026-07-31 11:30:03"
-    },
-    {
-      "name": "深证成指",
-      "code": "399001.SZ",
-      "val": 13705.421,
-      "chg": 3.158409492961703,
-      "cje": 959058259100.0,
-      "t": "2026-07-31 11:30:03"
-    },
-    {
-      "name": "创业板指",
-      "code": "399006.SZ",
-      "val": 3408.149,
-      "chg": 5.040069431902305,
-      "cje": 488260954500.0,
-      "t": "2026-07-31 11:30:03"
-    }
-  ],
+  "indices": [],
   "asOf": {
-    "indices": "11:30:03"
+    "indices": ""
   },
   "health": {
     "status": "stale",
@@ -119,21 +94,22 @@
       "pool_status": {
         "ztgc": "failed",
         "zbgc": "failed",
-        "dtgc": "valid"
+        "dtgc": "failed"
       },
       "pool_errors": {
-        "ztgc": "Expecting property name enclosed in double quotes: line 1431 column 1 (char 26763)",
-        "zbgc": "IncompleteRead(30755 bytes read, 677 more expected)"
+        "ztgc": "<urlopen error timed out>",
+        "zbgc": "<urlopen error timed out>",
+        "dtgc": "<urlopen error timed out>"
       }
     },
-    "indices_status": "valid",
+    "indices_status": "unavailable",
     "coverage": {
       "ok": false,
       "status": "degraded",
       "message": "intraday_coverage_incomplete",
       "date": "2026-07-31",
       "expected_count": 26,
-      "due_count": 13,
+      "due_count": 17,
       "observed_count": 1,
       "observed_slots": [
         "10:30"
@@ -150,7 +126,11 @@
         "11:00",
         "11:10",
         "11:20",
-        "11:30"
+        "11:30",
+        "13:00",
+        "13:10",
+        "13:20",
+        "13:30"
       ],
       "duplicate_slots": [],
       "out_of_session": [],
