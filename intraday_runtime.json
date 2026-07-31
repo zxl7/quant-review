@@ -1,28 +1,63 @@
 {
   "schema": "intraday_runtime_v1",
   "date": "2026-07-31",
-  "updated_at": "2026-07-31 10:30:06",
-  "source": "unknown",
+  "updated_at": "2026-07-31 14:50:19",
+  "source": "必盈(实时)",
   "latest": {
-    "time": "10:30:06",
-    "ts_bj": "2026-07-31 10:30:06",
+    "time": "14:50:19",
+    "ts_bj": "2026-07-31 14:50:19",
     "date": "2026-07-31",
     "source": "intraday_live",
-    "provider": "unknown",
-    "zt": 67,
+    "provider": "必盈(实时)",
+    "data_quality": "partial",
+    "pool_status": {
+      "ztgc": "failed",
+      "zbgc": "valid",
+      "dtgc": "valid"
+    },
+    "pool_errors": {
+      "ztgc": "IncompleteRead(32740 bytes read, 1983 more expected)"
+    },
+    "zt": null,
     "dt": 1,
-    "zab": null,
+    "zab": 103,
     "zb": null,
     "fb": null,
-    "jj": 11.9,
-    "lianban": 8,
-    "max_lb": 9,
+    "jj": null,
+    "lianban": null,
+    "max_lb": null,
     "amount": "",
     "bf": 0,
     "heat": null,
     "risk": null,
     "headline": "数据部分可用",
-    "concepts": [],
+    "concepts": [
+      {
+        "name": "广告营销",
+        "lead": "蓝色光标",
+        "chg_pct": null
+      },
+      {
+        "name": "软件开发",
+        "lead": "普联软件",
+        "chg_pct": null
+      },
+      {
+        "name": "IT服务Ⅱ",
+        "lead": "税友股份",
+        "chg_pct": null
+      },
+      {
+        "name": "专业工程",
+        "lead": "深桑达Ａ",
+        "chg_pct": null
+      },
+      {
+        "name": "专用设备",
+        "lead": "快意电梯",
+        "chg_pct": null
+      }
+    ],
     "alerts": [
       {
         "level": "info",
@@ -31,15 +66,11 @@
       {
         "level": "warn",
         "text": "盘中三池响应不完整，保留最近有效数据"
-      },
-      {
-        "level": "warn",
-        "text": "板块数据获取失败或为空（稍后重试）"
       }
     ],
     "shift_score": null,
     "shift_label": "数据部分可用",
-    "note": "核心涨停池有效，辅助池暂时缺失；节点已保留，缺失指标不参与判断。"
+    "note": "本槽位仅部分三池成功；节点已保留，缺失指标不参与判断。"
   },
   "snapshots": [
     {
@@ -79,40 +110,133 @@
       "shift_score": null,
       "shift_label": "数据部分可用",
       "note": "核心涨停池有效，辅助池暂时缺失；节点已保留，缺失指标不参与判断。"
+    },
+    {
+      "time": "14:50:19",
+      "ts_bj": "2026-07-31 14:50:19",
+      "date": "2026-07-31",
+      "source": "intraday_live",
+      "provider": "必盈(实时)",
+      "data_quality": "partial",
+      "pool_status": {
+        "ztgc": "failed",
+        "zbgc": "valid",
+        "dtgc": "valid"
+      },
+      "pool_errors": {
+        "ztgc": "IncompleteRead(32740 bytes read, 1983 more expected)"
+      },
+      "zt": null,
+      "dt": 1,
+      "zab": 103,
+      "zb": null,
+      "fb": null,
+      "jj": null,
+      "lianban": null,
+      "max_lb": null,
+      "amount": "",
+      "bf": 0,
+      "heat": null,
+      "risk": null,
+      "headline": "数据部分可用",
+      "concepts": [
+        {
+          "name": "广告营销",
+          "lead": "蓝色光标",
+          "chg_pct": null
+        },
+        {
+          "name": "软件开发",
+          "lead": "普联软件",
+          "chg_pct": null
+        },
+        {
+          "name": "IT服务Ⅱ",
+          "lead": "税友股份",
+          "chg_pct": null
+        },
+        {
+          "name": "专业工程",
+          "lead": "深桑达Ａ",
+          "chg_pct": null
+        },
+        {
+          "name": "专用设备",
+          "lead": "快意电梯",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        },
+        {
+          "level": "warn",
+          "text": "盘中三池响应不完整，保留最近有效数据"
+        }
+      ],
+      "shift_score": null,
+      "shift_label": "数据部分可用",
+      "note": "本槽位仅部分三池成功；节点已保留，缺失指标不参与判断。"
     }
   ],
-  "indices": [],
+  "indices": [
+    {
+      "name": "上证指数",
+      "code": "000001.SH",
+      "val": 3831.522,
+      "chg": 0.7051554488101858,
+      "cje": 1134770838900.0,
+      "t": "2026-07-31 14:50:21"
+    },
+    {
+      "name": "深证成指",
+      "code": "399001.SZ",
+      "val": 13588.392,
+      "chg": 2.27755180135545,
+      "cje": 1294848317200.0,
+      "t": "2026-07-31 14:50:18"
+    },
+    {
+      "name": "创业板指",
+      "code": "399006.SZ",
+      "val": 3349.46,
+      "chg": 3.2312586566430963,
+      "cje": 646926050800.0,
+      "t": "2026-07-31 14:50:21"
+    }
+  ],
   "asOf": {
-    "indices": ""
+    "indices": "14:50:21"
   },
   "health": {
-    "status": "stale",
-    "last_valid_at": "2026-07-31 10:30:06",
-    "rejected_reason": "source_partial",
+    "status": "degraded",
+    "last_valid_at": "2026-07-31 14:50:19",
+    "rejected_reason": "",
     "source": {
       "status": "partial",
       "pool_status": {
         "ztgc": "failed",
-        "zbgc": "failed",
-        "dtgc": "failed"
+        "zbgc": "valid",
+        "dtgc": "valid"
       },
       "pool_errors": {
-        "ztgc": "<urlopen error timed out>",
-        "zbgc": "<urlopen error timed out>",
-        "dtgc": "<urlopen error timed out>"
+        "ztgc": "IncompleteRead(32740 bytes read, 1983 more expected)"
       }
     },
-    "indices_status": "unavailable",
+    "indices_status": "valid",
     "coverage": {
       "ok": false,
       "status": "degraded",
       "message": "intraday_coverage_incomplete",
       "date": "2026-07-31",
       "expected_count": 26,
-      "due_count": 21,
-      "observed_count": 1,
+      "due_count": 25,
+      "observed_count": 2,
       "observed_slots": [
-        "10:30"
+        "10:30",
+        "14:50"
       ],
       "missing_slots": [
         "09:30",
@@ -134,23 +258,26 @@
         "13:40",
         "13:50",
         "14:00",
-        "14:10"
+        "14:10",
+        "14:20",
+        "14:30",
+        "14:40"
       ],
       "duplicate_slots": [],
       "out_of_session": [],
       "monotonic": true,
       "morning_coverage": 1,
-      "afternoon_coverage": 0
+      "afternoon_coverage": 1
     }
   },
   "live": {
     "market": {
-      "zt": 67,
+      "zt": null,
       "dt": 1,
-      "zab": null,
+      "zab": 103,
       "zab_rate": null,
-      "lianban": 8,
-      "max_lianban": 9,
+      "lianban": null,
+      "max_lianban": null,
       "amount": ""
     },
     "alerts": [
@@ -161,12 +288,34 @@
       {
         "level": "warn",
         "text": "盘中三池响应不完整，保留最近有效数据"
-      },
-      {
-        "level": "warn",
-        "text": "板块数据获取失败或为空（稍后重试）"
       }
     ],
-    "concepts": []
+    "concepts": [
+      {
+        "name": "广告营销",
+        "lead": "蓝色光标",
+        "chg_pct": null
+      },
+      {
+        "name": "软件开发",
+        "lead": "普联软件",
+        "chg_pct": null
+      },
+      {
+        "name": "IT服务Ⅱ",
+        "lead": "税友股份",
+        "chg_pct": null
+      },
+      {
+        "name": "专业工程",
+        "lead": "深桑达Ａ",
+        "chg_pct": null
+      },
+      {
+        "name": "专用设备",
+        "lead": "快意电梯",
+        "chg_pct": null
+      }
+    ]
   }
 }
