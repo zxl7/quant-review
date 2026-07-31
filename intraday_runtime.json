@@ -1,63 +1,35 @@
 {
   "schema": "intraday_runtime_v1",
   "date": "2026-07-31",
-  "updated_at": "2026-07-31 14:50:19",
+  "updated_at": "2026-07-31 15:00:06",
   "source": "必盈(实时)",
   "latest": {
-    "time": "14:50:19",
-    "ts_bj": "2026-07-31 14:50:19",
+    "time": "15:00:06",
+    "ts_bj": "2026-07-31 15:00:06",
     "date": "2026-07-31",
     "source": "intraday_live",
     "provider": "必盈(实时)",
-    "data_quality": "partial",
+    "data_quality": "valid",
     "pool_status": {
-      "ztgc": "failed",
+      "ztgc": "valid",
       "zbgc": "valid",
       "dtgc": "valid"
     },
-    "pool_errors": {
-      "ztgc": "IncompleteRead(32740 bytes read, 1983 more expected)"
-    },
-    "zt": null,
+    "pool_errors": {},
+    "zt": 98,
     "dt": 1,
-    "zab": 103,
-    "zb": null,
-    "fb": null,
-    "jj": null,
-    "lianban": null,
-    "max_lb": null,
-    "amount": "",
+    "zab": 108,
+    "zb": 52.4,
+    "fb": 47.6,
+    "jj": 10.2,
+    "lianban": 10,
+    "max_lb": 9,
+    "amount": "25419.5亿",
     "bf": 0,
-    "heat": null,
-    "risk": null,
-    "headline": "数据部分可用",
-    "concepts": [
-      {
-        "name": "广告营销",
-        "lead": "蓝色光标",
-        "chg_pct": null
-      },
-      {
-        "name": "软件开发",
-        "lead": "普联软件",
-        "chg_pct": null
-      },
-      {
-        "name": "IT服务Ⅱ",
-        "lead": "税友股份",
-        "chg_pct": null
-      },
-      {
-        "name": "专业工程",
-        "lead": "深桑达Ａ",
-        "chg_pct": null
-      },
-      {
-        "name": "专用设备",
-        "lead": "快意电梯",
-        "chg_pct": null
-      }
-    ],
+    "heat": 56,
+    "risk": 45,
+    "headline": "分歧",
+    "concepts": [],
     "alerts": [
       {
         "level": "info",
@@ -65,12 +37,20 @@
       },
       {
         "level": "warn",
-        "text": "盘中三池响应不完整，保留最近有效数据"
+        "text": "板块数据获取失败或为空（稍后重试）"
+      },
+      {
+        "level": "danger",
+        "text": "炸板率高（52.4%）→ 分歧偏强，谨慎接力"
+      },
+      {
+        "level": "warn",
+        "text": "高度9板 + 分歧不低 → 高位兑现/炸板风险"
       }
     ],
-    "shift_score": null,
-    "shift_label": "数据部分可用",
-    "note": "本槽位仅部分三池成功；节点已保留，缺失指标不参与判断。"
+    "shift_score": 56,
+    "shift_label": "分歧",
+    "note": "承接增强、分歧收敛，情绪明显回暖。"
   },
   "snapshots": [
     {
@@ -179,51 +159,98 @@
       "shift_score": null,
       "shift_label": "数据部分可用",
       "note": "本槽位仅部分三池成功；节点已保留，缺失指标不参与判断。"
+    },
+    {
+      "time": "15:00:06",
+      "ts_bj": "2026-07-31 15:00:06",
+      "date": "2026-07-31",
+      "source": "intraday_live",
+      "provider": "必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid"
+      },
+      "pool_errors": {},
+      "zt": 98,
+      "dt": 1,
+      "zab": 108,
+      "zb": 52.4,
+      "fb": 47.6,
+      "jj": 10.2,
+      "lianban": 10,
+      "max_lb": 9,
+      "amount": "25419.5亿",
+      "bf": 0,
+      "heat": 56,
+      "risk": 45,
+      "headline": "分歧",
+      "concepts": [],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        },
+        {
+          "level": "warn",
+          "text": "板块数据获取失败或为空（稍后重试）"
+        },
+        {
+          "level": "danger",
+          "text": "炸板率高（52.4%）→ 分歧偏强，谨慎接力"
+        },
+        {
+          "level": "warn",
+          "text": "高度9板 + 分歧不低 → 高位兑现/炸板风险"
+        }
+      ],
+      "shift_score": 56,
+      "shift_label": "分歧",
+      "note": "承接增强、分歧收敛，情绪明显回暖。"
     }
   ],
   "indices": [
     {
       "name": "上证指数",
       "code": "000001.SH",
-      "val": 3831.522,
-      "chg": 0.7051554488101858,
-      "cje": 1134770838900.0,
-      "t": "2026-07-31 14:50:21"
+      "val": 3832.596,
+      "chg": 0.7333837447594271,
+      "cje": 1186623044600.0,
+      "t": "2026-07-31 15:00:06"
     },
     {
       "name": "深证成指",
       "code": "399001.SZ",
-      "val": 13588.392,
-      "chg": 2.27755180135545,
-      "cje": 1294848317200.0,
-      "t": "2026-07-31 14:50:18"
+      "val": 13578.93,
+      "chg": 2.206332911354015,
+      "cje": 1354266631400.0,
+      "t": "2026-07-31 15:00:03"
     },
     {
       "name": "创业板指",
       "code": "399006.SZ",
-      "val": 3349.46,
-      "chg": 3.2312586566430963,
-      "cje": 646926050800.0,
-      "t": "2026-07-31 14:50:21"
+      "val": 3343.964,
+      "chg": 3.0618704574775832,
+      "cje": 674647834400.0,
+      "t": "2026-07-31 15:00:03"
     }
   ],
   "asOf": {
-    "indices": "14:50:21"
+    "indices": "15:00:03"
   },
   "health": {
-    "status": "degraded",
-    "last_valid_at": "2026-07-31 14:50:19",
+    "status": "valid",
+    "last_valid_at": "2026-07-31 15:00:06",
     "rejected_reason": "",
     "source": {
-      "status": "partial",
+      "status": "valid",
       "pool_status": {
-        "ztgc": "failed",
+        "ztgc": "valid",
         "zbgc": "valid",
         "dtgc": "valid"
       },
-      "pool_errors": {
-        "ztgc": "IncompleteRead(32740 bytes read, 1983 more expected)"
-      }
+      "pool_errors": {}
     },
     "indices_status": "valid",
     "coverage": {
@@ -232,11 +259,12 @@
       "message": "intraday_coverage_incomplete",
       "date": "2026-07-31",
       "expected_count": 26,
-      "due_count": 25,
-      "observed_count": 2,
+      "due_count": 26,
+      "observed_count": 3,
       "observed_slots": [
         "10:30",
-        "14:50"
+        "14:50",
+        "15:00"
       ],
       "missing_slots": [
         "09:30",
@@ -267,18 +295,18 @@
       "out_of_session": [],
       "monotonic": true,
       "morning_coverage": 1,
-      "afternoon_coverage": 1
+      "afternoon_coverage": 2
     }
   },
   "live": {
     "market": {
-      "zt": null,
+      "zt": 98,
       "dt": 1,
-      "zab": 103,
-      "zab_rate": null,
-      "lianban": null,
-      "max_lianban": null,
-      "amount": ""
+      "zab": 108,
+      "zab_rate": 52.4,
+      "lianban": 10,
+      "max_lianban": 9,
+      "amount": "25419.5亿"
     },
     "alerts": [
       {
@@ -287,35 +315,17 @@
       },
       {
         "level": "warn",
-        "text": "盘中三池响应不完整，保留最近有效数据"
+        "text": "板块数据获取失败或为空（稍后重试）"
+      },
+      {
+        "level": "danger",
+        "text": "炸板率高（52.4%）→ 分歧偏强，谨慎接力"
+      },
+      {
+        "level": "warn",
+        "text": "高度9板 + 分歧不低 → 高位兑现/炸板风险"
       }
     ],
-    "concepts": [
-      {
-        "name": "广告营销",
-        "lead": "蓝色光标",
-        "chg_pct": null
-      },
-      {
-        "name": "软件开发",
-        "lead": "普联软件",
-        "chg_pct": null
-      },
-      {
-        "name": "IT服务Ⅱ",
-        "lead": "税友股份",
-        "chg_pct": null
-      },
-      {
-        "name": "专业工程",
-        "lead": "深桑达Ａ",
-        "chg_pct": null
-      },
-      {
-        "name": "专用设备",
-        "lead": "快意电梯",
-        "chg_pct": null
-      }
-    ]
+    "concepts": []
   }
 }
