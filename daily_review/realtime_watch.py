@@ -14,6 +14,7 @@
 from __future__ import annotations
 
 import argparse
+import concurrent.futures
 import json
 from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
@@ -300,15 +301,27 @@ def _market_from_biying(date10: str) -> Dict[str, Any]:
         cfg = load_config_from_env()
         if not cfg.token:
             return {}
-        client = HttpClient(base_url=cfg.base_url, token=cfg.token, timeout=25)
-        pool_results = {
-            "ztgc": fetch_pool_result(client, pool_name="ztgc", date=date10),
-            "zbgc": fetch_pool_result(client, pool_name="zbgc", date=date10),
-            "dtgc": fetch_pool_result(client, pool_name="dtgc", date=date10),
-        }
+        # 盘中槽位外层已有整轮重试；单请求必须短超时且三池并行，避免一次上游故障拖过十分钟。
+        client = HttpClient(base_url=cfg.base_url, token=cfg.token, timeout=6, retries=0)
+        with concurrent.futures.ThreadPoolExecutor(max_workers=3) as executor:
+            futures = {
+                name: executor.submit(fetch_pool_result, client, pool_name=name, date=date10)
+                for name in ("ztgc", "zbgc", "dtgc")
+            }
+            pool_results = {name: future.result() for name, future in futures.items()}
         zt = pool_results["ztgc"]["rows"]
         zb = pool_results["zbgc"]["rows"]
         dt = pool_results["dtgc"]["rows"]
+        pool_status = {key: value["status"] for key, value in pool_results.items()}
+        valid_status = {"valid", "valid_empty"}
+        if not any(status in valid_status for status in pool_status.values()):
+            return {
+                "zt": None, "dt": None, "zab": None, "zab_rate": None,
+                "lianban": None, "max_lianban": None, "amount": "",
+                "quality": "partial", "pool_status": pool_status,
+                "pool_errors": {key: value["error"] for key, value in pool_results.items() if value.get("error")},
+                "indices": [], "indices_as_of": "",
+            }
         indices, indices_as_of = fetch_indices_realtime(
             client,
             [("000001.SH", "上证指数"), ("399001.SZ", "深证成指"), ("399006.SZ", "创业板指")],
@@ -466,7 +479,9 @@ def build_live_snapshot(date8: str | None = None, *, intraday: bool = True) -> "
         else:
             alerts.append({"level": "danger", "text": "数据拉取失败，请稍后重试"})
                 
-    if not concepts or intraday:
+    pool_states = health.get("pool_status") if isinstance(health.get("pool_status"), dict) else {}
+    all_pools_failed = bool(pool_states) and not any(str(state or "") in {"valid", "valid_empty"} for state in pool_states.values())
+    if (not concepts or intraday) and not (intraday and all_pools_failed):
         c2 = _concepts_from_biying(date10)
         if c2:
             concepts = c2
@@ -474,6 +489,8 @@ def build_live_snapshot(date8: str | None = None, *, intraday: bool = True) -> "
                 sources.append("必盈(实时)")
         elif not concepts:
             alerts.append({"level": "warn", "text": "板块数据获取失败或为空（稍后重试）"})
+    elif intraday and all_pools_failed:
+        alerts.append({"level": "warn", "text": "三池请求均超时，本槽位跳过板块补抓并等待下一节点"})
 
     # 负反馈：跌停/炸板过多
     if dt_cnt is not None and dt_cnt >= 20:

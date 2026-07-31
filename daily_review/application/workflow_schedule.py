@@ -678,7 +678,9 @@ def validate_intraday_runtime_indices(path: Path, *, require_indices: bool = Tru
             ts = str(row.get("ts_bj") or row.get("time") or "")
             time_text = ts[11:16] if len(ts) >= 16 else ts[:5]
             in_session = ("09:30" <= time_text <= "11:30") or ("13:00" <= time_text <= "15:00")
-            if not in_session or (not row.get("zt") and not row.get("lianban") and not row.get("max_lb")):
+            quality = str(row.get("data_quality") or "")
+            explicitly_degraded = quality in {"partial", "unavailable"} and isinstance(row.get("pool_status"), dict)
+            if not in_session or (not explicitly_degraded and not row.get("zt") and not row.get("lianban") and not row.get("max_lb")):
                 result.update({"ok": False, "message": "intraday_runtime_polluted_snapshot"})
                 return result
         if str(latest.get("ts_bj") or latest.get("time") or "") != str(last.get("ts_bj") or last.get("time") or ""):

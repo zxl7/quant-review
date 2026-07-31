@@ -1217,6 +1217,29 @@ class WorkflowScheduleTest(unittest.TestCase):
         self.assertFalse(result["ok"])
         self.assertIn("intraday_runtime_indices_incomplete", result["message"])
 
+    def test_validate_intraday_runtime_accepts_explicit_unavailable_slot(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            runtime_path = Path(tmp) / "intraday_runtime.json"
+            unavailable = {
+                "ts_bj": "2026-07-31 14:30:06", "time": "14:30:06",
+                "data_quality": "unavailable",
+                "pool_status": {"ztgc": "failed", "zbgc": "failed", "dtgc": "failed"},
+                "zt": None, "dt": None, "zab": None, "lianban": None, "max_lb": None,
+            }
+            runtime_path.write_text(
+                json.dumps({
+                    "indices": [], "asOf": {"indices": ""},
+                    "snapshots": [unavailable], "latest": unavailable,
+                    "live": {"market": {"zt": None, "dt": None, "zab": None, "lianban": None, "max_lianban": None}},
+                }),
+                encoding="utf-8",
+            )
+
+            result = validate_intraday_runtime_indices(runtime_path, require_indices=False)
+
+        self.assertTrue(result["ok"])
+        self.assertEqual(result["message"], "market_snapshot_valid_indices_unavailable")
+
     def test_intraday_coverage_reports_all_26_slots_complete(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             runtime_path = Path(tmp) / "intraday_runtime.json"
