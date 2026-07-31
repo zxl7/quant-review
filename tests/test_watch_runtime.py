@@ -76,7 +76,7 @@ class WatchRuntimeTest(unittest.TestCase):
         self.assertEqual(payload["latest"]["zt"], 31)
         self.assertEqual(payload["latest"]["zab"], None)
 
-    def test_append_intraday_slice_rejects_partial_snapshot_without_core_pool(self) -> None:
+    def test_append_intraday_slice_accepts_auxiliary_only_partial_snapshot(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             payload = watch_runtime.append_intraday_slice(
                 root=Path(tmp),
@@ -88,8 +88,37 @@ class WatchRuntimeTest(unittest.TestCase):
                 },
             )
 
-        self.assertEqual(payload["count"], 0)
-        self.assertEqual(payload["health"]["rejected_reason"], "source_partial")
+        self.assertEqual(payload["count"], 1)
+        self.assertEqual(payload["latest"]["data_quality"], "partial")
+        self.assertIsNone(payload["latest"]["zt"])
+        self.assertEqual(payload["latest"]["dt"], 2)
+
+    def test_all_pool_timeout_adds_availability_slot_only_after_first_valid_snapshot(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            outage = {
+                "date": "2026-07-31",
+                "ts_bj": "2026-07-31 09:30:00",
+                "health": {"status": "partial", "pool_status": {"ztgc": "failed", "zbgc": "failed", "dtgc": "failed"}},
+                "market": {"zt": None, "dt": None, "zab": None, "lianban": None, "max_lianban": None},
+            }
+            first = watch_runtime.append_intraday_slice(root=root, snapshot=outage)
+            watch_runtime.append_intraday_slice(root=root, snapshot={
+                "date": "2026-07-31", "ts_bj": "2026-07-31 09:40:00",
+                "health": {"status": "valid", "pool_status": {"ztgc": "valid", "zbgc": "valid", "dtgc": "valid"}},
+                "market": {"zt": 20, "dt": 2, "zab": 4, "lianban": 5, "max_lianban": 3},
+            })
+            outage["ts_bj"] = "2026-07-31 09:50:00"
+            third = watch_runtime.append_intraday_slice(root=root, snapshot=outage)
+            outage["ts_bj"] = "2026-07-31 10:00:00"
+            fourth = watch_runtime.append_intraday_slice(root=root, snapshot=outage)
+
+        self.assertEqual(first["count"], 0)
+        self.assertEqual(third["count"], 2)
+        self.assertEqual(third["latest"]["data_quality"], "unavailable")
+        self.assertIsNone(third["latest"]["shift_score"])
+        self.assertEqual(third["health"]["status"], "degraded")
+        self.assertEqual(fourth["count"], 3)
 
     def test_append_intraday_slice_cleans_preexisting_polluted_rows(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

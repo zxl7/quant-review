@@ -61,7 +61,26 @@ async function tryLoadMarketDataScript(src: string) {
 export async function initMarketData() {
   if (marketDataReady.value) return;
 
-  // 生产环境：window.__MARKET_DATA__ 由 inject_data.py 设置
+  // 生产环境优先拉取带时间戳的 JSON，避免 Pages/CDN 或浏览器长期复用旧 HTML 内嵌数据。
+  const liveUrls = ['./market_data.json', 'market_data.json', '/market_data.json'];
+  for (const url of liveUrls) {
+    try {
+      const sep = url.includes('?') ? '&' : '?';
+      const resp = await fetch(`${url}${sep}_ts=${Date.now()}`, { cache: 'no-store' });
+      if (!resp.ok) continue;
+      const data = await resp.json();
+      if (data && typeof data === 'object' && Object.keys(data).length > 1) {
+        marketDataState.value = data;
+        marketDataReady.value = true;
+        _setDocTitle(data);
+        return;
+      }
+    } catch {
+      // 单文件 HTML 或离线预览没有旁路 JSON 时继续使用内嵌数据。
+    }
+  }
+
+  // window.__MARKET_DATA__ 由 inject_data.py 设置，作为网络失败时的稳定兜底。
   const cached = (window as any).__MARKET_DATA__;
   if (cached && typeof cached === 'object' && Object.keys(cached).length > 1) {
     marketDataState.value = cached;
@@ -100,7 +119,7 @@ export async function initMarketData() {
 
   for (const url of fallbackUrls) {
     try {
-      const resp = await fetch(url);
+      const resp = await fetch(`${url}?_ts=${Date.now()}`, { cache: 'no-store' });
       if (resp.ok) {
         const data = await resp.json();
         marketDataState.value = data;

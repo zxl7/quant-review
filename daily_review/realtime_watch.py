@@ -431,13 +431,17 @@ def build_live_snapshot(date8: str | None = None, *, intraday: bool = True) -> "
             indices_as_of = str(m2.get("indices_as_of") or "")
             health = {"status": "valid", "pool_status": m2.get("pool_status") or {}, "pool_errors": {}}
         elif m2:
-            # 核心涨停池有效时保留部分可信节点；失败的辅助池字段保持为空，绝不伪造为 0。
+            # 三池可独立降级：哪个池成功就保留哪个字段，失败字段保持 None，绝不伪造为 0。
             pool_status = m2.get("pool_status") or {}
             valid_status = {"valid", "valid_empty"}
             if pool_status.get("ztgc") in valid_status:
                 zt_cnt = m2.get("zt")
                 lianban_cnt = m2.get("lianban")
                 max_lianban = m2.get("max_lianban")
+            else:
+                zt_cnt = None
+                lianban_cnt = None
+                max_lianban = None
             if pool_status.get("dtgc") in valid_status:
                 dt_cnt = m2.get("dt")
             else:

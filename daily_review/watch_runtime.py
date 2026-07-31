@@ -100,6 +100,10 @@ def _is_trading_session(ts_bj: str) -> bool:
 def _is_market_snapshot_credible(snapshot: dict[str, Any], prev: dict[str, Any] | None) -> bool:
     """过滤接口空池和单池异常响应，避免它们被误画成盘中情绪急变。"""
     market = snapshot.get("market") if isinstance(snapshot.get("market"), dict) else {}
+    health = snapshot.get("health") if isinstance(snapshot.get("health"), dict) else {}
+    pool_status = health.get("pool_status") if isinstance(health.get("pool_status"), dict) else {}
+    valid_status = {"valid", "valid_empty"}
+    core_known = not pool_status or str(pool_status.get("ztgc") or "") in valid_status
     zt = int(round(_to_num(market.get("zt"), 0)))
     dt = int(round(_to_num(market.get("dt"), 0)))
     zab = int(round(_to_num(market.get("zab"), 0)))
@@ -109,7 +113,7 @@ def _is_market_snapshot_credible(snapshot: dict[str, Any], prev: dict[str, Any] 
     if min(zt, dt, zab, lianban, max_lb) < 0:
         return False
     # 涨停池为空时，连板和高度也不应同时归零后被当作市场真实状态。
-    if zt == 0 and lianban == 0 and max_lb == 0:
+    if core_known and zt == 0 and lianban == 0 and max_lb == 0:
         return False
     if not prev:
         return True
@@ -127,13 +131,22 @@ def _snapshot_rejection_reason(snapshot: dict[str, Any], prev: dict[str, Any] | 
     health = snapshot.get("health") if isinstance(snapshot.get("health"), dict) else {}
     source_status = str(health.get("status") or "")
     pool_status = health.get("pool_status") if isinstance(health.get("pool_status"), dict) else {}
-    # 核心涨停池完整即可形成部分可信节点；辅助池失败字段保持为空，不影响十分钟轨迹连续性。
-    partial_core_valid = source_status == "partial" and str(pool_status.get("ztgc") or "") in {"valid", "valid_empty"}
-    if health and source_status not in {"valid", ""} and not partial_core_valid:
-        return f"source_{source_status}"
     ts_bj = str(snapshot.get("ts_bj") or "")
     if not _is_trading_session(ts_bj):
         return "outside_trading_session"
+    valid_status = {"valid", "valid_empty"}
+    valid_pool_count = sum(1 for status in pool_status.values() if str(status or "") in valid_status)
+    market = snapshot.get("market") if isinstance(snapshot.get("market"), dict) else {}
+    all_core_fields_unknown = all(market.get(key) is None for key in ("zt", "dt", "zab", "lianban", "max_lianban"))
+    # 任一池成功就保留降级节点；三池全失败时，仅在已有当日可信节点后追加“数据暂缺”槽位。
+    # 这样既保持十分钟时间轴连续，也不会在首个有效节点前用空数据覆盖昨日成品。
+    if health and source_status not in {"valid", ""}:
+        if source_status == "partial" and valid_pool_count > 0:
+            pass
+        elif prev is not None and pool_status and all_core_fields_unknown and source_status in {"partial", "failed", "fallback", "unavailable"}:
+            return ""
+        else:
+            return f"source_{source_status}"
     if not _is_market_snapshot_credible(snapshot, prev):
         return "market_snapshot_not_credible"
     return ""
@@ -188,6 +201,10 @@ def _normalize_slice_row(row: dict[str, Any], date10: str) -> dict[str, Any]:
 def _row_as_snapshot(row: dict[str, Any]) -> dict[str, Any]:
     return {
         "ts_bj": row.get("ts_bj"),
+        "health": {
+            "status": row.get("data_quality") or "",
+            "pool_status": row.get("pool_status") or {},
+        },
         "market": {
             "zt": row.get("zt"), "dt": row.get("dt"), "zab": row.get("zab"),
             "lianban": row.get("lianban"), "max_lianban": row.get("max_lb"),
@@ -272,8 +289,10 @@ def _shift_label(score: int) -> str:
 
 
 def _shift_note(curr: dict[str, Any], prev: dict[str, Any] | None) -> str:
+    if curr.get("data_quality") == "unavailable":
+        return "本槽位三池请求均未成功，已记录数据暂缺；等待下一节点自动恢复。"
     if curr.get("shift_score") is None:
-        return "核心涨停池有效，辅助池暂时缺失；节点已保留，缺失指标不参与判断。"
+        return "本槽位仅部分三池成功；节点已保留，缺失指标不参与判断。"
     if not prev:
         return "盘中实时切片已接入，可逐点观察情绪变化。"
     diff = int(curr.get("shift_score", 0) or 0) - int(prev.get("shift_score", 0) or 0)
@@ -290,18 +309,25 @@ def _shift_note(curr: dict[str, Any], prev: dict[str, Any] | None) -> str:
 
 def _build_slice(snapshot: dict[str, Any], prev: dict[str, Any] | None = None) -> dict[str, Any]:
     market = snapshot.get("market") or {}
+    source_health = snapshot.get("health") if isinstance(snapshot.get("health"), dict) else {}
+    pool_status = source_health.get("pool_status") if isinstance(source_health.get("pool_status"), dict) else {}
+    pool_errors = source_health.get("pool_errors") if isinstance(source_health.get("pool_errors"), dict) else {}
+    valid_status = {"valid", "valid_empty"}
+    zt_known = not pool_status or str(pool_status.get("ztgc") or "") in valid_status
+    dt_known = not pool_status or str(pool_status.get("dtgc") or "") in valid_status
+    zab_known = not pool_status or str(pool_status.get("zbgc") or "") in valid_status
+    known_pool_count = sum(1 for status in pool_status.values() if str(status or "") in valid_status)
+    data_quality = "valid" if str(source_health.get("status") or "") in {"", "valid"} else ("partial" if known_pool_count else "unavailable")
     ts_bj = str(snapshot.get("ts_bj") or "")
-    zt = int(round(_to_num(market.get("zt"), 0)))
-    zab_known = market.get("zab") is not None
-    dt_known = market.get("dt") is not None
+    zt = int(round(_to_num(market.get("zt"), 0))) if zt_known and market.get("zt") is not None else None
     zab = int(round(_to_num(market.get("zab"), 0))) if zab_known else None
     dt = int(round(_to_num(market.get("dt"), 0))) if dt_known else None
-    lianban = int(round(_to_num(market.get("lianban"), 0)))
-    max_lb = int(round(_to_num(market.get("max_lianban"), 0)))
+    lianban = int(round(_to_num(market.get("lianban"), 0))) if zt_known and market.get("lianban") is not None else None
+    max_lb = int(round(_to_num(market.get("max_lianban"), 0))) if zt_known and market.get("max_lianban") is not None else None
     zb = round(_to_num(market.get("zab_rate"), 0), 1) if market.get("zab_rate") is not None else None
-    fb = round(zt / max(zt + zab, 1) * 100.0, 1) if zab is not None else None
-    jj = round(lianban / max(zt, 1) * 100.0, 1)
-    heat = int(round(max(0.0, min(100.0, 0.42 * fb + 0.24 * jj + min(zt, 100) * 0.16 + min(max_lb * 12.0, 100) * 0.18)))) if fb is not None else None
+    fb = round(zt / max(zt + zab, 1) * 100.0, 1) if zt is not None and zab is not None else None
+    jj = round(lianban / max(zt, 1) * 100.0, 1) if zt is not None and lianban is not None else None
+    heat = int(round(max(0.0, min(100.0, 0.42 * fb + 0.24 * jj + min(zt, 100) * 0.16 + min(max_lb * 12.0, 100) * 0.18)))) if fb is not None and jj is not None and max_lb is not None else None
     risk = int(round(max(0.0, min(100.0, zb * 0.55 + min(dt * 5.0, 100.0) * 0.30 + min(zab * 3.0, 100.0) * 0.15)))) if zb is not None and dt is not None and zab is not None else None
     rec = {
         "time": _display_time_from_ts_bj(ts_bj),
@@ -309,6 +335,9 @@ def _build_slice(snapshot: dict[str, Any], prev: dict[str, Any] | None = None) -
         "date": str(snapshot.get("date") or ""),
         "source": "intraday_live",
         "provider": str(snapshot.get("source") or ""),
+        "data_quality": data_quality,
+        "pool_status": pool_status,
+        "pool_errors": pool_errors,
         "zt": zt,
         "dt": dt,
         "zab": zab,
@@ -330,7 +359,7 @@ def _build_slice(snapshot: dict[str, Any], prev: dict[str, Any] | None = None) -
         "alerts": snapshot.get("alerts") or [],
     }
     rec["shift_score"] = _calc_shift_score(rec) if heat is not None and risk is not None else None
-    rec["shift_label"] = _shift_label(rec["shift_score"]) if rec["shift_score"] is not None else "数据部分可用"
+    rec["shift_label"] = _shift_label(rec["shift_score"]) if rec["shift_score"] is not None else ("数据暂缺" if data_quality == "unavailable" else "数据部分可用")
     rec["headline"] = rec["shift_label"]
     rec["note"] = _shift_note(rec, prev)
     return rec
@@ -364,6 +393,7 @@ def append_intraday_slice(*, root: Path, snapshot: dict[str, Any]) -> dict[str, 
         merged = merged[-INTRADAY_SLICE_MAX:]
     latest = merged[-1] if merged else None
     latest_ts = str((latest or {}).get("ts_bj") or "")
+    accepted_quality = str((rec or {}).get("data_quality") or "")
     envelope: dict[str, Any] = {
         "schema": "intraday_snapshot_v1",
         "render_mode": "snapshot_stream",
@@ -376,7 +406,7 @@ def append_intraday_slice(*, root: Path, snapshot: dict[str, Any]) -> dict[str, 
         "updated_at": latest_ts,
         "snapshot_sig": f"{date10}|{latest_ts}|{len(merged)}",
         "health": {
-            "status": "valid" if rec else "stale",
+            "status": ("degraded" if accepted_quality in {"partial", "unavailable"} else "valid") if rec else "stale",
             "last_valid_at": latest_ts,
             "rejected_reason": rejection_reason,
             "source": (snap2.get("health") if isinstance(snap2.get("health"), dict) else {}),

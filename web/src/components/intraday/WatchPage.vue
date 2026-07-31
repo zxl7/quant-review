@@ -143,6 +143,8 @@ const isTradingSnapshot = (row: any) => {
 }
 
 const isCredibleSnapshot = (row: any, prev: any) => {
+  // 降级节点只表达该十分钟槽位的数据健康状态，不参与行情数值计算。
+  if (["partial", "unavailable"].includes(String(row?.data_quality || ""))) return isTradingSnapshot(row)
   const zt = toNum(row?.zt, 0)
   const dt = toNum(row?.dt, 0)
   const lianban = toNum(row?.lianban, 0)
@@ -182,6 +184,14 @@ const watchCurrentShift = computed(() => {
 
 const watchMarket = computed(() => {
   const snap = watchCurrentSnap.value || {}
+  // 降级槽位直接展示已知字段，未知字段显示“-”；禁止回退到复盘数据冒充实时行情。
+  if (["partial", "unavailable"].includes(String(snap?.data_quality || ""))) {
+    return {
+      zt: snap.zt ?? "-", zab: snap.zab ?? "-", dt: snap.dt ?? "-",
+      lianban: snap.lianban ?? "-", max_lianban: snap.max_lb ?? "-",
+      zab_rate: snap.zb ?? "-", amount: snap.amount || "-",
+    }
+  }
   const live = intradayRuntime.live.value?.market || marketData.value?.live?.market || {}
   const zt = snap.zt ?? live.zt ?? marketData.value?.panorama?.limitUp ?? "-"
   const zab = snap.zab ?? live.zab ?? "-"
@@ -208,7 +218,9 @@ const watchTempCards = computed(() => {
     { key: "lianban", label: "连板", unit: "", inverse: false, hi: 15, mid: 8, max: 30 },
   ]
   return cfgs.map((cfg) => {
-    const c = toNum((curr as any)?.[cfg.key], 0)
+    const rawCurrent = (curr as any)?.[cfg.key]
+    const available = rawCurrent !== undefined && rawCurrent !== null && rawCurrent !== ""
+    const c = toNum(rawCurrent, 0)
     const p = toNum((prev as any)?.[cfg.key], c)
     const delta = c - p
     const values = rows.map((x: any) => toNum(x?.[cfg.key], Number.NaN)).filter((v: number) => Number.isFinite(v))
@@ -217,7 +229,7 @@ const watchTempCards = computed(() => {
     const levelCls = level === "高位" ? "high" : level === "中位" ? "mid" : "low"
     const deltaWord = Math.abs(delta) < 0.05 ? "持平" : delta > 0 ? "上升" : "下降"
     const deltaVal = Math.abs(delta) < 0.05 ? "0" : `${delta > 0 ? "+" : "-"}${Number.isInteger(Math.abs(delta)) ? Math.abs(delta) : Math.abs(delta).toFixed(1)}${cfg.unit}`
-    const valueText = `${Number.isInteger(c) ? c : c.toFixed(1)}${cfg.unit}`
+    const valueText = available ? `${Number.isInteger(c) ? c : c.toFixed(1)}${cfg.unit}` : "-"
     const compressedValues = compressFlatSeries(values).map((x) => x.value)
     const trend = isFlat ? "" : compressedValues.map((v) => (Number.isInteger(v) ? String(v) : v.toFixed(1)) + cfg.unit).join("→")
     return {
@@ -230,6 +242,7 @@ const watchTempCards = computed(() => {
       valueText,
       kind: cfg.inverse ? "risk" : "heat",
       barPct: clamp100((c / Math.max(cfg.max, 1)) * 100),
+      available,
       isFlat,
       stableText: `数据未变化：${valueText}`,
       trendHtml: isFlat ? "" : trendColorHtml(trend, "→", cfg.inverse),
@@ -347,6 +360,10 @@ const watchEvolutionSummary = computed(() => {
   if (!rows.length) return "暂无盘中切片，无法生成演化总结。"
   const first: any = rows[0] || {}
   const last: any = rows[rows.length - 1] || {}
+  if (last.data_quality === "unavailable") {
+    const latestValid = [...rows].reverse().find((row: any) => row?.shift_score != null)
+    return `最新节点 ${last.time || "当前"} 三池请求超时，已保留时间槽位但不计算行情；最近可计算节点为 ${latestValid?.time || "暂无"}。`
+  }
   if (watchTrajectoryFlat.value) {
     return `盘中核心数据未变化：情绪分 ${last.shift_score ?? "-"}，热度 ${last.heat ?? "-"}，风险 ${last.risk ?? "-"}。继续等待下一次有效变化。`
   }
@@ -539,12 +556,13 @@ onBeforeUnmount(() => {
                   </span>
                   <span class="dim-v">{{ item.valueText }}</span>
                 </div>
-                <div class="dim-bar">
+                <div class="dim-bar" v-if="item.available">
                   <div class="dim-fill" :style="{ width: item.barPct + '%', background: item.kind === 'risk' ? riskColor(item.barPct) : heatColor(item.barPct) }"></div>
                 </div>
                 <div class="dim-mini">
-                  <span class="dim-chip" v-if="!item.isFlat">{{ item.deltaWord }} {{ item.deltaVal }}</span>
-                  <code v-if="item.isFlat">{{ item.stableText }}</code>
+                  <span class="dim-chip" v-if="item.available && !item.isFlat">{{ item.deltaWord }} {{ item.deltaVal }}</span>
+                  <code v-if="item.available && item.isFlat">{{ item.stableText }}</code>
+                  <code v-else-if="!item.available">本槽位数据暂缺</code>
                   <code v-if="item.trendHtml" v-html="'趋势：' + item.trendHtml"></code>
                 </div>
               </div>
