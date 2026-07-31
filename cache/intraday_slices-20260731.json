@@ -1,0 +1,104 @@
+{
+  "schema": "intraday_snapshot_v1",
+  "render_mode": "snapshot_stream",
+  "date": "2026-07-31",
+  "count": 1,
+  "interval_min": null,
+  "simulated": false,
+  "snapshots": [
+    {
+      "time": "10:30:06",
+      "ts_bj": "2026-07-31 10:30:06",
+      "date": "2026-07-31",
+      "source": "intraday_live",
+      "provider": "unknown",
+      "zt": 67,
+      "dt": 1,
+      "zab": null,
+      "zb": null,
+      "fb": null,
+      "jj": 11.9,
+      "lianban": 8,
+      "max_lb": 9,
+      "amount": "",
+      "bf": 0,
+      "heat": null,
+      "risk": null,
+      "headline": "数据部分可用",
+      "concepts": [],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        },
+        {
+          "level": "warn",
+          "text": "盘中三池响应不完整，保留最近有效数据"
+        },
+        {
+          "level": "warn",
+          "text": "板块数据获取失败或为空（稍后重试）"
+        }
+      ],
+      "shift_score": null,
+      "shift_label": "数据部分可用",
+      "note": "核心涨停池有效，辅助池暂时缺失；节点已保留，缺失指标不参与判断。"
+    }
+  ],
+  "latest": {
+    "time": "10:30:06",
+    "ts_bj": "2026-07-31 10:30:06",
+    "date": "2026-07-31",
+    "source": "intraday_live",
+    "provider": "unknown",
+    "zt": 67,
+    "dt": 1,
+    "zab": null,
+    "zb": null,
+    "fb": null,
+    "jj": 11.9,
+    "lianban": 8,
+    "max_lb": 9,
+    "amount": "",
+    "bf": 0,
+    "heat": null,
+    "risk": null,
+    "headline": "数据部分可用",
+    "concepts": [],
+    "alerts": [
+      {
+        "level": "info",
+        "text": "盘中模式：强制实时拉取"
+      },
+      {
+        "level": "warn",
+        "text": "盘中三池响应不完整，保留最近有效数据"
+      },
+      {
+        "level": "warn",
+        "text": "板块数据获取失败或为空（稍后重试）"
+      }
+    ],
+    "shift_score": null,
+    "shift_label": "数据部分可用",
+    "note": "核心涨停池有效，辅助池暂时缺失；节点已保留，缺失指标不参与判断。"
+  },
+  "updated_at": "2026-07-31 10:30:06",
+  "snapshot_sig": "2026-07-31|2026-07-31 10:30:06|1",
+  "health": {
+    "status": "valid",
+    "last_valid_at": "2026-07-31 10:30:06",
+    "rejected_reason": "",
+    "source": {
+      "status": "partial",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "failed",
+        "dtgc": "valid"
+      },
+      "pool_errors": {
+        "zbgc": "Expecting ',' delimiter: line 1061 column 15 (char 21361)"
+      }
+    }
+  }
+}
