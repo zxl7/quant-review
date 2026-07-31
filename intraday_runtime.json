@@ -85,44 +85,45 @@
     {
       "name": "上证指数",
       "code": "000001.SH",
-      "val": 3834.297,
-      "chg": 0.7780916883438378,
-      "cje": 650154883800.0,
-      "t": "2026-07-31 10:30:15"
+      "val": 3830.191,
+      "chg": 0.6701723371635923,
+      "cje": 688058793500.0,
+      "t": "2026-07-31 10:40:18"
     },
     {
       "name": "深证成指",
       "code": "399001.SZ",
-      "val": 13715.849,
-      "chg": 3.236899303248639,
-      "cje": 746965082100.0,
-      "t": "2026-07-31 10:30:12"
+      "val": 13687.247,
+      "chg": 3.021616837404082,
+      "cje": 792721690800.0,
+      "t": "2026-07-31 10:40:12"
     },
     {
       "name": "创业板指",
       "code": "399006.SZ",
-      "val": 3412.197,
-      "chg": 5.164829881360462,
-      "cje": 381946433100.0,
-      "t": "2026-07-31 10:30:12"
+      "val": 3397.602,
+      "chg": 4.715008053336323,
+      "cje": 406238301700.0,
+      "t": "2026-07-31 10:40:15"
     }
   ],
   "asOf": {
-    "indices": "10:30:12"
+    "indices": "10:40:15"
   },
   "health": {
-    "status": "valid",
+    "status": "stale",
     "last_valid_at": "2026-07-31 10:30:06",
-    "rejected_reason": "",
+    "rejected_reason": "source_partial",
     "source": {
       "status": "partial",
       "pool_status": {
-        "ztgc": "valid",
+        "ztgc": "failed",
         "zbgc": "failed",
         "dtgc": "valid"
       },
       "pool_errors": {
-        "zbgc": "Expecting ',' delimiter: line 1061 column 15 (char 21361)"
+        "ztgc": "IncompleteRead(24041 bytes read, 1310 more expected)",
+        "zbgc": "IncompleteRead(24655 bytes read, 50 more expected)"
       }
     },
     "indices_status": "valid",
@@ -132,7 +133,7 @@
       "message": "intraday_coverage_incomplete",
       "date": "2026-07-31",
       "expected_count": 26,
-      "due_count": 7,
+      "due_count": 8,
       "observed_count": 1,
       "observed_slots": [
         "10:30"
@@ -143,7 +144,8 @@
         "09:50",
         "10:00",
         "10:10",
-        "10:20"
+        "10:20",
+        "10:40"
       ],
       "duplicate_slots": [],
       "out_of_session": [],
