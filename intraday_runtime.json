@@ -85,30 +85,30 @@
     {
       "name": "上证指数",
       "code": "000001.SH",
-      "val": 3831.169,
-      "chg": 0.6958774334749126,
-      "cje": 691785212300.0,
-      "t": "2026-07-31 10:41:30"
+      "val": 3827.778,
+      "chg": 0.6067506629312688,
+      "cje": 718751213500.0,
+      "t": "2026-07-31 10:50:18"
     },
     {
       "name": "深证成指",
       "code": "399001.SZ",
-      "val": 13697.273,
-      "chg": 3.097080860988357,
-      "cje": 797616909200.0,
-      "t": "2026-07-31 10:41:24"
+      "val": 13686.411,
+      "chg": 3.0153244053557673,
+      "cje": 829839629100.0,
+      "t": "2026-07-31 10:50:15"
     },
     {
       "name": "创业板指",
       "code": "399006.SZ",
-      "val": 3401.184,
-      "chg": 4.82540625737761,
-      "cje": 408693151700.0,
-      "t": "2026-07-31 10:41:27"
+      "val": 3399.438,
+      "chg": 4.77159406746804,
+      "cje": 425043523100.0,
+      "t": "2026-07-31 10:50:15"
     }
   ],
   "asOf": {
-    "indices": "10:41:27"
+    "indices": "10:50:15"
   },
   "health": {
     "status": "stale",
@@ -122,8 +122,8 @@
         "dtgc": "valid"
       },
       "pool_errors": {
-        "ztgc": "'utf-8' codec can't decode byte 0xe8 in position 24040: unexpected end of data",
-        "zbgc": "Unterminated string starting at: line 1171 column 11 (char 23659)"
+        "ztgc": "Expecting property name enclosed in double quotes: line 1227 column 2 (char 22983)",
+        "zbgc": "IncompleteRead(24313 bytes read, 1471 more expected)"
       }
     },
     "indices_status": "valid",
@@ -133,7 +133,7 @@
       "message": "intraday_coverage_incomplete",
       "date": "2026-07-31",
       "expected_count": 26,
-      "due_count": 8,
+      "due_count": 9,
       "observed_count": 1,
       "observed_slots": [
         "10:30"
@@ -145,7 +145,8 @@
         "10:00",
         "10:10",
         "10:20",
-        "10:40"
+        "10:40",
+        "10:50"
       ],
       "duplicate_slots": [],
       "out_of_session": [],
