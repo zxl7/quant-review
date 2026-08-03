@@ -1,11 +1,11 @@
 {
   "schema": "intraday_runtime_v1",
   "date": "2026-08-03",
-  "updated_at": "2026-08-03 11:10:04",
+  "updated_at": "2026-08-03 11:20:03",
   "source": "必盈(实时)+必盈(实时)",
   "latest": {
-    "time": "11:10:04",
-    "ts_bj": "2026-08-03 11:10:04",
+    "time": "11:20:03",
+    "ts_bj": "2026-08-03 11:20:03",
     "date": "2026-08-03",
     "source": "intraday_live",
     "provider": "必盈(实时)+必盈(实时)",
@@ -16,18 +16,18 @@
       "dtgc": "valid"
     },
     "pool_errors": {},
-    "zt": 58,
+    "zt": 59,
     "dt": 2,
-    "zab": 14,
-    "zb": 19.4,
-    "fb": 80.6,
-    "jj": 25.9,
-    "lianban": 15,
+    "zab": 13,
+    "zb": 18.1,
+    "fb": 81.9,
+    "jj": 27.1,
+    "lianban": 16,
     "max_lb": 6,
-    "amount": "12817.3亿",
+    "amount": "13242.8亿",
     "bf": 0,
-    "heat": 62,
-    "risk": 20,
+    "heat": 63,
+    "risk": 19,
     "headline": "修复",
     "concepts": [
       {
@@ -62,7 +62,7 @@
         "text": "盘中模式：强制实时拉取"
       }
     ],
-    "shift_score": 70,
+    "shift_score": 71,
     "shift_label": "修复",
     "note": "情绪整体平稳，维持当前节奏。"
   },
@@ -696,40 +696,103 @@
       "shift_score": 70,
       "shift_label": "修复",
       "note": "情绪整体平稳，维持当前节奏。"
+    },
+    {
+      "time": "11:20:03",
+      "ts_bj": "2026-08-03 11:20:03",
+      "date": "2026-08-03",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid"
+      },
+      "pool_errors": {},
+      "zt": 59,
+      "dt": 2,
+      "zab": 13,
+      "zb": 18.1,
+      "fb": 81.9,
+      "jj": 27.1,
+      "lianban": 16,
+      "max_lb": 6,
+      "amount": "13242.8亿",
+      "bf": 0,
+      "heat": 63,
+      "risk": 19,
+      "headline": "修复",
+      "concepts": [
+        {
+          "name": "电网设备",
+          "lead": "顺钠股份",
+          "chg_pct": null
+        },
+        {
+          "name": "通用设备",
+          "lead": "中大力德",
+          "chg_pct": null
+        },
+        {
+          "name": "化学制品",
+          "lead": "高争民爆",
+          "chg_pct": null
+        },
+        {
+          "name": "专用设备",
+          "lead": "杰克科技",
+          "chg_pct": null
+        },
+        {
+          "name": "电力",
+          "lead": "新能股份",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        }
+      ],
+      "shift_score": 71,
+      "shift_label": "修复",
+      "note": "情绪整体平稳，维持当前节奏。"
     }
   ],
   "indices": [
     {
       "name": "上证指数",
       "code": "000001.SH",
-      "val": 3808.62,
-      "chg": -0.6169202418832606,
-      "cje": 604090765900.0,
-      "t": "2026-08-03 11:10:03"
+      "val": 3809.782,
+      "chg": -0.5865987241999637,
+      "cje": 624884131000.0,
+      "t": "2026-08-03 11:20:00"
     },
     {
       "name": "深证成指",
       "code": "399001.SZ",
-      "val": 13480.229,
-      "chg": -0.726868759173226,
-      "cje": 677293718300.0,
-      "t": "2026-08-03 11:09:57"
+      "val": 13506.438,
+      "chg": -0.5338564967931949,
+      "cje": 699117275100.0,
+      "t": "2026-08-03 11:20:00"
     },
     {
       "name": "创业板指",
       "code": "399006.SZ",
-      "val": 3311.983,
-      "chg": -0.9563799131808767,
-      "cje": 317109544000.0,
-      "t": "2026-08-03 11:09:57"
+      "val": 3325.131,
+      "chg": -0.5631938621348819,
+      "cje": 327793986400.0,
+      "t": "2026-08-03 11:20:00"
     }
   ],
   "asOf": {
-    "indices": "11:09:57"
+    "indices": "11:20:00"
   },
   "health": {
     "status": "valid",
-    "last_valid_at": "2026-08-03 11:10:04",
+    "last_valid_at": "2026-08-03 11:20:03",
     "rejected_reason": "",
     "source": {
       "status": "valid",
@@ -747,8 +810,8 @@
       "message": "intraday_coverage_incomplete",
       "date": "2026-08-03",
       "expected_count": 26,
-      "due_count": 11,
-      "observed_count": 10,
+      "due_count": 12,
+      "observed_count": 11,
       "observed_slots": [
         "09:40",
         "09:50",
@@ -759,7 +822,8 @@
         "10:40",
         "10:50",
         "11:00",
-        "11:10"
+        "11:10",
+        "11:20"
       ],
       "missing_slots": [
         "09:30"
@@ -767,19 +831,19 @@
       "duplicate_slots": [],
       "out_of_session": [],
       "monotonic": true,
-      "morning_coverage": 10,
+      "morning_coverage": 11,
       "afternoon_coverage": 0
     }
   },
   "live": {
     "market": {
-      "zt": 58,
+      "zt": 59,
       "dt": 2,
-      "zab": 14,
-      "zab_rate": 19.4,
-      "lianban": 15,
+      "zab": 13,
+      "zab_rate": 18.1,
+      "lianban": 16,
       "max_lianban": 6,
-      "amount": "12817.3亿"
+      "amount": "13242.8亿"
     },
     "alerts": [
       {
