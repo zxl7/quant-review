@@ -1,11 +1,11 @@
 {
   "schema": "intraday_runtime_v1",
   "date": "2026-08-03",
-  "updated_at": "2026-08-03 13:50:06",
+  "updated_at": "2026-08-03 14:00:04",
   "source": "必盈(实时)+必盈(实时)",
   "latest": {
-    "time": "13:50:06",
-    "ts_bj": "2026-08-03 13:50:06",
+    "time": "14:00:04",
+    "ts_bj": "2026-08-03 14:00:04",
     "date": "2026-08-03",
     "source": "intraday_live",
     "provider": "必盈(实时)+必盈(实时)",
@@ -16,17 +16,17 @@
       "dtgc": "valid"
     },
     "pool_errors": {},
-    "zt": 71,
+    "zt": 72,
     "dt": 5,
     "zab": 15,
-    "zb": 17.4,
-    "fb": 82.6,
-    "jj": 22.5,
+    "zb": 17.2,
+    "fb": 82.8,
+    "jj": 22.2,
     "lianban": 16,
     "max_lb": 6,
-    "amount": "15867.6亿",
+    "amount": "16303.3亿",
     "bf": 0,
-    "heat": 64,
+    "heat": 65,
     "risk": 24,
     "headline": "修复",
     "concepts": [
@@ -62,7 +62,7 @@
         "text": "盘中模式：强制实时拉取"
       }
     ],
-    "shift_score": 69,
+    "shift_score": 70,
     "shift_label": "修复",
     "note": "情绪整体平稳，维持当前节奏。"
   },
@@ -1074,40 +1074,103 @@
       "shift_score": 69,
       "shift_label": "修复",
       "note": "情绪整体平稳，维持当前节奏。"
+    },
+    {
+      "time": "14:00:04",
+      "ts_bj": "2026-08-03 14:00:04",
+      "date": "2026-08-03",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid"
+      },
+      "pool_errors": {},
+      "zt": 72,
+      "dt": 5,
+      "zab": 15,
+      "zb": 17.2,
+      "fb": 82.8,
+      "jj": 22.2,
+      "lianban": 16,
+      "max_lb": 6,
+      "amount": "16303.3亿",
+      "bf": 0,
+      "heat": 65,
+      "risk": 24,
+      "headline": "修复",
+      "concepts": [
+        {
+          "name": "电网设备",
+          "lead": "顺钠股份",
+          "chg_pct": null
+        },
+        {
+          "name": "通用设备",
+          "lead": "利欧股份",
+          "chg_pct": null
+        },
+        {
+          "name": "化学制品",
+          "lead": "高争民爆",
+          "chg_pct": null
+        },
+        {
+          "name": "IT服务Ⅱ",
+          "lead": "美利云",
+          "chg_pct": null
+        },
+        {
+          "name": "电力",
+          "lead": "新能股份",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        }
+      ],
+      "shift_score": 70,
+      "shift_label": "修复",
+      "note": "情绪整体平稳，维持当前节奏。"
     }
   ],
   "indices": [
     {
       "name": "上证指数",
       "code": "000001.SH",
-      "val": 3802.59,
-      "chg": -0.7742685651450768,
-      "cje": 753110808200.0,
-      "t": "2026-08-03 13:50:06"
+      "val": 3801.573,
+      "chg": -0.8008064166802871,
+      "cje": 774755565000.0,
+      "t": "2026-08-03 14:00:03"
     },
     {
       "name": "深证成指",
       "code": "399001.SZ",
-      "val": 13456.334,
-      "chg": -0.9028399144851587,
-      "cje": 833538606100.0,
-      "t": "2026-08-03 13:50:03"
+      "val": 13438.323,
+      "chg": -1.0354792314269237,
+      "cje": 855269149800.0,
+      "t": "2026-08-03 14:00:03"
     },
     {
       "name": "创业板指",
       "code": "399006.SZ",
-      "val": 3304.91,
-      "chg": -1.1678953481556646,
-      "cje": 392204042500.0,
-      "t": "2026-08-03 13:50:06"
+      "val": 3298.045,
+      "chg": -1.3731906204731832,
+      "cje": 402261618600.0,
+      "t": "2026-08-03 14:00:03"
     }
   ],
   "asOf": {
-    "indices": "13:50:06"
+    "indices": "14:00:03"
   },
   "health": {
     "status": "valid",
-    "last_valid_at": "2026-08-03 13:50:06",
+    "last_valid_at": "2026-08-03 14:00:04",
     "rejected_reason": "",
     "source": {
       "status": "valid",
@@ -1125,8 +1188,8 @@
       "message": "intraday_coverage_incomplete",
       "date": "2026-08-03",
       "expected_count": 26,
-      "due_count": 19,
-      "observed_count": 16,
+      "due_count": 20,
+      "observed_count": 17,
       "observed_slots": [
         "09:40",
         "09:50",
@@ -1143,7 +1206,8 @@
         "13:20",
         "13:30",
         "13:40",
-        "13:50"
+        "13:50",
+        "14:00"
       ],
       "missing_slots": [
         "09:30",
@@ -1154,18 +1218,18 @@
       "out_of_session": [],
       "monotonic": true,
       "morning_coverage": 12,
-      "afternoon_coverage": 4
+      "afternoon_coverage": 5
     }
   },
   "live": {
     "market": {
-      "zt": 71,
+      "zt": 72,
       "dt": 5,
       "zab": 15,
-      "zab_rate": 17.4,
+      "zab_rate": 17.2,
       "lianban": 16,
       "max_lianban": 6,
-      "amount": "15867.6亿"
+      "amount": "16303.3亿"
     },
     "alerts": [
       {
