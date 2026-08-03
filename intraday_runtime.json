@@ -1,11 +1,11 @@
 {
   "schema": "intraday_runtime_v1",
   "date": "2026-08-03",
-  "updated_at": "2026-08-03 13:30:05",
+  "updated_at": "2026-08-03 13:40:07",
   "source": "必盈(实时)+必盈(实时)",
   "latest": {
-    "time": "13:30:05",
-    "ts_bj": "2026-08-03 13:30:05",
+    "time": "13:40:07",
+    "ts_bj": "2026-08-03 13:40:07",
     "date": "2026-08-03",
     "source": "intraday_live",
     "provider": "必盈(实时)+必盈(实时)",
@@ -17,17 +17,17 @@
     },
     "pool_errors": {},
     "zt": 69,
-    "dt": 4,
+    "dt": 5,
     "zab": 16,
     "zb": 18.8,
     "fb": 81.2,
-    "jj": 23.2,
-    "lianban": 16,
+    "jj": 21.7,
+    "lianban": 15,
     "max_lb": 6,
-    "amount": "15071.1亿",
+    "amount": "15492.9亿",
     "bf": 0,
-    "heat": 64,
-    "risk": 24,
+    "heat": 63,
+    "risk": 25,
     "headline": "修复",
     "concepts": [
       {
@@ -37,7 +37,7 @@
       },
       {
         "name": "通用设备",
-        "lead": "利欧股份",
+        "lead": "中大力德",
         "chg_pct": null
       },
       {
@@ -62,7 +62,7 @@
         "text": "盘中模式：强制实时拉取"
       }
     ],
-    "shift_score": 69,
+    "shift_score": 68,
     "shift_label": "修复",
     "note": "情绪整体平稳，维持当前节奏。"
   },
@@ -948,40 +948,103 @@
       "shift_score": 69,
       "shift_label": "修复",
       "note": "情绪整体平稳，维持当前节奏。"
+    },
+    {
+      "time": "13:40:07",
+      "ts_bj": "2026-08-03 13:40:07",
+      "date": "2026-08-03",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid"
+      },
+      "pool_errors": {},
+      "zt": 69,
+      "dt": 5,
+      "zab": 16,
+      "zb": 18.8,
+      "fb": 81.2,
+      "jj": 21.7,
+      "lianban": 15,
+      "max_lb": 6,
+      "amount": "15492.9亿",
+      "bf": 0,
+      "heat": 63,
+      "risk": 25,
+      "headline": "修复",
+      "concepts": [
+        {
+          "name": "电网设备",
+          "lead": "顺钠股份",
+          "chg_pct": null
+        },
+        {
+          "name": "通用设备",
+          "lead": "中大力德",
+          "chg_pct": null
+        },
+        {
+          "name": "化学制品",
+          "lead": "高争民爆",
+          "chg_pct": null
+        },
+        {
+          "name": "IT服务Ⅱ",
+          "lead": "美利云",
+          "chg_pct": null
+        },
+        {
+          "name": "电力",
+          "lead": "新能股份",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        }
+      ],
+      "shift_score": 68,
+      "shift_label": "修复",
+      "note": "情绪整体平稳，维持当前节奏。"
     }
   ],
   "indices": [
     {
       "name": "上证指数",
       "code": "000001.SH",
-      "val": 3803.331,
-      "chg": -0.754932726415888,
-      "cje": 713647179300.0,
-      "t": "2026-08-03 13:30:03"
+      "val": 3798.796,
+      "chg": -0.8732701469784776,
+      "cje": 734278475500.0,
+      "t": "2026-08-03 13:40:06"
     },
     {
       "name": "深证成指",
       "code": "399001.SZ",
-      "val": 13475.517,
-      "chg": -0.7615695787517902,
-      "cje": 793190720400.0,
-      "t": "2026-08-03 13:30:00"
+      "val": 13456.45,
+      "chg": -0.901985649826603,
+      "cje": 814325558300.0,
+      "t": "2026-08-03 13:40:03"
     },
     {
       "name": "创业板指",
       "code": "399006.SZ",
-      "val": 3316.298,
-      "chg": -0.8273414426710386,
-      "cje": 373435511400.0,
-      "t": "2026-08-03 13:30:03"
+      "val": 3309.241,
+      "chg": -1.0383784035952528,
+      "cje": 383253507600.0,
+      "t": "2026-08-03 13:40:03"
     }
   ],
   "asOf": {
-    "indices": "13:30:03"
+    "indices": "13:40:03"
   },
   "health": {
     "status": "valid",
-    "last_valid_at": "2026-08-03 13:30:05",
+    "last_valid_at": "2026-08-03 13:40:07",
     "rejected_reason": "",
     "source": {
       "status": "valid",
@@ -999,8 +1062,8 @@
       "message": "intraday_coverage_incomplete",
       "date": "2026-08-03",
       "expected_count": 26,
-      "due_count": 17,
-      "observed_count": 14,
+      "due_count": 18,
+      "observed_count": 15,
       "observed_slots": [
         "09:40",
         "09:50",
@@ -1015,7 +1078,8 @@
         "11:20",
         "11:30",
         "13:20",
-        "13:30"
+        "13:30",
+        "13:40"
       ],
       "missing_slots": [
         "09:30",
@@ -1026,18 +1090,18 @@
       "out_of_session": [],
       "monotonic": true,
       "morning_coverage": 12,
-      "afternoon_coverage": 2
+      "afternoon_coverage": 3
     }
   },
   "live": {
     "market": {
       "zt": 69,
-      "dt": 4,
+      "dt": 5,
       "zab": 16,
       "zab_rate": 18.8,
-      "lianban": 16,
+      "lianban": 15,
       "max_lianban": 6,
-      "amount": "15071.1亿"
+      "amount": "15492.9亿"
     },
     "alerts": [
       {
@@ -1053,7 +1117,7 @@
       },
       {
         "name": "通用设备",
-        "lead": "利欧股份",
+        "lead": "中大力德",
         "chg_pct": null
       },
       {
