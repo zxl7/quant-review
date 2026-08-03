@@ -1,6 +1,6 @@
 {
   "schema": "watchlist_v2",
-  "generated_at_bj": "2026-08-03 20:40:12",
+  "generated_at_bj": "2026-08-03 21:00:12",
   "data_date": "2026-08-03",
   "pools_date": "2026-08-03",
   "sector_resolution": {
@@ -21135,12 +21135,12 @@
         "prev_zt": 10,
         "pre_prev_zt": 2,
         "resilience": -15.76,
-        "strength": null,
+        "strength": 63.0,
         "strength_rank": null,
-        "strength_score": null,
-        "strength_source": "",
-        "tide_score": 41,
-        "confidence": "medium",
+        "strength_score": 63.0,
+        "strength_source": "sector_heatmap",
+        "tide_score": 45,
+        "confidence": "high",
         "warning_level": "watch",
         "action_hint": "弱于市场：降低主线权重"
       },
@@ -24841,12 +24841,12 @@
         "prev_zt": 2,
         "pre_prev_zt": 1,
         "resilience": 224.24,
-        "strength": 63.0,
+        "strength": null,
         "strength_rank": null,
-        "strength_score": 63.0,
-        "strength_source": "sector_heatmap",
-        "tide_score": 88,
-        "confidence": "high",
+        "strength_score": null,
+        "strength_source": "",
+        "tide_score": 85,
+        "confidence": "medium",
         "warning_level": "none",
         "action_hint": "潮汐中性，按梯队和辨识度判断"
       },
@@ -28037,39 +28037,6 @@
         "action_hint": "太阳能（光伏）有观察价值，等待情绪/量能/消息继续共振。"
       },
       {
-        "name": "氢能源",
-        "canonical_name": "氢能源",
-        "status": "observe_candidate",
-        "base_tide_status": "neutral",
-        "action": "watch",
-        "tide_zone": "neutral",
-        "tide_phase": "neutral",
-        "core_score": 69,
-        "ebb_score": 32,
-        "tide_score": 88,
-        "emotion_score": 75,
-        "strength_score": 63,
-        "volume_score": 42,
-        "news_score": 50,
-        "market_score": 62,
-        "structure_score": 83,
-        "confidence": "medium",
-        "confirms": {
-          "emotion": true,
-          "strength": true,
-          "volume": false,
-          "news": false,
-          "market": true
-        },
-        "reasons": [
-          "低位新启动",
-          "中位承接活跃",
-          "低位连板承接"
-        ],
-        "cautions": [],
-        "action_hint": "氢能源有观察价值，等待情绪/量能/消息继续共振。"
-      },
-      {
         "name": "核聚变",
         "canonical_name": "核聚变",
         "status": "observe_candidate",
@@ -28168,6 +28135,39 @@
         ],
         "cautions": [],
         "action_hint": "CPO概念有观察价值，等待情绪/量能/消息继续共振。"
+      },
+      {
+        "name": "氢能源",
+        "canonical_name": "氢能源",
+        "status": "observe_candidate",
+        "base_tide_status": "neutral",
+        "action": "watch",
+        "tide_zone": "neutral",
+        "tide_phase": "neutral",
+        "core_score": 67,
+        "ebb_score": 33,
+        "tide_score": 85,
+        "emotion_score": 75,
+        "strength_score": 62,
+        "volume_score": 42,
+        "news_score": 50,
+        "market_score": 62,
+        "structure_score": 83,
+        "confidence": "medium",
+        "confirms": {
+          "emotion": true,
+          "strength": true,
+          "volume": false,
+          "news": false,
+          "market": true
+        },
+        "reasons": [
+          "低位新启动",
+          "中位承接活跃",
+          "低位连板承接"
+        ],
+        "cautions": [],
+        "action_hint": "氢能源有观察价值，等待情绪/量能/消息继续共振。"
       },
       {
         "name": "航天军工",
@@ -33352,6 +33352,40 @@
         "action_hint": "电力物联网核心潮汐偏弱，降低权重，避免追高。"
       },
       {
+        "name": "大数据",
+        "canonical_name": "大数据",
+        "status": "avoid_weak",
+        "base_tide_status": "weak",
+        "action": "avoid",
+        "tide_zone": "ebbing",
+        "tide_phase": "ebbing",
+        "core_score": 52,
+        "ebb_score": 60,
+        "tide_score": 45,
+        "emotion_score": 75,
+        "strength_score": 63,
+        "volume_score": 34,
+        "news_score": 50,
+        "market_score": 62,
+        "structure_score": 67,
+        "confidence": "medium",
+        "confirms": {
+          "emotion": true,
+          "strength": true,
+          "volume": false,
+          "news": false,
+          "market": true
+        },
+        "reasons": [
+          "中位承接活跃",
+          "低位连板承接"
+        ],
+        "cautions": [
+          "潮汐偏弱"
+        ],
+        "action_hint": "大数据核心潮汐偏弱，降低权重，避免追高。"
+      },
+      {
         "name": "芯片概念",
         "canonical_name": "半导体",
         "status": "avoid_weak",
@@ -33416,40 +33450,6 @@
         ],
         "cautions": [],
         "action_hint": "ST板块核心潮汐偏弱，降低权重，避免追高。"
-      },
-      {
-        "name": "大数据",
-        "canonical_name": "大数据",
-        "status": "avoid_weak",
-        "base_tide_status": "weak",
-        "action": "avoid",
-        "tide_zone": "ebbing",
-        "tide_phase": "ebbing",
-        "core_score": 50,
-        "ebb_score": 61,
-        "tide_score": 41,
-        "emotion_score": 75,
-        "strength_score": 62,
-        "volume_score": 34,
-        "news_score": 50,
-        "market_score": 62,
-        "structure_score": 67,
-        "confidence": "medium",
-        "confirms": {
-          "emotion": true,
-          "strength": true,
-          "volume": false,
-          "news": false,
-          "market": true
-        },
-        "reasons": [
-          "中位承接活跃",
-          "低位连板承接"
-        ],
-        "cautions": [
-          "潮汐偏弱"
-        ],
-        "action_hint": "大数据核心潮汐偏弱，降低权重，避免追高。"
       },
       {
         "name": "MLCC概念",
@@ -41200,19 +41200,19 @@
       "watch": [
         "核电",
         "太阳能（光伏）",
-        "氢能源",
         "核聚变",
         "低价",
         "CPO概念",
+        "氢能源",
         "航天军工",
         "固废处理"
       ],
       "avoid": [
         "人形机器人",
         "电力物联网",
+        "大数据",
         "芯片概念",
         "ST板块",
-        "大数据",
         "MLCC概念",
         "国产乳业",
         "整车"
@@ -41221,24 +41221,24 @@
       "neutral": [
         "核电",
         "太阳能（光伏）",
-        "氢能源",
         "核聚变",
         "低价",
         "CPO概念",
+        "氢能源",
         "航天军工",
         "固废处理"
       ],
       "ebbing": [
         "人形机器人",
         "电力物联网",
+        "大数据",
         "芯片概念",
         "ST板块",
-        "大数据",
         "MLCC概念",
         "国产乳业",
         "整车"
       ],
-      "action_hint": "中性方向：核电, 太阳能（光伏）, 氢能源，等待情绪/量能/消息继续共振。"
+      "action_hint": "中性方向：核电, 太阳能（光伏）, 核聚变，等待情绪/量能/消息继续共振。"
     }
   },
   "picks_advisor": {
