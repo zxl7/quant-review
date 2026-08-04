@@ -1,58 +1,60 @@
 {
   "schema": "intraday_runtime_v1",
-  "date": "2026-08-03",
-  "updated_at": "2026-08-03 15:00:06",
-  "source": "必盈(实时)+必盈(实时)",
+  "date": "2026-08-04",
+  "updated_at": "2026-08-04 09:40:05",
+  "source": "必盈(实时)",
   "latest": {
-    "time": "15:00:06",
-    "ts_bj": "2026-08-03 15:00:06",
-    "date": "2026-08-03",
+    "time": "09:40:05",
+    "ts_bj": "2026-08-04 09:40:05",
+    "date": "2026-08-04",
     "source": "intraday_live",
-    "provider": "必盈(实时)+必盈(实时)",
-    "data_quality": "valid",
+    "provider": "必盈(实时)",
+    "data_quality": "partial",
     "pool_status": {
       "ztgc": "valid",
       "zbgc": "valid",
-      "dtgc": "valid"
+      "dtgc": "failed"
     },
-    "pool_errors": {},
-    "zt": 75,
-    "dt": 8,
-    "zab": 16,
-    "zb": 17.6,
-    "fb": 82.4,
-    "jj": 22.7,
-    "lianban": 17,
-    "max_lb": 6,
-    "amount": "19973.9亿",
+    "pool_errors": {
+      "dtgc": "empty_response"
+    },
+    "zt": 18,
+    "dt": null,
+    "zab": 1,
+    "zb": 5.3,
+    "fb": 94.7,
+    "jj": 50.0,
+    "lianban": 9,
+    "max_lb": 7,
+    "amount": "",
     "bf": 0,
-    "heat": 65,
-    "risk": 29,
-    "headline": "修复",
+    "heat": 70,
+    "risk": null,
+    "headline": "数据部分可用",
     "concepts": [
       {
-        "name": "电网设备",
-        "lead": "顺钠股份",
-        "chg_pct": null
-      },
-      {
-        "name": "通用设备",
-        "lead": "利欧股份",
-        "chg_pct": null
-      },
-      {
-        "name": "化学制品",
-        "lead": "高争民爆",
-        "chg_pct": null
-      },
-      {
-        "name": "电力",
-        "lead": "新能股份",
+        "name": "医疗服务",
+        "lead": "药明康德",
         "chg_pct": null
       },
       {
         "name": "IT服务Ⅱ",
         "lead": "美利云",
+        "chg_pct": null
+      },
+      {
+        "name": "通信设备",
+        "lead": "欣天科技",
+        "chg_pct": null
+      },
+      {
+        "name": "化学制药",
+        "lead": "哈三联",
+        "chg_pct": null
+      },
+      {
+        "name": "教育",
+        "lead": "传智教育",
         "chg_pct": null
       }
     ],
@@ -60,58 +62,64 @@
       {
         "level": "info",
         "text": "盘中模式：强制实时拉取"
+      },
+      {
+        "level": "warn",
+        "text": "盘中三池响应不完整，保留最近有效数据"
       }
     ],
-    "shift_score": 68,
-    "shift_label": "修复",
-    "note": "情绪边际修复，但仍需确认持续性。"
+    "shift_score": null,
+    "shift_label": "数据部分可用",
+    "note": "本槽位仅部分三池成功；节点已保留，缺失指标不参与判断。"
   },
   "snapshots": [
     {
-      "time": "09:40:03",
-      "ts_bj": "2026-08-03 09:40:03",
-      "date": "2026-08-03",
+      "time": "09:40:05",
+      "ts_bj": "2026-08-04 09:40:05",
+      "date": "2026-08-04",
       "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
+      "provider": "必盈(实时)",
+      "data_quality": "partial",
       "pool_status": {
         "ztgc": "valid",
         "zbgc": "valid",
-        "dtgc": "valid"
+        "dtgc": "failed"
       },
-      "pool_errors": {},
-      "zt": 21,
-      "dt": 1,
-      "zab": 4,
-      "zb": 16.0,
-      "fb": 84.0,
-      "jj": 52.4,
-      "lianban": 11,
-      "max_lb": 6,
-      "amount": "3851.1亿",
+      "pool_errors": {
+        "dtgc": "empty_response"
+      },
+      "zt": 18,
+      "dt": null,
+      "zab": 1,
+      "zb": 5.3,
+      "fb": 94.7,
+      "jj": 50.0,
+      "lianban": 9,
+      "max_lb": 7,
+      "amount": "",
       "bf": 0,
-      "heat": 64,
-      "risk": 12,
-      "headline": "走强",
+      "heat": 70,
+      "risk": null,
+      "headline": "数据部分可用",
       "concepts": [
         {
-          "name": "计算机设",
-          "lead": "恒银科技",
+          "name": "医疗服务",
+          "lead": "药明康德",
           "chg_pct": null
         },
         {
-          "name": "化学制品",
-          "lead": "高争民爆",
+          "name": "IT服务Ⅱ",
+          "lead": "美利云",
           "chg_pct": null
         },
         {
-          "name": "环保设备",
-          "lead": "神雾节能",
+          "name": "通信设备",
+          "lead": "欣天科技",
           "chg_pct": null
         },
         {
-          "name": "专业工程",
-          "lead": "中岩大地",
+          "name": "化学制药",
+          "lead": "哈三联",
           "chg_pct": null
         },
         {
@@ -124,1527 +132,127 @@
         {
           "level": "info",
           "text": "盘中模式：强制实时拉取"
+        },
+        {
+          "level": "warn",
+          "text": "盘中三池响应不完整，保留最近有效数据"
         }
       ],
-      "shift_score": 74,
-      "shift_label": "走强",
-      "note": "盘中实时切片已接入，可逐点观察情绪变化。"
-    },
-    {
-      "time": "09:50:04",
-      "ts_bj": "2026-08-03 09:50:04",
-      "date": "2026-08-03",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid"
-      },
-      "pool_errors": {},
-      "zt": 30,
-      "dt": 1,
-      "zab": 9,
-      "zb": 23.1,
-      "fb": 76.9,
-      "jj": 36.7,
-      "lianban": 11,
-      "max_lb": 6,
-      "amount": "6026.5亿",
-      "bf": 0,
-      "heat": 59,
-      "risk": 18,
-      "headline": "修复",
-      "concepts": [
-        {
-          "name": "通用设备",
-          "lead": "中大力德",
-          "chg_pct": null
-        },
-        {
-          "name": "计算机设",
-          "lead": "恒银科技",
-          "chg_pct": null
-        },
-        {
-          "name": "电网设备",
-          "lead": "华菱线缆",
-          "chg_pct": null
-        },
-        {
-          "name": "IT服务Ⅱ",
-          "lead": "美利云",
-          "chg_pct": null
-        },
-        {
-          "name": "专业工程",
-          "lead": "中岩大地",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        }
-      ],
-      "shift_score": 69,
-      "shift_label": "修复",
-      "note": "炸板/跌停抬升，情绪明显走弱。"
-    },
-    {
-      "time": "10:00:04",
-      "ts_bj": "2026-08-03 10:00:04",
-      "date": "2026-08-03",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid"
-      },
-      "pool_errors": {},
-      "zt": 36,
-      "dt": 1,
-      "zab": 8,
-      "zb": 18.2,
-      "fb": 81.8,
-      "jj": 38.9,
-      "lianban": 14,
-      "max_lb": 6,
-      "amount": "7410.4亿",
-      "bf": 0,
-      "heat": 62,
-      "risk": 15,
-      "headline": "走强",
-      "concepts": [
-        {
-          "name": "电网设备",
-          "lead": "长缆科技",
-          "chg_pct": null
-        },
-        {
-          "name": "通用设备",
-          "lead": "中大力德",
-          "chg_pct": null
-        },
-        {
-          "name": "计算机设",
-          "lead": "恒银科技",
-          "chg_pct": null
-        },
-        {
-          "name": "环保设备",
-          "lead": "神雾节能",
-          "chg_pct": null
-        },
-        {
-          "name": "IT服务Ⅱ",
-          "lead": "美利云",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        }
-      ],
-      "shift_score": 72,
-      "shift_label": "走强",
-      "note": "情绪边际修复，但仍需确认持续性。"
-    },
-    {
-      "time": "10:10:04",
-      "ts_bj": "2026-08-03 10:10:04",
-      "date": "2026-08-03",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid"
-      },
-      "pool_errors": {},
-      "zt": 42,
-      "dt": 1,
-      "zab": 9,
-      "zb": 17.6,
-      "fb": 82.4,
-      "jj": 38.1,
-      "lianban": 16,
-      "max_lb": 6,
-      "amount": "8572.1亿",
-      "bf": 0,
-      "heat": 63,
-      "risk": 15,
-      "headline": "走强",
-      "concepts": [
-        {
-          "name": "电网设备",
-          "lead": "长缆科技",
-          "chg_pct": null
-        },
-        {
-          "name": "通用设备",
-          "lead": "中大力德",
-          "chg_pct": null
-        },
-        {
-          "name": "计算机设",
-          "lead": "恒银科技",
-          "chg_pct": null
-        },
-        {
-          "name": "环保设备",
-          "lead": "神雾节能",
-          "chg_pct": null
-        },
-        {
-          "name": "IT服务Ⅱ",
-          "lead": "美利云",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        }
-      ],
-      "shift_score": 72,
-      "shift_label": "走强",
-      "note": "情绪整体平稳，维持当前节奏。"
-    },
-    {
-      "time": "10:20:05",
-      "ts_bj": "2026-08-03 10:20:05",
-      "date": "2026-08-03",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid"
-      },
-      "pool_errors": {},
-      "zt": 49,
-      "dt": 1,
-      "zab": 9,
-      "zb": 15.5,
-      "fb": 84.5,
-      "jj": 34.7,
-      "lianban": 17,
-      "max_lb": 6,
-      "amount": "9571.1亿",
-      "bf": 0,
-      "heat": 65,
-      "risk": 14,
-      "headline": "走强",
-      "concepts": [
-        {
-          "name": "电网设备",
-          "lead": "顺钠股份",
-          "chg_pct": null
-        },
-        {
-          "name": "通用设备",
-          "lead": "利欧股份",
-          "chg_pct": null
-        },
-        {
-          "name": "化学制品",
-          "lead": "高争民爆",
-          "chg_pct": null
-        },
-        {
-          "name": "计算机设",
-          "lead": "恒银科技",
-          "chg_pct": null
-        },
-        {
-          "name": "环保设备",
-          "lead": "神雾节能",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        }
-      ],
-      "shift_score": 74,
-      "shift_label": "走强",
-      "note": "情绪边际修复，但仍需确认持续性。"
-    },
-    {
-      "time": "10:30:04",
-      "ts_bj": "2026-08-03 10:30:04",
-      "date": "2026-08-03",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid"
-      },
-      "pool_errors": {},
-      "zt": 51,
-      "dt": 2,
-      "zab": 12,
-      "zb": 19.0,
-      "fb": 81.0,
-      "jj": 31.4,
-      "lianban": 16,
-      "max_lb": 6,
-      "amount": "10400.4亿",
-      "bf": 0,
-      "heat": 63,
-      "risk": 19,
-      "headline": "修复",
-      "concepts": [
-        {
-          "name": "电网设备",
-          "lead": "顺钠股份",
-          "chg_pct": null
-        },
-        {
-          "name": "化学制品",
-          "lead": "高争民爆",
-          "chg_pct": null
-        },
-        {
-          "name": "通用设备",
-          "lead": "中大力德",
-          "chg_pct": null
-        },
-        {
-          "name": "专用设备",
-          "lead": "杰克科技",
-          "chg_pct": null
-        },
-        {
-          "name": "电力",
-          "lead": "新能股份",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        }
-      ],
-      "shift_score": 71,
-      "shift_label": "修复",
-      "note": "情绪略有回落，注意午后分歧。"
-    },
-    {
-      "time": "10:40:05",
-      "ts_bj": "2026-08-03 10:40:05",
-      "date": "2026-08-03",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid"
-      },
-      "pool_errors": {},
-      "zt": 53,
-      "dt": 3,
-      "zab": 12,
-      "zb": 18.5,
-      "fb": 81.5,
-      "jj": 30.2,
-      "lianban": 16,
-      "max_lb": 6,
-      "amount": "11147.8亿",
-      "bf": 0,
-      "heat": 63,
-      "risk": 20,
-      "headline": "修复",
-      "concepts": [
-        {
-          "name": "电网设备",
-          "lead": "顺钠股份",
-          "chg_pct": null
-        },
-        {
-          "name": "化学制品",
-          "lead": "高争民爆",
-          "chg_pct": null
-        },
-        {
-          "name": "通用设备",
-          "lead": "中大力德",
-          "chg_pct": null
-        },
-        {
-          "name": "专用设备",
-          "lead": "杰克科技",
-          "chg_pct": null
-        },
-        {
-          "name": "电力",
-          "lead": "新能股份",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        }
-      ],
-      "shift_score": 70,
-      "shift_label": "修复",
-      "note": "情绪整体平稳，维持当前节奏。"
-    },
-    {
-      "time": "10:50:04",
-      "ts_bj": "2026-08-03 10:50:04",
-      "date": "2026-08-03",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid"
-      },
-      "pool_errors": {},
-      "zt": 56,
-      "dt": 2,
-      "zab": 13,
-      "zb": 18.8,
-      "fb": 81.2,
-      "jj": 28.6,
-      "lianban": 16,
-      "max_lb": 6,
-      "amount": "11734.7亿",
-      "bf": 0,
-      "heat": 63,
-      "risk": 19,
-      "headline": "修复",
-      "concepts": [
-        {
-          "name": "电网设备",
-          "lead": "顺钠股份",
-          "chg_pct": null
-        },
-        {
-          "name": "化学制品",
-          "lead": "高争民爆",
-          "chg_pct": null
-        },
-        {
-          "name": "通用设备",
-          "lead": "中大力德",
-          "chg_pct": null
-        },
-        {
-          "name": "专用设备",
-          "lead": "杰克科技",
-          "chg_pct": null
-        },
-        {
-          "name": "电力",
-          "lead": "新能股份",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        }
-      ],
-      "shift_score": 71,
-      "shift_label": "修复",
-      "note": "情绪整体平稳，维持当前节奏。"
-    },
-    {
-      "time": "11:00:06",
-      "ts_bj": "2026-08-03 11:00:06",
-      "date": "2026-08-03",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid"
-      },
-      "pool_errors": {},
-      "zt": 57,
-      "dt": 3,
-      "zab": 14,
-      "zb": 19.7,
-      "fb": 80.3,
-      "jj": 28.1,
-      "lianban": 16,
-      "max_lb": 6,
-      "amount": "12256.2亿",
-      "bf": 0,
-      "heat": 63,
-      "risk": 22,
-      "headline": "修复",
-      "concepts": [
-        {
-          "name": "电网设备",
-          "lead": "顺钠股份",
-          "chg_pct": null
-        },
-        {
-          "name": "通用设备",
-          "lead": "中大力德",
-          "chg_pct": null
-        },
-        {
-          "name": "化学制品",
-          "lead": "高争民爆",
-          "chg_pct": null
-        },
-        {
-          "name": "专用设备",
-          "lead": "杰克科技",
-          "chg_pct": null
-        },
-        {
-          "name": "电力",
-          "lead": "新能股份",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        }
-      ],
-      "shift_score": 69,
-      "shift_label": "修复",
-      "note": "情绪略有回落，注意午后分歧。"
-    },
-    {
-      "time": "11:10:04",
-      "ts_bj": "2026-08-03 11:10:04",
-      "date": "2026-08-03",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid"
-      },
-      "pool_errors": {},
-      "zt": 58,
-      "dt": 2,
-      "zab": 14,
-      "zb": 19.4,
-      "fb": 80.6,
-      "jj": 25.9,
-      "lianban": 15,
-      "max_lb": 6,
-      "amount": "12817.3亿",
-      "bf": 0,
-      "heat": 62,
-      "risk": 20,
-      "headline": "修复",
-      "concepts": [
-        {
-          "name": "电网设备",
-          "lead": "顺钠股份",
-          "chg_pct": null
-        },
-        {
-          "name": "通用设备",
-          "lead": "中大力德",
-          "chg_pct": null
-        },
-        {
-          "name": "化学制品",
-          "lead": "高争民爆",
-          "chg_pct": null
-        },
-        {
-          "name": "专用设备",
-          "lead": "杰克科技",
-          "chg_pct": null
-        },
-        {
-          "name": "电力",
-          "lead": "新能股份",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        }
-      ],
-      "shift_score": 70,
-      "shift_label": "修复",
-      "note": "情绪整体平稳，维持当前节奏。"
-    },
-    {
-      "time": "11:20:03",
-      "ts_bj": "2026-08-03 11:20:03",
-      "date": "2026-08-03",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid"
-      },
-      "pool_errors": {},
-      "zt": 59,
-      "dt": 2,
-      "zab": 13,
-      "zb": 18.1,
-      "fb": 81.9,
-      "jj": 27.1,
-      "lianban": 16,
-      "max_lb": 6,
-      "amount": "13242.8亿",
-      "bf": 0,
-      "heat": 63,
-      "risk": 19,
-      "headline": "修复",
-      "concepts": [
-        {
-          "name": "电网设备",
-          "lead": "顺钠股份",
-          "chg_pct": null
-        },
-        {
-          "name": "通用设备",
-          "lead": "中大力德",
-          "chg_pct": null
-        },
-        {
-          "name": "化学制品",
-          "lead": "高争民爆",
-          "chg_pct": null
-        },
-        {
-          "name": "专用设备",
-          "lead": "杰克科技",
-          "chg_pct": null
-        },
-        {
-          "name": "电力",
-          "lead": "新能股份",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        }
-      ],
-      "shift_score": 71,
-      "shift_label": "修复",
-      "note": "情绪整体平稳，维持当前节奏。"
-    },
-    {
-      "time": "11:30:04",
-      "ts_bj": "2026-08-03 11:30:04",
-      "date": "2026-08-03",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid"
-      },
-      "pool_errors": {},
-      "zt": 61,
-      "dt": 2,
-      "zab": 12,
-      "zb": 16.4,
-      "fb": 83.6,
-      "jj": 27.9,
-      "lianban": 17,
-      "max_lb": 6,
-      "amount": "13650.7亿",
-      "bf": 0,
-      "heat": 65,
-      "risk": 17,
-      "headline": "走强",
-      "concepts": [
-        {
-          "name": "电网设备",
-          "lead": "顺钠股份",
-          "chg_pct": null
-        },
-        {
-          "name": "通用设备",
-          "lead": "利欧股份",
-          "chg_pct": null
-        },
-        {
-          "name": "化学制品",
-          "lead": "高争民爆",
-          "chg_pct": null
-        },
-        {
-          "name": "专用设备",
-          "lead": "杰克科技",
-          "chg_pct": null
-        },
-        {
-          "name": "电力",
-          "lead": "新能股份",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        }
-      ],
-      "shift_score": 73,
-      "shift_label": "走强",
-      "note": "情绪边际修复，但仍需确认持续性。"
-    },
-    {
-      "time": "13:21:53",
-      "ts_bj": "2026-08-03 13:21:53",
-      "date": "2026-08-03",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid"
-      },
-      "pool_errors": {},
-      "zt": 68,
-      "dt": 4,
-      "zab": 18,
-      "zb": 20.9,
-      "fb": 79.1,
-      "jj": 23.5,
-      "lianban": 16,
-      "max_lb": 6,
-      "amount": "14767.3亿",
-      "bf": 0,
-      "heat": 63,
-      "risk": 26,
-      "headline": "修复",
-      "concepts": [
-        {
-          "name": "电网设备",
-          "lead": "顺钠股份",
-          "chg_pct": null
-        },
-        {
-          "name": "通用设备",
-          "lead": "利欧股份",
-          "chg_pct": null
-        },
-        {
-          "name": "化学制品",
-          "lead": "高争民爆",
-          "chg_pct": null
-        },
-        {
-          "name": "IT服务Ⅱ",
-          "lead": "美利云",
-          "chg_pct": null
-        },
-        {
-          "name": "电力",
-          "lead": "新能股份",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        }
-      ],
-      "shift_score": 68,
-      "shift_label": "修复",
-      "note": "炸板/跌停抬升，情绪明显走弱。"
-    },
-    {
-      "time": "13:30:05",
-      "ts_bj": "2026-08-03 13:30:05",
-      "date": "2026-08-03",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid"
-      },
-      "pool_errors": {},
-      "zt": 69,
-      "dt": 4,
-      "zab": 16,
-      "zb": 18.8,
-      "fb": 81.2,
-      "jj": 23.2,
-      "lianban": 16,
-      "max_lb": 6,
-      "amount": "15071.1亿",
-      "bf": 0,
-      "heat": 64,
-      "risk": 24,
-      "headline": "修复",
-      "concepts": [
-        {
-          "name": "电网设备",
-          "lead": "顺钠股份",
-          "chg_pct": null
-        },
-        {
-          "name": "通用设备",
-          "lead": "利欧股份",
-          "chg_pct": null
-        },
-        {
-          "name": "化学制品",
-          "lead": "高争民爆",
-          "chg_pct": null
-        },
-        {
-          "name": "IT服务Ⅱ",
-          "lead": "美利云",
-          "chg_pct": null
-        },
-        {
-          "name": "电力",
-          "lead": "新能股份",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        }
-      ],
-      "shift_score": 69,
-      "shift_label": "修复",
-      "note": "情绪整体平稳，维持当前节奏。"
-    },
-    {
-      "time": "13:40:07",
-      "ts_bj": "2026-08-03 13:40:07",
-      "date": "2026-08-03",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid"
-      },
-      "pool_errors": {},
-      "zt": 69,
-      "dt": 5,
-      "zab": 16,
-      "zb": 18.8,
-      "fb": 81.2,
-      "jj": 21.7,
-      "lianban": 15,
-      "max_lb": 6,
-      "amount": "15492.9亿",
-      "bf": 0,
-      "heat": 63,
-      "risk": 25,
-      "headline": "修复",
-      "concepts": [
-        {
-          "name": "电网设备",
-          "lead": "顺钠股份",
-          "chg_pct": null
-        },
-        {
-          "name": "通用设备",
-          "lead": "中大力德",
-          "chg_pct": null
-        },
-        {
-          "name": "化学制品",
-          "lead": "高争民爆",
-          "chg_pct": null
-        },
-        {
-          "name": "IT服务Ⅱ",
-          "lead": "美利云",
-          "chg_pct": null
-        },
-        {
-          "name": "电力",
-          "lead": "新能股份",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        }
-      ],
-      "shift_score": 68,
-      "shift_label": "修复",
-      "note": "情绪整体平稳，维持当前节奏。"
-    },
-    {
-      "time": "13:50:06",
-      "ts_bj": "2026-08-03 13:50:06",
-      "date": "2026-08-03",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid"
-      },
-      "pool_errors": {},
-      "zt": 71,
-      "dt": 5,
-      "zab": 15,
-      "zb": 17.4,
-      "fb": 82.6,
-      "jj": 22.5,
-      "lianban": 16,
-      "max_lb": 6,
-      "amount": "15867.6亿",
-      "bf": 0,
-      "heat": 64,
-      "risk": 24,
-      "headline": "修复",
-      "concepts": [
-        {
-          "name": "电网设备",
-          "lead": "顺钠股份",
-          "chg_pct": null
-        },
-        {
-          "name": "通用设备",
-          "lead": "利欧股份",
-          "chg_pct": null
-        },
-        {
-          "name": "化学制品",
-          "lead": "高争民爆",
-          "chg_pct": null
-        },
-        {
-          "name": "IT服务Ⅱ",
-          "lead": "美利云",
-          "chg_pct": null
-        },
-        {
-          "name": "电力",
-          "lead": "新能股份",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        }
-      ],
-      "shift_score": 69,
-      "shift_label": "修复",
-      "note": "情绪整体平稳，维持当前节奏。"
-    },
-    {
-      "time": "14:00:04",
-      "ts_bj": "2026-08-03 14:00:04",
-      "date": "2026-08-03",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid"
-      },
-      "pool_errors": {},
-      "zt": 72,
-      "dt": 5,
-      "zab": 15,
-      "zb": 17.2,
-      "fb": 82.8,
-      "jj": 22.2,
-      "lianban": 16,
-      "max_lb": 6,
-      "amount": "16303.3亿",
-      "bf": 0,
-      "heat": 65,
-      "risk": 24,
-      "headline": "修复",
-      "concepts": [
-        {
-          "name": "电网设备",
-          "lead": "顺钠股份",
-          "chg_pct": null
-        },
-        {
-          "name": "通用设备",
-          "lead": "利欧股份",
-          "chg_pct": null
-        },
-        {
-          "name": "化学制品",
-          "lead": "高争民爆",
-          "chg_pct": null
-        },
-        {
-          "name": "IT服务Ⅱ",
-          "lead": "美利云",
-          "chg_pct": null
-        },
-        {
-          "name": "电力",
-          "lead": "新能股份",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        }
-      ],
-      "shift_score": 70,
-      "shift_label": "修复",
-      "note": "情绪整体平稳，维持当前节奏。"
-    },
-    {
-      "time": "14:10:06",
-      "ts_bj": "2026-08-03 14:10:06",
-      "date": "2026-08-03",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid"
-      },
-      "pool_errors": {},
-      "zt": 73,
-      "dt": 5,
-      "zab": 16,
-      "zb": 18.0,
-      "fb": 82.0,
-      "jj": 21.9,
-      "lianban": 16,
-      "max_lb": 6,
-      "amount": "16834.9亿",
-      "bf": 0,
-      "heat": 64,
-      "risk": 25,
-      "headline": "修复",
-      "concepts": [
-        {
-          "name": "电网设备",
-          "lead": "顺钠股份",
-          "chg_pct": null
-        },
-        {
-          "name": "通用设备",
-          "lead": "利欧股份",
-          "chg_pct": null
-        },
-        {
-          "name": "化学制品",
-          "lead": "高争民爆",
-          "chg_pct": null
-        },
-        {
-          "name": "IT服务Ⅱ",
-          "lead": "美利云",
-          "chg_pct": null
-        },
-        {
-          "name": "电力",
-          "lead": "新能股份",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        }
-      ],
-      "shift_score": 69,
-      "shift_label": "修复",
-      "note": "情绪整体平稳，维持当前节奏。"
-    },
-    {
-      "time": "14:20:06",
-      "ts_bj": "2026-08-03 14:20:06",
-      "date": "2026-08-03",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid"
-      },
-      "pool_errors": {},
-      "zt": 74,
-      "dt": 5,
-      "zab": 16,
-      "zb": 17.8,
-      "fb": 82.2,
-      "jj": 21.6,
-      "lianban": 16,
-      "max_lb": 6,
-      "amount": "17299.2亿",
-      "bf": 0,
-      "heat": 65,
-      "risk": 24,
-      "headline": "修复",
-      "concepts": [
-        {
-          "name": "电网设备",
-          "lead": "顺钠股份",
-          "chg_pct": null
-        },
-        {
-          "name": "通用设备",
-          "lead": "利欧股份",
-          "chg_pct": null
-        },
-        {
-          "name": "化学制品",
-          "lead": "高争民爆",
-          "chg_pct": null
-        },
-        {
-          "name": "电力",
-          "lead": "新能股份",
-          "chg_pct": null
-        },
-        {
-          "name": "IT服务Ⅱ",
-          "lead": "美利云",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        }
-      ],
-      "shift_score": 70,
-      "shift_label": "修复",
-      "note": "情绪整体平稳，维持当前节奏。"
-    },
-    {
-      "time": "14:30:05",
-      "ts_bj": "2026-08-03 14:30:05",
-      "date": "2026-08-03",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid"
-      },
-      "pool_errors": {},
-      "zt": 73,
-      "dt": 5,
-      "zab": 17,
-      "zb": 18.9,
-      "fb": 81.1,
-      "jj": 21.9,
-      "lianban": 16,
-      "max_lb": 6,
-      "amount": "17785.5亿",
-      "bf": 0,
-      "heat": 64,
-      "risk": 26,
-      "headline": "修复",
-      "concepts": [
-        {
-          "name": "电网设备",
-          "lead": "顺钠股份",
-          "chg_pct": null
-        },
-        {
-          "name": "通用设备",
-          "lead": "利欧股份",
-          "chg_pct": null
-        },
-        {
-          "name": "电力",
-          "lead": "新能股份",
-          "chg_pct": null
-        },
-        {
-          "name": "化学制品",
-          "lead": "高争民爆",
-          "chg_pct": null
-        },
-        {
-          "name": "IT服务Ⅱ",
-          "lead": "美利云",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        }
-      ],
-      "shift_score": 68,
-      "shift_label": "修复",
-      "note": "情绪略有回落，注意午后分歧。"
-    },
-    {
-      "time": "14:40:05",
-      "ts_bj": "2026-08-03 14:40:05",
-      "date": "2026-08-03",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid"
-      },
-      "pool_errors": {},
-      "zt": 74,
-      "dt": 6,
-      "zab": 17,
-      "zb": 18.7,
-      "fb": 81.3,
-      "jj": 21.6,
-      "lianban": 16,
-      "max_lb": 6,
-      "amount": "18328.6亿",
-      "bf": 0,
-      "heat": 64,
-      "risk": 27,
-      "headline": "修复",
-      "concepts": [
-        {
-          "name": "电网设备",
-          "lead": "顺钠股份",
-          "chg_pct": null
-        },
-        {
-          "name": "通用设备",
-          "lead": "利欧股份",
-          "chg_pct": null
-        },
-        {
-          "name": "化学制品",
-          "lead": "高争民爆",
-          "chg_pct": null
-        },
-        {
-          "name": "电力",
-          "lead": "新能股份",
-          "chg_pct": null
-        },
-        {
-          "name": "IT服务Ⅱ",
-          "lead": "美利云",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        }
-      ],
-      "shift_score": 68,
-      "shift_label": "修复",
-      "note": "情绪整体平稳，维持当前节奏。"
-    },
-    {
-      "time": "14:50:04",
-      "ts_bj": "2026-08-03 14:50:04",
-      "date": "2026-08-03",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid"
-      },
-      "pool_errors": {},
-      "zt": 74,
-      "dt": 9,
-      "zab": 17,
-      "zb": 18.7,
-      "fb": 81.3,
-      "jj": 23.0,
-      "lianban": 17,
-      "max_lb": 6,
-      "amount": "19032.2亿",
-      "bf": 0,
-      "heat": 64,
-      "risk": 31,
-      "headline": "修复",
-      "concepts": [
-        {
-          "name": "电网设备",
-          "lead": "顺钠股份",
-          "chg_pct": null
-        },
-        {
-          "name": "通用设备",
-          "lead": "利欧股份",
-          "chg_pct": null
-        },
-        {
-          "name": "电力",
-          "lead": "新能股份",
-          "chg_pct": null
-        },
-        {
-          "name": "化学制品",
-          "lead": "高争民爆",
-          "chg_pct": null
-        },
-        {
-          "name": "IT服务Ⅱ",
-          "lead": "美利云",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        }
-      ],
-      "shift_score": 66,
-      "shift_label": "修复",
-      "note": "情绪略有回落，注意午后分歧。"
-    },
-    {
-      "time": "15:00:06",
-      "ts_bj": "2026-08-03 15:00:06",
-      "date": "2026-08-03",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid"
-      },
-      "pool_errors": {},
-      "zt": 75,
-      "dt": 8,
-      "zab": 16,
-      "zb": 17.6,
-      "fb": 82.4,
-      "jj": 22.7,
-      "lianban": 17,
-      "max_lb": 6,
-      "amount": "19973.9亿",
-      "bf": 0,
-      "heat": 65,
-      "risk": 29,
-      "headline": "修复",
-      "concepts": [
-        {
-          "name": "电网设备",
-          "lead": "顺钠股份",
-          "chg_pct": null
-        },
-        {
-          "name": "通用设备",
-          "lead": "利欧股份",
-          "chg_pct": null
-        },
-        {
-          "name": "化学制品",
-          "lead": "高争民爆",
-          "chg_pct": null
-        },
-        {
-          "name": "电力",
-          "lead": "新能股份",
-          "chg_pct": null
-        },
-        {
-          "name": "IT服务Ⅱ",
-          "lead": "美利云",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        }
-      ],
-      "shift_score": 68,
-      "shift_label": "修复",
-      "note": "情绪边际修复，但仍需确认持续性。"
+      "shift_score": null,
+      "shift_label": "数据部分可用",
+      "note": "本槽位仅部分三池成功；节点已保留，缺失指标不参与判断。"
     }
   ],
   "indices": [
     {
       "name": "上证指数",
       "code": "000001.SH",
-      "val": 3809.663,
-      "chg": -0.5897039398663285,
-      "cje": 952256890100.0,
-      "t": "2026-08-03 15:00:06"
+      "val": 3810.903,
+      "chg": 0.03254881074782157,
+      "cje": 156046897500.0,
+      "t": "2026-08-04 09:40:03"
     },
     {
       "name": "深证成指",
       "code": "399001.SZ",
-      "val": 13448.289,
-      "chg": -0.9620861142961898,
-      "cje": 1045128965600.0,
-      "t": "2026-08-03 15:00:03"
+      "val": 13638.905,
+      "chg": 1.4173996409506069,
+      "cje": 197819569600.0,
+      "t": "2026-08-04 09:40:00"
     },
     {
       "name": "创业板指",
       "code": "399006.SZ",
-      "val": 3302.553,
-      "chg": -1.2383805567284834,
-      "cje": 489719703400.0,
-      "t": "2026-08-03 15:00:03"
+      "val": 3382.998,
+      "chg": 2.4358428161486025,
+      "cje": 96483385600.0,
+      "t": "2026-08-04 09:40:00"
     }
   ],
   "asOf": {
-    "indices": "15:00:03"
+    "indices": "09:40:00"
   },
   "health": {
-    "status": "valid",
-    "last_valid_at": "2026-08-03 15:00:06",
+    "status": "degraded",
+    "last_valid_at": "2026-08-04 09:40:05",
     "rejected_reason": "",
     "source": {
-      "status": "valid",
+      "status": "partial",
       "pool_status": {
         "ztgc": "valid",
         "zbgc": "valid",
-        "dtgc": "valid"
+        "dtgc": "failed"
       },
-      "pool_errors": {}
+      "pool_errors": {
+        "dtgc": "empty_response"
+      }
     },
     "indices_status": "valid",
     "coverage": {
       "ok": false,
       "status": "degraded",
       "message": "intraday_coverage_incomplete",
-      "date": "2026-08-03",
+      "date": "2026-08-04",
       "expected_count": 26,
-      "due_count": 26,
-      "observed_count": 23,
+      "due_count": 2,
+      "observed_count": 1,
       "observed_slots": [
-        "09:40",
-        "09:50",
-        "10:00",
-        "10:10",
-        "10:20",
-        "10:30",
-        "10:40",
-        "10:50",
-        "11:00",
-        "11:10",
-        "11:20",
-        "11:30",
-        "13:20",
-        "13:30",
-        "13:40",
-        "13:50",
-        "14:00",
-        "14:10",
-        "14:20",
-        "14:30",
-        "14:40",
-        "14:50",
-        "15:00"
+        "09:40"
       ],
       "missing_slots": [
-        "09:30",
-        "13:00",
-        "13:10"
+        "09:30"
       ],
       "duplicate_slots": [],
       "out_of_session": [],
       "monotonic": true,
-      "morning_coverage": 12,
-      "afternoon_coverage": 11
+      "morning_coverage": 1,
+      "afternoon_coverage": 0
     }
   },
   "live": {
     "market": {
-      "zt": 75,
-      "dt": 8,
-      "zab": 16,
-      "zab_rate": 17.6,
-      "lianban": 17,
-      "max_lianban": 6,
-      "amount": "19973.9亿"
+      "zt": 18,
+      "dt": null,
+      "zab": 1,
+      "zab_rate": 5.3,
+      "lianban": 9,
+      "max_lianban": 7,
+      "amount": ""
     },
     "alerts": [
       {
         "level": "info",
         "text": "盘中模式：强制实时拉取"
+      },
+      {
+        "level": "warn",
+        "text": "盘中三池响应不完整，保留最近有效数据"
       }
     ],
     "concepts": [
       {
-        "name": "电网设备",
-        "lead": "顺钠股份",
-        "chg_pct": null
-      },
-      {
-        "name": "通用设备",
-        "lead": "利欧股份",
-        "chg_pct": null
-      },
-      {
-        "name": "化学制品",
-        "lead": "高争民爆",
-        "chg_pct": null
-      },
-      {
-        "name": "电力",
-        "lead": "新能股份",
+        "name": "医疗服务",
+        "lead": "药明康德",
         "chg_pct": null
       },
       {
         "name": "IT服务Ⅱ",
         "lead": "美利云",
+        "chg_pct": null
+      },
+      {
+        "name": "通信设备",
+        "lead": "欣天科技",
+        "chg_pct": null
+      },
+      {
+        "name": "化学制药",
+        "lead": "哈三联",
+        "chg_pct": null
+      },
+      {
+        "name": "教育",
+        "lead": "传智教育",
         "chg_pct": null
       }
     ]
