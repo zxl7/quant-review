@@ -2,7 +2,7 @@
   "schema": "intraday_snapshot_v1",
   "render_mode": "snapshot_stream",
   "date": "2026-08-04",
-  "count": 2,
+  "count": 3,
   "interval_min": null,
   "simulated": false,
   "snapshots": [
@@ -143,11 +143,80 @@
       "shift_score": null,
       "shift_label": "数据部分可用",
       "note": "本槽位仅部分三池成功；节点已保留，缺失指标不参与判断。"
+    },
+    {
+      "time": "10:00:05",
+      "ts_bj": "2026-08-04 10:00:05",
+      "date": "2026-08-04",
+      "source": "intraday_live",
+      "provider": "必盈(实时)",
+      "data_quality": "partial",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "failed"
+      },
+      "pool_errors": {
+        "dtgc": "empty_response"
+      },
+      "zt": 37,
+      "dt": null,
+      "zab": 8,
+      "zb": 17.8,
+      "fb": 82.2,
+      "jj": 32.4,
+      "lianban": 12,
+      "max_lb": 7,
+      "amount": "",
+      "bf": 0,
+      "heat": 63,
+      "risk": null,
+      "headline": "数据部分可用",
+      "concepts": [
+        {
+          "name": "IT服务Ⅱ",
+          "lead": "美利云",
+          "chg_pct": null
+        },
+        {
+          "name": "医疗服务",
+          "lead": "药明康德",
+          "chg_pct": null
+        },
+        {
+          "name": "化学制药",
+          "lead": "普洛药业",
+          "chg_pct": null
+        },
+        {
+          "name": "通信设备",
+          "lead": "通宇通讯",
+          "chg_pct": null
+        },
+        {
+          "name": "计算机设",
+          "lead": "恒银科技",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        },
+        {
+          "level": "warn",
+          "text": "盘中三池响应不完整，保留最近有效数据"
+        }
+      ],
+      "shift_score": null,
+      "shift_label": "数据部分可用",
+      "note": "本槽位仅部分三池成功；节点已保留，缺失指标不参与判断。"
     }
   ],
   "latest": {
-    "time": "09:50:04",
-    "ts_bj": "2026-08-04 09:50:04",
+    "time": "10:00:05",
+    "ts_bj": "2026-08-04 10:00:05",
     "date": "2026-08-04",
     "source": "intraday_live",
     "provider": "必盈(实时)",
@@ -160,23 +229,28 @@
     "pool_errors": {
       "dtgc": "empty_response"
     },
-    "zt": 27,
+    "zt": 37,
     "dt": null,
-    "zab": 6,
-    "zb": 18.2,
-    "fb": 81.8,
-    "jj": 40.7,
-    "lianban": 11,
+    "zab": 8,
+    "zb": 17.8,
+    "fb": 82.2,
+    "jj": 32.4,
+    "lianban": 12,
     "max_lb": 7,
     "amount": "",
     "bf": 0,
-    "heat": 64,
+    "heat": 63,
     "risk": null,
     "headline": "数据部分可用",
     "concepts": [
       {
         "name": "IT服务Ⅱ",
         "lead": "美利云",
+        "chg_pct": null
+      },
+      {
+        "name": "医疗服务",
+        "lead": "药明康德",
         "chg_pct": null
       },
       {
@@ -190,13 +264,8 @@
         "chg_pct": null
       },
       {
-        "name": "电网设备",
-        "lead": "风范股份",
-        "chg_pct": null
-      },
-      {
-        "name": "医疗服务",
-        "lead": "凯莱英",
+        "name": "计算机设",
+        "lead": "恒银科技",
         "chg_pct": null
       }
     ],
@@ -214,11 +283,11 @@
     "shift_label": "数据部分可用",
     "note": "本槽位仅部分三池成功；节点已保留，缺失指标不参与判断。"
   },
-  "updated_at": "2026-08-04 09:50:04",
-  "snapshot_sig": "2026-08-04|2026-08-04 09:50:04|2",
+  "updated_at": "2026-08-04 10:00:05",
+  "snapshot_sig": "2026-08-04|2026-08-04 10:00:05|3",
   "health": {
     "status": "degraded",
-    "last_valid_at": "2026-08-04 09:50:04",
+    "last_valid_at": "2026-08-04 10:00:05",
     "rejected_reason": "",
     "source": {
       "status": "partial",

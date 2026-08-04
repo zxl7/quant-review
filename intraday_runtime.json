@@ -1,11 +1,11 @@
 {
   "schema": "intraday_runtime_v1",
   "date": "2026-08-04",
-  "updated_at": "2026-08-04 09:50:04",
+  "updated_at": "2026-08-04 10:00:05",
   "source": "必盈(实时)",
   "latest": {
-    "time": "09:50:04",
-    "ts_bj": "2026-08-04 09:50:04",
+    "time": "10:00:05",
+    "ts_bj": "2026-08-04 10:00:05",
     "date": "2026-08-04",
     "source": "intraday_live",
     "provider": "必盈(实时)",
@@ -18,23 +18,28 @@
     "pool_errors": {
       "dtgc": "empty_response"
     },
-    "zt": 27,
+    "zt": 37,
     "dt": null,
-    "zab": 6,
-    "zb": 18.2,
-    "fb": 81.8,
-    "jj": 40.7,
-    "lianban": 11,
+    "zab": 8,
+    "zb": 17.8,
+    "fb": 82.2,
+    "jj": 32.4,
+    "lianban": 12,
     "max_lb": 7,
     "amount": "",
     "bf": 0,
-    "heat": 64,
+    "heat": 63,
     "risk": null,
     "headline": "数据部分可用",
     "concepts": [
       {
         "name": "IT服务Ⅱ",
         "lead": "美利云",
+        "chg_pct": null
+      },
+      {
+        "name": "医疗服务",
+        "lead": "药明康德",
         "chg_pct": null
       },
       {
@@ -48,13 +53,8 @@
         "chg_pct": null
       },
       {
-        "name": "电网设备",
-        "lead": "风范股份",
-        "chg_pct": null
-      },
-      {
-        "name": "医疗服务",
-        "lead": "凯莱英",
+        "name": "计算机设",
+        "lead": "恒银科技",
         "chg_pct": null
       }
     ],
@@ -210,40 +210,109 @@
       "shift_score": null,
       "shift_label": "数据部分可用",
       "note": "本槽位仅部分三池成功；节点已保留，缺失指标不参与判断。"
+    },
+    {
+      "time": "10:00:05",
+      "ts_bj": "2026-08-04 10:00:05",
+      "date": "2026-08-04",
+      "source": "intraday_live",
+      "provider": "必盈(实时)",
+      "data_quality": "partial",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "failed"
+      },
+      "pool_errors": {
+        "dtgc": "empty_response"
+      },
+      "zt": 37,
+      "dt": null,
+      "zab": 8,
+      "zb": 17.8,
+      "fb": 82.2,
+      "jj": 32.4,
+      "lianban": 12,
+      "max_lb": 7,
+      "amount": "",
+      "bf": 0,
+      "heat": 63,
+      "risk": null,
+      "headline": "数据部分可用",
+      "concepts": [
+        {
+          "name": "IT服务Ⅱ",
+          "lead": "美利云",
+          "chg_pct": null
+        },
+        {
+          "name": "医疗服务",
+          "lead": "药明康德",
+          "chg_pct": null
+        },
+        {
+          "name": "化学制药",
+          "lead": "普洛药业",
+          "chg_pct": null
+        },
+        {
+          "name": "通信设备",
+          "lead": "通宇通讯",
+          "chg_pct": null
+        },
+        {
+          "name": "计算机设",
+          "lead": "恒银科技",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        },
+        {
+          "level": "warn",
+          "text": "盘中三池响应不完整，保留最近有效数据"
+        }
+      ],
+      "shift_score": null,
+      "shift_label": "数据部分可用",
+      "note": "本槽位仅部分三池成功；节点已保留，缺失指标不参与判断。"
     }
   ],
   "indices": [
     {
       "name": "上证指数",
       "code": "000001.SH",
-      "val": 3809.985,
-      "chg": 0.008452191178067886,
-      "cje": 249540215800.0,
-      "t": "2026-08-04 09:50:03"
+      "val": 3801.661,
+      "chg": -0.21004482548718753,
+      "cje": 325115358400.0,
+      "t": "2026-08-04 10:00:03"
     },
     {
       "name": "深证成指",
       "code": "399001.SZ",
-      "val": 13684.444,
-      "chg": 1.7560226434753061,
-      "cje": 309036008300.0,
-      "t": "2026-08-04 09:49:57"
+      "val": 13687.042,
+      "chg": 1.775341086141135,
+      "cje": 401243812700.0,
+      "t": "2026-08-04 10:00:00"
     },
     {
       "name": "创业板指",
       "code": "399006.SZ",
-      "val": 3405.488,
-      "chg": 3.1168311303406773,
-      "cje": 151524378200.0,
-      "t": "2026-08-04 09:50:00"
+      "val": 3417.146,
+      "chg": 3.469830764260265,
+      "cje": 199205752700.0,
+      "t": "2026-08-04 10:00:00"
     }
   ],
   "asOf": {
-    "indices": "09:50:00"
+    "indices": "10:00:00"
   },
   "health": {
     "status": "degraded",
-    "last_valid_at": "2026-08-04 09:50:04",
+    "last_valid_at": "2026-08-04 10:00:05",
     "rejected_reason": "",
     "source": {
       "status": "partial",
@@ -263,11 +332,12 @@
       "message": "intraday_coverage_incomplete",
       "date": "2026-08-04",
       "expected_count": 26,
-      "due_count": 3,
-      "observed_count": 2,
+      "due_count": 4,
+      "observed_count": 3,
       "observed_slots": [
         "09:40",
-        "09:50"
+        "09:50",
+        "10:00"
       ],
       "missing_slots": [
         "09:30"
@@ -275,17 +345,17 @@
       "duplicate_slots": [],
       "out_of_session": [],
       "monotonic": true,
-      "morning_coverage": 2,
+      "morning_coverage": 3,
       "afternoon_coverage": 0
     }
   },
   "live": {
     "market": {
-      "zt": 27,
+      "zt": 37,
       "dt": null,
-      "zab": 6,
-      "zab_rate": 18.2,
-      "lianban": 11,
+      "zab": 8,
+      "zab_rate": 17.8,
+      "lianban": 12,
       "max_lianban": 7,
       "amount": ""
     },
@@ -306,6 +376,11 @@
         "chg_pct": null
       },
       {
+        "name": "医疗服务",
+        "lead": "药明康德",
+        "chg_pct": null
+      },
+      {
         "name": "化学制药",
         "lead": "普洛药业",
         "chg_pct": null
@@ -316,13 +391,8 @@
         "chg_pct": null
       },
       {
-        "name": "电网设备",
-        "lead": "风范股份",
-        "chg_pct": null
-      },
-      {
-        "name": "医疗服务",
-        "lead": "凯莱英",
+        "name": "计算机设",
+        "lead": "恒银科技",
         "chg_pct": null
       }
     ]
