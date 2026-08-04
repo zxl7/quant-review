@@ -1,11 +1,11 @@
 {
   "schema": "intraday_runtime_v1",
   "date": "2026-08-04",
-  "updated_at": "2026-08-04 13:40:06",
+  "updated_at": "2026-08-04 13:50:07",
   "source": "必盈(实时)",
   "latest": {
-    "time": "13:40:06",
-    "ts_bj": "2026-08-04 13:40:06",
+    "time": "13:50:07",
+    "ts_bj": "2026-08-04 13:50:07",
     "date": "2026-08-04",
     "source": "intraday_live",
     "provider": "必盈(实时)",
@@ -18,12 +18,12 @@
     "pool_errors": {
       "dtgc": "empty_response"
     },
-    "zt": 118,
+    "zt": 124,
     "dt": null,
-    "zab": 7,
-    "zb": 5.6,
-    "fb": 94.4,
-    "jj": 14.4,
+    "zab": 6,
+    "zb": 4.6,
+    "fb": 95.4,
+    "jj": 13.7,
     "lianban": 17,
     "max_lb": 7,
     "amount": "",
@@ -48,13 +48,13 @@
         "chg_pct": null
       },
       {
-        "name": "电网设备",
-        "lead": "顺钠股份",
+        "name": "计算机设",
+        "lead": "恒银科技",
         "chg_pct": null
       },
       {
-        "name": "通用设备",
-        "lead": "冰轮环境",
+        "name": "电网设备",
+        "lead": "顺钠股份",
         "chg_pct": null
       }
     ],
@@ -1223,40 +1223,109 @@
       "shift_score": null,
       "shift_label": "数据部分可用",
       "note": "本槽位仅部分三池成功；节点已保留，缺失指标不参与判断。"
+    },
+    {
+      "time": "13:50:07",
+      "ts_bj": "2026-08-04 13:50:07",
+      "date": "2026-08-04",
+      "source": "intraday_live",
+      "provider": "必盈(实时)",
+      "data_quality": "partial",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "failed"
+      },
+      "pool_errors": {
+        "dtgc": "empty_response"
+      },
+      "zt": 124,
+      "dt": null,
+      "zab": 6,
+      "zb": 4.6,
+      "fb": 95.4,
+      "jj": 13.7,
+      "lianban": 17,
+      "max_lb": 7,
+      "amount": "",
+      "bf": 0,
+      "heat": 74,
+      "risk": null,
+      "headline": "数据部分可用",
+      "concepts": [
+        {
+          "name": "元件",
+          "lead": "东山精密",
+          "chg_pct": null
+        },
+        {
+          "name": "通信设备",
+          "lead": "通宇通讯",
+          "chg_pct": null
+        },
+        {
+          "name": "IT服务Ⅱ",
+          "lead": "美利云",
+          "chg_pct": null
+        },
+        {
+          "name": "计算机设",
+          "lead": "恒银科技",
+          "chg_pct": null
+        },
+        {
+          "name": "电网设备",
+          "lead": "顺钠股份",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        },
+        {
+          "level": "warn",
+          "text": "盘中三池响应不完整，保留最近有效数据"
+        }
+      ],
+      "shift_score": null,
+      "shift_label": "数据部分可用",
+      "note": "本槽位仅部分三池成功；节点已保留，缺失指标不参与判断。"
     }
   ],
   "indices": [
     {
       "name": "上证指数",
       "code": "000001.SH",
-      "val": 3827.432,
-      "chg": 0.4664192082081743,
-      "cje": 750581979600.0,
-      "t": "2026-08-04 13:40:06"
+      "val": 3828.971,
+      "chg": 0.5068164821927816,
+      "cje": 779698700600.0,
+      "t": "2026-08-04 13:50:06"
     },
     {
       "name": "深证成指",
       "code": "399001.SZ",
-      "val": 13893.448,
-      "chg": 3.3101534329013873,
-      "cje": 909599127800.0,
-      "t": "2026-08-04 13:40:00"
+      "val": 13902.688,
+      "chg": 3.3788610580870135,
+      "cje": 943479158700.0,
+      "t": "2026-08-04 13:50:00"
     },
     {
       "name": "创业板指",
       "code": "399006.SZ",
-      "val": 3487.545,
-      "chg": 5.601484669587443,
-      "cje": 457414262300.0,
-      "t": "2026-08-04 13:40:03"
+      "val": 3492.18,
+      "chg": 5.741830638297098,
+      "cje": 474373488000.0,
+      "t": "2026-08-04 13:50:03"
     }
   ],
   "asOf": {
-    "indices": "13:40:03"
+    "indices": "13:50:03"
   },
   "health": {
     "status": "degraded",
-    "last_valid_at": "2026-08-04 13:40:06",
+    "last_valid_at": "2026-08-04 13:50:07",
     "rejected_reason": "",
     "source": {
       "status": "partial",
@@ -1276,8 +1345,8 @@
       "message": "intraday_coverage_incomplete",
       "date": "2026-08-04",
       "expected_count": 26,
-      "due_count": 18,
-      "observed_count": 17,
+      "due_count": 19,
+      "observed_count": 18,
       "observed_slots": [
         "09:40",
         "09:50",
@@ -1295,7 +1364,8 @@
         "13:10",
         "13:20",
         "13:30",
-        "13:40"
+        "13:40",
+        "13:50"
       ],
       "missing_slots": [
         "09:30"
@@ -1304,15 +1374,15 @@
       "out_of_session": [],
       "monotonic": true,
       "morning_coverage": 12,
-      "afternoon_coverage": 5
+      "afternoon_coverage": 6
     }
   },
   "live": {
     "market": {
-      "zt": 118,
+      "zt": 124,
       "dt": null,
-      "zab": 7,
-      "zab_rate": 5.6,
+      "zab": 6,
+      "zab_rate": 4.6,
       "lianban": 17,
       "max_lianban": 7,
       "amount": ""
@@ -1344,13 +1414,13 @@
         "chg_pct": null
       },
       {
-        "name": "电网设备",
-        "lead": "顺钠股份",
+        "name": "计算机设",
+        "lead": "恒银科技",
         "chg_pct": null
       },
       {
-        "name": "通用设备",
-        "lead": "冰轮环境",
+        "name": "电网设备",
+        "lead": "顺钠股份",
         "chg_pct": null
       }
     ]
