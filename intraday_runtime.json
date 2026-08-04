@@ -1,11 +1,11 @@
 {
   "schema": "intraday_runtime_v1",
   "date": "2026-08-04",
-  "updated_at": "2026-08-04 11:30:06",
+  "updated_at": "2026-08-04 13:00:17",
   "source": "必盈(实时)",
   "latest": {
-    "time": "11:30:06",
-    "ts_bj": "2026-08-04 11:30:06",
+    "time": "13:00:17",
+    "ts_bj": "2026-08-04 13:00:17",
     "date": "2026-08-04",
     "source": "intraday_live",
     "provider": "必盈(实时)",
@@ -18,12 +18,12 @@
     "pool_errors": {
       "dtgc": "empty_response"
     },
-    "zt": 76,
+    "zt": 84,
     "dt": null,
-    "zab": 9,
-    "zb": 10.6,
-    "fb": 89.4,
-    "jj": 19.7,
+    "zab": 11,
+    "zb": 11.6,
+    "fb": 88.4,
+    "jj": 17.9,
     "lianban": 15,
     "max_lb": 7,
     "amount": "",
@@ -48,13 +48,13 @@
         "chg_pct": null
       },
       {
-        "name": "医疗服务",
-        "lead": "药明康德",
+        "name": "元件",
+        "lead": "东山精密",
         "chg_pct": null
       },
       {
-        "name": "元件",
-        "lead": "东山精密",
+        "name": "医疗服务",
+        "lead": "药明康德",
         "chg_pct": null
       }
     ],
@@ -900,40 +900,109 @@
       "shift_score": null,
       "shift_label": "数据部分可用",
       "note": "本槽位仅部分三池成功；节点已保留，缺失指标不参与判断。"
+    },
+    {
+      "time": "13:00:17",
+      "ts_bj": "2026-08-04 13:00:17",
+      "date": "2026-08-04",
+      "source": "intraday_live",
+      "provider": "必盈(实时)",
+      "data_quality": "partial",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "failed"
+      },
+      "pool_errors": {
+        "dtgc": "empty_response"
+      },
+      "zt": 84,
+      "dt": null,
+      "zab": 11,
+      "zb": 11.6,
+      "fb": 88.4,
+      "jj": 17.9,
+      "lianban": 15,
+      "max_lb": 7,
+      "amount": "",
+      "bf": 0,
+      "heat": 70,
+      "risk": null,
+      "headline": "数据部分可用",
+      "concepts": [
+        {
+          "name": "IT服务Ⅱ",
+          "lead": "美利云",
+          "chg_pct": null
+        },
+        {
+          "name": "电网设备",
+          "lead": "顺钠股份",
+          "chg_pct": null
+        },
+        {
+          "name": "通信设备",
+          "lead": "通宇通讯",
+          "chg_pct": null
+        },
+        {
+          "name": "元件",
+          "lead": "东山精密",
+          "chg_pct": null
+        },
+        {
+          "name": "医疗服务",
+          "lead": "药明康德",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        },
+        {
+          "level": "warn",
+          "text": "盘中三池响应不完整，保留最近有效数据"
+        }
+      ],
+      "shift_score": null,
+      "shift_label": "数据部分可用",
+      "note": "本槽位仅部分三池成功；节点已保留，缺失指标不参与判断。"
     }
   ],
   "indices": [
     {
       "name": "上证指数",
       "code": "000001.SH",
-      "val": 3815.589,
-      "chg": 0.15555181652550187,
-      "cje": 610988837800.0,
-      "t": "2026-08-04 11:30:03"
+      "val": 3816.968,
+      "chg": 0.19174924396199444,
+      "cje": 615402180800.0,
+      "t": "2026-08-04 13:00:15"
     },
     {
       "name": "深证成指",
       "code": "399001.SZ",
-      "val": 13817.387,
-      "chg": 2.744572190558962,
-      "cje": 749683343900.0,
-      "t": "2026-08-04 11:30:03"
+      "val": 13817.726,
+      "chg": 2.7470929573271357,
+      "cje": 757011479300.0,
+      "t": "2026-08-04 13:00:12"
     },
     {
       "name": "创业板指",
       "code": "399006.SZ",
-      "val": 3462.049,
-      "chg": 4.8294758630671515,
-      "cje": 375608787800.0,
-      "t": "2026-08-04 11:30:03"
+      "val": 3461.684,
+      "chg": 4.818423807278803,
+      "cje": 379462963100.0,
+      "t": "2026-08-04 13:00:12"
     }
   ],
   "asOf": {
-    "indices": "11:30:03"
+    "indices": "13:00:12"
   },
   "health": {
     "status": "degraded",
-    "last_valid_at": "2026-08-04 11:30:06",
+    "last_valid_at": "2026-08-04 13:00:17",
     "rejected_reason": "",
     "source": {
       "status": "partial",
@@ -953,8 +1022,8 @@
       "message": "intraday_coverage_incomplete",
       "date": "2026-08-04",
       "expected_count": 26,
-      "due_count": 13,
-      "observed_count": 12,
+      "due_count": 14,
+      "observed_count": 13,
       "observed_slots": [
         "09:40",
         "09:50",
@@ -967,7 +1036,8 @@
         "11:00",
         "11:10",
         "11:20",
-        "11:30"
+        "11:30",
+        "13:00"
       ],
       "missing_slots": [
         "09:30"
@@ -976,15 +1046,15 @@
       "out_of_session": [],
       "monotonic": true,
       "morning_coverage": 12,
-      "afternoon_coverage": 0
+      "afternoon_coverage": 1
     }
   },
   "live": {
     "market": {
-      "zt": 76,
+      "zt": 84,
       "dt": null,
-      "zab": 9,
-      "zab_rate": 10.6,
+      "zab": 11,
+      "zab_rate": 11.6,
       "lianban": 15,
       "max_lianban": 7,
       "amount": ""
@@ -1016,13 +1086,13 @@
         "chg_pct": null
       },
       {
-        "name": "医疗服务",
-        "lead": "药明康德",
+        "name": "元件",
+        "lead": "东山精密",
         "chg_pct": null
       },
       {
-        "name": "元件",
-        "lead": "东山精密",
+        "name": "医疗服务",
+        "lead": "药明康德",
         "chg_pct": null
       }
     ]
