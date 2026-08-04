@@ -1,11 +1,11 @@
 {
   "schema": "intraday_runtime_v1",
   "date": "2026-08-04",
-  "updated_at": "2026-08-04 10:40:05",
+  "updated_at": "2026-08-04 10:50:04",
   "source": "必盈(实时)",
   "latest": {
-    "time": "10:40:05",
-    "ts_bj": "2026-08-04 10:40:05",
+    "time": "10:50:04",
+    "ts_bj": "2026-08-04 10:50:04",
     "date": "2026-08-04",
     "source": "intraday_live",
     "provider": "必盈(实时)",
@@ -18,23 +18,28 @@
     "pool_errors": {
       "dtgc": "empty_response"
     },
-    "zt": 51,
+    "zt": 59,
     "dt": null,
     "zab": 8,
-    "zb": 13.6,
-    "fb": 86.4,
-    "jj": 27.5,
+    "zb": 11.9,
+    "fb": 88.1,
+    "jj": 23.7,
     "lianban": 14,
     "max_lb": 7,
     "amount": "",
     "bf": 0,
-    "heat": 66,
+    "heat": 67,
     "risk": null,
     "headline": "数据部分可用",
     "concepts": [
       {
         "name": "IT服务Ⅱ",
         "lead": "美利云",
+        "chg_pct": null
+      },
+      {
+        "name": "电网设备",
+        "lead": "顺钠股份",
         "chg_pct": null
       },
       {
@@ -45,11 +50,6 @@
       {
         "name": "化学制药",
         "lead": "普洛药业",
-        "chg_pct": null
-      },
-      {
-        "name": "电网设备",
-        "lead": "顺钠股份",
         "chg_pct": null
       },
       {
@@ -555,40 +555,109 @@
       "shift_score": null,
       "shift_label": "数据部分可用",
       "note": "本槽位仅部分三池成功；节点已保留，缺失指标不参与判断。"
+    },
+    {
+      "time": "10:50:04",
+      "ts_bj": "2026-08-04 10:50:04",
+      "date": "2026-08-04",
+      "source": "intraday_live",
+      "provider": "必盈(实时)",
+      "data_quality": "partial",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "failed"
+      },
+      "pool_errors": {
+        "dtgc": "empty_response"
+      },
+      "zt": 59,
+      "dt": null,
+      "zab": 8,
+      "zb": 11.9,
+      "fb": 88.1,
+      "jj": 23.7,
+      "lianban": 14,
+      "max_lb": 7,
+      "amount": "",
+      "bf": 0,
+      "heat": 67,
+      "risk": null,
+      "headline": "数据部分可用",
+      "concepts": [
+        {
+          "name": "IT服务Ⅱ",
+          "lead": "美利云",
+          "chg_pct": null
+        },
+        {
+          "name": "电网设备",
+          "lead": "顺钠股份",
+          "chg_pct": null
+        },
+        {
+          "name": "医疗服务",
+          "lead": "药明康德",
+          "chg_pct": null
+        },
+        {
+          "name": "化学制药",
+          "lead": "普洛药业",
+          "chg_pct": null
+        },
+        {
+          "name": "通信设备",
+          "lead": "通宇通讯",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        },
+        {
+          "level": "warn",
+          "text": "盘中三池响应不完整，保留最近有效数据"
+        }
+      ],
+      "shift_score": null,
+      "shift_label": "数据部分可用",
+      "note": "本槽位仅部分三池成功；节点已保留，缺失指标不参与判断。"
     }
   ],
   "indices": [
     {
       "name": "上证指数",
       "code": "000001.SH",
-      "val": 3805.83,
-      "chg": -0.10061257386808449,
-      "cje": 487301831400.0,
-      "t": "2026-08-04 10:40:03"
+      "val": 3806.424,
+      "chg": -0.08502064355823685,
+      "cje": 519642053500.0,
+      "t": "2026-08-04 10:50:03"
     },
     {
       "name": "深证成指",
       "code": "399001.SZ",
-      "val": 13741.279,
-      "chg": 2.178641461378468,
-      "cje": 606173280800.0,
-      "t": "2026-08-04 10:40:00"
+      "val": 13741.955,
+      "chg": 2.183668123134469,
+      "cje": 640090355200.0,
+      "t": "2026-08-04 10:50:00"
     },
     {
       "name": "创业板指",
       "code": "399006.SZ",
-      "val": 3432.019,
-      "chg": 3.9201793279320545,
-      "cje": 302213727900.0,
-      "t": "2026-08-04 10:40:00"
+      "val": 3430.265,
+      "chg": 3.867068900938153,
+      "cje": 319725384300.0,
+      "t": "2026-08-04 10:50:00"
     }
   ],
   "asOf": {
-    "indices": "10:40:00"
+    "indices": "10:50:00"
   },
   "health": {
     "status": "degraded",
-    "last_valid_at": "2026-08-04 10:40:05",
+    "last_valid_at": "2026-08-04 10:50:04",
     "rejected_reason": "",
     "source": {
       "status": "partial",
@@ -608,8 +677,8 @@
       "message": "intraday_coverage_incomplete",
       "date": "2026-08-04",
       "expected_count": 26,
-      "due_count": 8,
-      "observed_count": 7,
+      "due_count": 9,
+      "observed_count": 8,
       "observed_slots": [
         "09:40",
         "09:50",
@@ -617,7 +686,8 @@
         "10:10",
         "10:20",
         "10:30",
-        "10:40"
+        "10:40",
+        "10:50"
       ],
       "missing_slots": [
         "09:30"
@@ -625,16 +695,16 @@
       "duplicate_slots": [],
       "out_of_session": [],
       "monotonic": true,
-      "morning_coverage": 7,
+      "morning_coverage": 8,
       "afternoon_coverage": 0
     }
   },
   "live": {
     "market": {
-      "zt": 51,
+      "zt": 59,
       "dt": null,
       "zab": 8,
-      "zab_rate": 13.6,
+      "zab_rate": 11.9,
       "lianban": 14,
       "max_lianban": 7,
       "amount": ""
@@ -656,6 +726,11 @@
         "chg_pct": null
       },
       {
+        "name": "电网设备",
+        "lead": "顺钠股份",
+        "chg_pct": null
+      },
+      {
         "name": "医疗服务",
         "lead": "药明康德",
         "chg_pct": null
@@ -663,11 +738,6 @@
       {
         "name": "化学制药",
         "lead": "普洛药业",
-        "chg_pct": null
-      },
-      {
-        "name": "电网设备",
-        "lead": "顺钠股份",
         "chg_pct": null
       },
       {
