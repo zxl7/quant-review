@@ -1,14 +1,14 @@
 {
   "schema": "intraday_runtime_v1",
   "date": "2026-08-04",
-  "updated_at": "2026-08-04 13:20:05",
-  "source": "必盈(实时)",
+  "updated_at": "2026-08-04 13:30:07",
+  "source": "unknown",
   "latest": {
-    "time": "13:20:05",
-    "ts_bj": "2026-08-04 13:20:05",
+    "time": "13:30:07",
+    "ts_bj": "2026-08-04 13:30:07",
     "date": "2026-08-04",
     "source": "intraday_live",
-    "provider": "必盈(实时)",
+    "provider": "unknown",
     "data_quality": "partial",
     "pool_status": {
       "ztgc": "valid",
@@ -18,12 +18,12 @@
     "pool_errors": {
       "dtgc": "empty_response"
     },
-    "zt": 100,
+    "zt": 108,
     "dt": null,
-    "zab": 7,
-    "zb": 6.5,
-    "fb": 93.5,
-    "jj": 16.0,
+    "zab": 6,
+    "zb": 5.3,
+    "fb": 94.7,
+    "jj": 14.8,
     "lianban": 16,
     "max_lb": 7,
     "amount": "",
@@ -31,33 +31,7 @@
     "heat": 74,
     "risk": null,
     "headline": "数据部分可用",
-    "concepts": [
-      {
-        "name": "元件",
-        "lead": "东山精密",
-        "chg_pct": null
-      },
-      {
-        "name": "IT服务Ⅱ",
-        "lead": "美利云",
-        "chg_pct": null
-      },
-      {
-        "name": "电网设备",
-        "lead": "顺钠股份",
-        "chg_pct": null
-      },
-      {
-        "name": "通信设备",
-        "lead": "通宇通讯",
-        "chg_pct": null
-      },
-      {
-        "name": "计算机设",
-        "lead": "恒银科技",
-        "chg_pct": null
-      }
-    ],
+    "concepts": [],
     "alerts": [
       {
         "level": "info",
@@ -66,6 +40,10 @@
       {
         "level": "warn",
         "text": "盘中三池响应不完整，保留最近有效数据"
+      },
+      {
+        "level": "warn",
+        "text": "板块数据获取失败或为空（稍后重试）"
       }
     ],
     "shift_score": null,
@@ -1107,40 +1085,87 @@
       "shift_score": null,
       "shift_label": "数据部分可用",
       "note": "本槽位仅部分三池成功；节点已保留，缺失指标不参与判断。"
+    },
+    {
+      "time": "13:30:07",
+      "ts_bj": "2026-08-04 13:30:07",
+      "date": "2026-08-04",
+      "source": "intraday_live",
+      "provider": "unknown",
+      "data_quality": "partial",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "failed"
+      },
+      "pool_errors": {
+        "dtgc": "empty_response"
+      },
+      "zt": 108,
+      "dt": null,
+      "zab": 6,
+      "zb": 5.3,
+      "fb": 94.7,
+      "jj": 14.8,
+      "lianban": 16,
+      "max_lb": 7,
+      "amount": "",
+      "bf": 0,
+      "heat": 74,
+      "risk": null,
+      "headline": "数据部分可用",
+      "concepts": [],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        },
+        {
+          "level": "warn",
+          "text": "盘中三池响应不完整，保留最近有效数据"
+        },
+        {
+          "level": "warn",
+          "text": "板块数据获取失败或为空（稍后重试）"
+        }
+      ],
+      "shift_score": null,
+      "shift_label": "数据部分可用",
+      "note": "本槽位仅部分三池成功；节点已保留，缺失指标不参与判断。"
     }
   ],
   "indices": [
     {
       "name": "上证指数",
       "code": "000001.SH",
-      "val": 3815.987,
-      "chg": 0.16599893481392106,
-      "cje": 684190157300.0,
-      "t": "2026-08-04 13:20:03"
+      "val": 3821.544,
+      "chg": 0.311864855237848,
+      "cje": 714702077500.0,
+      "t": "2026-08-04 13:30:06"
     },
     {
       "name": "深证成指",
       "code": "399001.SZ",
-      "val": 13804.794,
-      "chg": 2.650932025627938,
-      "cje": 838322572400.0,
-      "t": "2026-08-04 13:20:03"
+      "val": 13868.832,
+      "chg": 3.1271115604371653,
+      "cje": 871602352100.0,
+      "t": "2026-08-04 13:30:06"
     },
     {
       "name": "创业板指",
       "code": "399006.SZ",
-      "val": 3454.796,
-      "chg": 4.609857888730323,
-      "cje": 422306951500.0,
-      "t": "2026-08-04 13:20:03"
+      "val": 3481.76,
+      "chg": 5.426317155243241,
+      "cje": 438788345700.0,
+      "t": "2026-08-04 13:30:12"
     }
   ],
   "asOf": {
-    "indices": "13:20:03"
+    "indices": "13:30:12"
   },
   "health": {
     "status": "degraded",
-    "last_valid_at": "2026-08-04 13:20:05",
+    "last_valid_at": "2026-08-04 13:30:07",
     "rejected_reason": "",
     "source": {
       "status": "partial",
@@ -1160,8 +1185,8 @@
       "message": "intraday_coverage_incomplete",
       "date": "2026-08-04",
       "expected_count": 26,
-      "due_count": 16,
-      "observed_count": 15,
+      "due_count": 17,
+      "observed_count": 16,
       "observed_slots": [
         "09:40",
         "09:50",
@@ -1177,7 +1202,8 @@
         "11:30",
         "13:00",
         "13:10",
-        "13:20"
+        "13:20",
+        "13:30"
       ],
       "missing_slots": [
         "09:30"
@@ -1186,15 +1212,15 @@
       "out_of_session": [],
       "monotonic": true,
       "morning_coverage": 12,
-      "afternoon_coverage": 3
+      "afternoon_coverage": 4
     }
   },
   "live": {
     "market": {
-      "zt": 100,
+      "zt": 108,
       "dt": null,
-      "zab": 7,
-      "zab_rate": 6.5,
+      "zab": 6,
+      "zab_rate": 5.3,
       "lianban": 16,
       "max_lianban": 7,
       "amount": ""
@@ -1207,34 +1233,12 @@
       {
         "level": "warn",
         "text": "盘中三池响应不完整，保留最近有效数据"
+      },
+      {
+        "level": "warn",
+        "text": "板块数据获取失败或为空（稍后重试）"
       }
     ],
-    "concepts": [
-      {
-        "name": "元件",
-        "lead": "东山精密",
-        "chg_pct": null
-      },
-      {
-        "name": "IT服务Ⅱ",
-        "lead": "美利云",
-        "chg_pct": null
-      },
-      {
-        "name": "电网设备",
-        "lead": "顺钠股份",
-        "chg_pct": null
-      },
-      {
-        "name": "通信设备",
-        "lead": "通宇通讯",
-        "chg_pct": null
-      },
-      {
-        "name": "计算机设",
-        "lead": "恒银科技",
-        "chg_pct": null
-      }
-    ]
+    "concepts": []
   }
 }
