@@ -2,7 +2,7 @@
   "schema": "intraday_snapshot_v1",
   "render_mode": "snapshot_stream",
   "date": "2026-08-04",
-  "count": 5,
+  "count": 6,
   "interval_min": null,
   "simulated": false,
   "snapshots": [
@@ -350,11 +350,80 @@
       "shift_score": null,
       "shift_label": "数据部分可用",
       "note": "本槽位仅部分三池成功；节点已保留，缺失指标不参与判断。"
+    },
+    {
+      "time": "10:30:05",
+      "ts_bj": "2026-08-04 10:30:05",
+      "date": "2026-08-04",
+      "source": "intraday_live",
+      "provider": "必盈(实时)",
+      "data_quality": "partial",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "failed"
+      },
+      "pool_errors": {
+        "dtgc": "empty_response"
+      },
+      "zt": 48,
+      "dt": null,
+      "zab": 7,
+      "zb": 12.7,
+      "fb": 87.3,
+      "jj": 29.2,
+      "lianban": 14,
+      "max_lb": 7,
+      "amount": "",
+      "bf": 0,
+      "heat": 66,
+      "risk": null,
+      "headline": "数据部分可用",
+      "concepts": [
+        {
+          "name": "IT服务Ⅱ",
+          "lead": "美利云",
+          "chg_pct": null
+        },
+        {
+          "name": "医疗服务",
+          "lead": "药明康德",
+          "chg_pct": null
+        },
+        {
+          "name": "化学制药",
+          "lead": "普洛药业",
+          "chg_pct": null
+        },
+        {
+          "name": "电网设备",
+          "lead": "顺钠股份",
+          "chg_pct": null
+        },
+        {
+          "name": "通信设备",
+          "lead": "通宇通讯",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        },
+        {
+          "level": "warn",
+          "text": "盘中三池响应不完整，保留最近有效数据"
+        }
+      ],
+      "shift_score": null,
+      "shift_label": "数据部分可用",
+      "note": "本槽位仅部分三池成功；节点已保留，缺失指标不参与判断。"
     }
   ],
   "latest": {
-    "time": "10:20:05",
-    "ts_bj": "2026-08-04 10:20:05",
+    "time": "10:30:05",
+    "ts_bj": "2026-08-04 10:30:05",
     "date": "2026-08-04",
     "source": "intraday_live",
     "provider": "必盈(实时)",
@@ -367,12 +436,12 @@
     "pool_errors": {
       "dtgc": "empty_response"
     },
-    "zt": 46,
+    "zt": 48,
     "dt": null,
     "zab": 7,
-    "zb": 13.2,
-    "fb": 86.8,
-    "jj": 30.4,
+    "zb": 12.7,
+    "fb": 87.3,
+    "jj": 29.2,
     "lianban": 14,
     "max_lb": 7,
     "amount": "",
@@ -421,11 +490,11 @@
     "shift_label": "数据部分可用",
     "note": "本槽位仅部分三池成功；节点已保留，缺失指标不参与判断。"
   },
-  "updated_at": "2026-08-04 10:20:05",
-  "snapshot_sig": "2026-08-04|2026-08-04 10:20:05|5",
+  "updated_at": "2026-08-04 10:30:05",
+  "snapshot_sig": "2026-08-04|2026-08-04 10:30:05|6",
   "health": {
     "status": "degraded",
-    "last_valid_at": "2026-08-04 10:20:05",
+    "last_valid_at": "2026-08-04 10:30:05",
     "rejected_reason": "",
     "source": {
       "status": "partial",

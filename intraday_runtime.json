@@ -1,11 +1,11 @@
 {
   "schema": "intraday_runtime_v1",
   "date": "2026-08-04",
-  "updated_at": "2026-08-04 10:20:05",
+  "updated_at": "2026-08-04 10:30:05",
   "source": "必盈(实时)",
   "latest": {
-    "time": "10:20:05",
-    "ts_bj": "2026-08-04 10:20:05",
+    "time": "10:30:05",
+    "ts_bj": "2026-08-04 10:30:05",
     "date": "2026-08-04",
     "source": "intraday_live",
     "provider": "必盈(实时)",
@@ -18,12 +18,12 @@
     "pool_errors": {
       "dtgc": "empty_response"
     },
-    "zt": 46,
+    "zt": 48,
     "dt": null,
     "zab": 7,
-    "zb": 13.2,
-    "fb": 86.8,
-    "jj": 30.4,
+    "zb": 12.7,
+    "fb": 87.3,
+    "jj": 29.2,
     "lianban": 14,
     "max_lb": 7,
     "amount": "",
@@ -417,40 +417,109 @@
       "shift_score": null,
       "shift_label": "数据部分可用",
       "note": "本槽位仅部分三池成功；节点已保留，缺失指标不参与判断。"
+    },
+    {
+      "time": "10:30:05",
+      "ts_bj": "2026-08-04 10:30:05",
+      "date": "2026-08-04",
+      "source": "intraday_live",
+      "provider": "必盈(实时)",
+      "data_quality": "partial",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "failed"
+      },
+      "pool_errors": {
+        "dtgc": "empty_response"
+      },
+      "zt": 48,
+      "dt": null,
+      "zab": 7,
+      "zb": 12.7,
+      "fb": 87.3,
+      "jj": 29.2,
+      "lianban": 14,
+      "max_lb": 7,
+      "amount": "",
+      "bf": 0,
+      "heat": 66,
+      "risk": null,
+      "headline": "数据部分可用",
+      "concepts": [
+        {
+          "name": "IT服务Ⅱ",
+          "lead": "美利云",
+          "chg_pct": null
+        },
+        {
+          "name": "医疗服务",
+          "lead": "药明康德",
+          "chg_pct": null
+        },
+        {
+          "name": "化学制药",
+          "lead": "普洛药业",
+          "chg_pct": null
+        },
+        {
+          "name": "电网设备",
+          "lead": "顺钠股份",
+          "chg_pct": null
+        },
+        {
+          "name": "通信设备",
+          "lead": "通宇通讯",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        },
+        {
+          "level": "warn",
+          "text": "盘中三池响应不完整，保留最近有效数据"
+        }
+      ],
+      "shift_score": null,
+      "shift_label": "数据部分可用",
+      "note": "本槽位仅部分三池成功；节点已保留，缺失指标不参与判断。"
     }
   ],
   "indices": [
     {
       "name": "上证指数",
       "code": "000001.SH",
-      "val": 3806.373,
-      "chg": -0.08635934464544406,
-      "cje": 422689439300.0,
-      "t": "2026-08-04 10:20:03"
+      "val": 3803.035,
+      "chg": -0.17397864325532617,
+      "cje": 453857062000.0,
+      "t": "2026-08-04 10:30:03"
     },
     {
       "name": "深证成指",
       "code": "399001.SZ",
-      "val": 13716.778,
-      "chg": 1.996454716283979,
-      "cje": 529203366100.0,
-      "t": "2026-08-04 10:20:03"
+      "val": 13710.152,
+      "chg": 1.9471845080069246,
+      "cje": 567865431200.0,
+      "t": "2026-08-04 10:30:00"
     },
     {
       "name": "创业板指",
       "code": "399006.SZ",
-      "val": 3420.398,
-      "chg": 3.5683000393937734,
-      "cje": 264925404800.0,
-      "t": "2026-08-04 10:20:03"
+      "val": 3419.05,
+      "chg": 3.52748313198911,
+      "cje": 283093479000.0,
+      "t": "2026-08-04 10:30:00"
     }
   ],
   "asOf": {
-    "indices": "10:20:03"
+    "indices": "10:30:00"
   },
   "health": {
     "status": "degraded",
-    "last_valid_at": "2026-08-04 10:20:05",
+    "last_valid_at": "2026-08-04 10:30:05",
     "rejected_reason": "",
     "source": {
       "status": "partial",
@@ -470,14 +539,15 @@
       "message": "intraday_coverage_incomplete",
       "date": "2026-08-04",
       "expected_count": 26,
-      "due_count": 6,
-      "observed_count": 5,
+      "due_count": 7,
+      "observed_count": 6,
       "observed_slots": [
         "09:40",
         "09:50",
         "10:00",
         "10:10",
-        "10:20"
+        "10:20",
+        "10:30"
       ],
       "missing_slots": [
         "09:30"
@@ -485,16 +555,16 @@
       "duplicate_slots": [],
       "out_of_session": [],
       "monotonic": true,
-      "morning_coverage": 5,
+      "morning_coverage": 6,
       "afternoon_coverage": 0
     }
   },
   "live": {
     "market": {
-      "zt": 46,
+      "zt": 48,
       "dt": null,
       "zab": 7,
-      "zab_rate": 13.2,
+      "zab_rate": 12.7,
       "lianban": 14,
       "max_lianban": 7,
       "amount": ""
