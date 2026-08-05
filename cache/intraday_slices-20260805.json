@@ -2,7 +2,7 @@
   "schema": "intraday_snapshot_v1",
   "render_mode": "snapshot_stream",
   "date": "2026-08-05",
-  "count": 9,
+  "count": 10,
   "interval_min": null,
   "simulated": false,
   "snapshots": [
@@ -601,11 +601,80 @@
       "shift_score": null,
       "shift_label": "数据部分可用",
       "note": "本槽位仅部分三池成功；节点已保留，缺失指标不参与判断。"
+    },
+    {
+      "time": "11:00:03",
+      "ts_bj": "2026-08-05 11:00:03",
+      "date": "2026-08-05",
+      "source": "intraday_live",
+      "provider": "必盈(实时)",
+      "data_quality": "partial",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "failed",
+        "dtgc": "valid"
+      },
+      "pool_errors": {
+        "zbgc": "Expecting ',' delimiter: line 305 column 22 (char 6101)"
+      },
+      "zt": 69,
+      "dt": 1,
+      "zab": null,
+      "zb": null,
+      "fb": null,
+      "jj": 34.8,
+      "lianban": 24,
+      "max_lb": 8,
+      "amount": "",
+      "bf": 0,
+      "heat": null,
+      "risk": null,
+      "headline": "数据部分可用",
+      "concepts": [
+        {
+          "name": "消费电子",
+          "lead": "利通电子",
+          "chg_pct": null
+        },
+        {
+          "name": "汽车零部",
+          "lead": "山子高科",
+          "chg_pct": null
+        },
+        {
+          "name": "小金属",
+          "lead": "云南锗业",
+          "chg_pct": null
+        },
+        {
+          "name": "光学光电",
+          "lead": "沃格光电",
+          "chg_pct": null
+        },
+        {
+          "name": "半导体",
+          "lead": "金海通",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        },
+        {
+          "level": "warn",
+          "text": "盘中三池响应不完整，保留最近有效数据"
+        }
+      ],
+      "shift_score": null,
+      "shift_label": "数据部分可用",
+      "note": "本槽位仅部分三池成功；节点已保留，缺失指标不参与判断。"
     }
   ],
   "latest": {
-    "time": "10:50:04",
-    "ts_bj": "2026-08-05 10:50:04",
+    "time": "11:00:03",
+    "ts_bj": "2026-08-05 11:00:03",
     "date": "2026-08-05",
     "source": "intraday_live",
     "provider": "必盈(实时)",
@@ -616,15 +685,15 @@
       "dtgc": "valid"
     },
     "pool_errors": {
-      "zbgc": "IncompleteRead(6395 bytes read, 1403 more expected)"
+      "zbgc": "Expecting ',' delimiter: line 305 column 22 (char 6101)"
     },
-    "zt": 63,
+    "zt": 69,
     "dt": 1,
     "zab": null,
     "zb": null,
     "fb": null,
-    "jj": 30.2,
-    "lianban": 19,
+    "jj": 34.8,
+    "lianban": 24,
     "max_lb": 8,
     "amount": "",
     "bf": 0,
@@ -633,8 +702,8 @@
     "headline": "数据部分可用",
     "concepts": [
       {
-        "name": "小金属",
-        "lead": "云南锗业",
+        "name": "消费电子",
+        "lead": "利通电子",
         "chg_pct": null
       },
       {
@@ -643,8 +712,8 @@
         "chg_pct": null
       },
       {
-        "name": "消费电子",
-        "lead": "利通电子",
+        "name": "小金属",
+        "lead": "云南锗业",
         "chg_pct": null
       },
       {
@@ -672,11 +741,11 @@
     "shift_label": "数据部分可用",
     "note": "本槽位仅部分三池成功；节点已保留，缺失指标不参与判断。"
   },
-  "updated_at": "2026-08-05 10:50:04",
-  "snapshot_sig": "2026-08-05|2026-08-05 10:50:04|9",
+  "updated_at": "2026-08-05 11:00:03",
+  "snapshot_sig": "2026-08-05|2026-08-05 11:00:03|10",
   "health": {
     "status": "degraded",
-    "last_valid_at": "2026-08-05 10:50:04",
+    "last_valid_at": "2026-08-05 11:00:03",
     "rejected_reason": "",
     "source": {
       "status": "partial",
@@ -686,7 +755,7 @@
         "dtgc": "valid"
       },
       "pool_errors": {
-        "zbgc": "IncompleteRead(6395 bytes read, 1403 more expected)"
+        "zbgc": "Expecting ',' delimiter: line 305 column 22 (char 6101)"
       }
     }
   }
