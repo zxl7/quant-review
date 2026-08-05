@@ -1,43 +1,40 @@
 {
   "schema": "intraday_runtime_v1",
   "date": "2026-08-05",
-  "updated_at": "2026-08-05 09:50:03",
-  "source": "必盈(实时)+必盈(实时)",
+  "updated_at": "2026-08-05 10:00:04",
+  "source": "必盈(实时)",
   "latest": {
-    "time": "09:50:03",
-    "ts_bj": "2026-08-05 09:50:03",
+    "time": "10:00:04",
+    "ts_bj": "2026-08-05 10:00:04",
     "date": "2026-08-05",
     "source": "intraday_live",
-    "provider": "必盈(实时)+必盈(实时)",
-    "data_quality": "valid",
+    "provider": "必盈(实时)",
+    "data_quality": "partial",
     "pool_status": {
       "ztgc": "valid",
-      "zbgc": "valid",
+      "zbgc": "failed",
       "dtgc": "valid"
     },
-    "pool_errors": {},
-    "zt": 37,
-    "dt": 2,
-    "zab": 8,
-    "zb": 17.8,
-    "fb": 82.2,
-    "jj": 45.9,
-    "lianban": 17,
+    "pool_errors": {
+      "zbgc": "Unterminated string starting at: line 191 column 11 (char 3764)"
+    },
+    "zt": 42,
+    "dt": 1,
+    "zab": null,
+    "zb": null,
+    "fb": null,
+    "jj": 38.1,
+    "lianban": 16,
     "max_lb": 8,
-    "amount": "6822.9亿",
+    "amount": "",
     "bf": 0,
-    "heat": 69,
-    "risk": 16,
-    "headline": "走强",
+    "heat": null,
+    "risk": null,
+    "headline": "数据部分可用",
     "concepts": [
       {
         "name": "汽车零部",
         "lead": "山子高科",
-        "chg_pct": null
-      },
-      {
-        "name": "通信设备",
-        "lead": "欣天科技",
         "chg_pct": null
       },
       {
@@ -46,13 +43,18 @@
         "chg_pct": null
       },
       {
-        "name": "光学光电",
-        "lead": "沃格光电",
+        "name": "通信设备",
+        "lead": "欣天科技",
         "chg_pct": null
       },
       {
-        "name": "自动化设",
-        "lead": "科瑞技术",
+        "name": "半导体",
+        "lead": "金海通",
+        "chg_pct": null
+      },
+      {
+        "name": "光学光电",
+        "lead": "沃格光电",
         "chg_pct": null
       }
     ],
@@ -60,11 +62,15 @@
       {
         "level": "info",
         "text": "盘中模式：强制实时拉取"
+      },
+      {
+        "level": "warn",
+        "text": "盘中三池响应不完整，保留最近有效数据"
       }
     ],
-    "shift_score": 75,
-    "shift_label": "走强",
-    "note": "情绪边际修复，但仍需确认持续性。"
+    "shift_score": null,
+    "shift_label": "数据部分可用",
+    "note": "本槽位仅部分三池成功；节点已保留，缺失指标不参与判断。"
   },
   "snapshots": [
     {
@@ -248,49 +254,120 @@
       "shift_score": 75,
       "shift_label": "走强",
       "note": "情绪边际修复，但仍需确认持续性。"
+    },
+    {
+      "time": "10:00:04",
+      "ts_bj": "2026-08-05 10:00:04",
+      "date": "2026-08-05",
+      "source": "intraday_live",
+      "provider": "必盈(实时)",
+      "data_quality": "partial",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "failed",
+        "dtgc": "valid"
+      },
+      "pool_errors": {
+        "zbgc": "Unterminated string starting at: line 191 column 11 (char 3764)"
+      },
+      "zt": 42,
+      "dt": 1,
+      "zab": null,
+      "zb": null,
+      "fb": null,
+      "jj": 38.1,
+      "lianban": 16,
+      "max_lb": 8,
+      "amount": "",
+      "bf": 0,
+      "heat": null,
+      "risk": null,
+      "headline": "数据部分可用",
+      "concepts": [
+        {
+          "name": "汽车零部",
+          "lead": "山子高科",
+          "chg_pct": null
+        },
+        {
+          "name": "消费电子",
+          "lead": "利通电子",
+          "chg_pct": null
+        },
+        {
+          "name": "通信设备",
+          "lead": "欣天科技",
+          "chg_pct": null
+        },
+        {
+          "name": "半导体",
+          "lead": "金海通",
+          "chg_pct": null
+        },
+        {
+          "name": "光学光电",
+          "lead": "沃格光电",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        },
+        {
+          "level": "warn",
+          "text": "盘中三池响应不完整，保留最近有效数据"
+        }
+      ],
+      "shift_score": null,
+      "shift_label": "数据部分可用",
+      "note": "本槽位仅部分三池成功；节点已保留，缺失指标不参与判断。"
     }
   ],
   "indices": [
     {
       "name": "上证指数",
       "code": "000001.SH",
-      "val": 3838.818,
-      "chg": 0.43254231434862545,
-      "cje": 299691606000.0,
-      "t": "2026-08-05 09:49:57"
+      "val": 3838.645,
+      "chg": 0.4280162258962932,
+      "cje": 378992128600.0,
+      "t": "2026-08-05 10:00:03"
     },
     {
       "name": "深证成指",
       "code": "399001.SZ",
-      "val": 13949.177,
-      "chg": 0.4570597789339008,
-      "cje": 381097834900.0,
-      "t": "2026-08-05 09:49:57"
+      "val": 13953.675,
+      "chg": 0.48945279071413733,
+      "cje": 475814595400.0,
+      "t": "2026-08-05 09:59:57"
     },
     {
       "name": "创业板指",
       "code": "399006.SZ",
-      "val": 3484.611,
-      "chg": -0.12482208195780695,
-      "cje": 193308423500.0,
-      "t": "2026-08-05 09:49:57"
+      "val": 3477.309,
+      "chg": -0.3341104499155251,
+      "cje": 240473784100.0,
+      "t": "2026-08-05 09:59:57"
     }
   ],
   "asOf": {
-    "indices": "09:49:57"
+    "indices": "09:59:57"
   },
   "health": {
-    "status": "valid",
-    "last_valid_at": "2026-08-05 09:50:03",
+    "status": "degraded",
+    "last_valid_at": "2026-08-05 10:00:04",
     "rejected_reason": "",
     "source": {
-      "status": "valid",
+      "status": "partial",
       "pool_status": {
         "ztgc": "valid",
-        "zbgc": "valid",
+        "zbgc": "failed",
         "dtgc": "valid"
       },
-      "pool_errors": {}
+      "pool_errors": {
+        "zbgc": "Unterminated string starting at: line 191 column 11 (char 3764)"
+      }
     },
     "indices_status": "valid",
     "coverage": {
@@ -299,35 +376,40 @@
       "message": "intraday_coverage_collecting",
       "date": "2026-08-05",
       "expected_count": 26,
-      "due_count": 3,
-      "observed_count": 3,
+      "due_count": 4,
+      "observed_count": 4,
       "observed_slots": [
         "09:30",
         "09:40",
-        "09:50"
+        "09:50",
+        "10:00"
       ],
       "missing_slots": [],
       "duplicate_slots": [],
       "out_of_session": [],
       "monotonic": true,
-      "morning_coverage": 3,
+      "morning_coverage": 4,
       "afternoon_coverage": 0
     }
   },
   "live": {
     "market": {
-      "zt": 37,
-      "dt": 2,
-      "zab": 8,
-      "zab_rate": 17.8,
-      "lianban": 17,
+      "zt": 42,
+      "dt": 1,
+      "zab": null,
+      "zab_rate": null,
+      "lianban": 16,
       "max_lianban": 8,
-      "amount": "6822.9亿"
+      "amount": ""
     },
     "alerts": [
       {
         "level": "info",
         "text": "盘中模式：强制实时拉取"
+      },
+      {
+        "level": "warn",
+        "text": "盘中三池响应不完整，保留最近有效数据"
       }
     ],
     "concepts": [
@@ -337,23 +419,23 @@
         "chg_pct": null
       },
       {
-        "name": "通信设备",
-        "lead": "欣天科技",
-        "chg_pct": null
-      },
-      {
         "name": "消费电子",
         "lead": "利通电子",
         "chg_pct": null
       },
       {
-        "name": "光学光电",
-        "lead": "沃格光电",
+        "name": "通信设备",
+        "lead": "欣天科技",
         "chg_pct": null
       },
       {
-        "name": "自动化设",
-        "lead": "科瑞技术",
+        "name": "半导体",
+        "lead": "金海通",
+        "chg_pct": null
+      },
+      {
+        "name": "光学光电",
+        "lead": "沃格光电",
         "chg_pct": null
       }
     ]
