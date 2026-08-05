@@ -2,7 +2,7 @@
   "schema": "intraday_snapshot_v1",
   "render_mode": "snapshot_stream",
   "date": "2026-08-05",
-  "count": 8,
+  "count": 9,
   "interval_min": null,
   "simulated": false,
   "snapshots": [
@@ -532,34 +532,105 @@
       "shift_score": 69,
       "shift_label": "修复",
       "note": "情绪边际修复，但仍需确认持续性。"
+    },
+    {
+      "time": "10:50:04",
+      "ts_bj": "2026-08-05 10:50:04",
+      "date": "2026-08-05",
+      "source": "intraday_live",
+      "provider": "必盈(实时)",
+      "data_quality": "partial",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "failed",
+        "dtgc": "valid"
+      },
+      "pool_errors": {
+        "zbgc": "IncompleteRead(6395 bytes read, 1403 more expected)"
+      },
+      "zt": 63,
+      "dt": 1,
+      "zab": null,
+      "zb": null,
+      "fb": null,
+      "jj": 30.2,
+      "lianban": 19,
+      "max_lb": 8,
+      "amount": "",
+      "bf": 0,
+      "heat": null,
+      "risk": null,
+      "headline": "数据部分可用",
+      "concepts": [
+        {
+          "name": "小金属",
+          "lead": "云南锗业",
+          "chg_pct": null
+        },
+        {
+          "name": "汽车零部",
+          "lead": "山子高科",
+          "chg_pct": null
+        },
+        {
+          "name": "消费电子",
+          "lead": "利通电子",
+          "chg_pct": null
+        },
+        {
+          "name": "光学光电",
+          "lead": "沃格光电",
+          "chg_pct": null
+        },
+        {
+          "name": "半导体",
+          "lead": "金海通",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        },
+        {
+          "level": "warn",
+          "text": "盘中三池响应不完整，保留最近有效数据"
+        }
+      ],
+      "shift_score": null,
+      "shift_label": "数据部分可用",
+      "note": "本槽位仅部分三池成功；节点已保留，缺失指标不参与判断。"
     }
   ],
   "latest": {
-    "time": "10:40:04",
-    "ts_bj": "2026-08-05 10:40:04",
+    "time": "10:50:04",
+    "ts_bj": "2026-08-05 10:50:04",
     "date": "2026-08-05",
     "source": "intraday_live",
-    "provider": "必盈(实时)+必盈(实时)",
-    "data_quality": "valid",
+    "provider": "必盈(实时)",
+    "data_quality": "partial",
     "pool_status": {
       "ztgc": "valid",
-      "zbgc": "valid",
+      "zbgc": "failed",
       "dtgc": "valid"
     },
-    "pool_errors": {},
-    "zt": 57,
+    "pool_errors": {
+      "zbgc": "IncompleteRead(6395 bytes read, 1403 more expected)"
+    },
+    "zt": 63,
     "dt": 1,
-    "zab": 21,
-    "zb": 26.9,
-    "fb": 73.1,
-    "jj": 31.6,
-    "lianban": 18,
+    "zab": null,
+    "zb": null,
+    "fb": null,
+    "jj": 30.2,
+    "lianban": 19,
     "max_lb": 8,
-    "amount": "13428.3亿",
+    "amount": "",
     "bf": 0,
-    "heat": 65,
-    "risk": 26,
-    "headline": "修复",
+    "heat": null,
+    "risk": null,
+    "headline": "数据部分可用",
     "concepts": [
       {
         "name": "小金属",
@@ -582,8 +653,8 @@
         "chg_pct": null
       },
       {
-        "name": "计算机设",
-        "lead": "恒银科技",
+        "name": "半导体",
+        "lead": "金海通",
         "chg_pct": null
       }
     ],
@@ -594,31 +665,29 @@
       },
       {
         "level": "warn",
-        "text": "炸板率偏高（26.9%）→ 注意回封质量"
-      },
-      {
-        "level": "warn",
-        "text": "高度8板 + 分歧不低 → 高位兑现/炸板风险"
+        "text": "盘中三池响应不完整，保留最近有效数据"
       }
     ],
-    "shift_score": 69,
-    "shift_label": "修复",
-    "note": "情绪边际修复，但仍需确认持续性。"
+    "shift_score": null,
+    "shift_label": "数据部分可用",
+    "note": "本槽位仅部分三池成功；节点已保留，缺失指标不参与判断。"
   },
-  "updated_at": "2026-08-05 10:40:04",
-  "snapshot_sig": "2026-08-05|2026-08-05 10:40:04|8",
+  "updated_at": "2026-08-05 10:50:04",
+  "snapshot_sig": "2026-08-05|2026-08-05 10:50:04|9",
   "health": {
-    "status": "valid",
-    "last_valid_at": "2026-08-05 10:40:04",
+    "status": "degraded",
+    "last_valid_at": "2026-08-05 10:50:04",
     "rejected_reason": "",
     "source": {
-      "status": "valid",
+      "status": "partial",
       "pool_status": {
         "ztgc": "valid",
-        "zbgc": "valid",
+        "zbgc": "failed",
         "dtgc": "valid"
       },
-      "pool_errors": {}
+      "pool_errors": {
+        "zbgc": "IncompleteRead(6395 bytes read, 1403 more expected)"
+      }
     }
   }
 }
