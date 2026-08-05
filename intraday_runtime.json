@@ -1,11 +1,11 @@
 {
   "schema": "intraday_runtime_v1",
   "date": "2026-08-05",
-  "updated_at": "2026-08-05 10:10:04",
+  "updated_at": "2026-08-05 10:20:04",
   "source": "必盈(实时)+必盈(实时)",
   "latest": {
-    "time": "10:10:04",
-    "ts_bj": "2026-08-05 10:10:04",
+    "time": "10:20:04",
+    "ts_bj": "2026-08-05 10:20:04",
     "date": "2026-08-05",
     "source": "intraday_live",
     "provider": "必盈(实时)+必盈(实时)",
@@ -18,17 +18,17 @@
     "pool_errors": {},
     "zt": 50,
     "dt": 1,
-    "zab": 14,
-    "zb": 21.9,
-    "fb": 78.1,
+    "zab": 18,
+    "zb": 26.5,
+    "fb": 73.5,
     "jj": 36.0,
     "lianban": 18,
     "max_lb": 8,
-    "amount": "9997.5亿",
+    "amount": "11601.7亿",
     "bf": 0,
-    "heat": 67,
-    "risk": 20,
-    "headline": "走强",
+    "heat": 65,
+    "risk": 24,
+    "headline": "修复",
     "concepts": [
       {
         "name": "汽车零部",
@@ -46,13 +46,13 @@
         "chg_pct": null
       },
       {
-        "name": "半导体",
-        "lead": "金海通",
+        "name": "小金属",
+        "lead": "云南锗业",
         "chg_pct": null
       },
       {
-        "name": "通信设备",
-        "lead": "欣天科技",
+        "name": "教育",
+        "lead": "传智教育",
         "chg_pct": null
       }
     ],
@@ -60,11 +60,19 @@
       {
         "level": "info",
         "text": "盘中模式：强制实时拉取"
+      },
+      {
+        "level": "warn",
+        "text": "炸板率偏高（26.5%）→ 注意回封质量"
+      },
+      {
+        "level": "warn",
+        "text": "高度8板 + 分歧不低 → 高位兑现/炸板风险"
       }
     ],
-    "shift_score": 72,
-    "shift_label": "走强",
-    "note": "承接增强、分歧收敛，情绪明显回暖。"
+    "shift_score": 70,
+    "shift_label": "修复",
+    "note": "情绪略有回落，注意午后分歧。"
   },
   "snapshots": [
     {
@@ -380,40 +388,111 @@
       "shift_score": 72,
       "shift_label": "走强",
       "note": "承接增强、分歧收敛，情绪明显回暖。"
+    },
+    {
+      "time": "10:20:04",
+      "ts_bj": "2026-08-05 10:20:04",
+      "date": "2026-08-05",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid"
+      },
+      "pool_errors": {},
+      "zt": 50,
+      "dt": 1,
+      "zab": 18,
+      "zb": 26.5,
+      "fb": 73.5,
+      "jj": 36.0,
+      "lianban": 18,
+      "max_lb": 8,
+      "amount": "11601.7亿",
+      "bf": 0,
+      "heat": 65,
+      "risk": 24,
+      "headline": "修复",
+      "concepts": [
+        {
+          "name": "汽车零部",
+          "lead": "山子高科",
+          "chg_pct": null
+        },
+        {
+          "name": "消费电子",
+          "lead": "利通电子",
+          "chg_pct": null
+        },
+        {
+          "name": "光学光电",
+          "lead": "沃格光电",
+          "chg_pct": null
+        },
+        {
+          "name": "小金属",
+          "lead": "云南锗业",
+          "chg_pct": null
+        },
+        {
+          "name": "教育",
+          "lead": "传智教育",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        },
+        {
+          "level": "warn",
+          "text": "炸板率偏高（26.5%）→ 注意回封质量"
+        },
+        {
+          "level": "warn",
+          "text": "高度8板 + 分歧不低 → 高位兑现/炸板风险"
+        }
+      ],
+      "shift_score": 70,
+      "shift_label": "修复",
+      "note": "情绪略有回落，注意午后分歧。"
     }
   ],
   "indices": [
     {
       "name": "上证指数",
       "code": "000001.SH",
-      "val": 3843.342,
-      "chg": 0.5509008354950048,
-      "cje": 445094215100.0,
-      "t": "2026-08-05 10:10:03"
+      "val": 3846.799,
+      "chg": 0.6413441174585391,
+      "cje": 516302747600.0,
+      "t": "2026-08-05 10:20:00"
     },
     {
       "name": "深证成指",
       "code": "399001.SZ",
-      "val": 13920.063,
-      "chg": 0.24739100504108702,
-      "cje": 554370745600.0,
-      "t": "2026-08-05 10:10:00"
+      "val": 13890.664,
+      "chg": 0.035669761526805066,
+      "cje": 642049732700.0,
+      "t": "2026-08-05 10:19:57"
     },
     {
       "name": "创业板指",
       "code": "399006.SZ",
-      "val": 3461.335,
-      "chg": -0.7919538338865973,
-      "cje": 281321606800.0,
-      "t": "2026-08-05 10:10:00"
+      "val": 3444.676,
+      "chg": -1.2694305418854746,
+      "cje": 323861714300.0,
+      "t": "2026-08-05 10:19:57"
     }
   ],
   "asOf": {
-    "indices": "10:10:00"
+    "indices": "10:19:57"
   },
   "health": {
     "status": "valid",
-    "last_valid_at": "2026-08-05 10:10:04",
+    "last_valid_at": "2026-08-05 10:20:04",
     "rejected_reason": "",
     "source": {
       "status": "valid",
@@ -431,20 +510,21 @@
       "message": "intraday_coverage_collecting",
       "date": "2026-08-05",
       "expected_count": 26,
-      "due_count": 5,
-      "observed_count": 5,
+      "due_count": 6,
+      "observed_count": 6,
       "observed_slots": [
         "09:30",
         "09:40",
         "09:50",
         "10:00",
-        "10:10"
+        "10:10",
+        "10:20"
       ],
       "missing_slots": [],
       "duplicate_slots": [],
       "out_of_session": [],
       "monotonic": true,
-      "morning_coverage": 5,
+      "morning_coverage": 6,
       "afternoon_coverage": 0
     }
   },
@@ -452,16 +532,24 @@
     "market": {
       "zt": 50,
       "dt": 1,
-      "zab": 14,
-      "zab_rate": 21.9,
+      "zab": 18,
+      "zab_rate": 26.5,
       "lianban": 18,
       "max_lianban": 8,
-      "amount": "9997.5亿"
+      "amount": "11601.7亿"
     },
     "alerts": [
       {
         "level": "info",
         "text": "盘中模式：强制实时拉取"
+      },
+      {
+        "level": "warn",
+        "text": "炸板率偏高（26.5%）→ 注意回封质量"
+      },
+      {
+        "level": "warn",
+        "text": "高度8板 + 分歧不低 → 高位兑现/炸板风险"
       }
     ],
     "concepts": [
@@ -481,13 +569,13 @@
         "chg_pct": null
       },
       {
-        "name": "半导体",
-        "lead": "金海通",
+        "name": "小金属",
+        "lead": "云南锗业",
         "chg_pct": null
       },
       {
-        "name": "通信设备",
-        "lead": "欣天科技",
+        "name": "教育",
+        "lead": "传智教育",
         "chg_pct": null
       }
     ]
