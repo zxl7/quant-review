@@ -1,14 +1,14 @@
 {
   "schema": "intraday_runtime_v1",
   "date": "2026-08-05",
-  "updated_at": "2026-08-05 13:20:06",
-  "source": "必盈(实时)+必盈(实时)",
+  "updated_at": "2026-08-05 13:30:08",
+  "source": "必盈(实时)",
   "latest": {
-    "time": "13:20:06",
-    "ts_bj": "2026-08-05 13:20:06",
+    "time": "13:30:08",
+    "ts_bj": "2026-08-05 13:30:08",
     "date": "2026-08-05",
     "source": "intraday_live",
-    "provider": "必盈(实时)+必盈(实时)",
+    "provider": "必盈(实时)",
     "data_quality": "valid",
     "pool_status": {
       "ztgc": "valid",
@@ -16,53 +16,31 @@
       "dtgc": "valid"
     },
     "pool_errors": {},
-    "zt": 110,
+    "zt": 117,
     "dt": 1,
-    "zab": 16,
-    "zb": 12.7,
-    "fb": 87.3,
-    "jj": 29.1,
-    "lianban": 32,
+    "zab": 14,
+    "zb": 10.7,
+    "fb": 89.3,
+    "jj": 31.6,
+    "lianban": 37,
     "max_lb": 8,
-    "amount": "18883.7亿",
+    "amount": "19699.2亿",
     "bf": 0,
-    "heat": 77,
-    "risk": 16,
+    "heat": 78,
+    "risk": 14,
     "headline": "走强",
-    "concepts": [
-      {
-        "name": "汽车零部",
-        "lead": "飞龙股份",
-        "chg_pct": null
-      },
-      {
-        "name": "消费电子",
-        "lead": "利通电子",
-        "chg_pct": null
-      },
-      {
-        "name": "通信设备",
-        "lead": "欣天科技",
-        "chg_pct": null
-      },
-      {
-        "name": "小金属",
-        "lead": "云南锗业",
-        "chg_pct": null
-      },
-      {
-        "name": "元件",
-        "lead": "华正新材",
-        "chg_pct": null
-      }
-    ],
+    "concepts": [],
     "alerts": [
       {
         "level": "info",
         "text": "盘中模式：强制实时拉取"
+      },
+      {
+        "level": "warn",
+        "text": "板块数据获取失败或为空（稍后重试）"
       }
     ],
-    "shift_score": 80,
+    "shift_score": 81,
     "shift_label": "走强",
     "note": "情绪整体平稳，维持当前节奏。"
   },
@@ -1109,40 +1087,81 @@
       "shift_score": 80,
       "shift_label": "走强",
       "note": "情绪整体平稳，维持当前节奏。"
+    },
+    {
+      "time": "13:30:08",
+      "ts_bj": "2026-08-05 13:30:08",
+      "date": "2026-08-05",
+      "source": "intraday_live",
+      "provider": "必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid"
+      },
+      "pool_errors": {},
+      "zt": 117,
+      "dt": 1,
+      "zab": 14,
+      "zb": 10.7,
+      "fb": 89.3,
+      "jj": 31.6,
+      "lianban": 37,
+      "max_lb": 8,
+      "amount": "19699.2亿",
+      "bf": 0,
+      "heat": 78,
+      "risk": 14,
+      "headline": "走强",
+      "concepts": [],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        },
+        {
+          "level": "warn",
+          "text": "板块数据获取失败或为空（稍后重试）"
+        }
+      ],
+      "shift_score": 81,
+      "shift_label": "走强",
+      "note": "情绪整体平稳，维持当前节奏。"
     }
   ],
   "indices": [
     {
       "name": "上证指数",
       "code": "000001.SH",
-      "val": 3879.477,
-      "chg": 1.4962777500892792,
-      "cje": 854961787900.0,
-      "t": "2026-08-05 13:20:06"
+      "val": 3879.009,
+      "chg": 1.484033765143106,
+      "cje": 891477319200.0,
+      "t": "2026-08-05 13:30:12"
     },
     {
       "name": "深证成指",
       "code": "399001.SZ",
-      "val": 14194.109,
-      "chg": 2.2209737765678765,
-      "cje": 1032541324800.0,
-      "t": "2026-08-05 13:20:03"
+      "val": 14207.304,
+      "chg": 2.3159995192179985,
+      "cje": 1078059126200.0,
+      "t": "2026-08-05 13:30:06"
     },
     {
       "name": "创业板指",
       "code": "399006.SZ",
-      "val": 3560.084,
-      "chg": 2.0383689608898434,
-      "cje": 517490203900.0,
-      "t": "2026-08-05 13:20:06"
+      "val": 3570.218,
+      "chg": 2.328827509353773,
+      "cje": 541850329500.0,
+      "t": "2026-08-05 13:30:09"
     }
   ],
   "asOf": {
-    "indices": "13:20:06"
+    "indices": "13:30:09"
   },
   "health": {
     "status": "valid",
-    "last_valid_at": "2026-08-05 13:20:06",
+    "last_valid_at": "2026-08-05 13:30:08",
     "rejected_reason": "",
     "source": {
       "status": "valid",
@@ -1160,8 +1179,8 @@
       "message": "intraday_coverage_collecting",
       "date": "2026-08-05",
       "expected_count": 26,
-      "due_count": 16,
-      "observed_count": 16,
+      "due_count": 17,
+      "observed_count": 17,
       "observed_slots": [
         "09:30",
         "09:40",
@@ -1178,58 +1197,37 @@
         "11:30",
         "13:00",
         "13:10",
-        "13:20"
+        "13:20",
+        "13:30"
       ],
       "missing_slots": [],
       "duplicate_slots": [],
       "out_of_session": [],
       "monotonic": true,
       "morning_coverage": 13,
-      "afternoon_coverage": 3
+      "afternoon_coverage": 4
     }
   },
   "live": {
     "market": {
-      "zt": 110,
+      "zt": 117,
       "dt": 1,
-      "zab": 16,
-      "zab_rate": 12.7,
-      "lianban": 32,
+      "zab": 14,
+      "zab_rate": 10.7,
+      "lianban": 37,
       "max_lianban": 8,
-      "amount": "18883.7亿"
+      "amount": "19699.2亿"
     },
     "alerts": [
       {
         "level": "info",
         "text": "盘中模式：强制实时拉取"
+      },
+      {
+        "level": "warn",
+        "text": "板块数据获取失败或为空（稍后重试）"
       }
     ],
-    "concepts": [
-      {
-        "name": "汽车零部",
-        "lead": "飞龙股份",
-        "chg_pct": null
-      },
-      {
-        "name": "消费电子",
-        "lead": "利通电子",
-        "chg_pct": null
-      },
-      {
-        "name": "通信设备",
-        "lead": "欣天科技",
-        "chg_pct": null
-      },
-      {
-        "name": "小金属",
-        "lead": "云南锗业",
-        "chg_pct": null
-      },
-      {
-        "name": "元件",
-        "lead": "华正新材",
-        "chg_pct": null
-      }
-    ]
+    "concepts": []
   }
 }
