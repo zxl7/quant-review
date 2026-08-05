@@ -1,11 +1,11 @@
 {
   "schema": "intraday_runtime_v1",
   "date": "2026-08-05",
-  "updated_at": "2026-08-05 13:50:05",
+  "updated_at": "2026-08-05 14:00:06",
   "source": "必盈(实时)+必盈(实时)",
   "latest": {
-    "time": "13:50:05",
-    "ts_bj": "2026-08-05 13:50:05",
+    "time": "14:00:06",
+    "ts_bj": "2026-08-05 14:00:06",
     "date": "2026-08-05",
     "source": "intraday_live",
     "provider": "必盈(实时)+必盈(实时)",
@@ -16,18 +16,18 @@
       "dtgc": "valid"
     },
     "pool_errors": {},
-    "zt": 120,
+    "zt": 121,
     "dt": 1,
-    "zab": 18,
-    "zb": 13.0,
-    "fb": 87.0,
-    "jj": 30.8,
+    "zab": 20,
+    "zb": 14.2,
+    "fb": 85.8,
+    "jj": 30.6,
     "lianban": 37,
     "max_lb": 8,
-    "amount": "21113.6亿",
+    "amount": "21658.7亿",
     "bf": 0,
     "heat": 77,
-    "risk": 17,
+    "risk": 18,
     "headline": "走强",
     "concepts": [
       {
@@ -62,7 +62,7 @@
         "text": "盘中模式：强制实时拉取"
       }
     ],
-    "shift_score": 80,
+    "shift_score": 79,
     "shift_label": "走强",
     "note": "情绪整体平稳，维持当前节奏。"
   },
@@ -1276,40 +1276,103 @@
       "shift_score": 80,
       "shift_label": "走强",
       "note": "情绪整体平稳，维持当前节奏。"
+    },
+    {
+      "time": "14:00:06",
+      "ts_bj": "2026-08-05 14:00:06",
+      "date": "2026-08-05",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid"
+      },
+      "pool_errors": {},
+      "zt": 121,
+      "dt": 1,
+      "zab": 20,
+      "zb": 14.2,
+      "fb": 85.8,
+      "jj": 30.6,
+      "lianban": 37,
+      "max_lb": 8,
+      "amount": "21658.7亿",
+      "bf": 0,
+      "heat": 77,
+      "risk": 18,
+      "headline": "走强",
+      "concepts": [
+        {
+          "name": "元件",
+          "lead": "生益科技",
+          "chg_pct": null
+        },
+        {
+          "name": "汽车零部",
+          "lead": "飞龙股份",
+          "chg_pct": null
+        },
+        {
+          "name": "半导体",
+          "lead": "金海通",
+          "chg_pct": null
+        },
+        {
+          "name": "消费电子",
+          "lead": "利通电子",
+          "chg_pct": null
+        },
+        {
+          "name": "通信设备",
+          "lead": "欣天科技",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        }
+      ],
+      "shift_score": 79,
+      "shift_label": "走强",
+      "note": "情绪整体平稳，维持当前节奏。"
     }
   ],
   "indices": [
     {
       "name": "上证指数",
       "code": "000001.SH",
-      "val": 3881.472,
-      "chg": 1.5484716602765192,
-      "cje": 955826739900.0,
-      "t": "2026-08-05 13:50:00"
+      "val": 3881.333,
+      "chg": 1.5448350920980574,
+      "cje": 981319695000.0,
+      "t": "2026-08-05 14:00:06"
     },
     {
       "name": "深证成指",
       "code": "399001.SZ",
-      "val": 14215.843,
-      "chg": 2.377494389736337,
-      "cje": 1155001608900.0,
-      "t": "2026-08-05 13:50:00"
+      "val": 14196.52,
+      "chg": 2.2383369494007264,
+      "cje": 1184115296200.0,
+      "t": "2026-08-05 14:00:03"
     },
     {
       "name": "创业板指",
       "code": "399006.SZ",
-      "val": 3567.55,
-      "chg": 2.252357861899494,
-      "cje": 581156224200.0,
-      "t": "2026-08-05 13:50:00"
+      "val": 3559.794,
+      "chg": 2.0300570426882913,
+      "cje": 595991178300.0,
+      "t": "2026-08-05 14:00:06"
     }
   ],
   "asOf": {
-    "indices": "13:50:00"
+    "indices": "14:00:06"
   },
   "health": {
     "status": "valid",
-    "last_valid_at": "2026-08-05 13:50:05",
+    "last_valid_at": "2026-08-05 14:00:06",
     "rejected_reason": "",
     "source": {
       "status": "valid",
@@ -1327,8 +1390,8 @@
       "message": "intraday_coverage_collecting",
       "date": "2026-08-05",
       "expected_count": 26,
-      "due_count": 19,
-      "observed_count": 19,
+      "due_count": 20,
+      "observed_count": 20,
       "observed_slots": [
         "09:30",
         "09:40",
@@ -1348,25 +1411,26 @@
         "13:20",
         "13:30",
         "13:40",
-        "13:50"
+        "13:50",
+        "14:00"
       ],
       "missing_slots": [],
       "duplicate_slots": [],
       "out_of_session": [],
       "monotonic": true,
       "morning_coverage": 13,
-      "afternoon_coverage": 6
+      "afternoon_coverage": 7
     }
   },
   "live": {
     "market": {
-      "zt": 120,
+      "zt": 121,
       "dt": 1,
-      "zab": 18,
-      "zab_rate": 13.0,
+      "zab": 20,
+      "zab_rate": 14.2,
       "lianban": 37,
       "max_lianban": 8,
-      "amount": "21113.6亿"
+      "amount": "21658.7亿"
     },
     "alerts": [
       {
