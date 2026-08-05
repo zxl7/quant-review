@@ -1,14 +1,14 @@
 {
   "schema": "intraday_runtime_v1",
   "date": "2026-08-05",
-  "updated_at": "2026-08-05 13:30:08",
-  "source": "必盈(实时)",
+  "updated_at": "2026-08-05 13:40:05",
+  "source": "必盈(实时)+必盈(实时)",
   "latest": {
-    "time": "13:30:08",
-    "ts_bj": "2026-08-05 13:30:08",
+    "time": "13:40:05",
+    "ts_bj": "2026-08-05 13:40:05",
     "date": "2026-08-05",
     "source": "intraday_live",
-    "provider": "必盈(实时)",
+    "provider": "必盈(实时)+必盈(实时)",
     "data_quality": "valid",
     "pool_status": {
       "ztgc": "valid",
@@ -16,28 +16,50 @@
       "dtgc": "valid"
     },
     "pool_errors": {},
-    "zt": 117,
+    "zt": 120,
     "dt": 1,
-    "zab": 14,
-    "zb": 10.7,
-    "fb": 89.3,
-    "jj": 31.6,
-    "lianban": 37,
+    "zab": 15,
+    "zb": 11.1,
+    "fb": 88.9,
+    "jj": 31.7,
+    "lianban": 38,
     "max_lb": 8,
-    "amount": "19699.2亿",
+    "amount": "20462.7亿",
     "bf": 0,
     "heat": 78,
     "risk": 14,
     "headline": "走强",
-    "concepts": [],
+    "concepts": [
+      {
+        "name": "元件",
+        "lead": "生益科技",
+        "chg_pct": null
+      },
+      {
+        "name": "汽车零部",
+        "lead": "飞龙股份",
+        "chg_pct": null
+      },
+      {
+        "name": "消费电子",
+        "lead": "利通电子",
+        "chg_pct": null
+      },
+      {
+        "name": "半导体",
+        "lead": "金海通",
+        "chg_pct": null
+      },
+      {
+        "name": "通信设备",
+        "lead": "欣天科技",
+        "chg_pct": null
+      }
+    ],
     "alerts": [
       {
         "level": "info",
         "text": "盘中模式：强制实时拉取"
-      },
-      {
-        "level": "warn",
-        "text": "板块数据获取失败或为空（稍后重试）"
       }
     ],
     "shift_score": 81,
@@ -1128,40 +1150,103 @@
       "shift_score": 81,
       "shift_label": "走强",
       "note": "情绪整体平稳，维持当前节奏。"
+    },
+    {
+      "time": "13:40:05",
+      "ts_bj": "2026-08-05 13:40:05",
+      "date": "2026-08-05",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid"
+      },
+      "pool_errors": {},
+      "zt": 120,
+      "dt": 1,
+      "zab": 15,
+      "zb": 11.1,
+      "fb": 88.9,
+      "jj": 31.7,
+      "lianban": 38,
+      "max_lb": 8,
+      "amount": "20462.7亿",
+      "bf": 0,
+      "heat": 78,
+      "risk": 14,
+      "headline": "走强",
+      "concepts": [
+        {
+          "name": "元件",
+          "lead": "生益科技",
+          "chg_pct": null
+        },
+        {
+          "name": "汽车零部",
+          "lead": "飞龙股份",
+          "chg_pct": null
+        },
+        {
+          "name": "消费电子",
+          "lead": "利通电子",
+          "chg_pct": null
+        },
+        {
+          "name": "半导体",
+          "lead": "金海通",
+          "chg_pct": null
+        },
+        {
+          "name": "通信设备",
+          "lead": "欣天科技",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        }
+      ],
+      "shift_score": 81,
+      "shift_label": "走强",
+      "note": "情绪整体平稳，维持当前节奏。"
     }
   ],
   "indices": [
     {
       "name": "上证指数",
       "code": "000001.SH",
-      "val": 3879.009,
-      "chg": 1.484033765143106,
-      "cje": 891477319200.0,
-      "t": "2026-08-05 13:30:12"
+      "val": 3879.503,
+      "chg": 1.4969579714751857,
+      "cje": 926657838000.0,
+      "t": "2026-08-05 13:40:03"
     },
     {
       "name": "深证成指",
       "code": "399001.SZ",
-      "val": 14207.304,
-      "chg": 2.3159995192179985,
-      "cje": 1078059126200.0,
-      "t": "2026-08-05 13:30:06"
+      "val": 14184.452,
+      "chg": 2.1514274638151405,
+      "cje": 1118613834500.0,
+      "t": "2026-08-05 13:40:00"
     },
     {
       "name": "创业板指",
       "code": "399006.SZ",
-      "val": 3570.218,
-      "chg": 2.328827509353773,
-      "cje": 541850329500.0,
-      "t": "2026-08-05 13:30:09"
+      "val": 3560.34,
+      "chg": 2.0457063783367406,
+      "cje": 563013325100.0,
+      "t": "2026-08-05 13:40:03"
     }
   ],
   "asOf": {
-    "indices": "13:30:09"
+    "indices": "13:40:03"
   },
   "health": {
     "status": "valid",
-    "last_valid_at": "2026-08-05 13:30:08",
+    "last_valid_at": "2026-08-05 13:40:05",
     "rejected_reason": "",
     "source": {
       "status": "valid",
@@ -1179,8 +1264,8 @@
       "message": "intraday_coverage_collecting",
       "date": "2026-08-05",
       "expected_count": 26,
-      "due_count": 17,
-      "observed_count": 17,
+      "due_count": 18,
+      "observed_count": 18,
       "observed_slots": [
         "09:30",
         "09:40",
@@ -1198,36 +1283,59 @@
         "13:00",
         "13:10",
         "13:20",
-        "13:30"
+        "13:30",
+        "13:40"
       ],
       "missing_slots": [],
       "duplicate_slots": [],
       "out_of_session": [],
       "monotonic": true,
       "morning_coverage": 13,
-      "afternoon_coverage": 4
+      "afternoon_coverage": 5
     }
   },
   "live": {
     "market": {
-      "zt": 117,
+      "zt": 120,
       "dt": 1,
-      "zab": 14,
-      "zab_rate": 10.7,
-      "lianban": 37,
+      "zab": 15,
+      "zab_rate": 11.1,
+      "lianban": 38,
       "max_lianban": 8,
-      "amount": "19699.2亿"
+      "amount": "20462.7亿"
     },
     "alerts": [
       {
         "level": "info",
         "text": "盘中模式：强制实时拉取"
-      },
-      {
-        "level": "warn",
-        "text": "板块数据获取失败或为空（稍后重试）"
       }
     ],
-    "concepts": []
+    "concepts": [
+      {
+        "name": "元件",
+        "lead": "生益科技",
+        "chg_pct": null
+      },
+      {
+        "name": "汽车零部",
+        "lead": "飞龙股份",
+        "chg_pct": null
+      },
+      {
+        "name": "消费电子",
+        "lead": "利通电子",
+        "chg_pct": null
+      },
+      {
+        "name": "半导体",
+        "lead": "金海通",
+        "chg_pct": null
+      },
+      {
+        "name": "通信设备",
+        "lead": "欣天科技",
+        "chg_pct": null
+      }
+    ]
   }
 }
