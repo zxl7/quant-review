@@ -2,7 +2,7 @@
   "schema": "intraday_snapshot_v1",
   "render_mode": "snapshot_stream",
   "date": "2026-08-06",
-  "count": 13,
+  "count": 14,
   "interval_min": null,
   "simulated": false,
   "snapshots": [
@@ -846,14 +846,55 @@
       "shift_score": 71,
       "shift_label": "修复",
       "note": "情绪整体平稳，维持当前节奏。"
+    },
+    {
+      "time": "13:10:07",
+      "ts_bj": "2026-08-06 13:10:07",
+      "date": "2026-08-06",
+      "source": "intraday_live",
+      "provider": "必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid"
+      },
+      "pool_errors": {},
+      "zt": 62,
+      "dt": 1,
+      "zab": 15,
+      "zb": 19.5,
+      "fb": 80.5,
+      "jj": 33.9,
+      "lianban": 21,
+      "max_lb": 10,
+      "amount": "18257.8亿",
+      "bf": 0,
+      "heat": 70,
+      "risk": 19,
+      "headline": "走强",
+      "concepts": [],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        },
+        {
+          "level": "warn",
+          "text": "板块数据获取失败或为空（稍后重试）"
+        }
+      ],
+      "shift_score": 75,
+      "shift_label": "走强",
+      "note": "情绪边际修复，但仍需确认持续性。"
     }
   ],
   "latest": {
-    "time": "13:00:33",
-    "ts_bj": "2026-08-06 13:00:33",
+    "time": "13:10:07",
+    "ts_bj": "2026-08-06 13:10:07",
     "date": "2026-08-06",
     "source": "intraday_live",
-    "provider": "必盈(实时)+必盈(实时)",
+    "provider": "必盈(实时)",
     "data_quality": "valid",
     "pool_status": {
       "ztgc": "valid",
@@ -861,61 +902,39 @@
       "dtgc": "valid"
     },
     "pool_errors": {},
-    "zt": 58,
+    "zt": 62,
     "dt": 1,
-    "zab": 19,
-    "zb": 24.7,
-    "fb": 75.3,
-    "jj": 34.5,
-    "lianban": 20,
+    "zab": 15,
+    "zb": 19.5,
+    "fb": 80.5,
+    "jj": 33.9,
+    "lianban": 21,
     "max_lb": 10,
-    "amount": "17654.5亿",
+    "amount": "18257.8亿",
     "bf": 0,
-    "heat": 67,
-    "risk": 24,
-    "headline": "修复",
-    "concepts": [
-      {
-        "name": "通信设备",
-        "lead": "欣天科技",
-        "chg_pct": null
-      },
-      {
-        "name": "化学制品",
-        "lead": "百合花",
-        "chg_pct": null
-      },
-      {
-        "name": "元件",
-        "lead": "宝鼎科技",
-        "chg_pct": null
-      },
-      {
-        "name": "专用设备",
-        "lead": "江钨装备",
-        "chg_pct": null
-      },
-      {
-        "name": "计算机设",
-        "lead": "新北洋",
-        "chg_pct": null
-      }
-    ],
+    "heat": 70,
+    "risk": 19,
+    "headline": "走强",
+    "concepts": [],
     "alerts": [
       {
         "level": "info",
         "text": "盘中模式：强制实时拉取"
+      },
+      {
+        "level": "warn",
+        "text": "板块数据获取失败或为空（稍后重试）"
       }
     ],
-    "shift_score": 71,
-    "shift_label": "修复",
-    "note": "情绪整体平稳，维持当前节奏。"
+    "shift_score": 75,
+    "shift_label": "走强",
+    "note": "情绪边际修复，但仍需确认持续性。"
   },
-  "updated_at": "2026-08-06 13:00:33",
-  "snapshot_sig": "2026-08-06|2026-08-06 13:00:33|13",
+  "updated_at": "2026-08-06 13:10:07",
+  "snapshot_sig": "2026-08-06|2026-08-06 13:10:07|14",
   "health": {
     "status": "valid",
-    "last_valid_at": "2026-08-06 13:00:33",
+    "last_valid_at": "2026-08-06 13:10:07",
     "rejected_reason": "",
     "source": {
       "status": "valid",
