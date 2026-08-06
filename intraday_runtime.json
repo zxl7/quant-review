@@ -1,11 +1,11 @@
 {
   "schema": "intraday_runtime_v1",
   "date": "2026-08-06",
-  "updated_at": "2026-08-06 13:10:07",
+  "updated_at": "2026-08-06 13:20:07",
   "source": "必盈(实时)",
   "latest": {
-    "time": "13:10:07",
-    "ts_bj": "2026-08-06 13:10:07",
+    "time": "13:20:07",
+    "ts_bj": "2026-08-06 13:20:07",
     "date": "2026-08-06",
     "source": "intraday_live",
     "provider": "必盈(实时)",
@@ -16,19 +16,19 @@
       "dtgc": "valid"
     },
     "pool_errors": {},
-    "zt": 62,
+    "zt": 61,
     "dt": 1,
-    "zab": 15,
-    "zb": 19.5,
-    "fb": 80.5,
-    "jj": 33.9,
-    "lianban": 21,
+    "zab": 20,
+    "zb": 24.7,
+    "fb": 75.3,
+    "jj": 32.8,
+    "lianban": 20,
     "max_lb": 10,
-    "amount": "18257.8亿",
+    "amount": "18887.1亿",
     "bf": 0,
-    "heat": 70,
-    "risk": 19,
-    "headline": "走强",
+    "heat": 67,
+    "risk": 24,
+    "headline": "修复",
     "concepts": [],
     "alerts": [
       {
@@ -40,9 +40,9 @@
         "text": "板块数据获取失败或为空（稍后重试）"
       }
     ],
-    "shift_score": 75,
-    "shift_label": "走强",
-    "note": "情绪边际修复，但仍需确认持续性。"
+    "shift_score": 71,
+    "shift_label": "修复",
+    "note": "情绪略有回落，注意午后分歧。"
   },
   "snapshots": [
     {
@@ -926,40 +926,81 @@
       "shift_score": 75,
       "shift_label": "走强",
       "note": "情绪边际修复，但仍需确认持续性。"
+    },
+    {
+      "time": "13:20:07",
+      "ts_bj": "2026-08-06 13:20:07",
+      "date": "2026-08-06",
+      "source": "intraday_live",
+      "provider": "必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid"
+      },
+      "pool_errors": {},
+      "zt": 61,
+      "dt": 1,
+      "zab": 20,
+      "zb": 24.7,
+      "fb": 75.3,
+      "jj": 32.8,
+      "lianban": 20,
+      "max_lb": 10,
+      "amount": "18887.1亿",
+      "bf": 0,
+      "heat": 67,
+      "risk": 24,
+      "headline": "修复",
+      "concepts": [],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        },
+        {
+          "level": "warn",
+          "text": "板块数据获取失败或为空（稍后重试）"
+        }
+      ],
+      "shift_score": 71,
+      "shift_label": "修复",
+      "note": "情绪略有回落，注意午后分歧。"
     }
   ],
   "indices": [
     {
       "name": "上证指数",
       "code": "000001.SH",
-      "val": 3881.045,
-      "chg": 0.0674241896850075,
-      "cje": 838891815100.0,
-      "t": "2026-08-06 13:10:03"
+      "val": 3875.825,
+      "chg": -0.06716635339557549,
+      "cje": 867715381400.0,
+      "t": "2026-08-06 13:20:06"
     },
     {
       "name": "深证成指",
       "code": "399001.SZ",
-      "val": 14066.802,
-      "chg": -0.5472417855934657,
-      "cje": 985725134200.0,
-      "t": "2026-08-06 13:10:03"
+      "val": 14034.185,
+      "chg": -0.7778450609277824,
+      "cje": 1020497966800.0,
+      "t": "2026-08-06 13:20:03"
     },
     {
       "name": "创业板指",
       "code": "399006.SZ",
-      "val": 3505.905,
-      "chg": -0.8270669673051367,
-      "cje": 482006717400.0,
-      "t": "2026-08-06 13:10:03"
+      "val": 3499.685,
+      "chg": -1.0030145880944585,
+      "cje": 499364498700.0,
+      "t": "2026-08-06 13:20:03"
     }
   ],
   "asOf": {
-    "indices": "13:10:03"
+    "indices": "13:20:03"
   },
   "health": {
     "status": "valid",
-    "last_valid_at": "2026-08-06 13:10:07",
+    "last_valid_at": "2026-08-06 13:20:07",
     "rejected_reason": "",
     "source": {
       "status": "valid",
@@ -977,8 +1018,8 @@
       "message": "intraday_coverage_incomplete",
       "date": "2026-08-06",
       "expected_count": 26,
-      "due_count": 15,
-      "observed_count": 14,
+      "due_count": 16,
+      "observed_count": 15,
       "observed_slots": [
         "09:40",
         "09:50",
@@ -993,7 +1034,8 @@
         "11:20",
         "11:30",
         "13:00",
-        "13:10"
+        "13:10",
+        "13:20"
       ],
       "missing_slots": [
         "09:30"
@@ -1002,18 +1044,18 @@
       "out_of_session": [],
       "monotonic": true,
       "morning_coverage": 12,
-      "afternoon_coverage": 2
+      "afternoon_coverage": 3
     }
   },
   "live": {
     "market": {
-      "zt": 62,
+      "zt": 61,
       "dt": 1,
-      "zab": 15,
-      "zab_rate": 19.5,
-      "lianban": 21,
+      "zab": 20,
+      "zab_rate": 24.7,
+      "lianban": 20,
       "max_lianban": 10,
-      "amount": "18257.8亿"
+      "amount": "18887.1亿"
     },
     "alerts": [
       {
