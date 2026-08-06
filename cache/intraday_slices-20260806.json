@@ -2,7 +2,7 @@
   "schema": "intraday_snapshot_v1",
   "render_mode": "snapshot_stream",
   "date": "2026-08-06",
-  "count": 11,
+  "count": 12,
   "interval_min": null,
   "simulated": false,
   "snapshots": [
@@ -712,11 +712,82 @@
       "shift_score": 76,
       "shift_label": "走强",
       "note": "情绪整体平稳，维持当前节奏。"
+    },
+    {
+      "time": "11:30:05",
+      "ts_bj": "2026-08-06 11:30:05",
+      "date": "2026-08-06",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid"
+      },
+      "pool_errors": {},
+      "zt": 55,
+      "dt": 1,
+      "zab": 20,
+      "zb": 26.7,
+      "fb": 73.3,
+      "jj": 36.4,
+      "lianban": 20,
+      "max_lb": 10,
+      "amount": "17518.9亿",
+      "bf": 0,
+      "heat": 66,
+      "risk": 25,
+      "headline": "修复",
+      "concepts": [
+        {
+          "name": "通信设备",
+          "lead": "欣天科技",
+          "chg_pct": null
+        },
+        {
+          "name": "化学制品",
+          "lead": "百合花",
+          "chg_pct": null
+        },
+        {
+          "name": "元件",
+          "lead": "宝鼎科技",
+          "chg_pct": null
+        },
+        {
+          "name": "专用设备",
+          "lead": "江钨装备",
+          "chg_pct": null
+        },
+        {
+          "name": "计算机设",
+          "lead": "新北洋",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        },
+        {
+          "level": "warn",
+          "text": "炸板率偏高（26.7%）→ 注意回封质量"
+        },
+        {
+          "level": "warn",
+          "text": "高度10板 + 分歧不低 → 高位兑现/炸板风险"
+        }
+      ],
+      "shift_score": 70,
+      "shift_label": "修复",
+      "note": "炸板/跌停抬升，情绪明显走弱。"
     }
   ],
   "latest": {
-    "time": "11:20:05",
-    "ts_bj": "2026-08-06 11:20:05",
+    "time": "11:30:05",
+    "ts_bj": "2026-08-06 11:30:05",
     "date": "2026-08-06",
     "source": "intraday_live",
     "provider": "必盈(实时)+必盈(实时)",
@@ -727,19 +798,19 @@
       "dtgc": "valid"
     },
     "pool_errors": {},
-    "zt": 61,
+    "zt": 55,
     "dt": 1,
-    "zab": 12,
-    "zb": 16.4,
-    "fb": 83.6,
-    "jj": 34.4,
-    "lianban": 21,
+    "zab": 20,
+    "zb": 26.7,
+    "fb": 73.3,
+    "jj": 36.4,
+    "lianban": 20,
     "max_lb": 10,
-    "amount": "16740.6亿",
+    "amount": "17518.9亿",
     "bf": 0,
-    "heat": 71,
-    "risk": 16,
-    "headline": "走强",
+    "heat": 66,
+    "risk": 25,
+    "headline": "修复",
     "concepts": [
       {
         "name": "通信设备",
@@ -757,13 +828,13 @@
         "chg_pct": null
       },
       {
-        "name": "计算机设",
-        "lead": "恒银科技",
+        "name": "专用设备",
+        "lead": "江钨装备",
         "chg_pct": null
       },
       {
-        "name": "专用设备",
-        "lead": "江钨装备",
+        "name": "计算机设",
+        "lead": "新北洋",
         "chg_pct": null
       }
     ],
@@ -771,17 +842,25 @@
       {
         "level": "info",
         "text": "盘中模式：强制实时拉取"
+      },
+      {
+        "level": "warn",
+        "text": "炸板率偏高（26.7%）→ 注意回封质量"
+      },
+      {
+        "level": "warn",
+        "text": "高度10板 + 分歧不低 → 高位兑现/炸板风险"
       }
     ],
-    "shift_score": 76,
-    "shift_label": "走强",
-    "note": "情绪整体平稳，维持当前节奏。"
+    "shift_score": 70,
+    "shift_label": "修复",
+    "note": "炸板/跌停抬升，情绪明显走弱。"
   },
-  "updated_at": "2026-08-06 11:20:05",
-  "snapshot_sig": "2026-08-06|2026-08-06 11:20:05|11",
+  "updated_at": "2026-08-06 11:30:05",
+  "snapshot_sig": "2026-08-06|2026-08-06 11:30:05|12",
   "health": {
     "status": "valid",
-    "last_valid_at": "2026-08-06 11:20:05",
+    "last_valid_at": "2026-08-06 11:30:05",
     "rejected_reason": "",
     "source": {
       "status": "valid",

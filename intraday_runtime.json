@@ -1,11 +1,11 @@
 {
   "schema": "intraday_runtime_v1",
   "date": "2026-08-06",
-  "updated_at": "2026-08-06 11:20:05",
+  "updated_at": "2026-08-06 11:30:05",
   "source": "必盈(实时)+必盈(实时)",
   "latest": {
-    "time": "11:20:05",
-    "ts_bj": "2026-08-06 11:20:05",
+    "time": "11:30:05",
+    "ts_bj": "2026-08-06 11:30:05",
     "date": "2026-08-06",
     "source": "intraday_live",
     "provider": "必盈(实时)+必盈(实时)",
@@ -16,19 +16,19 @@
       "dtgc": "valid"
     },
     "pool_errors": {},
-    "zt": 61,
+    "zt": 55,
     "dt": 1,
-    "zab": 12,
-    "zb": 16.4,
-    "fb": 83.6,
-    "jj": 34.4,
-    "lianban": 21,
+    "zab": 20,
+    "zb": 26.7,
+    "fb": 73.3,
+    "jj": 36.4,
+    "lianban": 20,
     "max_lb": 10,
-    "amount": "16740.6亿",
+    "amount": "17518.9亿",
     "bf": 0,
-    "heat": 71,
-    "risk": 16,
-    "headline": "走强",
+    "heat": 66,
+    "risk": 25,
+    "headline": "修复",
     "concepts": [
       {
         "name": "通信设备",
@@ -46,13 +46,13 @@
         "chg_pct": null
       },
       {
-        "name": "计算机设",
-        "lead": "恒银科技",
+        "name": "专用设备",
+        "lead": "江钨装备",
         "chg_pct": null
       },
       {
-        "name": "专用设备",
-        "lead": "江钨装备",
+        "name": "计算机设",
+        "lead": "新北洋",
         "chg_pct": null
       }
     ],
@@ -60,11 +60,19 @@
       {
         "level": "info",
         "text": "盘中模式：强制实时拉取"
+      },
+      {
+        "level": "warn",
+        "text": "炸板率偏高（26.7%）→ 注意回封质量"
+      },
+      {
+        "level": "warn",
+        "text": "高度10板 + 分歧不低 → 高位兑现/炸板风险"
       }
     ],
-    "shift_score": 76,
-    "shift_label": "走强",
-    "note": "情绪整体平稳，维持当前节奏。"
+    "shift_score": 70,
+    "shift_label": "修复",
+    "note": "炸板/跌停抬升，情绪明显走弱。"
   },
   "snapshots": [
     {
@@ -773,40 +781,111 @@
       "shift_score": 76,
       "shift_label": "走强",
       "note": "情绪整体平稳，维持当前节奏。"
+    },
+    {
+      "time": "11:30:05",
+      "ts_bj": "2026-08-06 11:30:05",
+      "date": "2026-08-06",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid"
+      },
+      "pool_errors": {},
+      "zt": 55,
+      "dt": 1,
+      "zab": 20,
+      "zb": 26.7,
+      "fb": 73.3,
+      "jj": 36.4,
+      "lianban": 20,
+      "max_lb": 10,
+      "amount": "17518.9亿",
+      "bf": 0,
+      "heat": 66,
+      "risk": 25,
+      "headline": "修复",
+      "concepts": [
+        {
+          "name": "通信设备",
+          "lead": "欣天科技",
+          "chg_pct": null
+        },
+        {
+          "name": "化学制品",
+          "lead": "百合花",
+          "chg_pct": null
+        },
+        {
+          "name": "元件",
+          "lead": "宝鼎科技",
+          "chg_pct": null
+        },
+        {
+          "name": "专用设备",
+          "lead": "江钨装备",
+          "chg_pct": null
+        },
+        {
+          "name": "计算机设",
+          "lead": "新北洋",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        },
+        {
+          "level": "warn",
+          "text": "炸板率偏高（26.7%）→ 注意回封质量"
+        },
+        {
+          "level": "warn",
+          "text": "高度10板 + 分歧不低 → 高位兑现/炸板风险"
+        }
+      ],
+      "shift_score": 70,
+      "shift_label": "修复",
+      "note": "炸板/跌停抬升，情绪明显走弱。"
     }
   ],
   "indices": [
     {
       "name": "上证指数",
       "code": "000001.SH",
-      "val": 3874.489,
-      "chg": -0.10161328166293586,
-      "cje": 768471023000.0,
-      "t": "2026-08-06 11:20:03"
+      "val": 3878.92,
+      "chg": 0.012633978181899288,
+      "cje": 804521236900.0,
+      "t": "2026-08-06 11:30:03"
     },
     {
       "name": "深证成指",
       "code": "399001.SZ",
-      "val": 14056.972,
-      "chg": -0.6167402126878122,
-      "cje": 905118746300.0,
-      "t": "2026-08-06 11:20:00"
+      "val": 14070.752,
+      "chg": -0.5193151541567697,
+      "cje": 947366431400.0,
+      "t": "2026-08-06 11:30:00"
     },
     {
       "name": "创业板指",
       "code": "399006.SZ",
-      "val": 3507.639,
-      "chg": -0.7780166177153203,
-      "cje": 442062669700.0,
-      "t": "2026-08-06 11:20:03"
+      "val": 3511.452,
+      "chg": -0.6701567659356298,
+      "cje": 463058670600.0,
+      "t": "2026-08-06 11:30:00"
     }
   ],
   "asOf": {
-    "indices": "11:20:03"
+    "indices": "11:30:00"
   },
   "health": {
     "status": "valid",
-    "last_valid_at": "2026-08-06 11:20:05",
+    "last_valid_at": "2026-08-06 11:30:05",
     "rejected_reason": "",
     "source": {
       "status": "valid",
@@ -824,8 +903,8 @@
       "message": "intraday_coverage_incomplete",
       "date": "2026-08-06",
       "expected_count": 26,
-      "due_count": 12,
-      "observed_count": 11,
+      "due_count": 13,
+      "observed_count": 12,
       "observed_slots": [
         "09:40",
         "09:50",
@@ -837,7 +916,8 @@
         "10:50",
         "11:00",
         "11:10",
-        "11:20"
+        "11:20",
+        "11:30"
       ],
       "missing_slots": [
         "09:30"
@@ -845,24 +925,32 @@
       "duplicate_slots": [],
       "out_of_session": [],
       "monotonic": true,
-      "morning_coverage": 11,
+      "morning_coverage": 12,
       "afternoon_coverage": 0
     }
   },
   "live": {
     "market": {
-      "zt": 61,
+      "zt": 55,
       "dt": 1,
-      "zab": 12,
-      "zab_rate": 16.4,
-      "lianban": 21,
+      "zab": 20,
+      "zab_rate": 26.7,
+      "lianban": 20,
       "max_lianban": 10,
-      "amount": "16740.6亿"
+      "amount": "17518.9亿"
     },
     "alerts": [
       {
         "level": "info",
         "text": "盘中模式：强制实时拉取"
+      },
+      {
+        "level": "warn",
+        "text": "炸板率偏高（26.7%）→ 注意回封质量"
+      },
+      {
+        "level": "warn",
+        "text": "高度10板 + 分歧不低 → 高位兑现/炸板风险"
       }
     ],
     "concepts": [
@@ -882,13 +970,13 @@
         "chg_pct": null
       },
       {
-        "name": "计算机设",
-        "lead": "恒银科技",
+        "name": "专用设备",
+        "lead": "江钨装备",
         "chg_pct": null
       },
       {
-        "name": "专用设备",
-        "lead": "江钨装备",
+        "name": "计算机设",
+        "lead": "新北洋",
         "chg_pct": null
       }
     ]
