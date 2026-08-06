@@ -2,7 +2,7 @@
   "schema": "intraday_snapshot_v1",
   "render_mode": "snapshot_stream",
   "date": "2026-08-06",
-  "count": 8,
+  "count": 9,
   "interval_min": null,
   "simulated": false,
   "snapshots": [
@@ -523,40 +523,106 @@
       "shift_score": null,
       "shift_label": "数据部分可用",
       "note": "本槽位仅部分三池成功；节点已保留，缺失指标不参与判断。"
+    },
+    {
+      "time": "11:00:06",
+      "ts_bj": "2026-08-06 11:00:06",
+      "date": "2026-08-06",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid"
+      },
+      "pool_errors": {},
+      "zt": 61,
+      "dt": 1,
+      "zab": 8,
+      "zb": 11.6,
+      "fb": 88.4,
+      "jj": 37.7,
+      "lianban": 23,
+      "max_lb": 10,
+      "amount": "14947.3亿",
+      "bf": 0,
+      "heat": 74,
+      "risk": 11,
+      "headline": "走强",
+      "concepts": [
+        {
+          "name": "通信设备",
+          "lead": "欣天科技",
+          "chg_pct": null
+        },
+        {
+          "name": "元件",
+          "lead": "华正新材",
+          "chg_pct": null
+        },
+        {
+          "name": "化学制品",
+          "lead": "和远气体",
+          "chg_pct": null
+        },
+        {
+          "name": "专用设备",
+          "lead": "江钨装备",
+          "chg_pct": null
+        },
+        {
+          "name": "半导体",
+          "lead": "有研新材",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        }
+      ],
+      "shift_score": 80,
+      "shift_label": "走强",
+      "note": "承接增强、分歧收敛，情绪明显回暖。"
     }
   ],
   "latest": {
-    "time": "10:50:06",
-    "ts_bj": "2026-08-06 10:50:06",
+    "time": "11:00:06",
+    "ts_bj": "2026-08-06 11:00:06",
     "date": "2026-08-06",
     "source": "intraday_live",
-    "provider": "必盈(实时)",
-    "data_quality": "partial",
+    "provider": "必盈(实时)+必盈(实时)",
+    "data_quality": "valid",
     "pool_status": {
       "ztgc": "valid",
-      "zbgc": "failed",
+      "zbgc": "valid",
       "dtgc": "valid"
     },
-    "pool_errors": {
-      "zbgc": "Expecting ',' delimiter: line 137 column 4 (char 2744)"
-    },
-    "zt": 57,
+    "pool_errors": {},
+    "zt": 61,
     "dt": 1,
-    "zab": null,
-    "zb": null,
-    "fb": null,
-    "jj": 40.4,
+    "zab": 8,
+    "zb": 11.6,
+    "fb": 88.4,
+    "jj": 37.7,
     "lianban": 23,
     "max_lb": 10,
-    "amount": "",
+    "amount": "14947.3亿",
     "bf": 0,
-    "heat": null,
-    "risk": null,
-    "headline": "数据部分可用",
+    "heat": 74,
+    "risk": 11,
+    "headline": "走强",
     "concepts": [
       {
         "name": "通信设备",
         "lead": "欣天科技",
+        "chg_pct": null
+      },
+      {
+        "name": "元件",
+        "lead": "华正新材",
         "chg_pct": null
       },
       {
@@ -565,18 +631,13 @@
         "chg_pct": null
       },
       {
-        "name": "元件",
-        "lead": "宝鼎科技",
+        "name": "专用设备",
+        "lead": "江钨装备",
         "chg_pct": null
       },
       {
-        "name": "计算机设",
-        "lead": "新北洋",
-        "chg_pct": null
-      },
-      {
-        "name": "电网设备",
-        "lead": "风范股份",
+        "name": "半导体",
+        "lead": "有研新材",
         "chg_pct": null
       }
     ],
@@ -584,32 +645,26 @@
       {
         "level": "info",
         "text": "盘中模式：强制实时拉取"
-      },
-      {
-        "level": "warn",
-        "text": "盘中三池响应不完整，保留最近有效数据"
       }
     ],
-    "shift_score": null,
-    "shift_label": "数据部分可用",
-    "note": "本槽位仅部分三池成功；节点已保留，缺失指标不参与判断。"
+    "shift_score": 80,
+    "shift_label": "走强",
+    "note": "承接增强、分歧收敛，情绪明显回暖。"
   },
-  "updated_at": "2026-08-06 10:50:06",
-  "snapshot_sig": "2026-08-06|2026-08-06 10:50:06|8",
+  "updated_at": "2026-08-06 11:00:06",
+  "snapshot_sig": "2026-08-06|2026-08-06 11:00:06|9",
   "health": {
-    "status": "degraded",
-    "last_valid_at": "2026-08-06 10:50:06",
+    "status": "valid",
+    "last_valid_at": "2026-08-06 11:00:06",
     "rejected_reason": "",
     "source": {
-      "status": "partial",
+      "status": "valid",
       "pool_status": {
         "ztgc": "valid",
-        "zbgc": "failed",
+        "zbgc": "valid",
         "dtgc": "valid"
       },
-      "pool_errors": {
-        "zbgc": "Expecting ',' delimiter: line 137 column 4 (char 2744)"
-      }
+      "pool_errors": {}
     }
   }
 }
