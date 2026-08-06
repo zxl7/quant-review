@@ -1,14 +1,14 @@
 {
   "schema": "intraday_runtime_v1",
   "date": "2026-08-06",
-  "updated_at": "2026-08-06 14:00:06",
-  "source": "必盈(实时)+必盈(实时)",
+  "updated_at": "2026-08-06 14:10:10",
+  "source": "必盈(实时)",
   "latest": {
-    "time": "14:00:06",
-    "ts_bj": "2026-08-06 14:00:06",
+    "time": "14:10:10",
+    "ts_bj": "2026-08-06 14:10:10",
     "date": "2026-08-06",
     "source": "intraday_live",
-    "provider": "必盈(实时)+必盈(实时)",
+    "provider": "必盈(实时)",
     "data_quality": "valid",
     "pool_status": {
       "ztgc": "valid",
@@ -16,50 +16,28 @@
       "dtgc": "valid"
     },
     "pool_errors": {},
-    "zt": 67,
+    "zt": 70,
     "dt": 1,
     "zab": 21,
-    "zb": 23.9,
-    "fb": 76.1,
-    "jj": 29.9,
+    "zb": 23.1,
+    "fb": 76.9,
+    "jj": 28.6,
     "lianban": 20,
     "max_lb": 10,
-    "amount": "21125.2亿",
+    "amount": "21682.7亿",
     "bf": 0,
     "heat": 68,
     "risk": 24,
     "headline": "修复",
-    "concepts": [
-      {
-        "name": "通信设备",
-        "lead": "欣天科技",
-        "chg_pct": null
-      },
-      {
-        "name": "元件",
-        "lead": "宝鼎科技",
-        "chg_pct": null
-      },
-      {
-        "name": "化学制品",
-        "lead": "百合花",
-        "chg_pct": null
-      },
-      {
-        "name": "专用设备",
-        "lead": "江钨装备",
-        "chg_pct": null
-      },
-      {
-        "name": "软件开发",
-        "lead": "泛微网络",
-        "chg_pct": null
-      }
-    ],
+    "concepts": [],
     "alerts": [
       {
         "level": "info",
         "text": "盘中模式：强制实时拉取"
+      },
+      {
+        "level": "warn",
+        "text": "板块数据获取失败或为空（稍后重试）"
       }
     ],
     "shift_score": 71,
@@ -1235,40 +1213,81 @@
       "shift_score": 71,
       "shift_label": "修复",
       "note": "情绪整体平稳，维持当前节奏。"
+    },
+    {
+      "time": "14:10:10",
+      "ts_bj": "2026-08-06 14:10:10",
+      "date": "2026-08-06",
+      "source": "intraday_live",
+      "provider": "必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid"
+      },
+      "pool_errors": {},
+      "zt": 70,
+      "dt": 1,
+      "zab": 21,
+      "zb": 23.1,
+      "fb": 76.9,
+      "jj": 28.6,
+      "lianban": 20,
+      "max_lb": 10,
+      "amount": "21682.7亿",
+      "bf": 0,
+      "heat": 68,
+      "risk": 24,
+      "headline": "修复",
+      "concepts": [],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        },
+        {
+          "level": "warn",
+          "text": "板块数据获取失败或为空（稍后重试）"
+        }
+      ],
+      "shift_score": 71,
+      "shift_label": "修复",
+      "note": "情绪整体平稳，维持当前节奏。"
     }
   ],
   "indices": [
     {
       "name": "上证指数",
       "code": "000001.SH",
-      "val": 3888.015,
-      "chg": 0.2471360834151973,
-      "cje": 970291750300.0,
-      "t": "2026-08-06 14:00:06"
+      "val": 3881.593,
+      "chg": 0.08155361834556796,
+      "cje": 997865529200.0,
+      "t": "2026-08-06 14:10:12"
     },
     {
       "name": "深证成指",
       "code": "399001.SZ",
-      "val": 14048.122,
-      "chg": -0.6793100071725525,
-      "cje": 1141821867500.0,
-      "t": "2026-08-06 14:00:06"
+      "val": 13989.182,
+      "chg": -1.0960177684076216,
+      "cje": 1169551020000.0,
+      "t": "2026-08-06 14:10:06"
     },
     {
       "name": "创业板指",
       "code": "399006.SZ",
-      "val": 3496.927,
-      "chg": -1.081031234097175,
-      "cje": 558407734300.0,
-      "t": "2026-08-06 14:00:06"
+      "val": 3477.963,
+      "chg": -1.6174734657126977,
+      "cje": 571356824200.0,
+      "t": "2026-08-06 14:10:12"
     }
   ],
   "asOf": {
-    "indices": "14:00:06"
+    "indices": "14:10:12"
   },
   "health": {
     "status": "valid",
-    "last_valid_at": "2026-08-06 14:00:06",
+    "last_valid_at": "2026-08-06 14:10:10",
     "rejected_reason": "",
     "source": {
       "status": "valid",
@@ -1286,8 +1305,8 @@
       "message": "intraday_coverage_incomplete",
       "date": "2026-08-06",
       "expected_count": 26,
-      "due_count": 20,
-      "observed_count": 19,
+      "due_count": 21,
+      "observed_count": 20,
       "observed_slots": [
         "09:40",
         "09:50",
@@ -1307,7 +1326,8 @@
         "13:30",
         "13:40",
         "13:50",
-        "14:00"
+        "14:00",
+        "14:10"
       ],
       "missing_slots": [
         "09:30"
@@ -1316,51 +1336,29 @@
       "out_of_session": [],
       "monotonic": true,
       "morning_coverage": 12,
-      "afternoon_coverage": 7
+      "afternoon_coverage": 8
     }
   },
   "live": {
     "market": {
-      "zt": 67,
+      "zt": 70,
       "dt": 1,
       "zab": 21,
-      "zab_rate": 23.9,
+      "zab_rate": 23.1,
       "lianban": 20,
       "max_lianban": 10,
-      "amount": "21125.2亿"
+      "amount": "21682.7亿"
     },
     "alerts": [
       {
         "level": "info",
         "text": "盘中模式：强制实时拉取"
+      },
+      {
+        "level": "warn",
+        "text": "板块数据获取失败或为空（稍后重试）"
       }
     ],
-    "concepts": [
-      {
-        "name": "通信设备",
-        "lead": "欣天科技",
-        "chg_pct": null
-      },
-      {
-        "name": "元件",
-        "lead": "宝鼎科技",
-        "chg_pct": null
-      },
-      {
-        "name": "化学制品",
-        "lead": "百合花",
-        "chg_pct": null
-      },
-      {
-        "name": "专用设备",
-        "lead": "江钨装备",
-        "chg_pct": null
-      },
-      {
-        "name": "软件开发",
-        "lead": "泛微网络",
-        "chg_pct": null
-      }
-    ]
+    "concepts": []
   }
 }

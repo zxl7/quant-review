@@ -2,7 +2,7 @@
   "schema": "intraday_snapshot_v1",
   "render_mode": "snapshot_stream",
   "date": "2026-08-06",
-  "count": 19,
+  "count": 20,
   "interval_min": null,
   "simulated": false,
   "snapshots": [
@@ -1174,14 +1174,55 @@
       "shift_score": 71,
       "shift_label": "修复",
       "note": "情绪整体平稳，维持当前节奏。"
+    },
+    {
+      "time": "14:10:10",
+      "ts_bj": "2026-08-06 14:10:10",
+      "date": "2026-08-06",
+      "source": "intraday_live",
+      "provider": "必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid"
+      },
+      "pool_errors": {},
+      "zt": 70,
+      "dt": 1,
+      "zab": 21,
+      "zb": 23.1,
+      "fb": 76.9,
+      "jj": 28.6,
+      "lianban": 20,
+      "max_lb": 10,
+      "amount": "21682.7亿",
+      "bf": 0,
+      "heat": 68,
+      "risk": 24,
+      "headline": "修复",
+      "concepts": [],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        },
+        {
+          "level": "warn",
+          "text": "板块数据获取失败或为空（稍后重试）"
+        }
+      ],
+      "shift_score": 71,
+      "shift_label": "修复",
+      "note": "情绪整体平稳，维持当前节奏。"
     }
   ],
   "latest": {
-    "time": "14:00:06",
-    "ts_bj": "2026-08-06 14:00:06",
+    "time": "14:10:10",
+    "ts_bj": "2026-08-06 14:10:10",
     "date": "2026-08-06",
     "source": "intraday_live",
-    "provider": "必盈(实时)+必盈(实时)",
+    "provider": "必盈(实时)",
     "data_quality": "valid",
     "pool_status": {
       "ztgc": "valid",
@@ -1189,61 +1230,39 @@
       "dtgc": "valid"
     },
     "pool_errors": {},
-    "zt": 67,
+    "zt": 70,
     "dt": 1,
     "zab": 21,
-    "zb": 23.9,
-    "fb": 76.1,
-    "jj": 29.9,
+    "zb": 23.1,
+    "fb": 76.9,
+    "jj": 28.6,
     "lianban": 20,
     "max_lb": 10,
-    "amount": "21125.2亿",
+    "amount": "21682.7亿",
     "bf": 0,
     "heat": 68,
     "risk": 24,
     "headline": "修复",
-    "concepts": [
-      {
-        "name": "通信设备",
-        "lead": "欣天科技",
-        "chg_pct": null
-      },
-      {
-        "name": "元件",
-        "lead": "宝鼎科技",
-        "chg_pct": null
-      },
-      {
-        "name": "化学制品",
-        "lead": "百合花",
-        "chg_pct": null
-      },
-      {
-        "name": "专用设备",
-        "lead": "江钨装备",
-        "chg_pct": null
-      },
-      {
-        "name": "软件开发",
-        "lead": "泛微网络",
-        "chg_pct": null
-      }
-    ],
+    "concepts": [],
     "alerts": [
       {
         "level": "info",
         "text": "盘中模式：强制实时拉取"
+      },
+      {
+        "level": "warn",
+        "text": "板块数据获取失败或为空（稍后重试）"
       }
     ],
     "shift_score": 71,
     "shift_label": "修复",
     "note": "情绪整体平稳，维持当前节奏。"
   },
-  "updated_at": "2026-08-06 14:00:06",
-  "snapshot_sig": "2026-08-06|2026-08-06 14:00:06|19",
+  "updated_at": "2026-08-06 14:10:10",
+  "snapshot_sig": "2026-08-06|2026-08-06 14:10:10|20",
   "health": {
     "status": "valid",
-    "last_valid_at": "2026-08-06 14:00:06",
+    "last_valid_at": "2026-08-06 14:10:10",
     "rejected_reason": "",
     "source": {
       "status": "valid",
