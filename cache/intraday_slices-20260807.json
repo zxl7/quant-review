@@ -2,7 +2,7 @@
   "schema": "intraday_snapshot_v1",
   "render_mode": "snapshot_stream",
   "date": "2026-08-07",
-  "count": 1,
+  "count": 2,
   "interval_min": null,
   "simulated": false,
   "snapshots": [
@@ -68,11 +68,74 @@
       "shift_score": 71,
       "shift_label": "修复",
       "note": "盘中实时切片已接入，可逐点观察情绪变化。"
+    },
+    {
+      "time": "09:50:05",
+      "ts_bj": "2026-08-07 09:50:05",
+      "date": "2026-08-07",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid"
+      },
+      "pool_errors": {},
+      "zt": 25,
+      "dt": 5,
+      "zab": 2,
+      "zb": 7.4,
+      "fb": 92.6,
+      "jj": 36.0,
+      "lianban": 9,
+      "max_lb": 4,
+      "amount": "6539.7亿",
+      "bf": 0,
+      "heat": 60,
+      "risk": 12,
+      "headline": "走强",
+      "concepts": [
+        {
+          "name": "化学制药",
+          "lead": "哈药股份",
+          "chg_pct": null
+        },
+        {
+          "name": "元件",
+          "lead": "宝鼎科技",
+          "chg_pct": null
+        },
+        {
+          "name": "化学制品",
+          "lead": "和远气体",
+          "chg_pct": null
+        },
+        {
+          "name": "通信设备",
+          "lead": "武汉凡谷",
+          "chg_pct": null
+        },
+        {
+          "name": "汽车零部",
+          "lead": "秦安股份",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        }
+      ],
+      "shift_score": 72,
+      "shift_label": "走强",
+      "note": "情绪整体平稳，维持当前节奏。"
     }
   ],
   "latest": {
-    "time": "09:40:19",
-    "ts_bj": "2026-08-07 09:40:19",
+    "time": "09:50:05",
+    "ts_bj": "2026-08-07 09:50:05",
     "date": "2026-08-07",
     "source": "intraday_live",
     "provider": "必盈(实时)+必盈(实时)",
@@ -83,28 +146,28 @@
       "dtgc": "valid"
     },
     "pool_errors": {},
-    "zt": 20,
-    "dt": 2,
-    "zab": 3,
-    "zb": 13.0,
-    "fb": 87.0,
-    "jj": 40.0,
-    "lianban": 8,
+    "zt": 25,
+    "dt": 5,
+    "zab": 2,
+    "zb": 7.4,
+    "fb": 92.6,
+    "jj": 36.0,
+    "lianban": 9,
     "max_lb": 4,
-    "amount": "4116.2亿",
+    "amount": "6539.7亿",
     "bf": 0,
-    "heat": 58,
+    "heat": 60,
     "risk": 12,
-    "headline": "修复",
+    "headline": "走强",
     "concepts": [
-      {
-        "name": "元件",
-        "lead": "宝鼎科技",
-        "chg_pct": null
-      },
       {
         "name": "化学制药",
         "lead": "哈药股份",
+        "chg_pct": null
+      },
+      {
+        "name": "元件",
+        "lead": "宝鼎科技",
         "chg_pct": null
       },
       {
@@ -118,8 +181,8 @@
         "chg_pct": null
       },
       {
-        "name": "医疗服务",
-        "lead": "百花医药",
+        "name": "汽车零部",
+        "lead": "秦安股份",
         "chg_pct": null
       }
     ],
@@ -129,15 +192,15 @@
         "text": "盘中模式：强制实时拉取"
       }
     ],
-    "shift_score": 71,
-    "shift_label": "修复",
-    "note": "盘中实时切片已接入，可逐点观察情绪变化。"
+    "shift_score": 72,
+    "shift_label": "走强",
+    "note": "情绪整体平稳，维持当前节奏。"
   },
-  "updated_at": "2026-08-07 09:40:19",
-  "snapshot_sig": "2026-08-07|2026-08-07 09:40:19|1",
+  "updated_at": "2026-08-07 09:50:05",
+  "snapshot_sig": "2026-08-07|2026-08-07 09:50:05|2",
   "health": {
     "status": "valid",
-    "last_valid_at": "2026-08-07 09:40:19",
+    "last_valid_at": "2026-08-07 09:50:05",
     "rejected_reason": "",
     "source": {
       "status": "valid",
