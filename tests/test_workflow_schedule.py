@@ -12,7 +12,6 @@ from pathlib import Path
 from unittest.mock import patch
 
 from daily_review.application.workflow_schedule import (
-    AUCTION_PREFETCH_ONLY_MODES,
     SCHEDULE_MODE_BY_CRON,
     annotate_intraday_runtime_coverage,
     describe_prefetched_quotes_snapshot,
@@ -120,15 +119,12 @@ class WorkflowScheduleTest(unittest.TestCase):
     def test_push_publish_does_not_require_time_sensitive_auction_snapshot(self) -> None:
         root = Path(__file__).resolve().parents[1]
         workflow = (root / ".github" / "workflows" / "publish_pages.yml").read_text(encoding="utf-8")
-        ensure_step = workflow.split("- name: Ensure today auction snapshot before full publish", 1)[1].split(
-            "- name: Generate latest full report", 1
-        )[0]
         validate_step = workflow.split("- name: Validate stock research snapshot in published market data", 1)[1].split(
             "- name: Validate eod stock research prediction pool", 1
         )[0]
 
         # 代码 push 可以发生在竞价窗口外，不能依赖尚未生成的 09:25 快照。
-        self.assertIn("github.event_name != 'push'", ensure_step)
+        self.assertNotIn("Ensure today auction snapshot", workflow)
         self.assertIn("github.event_name != 'push'", validate_step)
 
     def test_validate_external_data_freshness_requires_all_same_day_artifacts(self) -> None:
@@ -182,27 +178,34 @@ class WorkflowScheduleTest(unittest.TestCase):
         self.assertEqual(result["mode"], "open_fore")
         self.assertEqual(result["beijing_now"], "10:27")
 
-    def test_early_open_controllers_map_to_open_publish(self) -> None:
+    def test_old_early_open_controllers_are_no_longer_publish_triggers(self) -> None:
         for cron in ("55 0 * * 1-5", "15 1 * * 1-5"):
             with self.subTest(cron=cron):
                 result = resolve_publish_schedule_mode("schedule", cron, now=datetime(2026, 6, 22, 9, 0, tzinfo=TZ_BJ))
-                self.assertEqual(result["skip"], "false")
-                self.assertEqual(result["mode"], "open_fore")
+                self.assertEqual(result["skip"], "true")
+                self.assertEqual(result["mode"], "skip")
 
-    def test_0925_schedule_maps_to_prefetch_only_path(self) -> None:
-        result = resolve_publish_schedule_mode("schedule", "25 1 * * 1-5", now=datetime(2026, 6, 22, 9, 25, tzinfo=TZ_BJ))
-        self.assertEqual(result["skip"], "false")
-        self.assertEqual(result["mode"], "auction_prefetch")
-        self.assertEqual(result["reason"], "resolved_from_schedule:25 1 * * 1-5")
+    def test_old_auction_schedule_is_not_a_full_publish_mode(self) -> None:
+        for cron in ("25 1 * * 1-5", "27 1 * * 1-5"):
+            with self.subTest(cron=cron):
+                result = resolve_publish_schedule_mode(
+                    "schedule", cron, now=datetime(2026, 6, 22, 9, 27, tzinfo=TZ_BJ)
+                )
+                self.assertEqual(result["skip"], "true")
+                self.assertEqual(result["mode"], "skip")
 
-    def test_0927_schedule_maps_to_full_open_retry(self) -> None:
-        result = resolve_publish_schedule_mode("schedule", "27 1 * * 1-5", now=datetime(2026, 6, 22, 9, 27, tzinfo=TZ_BJ))
-        self.assertEqual(result["skip"], "false")
-        self.assertEqual(result["mode"], "open_fore")
-        self.assertEqual(result["reason"], "resolved_from_schedule:27 1 * * 1-5")
-
-    def test_prefetch_only_modes_are_explicit(self) -> None:
-        self.assertEqual(AUCTION_PREFETCH_ONLY_MODES, {"auction_prefetch", "auction_prefetch_retry"})
+    def test_auction_workflow_isolated_from_full_publish(self) -> None:
+        root = Path(__file__).resolve().parents[1]
+        workflow = (root / ".github" / "workflows" / "auction_prefetch.yml").read_text(encoding="utf-8")
+        publish = (root / ".github" / "workflows" / "publish_pages.yml").read_text(encoding="utf-8")
+        for cron in ("15 1 * * 1-5", "25 1 * * 1-5", "27 1 * * 1-5"):
+            self.assertIn(f'cron: "{cron}"', workflow)
+        self.assertIn("auction-prefetch-primary", workflow)
+        self.assertIn("auction-prefetch-0925", workflow)
+        self.assertIn("auction-prefetch-0927", workflow)
+        self.assertNotIn("Commit auction snapshot", publish)
+        self.assertNotIn('cron: "25 1 * * 1-5"', publish)
+        self.assertNotIn("auction_prefetch_retry", publish)
 
     def test_intraday_session_fallback_takes_over_remaining_morning(self) -> None:
         result = resolve_intraday_session(
@@ -510,7 +513,7 @@ class WorkflowScheduleTest(unittest.TestCase):
                                 "reference_date": "2026-06-19",
                                 "candidate_count": 1,
                                 "quote_time": "2026-06-22 09:25:03",
-                                "diagnostics": {"source": "forced_query"},
+                                "diagnostics": {"source": "workflow_prefetch"},
                             }
                         },
                     },
@@ -603,7 +606,7 @@ class WorkflowScheduleTest(unittest.TestCase):
                                 "reference_date": "2026-06-19",
                                 "candidate_count": 2,
                                 "quote_time": "2026-06-22 09:25:01",
-                                "diagnostics": {"source": "forced_query"},
+                                "diagnostics": {"source": "workflow_prefetch"},
                             }
                         },
                     },
@@ -681,6 +684,29 @@ class WorkflowScheduleTest(unittest.TestCase):
         self.assertTrue(snapshot["found"])
         self.assertEqual(snapshot["reference_date"], "2026-06-19")
         self.assertEqual(snapshot["as_of"], "2026-06-22 09:25:03")
+
+    def test_describe_prefetched_quotes_snapshot_rejects_intraday_forced_query(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            cache_dir = Path(tmp) / "cache"
+            cache_dir.mkdir()
+            (cache_dir / "stock_research_realtime_quotes-20260806.json").write_text(
+                json.dumps(
+                    {
+                        "date": "2026-08-06",
+                        "as_of": "2026-08-07 11:30:00",
+                        "source": "forced_query",
+                        "items": {"000001": {"dm": "000001", "t": "2026-08-07 11:30:00"}},
+                    }
+                ),
+                encoding="utf-8",
+            )
+
+            snapshot = describe_prefetched_quotes_snapshot(cache_dir, "2026-08-07")
+            plan = resolve_auction_snapshot_prefetch_plan(cache_dir, "2026-08-07")
+
+        self.assertFalse(snapshot["found"])
+        self.assertTrue(plan["should_prefetch"])
+        self.assertEqual(plan["status"], "auction_snapshot_missing_prefetch_required")
 
     def test_execute_auction_snapshot_prefetch_skips_when_today_snapshot_ready(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
@@ -769,11 +795,11 @@ class WorkflowScheduleTest(unittest.TestCase):
         self.assertEqual(result["reason"], "prefetch_failed")
         self.assertIn("URLError", result["last_error"])
 
-    def test_execute_auction_snapshot_prefetch_auto_forces_after_0930_when_today_snapshot_missing(self) -> None:
+    def test_execute_auction_snapshot_prefetch_rejects_non_auction_response_time(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             cache_dir = Path(tmp) / "cache"
             cache_dir.mkdir()
-            fake_rows = [{"date10": "2026-06-19", "code": "000001"}]
+            fake_rows = [{"date10": "2026-08-06", "code": "000001"}]
             with patch(
                 "daily_review.application.workflow_schedule._load_stock_research_rows_for_prefetch",
                 return_value=(fake_rows, []),
@@ -785,20 +811,32 @@ class WorkflowScheduleTest(unittest.TestCase):
                 return_value=object(),
             ), patch(
                 "daily_review.application.workflow_schedule._fetch_prefetch_quotes_map",
-                return_value=({"000001": {"dm": "000001", "t": "2026-06-22 09:25:03"}}, "2026-06-22 09:25:03"),
-            ), patch(
-                "daily_review.application.workflow_schedule._save_prefetched_quotes_snapshot",
-                return_value=cache_dir / "stock_research_realtime_quotes-20260619.json",
-            ):
+                return_value=({"000001": {"dm": "000001"}}, "2026-08-07 11:30:00"),
+            ), patch("daily_review.application.workflow_schedule.time.sleep"):
+                result = execute_auction_snapshot_prefetch(
+                    cache_dir=cache_dir,
+                    trade_date10="2026-08-07",
+                    now=datetime(2026, 8, 7, 9, 25, 1, tzinfo=TZ_BJ),
+                )
+
+        self.assertFalse(result["ok"])
+        self.assertEqual(result["reason"], "prefetch_failed")
+        self.assertEqual(result["last_error"], "returned_quote_outside_auction_window")
+
+    def test_execute_auction_snapshot_prefetch_rejects_automatic_capture_after_0930(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            cache_dir = Path(tmp) / "cache"
+            cache_dir.mkdir()
+            fake_rows = [{"date10": "2026-06-19", "code": "000001"}]
+            with patch("daily_review.application.workflow_schedule._load_stock_research_rows_for_prefetch", return_value=(fake_rows, [])):
                 result = execute_auction_snapshot_prefetch(
                     cache_dir=cache_dir,
                     trade_date10="2026-06-22",
                     now=datetime(2026, 6, 22, 9, 30, 1, tzinfo=TZ_BJ),
                 )
 
-        self.assertTrue(result["ok"])
-        self.assertEqual(result["reason"], "prefetch_saved")
-        self.assertEqual(result["source"], "forced_query")
+        self.assertFalse(result["ok"])
+        self.assertEqual(result["reason"], "outside_entry_window")
 
     def test_validate_market_data_snapshot_requires_quote_time_when_candidates_exist(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

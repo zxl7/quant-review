@@ -1,0 +1,190 @@
+name: Capture auction snapshot
+
+on:
+  # 主会话提前启动并等待到 09:25；两个独立补启动避免同一 pending 队列互相淘汰。
+  schedule:
+    - cron: "15 1 * * 1-5"
+    - cron: "25 1 * * 1-5"
+    - cron: "27 1 * * 1-5"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: ${{ github.event_name == 'workflow_dispatch' && format('auction-prefetch-manual-{0}', github.run_id) || github.event.schedule == '15 1 * * 1-5' && 'auction-prefetch-primary' || github.event.schedule == '25 1 * * 1-5' && 'auction-prefetch-0925' || 'auction-prefetch-0927' }}
+  cancel-in-progress: false
+
+env:
+  TZ: Asia/Shanghai
+  PYTHONUNBUFFERED: "1"
+
+jobs:
+  capture:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install Python dependencies
+        run: pip install -r requirements.txt
+
+      - name: Wait for auction window
+        if: ${{ github.event_name == 'schedule' && github.event.schedule == '15 1 * * 1-5' }}
+        run: |
+          set -euo pipefail
+          wait_seconds="$(python3 - <<'PY'
+          from datetime import datetime, timedelta, timezone
+
+          now = datetime.now(timezone(timedelta(hours=8)))
+          target = now.replace(hour=9, minute=25, second=0, microsecond=0)
+          print(max(0, int((target - now).total_seconds())))
+          PY
+          )"
+          if [ "${wait_seconds}" -gt 0 ]; then
+            echo "Waiting ${wait_seconds}s for the 09:25 auction window"
+            sleep "${wait_seconds}"
+          fi
+
+      - name: Resolve trade date
+        id: trade
+        env:
+          BIYING_TOKEN: ${{ secrets.BIYING_TOKEN }}
+          BIYING_BASE_URL: ${{ secrets.BIYING_BASE_URL }}
+        run: |
+          set -euo pipefail
+          test -n "${BIYING_TOKEN}" || { echo "Missing secrets.BIYING_TOKEN"; exit 2; }
+          PYTHONPATH=. python3 - <<'PY'
+          import datetime as dt
+          import os
+          from daily_review.config import load_config_from_env
+          from daily_review.data.biying import resolve_trade_date_intraday
+          from daily_review.http import HttpClient
+
+          today = dt.datetime.now().strftime("%Y-%m-%d")
+          cfg = load_config_from_env()
+          client = HttpClient(base_url=cfg.base_url, token=cfg.token, timeout=20, retries=1)
+          resolved, note = resolve_trade_date_intraday(client, today)
+          print(f"auction_trade_date={resolved} requested={today} {note}")
+          with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as fh:
+              fh.write(f"date10={resolved}\n")
+              fh.write(f"is_trade_today={'true' if resolved == today else 'false'}\n")
+          PY
+
+      - name: Checkout published cache
+        if: ${{ steps.trade.outputs.is_trade_today == 'true' }}
+        uses: actions/checkout@v4
+        with:
+          ref: gh-pages
+          path: site_prev
+          fetch-depth: 1
+          persist-credentials: true
+
+      - name: Restore auction cache
+        if: ${{ steps.trade.outputs.is_trade_today == 'true' }}
+        run: |
+          set -euo pipefail
+          mkdir -p cache site_prev/cache
+          cp -f site_prev/cache/stock_research_backtest_source.json cache/ 2>/dev/null || true
+          cp -f site_prev/cache/stock_research_realtime_quotes-*.json cache/ 2>/dev/null || true
+          cp -f site_prev/cache/trade_days_cache.json cache/ 2>/dev/null || true
+
+      - name: Check existing valid auction snapshot
+        id: existing
+        if: ${{ steps.trade.outputs.is_trade_today == 'true' }}
+        env:
+          RUN_DATE: ${{ steps.trade.outputs.date10 }}
+        run: |
+          set -euo pipefail
+          RUN_DATE="${RUN_DATE}" PYTHONPATH=. python3 - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+          from daily_review.application.workflow_schedule import resolve_auction_snapshot_prefetch_plan
+
+          plan = resolve_auction_snapshot_prefetch_plan(Path("cache"), os.environ["RUN_DATE"])
+          print("auction_existing_plan=" + json.dumps(plan, ensure_ascii=False, sort_keys=True))
+          with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as fh:
+              fh.write(f"skip={'true' if plan['status'] == 'auction_snapshot_ready_skip' else 'false'}\n")
+          PY
+
+      - name: Capture 09:25 auction quotes
+        if: ${{ steps.trade.outputs.is_trade_today == 'true' && steps.existing.outputs.skip != 'true' }}
+        env:
+          BIYING_TOKEN: ${{ secrets.BIYING_TOKEN }}
+          BIYING_BASE_URL: ${{ secrets.BIYING_BASE_URL }}
+          RUN_DATE: ${{ steps.trade.outputs.date10 }}
+        run: |
+          set -euo pipefail
+          PYTHONPATH=. python3 - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+          from daily_review.application.workflow_schedule import execute_auction_snapshot_prefetch
+
+          result = execute_auction_snapshot_prefetch(
+              cache_dir=Path("cache"),
+              trade_date10=os.environ["RUN_DATE"],
+              # 自动任务绝不在窗口外强制请求，避免 11:30 数据伪装成竞价。
+              force_outside_window=False,
+          )
+          print("auction_prefetch_result=" + json.dumps(result, ensure_ascii=False, sort_keys=True))
+          if not result["ok"]:
+              raise SystemExit(result.get("reason") or "auction_prefetch_failed")
+          PY
+
+      - name: Publish auction cache
+        if: ${{ steps.trade.outputs.is_trade_today == 'true' && steps.existing.outputs.skip != 'true' }}
+        run: |
+          set -euo pipefail
+          push_rc=1
+          for attempt in 1 2 3; do
+            git -C site_prev fetch origin gh-pages
+            git -C site_prev reset --hard origin/gh-pages
+            # 补启动可能与主会话并行；每次 push 前重新读取远端，已落地的合格快照不可被覆盖。
+            set +e
+            RUN_DATE="${{ steps.trade.outputs.date10 }}" PYTHONPATH=. python3 - <<'PY'
+            import os
+            from pathlib import Path
+            from daily_review.application.workflow_schedule import resolve_auction_snapshot_prefetch_plan
+
+            plan = resolve_auction_snapshot_prefetch_plan(Path("site_prev/cache"), os.environ["RUN_DATE"])
+            print("remote_auction_plan=", plan)
+            if plan["status"] == "auction_snapshot_ready_skip":
+                print("Remote valid auction snapshot already exists; skip publish.")
+                raise SystemExit(10)
+            PY
+            remote_check_rc=$?
+            if [ "${remote_check_rc}" -eq 10 ]; then
+              exit 0
+            fi
+            if [ "${remote_check_rc}" -ne 0 ]; then
+              exit "${remote_check_rc}"
+            fi
+            set -e
+            mkdir -p site_prev/cache
+            cp -f cache/stock_research_realtime_quotes-*.json site_prev/cache/ 2>/dev/null || true
+            cp -f cache/trade_days_cache.json site_prev/cache/ 2>/dev/null || true
+            git -C site_prev add cache/stock_research_realtime_quotes-*.json cache/trade_days_cache.json 2>/dev/null || true
+            if git -C site_prev diff --cached --quiet; then
+              echo "No auction cache changes."
+              exit 0
+            fi
+            git -C site_prev config user.name "github-actions[bot]"
+            git -C site_prev config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git -C site_prev commit -m "deploy: auction snapshot cache"
+            if git -C site_prev push origin HEAD:gh-pages; then
+              push_rc=0
+              break
+            fi
+            push_rc=$?
+            echo "Auction cache push failed on attempt ${attempt} (rc=${push_rc})"
+            sleep $((attempt * 5))
+          done
+          exit "${push_rc}"

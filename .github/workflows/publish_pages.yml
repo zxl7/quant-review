@@ -23,18 +23,10 @@ on:
         required: false
         default: ""
         type: string
-  # 工作日北京时间保留开盘控制、竞价兜底和收盘复盘链路：
-  # - 08:55 / 09:15：提前启动开盘控制器，任务内等待到 09:25
-  # - 09:25：仅做轻量竞价快照预抓，不跑 full publish
-  # - 09:26：早盘主链执行一次正式 fetch，进入前先确保今日竞价快照
-  # - 09:27：完整开盘发布兜底，保证并发队列最终保留的是可发布任务
+  # 工作日北京时间保留 09:26 开盘发布和收盘复盘链路；竞价快照由 auction_prefetch.yml 独立负责。
   # - 15:00 / 16:00 / 17:00 / 18:00：执行收盘后全量复盘发布
   schedule:
-    - cron: "55 0 * * 1-5"
-    - cron: "15 1 * * 1-5"
-    - cron: "25 1 * * 1-5"
     - cron: "26 1 * * 1-5"
-    - cron: "27 1 * * 1-5"
     - cron: "0 7 * * 1-5"
     - cron: "0 9 * * 1-5"
     - cron: "0 8 * * 1-5"
@@ -50,11 +42,11 @@ permissions:
   contents: write
 
 concurrency:
-  # schedule 按 cron 通道分流，避免 09:26/open、盘中轻量快照或收盘重任务互相堵住。
+  # schedule 按 cron 通道分流，避免开盘和收盘重任务互相堵住。
   # push 与 workflow_dispatch 分通道串行：
   # - 各自通道内仍按分支串行，避免同一来源的重复发布互相覆盖；
   # - 手动触发不再和同分支 push 共用一个等待队列，避免 queued run 被“更高优先级等待项”顶掉。
-  group: ${{ github.event_name == 'schedule' && (github.event.schedule == '55 0 * * 1-5' || github.event.schedule == '15 1 * * 1-5' || github.event.schedule == '25 1 * * 1-5' || github.event.schedule == '26 1 * * 1-5' || github.event.schedule == '27 1 * * 1-5') && 'gh-pages-publish-open' || github.event_name == 'schedule' && format('gh-pages-publish-schedule-{0}', github.event.schedule) || github.event_name == 'workflow_dispatch' && format('gh-pages-publish-dispatch-{0}', github.ref_name) || format('gh-pages-publish-push-{0}', github.ref_name) }}
+  group: ${{ github.event_name == 'schedule' && github.event.schedule == '26 1 * * 1-5' && 'gh-pages-publish-open' || github.event_name == 'schedule' && format('gh-pages-publish-schedule-{0}', github.event.schedule) || github.event_name == 'workflow_dispatch' && format('gh-pages-publish-dispatch-{0}', github.ref_name) || format('gh-pages-publish-push-{0}', github.ref_name) }}
   # 不取消已在执行中的发布；仅让同通道的新请求接替旧的等待项。
   cancel-in-progress: false
 
@@ -102,23 +94,6 @@ jobs:
               fh.write(f"beijing_now={result['beijing_now']}\n")
               fh.write(f"schedule_expr={result['schedule_expr']}\n")
           PY
-
-      - name: Wait for 09:25 auction window (early open controller only)
-        if: ${{ github.event_name == 'schedule' && (github.event.schedule == '55 0 * * 1-5' || github.event.schedule == '15 1 * * 1-5') && steps.timecheck.outputs.skip != 'true' }}
-        run: |
-          set -euo pipefail
-          wait_seconds="$(python3 - <<'PY'
-          from datetime import datetime, timedelta, timezone
-
-          now = datetime.now(timezone(timedelta(hours=8)))
-          target = now.replace(hour=9, minute=25, second=0, microsecond=0)
-          print(max(0, int((target - now).total_seconds())))
-          PY
-          )"
-          if [ "${wait_seconds}" -gt 0 ]; then
-            echo "Waiting ${wait_seconds}s for the 09:25 auction window"
-            sleep "${wait_seconds}"
-          fi
 
       - name: Compute cache key (Beijing date)
         id: datekey
@@ -169,7 +144,6 @@ jobs:
           cp -f site_prev/cache/stock_research_backtest_source.json cache/ 2>/dev/null || true
           cp -f site_prev/cache/account_nav_history.jsonl cache/ 2>/dev/null || true
           cp -f site_prev/cache/account_strategy_metrics.json cache/ 2>/dev/null || true
-          cp -f site_prev/cache/stock_research_realtime_quotes-*.json cache/ 2>/dev/null || true
           cp -f site_prev/cache/intraday_slices-*.json cache/ 2>/dev/null || true
           cp -f site_prev/cache/intraday_snapshots-*.json cache/ 2>/dev/null || true
           # 全量构建也必须从部署分支恢复已验收的运行时，避免仓库内旧样例污染 dataHealth。
@@ -191,10 +165,6 @@ jobs:
           sfiles=( $(ls -1 cache/intraday_slices-*.json 2>/dev/null | sort || true) )
           if [ ${#sfiles[@]} -gt 2 ]; then
             rm -f "${sfiles[@]:0:${#sfiles[@]}-2}"
-          fi
-          rfiles=( $(ls -1 cache/stock_research_realtime_quotes-*.json 2>/dev/null | sort || true) )
-          if [ ${#rfiles[@]} -gt 7 ]; then
-            rm -f "${rfiles[@]:0:${#rfiles[@]}-7}"
           fi
 
       - name: Setup Python
@@ -338,11 +308,9 @@ jobs:
           is_trade_today="${{ steps.tradeday.outputs.is_trade_today }}"
           schedule_mode="${{ steps.timecheck.outputs.mode || '' }}"
 
-          # 仅对常规定时窗口保留这层保护；
-          # - 9:26 的 schedule 会先做快照预检，再决定是否补 fore；
-          # - push / workflow_dispatch 允许立即进入主流程，并在缺快照时自动补 fore。
+          # 竞价由独立工作流负责；全量发布仅在竞价链路之外运行。
           warmup_hit=false
-          if [ "${event_name}" = "schedule" ] && { [ "${schedule_mode}" = "open_fore" ] || [ "${schedule_mode}" = "auction_prefetch" ] || [ "${schedule_mode}" = "auction_prefetch_retry" ]; }; then
+          if [ "${event_name}" = "schedule" ] && [ "${schedule_mode}" = "open_fore" ]; then
             warmup_hit=false
           elif [ "${event_name}" = "push" ]; then
             warmup_hit=false
@@ -403,11 +371,7 @@ jobs:
               mode="open_fore"
             fi
           elif [ "${{ github.event_name }}" = "schedule" ]; then
-            if [ "${schedule_mode}" = "auction_prefetch" ]; then
-              mode="auction_prefetch"
-            elif [ "${schedule_mode}" = "auction_prefetch_retry" ]; then
-              mode="auction_prefetch_retry"
-            elif [ "${schedule_mode}" = "intraday" ]; then
+            if [ "${schedule_mode}" = "intraday" ]; then
               mode="intraday"
             elif [ "${schedule_mode}" = "eod" ]; then
               mode="eod"
@@ -433,93 +397,18 @@ jobs:
         run: pip install -r requirements.txt
 
       - name: Setup Node.js (full publish only)
-        if: ${{ (github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true') && steps.warmup.outputs.skip != 'true' && steps.pushmode.outputs.mode != 'intraday' && steps.pushmode.outputs.mode != 'auction_prefetch' && steps.pushmode.outputs.mode != 'auction_prefetch_retry' }}
+        if: ${{ (github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true') && steps.warmup.outputs.skip != 'true' && steps.pushmode.outputs.mode != 'intraday' }}
         uses: actions/setup-node@v4
         with:
           node-version: "22"
 
       - name: Install web dependencies (full publish only)
-        if: ${{ (github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true') && steps.warmup.outputs.skip != 'true' && steps.pushmode.outputs.mode != 'intraday' && steps.pushmode.outputs.mode != 'auction_prefetch' && steps.pushmode.outputs.mode != 'auction_prefetch_retry' }}
+        if: ${{ (github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true') && steps.warmup.outputs.skip != 'true' && steps.pushmode.outputs.mode != 'intraday' }}
         run: cd web && npm ci
-
-      - name: 09:25/09:27 auction snapshot prefetch only
-        if: ${{ github.event_name == 'schedule' && (steps.pushmode.outputs.mode == 'auction_prefetch' || steps.pushmode.outputs.mode == 'auction_prefetch_retry') && steps.timecheck.outputs.skip != 'true' && steps.tradeday.outputs.is_trade_today == 'true' }}
-        env:
-          BIYING_TOKEN: ${{ secrets.BIYING_TOKEN }}
-          BIYING_BASE_URL: ${{ secrets.BIYING_BASE_URL }}
-          RUN_DATE: ${{ steps.pushmode.outputs.date10 }}
-          FORCE_OUTSIDE_WINDOW: ${{ steps.pushmode.outputs.mode == 'auction_prefetch_retry' && 'true' || 'false' }}
-        run: |
-          set -euo pipefail
-          python3 - <<'PY'
-          import json
-          import os
-          from pathlib import Path
-
-          from daily_review.application.workflow_schedule import execute_auction_snapshot_prefetch
-
-          run_date = os.environ["RUN_DATE"]
-          force_outside_window = os.environ.get("FORCE_OUTSIDE_WINDOW", "false") == "true"
-          result = execute_auction_snapshot_prefetch(
-              cache_dir=Path("cache"),
-              trade_date10=run_date,
-              force_outside_window=force_outside_window,
-          )
-          print("auction_snapshot_prefetch_execution=" + json.dumps(result, ensure_ascii=False, sort_keys=True))
-          if result["ok"] and result["reason"] == "snapshot_ready_skip":
-              print(f"auction_snapshot_ready_skip: trade_date={run_date} ready_source={result.get('ready_source') or '-'}")
-              raise SystemExit(0)
-          if result["ok"]:
-              marker = "09:27_prefetch_retry_only" if force_outside_window else "09:25_prefetch_only_succeeded"
-              print(f"{marker}: trade_date={run_date} path={result.get('path') or '-'} as_of={result.get('as_of') or '-'}")
-              raise SystemExit(0)
-          marker = "09:27_prefetch_retry_only" if force_outside_window else "09:25_prefetch_only_failed"
-          print(f"::warning title=Auction prefetch unavailable::{marker}: trade_date={run_date} reason={result.get('reason') or '-'} last_error={result.get('last_error') or '-'}")
-          PY
-
-      - name: Commit auction snapshot prefetch cache only to gh-pages
-        if: ${{ github.event_name == 'schedule' && (steps.pushmode.outputs.mode == 'auction_prefetch' || steps.pushmode.outputs.mode == 'auction_prefetch_retry') && steps.timecheck.outputs.skip != 'true' && steps.tradeday.outputs.is_trade_today == 'true' }}
-        run: |
-          set -euo pipefail
-          mkdir -p site_prev/cache
-          cp -f cache/stock_research_realtime_quotes-*.json site_prev/cache/ 2>/dev/null || true
-          cp -f cache/trade_days_cache.json site_prev/cache/ 2>/dev/null || true
-          rfiles=( $(ls -1 site_prev/cache/stock_research_realtime_quotes-*.json 2>/dev/null | sort || true) )
-          if [ ${#rfiles[@]} -gt 7 ]; then
-            rm -f "${rfiles[@]:0:${#rfiles[@]}-7}"
-          fi
-          if git -C site_prev diff --quiet; then
-            echo "No auction snapshot cache changes to commit."
-            exit 0
-          fi
-          git -C site_prev status --porcelain
-          git -C site_prev config user.name "github-actions[bot]"
-          git -C site_prev config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git -C site_prev add cache/stock_research_realtime_quotes-*.json cache/trade_days_cache.json 2>/dev/null || true
-          git -C site_prev commit -m "deploy: auction snapshot cache" || true
-          push_rc=1
-          for attempt in 1 2 3; do
-            if git -C site_prev push origin HEAD:gh-pages; then
-              echo "Push auction snapshot cache to gh-pages succeeded on attempt ${attempt}"
-              push_rc=0
-              break
-            fi
-            push_rc=$?
-            echo "Push auction snapshot cache failed on attempt ${attempt} (rc=${push_rc})"
-            if [ "${attempt}" -lt 3 ]; then
-              sleep $((attempt * 5))
-              git -C site_prev fetch origin gh-pages || true
-              git -C site_prev rebase origin/gh-pages || {
-                git -C site_prev rebase --abort || true
-                echo "Rebase against origin/gh-pages failed; retrying push without rebase"
-              }
-            fi
-          done
-          exit "${push_rc}"
 
       - name: Resolve stock research query tag
         id: stockresearch
-        if: ${{ (github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true') && steps.warmup.outputs.skip != 'true' && (github.event_name != 'schedule' || steps.tradeday.outputs.is_trade_today == 'true') && steps.pushmode.outputs.mode != 'intraday' && steps.pushmode.outputs.mode != 'auction_prefetch' && steps.pushmode.outputs.mode != 'auction_prefetch_retry' && ((github.event_name == 'schedule' && (steps.timecheck.outputs.mode == 'open_fore' || steps.timecheck.outputs.mode == 'eod')) || github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && (github.event.inputs.stock_research_query_tag != '' || steps.pushmode.outputs.mode == 'eod' || steps.pushmode.outputs.mode == 'open_fore'))) }}
+        if: ${{ (github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true') && steps.warmup.outputs.skip != 'true' && (github.event_name != 'schedule' || steps.tradeday.outputs.is_trade_today == 'true') && steps.pushmode.outputs.mode != 'intraday' && ((github.event_name == 'schedule' && (steps.timecheck.outputs.mode == 'open_fore' || steps.timecheck.outputs.mode == 'eod')) || github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && (github.event.inputs.stock_research_query_tag != '' || steps.pushmode.outputs.mode == 'eod' || steps.pushmode.outputs.mode == 'open_fore'))) }}
         run: |
           set -euo pipefail
           mode="${{ steps.pushmode.outputs.mode }}"
@@ -588,7 +477,7 @@ jobs:
 
       - name: Default stock research strategy
         id: stockresearchdefault
-        if: ${{ (github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true') && steps.warmup.outputs.skip != 'true' && (github.event_name != 'schedule' || steps.tradeday.outputs.is_trade_today == 'true') && steps.pushmode.outputs.mode != 'intraday' && steps.pushmode.outputs.mode != 'auction_prefetch' && steps.pushmode.outputs.mode != 'auction_prefetch_retry' && ((github.event_name == 'schedule' && steps.timecheck.outputs.mode != 'open_fore' && steps.timecheck.outputs.mode != 'eod') || (github.event_name == 'workflow_dispatch' && github.event.inputs.stock_research_query_tag == '' && steps.pushmode.outputs.mode != 'eod' && steps.pushmode.outputs.mode != 'open_fore')) }}
+        if: ${{ (github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true') && steps.warmup.outputs.skip != 'true' && (github.event_name != 'schedule' || steps.tradeday.outputs.is_trade_today == 'true') && steps.pushmode.outputs.mode != 'intraday' && ((github.event_name == 'schedule' && steps.timecheck.outputs.mode != 'open_fore' && steps.timecheck.outputs.mode != 'eod') || (github.event_name == 'workflow_dispatch' && github.event.inputs.stock_research_query_tag == '' && steps.pushmode.outputs.mode != 'eod' && steps.pushmode.outputs.mode != 'open_fore')) }}
         run: |
           set -euo pipefail
           refresh_backtest="false"
@@ -611,7 +500,7 @@ jobs:
 
       - name: Finalize stock research strategy
         id: stockresearchfinal
-        if: ${{ (github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true') && steps.warmup.outputs.skip != 'true' && (github.event_name != 'schedule' || steps.tradeday.outputs.is_trade_today == 'true') && steps.pushmode.outputs.mode != 'intraday' && steps.pushmode.outputs.mode != 'auction_prefetch' && steps.pushmode.outputs.mode != 'auction_prefetch_retry' }}
+        if: ${{ (github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true') && steps.warmup.outputs.skip != 'true' && (github.event_name != 'schedule' || steps.tradeday.outputs.is_trade_today == 'true') && steps.pushmode.outputs.mode != 'intraday' }}
         run: |
           set -euo pipefail
           effective_query_tag="${{ steps.stockresearch.outputs.effective_query_tag || steps.stockresearchdefault.outputs.effective_query_tag || '' }}"
@@ -632,42 +521,8 @@ jobs:
           } >> "$GITHUB_OUTPUT"
           echo "Final stock research strategy: refresh_backtest=${refresh_backtest} validate_snapshot=${validate_snapshot} query_tag=${effective_query_tag:-<none>} reason=${resolution_reason}"
 
-      - name: Ensure today auction snapshot before full publish
-        # push 只负责部署代码，可能发生在 09:25 竞价窗口之前；不得因业务快照尚未生成而阻断部署。
-        if: ${{ github.event_name != 'push' && (github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true') && steps.warmup.outputs.skip != 'true' && (github.event_name != 'schedule' || steps.tradeday.outputs.is_trade_today == 'true') && steps.pushmode.outputs.mode != 'intraday' && steps.pushmode.outputs.mode != 'auction_prefetch' && steps.pushmode.outputs.mode != 'auction_prefetch_retry' }}
-        env:
-          BIYING_TOKEN: ${{ secrets.BIYING_TOKEN }}
-          BIYING_BASE_URL: ${{ secrets.BIYING_BASE_URL }}
-          RUN_DATE: ${{ steps.pushmode.outputs.date10 }}
-          FORCE_OUTSIDE_WINDOW: ${{ github.event_name == 'schedule' && steps.timecheck.outputs.mode == 'open_fore' && 'true' || 'false' }}
-        run: |
-          set -euo pipefail
-          python3 - <<'PY'
-          import json
-          import os
-          from pathlib import Path
-
-          from daily_review.application.workflow_schedule import execute_auction_snapshot_prefetch
-
-          run_date = os.environ["RUN_DATE"]
-          force_outside_window = os.environ.get("FORCE_OUTSIDE_WINDOW", "false") == "true"
-          result = execute_auction_snapshot_prefetch(
-              cache_dir=Path("cache"),
-              trade_date10=run_date,
-              force_outside_window=force_outside_window,
-          )
-          print("auction_snapshot_prefetch_execution=" + json.dumps(result, ensure_ascii=False, sort_keys=True))
-          if result["ok"] and result["reason"] == "snapshot_ready_skip":
-              print(f"auction_snapshot_ready_skip: trade_date={run_date} ready_source={result.get('ready_source') or '-'}")
-              raise SystemExit(0)
-          if result["ok"]:
-              print(f"09:26_prefetch_then_full_publish: trade_date={run_date} path={result.get('path') or '-'} as_of={result.get('as_of') or '-'}")
-              raise SystemExit(0)
-          print(f"::warning title=Auction prefetch unavailable::trade_date={run_date} reason={result.get('reason') or '-'} last_error={result.get('last_error') or '-'}; full publish will continue with the latest valid research history")
-          PY
-
       - name: Generate latest full report (online fetch -> offline pipeline rebuild)
-        if: ${{ (github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true') && steps.warmup.outputs.skip != 'true' && (github.event_name != 'schedule' || steps.tradeday.outputs.is_trade_today == 'true') && steps.pushmode.outputs.mode != 'intraday' && steps.pushmode.outputs.mode != 'auction_prefetch' && steps.pushmode.outputs.mode != 'auction_prefetch_retry' }}
+        if: ${{ (github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true') && steps.warmup.outputs.skip != 'true' && (github.event_name != 'schedule' || steps.tradeday.outputs.is_trade_today == 'true') && steps.pushmode.outputs.mode != 'intraday' }}
         timeout-minutes: 20
         env:
           BIYING_TOKEN: ${{ secrets.BIYING_TOKEN }}
@@ -757,7 +612,7 @@ jobs:
           PY
 
       - name: Post-fetch cache sync and derived data
-        if: ${{ (github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true') && steps.warmup.outputs.skip != 'true' && (github.event_name != 'schedule' || steps.tradeday.outputs.is_trade_today == 'true') && steps.pushmode.outputs.mode != 'intraday' && steps.pushmode.outputs.mode != 'auction_prefetch' && steps.pushmode.outputs.mode != 'auction_prefetch_retry' }}
+        if: ${{ (github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true') && steps.warmup.outputs.skip != 'true' && (github.event_name != 'schedule' || steps.tradeday.outputs.is_trade_today == 'true') && steps.pushmode.outputs.mode != 'intraday' }}
         timeout-minutes: 6
         run: |
           set -euo pipefail
@@ -816,14 +671,14 @@ jobs:
           fi
 
       - name: Pre-fetch external data (明日策略池 + 东方财富今日题材)
-        if: ${{ (github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true') && steps.warmup.outputs.skip != 'true' && (github.event_name != 'schedule' || steps.tradeday.outputs.is_trade_today == 'true') && steps.pushmode.outputs.mode != 'intraday' && steps.pushmode.outputs.mode != 'auction_prefetch' && steps.pushmode.outputs.mode != 'auction_prefetch_retry' }}
+        if: ${{ (github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true') && steps.warmup.outputs.skip != 'true' && (github.event_name != 'schedule' || steps.tradeday.outputs.is_trade_today == 'true') && steps.pushmode.outputs.mode != 'intraday' }}
         run: |
           # 已在 Post-fetch cache sync 阶段以同日校验完成，避免二次请求覆盖有效缓存。
           echo "External theme chain already refreshed and validated."
 
       - name: Resolve full publish source cache
         id: publishsource
-        if: ${{ (github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true') && steps.warmup.outputs.skip != 'true' && (github.event_name != 'schedule' || steps.tradeday.outputs.is_trade_today == 'true') && steps.pushmode.outputs.mode != 'intraday' && steps.pushmode.outputs.mode != 'auction_prefetch' && steps.pushmode.outputs.mode != 'auction_prefetch_retry' }}
+        if: ${{ (github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true') && steps.warmup.outputs.skip != 'true' && (github.event_name != 'schedule' || steps.tradeday.outputs.is_trade_today == 'true') && steps.pushmode.outputs.mode != 'intraday' }}
         env:
           EVENT_NAME: ${{ github.event_name }}
           REQUESTED_DATE: ${{ steps.pushmode.outputs.date10 }}
@@ -865,13 +720,13 @@ jobs:
           PY
 
       - name: Build Vue3 web (Vite -> single HTML)
-        if: ${{ (github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true') && steps.warmup.outputs.skip != 'true' && (github.event_name != 'schedule' || steps.tradeday.outputs.is_trade_today == 'true') && steps.pushmode.outputs.mode != 'intraday' && steps.pushmode.outputs.mode != 'auction_prefetch' && steps.pushmode.outputs.mode != 'auction_prefetch_retry' }}
+        if: ${{ (github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true') && steps.warmup.outputs.skip != 'true' && (github.event_name != 'schedule' || steps.tradeday.outputs.is_trade_today == 'true') && steps.pushmode.outputs.mode != 'intraday' }}
         run: |
           set -euo pipefail
           cd web && npm run build
 
       - name: Inject market data into Vue3 HTML
-        if: ${{ (github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true') && steps.warmup.outputs.skip != 'true' && (github.event_name != 'schedule' || steps.tradeday.outputs.is_trade_today == 'true') && steps.pushmode.outputs.mode != 'intraday' && steps.pushmode.outputs.mode != 'auction_prefetch' && steps.pushmode.outputs.mode != 'auction_prefetch_retry' }}
+        if: ${{ (github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true') && steps.warmup.outputs.skip != 'true' && (github.event_name != 'schedule' || steps.tradeday.outputs.is_trade_today == 'true') && steps.pushmode.outputs.mode != 'intraday' }}
         env:
           RUN_DATE: ${{ steps.pushmode.outputs.date10 }}
           EFFECTIVE_DATE8: ${{ steps.publishsource.outputs.effective_date8 }}
@@ -887,7 +742,7 @@ jobs:
 
       - name: Validate stock research snapshot in published market data
         # push 不对竞价时窗数据做强校验；业务 schedule/显式手动任务仍按策略严格校验。
-        if: ${{ github.event_name != 'push' && (github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true') && steps.warmup.outputs.skip != 'true' && (github.event_name != 'schedule' || steps.tradeday.outputs.is_trade_today == 'true') && steps.pushmode.outputs.mode != 'intraday' && steps.pushmode.outputs.mode != 'auction_prefetch' && steps.pushmode.outputs.mode != 'auction_prefetch_retry' && steps.stockresearchfinal.outputs.validate_snapshot == 'true' }}
+        if: ${{ github.event_name != 'push' && (github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true') && steps.warmup.outputs.skip != 'true' && (github.event_name != 'schedule' || steps.tradeday.outputs.is_trade_today == 'true') && steps.pushmode.outputs.mode != 'intraday' && steps.stockresearchfinal.outputs.validate_snapshot == 'true' }}
         env:
           EVENT_NAME: ${{ github.event_name }}
           RUN_DATE: ${{ steps.pushmode.outputs.date10 }}
@@ -1046,7 +901,7 @@ jobs:
           PY
 
       - name: Prepare Pages site
-        if: ${{ (github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true') && steps.warmup.outputs.skip != 'true' && (github.event_name != 'schedule' || steps.tradeday.outputs.is_trade_today == 'true') && steps.pushmode.outputs.mode != 'intraday' && steps.pushmode.outputs.mode != 'auction_prefetch' && steps.pushmode.outputs.mode != 'auction_prefetch_retry' }}
+        if: ${{ (github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true') && steps.warmup.outputs.skip != 'true' && (github.event_name != 'schedule' || steps.tradeday.outputs.is_trade_today == 'true') && steps.pushmode.outputs.mode != 'intraday' }}
         run: |
           set -euo pipefail
           report_html="./web/dist/index.html"
@@ -1108,7 +963,7 @@ jobs:
           ls -la ./site/ | grep -E '\.(json|js|html)$' || true
 
       - name: Commit & push to gh-pages
-        if: ${{ (github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true') && steps.warmup.outputs.skip != 'true' && (github.event_name != 'schedule' || steps.tradeday.outputs.is_trade_today == 'true') && steps.pushmode.outputs.mode != 'intraday' && steps.pushmode.outputs.mode != 'auction_prefetch' && steps.pushmode.outputs.mode != 'auction_prefetch_retry' }}
+        if: ${{ (github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true') && steps.warmup.outputs.skip != 'true' && (github.event_name != 'schedule' || steps.tradeday.outputs.is_trade_today == 'true') && steps.pushmode.outputs.mode != 'intraday' }}
         run: |
           set -euo pipefail
           # 将构建产物覆盖写入 gh-pages 根目录（Deploy from branch: /）
@@ -1155,7 +1010,6 @@ jobs:
           elif [ -f cache/account_strategy_metrics.json ]; then
             cp -f cache/account_strategy_metrics.json site_prev/cache/account_strategy_metrics.json
           fi
-          cp -f cache/stock_research_realtime_quotes-*.json site_prev/cache/ 2>/dev/null || true
           # 持久化收盘在线抓取结果，供后续全量发布和页面降级复用。
           cp -f cache_online/xuangubao_abnormal-*.json site_prev/cache/ 2>/dev/null || true
           cp -f cache_online/xuangubao_surge_plates-*.json site_prev/cache/ 2>/dev/null || true
@@ -1165,10 +1019,6 @@ jobs:
           cfiles=( $(ls -1 site_prev/cache/market_data-*.json 2>/dev/null | sort || true) )
           if [ ${#cfiles[@]} -gt 7 ]; then
             rm -f "${cfiles[@]:0:${#cfiles[@]}-7}"
-          fi
-          rfiles=( $(ls -1 site_prev/cache/stock_research_realtime_quotes-*.json 2>/dev/null | sort || true) )
-          if [ ${#rfiles[@]} -gt 7 ]; then
-            rm -f "${rfiles[@]:0:${#rfiles[@]}-7}"
           fi
 
           cp -f ./cache_online/intraday_resonance-*.json site_prev/ 2>/dev/null || true
@@ -1193,7 +1043,7 @@ jobs:
             cp -f cache/pools_cache.json cache/theme_cache.json cache/plate_rotate_cache.json site_prev/cache/ 2>/dev/null || true
             cp -f cache/index_kline_cache.json cache/height_trend_cache.json cache/theme_trend_cache.json site_prev/cache/ 2>/dev/null || true
             cp -f cache/concept_fund_flow_cache.json cache/money_flow_cache.json cache/trade_days_cache.json site_prev/cache/ 2>/dev/null || true
-            cp -f cache/stock_research_backtest_source.json cache/stock_research_realtime_quotes-*.json site_prev/cache/ 2>/dev/null || true
+            cp -f cache/stock_research_backtest_source.json site_prev/cache/ 2>/dev/null || true
             cp -f cache_online/recommendation_price_history.json cache_online/xuangubao_abnormal-*.json cache_online/xuangubao_surge_plates-*.json site_prev/cache/ 2>/dev/null || true
             cp -f cache_online/eastmoney_tomorrow_themes-*.json cache_online/eastmoney_theme_stocks-*.json cache_online/watchlist_cache-*.json site_prev/cache/ 2>/dev/null || true
             cp -f ./cache_online/intraday_resonance-*.json site_prev/ 2>/dev/null || true

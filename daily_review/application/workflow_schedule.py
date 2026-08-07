@@ -10,11 +10,7 @@ from typing import Any
 TZ_BJ = timezone(timedelta(hours=8))
 
 SCHEDULE_MODE_BY_CRON: dict[str, str] = {
-    "55 0 * * 1-5": "open_fore",
-    "15 1 * * 1-5": "open_fore",
-    "25 1 * * 1-5": "auction_prefetch",
     "26 1 * * 1-5": "open_fore",
-    "27 1 * * 1-5": "open_fore",
     "0 7 * * 1-5": "eod",
     "0 8 * * 1-5": "eod",
     "0 9 * * 1-5": "eod",
@@ -33,11 +29,11 @@ INTRADAY_SESSION_WINDOWS: dict[str, tuple[tuple[int, int], tuple[int, int]]] = {
 }
 
 INVALID_QUOTE_SOURCES = {"unavailable", "forced_query_unavailable"}
+AUCTION_QUOTE_SOURCES = {"workflow_prefetch", "realtime_buy_snapshot"}
 
 INTRADAY_CUTOFF_HOUR_BJ = 15
 INTRADAY_SLOT_SECONDS = 10 * 60
 INTRADAY_SLOT_GRACE_SECONDS = 2 * 60
-AUCTION_PREFETCH_ONLY_MODES = {"auction_prefetch", "auction_prefetch_retry"}
 PREFETCH_HTTP_TIMEOUT = 12
 PREFETCH_HTTP_RETRIES = 2
 PREFETCH_FETCH_ATTEMPTS = 2
@@ -245,8 +241,7 @@ def execute_auction_snapshot_prefetch(
     current = now.astimezone(TZ_BJ) if now else _now_bj()
     total = current.hour * 3600 + current.minute * 60 + current.second
     in_window = 9 * 3600 + 25 * 60 <= total < 9 * 3600 + 30 * 60
-    after_window = total >= 9 * 3600 + 30 * 60
-    allow_outside_window_fetch = force_outside_window or after_window
+    allow_outside_window_fetch = force_outside_window
     if not in_window and not allow_outside_window_fetch:
         result["reason"] = "outside_entry_window"
         result["last_error"] = "outside 09:25-09:30 window"
@@ -260,7 +255,12 @@ def execute_auction_snapshot_prefetch(
         result["attempts"] = attempt
         try:
             quotes_map, as_of = _fetch_prefetch_quotes_map(client, codes)
-            if quotes_map:
+            returned_clock = str(as_of or "").strip()[11:19]
+            returned_is_auction = (
+                str(as_of or "").strip().startswith(f"{trade_date10} ")
+                and "09:25:00" <= returned_clock < "09:30:00"
+            )
+            if quotes_map and returned_is_auction:
                 path = _save_prefetched_quotes_snapshot(
                     date10=reference_date,
                     items=quotes_map,
@@ -273,7 +273,7 @@ def execute_auction_snapshot_prefetch(
                 result["source"] = "forced_query" if allow_outside_window_fetch and not in_window else "workflow_prefetch"
                 result["reason"] = "prefetch_saved"
                 return result
-            result["last_error"] = "empty_quotes_map"
+            result["last_error"] = "empty_quotes_map" if not quotes_map else "returned_quote_outside_auction_window"
         except Exception as exc:
             result["last_error"] = f"{type(exc).__name__}: {exc}"
         if attempt < PREFETCH_FETCH_ATTEMPTS:
@@ -400,7 +400,9 @@ def describe_prefetched_quotes_snapshot(cache_dir: Path, trade_date10: str) -> d
             continue
         if not as_of.startswith(trade_date10) or len(as_of) < 19:
             continue
-        if source in INVALID_QUOTE_SOURCES:
+        quote_clock = as_of[11:19]
+        auction_window = "09:25:00" <= quote_clock < "09:30:00"
+        if source not in {"workflow_prefetch", "realtime_buy_snapshot"} or not auction_window:
             continue
         result.update(
             {
@@ -410,6 +412,7 @@ def describe_prefetched_quotes_snapshot(cache_dir: Path, trade_date10: str) -> d
                 "as_of": as_of,
                 "count": len(items),
                 "reference_date": str(payload.get("date") or "").strip(),
+                "auction_window": True,
             }
         )
         return result
@@ -425,6 +428,7 @@ def describe_market_data_snapshot(path: Path, trade_date10: str) -> dict[str, An
         "trade_date": "",
         "reference_date": "",
         "candidate_count": 0,
+        "forced_query": False,
         "future_trade_day_guard": False,
         "auction_window": False,
         "quality": "missing",
@@ -444,7 +448,7 @@ def describe_market_data_snapshot(path: Path, trade_date10: str) -> dict[str, An
     future_trade_day_guard = bool(diagnostics.get("future_trade_day_guard")) or source == "future_trade_day_guard"
     quote_time_matches_trade_date = quote_time.startswith(f"{trade_date10} ") if trade_date10 and quote_time else False
     quote_clock = quote_time[11:19] if len(quote_time) >= 19 else ""
-    auction_window = "09:25:00" <= quote_clock <= "09:30:59"
+    auction_window = "09:25:00" <= quote_clock < "09:30:00"
     valid = (
         quote_time_matches_trade_date
         and len(quote_time) >= 19
@@ -459,6 +463,7 @@ def describe_market_data_snapshot(path: Path, trade_date10: str) -> dict[str, An
             "trade_date": trade_date,
             "reference_date": reference_date,
             "candidate_count": candidate_count,
+            "forced_query": bool(diagnostics.get("forced_query")),
             "future_trade_day_guard": future_trade_day_guard,
             "quote_time_matches_trade_date": quote_time_matches_trade_date,
             "auction_window": auction_window,
@@ -475,11 +480,17 @@ def resolve_auction_snapshot_prefetch_plan(cache_dir: Path, trade_date10: str) -
         trade_date10,
     )
 
-    if prefetched["found"]:
+    if prefetched["found"] and prefetched.get("auction_window"):
         should_prefetch = False
         status = "auction_snapshot_ready_skip"
         ready_source = "prefetched_snapshot"
-    elif market_data["found"]:
+    elif (
+        market_data["found"]
+        and market_data.get("auction_window")
+        and market_data.get("source") in AUCTION_QUOTE_SOURCES
+        and not bool(market_data.get("forced_query"))
+        and int(market_data.get("candidate_count") or 0) > 0
+    ):
         should_prefetch = False
         status = "auction_snapshot_ready_skip"
         ready_source = "market_data_snapshot"
