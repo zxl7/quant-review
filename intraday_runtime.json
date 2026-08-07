@@ -1,11 +1,11 @@
 {
   "schema": "intraday_runtime_v1",
   "date": "2026-08-07",
-  "updated_at": "2026-08-07 13:00:18",
+  "updated_at": "2026-08-07 13:10:04",
   "source": "必盈(实时)+必盈(实时)",
   "latest": {
-    "time": "13:00:18",
-    "ts_bj": "2026-08-07 13:00:18",
+    "time": "13:10:04",
+    "ts_bj": "2026-08-07 13:10:04",
     "date": "2026-08-07",
     "source": "intraday_live",
     "provider": "必盈(实时)+必盈(实时)",
@@ -16,18 +16,18 @@
       "dtgc": "valid"
     },
     "pool_errors": {},
-    "zt": 60,
+    "zt": 63,
     "dt": 4,
-    "zab": 7,
-    "zb": 10.4,
-    "fb": 89.6,
-    "jj": 23.3,
-    "lianban": 14,
+    "zab": 9,
+    "zb": 12.5,
+    "fb": 87.5,
+    "jj": 20.6,
+    "lianban": 13,
     "max_lb": 4,
-    "amount": "16886.3亿",
+    "amount": "17745.0亿",
     "bf": 0,
-    "heat": 61,
-    "risk": 15,
+    "heat": 60,
+    "risk": 17,
     "headline": "修复",
     "concepts": [
       {
@@ -62,7 +62,7 @@
         "text": "盘中模式：强制实时拉取"
       }
     ],
-    "shift_score": 71,
+    "shift_score": 70,
     "shift_label": "修复",
     "note": "情绪整体平稳，维持当前节奏。"
   },
@@ -885,40 +885,103 @@
       "shift_score": 71,
       "shift_label": "修复",
       "note": "情绪整体平稳，维持当前节奏。"
+    },
+    {
+      "time": "13:10:04",
+      "ts_bj": "2026-08-07 13:10:04",
+      "date": "2026-08-07",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid"
+      },
+      "pool_errors": {},
+      "zt": 63,
+      "dt": 4,
+      "zab": 9,
+      "zb": 12.5,
+      "fb": 87.5,
+      "jj": 20.6,
+      "lianban": 13,
+      "max_lb": 4,
+      "amount": "17745.0亿",
+      "bf": 0,
+      "heat": 60,
+      "risk": 17,
+      "headline": "修复",
+      "concepts": [
+        {
+          "name": "元件",
+          "lead": "宝鼎科技",
+          "chg_pct": null
+        },
+        {
+          "name": "化学制药",
+          "lead": "哈药股份",
+          "chg_pct": null
+        },
+        {
+          "name": "医疗服务",
+          "lead": "百花医药",
+          "chg_pct": null
+        },
+        {
+          "name": "通信设备",
+          "lead": "汇绿生态",
+          "chg_pct": null
+        },
+        {
+          "name": "半导体",
+          "lead": "有研新材",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        }
+      ],
+      "shift_score": 70,
+      "shift_label": "修复",
+      "note": "情绪整体平稳，维持当前节奏。"
     }
   ],
   "indices": [
     {
       "name": "上证指数",
       "code": "000001.SH",
-      "val": 3919.732,
-      "chg": 0.4968782304776623,
-      "cje": 774590699600.0,
-      "t": "2026-08-07 13:00:18"
+      "val": 3920.32,
+      "chg": 0.5119537928884444,
+      "cje": 814687821900.0,
+      "t": "2026-08-07 13:10:03"
     },
     {
       "name": "深证成指",
       "code": "399001.SZ",
-      "val": 14306.379,
-      "chg": 1.3909023175634116,
-      "cje": 911574659400.0,
-      "t": "2026-08-07 13:00:12"
+      "val": 14326.096,
+      "chg": 1.5306388938833364,
+      "cje": 959131760200.0,
+      "t": "2026-08-07 13:09:57"
     },
     {
       "name": "创业板指",
       "code": "399006.SZ",
-      "val": 3585.214,
-      "chg": 1.981305965479184,
-      "cje": 450428245100.0,
-      "t": "2026-08-07 13:00:18"
+      "val": 3590.572,
+      "chg": 2.1337141166698954,
+      "cje": 475036459000.0,
+      "t": "2026-08-07 13:10:00"
     }
   ],
   "asOf": {
-    "indices": "13:00:18"
+    "indices": "13:10:00"
   },
   "health": {
     "status": "valid",
-    "last_valid_at": "2026-08-07 13:00:18",
+    "last_valid_at": "2026-08-07 13:10:04",
     "rejected_reason": "",
     "source": {
       "status": "valid",
@@ -936,8 +999,8 @@
       "message": "intraday_coverage_incomplete",
       "date": "2026-08-07",
       "expected_count": 26,
-      "due_count": 14,
-      "observed_count": 13,
+      "due_count": 15,
+      "observed_count": 14,
       "observed_slots": [
         "09:40",
         "09:50",
@@ -951,7 +1014,8 @@
         "11:10",
         "11:20",
         "11:30",
-        "13:00"
+        "13:00",
+        "13:10"
       ],
       "missing_slots": [
         "09:30"
@@ -960,18 +1024,18 @@
       "out_of_session": [],
       "monotonic": true,
       "morning_coverage": 12,
-      "afternoon_coverage": 1
+      "afternoon_coverage": 2
     }
   },
   "live": {
     "market": {
-      "zt": 60,
+      "zt": 63,
       "dt": 4,
-      "zab": 7,
-      "zab_rate": 10.4,
-      "lianban": 14,
+      "zab": 9,
+      "zab_rate": 12.5,
+      "lianban": 13,
       "max_lianban": 4,
-      "amount": "16886.3亿"
+      "amount": "17745.0亿"
     },
     "alerts": [
       {
