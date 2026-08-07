@@ -1,6 +1,6 @@
 {
   "schema": "watchlist_v2",
-  "generated_at_bj": "2026-08-07 15:52:35",
+  "generated_at_bj": "2026-08-07 16:09:53",
   "data_date": "2026-08-07",
   "pools_date": "2026-08-07",
   "sector_resolution": {
@@ -12198,6 +12198,23 @@
         "xgb_description": "",
         "event_count": 0
       },
+      "民爆": {
+        "name": "民爆",
+        "aliases": [],
+        "stocks": [
+          "002827"
+        ],
+        "em_theme_code": "",
+        "em_rank": null,
+        "em_zt_count": 0,
+        "em_cumulate_gain": 0.0,
+        "em_is_hot": false,
+        "em_title": "",
+        "em_summary": "",
+        "xgb_plate_id": "21277137",
+        "xgb_description": "",
+        "event_count": 0
+      },
       "其他": {
         "name": "其他",
         "aliases": [],
@@ -14419,23 +14436,6 @@
         "xgb_description": "",
         "event_count": 0
       },
-      "民爆": {
-        "name": "民爆",
-        "aliases": [],
-        "stocks": [
-          "002827"
-        ],
-        "em_theme_code": "",
-        "em_rank": null,
-        "em_zt_count": 0,
-        "em_cumulate_gain": 0.0,
-        "em_is_hot": false,
-        "em_title": "",
-        "em_summary": "",
-        "xgb_plate_id": "",
-        "xgb_description": "",
-        "event_count": 0
-      },
       "西部大开发": {
         "name": "西部大开发",
         "aliases": [],
@@ -16603,7 +16603,7 @@
     },
     "diagnostics": {
       "abnormal_events": 120,
-      "surge_plates": 22,
+      "surge_plates": 23,
       "em_themes": 214,
       "em_theme_stocks": 15,
       "stock_count": 762,
@@ -27687,6 +27687,40 @@
         "action_hint": "TOPCon电池有观察价值，等待情绪/量能/消息继续共振。"
       },
       {
+        "name": "民爆",
+        "canonical_name": "民爆",
+        "status": "observe_candidate",
+        "base_tide_status": "neutral",
+        "action": "watch",
+        "tide_zone": "neutral",
+        "tide_phase": "neutral",
+        "core_score": 57,
+        "ebb_score": 41,
+        "tide_score": 53,
+        "emotion_score": 74,
+        "strength_score": 47,
+        "volume_score": 62,
+        "news_score": 72,
+        "market_score": 67,
+        "structure_score": 58,
+        "confidence": "high",
+        "confirms": {
+          "emotion": true,
+          "strength": false,
+          "volume": true,
+          "news": true,
+          "market": true
+        },
+        "reasons": [
+          "消息催化",
+          "低位连板承接"
+        ],
+        "cautions": [
+          "高位负反馈"
+        ],
+        "action_hint": "民爆有观察价值，等待情绪/量能/消息继续共振。"
+      },
+      {
         "name": "化工",
         "canonical_name": "化工",
         "status": "observe_candidate",
@@ -29415,40 +29449,6 @@
           "高位负反馈"
         ],
         "action_hint": "智能眼镜核心潮汐中性，按梯队和个股辨识度处理。"
-      },
-      {
-        "name": "民爆",
-        "canonical_name": "民爆",
-        "status": "neutral_wait",
-        "base_tide_status": "neutral",
-        "action": "watch",
-        "tide_zone": "neutral",
-        "tide_phase": "neutral",
-        "core_score": 54,
-        "ebb_score": 41,
-        "tide_score": 53,
-        "emotion_score": 74,
-        "strength_score": 47,
-        "volume_score": 62,
-        "news_score": 56,
-        "market_score": 67,
-        "structure_score": 58,
-        "confidence": "medium",
-        "confirms": {
-          "emotion": true,
-          "strength": false,
-          "volume": true,
-          "news": false,
-          "market": true
-        },
-        "reasons": [
-          "消息催化",
-          "低位连板承接"
-        ],
-        "cautions": [
-          "高位负反馈"
-        ],
-        "action_hint": "民爆核心潮汐中性，按梯队和个股辨识度处理。"
       },
       {
         "name": "热泵概念",
@@ -39750,7 +39750,7 @@
             "code": "603228",
             "name": "景旺电子",
             "action": "watch",
-            "score": 55,
+            "score": 59,
             "main_line": "半导体",
             "primary_sector": "光模块",
             "primary_confidence": 0.55,
@@ -39774,6 +39774,7 @@
               "环境防守",
               "发酵期",
               "观察池候选",
+              "接力链条强",
               "核心潮汐确认"
             ],
             "cautions": [
@@ -39788,7 +39789,7 @@
             "turnover": 3.48,
             "leaders_score": 0.0,
             "env_adjust": -6,
-            "relay_adjust": -8,
+            "relay_adjust": -4,
             "risk_penalty": 0,
             "zt_placement": "watch",
             "style_tag": "接力",
@@ -39945,7 +39946,7 @@
         "summary": "半导体主线，买入 通宇通讯(光模块核心) / 生益科技(PCB板核心) / 武汉凡谷(光模块核心)，观察 欧克科技 · 景旺电子 · 光迅科技 · 东材科技",
         "diagnostics": {
           "member_count": 20,
-          "avg_score": 52.1,
+          "avg_score": 52.3,
           "env_gate": "防守观察",
           "relay_hits": 0,
           "line_penalty": 0,
