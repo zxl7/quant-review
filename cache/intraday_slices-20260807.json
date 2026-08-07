@@ -2,7 +2,7 @@
   "schema": "intraday_snapshot_v1",
   "render_mode": "snapshot_stream",
   "date": "2026-08-07",
-  "count": 23,
+  "count": 24,
   "interval_min": null,
   "simulated": false,
   "snapshots": [
@@ -1462,11 +1462,78 @@
       "shift_score": 59,
       "shift_label": "分歧",
       "note": "情绪边际修复，但仍需确认持续性。"
+    },
+    {
+      "time": "14:50:06",
+      "ts_bj": "2026-08-07 14:50:06",
+      "date": "2026-08-07",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid"
+      },
+      "pool_errors": {},
+      "zt": 70,
+      "dt": 4,
+      "zab": 27,
+      "zb": 27.8,
+      "fb": 72.2,
+      "jj": 20.0,
+      "lianban": 14,
+      "max_lb": 4,
+      "amount": "25396.2亿",
+      "bf": 0,
+      "heat": 55,
+      "risk": 33,
+      "headline": "修复",
+      "concepts": [
+        {
+          "name": "元件",
+          "lead": "宝鼎科技",
+          "chg_pct": null
+        },
+        {
+          "name": "医疗服务",
+          "lead": "百花医药",
+          "chg_pct": null
+        },
+        {
+          "name": "化学制药",
+          "lead": "哈药股份",
+          "chg_pct": null
+        },
+        {
+          "name": "半导体",
+          "lead": "有研新材",
+          "chg_pct": null
+        },
+        {
+          "name": "化学制品",
+          "lead": "和远气体",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        },
+        {
+          "level": "warn",
+          "text": "炸板率偏高（27.8%）→ 注意回封质量"
+        }
+      ],
+      "shift_score": 60,
+      "shift_label": "修复",
+      "note": "情绪整体平稳，维持当前节奏。"
     }
   ],
   "latest": {
-    "time": "14:40:05",
-    "ts_bj": "2026-08-07 14:40:05",
+    "time": "14:50:06",
+    "ts_bj": "2026-08-07 14:50:06",
     "date": "2026-08-07",
     "source": "intraday_live",
     "provider": "必盈(实时)+必盈(实时)",
@@ -1477,19 +1544,19 @@
       "dtgc": "valid"
     },
     "pool_errors": {},
-    "zt": 67,
+    "zt": 70,
     "dt": 4,
     "zab": 27,
-    "zb": 28.7,
-    "fb": 71.3,
-    "jj": 20.9,
+    "zb": 27.8,
+    "fb": 72.2,
+    "jj": 20.0,
     "lianban": 14,
     "max_lb": 4,
-    "amount": "11104.9亿",
+    "amount": "25396.2亿",
     "bf": 0,
-    "heat": 54,
-    "risk": 34,
-    "headline": "分歧",
+    "heat": 55,
+    "risk": 33,
+    "headline": "修复",
     "concepts": [
       {
         "name": "元件",
@@ -1524,18 +1591,18 @@
       },
       {
         "level": "warn",
-        "text": "炸板率偏高（28.7%）→ 注意回封质量"
+        "text": "炸板率偏高（27.8%）→ 注意回封质量"
       }
     ],
-    "shift_score": 59,
-    "shift_label": "分歧",
-    "note": "情绪边际修复，但仍需确认持续性。"
+    "shift_score": 60,
+    "shift_label": "修复",
+    "note": "情绪整体平稳，维持当前节奏。"
   },
-  "updated_at": "2026-08-07 14:40:05",
-  "snapshot_sig": "2026-08-07|2026-08-07 14:40:05|23",
+  "updated_at": "2026-08-07 14:50:06",
+  "snapshot_sig": "2026-08-07|2026-08-07 14:50:06|24",
   "health": {
     "status": "valid",
-    "last_valid_at": "2026-08-07 14:40:05",
+    "last_valid_at": "2026-08-07 14:50:06",
     "rejected_reason": "",
     "source": {
       "status": "valid",
