@@ -1,11 +1,11 @@
 {
   "schema": "intraday_runtime_v1",
   "date": "2026-08-07",
-  "updated_at": "2026-08-07 11:30:06",
+  "updated_at": "2026-08-07 13:00:18",
   "source": "必盈(实时)+必盈(实时)",
   "latest": {
-    "time": "11:30:06",
-    "ts_bj": "2026-08-07 11:30:06",
+    "time": "13:00:18",
+    "ts_bj": "2026-08-07 13:00:18",
     "date": "2026-08-07",
     "source": "intraday_live",
     "provider": "必盈(实时)+必盈(实时)",
@@ -16,15 +16,15 @@
       "dtgc": "valid"
     },
     "pool_errors": {},
-    "zt": 57,
+    "zt": 60,
     "dt": 4,
     "zab": 7,
-    "zb": 10.9,
-    "fb": 89.1,
-    "jj": 22.8,
-    "lianban": 13,
+    "zb": 10.4,
+    "fb": 89.6,
+    "jj": 23.3,
+    "lianban": 14,
     "max_lb": 4,
-    "amount": "16766.9亿",
+    "amount": "16886.3亿",
     "bf": 0,
     "heat": 61,
     "risk": 15,
@@ -46,13 +46,13 @@
         "chg_pct": null
       },
       {
-        "name": "半导体",
-        "lead": "有研新材",
+        "name": "通信设备",
+        "lead": "汇绿生态",
         "chg_pct": null
       },
       {
-        "name": "化学制品",
-        "lead": "和远气体",
+        "name": "半导体",
+        "lead": "有研新材",
         "chg_pct": null
       }
     ],
@@ -64,7 +64,7 @@
     ],
     "shift_score": 71,
     "shift_label": "修复",
-    "note": "情绪边际修复，但仍需确认持续性。"
+    "note": "情绪整体平稳，维持当前节奏。"
   },
   "snapshots": [
     {
@@ -822,40 +822,103 @@
       "shift_score": 71,
       "shift_label": "修复",
       "note": "情绪边际修复，但仍需确认持续性。"
+    },
+    {
+      "time": "13:00:18",
+      "ts_bj": "2026-08-07 13:00:18",
+      "date": "2026-08-07",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid"
+      },
+      "pool_errors": {},
+      "zt": 60,
+      "dt": 4,
+      "zab": 7,
+      "zb": 10.4,
+      "fb": 89.6,
+      "jj": 23.3,
+      "lianban": 14,
+      "max_lb": 4,
+      "amount": "16886.3亿",
+      "bf": 0,
+      "heat": 61,
+      "risk": 15,
+      "headline": "修复",
+      "concepts": [
+        {
+          "name": "元件",
+          "lead": "宝鼎科技",
+          "chg_pct": null
+        },
+        {
+          "name": "化学制药",
+          "lead": "哈药股份",
+          "chg_pct": null
+        },
+        {
+          "name": "医疗服务",
+          "lead": "百花医药",
+          "chg_pct": null
+        },
+        {
+          "name": "通信设备",
+          "lead": "汇绿生态",
+          "chg_pct": null
+        },
+        {
+          "name": "半导体",
+          "lead": "有研新材",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        }
+      ],
+      "shift_score": 71,
+      "shift_label": "修复",
+      "note": "情绪整体平稳，维持当前节奏。"
     }
   ],
   "indices": [
     {
       "name": "上证指数",
       "code": "000001.SH",
-      "val": 3919.511,
-      "chg": 0.49121207521782917,
-      "cje": 770663831900.0,
-      "t": "2026-08-07 11:30:03"
+      "val": 3919.732,
+      "chg": 0.4968782304776623,
+      "cje": 774590699600.0,
+      "t": "2026-08-07 13:00:18"
     },
     {
       "name": "深证成指",
       "code": "399001.SZ",
-      "val": 14295.064,
-      "chg": 1.3107116515868371,
-      "cje": 906018888600.0,
-      "t": "2026-08-07 11:30:00"
+      "val": 14306.379,
+      "chg": 1.3909023175634116,
+      "cje": 911574659400.0,
+      "t": "2026-08-07 13:00:12"
     },
     {
       "name": "创业板指",
       "code": "399006.SZ",
-      "val": 3577.2,
-      "chg": 1.7533479730114085,
-      "cje": 446976752800.0,
-      "t": "2026-08-07 11:30:03"
+      "val": 3585.214,
+      "chg": 1.981305965479184,
+      "cje": 450428245100.0,
+      "t": "2026-08-07 13:00:18"
     }
   ],
   "asOf": {
-    "indices": "11:30:03"
+    "indices": "13:00:18"
   },
   "health": {
     "status": "valid",
-    "last_valid_at": "2026-08-07 11:30:06",
+    "last_valid_at": "2026-08-07 13:00:18",
     "rejected_reason": "",
     "source": {
       "status": "valid",
@@ -873,8 +936,8 @@
       "message": "intraday_coverage_incomplete",
       "date": "2026-08-07",
       "expected_count": 26,
-      "due_count": 13,
-      "observed_count": 12,
+      "due_count": 14,
+      "observed_count": 13,
       "observed_slots": [
         "09:40",
         "09:50",
@@ -887,7 +950,8 @@
         "11:00",
         "11:10",
         "11:20",
-        "11:30"
+        "11:30",
+        "13:00"
       ],
       "missing_slots": [
         "09:30"
@@ -896,18 +960,18 @@
       "out_of_session": [],
       "monotonic": true,
       "morning_coverage": 12,
-      "afternoon_coverage": 0
+      "afternoon_coverage": 1
     }
   },
   "live": {
     "market": {
-      "zt": 57,
+      "zt": 60,
       "dt": 4,
       "zab": 7,
-      "zab_rate": 10.9,
-      "lianban": 13,
+      "zab_rate": 10.4,
+      "lianban": 14,
       "max_lianban": 4,
-      "amount": "16766.9亿"
+      "amount": "16886.3亿"
     },
     "alerts": [
       {
@@ -932,13 +996,13 @@
         "chg_pct": null
       },
       {
-        "name": "半导体",
-        "lead": "有研新材",
+        "name": "通信设备",
+        "lead": "汇绿生态",
         "chg_pct": null
       },
       {
-        "name": "化学制品",
-        "lead": "和远气体",
+        "name": "半导体",
+        "lead": "有研新材",
         "chg_pct": null
       }
     ]
