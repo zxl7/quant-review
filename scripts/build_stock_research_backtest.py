@@ -1919,7 +1919,15 @@ def _build_realtime_buy_payload(
             },
         }
     in_window = forced_query or _should_request_realtime_quotes()
-    if not in_window:
+    prefetched = load_prefetched_realtime_quotes(latest_date10)
+    prefetched_as_of = str(prefetched.get("as_of") or "").strip() if isinstance(prefetched, dict) else ""
+    prefetched_source = str(prefetched.get("source") or "").strip() if isinstance(prefetched, dict) else ""
+    prefetched_is_auction = (
+        prefetched_source in {"workflow_prefetch", "realtime_buy_snapshot"}
+        and _quote_time_matches_trade_date(prefetched_as_of, trade_date10)
+        and _is_entry_window_time(prefetched_as_of)
+    )
+    if not in_window and not prefetched_is_auction:
         preserved = _load_preserved_realtime_buy(latest_date10)
         if isinstance(preserved, dict):
             preserved = _upgrade_preserved_realtime_buy_payload(preserved)
@@ -1936,12 +1944,9 @@ def _build_realtime_buy_payload(
     latest_raw = _load_latest_stock_research_snapshot(latest_date10)
     raw_quotes.update(_extract_raw_quotes_items(latest_raw))
     raw_quotes.update(_extract_raw_quotes_items(current_market_data))
-    prefetched = load_prefetched_realtime_quotes(latest_date10)
     items = prefetched.get("items")
     if isinstance(items, dict):
         raw_quotes.update(items)
-    prefetched_as_of = str(prefetched.get("as_of") or "").strip() if isinstance(prefetched, dict) else ""
-    prefetched_source = str(prefetched.get("source") or "").strip() if isinstance(prefetched, dict) else ""
     prefetched_codes = set(items.keys()) if isinstance(items, dict) else set()
     codes = [str(row.get("code") or "").strip() for row in latest_rows if str(row.get("code") or "").strip()]
 

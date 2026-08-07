@@ -559,6 +559,41 @@ class WorkflowScheduleTest(unittest.TestCase):
         self.assertTrue(plan["refresh_backtest"])
         self.assertTrue(plan["validate_snapshot"])
 
+    def test_query_plan_manual_fore_refreshes_delayed_same_day_market_snapshot(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            cache_dir = Path(tmp) / "cache"
+            cache_dir.mkdir()
+            (cache_dir / "market_data-20260807.json").write_text(
+                json.dumps(
+                    {
+                        "date": "2026-08-07",
+                        "stockResearchBacktest": {
+                            "realtimeBuy": {
+                                "trade_date": "2026-08-07",
+                                "reference_date": "2026-08-06",
+                                "candidate_count": 11,
+                                "quote_time": "2026-08-07 11:30:00",
+                                "diagnostics": {"source": "preserved_snapshot", "forced_query": True},
+                            }
+                        },
+                    },
+                    ensure_ascii=False,
+                ),
+                encoding="utf-8",
+            )
+
+            plan = resolve_stock_research_query_plan(
+                mode="full",
+                trade_date10="2026-08-07",
+                is_trade_today=True,
+                input_query_tag="fore",
+                cache_dir=cache_dir,
+            )
+
+        self.assertEqual(plan["effective_query_tag"], "fore")
+        self.assertEqual(plan["resolution_reason"], "manual_fore_prefetch_required")
+        self.assertEqual(plan["market_data_snapshot"]["quality"], "degraded")
+
     def test_query_plan_manual_fore_keeps_fore_when_only_prefetched_snapshot_exists(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             cache_dir = Path(tmp) / "cache"

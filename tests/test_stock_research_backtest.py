@@ -278,11 +278,19 @@ class StockResearchBacktestRowsTest(unittest.TestCase):
                         }
                     },
                     as_of="2026-06-04 09:25:01",
-                    source="unit_test",
+                    source="workflow_prefetch",
                 )
                 with patch.object(backtest, "_should_request_realtime_quotes", return_value=False), patch.object(
-                    backtest, "_load_preserved_realtime_buy", return_value=None
-                ), patch.object(
+                    backtest,
+                    "_load_preserved_realtime_buy",
+                    return_value={
+                        "reference_date": "2026-06-03",
+                        "trade_date": "2026-06-04",
+                        "quote_time": "2026-06-04 11:30:00",
+                        "quoted_count": 1,
+                        "diagnostics": {"source": "preserved_snapshot", "forced_query": True},
+                    },
+                ) as preserved, patch.object(
                     backtest,
                     "_get_price_histories",
                     return_value=(
@@ -297,6 +305,7 @@ class StockResearchBacktestRowsTest(unittest.TestCase):
                 ):
                     payload = backtest.build_stock_research_backtest_payload()
 
+        preserved.assert_not_called()
         self.assertEqual(payload["realtimeBuy"]["quoted_count"], 1)
         self.assertEqual(payload["realtimeBuy"]["buy_count"], 1)
         self.assertEqual(payload["realtimeBuy"]["direct_expected_count"], 1)

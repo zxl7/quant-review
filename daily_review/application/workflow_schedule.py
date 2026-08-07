@@ -707,7 +707,9 @@ def resolve_stock_research_query_plan(
     market_data = prefetch_plan["market_data_snapshot"]
 
     if normalized_input == "fore":
-        if prefetch_plan["status"] == "auction_snapshot_ready_skip" or market_data["found"]:
+        # 任意同日盘中报价都可能是旧的 forced_query 缓存，不能因此取消补抓。
+        # 只有通过 09:25-09:30 质量门槛的原始竞价证据才允许复用。
+        if prefetch_plan["status"] == "auction_snapshot_ready_skip":
             effective_query_tag = ""
             reason = "manual_fore_snapshot_ready_reuse"
         else:
