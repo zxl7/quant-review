@@ -23,10 +23,12 @@ on:
         required: false
         default: ""
         type: string
-  # 工作日北京时间保留 09:26 开盘发布和收盘复盘链路；竞价快照由 auction_prefetch.yml 独立负责。
+  # 09:26 尽早发布，09:31/09:36 对缺失行情继续自动补抓并发布。
   # - 15:00 / 16:00 / 17:00 / 18:00：执行收盘后全量复盘发布
   schedule:
     - cron: "26 1 * * 1-5"
+    - cron: "31 1 * * 1-5"
+    - cron: "36 1 * * 1-5"
     - cron: "0 7 * * 1-5"
     - cron: "0 9 * * 1-5"
     - cron: "0 8 * * 1-5"
@@ -46,7 +48,7 @@ concurrency:
   # push 与 workflow_dispatch 分通道串行：
   # - 各自通道内仍按分支串行，避免同一来源的重复发布互相覆盖；
   # - 手动触发不再和同分支 push 共用一个等待队列，避免 queued run 被“更高优先级等待项”顶掉。
-  group: ${{ github.event_name == 'schedule' && github.event.schedule == '26 1 * * 1-5' && 'gh-pages-publish-open' || github.event_name == 'schedule' && format('gh-pages-publish-schedule-{0}', github.event.schedule) || github.event_name == 'workflow_dispatch' && format('gh-pages-publish-dispatch-{0}', github.ref_name) || format('gh-pages-publish-push-{0}', github.ref_name) }}
+  group: ${{ github.event_name == 'schedule' && github.event.schedule == '26 1 * * 1-5' && 'gh-pages-publish-open-0926' || github.event_name == 'schedule' && github.event.schedule == '31 1 * * 1-5' && 'gh-pages-publish-open-0931' || github.event_name == 'schedule' && github.event.schedule == '36 1 * * 1-5' && 'gh-pages-publish-open-0936' || github.event_name == 'schedule' && format('gh-pages-publish-schedule-{0}', github.event.schedule) || github.event_name == 'workflow_dispatch' && format('gh-pages-publish-dispatch-{0}', github.ref_name) || format('gh-pages-publish-push-{0}', github.ref_name) }}
   # 不取消已在执行中的发布；仅让同通道的新请求接替旧的等待项。
   cancel-in-progress: false
 
@@ -144,6 +146,9 @@ jobs:
           cp -f site_prev/cache/stock_research_backtest_source.json cache/ 2>/dev/null || true
           cp -f site_prev/cache/account_nav_history.jsonl cache/ 2>/dev/null || true
           cp -f site_prev/cache/account_strategy_metrics.json cache/ 2>/dev/null || true
+          # 竞价产物在全量发布中严格只读：恢复用于构建，但提交阶段不得复制或清理。
+          cp -f site_prev/cache/stock_research_realtime_quotes-*.json cache/ 2>/dev/null || true
+          cp -f site_prev/cache/auction_snapshot_status-*.json cache/ 2>/dev/null || true
           cp -f site_prev/cache/intraday_slices-*.json cache/ 2>/dev/null || true
           cp -f site_prev/cache/intraday_snapshots-*.json cache/ 2>/dev/null || true
           # 全量构建也必须从部署分支恢复已验收的运行时，避免仓库内旧样例污染 dataHealth。
@@ -415,6 +420,11 @@ jobs:
           run_date="${{ steps.pushmode.outputs.date10 }}"
           is_trade_today="${{ steps.tradeday.outputs.is_trade_today }}"
           input_query_tag="${{ github.event.inputs.stock_research_query_tag || '' }}"
+          schedule_expr="${{ github.event.schedule || '' }}"
+          if [ -z "${input_query_tag}" ] && { [ "${schedule_expr}" = "26 1 * * 1-5" ] || [ "${schedule_expr}" = "31 1 * * 1-5" ] || [ "${schedule_expr}" = "36 1 * * 1-5" ]; }; then
+            # 三次开盘发布都主动恢复缺失行情；已有合格快照时查询计划会自动复用，不重复抓取。
+            input_query_tag="fore"
+          fi
           MODE="${mode}" \
           RUN_DATE="${run_date}" \
           IS_TRADE_TODAY="${is_trade_today}" \
@@ -1023,6 +1033,35 @@ jobs:
 
           cp -f ./cache_online/intraday_resonance-*.json site_prev/ 2>/dev/null || true
 
+          guard_stale_open_publish() {
+            RUN_DATE="${{ steps.pushmode.outputs.date10 }}" \
+            SCHEDULE_EXPR="${{ github.event.schedule || '' }}" \
+            PYTHONPATH=. python3 - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          from daily_review.application.workflow_schedule import (
+              describe_auction_snapshot_status,
+              resolve_auction_snapshot_prefetch_plan,
+          )
+
+          if os.environ.get("SCHEDULE_EXPR") not in {"26 1 * * 1-5", "31 1 * * 1-5", "36 1 * * 1-5"}:
+              raise SystemExit(0)
+          run_date = os.environ["RUN_DATE"]
+          local_plan = resolve_auction_snapshot_prefetch_plan(Path("cache"), run_date)
+          remote_plan = resolve_auction_snapshot_prefetch_plan(Path("site_prev/cache"), run_date)
+          local_status = describe_auction_snapshot_status(Path("cache"), run_date)
+          remote_status = describe_auction_snapshot_status(Path("site_prev/cache"), run_date)
+          print("open_publish_auction_guard=" + json.dumps({"local": local_plan, "remote": remote_plan, "local_status": local_status, "remote_status": remote_status}, ensure_ascii=False, sort_keys=True))
+          local_usable = local_plan["status"] == "auction_snapshot_ready_skip" or local_status.get("status") == "recovered"
+          remote_usable = remote_plan["status"] == "auction_snapshot_ready_skip" or remote_status.get("status") == "recovered"
+          if not local_usable and remote_usable:
+              print("Open build is stale; preserve the newer remote auction or recovery result.")
+              raise SystemExit(20)
+          PY
+          }
+
           push_rc=1
           for attempt in 1 2 3; do
             # Full site artifacts cannot be rebased over an intraday JSON commit. Rebuild the
@@ -1030,6 +1069,17 @@ jobs:
             git -C site_prev fetch origin gh-pages
             git -C site_prev reset --hard origin/gh-pages
             git -C site_prev clean -fd
+            # 开盘构建若未消费到快照，但远端随后已恢复，禁止旧页面倒序覆盖新结果。
+            set +e
+            guard_stale_open_publish
+            auction_guard_rc=$?
+            set -e
+            if [ "${auction_guard_rc}" -eq 20 ]; then
+              exit 0
+            fi
+            if [ "${auction_guard_rc}" -ne 0 ]; then
+              exit "${auction_guard_rc}"
+            fi
             cp -f ./site/.nojekyll site_prev/.nojekyll
             cp -f ./site/index.html site_prev/index.html
             for f in ./site/*.html; do

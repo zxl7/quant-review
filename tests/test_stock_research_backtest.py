@@ -1409,8 +1409,8 @@ class StockResearchBacktestPublishFreshnessTest(unittest.TestCase):
         self.assertEqual(upgraded["meta"]["default_display_recommendation_date"], "2026-06-22")
         self.assertEqual(upgraded["lifecycle"]["quote_state"], "missing")
         self.assertEqual(upgraded["lifecycle"]["stage"], "auction_snapshot_missing")
-        self.assertIn("不再自动跳到历史闭环结果", upgraded["lifecycle"]["stage_note"])
-        self.assertIn("当前仅保留今日待验证池", upgraded["lifecycle"]["quote_state_note"])
+        self.assertIn("已触发同日实时补抓", upgraded["lifecycle"]["stage_note"])
+        self.assertIn("补到后立即重算买入判断", upgraded["lifecycle"]["quote_state_note"])
 
     def test_upgrade_prefers_latest_closed_day_when_future_pending_next_day_exists(self) -> None:
         payload = {
@@ -1444,8 +1444,23 @@ class StockResearchBacktestPublishFreshnessTest(unittest.TestCase):
             "records": [{"code": "000001", "date10": "2026-06-24", "trade_date10": "2026-06-25"}],
         }
 
-        with patch.object(backtest, "_now_bj", return_value=real_datetime(2026, 6, 25, 16, 0, 0, tzinfo=backtest.TZ_BJ)):
-            upgraded = backtest.upgrade_stock_research_backtest_payload(payload)
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            cache_dir = root / "cache"
+            cache_dir.mkdir()
+            (cache_dir / "pools_cache.json").write_text(
+                json.dumps(
+                    {"pools": {"ztgc": {"2026-06-24": [], "2026-06-25": [], "2026-06-26": []}}},
+                    ensure_ascii=False,
+                ),
+                encoding="utf-8",
+            )
+            with patch.object(backtest, "ROOT", root), patch.object(backtest, "CACHE_DIR", cache_dir), patch.object(
+                backtest,
+                "_now_bj",
+                return_value=real_datetime(2026, 6, 25, 16, 0, 0, tzinfo=backtest.TZ_BJ),
+            ):
+                upgraded = backtest.upgrade_stock_research_backtest_payload(payload)
 
         self.assertEqual(upgraded["meta"]["active_trade_date"], "2026-06-26")
         self.assertEqual(upgraded["meta"]["latest_closed_trade_date"], "2026-06-25")

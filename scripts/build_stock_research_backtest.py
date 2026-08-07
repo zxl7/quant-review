@@ -344,6 +344,10 @@ def _resolve_trade_date10_for_reference_date(
             return existing
         if existing in trade_day_set:
             return existing
+        # 缓存没有覆盖推荐日时，不能用更晚的第一个缓存日期推翻已发布交易日。
+        # 这类数据断层曾把 06-26 的待验证批次错误推进到 07-03。
+        if reference_date10 not in trade_day_set and resolved and resolved > existing:
+            return existing
         if resolved and resolved != existing:
             return resolved
         return existing
@@ -1026,7 +1030,7 @@ def _build_lifecycle(
         else:
             quote_state = "degraded"
             quote_state_label = "盘中补抓"
-            quote_state_note = f"竞价窗口已过，当前仅保留 {quote_time or '-'} 的盘中补抓报价，不作为 9:25 竞价结果。"
+            quote_state_note = f"已在 {quote_time or '-'} 自动补抓实时报价，并按当前价格和成交额重新计算买入判断；该数据不作为 9:25 竞价结果。"
     elif has_current_plan:
         if active_trade_date10 and active_trade_date10 > today10:
             quote_state = "waiting_trade_day"
@@ -1046,9 +1050,11 @@ def _build_lifecycle(
                 quote_state_label = "窗口进行中"
                 quote_state_note = "当前正处于 09:25-09:30，可直接抓取实时竞价结果。"
             else:
+                # 保留 missing 作为旧页面协议，避免下游把 recovering 当成新结果；
+                # 但语义改为自动补抓，开盘发布会用 fore 继续查询同日实时行情。
                 quote_state = "missing"
-                quote_state_label = "快照缺失"
-                quote_state_note = f"{active_trade_date10} 的 09:25 竞价窗口已过，但没有拿到有效快照；当前仅保留今日待验证池，需补抓后才能展示真实闭环结果。"
+                quote_state_label = "快照缺失，自动补抓"
+                quote_state_note = f"{active_trade_date10} 的原始竞价快照暂缺，系统已自动触发 09:26、09:31、09:36 同日实时补抓；补到后立即重算买入判断。"
         else:
             quote_state = "missing" if candidate_count > 0 else "pending_source"
             quote_state_label = "快照缺失" if candidate_count > 0 else "等待推送"
@@ -1068,8 +1074,8 @@ def _build_lifecycle(
             stage_note = f"推荐日 {latest_recommendation_date10 or '-'} 的待验证池已匹配到 {active_trade_date10 or '-'} 9:25 竞价结果，历史统计与当前快照都可同时查看。"
         else:
             stage = "auction_snapshot_degraded"
-            stage_label = "盘中报价降级"
-            stage_note = f"推荐日 {latest_recommendation_date10 or '-'} 未拿到有效 9:25 快照；当前展示 {quote_time or '-'} 的盘中补抓报价，仅供观察。"
+            stage_label = "盘中补抓已恢复"
+            stage_note = f"推荐日 {latest_recommendation_date10 or '-'} 未拿到原始 9:25 快照；已使用 {quote_time or '-'} 的同日实时报价重新计算当前买入判断。"
     elif has_current_plan:
         if quote_state in {"waiting_trade_day", "waiting_window", "window_live"}:
             stage = "post_close_wait_auction"
@@ -1078,6 +1084,10 @@ def _build_lifecycle(
                 f"收盘后样本已经更新到推荐日 {latest_recommendation_date10 or '-'}；"
                 f"{active_trade_date10 or '-'} 这批待验证推荐已准备好，明日 09:25-09:30 再补真实竞价结果。 {default_display_note}"
             ).strip()
+        elif quote_state == "missing" and active_trade_date10 == today10 and now_seconds >= 9 * 3600 + 30 * 60:
+            stage = "auction_snapshot_missing"
+            stage_label = "快照缺失，自动补抓"
+            stage_note = f"{active_trade_date10} 原始 09:25 快照暂缺，系统已触发同日实时补抓；当前不会停留在等待状态，补到后立即刷新买入判断。"
         else:
             stage = "auction_snapshot_missing"
             stage_label = "竞价快照缺失"

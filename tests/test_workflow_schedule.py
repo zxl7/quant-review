@@ -15,7 +15,9 @@ from daily_review.application.workflow_schedule import (
     SCHEDULE_MODE_BY_CRON,
     annotate_intraday_runtime_coverage,
     describe_prefetched_quotes_snapshot,
+    describe_auction_snapshot_status,
     execute_auction_snapshot_prefetch,
+    execute_auction_snapshot_prefetch_until_deadline,
     resolve_auction_snapshot_prefetch_plan,
     resolve_intraday_session,
     resolve_publish_schedule_mode,
@@ -28,6 +30,7 @@ from daily_review.application.workflow_schedule import (
     validate_intraday_runtime_coverage,
     validate_external_data_freshness,
     validate_market_data_stock_research_snapshot,
+    write_auction_snapshot_status,
 )
 
 
@@ -178,6 +181,9 @@ class WorkflowScheduleTest(unittest.TestCase):
         self.assertEqual(result["mode"], "open_fore")
         self.assertEqual(result["beijing_now"], "10:27")
 
+        fallback = resolve_publish_schedule_mode("schedule", "31 1 * * 1-5", now=delayed_now)
+        self.assertEqual(fallback["mode"], "open_fore")
+
     def test_old_early_open_controllers_are_no_longer_publish_triggers(self) -> None:
         for cron in ("55 0 * * 1-5", "15 1 * * 1-5"):
             with self.subTest(cron=cron):
@@ -203,9 +209,27 @@ class WorkflowScheduleTest(unittest.TestCase):
         self.assertIn("auction-prefetch-primary", workflow)
         self.assertIn("auction-prefetch-0925", workflow)
         self.assertIn("auction-prefetch-0927", workflow)
+        self.assertLess(workflow.index("- name: Resolve trade date"), workflow.index("- name: Wait for auction window after preparation"))
+        self.assertLess(workflow.index("- name: Restore auction cache"), workflow.index("- name: Wait for auction window after preparation"))
+        self.assertIn("execute_auction_snapshot_prefetch_until_deadline", workflow)
+        self.assertIn("auction_snapshot_status-*", workflow)
+        self.assertIn("Verify published auction outcome", workflow)
+        self.assertIn("Auction snapshot missing after the 09:25-09:30 capture window", workflow)
         self.assertNotIn("Commit auction snapshot", publish)
         self.assertNotIn('cron: "25 1 * * 1-5"', publish)
         self.assertNotIn("auction_prefetch_retry", publish)
+        self.assertIn('cron: "26 1 * * 1-5"', publish)
+        self.assertIn('cron: "31 1 * * 1-5"', publish)
+        self.assertIn('cron: "36 1 * * 1-5"', publish)
+        self.assertIn("gh-pages-publish-open-0926", publish)
+        self.assertIn("gh-pages-publish-open-0931", publish)
+        self.assertIn("gh-pages-publish-open-0936", publish)
+        self.assertIn("cp -f site_prev/cache/stock_research_realtime_quotes-*.json cache/", publish)
+        publish_commit = publish.split("- name: Commit & push to gh-pages", 1)[1]
+        self.assertIn("Open build is stale; preserve the newer remote auction or recovery result.", publish_commit)
+        self.assertIn('SCHEDULE_EXPR="${{ github.event.schedule || \'\' }}"', publish_commit)
+        self.assertNotIn("stock_research_realtime_quotes", publish_commit)
+        self.assertNotIn("cp -f cache/auction_snapshot_status", publish_commit)
 
     def test_intraday_session_fallback_takes_over_remaining_morning(self) -> None:
         result = resolve_intraday_session(
@@ -823,6 +847,39 @@ class WorkflowScheduleTest(unittest.TestCase):
         self.assertEqual(result["reason"], "prefetch_failed")
         self.assertEqual(result["last_error"], "returned_quote_outside_auction_window")
 
+    def test_execute_auction_snapshot_prefetch_allows_explicit_same_day_recovery(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            cache_dir = Path(tmp) / "cache"
+            cache_dir.mkdir()
+            fake_rows = [{"date10": "2026-08-06", "code": "000001"}]
+            with patch(
+                "daily_review.application.workflow_schedule._load_stock_research_rows_for_prefetch",
+                return_value=(fake_rows, []),
+            ), patch(
+                "daily_review.application.workflow_schedule._load_prefetch_runtime_config",
+                return_value=type("Cfg", (), {"base_url": "https://example.test", "token": "token"})(),
+            ), patch(
+                "daily_review.application.workflow_schedule._build_prefetch_http_client",
+                return_value=object(),
+            ), patch(
+                "daily_review.application.workflow_schedule._fetch_prefetch_quotes_map",
+                return_value=({"000001": {"dm": "000001"}}, "2026-08-07 09:31:02"),
+            ), patch(
+                "daily_review.application.workflow_schedule._save_prefetched_quotes_snapshot",
+                return_value=cache_dir / "stock_research_realtime_quotes-20260806.json",
+            ):
+                result = execute_auction_snapshot_prefetch(
+                    cache_dir=cache_dir,
+                    trade_date10="2026-08-07",
+                    force_outside_window=True,
+                    now=datetime(2026, 8, 7, 9, 31, 2, tzinfo=TZ_BJ),
+                )
+
+        self.assertTrue(result["ok"])
+        self.assertEqual(result["source"], "forced_query")
+        self.assertEqual(result["reason"], "prefetch_saved")
+        self.assertEqual(result["quotes_count"], 1)
+
     def test_execute_auction_snapshot_prefetch_rejects_automatic_capture_after_0930(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             cache_dir = Path(tmp) / "cache"
@@ -837,6 +894,238 @@ class WorkflowScheduleTest(unittest.TestCase):
 
         self.assertFalse(result["ok"])
         self.assertEqual(result["reason"], "outside_entry_window")
+
+    def test_auction_capture_session_retries_until_success_before_deadline(self) -> None:
+        times = iter(
+            [
+                datetime(2026, 8, 7, 9, 25, 0, tzinfo=TZ_BJ),
+                datetime(2026, 8, 7, 9, 25, 5, tzinfo=TZ_BJ),
+                datetime(2026, 8, 7, 9, 25, 15, tzinfo=TZ_BJ),
+                datetime(2026, 8, 7, 9, 25, 16, tzinfo=TZ_BJ),
+            ]
+        )
+        failed = {"ok": False, "attempts": 2, "codes_count": 3, "reason": "prefetch_failed", "last_error": "empty_quotes_map"}
+        succeeded = {
+            "ok": True,
+            "attempts": 1,
+            "codes_count": 3,
+            "reason": "prefetch_saved",
+            "last_error": "",
+            "as_of": "2026-08-07 09:25:15",
+            "source": "workflow_prefetch",
+        }
+        with patch(
+            "daily_review.application.workflow_schedule.execute_auction_snapshot_prefetch",
+            side_effect=[failed, succeeded],
+        ):
+            result = execute_auction_snapshot_prefetch_until_deadline(
+                cache_dir=Path("cache"),
+                trade_date10="2026-08-07",
+                now_fn=lambda: next(times),
+                sleep_fn=lambda _seconds: None,
+                poll_seconds=10,
+            )
+
+        self.assertTrue(result["ok"])
+        self.assertEqual(result["session_rounds"], 2)
+        self.assertEqual(result["session_attempts"], 3)
+        self.assertEqual(result["as_of"], "2026-08-07 09:25:15")
+
+    def test_auction_capture_session_waits_until_0925_when_started_early(self) -> None:
+        times = iter(
+            [
+                datetime(2026, 8, 7, 9, 24, 30, tzinfo=TZ_BJ),
+                datetime(2026, 8, 7, 9, 25, 0, tzinfo=TZ_BJ),
+            ]
+        )
+        sleeps: list[float] = []
+        succeeded = {
+            "ok": True,
+            "attempts": 1,
+            "codes_count": 3,
+            "quotes_count": 3,
+            "reason": "prefetch_saved",
+            "last_error": "",
+            "as_of": "2026-08-07 09:25:00",
+            "source": "workflow_prefetch",
+        }
+        with patch(
+            "daily_review.application.workflow_schedule.execute_auction_snapshot_prefetch",
+            return_value=succeeded,
+        ) as capture:
+            result = execute_auction_snapshot_prefetch_until_deadline(
+                cache_dir=Path("cache"),
+                trade_date10="2026-08-07",
+                now_fn=lambda: next(times),
+                sleep_fn=sleeps.append,
+            )
+
+        self.assertTrue(result["ok"])
+        self.assertEqual(sleeps, [30.0])
+        capture.assert_called_once_with(
+            cache_dir=Path("cache"),
+            trade_date10="2026-08-07",
+            force_outside_window=False,
+            now=datetime(2026, 8, 7, 9, 25, 0, tzinfo=TZ_BJ),
+        )
+
+    def test_auction_capture_session_reports_exhausted_window(self) -> None:
+        times = iter(
+            [
+                datetime(2026, 8, 7, 9, 29, 20, tzinfo=TZ_BJ),
+                datetime(2026, 8, 7, 9, 29, 25, tzinfo=TZ_BJ),
+                datetime(2026, 8, 7, 9, 29, 30, tzinfo=TZ_BJ),
+                datetime(2026, 8, 7, 9, 29, 31, tzinfo=TZ_BJ),
+                datetime(2026, 8, 7, 9, 29, 32, tzinfo=TZ_BJ),
+            ]
+        )
+        failed = {"ok": False, "attempts": 2, "codes_count": 3, "reason": "prefetch_failed", "last_error": "empty_quotes_map"}
+        with patch(
+            "daily_review.application.workflow_schedule.execute_auction_snapshot_prefetch",
+            side_effect=[failed, failed],
+        ):
+            result = execute_auction_snapshot_prefetch_until_deadline(
+                cache_dir=Path("cache"),
+                trade_date10="2026-08-07",
+                now_fn=lambda: next(times),
+                sleep_fn=lambda _seconds: None,
+                poll_seconds=10,
+            )
+
+        self.assertFalse(result["ok"])
+        self.assertEqual(result["reason"], "auction_window_exhausted")
+        self.assertEqual(result["session_rounds"], 2)
+        self.assertEqual(result["session_attempts"], 4)
+
+    def test_auction_capture_session_recovers_with_same_day_quote_after_window(self) -> None:
+        times = iter(
+            [
+                datetime(2026, 8, 7, 9, 31, 0, tzinfo=TZ_BJ),
+                datetime(2026, 8, 7, 9, 31, 1, tzinfo=TZ_BJ),
+            ]
+        )
+        recovered = {
+            "ok": True,
+            "attempts": 1,
+            "codes_count": 3,
+            "quotes_count": 3,
+            "reason": "prefetch_saved",
+            "last_error": "",
+            "as_of": "2026-08-07 09:31:01",
+            "source": "forced_query",
+        }
+        with patch(
+            "daily_review.application.workflow_schedule.execute_auction_snapshot_prefetch",
+            return_value=recovered,
+        ) as capture:
+            result = execute_auction_snapshot_prefetch_until_deadline(
+                cache_dir=Path("cache"),
+                trade_date10="2026-08-07",
+                now_fn=lambda: next(times),
+                sleep_fn=lambda _seconds: None,
+                recover_outside_window=True,
+            )
+
+        self.assertTrue(result["ok"])
+        self.assertEqual(result["reason"], "post_auction_recovery_saved")
+        self.assertEqual(result["session_rounds"], 1)
+        capture.assert_called_once_with(
+            cache_dir=Path("cache"),
+            trade_date10="2026-08-07",
+            force_outside_window=True,
+            now=datetime(2026, 8, 7, 9, 31, 0, tzinfo=TZ_BJ),
+        )
+
+    def test_auction_status_persists_missing_and_success_results(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            cache_dir = Path(tmp) / "cache"
+            cache_dir.mkdir()
+            missing_path = write_auction_snapshot_status(
+                cache_dir=cache_dir,
+                trade_date10="2026-08-07",
+                capture_result={
+                    "ok": False,
+                    "started_at": "2026-08-07 09:25:00",
+                    "finished_at": "2026-08-07 09:29:30",
+                    "session_rounds": 4,
+                    "session_attempts": 8,
+                    "codes_count": 3,
+                    "reason": "auction_window_exhausted",
+                    "last_error": "empty_quotes_map",
+                },
+                now=datetime(2026, 8, 7, 9, 29, 30, tzinfo=TZ_BJ),
+            )
+            missing = json.loads(missing_path.read_text(encoding="utf-8"))
+            self.assertEqual(missing["status"], "missing")
+            self.assertEqual(missing["attempts"], 8)
+
+            (cache_dir / "stock_research_realtime_quotes-20260806.json").write_text(
+                json.dumps(
+                    {
+                        "date": "2026-08-06",
+                        "as_of": "2026-08-07 09:25:18",
+                        "source": "workflow_prefetch",
+                        "items": {"000001": {"dm": "000001", "t": "2026-08-07 09:25:18"}},
+                    }
+                ),
+                encoding="utf-8",
+            )
+            success_path = write_auction_snapshot_status(
+                cache_dir=cache_dir,
+                trade_date10="2026-08-07",
+                capture_result={"ok": True, "session_rounds": 1, "session_attempts": 1},
+                now=datetime(2026, 8, 7, 9, 25, 18, tzinfo=TZ_BJ),
+            )
+            success = json.loads(success_path.read_text(encoding="utf-8"))
+
+        self.assertEqual(success["status"], "success")
+        self.assertEqual(success["valid_quote_count"], 1)
+        self.assertEqual(success["quote_time"], "2026-08-07 09:25:18")
+
+    def test_auction_status_marks_same_day_forced_recovery_as_recovered(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            cache_dir = Path(tmp) / "cache"
+            cache_dir.mkdir()
+            result = {
+                "ok": True,
+                "source": "forced_query",
+                "as_of": "2026-08-07 09:31:02",
+                "quotes_count": 2,
+                "reason": "post_auction_recovery_saved",
+            }
+            path = write_auction_snapshot_status(
+                cache_dir=cache_dir,
+                trade_date10="2026-08-07",
+                capture_result=result,
+                now=datetime(2026, 8, 7, 9, 31, 2, tzinfo=TZ_BJ),
+            )
+            status = describe_auction_snapshot_status(cache_dir, "2026-08-07")
+            payload = json.loads(path.read_text(encoding="utf-8"))
+
+        self.assertEqual(payload["status"], "recovered")
+        self.assertTrue(status["found"])
+        self.assertEqual(status["status"], "recovered")
+
+    def test_auction_status_rejects_recovered_marker_without_quote_evidence(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            cache_dir = Path(tmp) / "cache"
+            cache_dir.mkdir()
+            (cache_dir / "auction_snapshot_status-20260807.json").write_text(
+                json.dumps(
+                    {
+                        "date": "2026-08-07",
+                        "status": "recovered",
+                        "quote_time": "2026-08-07 09:31:02",
+                        "source": "forced_query",
+                        "valid_quote_count": 0,
+                    }
+                ),
+                encoding="utf-8",
+            )
+
+            status = describe_auction_snapshot_status(cache_dir, "2026-08-07")
+
+        self.assertFalse(status["found"])
 
     def test_validate_market_data_snapshot_requires_quote_time_when_candidates_exist(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

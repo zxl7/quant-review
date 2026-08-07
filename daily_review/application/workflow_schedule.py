@@ -4,13 +4,15 @@ import json
 import time
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
-from typing import Any
+from typing import Any, Callable
 
 
 TZ_BJ = timezone(timedelta(hours=8))
 
 SCHEDULE_MODE_BY_CRON: dict[str, str] = {
     "26 1 * * 1-5": "open_fore",
+    "31 1 * * 1-5": "open_fore",
+    "36 1 * * 1-5": "open_fore",
     "0 7 * * 1-5": "eod",
     "0 8 * * 1-5": "eod",
     "0 9 * * 1-5": "eod",
@@ -38,6 +40,7 @@ PREFETCH_HTTP_TIMEOUT = 12
 PREFETCH_HTTP_RETRIES = 2
 PREFETCH_FETCH_ATTEMPTS = 2
 PREFETCH_RETRY_SLEEP_SECONDS = 1.2
+AUCTION_SESSION_POLL_SECONDS = 10
 
 
 def _now_bj() -> datetime:
@@ -200,6 +203,7 @@ def execute_auction_snapshot_prefetch(
         "reference_date": "",
         "codes": [],
         "codes_count": 0,
+        "quotes_count": 0,
         "attempts": 0,
         "should_prefetch": False,
         "status": "",
@@ -255,12 +259,13 @@ def execute_auction_snapshot_prefetch(
         result["attempts"] = attempt
         try:
             quotes_map, as_of = _fetch_prefetch_quotes_map(client, codes)
-            returned_clock = str(as_of or "").strip()[11:19]
+            returned_text = str(as_of or "").strip()
+            returned_clock = returned_text[11:19]
+            returned_same_day = returned_text.startswith(f"{trade_date10} ")
             returned_is_auction = (
-                str(as_of or "").strip().startswith(f"{trade_date10} ")
-                and "09:25:00" <= returned_clock < "09:30:00"
+                returned_same_day and "09:25:00" <= returned_clock < "09:30:00"
             )
-            if quotes_map and returned_is_auction:
+            if quotes_map and (returned_is_auction or (allow_outside_window_fetch and returned_same_day)):
                 path = _save_prefetched_quotes_snapshot(
                     date10=reference_date,
                     items=quotes_map,
@@ -268,6 +273,7 @@ def execute_auction_snapshot_prefetch(
                     source="forced_query" if allow_outside_window_fetch and not in_window else "workflow_prefetch",
                 )
                 result["ok"] = True
+                result["quotes_count"] = len(quotes_map)
                 result["path"] = str(path)
                 result["as_of"] = as_of or ""
                 result["source"] = "forced_query" if allow_outside_window_fetch and not in_window else "workflow_prefetch"
@@ -281,6 +287,184 @@ def execute_auction_snapshot_prefetch(
 
     result["reason"] = "prefetch_failed"
     return result
+
+
+def execute_auction_snapshot_prefetch_until_deadline(
+    *,
+    cache_dir: Path,
+    trade_date10: str,
+    now_fn: Callable[[], datetime] = _now_bj,
+    sleep_fn: Callable[[float], None] = time.sleep,
+    poll_seconds: int = AUCTION_SESSION_POLL_SECONDS,
+    recover_outside_window: bool = False,
+) -> dict[str, Any]:
+    """优先抓取原始竞价；缺失时可在 09:30 后立即降级为同日实时补抓。"""
+    started = now_fn().astimezone(TZ_BJ)
+    deadline = started.replace(hour=9, minute=29, second=30, microsecond=0)
+    latest: dict[str, Any] = {
+        "ok": False,
+        "trade_date10": trade_date10,
+        "reason": "outside_entry_window",
+        "last_error": "outside 09:25-09:30 window",
+        "attempts": 0,
+        "codes_count": 0,
+        "quotes_count": 0,
+        "as_of": "",
+        "source": "",
+    }
+    rounds = 0
+    total_attempts = 0
+
+    current = started
+    window_start = started.replace(hour=9, minute=25, second=0, microsecond=0)
+    if current < window_start:
+        # 手动恢复或延迟初始化也统一守在 09:25 起点，不能因为过早启动而
+        # 直接跳过原始竞价窗口，降级到 09:30 以后才查询。
+        sleep_fn((window_start - current).total_seconds())
+        current = now_fn().astimezone(TZ_BJ)
+    while current <= deadline:
+        clock = current.hour * 3600 + current.minute * 60 + current.second
+        if clock < 9 * 3600 + 25 * 60 or clock >= 9 * 3600 + 30 * 60:
+            break
+        rounds += 1
+        latest = execute_auction_snapshot_prefetch(
+            cache_dir=cache_dir,
+            trade_date10=trade_date10,
+            force_outside_window=False,
+            now=current,
+        )
+        total_attempts += int(latest.get("attempts") or 0)
+        print(
+            "auction_capture_round="
+            f"{rounds} ok={latest.get('ok')} attempts={latest.get('attempts') or 0} "
+            f"codes={latest.get('codes_count') or 0} as_of={latest.get('as_of') or '-'} "
+            f"reason={latest.get('reason') or '-'} error={latest.get('last_error') or '-'}"
+        )
+        if latest.get("ok"):
+            break
+        if latest.get("reason") in {"no_stock_research_rows", "no_reference_date", "no_codes_for_reference_date"}:
+            break
+
+        current = now_fn().astimezone(TZ_BJ)
+        remaining = (deadline - current).total_seconds()
+        if remaining <= 0:
+            break
+        sleep_fn(min(max(1, poll_seconds), remaining))
+        current = now_fn().astimezone(TZ_BJ)
+
+    if not latest.get("ok") and recover_outside_window:
+        recovery_start = current.replace(hour=9, minute=30, second=0, microsecond=0)
+        recovery_end = current.replace(hour=15, minute=0, second=0, microsecond=0)
+        if current < recovery_start:
+            sleep_fn((recovery_start - current).total_seconds())
+            current = now_fn().astimezone(TZ_BJ)
+        if recovery_start <= current < recovery_end:
+            recovery = execute_auction_snapshot_prefetch(
+                cache_dir=cache_dir,
+                trade_date10=trade_date10,
+                force_outside_window=True,
+                now=current,
+            )
+            rounds += 1
+            total_attempts += int(recovery.get("attempts") or 0)
+            print(
+                "auction_recovery_round="
+                f"{rounds} ok={recovery.get('ok')} attempts={recovery.get('attempts') or 0} "
+                f"quotes={recovery.get('quotes_count') or 0} as_of={recovery.get('as_of') or '-'} "
+                f"reason={recovery.get('reason') or '-'} error={recovery.get('last_error') or '-'}"
+            )
+            latest = recovery
+            if latest.get("ok") and latest.get("source") == "forced_query":
+                latest["reason"] = "post_auction_recovery_saved"
+
+    # 会话结束时间沿用最后一次状态采样，避免额外调用时钟导致调度边界
+    # 被推进，也让采集结果、状态文件和测试使用同一条时间轴。
+    finished = current
+    latest = dict(latest)
+    latest["session_rounds"] = rounds
+    latest["session_attempts"] = total_attempts
+    latest["started_at"] = started.strftime("%Y-%m-%d %H:%M:%S")
+    latest["finished_at"] = finished.strftime("%Y-%m-%d %H:%M:%S")
+    if not latest.get("ok") and rounds > 0:
+        latest["reason"] = "auction_window_exhausted"
+    return latest
+
+
+def describe_auction_snapshot_status(cache_dir: Path, trade_date10: str) -> dict[str, Any]:
+    result = {"found": False, "status": "", "path": "", "quote_time": "", "source": "", "valid_quote_count": 0}
+    path = cache_dir / f"auction_snapshot_status-{trade_date10.replace('-', '')}.json"
+    payload = _read_json(path)
+    status = str(payload.get("status") or "").strip()
+    quote_time = str(payload.get("quote_time") or "").strip()
+    source = str(payload.get("source") or "").strip()
+    quote_count = int(payload.get("valid_quote_count") or 0)
+    if str(payload.get("date") or "").strip() != trade_date10 or status not in {"success", "recovered", "missing"}:
+        return result
+    if status in {"success", "recovered"} and not quote_time.startswith(f"{trade_date10} "):
+        return result
+    quote_clock = quote_time[11:19] if len(quote_time) >= 19 else ""
+    # success 必须有真实竞价窗口证据；recovered 只接受同日 forced_query，
+    # 防止单独残留的状态文件阻止后续任务修复实际报价缓存。
+    if status == "success" and (source not in AUCTION_QUOTE_SOURCES or not ("09:25:00" <= quote_clock < "09:30:00") or quote_count <= 0):
+        return result
+    if status == "recovered" and (source != "forced_query" or quote_count <= 0):
+        return result
+    result.update(
+        {
+            "found": True,
+            "status": status,
+            "path": str(path),
+            "quote_time": quote_time,
+            "source": source,
+            "valid_quote_count": quote_count,
+        }
+    )
+    return result
+
+
+def write_auction_snapshot_status(
+    *,
+    cache_dir: Path,
+    trade_date10: str,
+    capture_result: dict[str, Any],
+    now: datetime | None = None,
+) -> Path:
+    """持久化成功或缺失状态，保证失败轮次也能在 09:31 发布中被观察到。"""
+    current = (now or _now_bj()).astimezone(TZ_BJ)
+    plan = resolve_auction_snapshot_prefetch_plan(cache_dir, trade_date10)
+    prefetched = plan.get("prefetched_snapshot") if isinstance(plan.get("prefetched_snapshot"), dict) else {}
+    market_data = plan.get("market_data_snapshot") if isinstance(plan.get("market_data_snapshot"), dict) else {}
+    ready = plan.get("status") == "auction_snapshot_ready_skip"
+    recovered = (
+        bool(capture_result.get("ok"))
+        and str(capture_result.get("source") or "") == "forced_query"
+        and str(capture_result.get("as_of") or "").startswith(f"{trade_date10} ")
+    )
+    ready_snapshot = prefetched if prefetched.get("found") else market_data
+    quote_time = str(ready_snapshot.get("as_of") or ready_snapshot.get("quote_time") or "") if ready else str(capture_result.get("as_of") or "")
+    quote_source = str(ready_snapshot.get("source") or "") if ready else str(capture_result.get("source") or "")
+    quote_count = int(ready_snapshot.get("count") or ready_snapshot.get("candidate_count") or 0) if ready else int(capture_result.get("quotes_count") or 0)
+    payload = {
+        "schema": "auction_snapshot_status_v1",
+        "date": trade_date10,
+        "status": "success" if ready else ("recovered" if recovered else "missing"),
+        "started_at": str(capture_result.get("started_at") or ""),
+        "finished_at": str(capture_result.get("finished_at") or current.strftime("%Y-%m-%d %H:%M:%S")),
+        "session_rounds": int(capture_result.get("session_rounds") or 0),
+        "attempts": int(capture_result.get("session_attempts") or capture_result.get("attempts") or 0),
+        "codes_count": int(capture_result.get("codes_count") or 0),
+        "valid_quote_count": quote_count,
+        "quote_time": quote_time,
+        "source": quote_source,
+        "reason": "snapshot_ready" if ready else ("post_auction_recovery_saved" if recovered else str(capture_result.get("reason") or "auction_snapshot_missing")),
+        "last_error": "" if ready or recovered else str(capture_result.get("last_error") or "auction_snapshot_missing"),
+    }
+    cache_dir.mkdir(parents=True, exist_ok=True)
+    path = cache_dir / f"auction_snapshot_status-{trade_date10.replace('-', '')}.json"
+    tmp = path.with_suffix(path.suffix + ".tmp")
+    tmp.write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    tmp.replace(path)
+    return path
 
 
 def resolve_publish_schedule_mode(
@@ -523,7 +707,7 @@ def resolve_stock_research_query_plan(
     market_data = prefetch_plan["market_data_snapshot"]
 
     if normalized_input == "fore":
-        if market_data["found"]:
+        if prefetch_plan["status"] == "auction_snapshot_ready_skip" or market_data["found"]:
             effective_query_tag = ""
             reason = "manual_fore_snapshot_ready_reuse"
         else:

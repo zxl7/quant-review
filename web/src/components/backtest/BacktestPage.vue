@@ -333,7 +333,7 @@ const hasPendingNextTradeDay = computed(() => !!(meta.value?.has_pending_next_tr
 const isTodaySnapshotMissing = computed(() => {
   return (
     String(activeTradeDate.value || "").trim() === String(marketSessionDate.value || "").trim() &&
-    String(lifecycle.value?.quote_state || "").trim() === "missing"
+    ["missing", "recovering"].includes(String(lifecycle.value?.quote_state || "").trim())
   )
 })
 const selectedRecommendationDateInput = ref("")
@@ -519,7 +519,7 @@ const realtimeSubtitle = computed(() => {
   }
   if (hasRealtimeSnapshot.value && quoteUpdatedAt.value && quoteUpdatedAt.value !== "-") {
     if (isDelayedRealtimeSnapshot.value) {
-      return `当前展示 ${realtimeTitleDate.value || "-"} ${quoteUpdatedAt.value} 的盘中补抓报价，仅作降级观察，不作为 9:25 竞价结果。`
+      return `当前展示 ${realtimeTitleDate.value || "-"} ${quoteUpdatedAt.value} 的自动补抓报价，已按当前行情重新计算买入判断；不作为 9:25 竞价结果。`
     }
     return `竞价快照：${quoteUpdatedAt.value}｜高开超5%先观察，不直接追。`
   }
@@ -551,7 +551,7 @@ const summaryHeaderSubtitle = computed(() => {
       ? `；切换到 ${latestRecommendationDate.value} 可查看下一交易日待验证推荐`
       : ""
     if (isDelayedRealtimeSnapshot.value) {
-      return `今天是 ${marketSessionDate.value || tradeDate}，页面当前展示 ${tradeDate} 的盘中补抓报价（对应推荐日 ${realtimeReferenceDate.value}），未计作 9:25 竞价快照${nextLabel}。`
+      return `今天是 ${marketSessionDate.value || tradeDate}，页面当前展示 ${tradeDate} 的自动补抓报价（对应推荐日 ${realtimeReferenceDate.value}），已重算买入判断；不作为 9:25 竞价结果${nextLabel}。`
     }
     return `今天是 ${marketSessionDate.value || tradeDate}，页面当前展示 ${tradeDate} 的闭环结果（对应推荐日 ${realtimeReferenceDate.value}）${nextLabel}。`
   }
@@ -575,6 +575,7 @@ const stageClass = computed(() => {
   const stage = lifecycleStage.value
   if (stage === "auction_snapshot_ready") return "is-super"
   if (stage === "auction_snapshot_degraded") return "is-expected"
+  if (stage === "auction_snapshot_recovering") return "is-expected"
   if (stage === "post_close_wait_auction") return "is-expected"
   if (stage === "auction_snapshot_missing") return "is-reject"
   return "is-neutral"
@@ -583,7 +584,7 @@ const quoteClass = computed(() => {
   const state = String(lifecycle.value?.quote_state || "")
   if (state === "ready") return "is-super"
   if (state === "degraded") return "is-expected"
-  if (state === "window_live" || state === "waiting_trade_day" || state === "waiting_window") return "is-expected"
+  if (state === "window_live" || state === "waiting_trade_day" || state === "waiting_window" || state === "recovering") return "is-expected"
   if (state === "missing") return "is-reject"
   return "is-neutral"
 })
@@ -643,7 +644,7 @@ const emptyStateText = computed(() => {
   if (hasCurrentPlan.value) return "收盘后推送的个股研究样本已经落进回测 JSON，当前先展示待验证推荐；到下一交易日 09:25-09:30 再补真实竞价命中结果。"
   if (!realtimeBuy.value?.reference_date) return "当前推荐还没到次日 09:25-09:30，明天窗口内会落地实时行情。"
   if (isForcedQuerySnapshot.value) return "当前批次还没拿到属于今天的有效 09:25 快照；历史补齐结果只保留给对应历史批次查看。"
-  if (isTodaySnapshotMissing.value) return "今日竞价快照缺失，当前仅展示今日待验证池；补抓成功后才会显示真实闭环结果。"
+  if (isTodaySnapshotMissing.value) return "今日原始竞价快照暂缺，系统正在自动补抓同日实时行情；成功后会立即重算并展示买入判断。"
   if (!isEntryWindowTime(realtimeBuy.value?.quote_time)) return "当前暂无有效竞价快照，等对应交易日 09:25-09:30 落地后再显示命中结果。"
   return "当前没有可展示的回测结果。"
 })
@@ -653,7 +654,7 @@ const realtimeEmptyText = computed(() => {
   if (!hasCurrentPlan.value) return "当前还没有待验证推荐数据，先执行一次复盘脚本生成个股回测 JSON。"
   if (!realtimeBuy.value?.reference_date) return "当前是收盘后待验证阶段，会在对应交易日 09:25-09:30 补充实时量价和命中结果。"
   if (isForcedQuerySnapshot.value) return "当前批次仍未拿到属于今天的有效 09:25 快照；历史补齐结果不会自动顶替今天视图。"
-  if (isTodaySnapshotMissing.value) return "今日竞价快照缺失，当前不会自动回退展示昨天闭环结果；请补抓后再查看真实命中结果。"
+  if (isTodaySnapshotMissing.value) return "今日原始竞价快照暂缺，系统正在自动补抓同日实时行情，不会停留在等待状态。"
   if (!isEntryWindowTime(realtimeBuy.value?.quote_time)) return "当前还没到有效竞价快照时间，会在对应交易日 09:25-09:30 自动显示真实命中结果。"
   return "当前没有命中结果。"
 })
