@@ -1318,23 +1318,24 @@ def _load_account_curve() -> dict:
 
 
 def _resolve_account_nav_ledger_path() -> Path:
-    primary = ROOT / "data" / "account_nav_history.jsonl"
+    # gh-pages 恢复的 cache 是跨工作流权威账本，不能被仓库内旧 data 覆盖。
+    primary = ROOT / "cache" / "account_nav_history.jsonl"
     if primary.exists():
         return primary
-    cache_fallback = ROOT / "cache" / "account_nav_history.jsonl"
-    if cache_fallback.exists():
-        return cache_fallback
+    data_fallback = ROOT / "data" / "account_nav_history.jsonl"
+    if data_fallback.exists():
+        return data_fallback
     online_fallback = ROOT / "cache_online" / "account_nav_history.jsonl"
     return online_fallback
 
 
 def _resolve_account_strategy_metrics_path() -> Path:
-    primary = ROOT / "data" / "account_strategy_metrics.json"
+    primary = ROOT / "cache" / "account_strategy_metrics.json"
     if primary.exists():
         return primary
-    cache_fallback = ROOT / "cache" / "account_strategy_metrics.json"
-    if cache_fallback.exists():
-        return cache_fallback
+    data_fallback = ROOT / "data" / "account_strategy_metrics.json"
+    if data_fallback.exists():
+        return data_fallback
     online_fallback = ROOT / "cache_online" / "account_strategy_metrics.json"
     return online_fallback
 
@@ -2951,6 +2952,37 @@ def _build_data_health(md: dict, *, date8: str) -> dict:
     meta = md.get("meta") if isinstance(md.get("meta"), dict) else {}
     as_of = meta.get("asOf") if isinstance(meta.get("asOf"), dict) else {}
     plate_meta = md.get("plateRotateMeta") if isinstance(md.get("plateRotateMeta"), dict) else {}
+    account_ledger = md.get("accountNavLedger") if isinstance(md.get("accountNavLedger"), dict) else {}
+    account_metrics = md.get("accountStrategyMetrics") if isinstance(md.get("accountStrategyMetrics"), dict) else {}
+    backtest = md.get("stockResearchBacktest") if isinstance(md.get("stockResearchBacktest"), dict) else {}
+    backtest_records = backtest.get("records") if isinstance(backtest.get("records"), list) else []
+    expected_metrics_dates: list[str] = []
+    expected_ledger_dates: list[str] = []
+    for row in backtest_records:
+        if not isinstance(row, dict):
+            continue
+        performance = row.get("performance") if isinstance(row.get("performance"), dict) else {}
+        next_day = performance.get("next_day") if isinstance(performance.get("next_day"), dict) else {}
+        trade_date = str(row.get("trade_date10") or next_day.get("entry_date") or next_day.get("exit_date") or "").strip()
+        if len(trade_date) != 10:
+            continue
+        expected_metrics_dates.append(trade_date)
+        open_check = performance.get("open_check") if isinstance(performance.get("open_check"), dict) else {}
+        if bool(open_check.get("can_enter")) and str(next_day.get("status") or "") == "covered":
+            expected_ledger_dates.append(trade_date)
+    expected_metrics_date = max(expected_metrics_dates, default="")
+    expected_ledger_date = max(expected_ledger_dates, default="")
+    ledger_records = account_ledger.get("records") if isinstance(account_ledger.get("records"), list) else []
+    ledger_date = str((ledger_records[-1] if ledger_records else {}).get("trade_date") or "").strip()
+    metrics_date = str(account_metrics.get("latest_trade_date") or "").strip()
+    if not expected_metrics_date:
+        account_status = "missing"
+    elif metrics_date != expected_metrics_date or ledger_date != expected_ledger_date:
+        account_status = "stale"
+    elif expected_ledger_date != expected_metrics_date:
+        account_status = "no_trade"
+    else:
+        account_status = "fresh"
     return {
         "market": {"date": str(md.get("date") or ""), "updatedAt": str(meta.get("generatedAt") or ""), "status": "fresh" if str(md.get("date") or "") == date10 else "stale"},
         "intraday": inspect("intraday", ROOT / "web" / "public" / "intraday_runtime.json"),
@@ -2960,6 +2992,15 @@ def _build_data_health(md: dict, *, date8: str) -> dict:
         "eastmoneyStocks": inspect("eastmoneyStocks", cache_online / f"eastmoney_theme_stocks-{date8}.json"),
         "watchlist": inspect("watchlist", cache_online / f"watchlist_cache-{date8}.json", date_key="data_date"),
         "plateRotate": {"date": str(plate_meta.get("asOf") or as_of.get("plate_rotate") or ""), "updatedAt": str(plate_meta.get("refreshedAt") or ""), "status": "stale" if plate_meta.get("stale") else "fresh"},
+        "accountDerivatives": {
+            "status": account_status,
+            "summaryDate": metrics_date,
+            "navLatestTradeDate": ledger_date,
+            "expectedSummaryDate": expected_metrics_date,
+            "expectedNavTradeDate": expected_ledger_date,
+            "updatedAt": str(account_metrics.get("generated_at_bj") or ""),
+            "noTradeOnLatestClose": account_status == "no_trade",
+        },
     }
 
 

@@ -3,6 +3,7 @@
 
 from __future__ import annotations
 
+import argparse
 import json
 import os
 import sys
@@ -43,10 +44,20 @@ def _write_jsonl(path: Path, rows: list[dict[str, Any]]) -> None:
 
 
 def _load_existing_ledger() -> list[dict[str, Any]]:
-    rows = _read_jsonl(LEDGER_PATH)
+    # 发布链以 gh-pages 恢复的 cache 账本为准，仓库内旧 data 不能覆盖线上新记录。
+    rows = _read_jsonl(CACHE_LEDGER_PATH)
     if rows:
         return rows
-    return _read_jsonl(CACHE_LEDGER_PATH)
+    return _read_jsonl(LEDGER_PATH)
+
+
+def _load_backtest_from_market_data(path: Path) -> dict[str, Any]:
+    payload = json.loads(path.read_text(encoding="utf-8"))
+    backtest = payload.get("stockResearchBacktest") if isinstance(payload, dict) else None
+    records = backtest.get("records") if isinstance(backtest, dict) else None
+    if not isinstance(backtest, dict) or not isinstance(records, list) or not records:
+        raise ValueError(f"invalid stockResearchBacktest in {path}")
+    return backtest
 
 
 def _implied_base_nav(rows: list[dict[str, Any]], *, default_base: float) -> float:
@@ -181,33 +192,48 @@ def _merge_ledger_rows(
     return out
 
 
-def build_account_nav_ledger(*, base_nav: float = 1.0) -> list[dict[str, Any]]:
-    from scripts.build_stock_research_backtest import build_stock_research_backtest_payload
+def build_account_nav_ledger(
+    *,
+    base_nav: float = 1.0,
+    backtest_payload: dict[str, Any] | None = None,
+) -> list[dict[str, Any]]:
+    payload = backtest_payload
+    if payload is None:
+        from scripts.build_stock_research_backtest import build_stock_research_backtest_payload
 
-    previous_disable_history_fetch = os.environ.get("QR_DISABLE_STOCK_RESEARCH_HISTORY_FETCH")
-    if previous_disable_history_fetch is None:
-        os.environ["QR_DISABLE_STOCK_RESEARCH_HISTORY_FETCH"] = "1"
-    try:
-        payload = build_stock_research_backtest_payload()
-    finally:
+        previous_disable_history_fetch = os.environ.get("QR_DISABLE_STOCK_RESEARCH_HISTORY_FETCH")
         if previous_disable_history_fetch is None:
-            os.environ.pop("QR_DISABLE_STOCK_RESEARCH_HISTORY_FETCH", None)
-        else:
-            os.environ["QR_DISABLE_STOCK_RESEARCH_HISTORY_FETCH"] = previous_disable_history_fetch
+            os.environ["QR_DISABLE_STOCK_RESEARCH_HISTORY_FETCH"] = "1"
+        try:
+            payload = build_stock_research_backtest_payload()
+        finally:
+            if previous_disable_history_fetch is None:
+                os.environ.pop("QR_DISABLE_STOCK_RESEARCH_HISTORY_FETCH", None)
+            else:
+                os.environ["QR_DISABLE_STOCK_RESEARCH_HISTORY_FETCH"] = previous_disable_history_fetch
     existing_rows = _load_existing_ledger()
     incremental_rows = _build_incremental_rows_from_payload(payload if isinstance(payload, dict) else {})
     return _merge_ledger_rows(existing_rows, incremental_rows, base_nav=base_nav)
 
 
-def sync_account_nav_ledger(*, base_nav: float = 1.0) -> list[dict[str, Any]]:
-    rows = build_account_nav_ledger(base_nav=base_nav)
+def sync_account_nav_ledger(
+    *,
+    base_nav: float = 1.0,
+    backtest_payload: dict[str, Any] | None = None,
+) -> list[dict[str, Any]]:
+    rows = build_account_nav_ledger(base_nav=base_nav, backtest_payload=backtest_payload)
     _write_jsonl(LEDGER_PATH, rows)
     _write_jsonl(CACHE_LEDGER_PATH, rows)
     return rows
 
 
 def main() -> None:
-    rows = sync_account_nav_ledger()
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--market-data", type=Path)
+    args = parser.parse_args()
+    # EOD 显式传入本轮主报告，账户派生不得自行重新查询另一套回测数据。
+    backtest_payload = _load_backtest_from_market_data(args.market_data) if args.market_data else None
+    rows = sync_account_nav_ledger(backtest_payload=backtest_payload)
     print(str(LEDGER_PATH))
     print(str(CACHE_LEDGER_PATH))
     print(f"rows={len(rows)}")

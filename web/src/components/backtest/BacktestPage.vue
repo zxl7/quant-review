@@ -667,6 +667,20 @@ const accountStrategyMetricsPayload = computed<any>(() => {
   const raw = md?.accountStrategyMetrics
   return raw && typeof raw === "object" ? raw : { records: [] }
 })
+const accountDataHealth = computed<any>(() => {
+  const md = marketData.value as any
+  const raw = md?.dataHealth?.accountDerivatives
+  return raw && typeof raw === "object" ? raw : {}
+})
+const accountHealthText = computed(() => {
+  const status = String(accountDataHealth.value?.status || "").trim()
+  const summaryDate = String(accountDataHealth.value?.summaryDate || "").trim()
+  const navDate = String(accountDataHealth.value?.navLatestTradeDate || "").trim()
+  if (status === "stale") return `账户汇总更新失败，当前汇总截至 ${summaryDate || "-"}，净值截至 ${navDate || "-"}`
+  if (status === "missing") return "账户汇总尚未生成"
+  if (status === "no_trade") return `收盘汇总 ${summaryDate || "-"} 已完成；当日无入账交易，净值截至 ${navDate || "-"}`
+  return `收盘汇总截至 ${summaryDate || "-"}，净值截至 ${navDate || "-"}`
+})
 const accountStrategyMetricMap = computed<Record<string, any>>(() => {
   const out: Record<string, any> = {}
   const rows = Array.isArray(accountStrategyMetricsPayload.value?.records) ? accountStrategyMetricsPayload.value.records : []
@@ -1179,6 +1193,7 @@ function rowOpenPrice(row: any) {
         <div>
           <div class="card-title">策略表现</div>
           <div class="bt-subtitle">{{ strategySubtitle }}</div>
+          <div class="bt-subtitle" :class="{ 'green-text': accountDataHealth.status === 'stale' || accountDataHealth.status === 'missing' }">{{ accountHealthText }}</div>
         </div>
       </div>
 
@@ -1224,6 +1239,7 @@ function rowOpenPrice(row: any) {
       <div class="card-header">
         <div>
           <div class="card-title">账户净值走势</div>
+          <p class="bt-subtitle" :class="{ 'green-text': accountDataHealth.status === 'stale' || accountDataHealth.status === 'missing' }">{{ accountHealthText }}</p>
           <p class="bt-subtitle">这里按历史回测中"符合买入条件"的个股做等权平均，默认满仓分配；如果某天有 4 只票，就按单只 25% 仓位折算成当天账户收益。</p>
           <p class="bt-subtitle">注：不考虑如何卖出，只考虑买入。</p>
         </div>

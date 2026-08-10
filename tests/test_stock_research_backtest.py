@@ -21,6 +21,60 @@ from daily_review.features.stock_ranker import build_picks_advisor, StockScore, 
 
 
 class StockResearchBacktestRowsTest(unittest.TestCase):
+    def test_account_publish_sources_prefer_restored_cache(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / "cache").mkdir()
+            (root / "data").mkdir()
+            cache_ledger = root / "cache" / "account_nav_history.jsonl"
+            cache_metrics = root / "cache" / "account_strategy_metrics.json"
+            cache_ledger.write_text('{"trade_date":"2026-08-07"}\n', encoding="utf-8")
+            cache_metrics.write_text('{"latest_trade_date":"2026-08-07"}', encoding="utf-8")
+            (root / "data" / "account_nav_history.jsonl").write_text(
+                '{"trade_date":"2026-07-24"}\n', encoding="utf-8"
+            )
+            (root / "data" / "account_strategy_metrics.json").write_text(
+                '{"latest_trade_date":"2026-07-24"}', encoding="utf-8"
+            )
+
+            with patch.object(web_bundle, "ROOT", root):
+                self.assertEqual(web_bundle._resolve_account_nav_ledger_path(), cache_ledger)
+                self.assertEqual(web_bundle._resolve_account_strategy_metrics_path(), cache_metrics)
+
+    def test_account_data_health_distinguishes_latest_close_without_trade(self) -> None:
+        market_data = {
+            "date": "2026-08-10",
+            "stockResearchBacktest": {
+                "records": [
+                    {
+                        "trade_date10": "2026-08-07",
+                        "performance": {
+                            "open_check": {"can_enter": True},
+                            "next_day": {"status": "covered", "entry_date": "2026-08-07"},
+                        },
+                    },
+                    {
+                        "trade_date10": "2026-08-10",
+                        "performance": {
+                            "open_check": {"can_enter": False},
+                            "next_day": {"status": "covered", "entry_date": "2026-08-10"},
+                        },
+                    },
+                ]
+            },
+            "accountNavLedger": {"records": [{"trade_date": "2026-08-07"}]},
+            "accountStrategyMetrics": {
+                "latest_trade_date": "2026-08-10",
+                "generated_at_bj": "2026-08-10 15:10:00",
+            },
+        }
+
+        health = web_bundle._build_data_health(market_data, date8="20260810")["accountDerivatives"]
+
+        self.assertEqual(health["status"], "no_trade")
+        self.assertTrue(health["noTradeOnLatestClose"])
+        self.assertEqual(health["navLatestTradeDate"], "2026-08-07")
+
     def test_resolve_next_trade_date_merges_local_sources_before_weekday_fallback(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)

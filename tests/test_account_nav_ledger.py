@@ -43,6 +43,42 @@ def _covered_row(*, code: str, name: str, recommendation_date: str, trade_date: 
 
 
 class AccountNavLedgerTest(unittest.TestCase):
+    def test_explicit_backtest_payload_does_not_rebuild(self) -> None:
+        payload = _payload(
+            [
+                _covered_row(
+                    code="000002",
+                    name="新样本",
+                    recommendation_date="2026-08-07",
+                    trade_date="2026-08-10",
+                    return_pct=2.0,
+                )
+            ]
+        )
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            with patch.object(ledger, "LEDGER_PATH", root / "data.jsonl"), patch.object(
+                ledger, "CACHE_LEDGER_PATH", root / "cache.jsonl"
+            ), patch("scripts.build_stock_research_backtest.build_stock_research_backtest_payload") as builder:
+                rows = ledger.build_account_nav_ledger(backtest_payload=payload)
+
+        builder.assert_not_called()
+        self.assertEqual(rows[-1]["trade_date"], "2026-08-10")
+
+    def test_restored_cache_takes_priority_over_stale_data(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            data_path = root / "data" / "account_nav_history.jsonl"
+            cache_path = root / "cache" / "account_nav_history.jsonl"
+            old = _covered_row(code="000001", name="旧", recommendation_date="2026-07-23", trade_date="2026-07-24", return_pct=1)
+            new = _covered_row(code="000002", name="新", recommendation_date="2026-08-06", trade_date="2026-08-07", return_pct=2)
+            _write_jsonl(data_path, ledger._build_incremental_rows_from_payload(_payload([old])))
+            _write_jsonl(cache_path, ledger._build_incremental_rows_from_payload(_payload([new])))
+            with patch.object(ledger, "LEDGER_PATH", data_path), patch.object(ledger, "CACHE_LEDGER_PATH", cache_path):
+                rows = ledger.build_account_nav_ledger(backtest_payload=_payload([]))
+
+        self.assertEqual([row["trade_date"] for row in rows], ["2026-08-07"])
+
     def test_build_account_nav_ledger_disables_history_fetch_by_default(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)

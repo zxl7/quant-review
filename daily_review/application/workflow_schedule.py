@@ -1114,7 +1114,13 @@ def validate_eod_stock_research_closeout(path: Path, run_date10: str) -> dict[st
     return result
 
 
-def validate_account_derivatives(*, ledger_path: Path, metrics_path: Path, run_date10: str) -> dict[str, Any]:
+def validate_account_derivatives(
+    *,
+    ledger_path: Path,
+    metrics_path: Path,
+    run_date10: str,
+    backtest_path: Path | None = None,
+) -> dict[str, Any]:
     result: dict[str, Any] = {
         "ok": True,
         "message": "account_derivatives_ready",
@@ -1123,6 +1129,10 @@ def validate_account_derivatives(*, ledger_path: Path, metrics_path: Path, run_d
         "metrics_path": str(metrics_path),
         "ledger_latest_trade_date": "",
         "metrics_latest_trade_date": "",
+        "expected_ledger_trade_date": "",
+        "expected_metrics_trade_date": "",
+        "no_trade_on_latest_close": False,
+        "status": "ready",
     }
     if len(result["run_date"]) != 10:
         result["ok"] = False
@@ -1154,19 +1164,64 @@ def validate_account_derivatives(*, ledger_path: Path, metrics_path: Path, run_d
     metrics_payload = _read_json(metrics_path)
     result["metrics_latest_trade_date"] = str(metrics_payload.get("latest_trade_date") or "").strip()
 
-    if result["ledger_latest_trade_date"] != result["run_date"]:
+    expected_ledger_trade_date = result["run_date"]
+    expected_metrics_trade_date = result["run_date"]
+    if backtest_path is not None:
+        market_payload = _read_json(backtest_path)
+        backtest = (
+            market_payload.get("stockResearchBacktest")
+            if isinstance(market_payload.get("stockResearchBacktest"), dict)
+            else {}
+        )
+        records = backtest.get("records") if isinstance(backtest.get("records"), list) else []
+        metrics_dates: list[str] = []
+        ledger_dates: list[str] = []
+        for row in records:
+            if not isinstance(row, dict):
+                continue
+            performance = row.get("performance") if isinstance(row.get("performance"), dict) else {}
+            next_day = performance.get("next_day") if isinstance(performance.get("next_day"), dict) else {}
+            trade_date = str(row.get("trade_date10") or next_day.get("entry_date") or next_day.get("exit_date") or "").strip()
+            if len(trade_date) == 10:
+                metrics_dates.append(trade_date)
+            open_check = performance.get("open_check") if isinstance(performance.get("open_check"), dict) else {}
+            if bool(open_check.get("can_enter")) and str(next_day.get("status") or "") == "covered" and len(trade_date) == 10:
+                ledger_dates.append(trade_date)
+        expected_metrics_trade_date = max(metrics_dates, default="")
+        expected_ledger_trade_date = max(ledger_dates, default="")
+        if not expected_metrics_trade_date:
+            result["ok"] = False
+            result["status"] = "stale"
+            result["message"] = "account_backtest_closed_trade_date_missing"
+            return result
+
+    result["expected_ledger_trade_date"] = expected_ledger_trade_date
+    result["expected_metrics_trade_date"] = expected_metrics_trade_date
+    result["no_trade_on_latest_close"] = bool(
+        expected_metrics_trade_date and expected_ledger_trade_date != expected_metrics_trade_date
+    )
+
+    if result["ledger_latest_trade_date"] != expected_ledger_trade_date:
         result["ok"] = False
+        result["status"] = "stale"
         result["message"] = (
             "account_nav_ledger_stale: "
-            f"run_date={result['run_date']} latest_trade_date={result['ledger_latest_trade_date'] or '<missing>'}"
+            f"expected_trade_date={expected_ledger_trade_date or '<missing>'} "
+            f"latest_trade_date={result['ledger_latest_trade_date'] or '<missing>'}"
         )
         return result
-    if result["metrics_latest_trade_date"] != result["run_date"]:
+    if result["metrics_latest_trade_date"] != expected_metrics_trade_date:
         result["ok"] = False
+        result["status"] = "stale"
         result["message"] = (
             "account_strategy_metrics_stale: "
-            f"run_date={result['run_date']} latest_trade_date={result['metrics_latest_trade_date'] or '<missing>'}"
+            f"expected_trade_date={expected_metrics_trade_date or '<missing>'} "
+            f"latest_trade_date={result['metrics_latest_trade_date'] or '<missing>'}"
         )
+        return result
+    if result["no_trade_on_latest_close"]:
+        result["status"] = "ready_no_trade"
+        result["message"] = "account_derivatives_ready_no_trade"
     return result
 
 

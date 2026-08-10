@@ -118,6 +118,11 @@ class WorkflowScheduleTest(unittest.TestCase):
         self.assertIn("::warning title=Account review delayed::", account_step)
         self.assertNotIn('raise SystemExit(result["message"])', account_step)
         self.assertIn("latest valid artifacts were preserved", workflow)
+        self.assertIn('--market-data "${account_market_data}"', workflow)
+        publish_commit = workflow.split("- name: Commit & push to gh-pages", 1)[1]
+        reset_overlay = publish_commit.split("git -C site_prev reset --hard origin/gh-pages", 1)[1]
+        self.assertIn("cache/account_nav_history.jsonl", reset_overlay)
+        self.assertIn("cache/account_strategy_metrics.json", reset_overlay)
 
     def test_push_publish_does_not_require_time_sensitive_auction_snapshot(self) -> None:
         root = Path(__file__).resolve().parents[1]
@@ -1776,6 +1781,58 @@ class WorkflowScheduleTest(unittest.TestCase):
 
         self.assertFalse(result["ok"])
         self.assertIn("account_nav_ledger_stale", result["message"])
+
+    def test_validate_account_derivatives_accepts_latest_close_without_trade(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            ledger_path = root / "account_nav_history.jsonl"
+            metrics_path = root / "account_strategy_metrics.json"
+            backtest_path = root / "market_data.json"
+            ledger_path.write_text(
+                json.dumps({"trade_date": "2026-06-22", "nav": 1.01}, ensure_ascii=False) + "\n",
+                encoding="utf-8",
+            )
+            metrics_path.write_text(
+                json.dumps({"latest_trade_date": "2026-06-23"}, ensure_ascii=False),
+                encoding="utf-8",
+            )
+            backtest_path.write_text(
+                json.dumps(
+                    {
+                        "stockResearchBacktest": {
+                            "records": [
+                                {
+                                    "trade_date10": "2026-06-22",
+                                    "performance": {
+                                        "open_check": {"can_enter": True},
+                                        "next_day": {"status": "covered", "entry_date": "2026-06-22"},
+                                    },
+                                },
+                                {
+                                    "trade_date10": "2026-06-23",
+                                    "performance": {
+                                        "open_check": {"can_enter": False},
+                                        "next_day": {"status": "covered", "entry_date": "2026-06-23"},
+                                    },
+                                },
+                            ]
+                        }
+                    },
+                    ensure_ascii=False,
+                ),
+                encoding="utf-8",
+            )
+
+            result = validate_account_derivatives(
+                ledger_path=ledger_path,
+                metrics_path=metrics_path,
+                run_date10="2026-06-23",
+                backtest_path=backtest_path,
+            )
+
+        self.assertTrue(result["ok"])
+        self.assertEqual(result["status"], "ready_no_trade")
+        self.assertTrue(result["no_trade_on_latest_close"])
 
 
 if __name__ == "__main__":

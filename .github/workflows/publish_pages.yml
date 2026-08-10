@@ -672,12 +672,13 @@ jobs:
             fi
             rm -rf "${external_backup}"
           fi
+          account_market_data="cache/market_data-${run_date//-/}.json"
           if [ "${{ github.event_name }}" = "schedule" ] && [ "${{ steps.timecheck.outputs.mode }}" = "eod" ]; then
-            PYTHONPATH=. python3 scripts/build_account_nav_ledger.py >/dev/null || echo "::warning title=Account review delayed::account nav ledger sync failed"
-            PYTHONPATH=. python3 scripts/build_account_strategy_metrics.py >/dev/null || echo "::warning title=Account review delayed::account strategy metrics sync failed"
+            PYTHONPATH=. python3 scripts/build_account_nav_ledger.py --market-data "${account_market_data}" >/dev/null || echo "::warning title=Account review delayed::account nav ledger sync failed"
+            PYTHONPATH=. python3 scripts/build_account_strategy_metrics.py --market-data "${account_market_data}" >/dev/null || echo "::warning title=Account review delayed::account strategy metrics sync failed"
           elif [ "${{ github.event_name }}" != "schedule" ]; then
-            PYTHONPATH=. python3 scripts/build_account_nav_ledger.py >/dev/null || echo "⚠ account nav ledger sync failed"
-            PYTHONPATH=. python3 scripts/build_account_strategy_metrics.py >/dev/null || echo "⚠ account strategy metrics sync failed"
+            PYTHONPATH=. python3 scripts/build_account_nav_ledger.py --market-data "${account_market_data}" >/dev/null || echo "⚠ account nav ledger sync failed"
+            PYTHONPATH=. python3 scripts/build_account_strategy_metrics.py --market-data "${account_market_data}" >/dev/null || echo "⚠ account strategy metrics sync failed"
           fi
 
       - name: Pre-fetch external data (明日策略池 + 东方财富今日题材)
@@ -901,9 +902,10 @@ jobs:
           from daily_review.application.workflow_schedule import validate_account_derivatives
 
           result = validate_account_derivatives(
-              ledger_path=Path("data/account_nav_history.jsonl"),
-              metrics_path=Path("data/account_strategy_metrics.json"),
+              ledger_path=Path("cache/account_nav_history.jsonl"),
+              metrics_path=Path("cache/account_strategy_metrics.json"),
               run_date10=os.environ["RUN_DATE"],
+              backtest_path=Path("web/dist/market_data.json"),
           )
           print("published_account_derivatives=" + json.dumps(result, ensure_ascii=False, sort_keys=True))
           if not result["ok"]:
@@ -1010,16 +1012,6 @@ jobs:
           cp -f cache/trade_days_cache.json site_prev/cache/ 2>/dev/null || true
           cp -f cache/stock_research_backtest_source.json site_prev/cache/ 2>/dev/null || true
           cp -f cache_online/recommendation_price_history.json site_prev/cache/ 2>/dev/null || true
-          if [ -f data/account_nav_history.jsonl ]; then
-            cp -f data/account_nav_history.jsonl site_prev/cache/account_nav_history.jsonl
-          elif [ -f cache/account_nav_history.jsonl ]; then
-            cp -f cache/account_nav_history.jsonl site_prev/cache/account_nav_history.jsonl
-          fi
-          if [ -f data/account_strategy_metrics.json ]; then
-            cp -f data/account_strategy_metrics.json site_prev/cache/account_strategy_metrics.json
-          elif [ -f cache/account_strategy_metrics.json ]; then
-            cp -f cache/account_strategy_metrics.json site_prev/cache/account_strategy_metrics.json
-          fi
           # 持久化收盘在线抓取结果，供后续全量发布和页面降级复用。
           cp -f cache_online/xuangubao_abnormal-*.json site_prev/cache/ 2>/dev/null || true
           cp -f cache_online/xuangubao_surge_plates-*.json site_prev/cache/ 2>/dev/null || true
@@ -1096,6 +1088,13 @@ jobs:
             cp -f cache/stock_research_backtest_source.json site_prev/cache/ 2>/dev/null || true
             cp -f cache_online/recommendation_price_history.json cache_online/xuangubao_abnormal-*.json cache_online/xuangubao_surge_plates-*.json site_prev/cache/ 2>/dev/null || true
             cp -f cache_online/eastmoney_tomorrow_themes-*.json cache_online/eastmoney_theme_stocks-*.json cache_online/watchlist_cache-*.json site_prev/cache/ 2>/dev/null || true
+            # reset 后必须重新覆盖账户派生产物，否则远端会永久保留旧账本。
+            if [ -f cache/account_nav_history.jsonl ]; then
+              cp -f cache/account_nav_history.jsonl site_prev/cache/account_nav_history.jsonl
+            fi
+            if [ -f cache/account_strategy_metrics.json ]; then
+              cp -f cache/account_strategy_metrics.json site_prev/cache/account_strategy_metrics.json
+            fi
             cp -f ./cache_online/intraday_resonance-*.json site_prev/ 2>/dev/null || true
 
             # The full-report overlay must leave live runtime artifacts byte-for-byte unchanged.

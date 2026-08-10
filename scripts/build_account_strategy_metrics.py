@@ -3,6 +3,7 @@
 
 from __future__ import annotations
 
+import argparse
 import json
 import os
 import sys
@@ -21,6 +22,15 @@ STRATEGY_DEFS = (
     ("hold_2d", "2日收益"),
     ("hold_3d", "3日收益"),
 )
+
+
+def _load_backtest_from_market_data(path: Path) -> dict[str, Any]:
+    payload = json.loads(path.read_text(encoding="utf-8"))
+    backtest = payload.get("stockResearchBacktest") if isinstance(payload, dict) else None
+    records = backtest.get("records") if isinstance(backtest, dict) else None
+    if not isinstance(backtest, dict) or not isinstance(records, list) or not records:
+        raise ValueError(f"invalid stockResearchBacktest in {path}")
+    return backtest
 
 
 def _pct(numerator: int, denominator: int) -> float:
@@ -81,19 +91,24 @@ def _summarize_scope(rows: list[dict[str, Any]], key: str) -> dict[str, Any]:
     }
 
 
-def build_account_strategy_metrics() -> dict[str, Any]:
-    from scripts.build_stock_research_backtest import build_stock_research_backtest_payload
+def build_account_strategy_metrics(
+    *,
+    backtest_payload: dict[str, Any] | None = None,
+) -> dict[str, Any]:
+    payload = backtest_payload
+    if payload is None:
+        from scripts.build_stock_research_backtest import build_stock_research_backtest_payload
 
-    previous_disable_history_fetch = os.environ.get("QR_DISABLE_STOCK_RESEARCH_HISTORY_FETCH")
-    if previous_disable_history_fetch is None:
-        os.environ["QR_DISABLE_STOCK_RESEARCH_HISTORY_FETCH"] = "1"
-    try:
-        payload = build_stock_research_backtest_payload()
-    finally:
+        previous_disable_history_fetch = os.environ.get("QR_DISABLE_STOCK_RESEARCH_HISTORY_FETCH")
         if previous_disable_history_fetch is None:
-            os.environ.pop("QR_DISABLE_STOCK_RESEARCH_HISTORY_FETCH", None)
-        else:
-            os.environ["QR_DISABLE_STOCK_RESEARCH_HISTORY_FETCH"] = previous_disable_history_fetch
+            os.environ["QR_DISABLE_STOCK_RESEARCH_HISTORY_FETCH"] = "1"
+        try:
+            payload = build_stock_research_backtest_payload()
+        finally:
+            if previous_disable_history_fetch is None:
+                os.environ.pop("QR_DISABLE_STOCK_RESEARCH_HISTORY_FETCH", None)
+            else:
+                os.environ["QR_DISABLE_STOCK_RESEARCH_HISTORY_FETCH"] = previous_disable_history_fetch
     records = payload.get("records") if isinstance(payload, dict) else []
     valid_records = [row for row in records if isinstance(row, dict)]
     by_date: dict[str, list[dict[str, Any]]] = {}
@@ -138,15 +153,23 @@ def build_account_strategy_metrics() -> dict[str, Any]:
     }
 
 
-def sync_account_strategy_metrics() -> dict[str, Any]:
-    payload = build_account_strategy_metrics()
+def sync_account_strategy_metrics(
+    *,
+    backtest_payload: dict[str, Any] | None = None,
+) -> dict[str, Any]:
+    payload = build_account_strategy_metrics(backtest_payload=backtest_payload)
     _write_json(METRICS_PATH, payload)
     _write_json(CACHE_METRICS_PATH, payload)
     return payload
 
 
 def main() -> None:
-    payload = sync_account_strategy_metrics()
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--market-data", type=Path)
+    args = parser.parse_args()
+    # EOD 显式传入本轮主报告，汇总口径必须与页面回测完全一致。
+    backtest_payload = _load_backtest_from_market_data(args.market_data) if args.market_data else None
+    payload = sync_account_strategy_metrics(backtest_payload=backtest_payload)
     print(str(METRICS_PATH))
     print(str(CACHE_METRICS_PATH))
     print(f"rows={len(payload.get('records') or [])}")
