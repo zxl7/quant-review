@@ -1,70 +1,56 @@
 {
   "schema": "intraday_runtime_v1",
   "date": "2026-08-10",
-  "updated_at": "2026-08-10 11:20:05",
-  "source": "必盈(实时)+必盈(实时)",
+  "updated_at": "2026-08-10 11:30:05",
+  "source": "unknown",
   "latest": {
-    "time": "11:20:05",
-    "ts_bj": "2026-08-10 11:20:05",
+    "time": "11:30:05",
+    "ts_bj": "2026-08-10 11:30:05",
     "date": "2026-08-10",
     "source": "intraday_live",
-    "provider": "必盈(实时)+必盈(实时)",
-    "data_quality": "valid",
+    "provider": "unknown",
+    "data_quality": "unavailable",
     "pool_status": {
-      "ztgc": "valid",
-      "zbgc": "valid",
-      "dtgc": "valid"
+      "ztgc": "failed",
+      "zbgc": "failed",
+      "dtgc": "failed"
     },
-    "pool_errors": {},
-    "zt": 71,
-    "dt": 6,
-    "zab": 13,
-    "zb": 15.5,
-    "fb": 84.5,
-    "jj": 15.5,
-    "lianban": 11,
-    "max_lb": 5,
-    "amount": "16903.1亿",
+    "pool_errors": {
+      "ztgc": "HTTP Error 429: Too Many Requests",
+      "zbgc": "HTTP Error 429: Too Many Requests",
+      "dtgc": "HTTP Error 429: Too Many Requests"
+    },
+    "zt": null,
+    "dt": null,
+    "zab": null,
+    "zb": null,
+    "fb": null,
+    "jj": null,
+    "lianban": null,
+    "max_lb": null,
+    "amount": "",
     "bf": 0,
-    "heat": 61,
-    "risk": 23,
-    "headline": "修复",
-    "concepts": [
-      {
-        "name": "化学制药",
-        "lead": "海正药业",
-        "chg_pct": null
-      },
-      {
-        "name": "医疗服务",
-        "lead": "百花医药",
-        "chg_pct": null
-      },
-      {
-        "name": "医药商业",
-        "lead": "开开实业",
-        "chg_pct": null
-      },
-      {
-        "name": "汽车零部",
-        "lead": "秦安股份",
-        "chg_pct": null
-      },
-      {
-        "name": "电力",
-        "lead": "立新能源",
-        "chg_pct": null
-      }
-    ],
+    "heat": null,
+    "risk": null,
+    "headline": "数据暂缺",
+    "concepts": [],
     "alerts": [
       {
         "level": "info",
         "text": "盘中模式：强制实时拉取"
+      },
+      {
+        "level": "warn",
+        "text": "盘中三池响应不完整，保留最近有效数据"
+      },
+      {
+        "level": "warn",
+        "text": "三池请求均超时，本槽位跳过板块补抓并等待下一节点"
       }
     ],
-    "shift_score": 68,
-    "shift_label": "修复",
-    "note": "情绪整体平稳，维持当前节奏。"
+    "shift_score": null,
+    "shift_label": "数据暂缺",
+    "note": "本槽位三池请求均未成功，已记录数据暂缺；等待下一节点自动恢复。"
   },
   "snapshots": [
     {
@@ -829,59 +815,87 @@
       "shift_score": 68,
       "shift_label": "修复",
       "note": "情绪整体平稳，维持当前节奏。"
-    }
-  ],
-  "indices": [
-    {
-      "name": "上证指数",
-      "code": "000001.SH",
-      "val": 3950.803,
-      "chg": 0.27324616494718396,
-      "cje": 783258088000.0,
-      "t": "2026-08-10 11:20:03"
     },
     {
-      "name": "深证成指",
-      "code": "399001.SZ",
-      "val": 14157.569,
-      "chg": -1.0721746504508998,
-      "cje": 906704364100.0,
-      "t": "2026-08-10 11:20:00"
-    },
-    {
-      "name": "创业板指",
-      "code": "399006.SZ",
-      "val": 3487.151,
-      "chg": -2.1320096982501653,
-      "cje": 448901256000.0,
-      "t": "2026-08-10 11:20:00"
+      "time": "11:30:05",
+      "ts_bj": "2026-08-10 11:30:05",
+      "date": "2026-08-10",
+      "source": "intraday_live",
+      "provider": "unknown",
+      "data_quality": "unavailable",
+      "pool_status": {
+        "ztgc": "failed",
+        "zbgc": "failed",
+        "dtgc": "failed"
+      },
+      "pool_errors": {
+        "ztgc": "HTTP Error 429: Too Many Requests",
+        "zbgc": "HTTP Error 429: Too Many Requests",
+        "dtgc": "HTTP Error 429: Too Many Requests"
+      },
+      "zt": null,
+      "dt": null,
+      "zab": null,
+      "zb": null,
+      "fb": null,
+      "jj": null,
+      "lianban": null,
+      "max_lb": null,
+      "amount": "",
+      "bf": 0,
+      "heat": null,
+      "risk": null,
+      "headline": "数据暂缺",
+      "concepts": [],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        },
+        {
+          "level": "warn",
+          "text": "盘中三池响应不完整，保留最近有效数据"
+        },
+        {
+          "level": "warn",
+          "text": "三池请求均超时，本槽位跳过板块补抓并等待下一节点"
+        }
+      ],
+      "shift_score": null,
+      "shift_label": "数据暂缺",
+      "note": "本槽位三池请求均未成功，已记录数据暂缺；等待下一节点自动恢复。"
     }
   ],
+  "indices": [],
   "asOf": {
-    "indices": "11:20:00"
+    "indices": ""
   },
   "health": {
-    "status": "valid",
-    "last_valid_at": "2026-08-10 11:20:05",
+    "status": "degraded",
+    "last_valid_at": "2026-08-10 11:30:05",
     "rejected_reason": "",
     "source": {
-      "status": "valid",
+      "status": "partial",
       "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid"
+        "ztgc": "failed",
+        "zbgc": "failed",
+        "dtgc": "failed"
       },
-      "pool_errors": {}
+      "pool_errors": {
+        "ztgc": "HTTP Error 429: Too Many Requests",
+        "zbgc": "HTTP Error 429: Too Many Requests",
+        "dtgc": "HTTP Error 429: Too Many Requests"
+      }
     },
-    "indices_status": "valid",
+    "indices_status": "unavailable",
     "coverage": {
       "ok": true,
       "status": "collecting",
       "message": "intraday_coverage_collecting",
       "date": "2026-08-10",
       "expected_count": 26,
-      "due_count": 12,
-      "observed_count": 12,
+      "due_count": 13,
+      "observed_count": 13,
       "observed_slots": [
         "09:30",
         "09:40",
@@ -894,58 +908,41 @@
         "10:50",
         "11:00",
         "11:10",
-        "11:20"
+        "11:20",
+        "11:30"
       ],
       "missing_slots": [],
       "duplicate_slots": [],
       "out_of_session": [],
       "monotonic": true,
-      "morning_coverage": 12,
+      "morning_coverage": 13,
       "afternoon_coverage": 0
     }
   },
   "live": {
     "market": {
-      "zt": 71,
-      "dt": 6,
-      "zab": 13,
-      "zab_rate": 15.5,
-      "lianban": 11,
-      "max_lianban": 5,
-      "amount": "16903.1亿"
+      "zt": null,
+      "dt": null,
+      "zab": null,
+      "zab_rate": null,
+      "lianban": null,
+      "max_lianban": null,
+      "amount": ""
     },
     "alerts": [
       {
         "level": "info",
         "text": "盘中模式：强制实时拉取"
+      },
+      {
+        "level": "warn",
+        "text": "盘中三池响应不完整，保留最近有效数据"
+      },
+      {
+        "level": "warn",
+        "text": "三池请求均超时，本槽位跳过板块补抓并等待下一节点"
       }
     ],
-    "concepts": [
-      {
-        "name": "化学制药",
-        "lead": "海正药业",
-        "chg_pct": null
-      },
-      {
-        "name": "医疗服务",
-        "lead": "百花医药",
-        "chg_pct": null
-      },
-      {
-        "name": "医药商业",
-        "lead": "开开实业",
-        "chg_pct": null
-      },
-      {
-        "name": "汽车零部",
-        "lead": "秦安股份",
-        "chg_pct": null
-      },
-      {
-        "name": "电力",
-        "lead": "立新能源",
-        "chg_pct": null
-      }
-    ]
+    "concepts": []
   }
 }
