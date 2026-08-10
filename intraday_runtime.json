@@ -1,38 +1,46 @@
 {
   "schema": "intraday_runtime_v1",
-  "date": "2026-08-07",
-  "updated_at": "2026-08-07 15:00:04",
-  "source": "必盈(实时)+必盈(实时)",
+  "date": "2026-08-10",
+  "updated_at": "2026-08-10 09:30:19",
+  "source": "必盈(实时)",
   "latest": {
-    "time": "15:00:04",
-    "ts_bj": "2026-08-07 15:00:04",
-    "date": "2026-08-07",
+    "time": "09:30:19",
+    "ts_bj": "2026-08-10 09:30:19",
+    "date": "2026-08-10",
     "source": "intraday_live",
-    "provider": "必盈(实时)+必盈(实时)",
-    "data_quality": "valid",
+    "provider": "必盈(实时)",
+    "data_quality": "partial",
     "pool_status": {
       "ztgc": "valid",
-      "zbgc": "valid",
-      "dtgc": "valid"
+      "zbgc": "failed",
+      "dtgc": "failed"
     },
-    "pool_errors": {},
-    "zt": 74,
-    "dt": 4,
-    "zab": 25,
-    "zb": 25.3,
-    "fb": 74.7,
-    "jj": 18.9,
-    "lianban": 14,
-    "max_lb": 4,
-    "amount": "26639.2亿",
+    "pool_errors": {
+      "zbgc": "empty_response",
+      "dtgc": "empty_response"
+    },
+    "zt": 12,
+    "dt": null,
+    "zab": null,
+    "zb": null,
+    "fb": null,
+    "jj": 50.0,
+    "lianban": 6,
+    "max_lb": 5,
+    "amount": "",
     "bf": 0,
-    "heat": 56,
-    "risk": 31,
-    "headline": "修复",
+    "heat": null,
+    "risk": null,
+    "headline": "数据部分可用",
     "concepts": [
       {
-        "name": "元件",
-        "lead": "宝鼎科技",
+        "name": "化学制药",
+        "lead": "誉衡药业",
+        "chg_pct": null
+      },
+      {
+        "name": "影视院线",
+        "lead": "北京文化",
         "chg_pct": null
       },
       {
@@ -41,18 +49,13 @@
         "chg_pct": null
       },
       {
-        "name": "化学制药",
-        "lead": "哈药股份",
+        "name": "医药商业",
+        "lead": "开开实业",
         "chg_pct": null
       },
       {
-        "name": "通信设备",
-        "lead": "汇绿生态",
-        "chg_pct": null
-      },
-      {
-        "name": "半导体",
-        "lead": "有研新材",
+        "name": "生物制品",
+        "lead": "百普赛斯",
         "chg_pct": null
       }
     ],
@@ -63,1387 +66,67 @@
       },
       {
         "level": "warn",
-        "text": "炸板率偏高（25.3%）→ 注意回封质量"
+        "text": "盘中三池响应不完整，保留最近有效数据"
       }
     ],
-    "shift_score": 61,
-    "shift_label": "修复",
-    "note": "情绪整体平稳，维持当前节奏。"
+    "shift_score": null,
+    "shift_label": "数据部分可用",
+    "note": "本槽位仅部分三池成功；节点已保留，缺失指标不参与判断。"
   },
   "snapshots": [
     {
-      "time": "09:40:19",
-      "ts_bj": "2026-08-07 09:40:19",
-      "date": "2026-08-07",
+      "time": "09:30:19",
+      "ts_bj": "2026-08-10 09:30:19",
+      "date": "2026-08-10",
       "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
+      "provider": "必盈(实时)",
+      "data_quality": "partial",
       "pool_status": {
         "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid"
+        "zbgc": "failed",
+        "dtgc": "failed"
       },
-      "pool_errors": {},
-      "zt": 20,
-      "dt": 2,
-      "zab": 3,
-      "zb": 13.0,
-      "fb": 87.0,
-      "jj": 40.0,
-      "lianban": 8,
-      "max_lb": 4,
-      "amount": "4116.2亿",
+      "pool_errors": {
+        "zbgc": "empty_response",
+        "dtgc": "empty_response"
+      },
+      "zt": 12,
+      "dt": null,
+      "zab": null,
+      "zb": null,
+      "fb": null,
+      "jj": 50.0,
+      "lianban": 6,
+      "max_lb": 5,
+      "amount": "",
       "bf": 0,
-      "heat": 58,
-      "risk": 12,
-      "headline": "修复",
+      "heat": null,
+      "risk": null,
+      "headline": "数据部分可用",
       "concepts": [
         {
-          "name": "元件",
-          "lead": "宝鼎科技",
-          "chg_pct": null
-        },
-        {
           "name": "化学制药",
-          "lead": "哈药股份",
+          "lead": "誉衡药业",
           "chg_pct": null
         },
         {
-          "name": "化学制品",
-          "lead": "和远气体",
-          "chg_pct": null
-        },
-        {
-          "name": "通信设备",
-          "lead": "武汉凡谷",
+          "name": "影视院线",
+          "lead": "北京文化",
           "chg_pct": null
         },
         {
           "name": "医疗服务",
           "lead": "百花医药",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        }
-      ],
-      "shift_score": 71,
-      "shift_label": "修复",
-      "note": "盘中实时切片已接入，可逐点观察情绪变化。"
-    },
-    {
-      "time": "09:50:05",
-      "ts_bj": "2026-08-07 09:50:05",
-      "date": "2026-08-07",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid"
-      },
-      "pool_errors": {},
-      "zt": 25,
-      "dt": 5,
-      "zab": 2,
-      "zb": 7.4,
-      "fb": 92.6,
-      "jj": 36.0,
-      "lianban": 9,
-      "max_lb": 4,
-      "amount": "6539.7亿",
-      "bf": 0,
-      "heat": 60,
-      "risk": 12,
-      "headline": "走强",
-      "concepts": [
-        {
-          "name": "化学制药",
-          "lead": "哈药股份",
-          "chg_pct": null
-        },
-        {
-          "name": "元件",
-          "lead": "宝鼎科技",
-          "chg_pct": null
-        },
-        {
-          "name": "化学制品",
-          "lead": "和远气体",
-          "chg_pct": null
-        },
-        {
-          "name": "通信设备",
-          "lead": "武汉凡谷",
-          "chg_pct": null
-        },
-        {
-          "name": "汽车零部",
-          "lead": "秦安股份",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        }
-      ],
-      "shift_score": 72,
-      "shift_label": "走强",
-      "note": "情绪整体平稳，维持当前节奏。"
-    },
-    {
-      "time": "10:00:04",
-      "ts_bj": "2026-08-07 10:00:04",
-      "date": "2026-08-07",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid"
-      },
-      "pool_errors": {},
-      "zt": 26,
-      "dt": 5,
-      "zab": 4,
-      "zb": 13.3,
-      "fb": 86.7,
-      "jj": 30.8,
-      "lianban": 8,
-      "max_lb": 4,
-      "amount": "8135.8亿",
-      "bf": 0,
-      "heat": 57,
-      "risk": 17,
-      "headline": "修复",
-      "concepts": [
-        {
-          "name": "化学制药",
-          "lead": "哈药股份",
-          "chg_pct": null
-        },
-        {
-          "name": "元件",
-          "lead": "宝鼎科技",
-          "chg_pct": null
-        },
-        {
-          "name": "化学制品",
-          "lead": "和远气体",
-          "chg_pct": null
-        },
-        {
-          "name": "通信设备",
-          "lead": "武汉凡谷",
           "chg_pct": null
         },
         {
           "name": "医药商业",
           "lead": "开开实业",
           "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        }
-      ],
-      "shift_score": 68,
-      "shift_label": "修复",
-      "note": "情绪略有回落，注意午后分歧。"
-    },
-    {
-      "time": "10:10:04",
-      "ts_bj": "2026-08-07 10:10:04",
-      "date": "2026-08-07",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid"
-      },
-      "pool_errors": {},
-      "zt": 30,
-      "dt": 4,
-      "zab": 4,
-      "zb": 11.8,
-      "fb": 88.2,
-      "jj": 33.3,
-      "lianban": 10,
-      "max_lb": 4,
-      "amount": "9540.8亿",
-      "bf": 0,
-      "heat": 58,
-      "risk": 14,
-      "headline": "修复",
-      "concepts": [
-        {
-          "name": "元件",
-          "lead": "宝鼎科技",
-          "chg_pct": null
-        },
-        {
-          "name": "化学制药",
-          "lead": "哈药股份",
-          "chg_pct": null
-        },
-        {
-          "name": "半导体",
-          "lead": "有研新材",
-          "chg_pct": null
-        },
-        {
-          "name": "化学制品",
-          "lead": "和远气体",
-          "chg_pct": null
-        },
-        {
-          "name": "通信设备",
-          "lead": "武汉凡谷",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        }
-      ],
-      "shift_score": 70,
-      "shift_label": "修复",
-      "note": "情绪边际修复，但仍需确认持续性。"
-    },
-    {
-      "time": "10:20:04",
-      "ts_bj": "2026-08-07 10:20:04",
-      "date": "2026-08-07",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid"
-      },
-      "pool_errors": {},
-      "zt": 36,
-      "dt": 4,
-      "zab": 6,
-      "zb": 14.3,
-      "fb": 85.7,
-      "jj": 27.8,
-      "lianban": 10,
-      "max_lb": 4,
-      "amount": "10835.3亿",
-      "bf": 0,
-      "heat": 57,
-      "risk": 17,
-      "headline": "修复",
-      "concepts": [
-        {
-          "name": "元件",
-          "lead": "宝鼎科技",
-          "chg_pct": null
-        },
-        {
-          "name": "化学制药",
-          "lead": "哈药股份",
-          "chg_pct": null
-        },
-        {
-          "name": "通信设备",
-          "lead": "武汉凡谷",
-          "chg_pct": null
-        },
-        {
-          "name": "医疗服务",
-          "lead": "百花医药",
-          "chg_pct": null
-        },
-        {
-          "name": "半导体",
-          "lead": "有研新材",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        }
-      ],
-      "shift_score": 68,
-      "shift_label": "修复",
-      "note": "情绪略有回落，注意午后分歧。"
-    },
-    {
-      "time": "10:30:04",
-      "ts_bj": "2026-08-07 10:30:04",
-      "date": "2026-08-07",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid"
-      },
-      "pool_errors": {},
-      "zt": 38,
-      "dt": 4,
-      "zab": 9,
-      "zb": 19.1,
-      "fb": 80.9,
-      "jj": 26.3,
-      "lianban": 10,
-      "max_lb": 4,
-      "amount": "11973.2亿",
-      "bf": 0,
-      "heat": 55,
-      "risk": 21,
-      "headline": "修复",
-      "concepts": [
-        {
-          "name": "元件",
-          "lead": "宝鼎科技",
-          "chg_pct": null
-        },
-        {
-          "name": "化学制药",
-          "lead": "哈药股份",
-          "chg_pct": null
-        },
-        {
-          "name": "医疗服务",
-          "lead": "百花医药",
-          "chg_pct": null
-        },
-        {
-          "name": "通信设备",
-          "lead": "武汉凡谷",
-          "chg_pct": null
-        },
-        {
-          "name": "半导体",
-          "lead": "有研新材",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        }
-      ],
-      "shift_score": 65,
-      "shift_label": "修复",
-      "note": "情绪略有回落，注意午后分歧。"
-    },
-    {
-      "time": "10:40:05",
-      "ts_bj": "2026-08-07 10:40:05",
-      "date": "2026-08-07",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid"
-      },
-      "pool_errors": {},
-      "zt": 41,
-      "dt": 5,
-      "zab": 9,
-      "zb": 18.0,
-      "fb": 82.0,
-      "jj": 26.8,
-      "lianban": 11,
-      "max_lb": 4,
-      "amount": "12951.0亿",
-      "bf": 0,
-      "heat": 56,
-      "risk": 21,
-      "headline": "修复",
-      "concepts": [
-        {
-          "name": "元件",
-          "lead": "宝鼎科技",
-          "chg_pct": null
-        },
-        {
-          "name": "化学制药",
-          "lead": "哈药股份",
-          "chg_pct": null
-        },
-        {
-          "name": "医疗服务",
-          "lead": "百花医药",
-          "chg_pct": null
-        },
-        {
-          "name": "通信设备",
-          "lead": "武汉凡谷",
-          "chg_pct": null
-        },
-        {
-          "name": "半导体",
-          "lead": "有研新材",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        }
-      ],
-      "shift_score": 66,
-      "shift_label": "修复",
-      "note": "情绪整体平稳，维持当前节奏。"
-    },
-    {
-      "time": "10:50:05",
-      "ts_bj": "2026-08-07 10:50:05",
-      "date": "2026-08-07",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid"
-      },
-      "pool_errors": {},
-      "zt": 43,
-      "dt": 5,
-      "zab": 8,
-      "zb": 15.7,
-      "fb": 84.3,
-      "jj": 25.6,
-      "lianban": 11,
-      "max_lb": 4,
-      "amount": "13817.5亿",
-      "bf": 0,
-      "heat": 57,
-      "risk": 20,
-      "headline": "修复",
-      "concepts": [
-        {
-          "name": "元件",
-          "lead": "宝鼎科技",
-          "chg_pct": null
-        },
-        {
-          "name": "化学制药",
-          "lead": "哈药股份",
-          "chg_pct": null
-        },
-        {
-          "name": "医疗服务",
-          "lead": "百花医药",
-          "chg_pct": null
-        },
-        {
-          "name": "化学制品",
-          "lead": "和远气体",
-          "chg_pct": null
-        },
-        {
-          "name": "通信设备",
-          "lead": "武汉凡谷",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        }
-      ],
-      "shift_score": 67,
-      "shift_label": "修复",
-      "note": "情绪整体平稳，维持当前节奏。"
-    },
-    {
-      "time": "11:00:06",
-      "ts_bj": "2026-08-07 11:00:06",
-      "date": "2026-08-07",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid"
-      },
-      "pool_errors": {},
-      "zt": 48,
-      "dt": 5,
-      "zab": 9,
-      "zb": 15.8,
-      "fb": 84.2,
-      "jj": 25.0,
-      "lianban": 12,
-      "max_lb": 4,
-      "amount": "14540.4亿",
-      "bf": 0,
-      "heat": 58,
-      "risk": 20,
-      "headline": "修复",
-      "concepts": [
-        {
-          "name": "元件",
-          "lead": "宝鼎科技",
-          "chg_pct": null
-        },
-        {
-          "name": "医疗服务",
-          "lead": "百花医药",
-          "chg_pct": null
-        },
-        {
-          "name": "化学制药",
-          "lead": "哈药股份",
-          "chg_pct": null
-        },
-        {
-          "name": "半导体",
-          "lead": "有研新材",
-          "chg_pct": null
-        },
-        {
-          "name": "化学制品",
-          "lead": "和远气体",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        }
-      ],
-      "shift_score": 67,
-      "shift_label": "修复",
-      "note": "情绪整体平稳，维持当前节奏。"
-    },
-    {
-      "time": "11:10:05",
-      "ts_bj": "2026-08-07 11:10:05",
-      "date": "2026-08-07",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid"
-      },
-      "pool_errors": {},
-      "zt": 52,
-      "dt": 5,
-      "zab": 7,
-      "zb": 11.9,
-      "fb": 88.1,
-      "jj": 23.1,
-      "lianban": 12,
-      "max_lb": 4,
-      "amount": "15227.4亿",
-      "bf": 0,
-      "heat": 60,
-      "risk": 17,
-      "headline": "修复",
-      "concepts": [
-        {
-          "name": "元件",
-          "lead": "宝鼎科技",
-          "chg_pct": null
-        },
-        {
-          "name": "医疗服务",
-          "lead": "百花医药",
-          "chg_pct": null
-        },
-        {
-          "name": "化学制药",
-          "lead": "哈药股份",
-          "chg_pct": null
-        },
-        {
-          "name": "半导体",
-          "lead": "有研新材",
-          "chg_pct": null
-        },
-        {
-          "name": "化学制品",
-          "lead": "和远气体",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        }
-      ],
-      "shift_score": 70,
-      "shift_label": "修复",
-      "note": "情绪边际修复，但仍需确认持续性。"
-    },
-    {
-      "time": "11:20:04",
-      "ts_bj": "2026-08-07 11:20:04",
-      "date": "2026-08-07",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid"
-      },
-      "pool_errors": {},
-      "zt": 52,
-      "dt": 4,
-      "zab": 9,
-      "zb": 14.8,
-      "fb": 85.2,
-      "jj": 21.2,
-      "lianban": 11,
-      "max_lb": 4,
-      "amount": "16087.3亿",
-      "bf": 0,
-      "heat": 58,
-      "risk": 18,
-      "headline": "修复",
-      "concepts": [
-        {
-          "name": "元件",
-          "lead": "宝鼎科技",
-          "chg_pct": null
-        },
-        {
-          "name": "医疗服务",
-          "lead": "百花医药",
-          "chg_pct": null
-        },
-        {
-          "name": "化学制药",
-          "lead": "哈药股份",
-          "chg_pct": null
-        },
-        {
-          "name": "半导体",
-          "lead": "有研新材",
-          "chg_pct": null
-        },
-        {
-          "name": "化学制品",
-          "lead": "和远气体",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        }
-      ],
-      "shift_score": 68,
-      "shift_label": "修复",
-      "note": "情绪略有回落，注意午后分歧。"
-    },
-    {
-      "time": "11:30:06",
-      "ts_bj": "2026-08-07 11:30:06",
-      "date": "2026-08-07",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid"
-      },
-      "pool_errors": {},
-      "zt": 57,
-      "dt": 4,
-      "zab": 7,
-      "zb": 10.9,
-      "fb": 89.1,
-      "jj": 22.8,
-      "lianban": 13,
-      "max_lb": 4,
-      "amount": "16766.9亿",
-      "bf": 0,
-      "heat": 61,
-      "risk": 15,
-      "headline": "修复",
-      "concepts": [
-        {
-          "name": "元件",
-          "lead": "宝鼎科技",
-          "chg_pct": null
-        },
-        {
-          "name": "化学制药",
-          "lead": "哈药股份",
-          "chg_pct": null
-        },
-        {
-          "name": "医疗服务",
-          "lead": "百花医药",
-          "chg_pct": null
-        },
-        {
-          "name": "半导体",
-          "lead": "有研新材",
-          "chg_pct": null
-        },
-        {
-          "name": "化学制品",
-          "lead": "和远气体",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        }
-      ],
-      "shift_score": 71,
-      "shift_label": "修复",
-      "note": "情绪边际修复，但仍需确认持续性。"
-    },
-    {
-      "time": "13:00:18",
-      "ts_bj": "2026-08-07 13:00:18",
-      "date": "2026-08-07",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid"
-      },
-      "pool_errors": {},
-      "zt": 60,
-      "dt": 4,
-      "zab": 7,
-      "zb": 10.4,
-      "fb": 89.6,
-      "jj": 23.3,
-      "lianban": 14,
-      "max_lb": 4,
-      "amount": "16886.3亿",
-      "bf": 0,
-      "heat": 61,
-      "risk": 15,
-      "headline": "修复",
-      "concepts": [
-        {
-          "name": "元件",
-          "lead": "宝鼎科技",
-          "chg_pct": null
-        },
-        {
-          "name": "化学制药",
-          "lead": "哈药股份",
-          "chg_pct": null
-        },
-        {
-          "name": "医疗服务",
-          "lead": "百花医药",
-          "chg_pct": null
-        },
-        {
-          "name": "通信设备",
-          "lead": "汇绿生态",
-          "chg_pct": null
-        },
-        {
-          "name": "半导体",
-          "lead": "有研新材",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        }
-      ],
-      "shift_score": 71,
-      "shift_label": "修复",
-      "note": "情绪整体平稳，维持当前节奏。"
-    },
-    {
-      "time": "13:10:04",
-      "ts_bj": "2026-08-07 13:10:04",
-      "date": "2026-08-07",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid"
-      },
-      "pool_errors": {},
-      "zt": 63,
-      "dt": 4,
-      "zab": 9,
-      "zb": 12.5,
-      "fb": 87.5,
-      "jj": 20.6,
-      "lianban": 13,
-      "max_lb": 4,
-      "amount": "17745.0亿",
-      "bf": 0,
-      "heat": 60,
-      "risk": 17,
-      "headline": "修复",
-      "concepts": [
-        {
-          "name": "元件",
-          "lead": "宝鼎科技",
-          "chg_pct": null
-        },
-        {
-          "name": "化学制药",
-          "lead": "哈药股份",
-          "chg_pct": null
-        },
-        {
-          "name": "医疗服务",
-          "lead": "百花医药",
-          "chg_pct": null
-        },
-        {
-          "name": "通信设备",
-          "lead": "汇绿生态",
-          "chg_pct": null
-        },
-        {
-          "name": "半导体",
-          "lead": "有研新材",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        }
-      ],
-      "shift_score": 70,
-      "shift_label": "修复",
-      "note": "情绪整体平稳，维持当前节奏。"
-    },
-    {
-      "time": "13:20:05",
-      "ts_bj": "2026-08-07 13:20:05",
-      "date": "2026-08-07",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid"
-      },
-      "pool_errors": {},
-      "zt": 66,
-      "dt": 4,
-      "zab": 14,
-      "zb": 17.5,
-      "fb": 82.5,
-      "jj": 19.7,
-      "lianban": 13,
-      "max_lb": 4,
-      "amount": "18553.6亿",
-      "bf": 0,
-      "heat": 59,
-      "risk": 22,
-      "headline": "修复",
-      "concepts": [
-        {
-          "name": "元件",
-          "lead": "宝鼎科技",
-          "chg_pct": null
-        },
-        {
-          "name": "化学制药",
-          "lead": "哈药股份",
-          "chg_pct": null
-        },
-        {
-          "name": "医疗服务",
-          "lead": "百花医药",
-          "chg_pct": null
-        },
-        {
-          "name": "通信设备",
-          "lead": "汇绿生态",
-          "chg_pct": null
-        },
-        {
-          "name": "半导体",
-          "lead": "有研新材",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        }
-      ],
-      "shift_score": 67,
-      "shift_label": "修复",
-      "note": "情绪略有回落，注意午后分歧。"
-    },
-    {
-      "time": "13:30:06",
-      "ts_bj": "2026-08-07 13:30:06",
-      "date": "2026-08-07",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid"
-      },
-      "pool_errors": {},
-      "zt": 70,
-      "dt": 4,
-      "zab": 14,
-      "zb": 16.7,
-      "fb": 83.3,
-      "jj": 20.0,
-      "lianban": 14,
-      "max_lb": 4,
-      "amount": "19291.2亿",
-      "bf": 0,
-      "heat": 60,
-      "risk": 21,
-      "headline": "修复",
-      "concepts": [
-        {
-          "name": "元件",
-          "lead": "宝鼎科技",
-          "chg_pct": null
-        },
-        {
-          "name": "医疗服务",
-          "lead": "百花医药",
-          "chg_pct": null
-        },
-        {
-          "name": "化学制药",
-          "lead": "哈药股份",
-          "chg_pct": null
-        },
-        {
-          "name": "通信设备",
-          "lead": "汇绿生态",
-          "chg_pct": null
-        },
-        {
-          "name": "半导体",
-          "lead": "有研新材",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        }
-      ],
-      "shift_score": 68,
-      "shift_label": "修复",
-      "note": "情绪整体平稳，维持当前节奏。"
-    },
-    {
-      "time": "13:40:04",
-      "ts_bj": "2026-08-07 13:40:04",
-      "date": "2026-08-07",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid"
-      },
-      "pool_errors": {},
-      "zt": 74,
-      "dt": 4,
-      "zab": 13,
-      "zb": 14.9,
-      "fb": 85.1,
-      "jj": 18.9,
-      "lianban": 14,
-      "max_lb": 4,
-      "amount": "20051.3亿",
-      "bf": 0,
-      "heat": 61,
-      "risk": 20,
-      "headline": "修复",
-      "concepts": [
-        {
-          "name": "元件",
-          "lead": "宝鼎科技",
-          "chg_pct": null
-        },
-        {
-          "name": "医疗服务",
-          "lead": "百花医药",
-          "chg_pct": null
-        },
-        {
-          "name": "化学制药",
-          "lead": "哈药股份",
-          "chg_pct": null
-        },
-        {
-          "name": "通信设备",
-          "lead": "汇绿生态",
-          "chg_pct": null
-        },
-        {
-          "name": "半导体",
-          "lead": "有研新材",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        }
-      ],
-      "shift_score": 69,
-      "shift_label": "修复",
-      "note": "情绪整体平稳，维持当前节奏。"
-    },
-    {
-      "time": "13:50:06",
-      "ts_bj": "2026-08-07 13:50:06",
-      "date": "2026-08-07",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid"
-      },
-      "pool_errors": {},
-      "zt": 74,
-      "dt": 4,
-      "zab": 14,
-      "zb": 15.9,
-      "fb": 84.1,
-      "jj": 18.9,
-      "lianban": 14,
-      "max_lb": 4,
-      "amount": "20665.7亿",
-      "bf": 0,
-      "heat": 60,
-      "risk": 21,
-      "headline": "修复",
-      "concepts": [
-        {
-          "name": "元件",
-          "lead": "宝鼎科技",
-          "chg_pct": null
-        },
-        {
-          "name": "医疗服务",
-          "lead": "百花医药",
-          "chg_pct": null
-        },
-        {
-          "name": "化学制药",
-          "lead": "哈药股份",
-          "chg_pct": null
-        },
-        {
-          "name": "通信设备",
-          "lead": "汇绿生态",
-          "chg_pct": null
-        },
-        {
-          "name": "半导体",
-          "lead": "有研新材",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        }
-      ],
-      "shift_score": 68,
-      "shift_label": "修复",
-      "note": "情绪整体平稳，维持当前节奏。"
-    },
-    {
-      "time": "14:00:04",
-      "ts_bj": "2026-08-07 14:00:04",
-      "date": "2026-08-07",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid"
-      },
-      "pool_errors": {},
-      "zt": 77,
-      "dt": 5,
-      "zab": 14,
-      "zb": 15.4,
-      "fb": 84.6,
-      "jj": 18.2,
-      "lianban": 14,
-      "max_lb": 4,
-      "amount": "21392.0亿",
-      "bf": 0,
-      "heat": 61,
-      "risk": 22,
-      "headline": "修复",
-      "concepts": [
-        {
-          "name": "元件",
-          "lead": "宝鼎科技",
-          "chg_pct": null
-        },
-        {
-          "name": "医疗服务",
-          "lead": "百花医药",
-          "chg_pct": null
-        },
-        {
-          "name": "化学制药",
-          "lead": "哈药股份",
-          "chg_pct": null
-        },
-        {
-          "name": "通信设备",
-          "lead": "汇绿生态",
-          "chg_pct": null
-        },
-        {
-          "name": "半导体",
-          "lead": "有研新材",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        }
-      ],
-      "shift_score": 68,
-      "shift_label": "修复",
-      "note": "情绪整体平稳，维持当前节奏。"
-    },
-    {
-      "time": "14:10:05",
-      "ts_bj": "2026-08-07 14:10:05",
-      "date": "2026-08-07",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid"
-      },
-      "pool_errors": {},
-      "zt": 71,
-      "dt": 5,
-      "zab": 21,
-      "zb": 22.8,
-      "fb": 77.2,
-      "jj": 19.7,
-      "lianban": 14,
-      "max_lb": 4,
-      "amount": "22179.2亿",
-      "bf": 0,
-      "heat": 57,
-      "risk": 29,
-      "headline": "修复",
-      "concepts": [
-        {
-          "name": "元件",
-          "lead": "宝鼎科技",
-          "chg_pct": null
-        },
-        {
-          "name": "医疗服务",
-          "lead": "百花医药",
-          "chg_pct": null
-        },
-        {
-          "name": "化学制药",
-          "lead": "哈药股份",
-          "chg_pct": null
-        },
-        {
-          "name": "通信设备",
-          "lead": "汇绿生态",
-          "chg_pct": null
-        },
-        {
-          "name": "半导体",
-          "lead": "有研新材",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        }
-      ],
-      "shift_score": 63,
-      "shift_label": "修复",
-      "note": "炸板/跌停抬升，情绪明显走弱。"
-    },
-    {
-      "time": "14:20:05",
-      "ts_bj": "2026-08-07 14:20:05",
-      "date": "2026-08-07",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid"
-      },
-      "pool_errors": {},
-      "zt": 73,
-      "dt": 5,
-      "zab": 19,
-      "zb": 20.7,
-      "fb": 79.3,
-      "jj": 19.2,
-      "lianban": 14,
-      "max_lb": 4,
-      "amount": "22964.7亿",
-      "bf": 0,
-      "heat": 58,
-      "risk": 27,
-      "headline": "修复",
-      "concepts": [
-        {
-          "name": "元件",
-          "lead": "宝鼎科技",
-          "chg_pct": null
-        },
-        {
-          "name": "医疗服务",
-          "lead": "百花医药",
-          "chg_pct": null
-        },
-        {
-          "name": "化学制药",
-          "lead": "哈药股份",
-          "chg_pct": null
-        },
-        {
-          "name": "通信设备",
-          "lead": "汇绿生态",
-          "chg_pct": null
-        },
-        {
-          "name": "半导体",
-          "lead": "有研新材",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        }
-      ],
-      "shift_score": 64,
-      "shift_label": "修复",
-      "note": "情绪整体平稳，维持当前节奏。"
-    },
-    {
-      "time": "14:30:07",
-      "ts_bj": "2026-08-07 14:30:07",
-      "date": "2026-08-07",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid"
-      },
-      "pool_errors": {},
-      "zt": 64,
-      "dt": 5,
-      "zab": 29,
-      "zb": 31.2,
-      "fb": 68.8,
-      "jj": 20.3,
-      "lianban": 13,
-      "max_lb": 4,
-      "amount": "23729.0亿",
-      "bf": 0,
-      "heat": 53,
-      "risk": 38,
-      "headline": "分歧",
-      "concepts": [
-        {
-          "name": "元件",
-          "lead": "宝鼎科技",
-          "chg_pct": null
-        },
-        {
-          "name": "医疗服务",
-          "lead": "百花医药",
-          "chg_pct": null
-        },
-        {
-          "name": "化学制药",
-          "lead": "哈药股份",
-          "chg_pct": null
-        },
-        {
-          "name": "半导体",
-          "lead": "有研新材",
-          "chg_pct": null
         },
         {
-          "name": "化学制品",
-          "lead": "和远气体",
+          "name": "生物制品",
+          "lead": "百普赛斯",
           "chg_pct": null
         }
       ],
@@ -1454,312 +137,88 @@
         },
         {
           "level": "warn",
-          "text": "炸板率偏高（31.2%）→ 注意回封质量"
+          "text": "盘中三池响应不完整，保留最近有效数据"
         }
       ],
-      "shift_score": 57,
-      "shift_label": "分歧",
-      "note": "炸板/跌停抬升，情绪明显走弱。"
-    },
-    {
-      "time": "14:40:05",
-      "ts_bj": "2026-08-07 14:40:05",
-      "date": "2026-08-07",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid"
-      },
-      "pool_errors": {},
-      "zt": 67,
-      "dt": 4,
-      "zab": 27,
-      "zb": 28.7,
-      "fb": 71.3,
-      "jj": 20.9,
-      "lianban": 14,
-      "max_lb": 4,
-      "amount": "11104.9亿",
-      "bf": 0,
-      "heat": 54,
-      "risk": 34,
-      "headline": "分歧",
-      "concepts": [
-        {
-          "name": "元件",
-          "lead": "宝鼎科技",
-          "chg_pct": null
-        },
-        {
-          "name": "医疗服务",
-          "lead": "百花医药",
-          "chg_pct": null
-        },
-        {
-          "name": "化学制药",
-          "lead": "哈药股份",
-          "chg_pct": null
-        },
-        {
-          "name": "半导体",
-          "lead": "有研新材",
-          "chg_pct": null
-        },
-        {
-          "name": "化学制品",
-          "lead": "和远气体",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        },
-        {
-          "level": "warn",
-          "text": "炸板率偏高（28.7%）→ 注意回封质量"
-        }
-      ],
-      "shift_score": 59,
-      "shift_label": "分歧",
-      "note": "情绪边际修复，但仍需确认持续性。"
-    },
-    {
-      "time": "14:50:06",
-      "ts_bj": "2026-08-07 14:50:06",
-      "date": "2026-08-07",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid"
-      },
-      "pool_errors": {},
-      "zt": 70,
-      "dt": 4,
-      "zab": 27,
-      "zb": 27.8,
-      "fb": 72.2,
-      "jj": 20.0,
-      "lianban": 14,
-      "max_lb": 4,
-      "amount": "25396.2亿",
-      "bf": 0,
-      "heat": 55,
-      "risk": 33,
-      "headline": "修复",
-      "concepts": [
-        {
-          "name": "元件",
-          "lead": "宝鼎科技",
-          "chg_pct": null
-        },
-        {
-          "name": "医疗服务",
-          "lead": "百花医药",
-          "chg_pct": null
-        },
-        {
-          "name": "化学制药",
-          "lead": "哈药股份",
-          "chg_pct": null
-        },
-        {
-          "name": "半导体",
-          "lead": "有研新材",
-          "chg_pct": null
-        },
-        {
-          "name": "化学制品",
-          "lead": "和远气体",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        },
-        {
-          "level": "warn",
-          "text": "炸板率偏高（27.8%）→ 注意回封质量"
-        }
-      ],
-      "shift_score": 60,
-      "shift_label": "修复",
-      "note": "情绪整体平稳，维持当前节奏。"
-    },
-    {
-      "time": "15:00:04",
-      "ts_bj": "2026-08-07 15:00:04",
-      "date": "2026-08-07",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid"
-      },
-      "pool_errors": {},
-      "zt": 74,
-      "dt": 4,
-      "zab": 25,
-      "zb": 25.3,
-      "fb": 74.7,
-      "jj": 18.9,
-      "lianban": 14,
-      "max_lb": 4,
-      "amount": "26639.2亿",
-      "bf": 0,
-      "heat": 56,
-      "risk": 31,
-      "headline": "修复",
-      "concepts": [
-        {
-          "name": "元件",
-          "lead": "宝鼎科技",
-          "chg_pct": null
-        },
-        {
-          "name": "医疗服务",
-          "lead": "百花医药",
-          "chg_pct": null
-        },
-        {
-          "name": "化学制药",
-          "lead": "哈药股份",
-          "chg_pct": null
-        },
-        {
-          "name": "通信设备",
-          "lead": "汇绿生态",
-          "chg_pct": null
-        },
-        {
-          "name": "半导体",
-          "lead": "有研新材",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        },
-        {
-          "level": "warn",
-          "text": "炸板率偏高（25.3%）→ 注意回封质量"
-        }
-      ],
-      "shift_score": 61,
-      "shift_label": "修复",
-      "note": "情绪整体平稳，维持当前节奏。"
+      "shift_score": null,
+      "shift_label": "数据部分可用",
+      "note": "本槽位仅部分三池成功；节点已保留，缺失指标不参与判断。"
     }
   ],
   "indices": [
     {
       "name": "上证指数",
       "code": "000001.SH",
-      "val": 3940.229,
-      "chg": 1.022394901793478,
-      "cje": 1203077655500.0,
-      "t": "2026-08-07 15:00:03"
+      "val": 3944.605,
+      "chg": 0.11593799753657671,
+      "cje": 20577852500.0,
+      "t": "2026-08-10 09:30:18"
     },
     {
       "name": "深证成指",
       "code": "399001.SZ",
-      "val": 14308.139,
-      "chg": 1.4033756337029288,
-      "cje": 1440321399300.0,
-      "t": "2026-08-07 14:57:03"
+      "val": 14356.888,
+      "chg": 0.32059237196989215,
+      "cje": 39663278600.0,
+      "t": "2026-08-10 09:30:15"
     },
     {
       "name": "创业板指",
       "code": "399006.SZ",
-      "val": 3563.117,
-      "chg": 1.3527574554267385,
-      "cje": 734824333700.0,
-      "t": "2026-08-07 15:00:03"
+      "val": 3571.664,
+      "chg": 0.2398742449377897,
+      "cje": 18637345400.0,
+      "t": "2026-08-10 09:30:15"
     }
   ],
   "asOf": {
-    "indices": "15:00:03"
+    "indices": "09:30:15"
   },
   "health": {
-    "status": "valid",
-    "last_valid_at": "2026-08-07 15:00:04",
+    "status": "degraded",
+    "last_valid_at": "2026-08-10 09:30:19",
     "rejected_reason": "",
     "source": {
-      "status": "valid",
+      "status": "partial",
       "pool_status": {
         "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid"
+        "zbgc": "failed",
+        "dtgc": "failed"
       },
-      "pool_errors": {}
+      "pool_errors": {
+        "zbgc": "empty_response",
+        "dtgc": "empty_response"
+      }
     },
     "indices_status": "valid",
     "coverage": {
-      "ok": false,
-      "status": "degraded",
-      "message": "intraday_coverage_incomplete",
-      "date": "2026-08-07",
+      "ok": true,
+      "status": "collecting",
+      "message": "intraday_coverage_collecting",
+      "date": "2026-08-10",
       "expected_count": 26,
-      "due_count": 26,
-      "observed_count": 25,
+      "due_count": 1,
+      "observed_count": 1,
       "observed_slots": [
-        "09:40",
-        "09:50",
-        "10:00",
-        "10:10",
-        "10:20",
-        "10:30",
-        "10:40",
-        "10:50",
-        "11:00",
-        "11:10",
-        "11:20",
-        "11:30",
-        "13:00",
-        "13:10",
-        "13:20",
-        "13:30",
-        "13:40",
-        "13:50",
-        "14:00",
-        "14:10",
-        "14:20",
-        "14:30",
-        "14:40",
-        "14:50",
-        "15:00"
-      ],
-      "missing_slots": [
         "09:30"
       ],
+      "missing_slots": [],
       "duplicate_slots": [],
       "out_of_session": [],
       "monotonic": true,
-      "morning_coverage": 12,
-      "afternoon_coverage": 13
+      "morning_coverage": 1,
+      "afternoon_coverage": 0
     }
   },
   "live": {
     "market": {
-      "zt": 74,
-      "dt": 4,
-      "zab": 25,
-      "zab_rate": 25.3,
-      "lianban": 14,
-      "max_lianban": 4,
-      "amount": "26639.2亿"
+      "zt": 12,
+      "dt": null,
+      "zab": null,
+      "zab_rate": null,
+      "lianban": 6,
+      "max_lianban": 5,
+      "amount": ""
     },
     "alerts": [
       {
@@ -1768,13 +227,18 @@
       },
       {
         "level": "warn",
-        "text": "炸板率偏高（25.3%）→ 注意回封质量"
+        "text": "盘中三池响应不完整，保留最近有效数据"
       }
     ],
     "concepts": [
       {
-        "name": "元件",
-        "lead": "宝鼎科技",
+        "name": "化学制药",
+        "lead": "誉衡药业",
+        "chg_pct": null
+      },
+      {
+        "name": "影视院线",
+        "lead": "北京文化",
         "chg_pct": null
       },
       {
@@ -1783,18 +247,13 @@
         "chg_pct": null
       },
       {
-        "name": "化学制药",
-        "lead": "哈药股份",
+        "name": "医药商业",
+        "lead": "开开实业",
         "chg_pct": null
       },
       {
-        "name": "通信设备",
-        "lead": "汇绿生态",
-        "chg_pct": null
-      },
-      {
-        "name": "半导体",
-        "lead": "有研新材",
+        "name": "生物制品",
+        "lead": "百普赛斯",
         "chg_pct": null
       }
     ]
