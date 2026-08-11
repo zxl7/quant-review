@@ -2,7 +2,7 @@
   "schema": "intraday_snapshot_v1",
   "render_mode": "snapshot_stream",
   "date": "2026-08-11",
-  "count": 9,
+  "count": 10,
   "interval_min": null,
   "simulated": false,
   "snapshots": [
@@ -587,11 +587,74 @@
       "shift_score": 70,
       "shift_label": "修复",
       "note": "炸板/跌停抬升，情绪明显走弱。"
+    },
+    {
+      "time": "11:00:07",
+      "ts_bj": "2026-08-11 11:00:07",
+      "date": "2026-08-11",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid_empty"
+      },
+      "pool_errors": {},
+      "zt": 42,
+      "dt": 0,
+      "zab": 10,
+      "zb": 19.2,
+      "fb": 80.8,
+      "jj": 31.0,
+      "lianban": 13,
+      "max_lb": 6,
+      "amount": "13452.0亿",
+      "bf": 0,
+      "heat": 61,
+      "risk": 15,
+      "headline": "修复",
+      "concepts": [
+        {
+          "name": "医药商业",
+          "lead": "开开实业",
+          "chg_pct": null
+        },
+        {
+          "name": "专用设备",
+          "lead": "同力天启",
+          "chg_pct": null
+        },
+        {
+          "name": "塑料",
+          "lead": "国风新材",
+          "chg_pct": null
+        },
+        {
+          "name": "影视院线",
+          "lead": "北京文化",
+          "chg_pct": null
+        },
+        {
+          "name": "通用设备",
+          "lead": "华东数控",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        }
+      ],
+      "shift_score": 71,
+      "shift_label": "修复",
+      "note": "情绪整体平稳，维持当前节奏。"
     }
   ],
   "latest": {
-    "time": "10:50:04",
-    "ts_bj": "2026-08-11 10:50:04",
+    "time": "11:00:07",
+    "ts_bj": "2026-08-11 11:00:07",
     "date": "2026-08-11",
     "source": "intraday_live",
     "provider": "必盈(实时)+必盈(实时)",
@@ -602,23 +665,28 @@
       "dtgc": "valid_empty"
     },
     "pool_errors": {},
-    "zt": 38,
+    "zt": 42,
     "dt": 0,
-    "zab": 11,
-    "zb": 22.4,
-    "fb": 77.6,
-    "jj": 34.2,
+    "zab": 10,
+    "zb": 19.2,
+    "fb": 80.8,
+    "jj": 31.0,
     "lianban": 13,
     "max_lb": 6,
-    "amount": "12731.6亿",
+    "amount": "13452.0亿",
     "bf": 0,
-    "heat": 60,
-    "risk": 17,
+    "heat": 61,
+    "risk": 15,
     "headline": "修复",
     "concepts": [
       {
         "name": "医药商业",
         "lead": "开开实业",
+        "chg_pct": null
+      },
+      {
+        "name": "专用设备",
+        "lead": "同力天启",
         "chg_pct": null
       },
       {
@@ -629,11 +697,6 @@
       {
         "name": "影视院线",
         "lead": "北京文化",
-        "chg_pct": null
-      },
-      {
-        "name": "专用设备",
-        "lead": "同力天启",
         "chg_pct": null
       },
       {
@@ -648,15 +711,15 @@
         "text": "盘中模式：强制实时拉取"
       }
     ],
-    "shift_score": 70,
+    "shift_score": 71,
     "shift_label": "修复",
-    "note": "炸板/跌停抬升，情绪明显走弱。"
+    "note": "情绪整体平稳，维持当前节奏。"
   },
-  "updated_at": "2026-08-11 10:50:04",
-  "snapshot_sig": "2026-08-11|2026-08-11 10:50:04|9",
+  "updated_at": "2026-08-11 11:00:07",
+  "snapshot_sig": "2026-08-11|2026-08-11 11:00:07|10",
   "health": {
     "status": "valid",
-    "last_valid_at": "2026-08-11 10:50:04",
+    "last_valid_at": "2026-08-11 11:00:07",
     "rejected_reason": "",
     "source": {
       "status": "valid",
