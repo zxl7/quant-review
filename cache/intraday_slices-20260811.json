@@ -2,7 +2,7 @@
   "schema": "intraday_snapshot_v1",
   "render_mode": "snapshot_stream",
   "date": "2026-08-11",
-  "count": 24,
+  "count": 25,
   "interval_min": null,
   "simulated": false,
   "snapshots": [
@@ -1540,11 +1540,82 @@
       "shift_score": 65,
       "shift_label": "修复",
       "note": "情绪略有回落，注意午后分歧。"
+    },
+    {
+      "time": "14:50:07",
+      "ts_bj": "2026-08-11 14:50:07",
+      "date": "2026-08-11",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid"
+      },
+      "pool_errors": {},
+      "zt": 55,
+      "dt": 1,
+      "zab": 19,
+      "zb": 25.7,
+      "fb": 74.3,
+      "jj": 27.3,
+      "lianban": 15,
+      "max_lb": 6,
+      "amount": "22149.2亿",
+      "bf": 0,
+      "heat": 60,
+      "risk": 24,
+      "headline": "修复",
+      "concepts": [
+        {
+          "name": "汽车零部",
+          "lead": "秦安股份",
+          "chg_pct": null
+        },
+        {
+          "name": "专用设备",
+          "lead": "同力天启",
+          "chg_pct": null
+        },
+        {
+          "name": "医药商业",
+          "lead": "开开实业",
+          "chg_pct": null
+        },
+        {
+          "name": "化学制品",
+          "lead": "亚邦股份",
+          "chg_pct": null
+        },
+        {
+          "name": "医疗服务",
+          "lead": "百花医药",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        },
+        {
+          "level": "warn",
+          "text": "炸板率偏高（25.7%）→ 注意回封质量"
+        },
+        {
+          "level": "warn",
+          "text": "高度6板 + 分歧不低 → 高位兑现/炸板风险"
+        }
+      ],
+      "shift_score": 67,
+      "shift_label": "修复",
+      "note": "情绪边际修复，但仍需确认持续性。"
     }
   ],
   "latest": {
-    "time": "14:40:06",
-    "ts_bj": "2026-08-11 14:40:06",
+    "time": "14:50:07",
+    "ts_bj": "2026-08-11 14:50:07",
     "date": "2026-08-11",
     "source": "intraday_live",
     "provider": "必盈(实时)+必盈(实时)",
@@ -1555,18 +1626,18 @@
       "dtgc": "valid"
     },
     "pool_errors": {},
-    "zt": 52,
+    "zt": 55,
     "dt": 1,
-    "zab": 20,
-    "zb": 27.8,
-    "fb": 72.2,
-    "jj": 28.8,
+    "zab": 19,
+    "zb": 25.7,
+    "fb": 74.3,
+    "jj": 27.3,
     "lianban": 15,
     "max_lb": 6,
-    "amount": "21325.6亿",
+    "amount": "22149.2亿",
     "bf": 0,
-    "heat": 59,
-    "risk": 26,
+    "heat": 60,
+    "risk": 24,
     "headline": "修复",
     "concepts": [
       {
@@ -1590,8 +1661,8 @@
         "chg_pct": null
       },
       {
-        "name": "塑料",
-        "lead": "国风新材",
+        "name": "医疗服务",
+        "lead": "百花医药",
         "chg_pct": null
       }
     ],
@@ -1602,22 +1673,22 @@
       },
       {
         "level": "warn",
-        "text": "炸板率偏高（27.8%）→ 注意回封质量"
+        "text": "炸板率偏高（25.7%）→ 注意回封质量"
       },
       {
         "level": "warn",
         "text": "高度6板 + 分歧不低 → 高位兑现/炸板风险"
       }
     ],
-    "shift_score": 65,
+    "shift_score": 67,
     "shift_label": "修复",
-    "note": "情绪略有回落，注意午后分歧。"
+    "note": "情绪边际修复，但仍需确认持续性。"
   },
-  "updated_at": "2026-08-11 14:40:06",
-  "snapshot_sig": "2026-08-11|2026-08-11 14:40:06|24",
+  "updated_at": "2026-08-11 14:50:07",
+  "snapshot_sig": "2026-08-11|2026-08-11 14:50:07|25",
   "health": {
     "status": "valid",
-    "last_valid_at": "2026-08-11 14:40:06",
+    "last_valid_at": "2026-08-11 14:50:07",
     "rejected_reason": "",
     "source": {
       "status": "valid",
