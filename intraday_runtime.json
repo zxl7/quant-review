@@ -1,11 +1,11 @@
 {
   "schema": "intraday_runtime_v1",
   "date": "2026-08-11",
-  "updated_at": "2026-08-11 09:50:04",
+  "updated_at": "2026-08-11 10:00:06",
   "source": "必盈(实时)+必盈(实时)",
   "latest": {
-    "time": "09:50:04",
-    "ts_bj": "2026-08-11 09:50:04",
+    "time": "10:00:06",
+    "ts_bj": "2026-08-11 10:00:06",
     "date": "2026-08-11",
     "source": "intraday_live",
     "provider": "必盈(实时)+必盈(实时)",
@@ -16,18 +16,18 @@
       "dtgc": "valid"
     },
     "pool_errors": {},
-    "zt": 24,
-    "dt": 2,
+    "zt": 31,
+    "dt": 1,
     "zab": 5,
-    "zb": 17.2,
-    "fb": 82.8,
-    "jj": 54.2,
+    "zb": 13.9,
+    "fb": 86.1,
+    "jj": 41.9,
     "lianban": 13,
     "max_lb": 6,
-    "amount": "5925.8亿",
+    "amount": "7361.3亿",
     "bf": 0,
-    "heat": 65,
-    "risk": 15,
+    "heat": 64,
+    "risk": 11,
     "headline": "走强",
     "concepts": [
       {
@@ -62,9 +62,9 @@
         "text": "盘中模式：强制实时拉取"
       }
     ],
-    "shift_score": 73,
+    "shift_score": 74,
     "shift_label": "走强",
-    "note": "承接增强、分歧收敛，情绪明显回暖。"
+    "note": "情绪整体平稳，维持当前节奏。"
   },
   "snapshots": [
     {
@@ -270,40 +270,103 @@
       "shift_score": 73,
       "shift_label": "走强",
       "note": "承接增强、分歧收敛，情绪明显回暖。"
+    },
+    {
+      "time": "10:00:06",
+      "ts_bj": "2026-08-11 10:00:06",
+      "date": "2026-08-11",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid"
+      },
+      "pool_errors": {},
+      "zt": 31,
+      "dt": 1,
+      "zab": 5,
+      "zb": 13.9,
+      "fb": 86.1,
+      "jj": 41.9,
+      "lianban": 13,
+      "max_lb": 6,
+      "amount": "7361.3亿",
+      "bf": 0,
+      "heat": 64,
+      "risk": 11,
+      "headline": "走强",
+      "concepts": [
+        {
+          "name": "医药商业",
+          "lead": "开开实业",
+          "chg_pct": null
+        },
+        {
+          "name": "塑料",
+          "lead": "国风新材",
+          "chg_pct": null
+        },
+        {
+          "name": "饮料乳品",
+          "lead": "一鸣食品",
+          "chg_pct": null
+        },
+        {
+          "name": "通用设备",
+          "lead": "华东数控",
+          "chg_pct": null
+        },
+        {
+          "name": "房地产开",
+          "lead": "京投发展",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        }
+      ],
+      "shift_score": 74,
+      "shift_label": "走强",
+      "note": "情绪整体平稳，维持当前节奏。"
     }
   ],
   "indices": [
     {
       "name": "上证指数",
       "code": "000001.SH",
-      "val": 3959.071,
-      "chg": -0.1896589366090943,
-      "cje": 265594210700.0,
-      "t": "2026-08-11 09:49:54"
+      "val": 3954.599,
+      "chg": -0.30240049775701494,
+      "cje": 332128379900.0,
+      "t": "2026-08-11 10:00:03"
     },
     {
       "name": "深证成指",
       "code": "399001.SZ",
-      "val": 14306.318,
-      "chg": -0.07433840184379932,
-      "cje": 326985966600.0,
-      "t": "2026-08-11 09:50:00"
+      "val": 14280.236,
+      "chg": -0.25651393476589446,
+      "cje": 403676623900.0,
+      "t": "2026-08-11 10:00:00"
     },
     {
       "name": "创业板指",
       "code": "399006.SZ",
-      "val": 3543.318,
-      "chg": 0.172565188309225,
-      "cje": 155783896800.0,
-      "t": "2026-08-11 09:50:00"
+      "val": 3533.444,
+      "chg": -0.10658105503370682,
+      "cje": 193791605300.0,
+      "t": "2026-08-11 10:00:00"
     }
   ],
   "asOf": {
-    "indices": "09:50:00"
+    "indices": "10:00:00"
   },
   "health": {
     "status": "valid",
-    "last_valid_at": "2026-08-11 09:50:04",
+    "last_valid_at": "2026-08-11 10:00:06",
     "rejected_reason": "",
     "source": {
       "status": "valid",
@@ -321,30 +384,31 @@
       "message": "intraday_coverage_collecting",
       "date": "2026-08-11",
       "expected_count": 26,
-      "due_count": 3,
-      "observed_count": 3,
+      "due_count": 4,
+      "observed_count": 4,
       "observed_slots": [
         "09:30",
         "09:40",
-        "09:50"
+        "09:50",
+        "10:00"
       ],
       "missing_slots": [],
       "duplicate_slots": [],
       "out_of_session": [],
       "monotonic": true,
-      "morning_coverage": 3,
+      "morning_coverage": 4,
       "afternoon_coverage": 0
     }
   },
   "live": {
     "market": {
-      "zt": 24,
-      "dt": 2,
+      "zt": 31,
+      "dt": 1,
       "zab": 5,
-      "zab_rate": 17.2,
+      "zab_rate": 13.9,
       "lianban": 13,
       "max_lianban": 6,
-      "amount": "5925.8亿"
+      "amount": "7361.3亿"
     },
     "alerts": [
       {
