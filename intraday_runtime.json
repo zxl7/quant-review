@@ -1,11 +1,11 @@
 {
   "schema": "intraday_runtime_v1",
   "date": "2026-08-11",
-  "updated_at": "2026-08-11 13:30:07",
+  "updated_at": "2026-08-11 13:40:08",
   "source": "必盈(实时)+必盈(实时)",
   "latest": {
-    "time": "13:30:07",
-    "ts_bj": "2026-08-11 13:30:07",
+    "time": "13:40:08",
+    "ts_bj": "2026-08-11 13:40:08",
     "date": "2026-08-11",
     "source": "intraday_live",
     "provider": "必盈(实时)+必盈(实时)",
@@ -24,12 +24,17 @@
     "jj": 25.5,
     "lianban": 13,
     "max_lb": 6,
-    "amount": "17187.3亿",
+    "amount": "17768.8亿",
     "bf": 0,
     "heat": 59,
     "risk": 20,
     "headline": "修复",
     "concepts": [
+      {
+        "name": "汽车零部",
+        "lead": "秦安股份",
+        "chg_pct": null
+      },
       {
         "name": "专用设备",
         "lead": "同力天启",
@@ -38,11 +43,6 @@
       {
         "name": "医药商业",
         "lead": "开开实业",
-        "chg_pct": null
-      },
-      {
-        "name": "汽车零部",
-        "lead": "秦安股份",
         "chg_pct": null
       },
       {
@@ -1152,40 +1152,103 @@
       "shift_score": 68,
       "shift_label": "修复",
       "note": "情绪整体平稳，维持当前节奏。"
+    },
+    {
+      "time": "13:40:08",
+      "ts_bj": "2026-08-11 13:40:08",
+      "date": "2026-08-11",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid_empty"
+      },
+      "pool_errors": {},
+      "zt": 51,
+      "dt": 0,
+      "zab": 16,
+      "zb": 23.9,
+      "fb": 76.1,
+      "jj": 25.5,
+      "lianban": 13,
+      "max_lb": 6,
+      "amount": "17768.8亿",
+      "bf": 0,
+      "heat": 59,
+      "risk": 20,
+      "headline": "修复",
+      "concepts": [
+        {
+          "name": "汽车零部",
+          "lead": "秦安股份",
+          "chg_pct": null
+        },
+        {
+          "name": "专用设备",
+          "lead": "同力天启",
+          "chg_pct": null
+        },
+        {
+          "name": "医药商业",
+          "lead": "开开实业",
+          "chg_pct": null
+        },
+        {
+          "name": "医疗服务",
+          "lead": "百花医药",
+          "chg_pct": null
+        },
+        {
+          "name": "塑料",
+          "lead": "国风新材",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        }
+      ],
+      "shift_score": 68,
+      "shift_label": "修复",
+      "note": "情绪整体平稳，维持当前节奏。"
     }
   ],
   "indices": [
     {
       "name": "上证指数",
       "code": "000001.SH",
-      "val": 3952.573,
-      "chg": -0.35347706369747406,
-      "cje": 784544191900.0,
-      "t": "2026-08-11 13:30:09"
+      "val": 3957.71,
+      "chg": -0.22397048954342225,
+      "cje": 810853951500.0,
+      "t": "2026-08-11 13:40:06"
     },
     {
       "name": "深证成指",
       "code": "399001.SZ",
-      "val": 14342.664,
-      "chg": 0.17952832308477576,
-      "cje": 934189135800.0,
-      "t": "2026-08-11 13:30:09"
+      "val": 14389.209,
+      "chg": 0.5046322330556143,
+      "cje": 965910491000.0,
+      "t": "2026-08-11 13:40:03"
     },
     {
       "name": "创业板指",
       "code": "399006.SZ",
-      "val": 3567.98,
-      "chg": 0.869780567418315,
-      "cje": 450283857800.0,
-      "t": "2026-08-11 13:30:09"
+      "val": 3583.377,
+      "chg": 1.3050666428437752,
+      "cje": 464556406300.0,
+      "t": "2026-08-11 13:40:03"
     }
   ],
   "asOf": {
-    "indices": "13:30:09"
+    "indices": "13:40:03"
   },
   "health": {
     "status": "valid",
-    "last_valid_at": "2026-08-11 13:30:07",
+    "last_valid_at": "2026-08-11 13:40:08",
     "rejected_reason": "",
     "source": {
       "status": "valid",
@@ -1203,8 +1266,8 @@
       "message": "intraday_coverage_collecting",
       "date": "2026-08-11",
       "expected_count": 26,
-      "due_count": 17,
-      "observed_count": 17,
+      "due_count": 18,
+      "observed_count": 18,
       "observed_slots": [
         "09:30",
         "09:40",
@@ -1222,14 +1285,15 @@
         "13:00",
         "13:10",
         "13:20",
-        "13:30"
+        "13:30",
+        "13:40"
       ],
       "missing_slots": [],
       "duplicate_slots": [],
       "out_of_session": [],
       "monotonic": true,
       "morning_coverage": 13,
-      "afternoon_coverage": 4
+      "afternoon_coverage": 5
     }
   },
   "live": {
@@ -1240,7 +1304,7 @@
       "zab_rate": 23.9,
       "lianban": 13,
       "max_lianban": 6,
-      "amount": "17187.3亿"
+      "amount": "17768.8亿"
     },
     "alerts": [
       {
@@ -1250,6 +1314,11 @@
     ],
     "concepts": [
       {
+        "name": "汽车零部",
+        "lead": "秦安股份",
+        "chg_pct": null
+      },
+      {
         "name": "专用设备",
         "lead": "同力天启",
         "chg_pct": null
@@ -1257,11 +1326,6 @@
       {
         "name": "医药商业",
         "lead": "开开实业",
-        "chg_pct": null
-      },
-      {
-        "name": "汽车零部",
-        "lead": "秦安股份",
         "chg_pct": null
       },
       {
