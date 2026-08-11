@@ -2,7 +2,7 @@
   "schema": "intraday_snapshot_v1",
   "render_mode": "snapshot_stream",
   "date": "2026-08-11",
-  "count": 1,
+  "count": 2,
   "interval_min": null,
   "simulated": false,
   "snapshots": [
@@ -75,41 +75,114 @@
       "shift_score": null,
       "shift_label": "数据部分可用",
       "note": "本槽位仅部分三池成功；节点已保留，缺失指标不参与判断。"
+    },
+    {
+      "time": "09:40:05",
+      "ts_bj": "2026-08-11 09:40:05",
+      "date": "2026-08-11",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid_empty"
+      },
+      "pool_errors": {},
+      "zt": 13,
+      "dt": 0,
+      "zab": 6,
+      "zb": 31.6,
+      "fb": 68.4,
+      "jj": 69.2,
+      "lianban": 9,
+      "max_lb": 6,
+      "amount": "3958.3亿",
+      "bf": 0,
+      "heat": 60,
+      "risk": 20,
+      "headline": "修复",
+      "concepts": [
+        {
+          "name": "通用设备",
+          "lead": "华东数控",
+          "chg_pct": null
+        },
+        {
+          "name": "医疗服务",
+          "lead": "百花医药",
+          "chg_pct": null
+        },
+        {
+          "name": "汽车零部",
+          "lead": "秦安股份",
+          "chg_pct": null
+        },
+        {
+          "name": "影视院线",
+          "lead": "北京文化",
+          "chg_pct": null
+        },
+        {
+          "name": "饮料乳品",
+          "lead": "皇氏集团",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        },
+        {
+          "level": "warn",
+          "text": "炸板率偏高（31.6%）→ 注意回封质量"
+        },
+        {
+          "level": "warn",
+          "text": "高度6板 + 分歧不低 → 高位兑现/炸板风险"
+        }
+      ],
+      "shift_score": 68,
+      "shift_label": "修复",
+      "note": "承接增强、分歧收敛，情绪明显回暖。"
     }
   ],
   "latest": {
-    "time": "09:30:20",
-    "ts_bj": "2026-08-11 09:30:20",
+    "time": "09:40:05",
+    "ts_bj": "2026-08-11 09:40:05",
     "date": "2026-08-11",
     "source": "intraday_live",
-    "provider": "必盈(实时)",
-    "data_quality": "partial",
+    "provider": "必盈(实时)+必盈(实时)",
+    "data_quality": "valid",
     "pool_status": {
       "ztgc": "valid",
-      "zbgc": "failed",
-      "dtgc": "failed"
+      "zbgc": "valid",
+      "dtgc": "valid_empty"
     },
-    "pool_errors": {
-      "zbgc": "empty_response",
-      "dtgc": "empty_response"
-    },
-    "zt": 7,
-    "dt": null,
-    "zab": null,
-    "zb": null,
-    "fb": null,
-    "jj": 85.7,
-    "lianban": 6,
-    "max_lb": 3,
-    "amount": "",
+    "pool_errors": {},
+    "zt": 13,
+    "dt": 0,
+    "zab": 6,
+    "zb": 31.6,
+    "fb": 68.4,
+    "jj": 69.2,
+    "lianban": 9,
+    "max_lb": 6,
+    "amount": "3958.3亿",
     "bf": 0,
-    "heat": null,
-    "risk": null,
-    "headline": "数据部分可用",
+    "heat": 60,
+    "risk": 20,
+    "headline": "修复",
     "concepts": [
       {
         "name": "通用设备",
         "lead": "华东数控",
+        "chg_pct": null
+      },
+      {
+        "name": "医疗服务",
+        "lead": "百花医药",
         "chg_pct": null
       },
       {
@@ -126,11 +199,6 @@
         "name": "饮料乳品",
         "lead": "皇氏集团",
         "chg_pct": null
-      },
-      {
-        "name": "房地产开",
-        "lead": "京投发展",
-        "chg_pct": null
       }
     ],
     "alerts": [
@@ -140,30 +208,31 @@
       },
       {
         "level": "warn",
-        "text": "盘中三池响应不完整，保留最近有效数据"
+        "text": "炸板率偏高（31.6%）→ 注意回封质量"
+      },
+      {
+        "level": "warn",
+        "text": "高度6板 + 分歧不低 → 高位兑现/炸板风险"
       }
     ],
-    "shift_score": null,
-    "shift_label": "数据部分可用",
-    "note": "本槽位仅部分三池成功；节点已保留，缺失指标不参与判断。"
+    "shift_score": 68,
+    "shift_label": "修复",
+    "note": "承接增强、分歧收敛，情绪明显回暖。"
   },
-  "updated_at": "2026-08-11 09:30:20",
-  "snapshot_sig": "2026-08-11|2026-08-11 09:30:20|1",
+  "updated_at": "2026-08-11 09:40:05",
+  "snapshot_sig": "2026-08-11|2026-08-11 09:40:05|2",
   "health": {
-    "status": "degraded",
-    "last_valid_at": "2026-08-11 09:30:20",
+    "status": "valid",
+    "last_valid_at": "2026-08-11 09:40:05",
     "rejected_reason": "",
     "source": {
-      "status": "partial",
+      "status": "valid",
       "pool_status": {
         "ztgc": "valid",
-        "zbgc": "failed",
-        "dtgc": "failed"
+        "zbgc": "valid",
+        "dtgc": "valid_empty"
       },
-      "pool_errors": {
-        "zbgc": "empty_response",
-        "dtgc": "empty_response"
-      }
+      "pool_errors": {}
     }
   }
 }
