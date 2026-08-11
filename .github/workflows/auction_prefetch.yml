@@ -1,18 +1,19 @@
 name: Capture auction snapshot
 
 on:
-  # 主会话提前启动并等待到 09:25；两个独立补启动避免同一 pending 队列互相淘汰。
+  # 三个提前触发共享单飞锁；前一会话失败后由最新候补接管。
   schedule:
+    - cron: "45 0 * * 1-5"
+    - cron: "0 1 * * 1-5"
     - cron: "15 1 * * 1-5"
-    - cron: "25 1 * * 1-5"
-    - cron: "27 1 * * 1-5"
   workflow_dispatch:
 
 permissions:
   contents: write
+  actions: write
 
 concurrency:
-  group: ${{ github.event_name == 'workflow_dispatch' && format('auction-prefetch-manual-{0}', github.run_id) || github.event.schedule == '15 1 * * 1-5' && 'auction-prefetch-primary' || github.event.schedule == '25 1 * * 1-5' && 'auction-prefetch-0925' || 'auction-prefetch-0927' }}
+  group: ${{ github.event_name == 'workflow_dispatch' && format('auction-prefetch-manual-{0}', github.run_id) || 'auction-prefetch-session' }}
   cancel-in-progress: false
 
 env:
@@ -22,8 +23,33 @@ env:
 jobs:
   capture:
     runs-on: ubuntu-latest
-    timeout-minutes: 25
+    timeout-minutes: 70
     steps:
+      - name: Record runner timing
+        id: runtime
+        env:
+          RUN_SCHEDULE: ${{ github.event.schedule || '' }}
+        run: |
+          python3 - <<'PY'
+          import datetime as dt
+          import os
+          from zoneinfo import ZoneInfo
+
+          now = dt.datetime.now(ZoneInfo("Asia/Shanghai"))
+          slot_by_cron = {
+              "45 0 * * 1-5": "08:45:00",
+              "0 1 * * 1-5": "09:00:00",
+              "15 1 * * 1-5": "09:15:00",
+          }
+          scheduled_clock = slot_by_cron.get(os.environ.get("RUN_SCHEDULE", ""), now.strftime("%H:%M:%S"))
+          scheduled_slot = f"{now:%Y-%m-%d} {scheduled_clock}"
+          runner_started_at = now.strftime("%Y-%m-%d %H:%M:%S")
+          with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as fh:
+              fh.write(f"scheduled_slot={scheduled_slot}\n")
+              fh.write(f"runner_started_at={runner_started_at}\n")
+          print(f"scheduled_slot={scheduled_slot} runner_started_at={runner_started_at}")
+          PY
+
       - name: Checkout source
         uses: actions/checkout@v4
 
@@ -31,6 +57,7 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: "3.11"
+          cache: pip
 
       - name: Install Python dependencies
         run: pip install -r requirements.txt
@@ -78,8 +105,13 @@ jobs:
           cp -f site_prev/cache/stock_research_realtime_quotes-*.json cache/ 2>/dev/null || true
           cp -f site_prev/cache/trade_days_cache.json cache/ 2>/dev/null || true
 
+      - name: Mark preparation complete
+        id: prepared
+        if: ${{ steps.trade.outputs.is_trade_today == 'true' }}
+        run: echo "prepared_at=$(date '+%Y-%m-%d %H:%M:%S')" >> "$GITHUB_OUTPUT"
+
       - name: Wait for auction window after preparation
-        if: ${{ steps.trade.outputs.is_trade_today == 'true' && github.event_name == 'schedule' && github.event.schedule == '15 1 * * 1-5' }}
+        if: ${{ steps.trade.outputs.is_trade_today == 'true' && github.event_name == 'schedule' }}
         run: |
           set -euo pipefail
           wait_seconds="$(python3 - <<'PY'
@@ -95,6 +127,16 @@ jobs:
             sleep "${wait_seconds}"
           fi
 
+      - name: Refresh published cache before capture
+        if: ${{ steps.trade.outputs.is_trade_today == 'true' }}
+        run: |
+          set -euo pipefail
+          git -C site_prev fetch origin gh-pages
+          git -C site_prev reset --hard origin/gh-pages
+          cp -f site_prev/cache/stock_research_backtest_source.json cache/ 2>/dev/null || true
+          cp -f site_prev/cache/stock_research_realtime_quotes-*.json cache/ 2>/dev/null || true
+          cp -f site_prev/cache/trade_days_cache.json cache/ 2>/dev/null || true
+
       - name: Capture 09:25 auction quotes
         id: capture
         if: ${{ steps.trade.outputs.is_trade_today == 'true' }}
@@ -102,6 +144,10 @@ jobs:
           BIYING_TOKEN: ${{ secrets.BIYING_TOKEN }}
           BIYING_BASE_URL: ${{ secrets.BIYING_BASE_URL }}
           RUN_DATE: ${{ steps.trade.outputs.date10 }}
+          SCHEDULED_SLOT: ${{ steps.runtime.outputs.scheduled_slot }}
+          RUNNER_STARTED_AT: ${{ steps.runtime.outputs.runner_started_at }}
+          PREPARED_AT: ${{ steps.prepared.outputs.prepared_at }}
+          WORKFLOW_RUN_ID: ${{ github.run_id }}
         run: |
           set -euo pipefail
           PYTHONPATH=. python3 - <<'PY'
@@ -133,6 +179,12 @@ jobs:
                   "session_attempts": 0,
                   "codes_count": 0,
               }
+          result.update({
+              "scheduled_slot": os.environ.get("SCHEDULED_SLOT", ""),
+              "runner_started_at": os.environ.get("RUNNER_STARTED_AT", ""),
+              "prepared_at": os.environ.get("PREPARED_AT", ""),
+              "workflow_run_id": os.environ.get("WORKFLOW_RUN_ID", ""),
+          })
           status_path = write_auction_snapshot_status(
               cache_dir=Path("cache"),
               trade_date10=os.environ["RUN_DATE"],
@@ -146,9 +198,11 @@ jobs:
           PY
 
       - name: Publish auction cache and status
+        id: publish
         if: ${{ steps.trade.outputs.is_trade_today == 'true' && always() }}
         run: |
           set -euo pipefail
+          echo "changed=false" >> "$GITHUB_OUTPUT"
           remote_auction_check() {
             RUN_DATE="${{ steps.trade.outputs.date10 }}" PYTHONPATH=. python3 - <<'PY'
           import os
@@ -183,11 +237,29 @@ jobs:
               exit "${remote_check_rc}"
             fi
             set -e
+            RUN_DATE="${{ steps.trade.outputs.date10 }}" PYTHONPATH=. python3 - <<'PY'
+          import os
+          from pathlib import Path
+          from daily_review.application.workflow_schedule import mark_auction_snapshot_published
+
+          path = mark_auction_snapshot_published(
+              cache_dir=Path("cache"),
+              trade_date10=os.environ["RUN_DATE"],
+          )
+          print(f"auction_status_published_at={path}")
+          PY
             mkdir -p site_prev/cache
             cp -f cache/stock_research_realtime_quotes-*.json site_prev/cache/ 2>/dev/null || true
             cp -f cache/auction_snapshot_status-*.json site_prev/cache/ 2>/dev/null || true
             cp -f cache/trade_days_cache.json site_prev/cache/ 2>/dev/null || true
-            git -C site_prev add cache/stock_research_realtime_quotes-*.json cache/auction_snapshot_status-*.json cache/trade_days_cache.json 2>/dev/null || true
+            # 状态文件必须独立暂存；报价缺失时不能连 missing 状态也一起漏掉。
+            git -C site_prev add -A -- cache/auction_snapshot_status-*.json
+            if compgen -G "site_prev/cache/stock_research_realtime_quotes-*.json" >/dev/null; then
+              git -C site_prev add -- cache/stock_research_realtime_quotes-*.json
+            fi
+            if [ -f site_prev/cache/trade_days_cache.json ]; then
+              git -C site_prev add -- cache/trade_days_cache.json
+            fi
             if git -C site_prev diff --cached --quiet; then
               echo "No auction cache changes."
               exit 0
@@ -197,6 +269,7 @@ jobs:
             git -C site_prev commit -m "deploy: auction snapshot cache"
             if git -C site_prev push origin HEAD:gh-pages; then
               push_rc=0
+              echo "changed=true" >> "$GITHUB_OUTPUT"
               break
             fi
             push_rc=$?
@@ -204,6 +277,20 @@ jobs:
             sleep $((attempt * 5))
           done
           exit "${push_rc}"
+
+      - name: Trigger immediate open publish
+        if: ${{ steps.trade.outputs.is_trade_today == 'true' && steps.publish.outputs.changed == 'true' }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RUN_DATE: ${{ steps.trade.outputs.date10 }}
+        run: |
+          set -euo pipefail
+          triggered_at="$(date '+%Y-%m-%d %H:%M:%S')"
+          gh workflow run publish_pages.yml \
+            --ref "${GITHUB_REF_NAME}" \
+            -f date10="${RUN_DATE}" \
+            -f run_stage=open
+          echo "open_publish_triggered_at=${triggered_at}"
 
       - name: Verify published auction outcome
         if: ${{ steps.trade.outputs.is_trade_today == 'true' && always() }}

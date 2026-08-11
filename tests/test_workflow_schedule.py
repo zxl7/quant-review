@@ -18,6 +18,7 @@ from daily_review.application.workflow_schedule import (
     describe_auction_snapshot_status,
     execute_auction_snapshot_prefetch,
     execute_auction_snapshot_prefetch_until_deadline,
+    mark_auction_snapshot_published,
     resolve_auction_snapshot_prefetch_plan,
     resolve_intraday_session,
     resolve_publish_schedule_mode,
@@ -209,15 +210,24 @@ class WorkflowScheduleTest(unittest.TestCase):
         root = Path(__file__).resolve().parents[1]
         workflow = (root / ".github" / "workflows" / "auction_prefetch.yml").read_text(encoding="utf-8")
         publish = (root / ".github" / "workflows" / "publish_pages.yml").read_text(encoding="utf-8")
-        for cron in ("15 1 * * 1-5", "25 1 * * 1-5", "27 1 * * 1-5"):
+        for cron in ("45 0 * * 1-5", "0 1 * * 1-5", "15 1 * * 1-5"):
             self.assertIn(f'cron: "{cron}"', workflow)
-        self.assertIn("auction-prefetch-primary", workflow)
-        self.assertIn("auction-prefetch-0925", workflow)
-        self.assertIn("auction-prefetch-0927", workflow)
+        self.assertEqual(workflow.count('    - cron: "'), 3)
+        self.assertIn("auction-prefetch-session", workflow)
+        self.assertIn("cancel-in-progress: false", workflow)
+        self.assertIn("timeout-minutes: 70", workflow)
+        self.assertIn("actions: write", workflow)
         self.assertLess(workflow.index("- name: Resolve trade date"), workflow.index("- name: Wait for auction window after preparation"))
         self.assertLess(workflow.index("- name: Restore auction cache"), workflow.index("- name: Wait for auction window after preparation"))
+        self.assertLess(workflow.index("- name: Wait for auction window after preparation"), workflow.index("- name: Refresh published cache before capture"))
         self.assertIn("execute_auction_snapshot_prefetch_until_deadline", workflow)
+        self.assertIn("mark_auction_snapshot_published", workflow)
         self.assertIn("auction_snapshot_status-*", workflow)
+        self.assertIn("git -C site_prev add -A -- cache/auction_snapshot_status-*.json", workflow)
+        self.assertNotIn("git -C site_prev add cache/stock_research_realtime_quotes-*.json cache/auction_snapshot_status-*.json", workflow)
+        self.assertIn("steps.publish.outputs.changed == 'true'", workflow)
+        self.assertIn("gh workflow run publish_pages.yml", workflow)
+        self.assertIn("-f run_stage=open", workflow)
         self.assertIn("Verify published auction outcome", workflow)
         self.assertIn("Auction snapshot missing after the 09:25-09:30 capture window", workflow)
         self.assertNotIn("Commit auction snapshot", publish)
@@ -970,6 +980,7 @@ class WorkflowScheduleTest(unittest.TestCase):
         self.assertEqual(result["session_rounds"], 2)
         self.assertEqual(result["session_attempts"], 3)
         self.assertEqual(result["as_of"], "2026-08-07 09:25:15")
+        self.assertEqual(result["first_request_at"], "2026-08-07 09:25:00")
 
     def test_auction_capture_session_waits_until_0925_when_started_early(self) -> None:
         times = iter(
@@ -1002,6 +1013,7 @@ class WorkflowScheduleTest(unittest.TestCase):
 
         self.assertTrue(result["ok"])
         self.assertEqual(sleeps, [30.0])
+        self.assertEqual(result["first_request_at"], "2026-08-07 09:25:00")
         capture.assert_called_once_with(
             cache_dir=Path("cache"),
             trade_date10="2026-08-07",
@@ -1087,6 +1099,11 @@ class WorkflowScheduleTest(unittest.TestCase):
                     "ok": False,
                     "started_at": "2026-08-07 09:25:00",
                     "finished_at": "2026-08-07 09:29:30",
+                    "scheduled_slot": "2026-08-07 08:45:00",
+                    "runner_started_at": "2026-08-07 08:46:00",
+                    "prepared_at": "2026-08-07 08:47:00",
+                    "first_request_at": "2026-08-07 09:25:10",
+                    "workflow_run_id": "12345",
                     "session_rounds": 4,
                     "session_attempts": 8,
                     "codes_count": 3,
@@ -1098,6 +1115,9 @@ class WorkflowScheduleTest(unittest.TestCase):
             missing = json.loads(missing_path.read_text(encoding="utf-8"))
             self.assertEqual(missing["status"], "missing")
             self.assertEqual(missing["attempts"], 8)
+            self.assertEqual(missing["start_delay_seconds"], 60)
+            self.assertEqual(missing["capture_delay_seconds"], 10)
+            self.assertEqual(missing["workflow_run_id"], "12345")
 
             (cache_dir / "stock_research_realtime_quotes-20260806.json").write_text(
                 json.dumps(
@@ -1121,6 +1141,34 @@ class WorkflowScheduleTest(unittest.TestCase):
         self.assertEqual(success["status"], "success")
         self.assertEqual(success["valid_quote_count"], 1)
         self.assertEqual(success["quote_time"], "2026-08-07 09:25:18")
+
+    def test_mark_auction_snapshot_published_records_real_push_time(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            cache_dir = Path(tmp) / "cache"
+            cache_dir.mkdir()
+            status_path = cache_dir / "auction_snapshot_status-20260807.json"
+            status_path.write_text(
+                json.dumps(
+                    {
+                        "date": "2026-08-07",
+                        "status": "success",
+                        "quote_time": "2026-08-07 09:25:18",
+                        "source": "workflow_prefetch",
+                        "valid_quote_count": 1,
+                    }
+                ),
+                encoding="utf-8",
+            )
+
+            mark_auction_snapshot_published(
+                cache_dir=cache_dir,
+                trade_date10="2026-08-07",
+                now=datetime(2026, 8, 7, 9, 26, 0, tzinfo=TZ_BJ),
+            )
+            payload = json.loads(status_path.read_text(encoding="utf-8"))
+
+        self.assertEqual(payload["published_at"], "2026-08-07 09:26:00")
+        self.assertEqual(payload["publish_delay_seconds"], 42)
 
     def test_auction_status_marks_same_day_forced_recovery_as_recovered(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

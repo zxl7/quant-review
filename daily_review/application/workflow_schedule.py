@@ -314,6 +314,7 @@ def execute_auction_snapshot_prefetch_until_deadline(
     }
     rounds = 0
     total_attempts = 0
+    first_request_at = ""
 
     current = started
     window_start = started.replace(hour=9, minute=25, second=0, microsecond=0)
@@ -327,6 +328,8 @@ def execute_auction_snapshot_prefetch_until_deadline(
         if clock < 9 * 3600 + 25 * 60 or clock >= 9 * 3600 + 30 * 60:
             break
         rounds += 1
+        if not first_request_at:
+            first_request_at = current.strftime("%Y-%m-%d %H:%M:%S")
         latest = execute_auction_snapshot_prefetch(
             cache_dir=cache_dir,
             trade_date10=trade_date10,
@@ -359,6 +362,8 @@ def execute_auction_snapshot_prefetch_until_deadline(
             sleep_fn((recovery_start - current).total_seconds())
             current = now_fn().astimezone(TZ_BJ)
         if recovery_start <= current < recovery_end:
+            if not first_request_at:
+                first_request_at = current.strftime("%Y-%m-%d %H:%M:%S")
             recovery = execute_auction_snapshot_prefetch(
                 cache_dir=cache_dir,
                 trade_date10=trade_date10,
@@ -385,13 +390,30 @@ def execute_auction_snapshot_prefetch_until_deadline(
     latest["session_attempts"] = total_attempts
     latest["started_at"] = started.strftime("%Y-%m-%d %H:%M:%S")
     latest["finished_at"] = finished.strftime("%Y-%m-%d %H:%M:%S")
+    latest["first_request_at"] = first_request_at
     if not latest.get("ok") and rounds > 0:
         latest["reason"] = "auction_window_exhausted"
     return latest
 
 
 def describe_auction_snapshot_status(cache_dir: Path, trade_date10: str) -> dict[str, Any]:
-    result = {"found": False, "status": "", "path": "", "quote_time": "", "source": "", "valid_quote_count": 0}
+    result = {
+        "found": False,
+        "status": "",
+        "path": "",
+        "quote_time": "",
+        "source": "",
+        "valid_quote_count": 0,
+        "scheduled_slot": "",
+        "runner_started_at": "",
+        "prepared_at": "",
+        "first_request_at": "",
+        "published_at": "",
+        "workflow_run_id": "",
+        "start_delay_seconds": 0,
+        "capture_delay_seconds": 0,
+        "publish_delay_seconds": 0,
+    }
     path = cache_dir / f"auction_snapshot_status-{trade_date10.replace('-', '')}.json"
     payload = _read_json(path)
     status = str(payload.get("status") or "").strip()
@@ -417,6 +439,15 @@ def describe_auction_snapshot_status(cache_dir: Path, trade_date10: str) -> dict
             "quote_time": quote_time,
             "source": source,
             "valid_quote_count": quote_count,
+            "scheduled_slot": str(payload.get("scheduled_slot") or ""),
+            "runner_started_at": str(payload.get("runner_started_at") or ""),
+            "prepared_at": str(payload.get("prepared_at") or ""),
+            "first_request_at": str(payload.get("first_request_at") or ""),
+            "published_at": str(payload.get("published_at") or ""),
+            "workflow_run_id": str(payload.get("workflow_run_id") or ""),
+            "start_delay_seconds": int(payload.get("start_delay_seconds") or 0),
+            "capture_delay_seconds": int(payload.get("capture_delay_seconds") or 0),
+            "publish_delay_seconds": int(payload.get("publish_delay_seconds") or 0),
         }
     )
     return result
@@ -444,12 +475,34 @@ def write_auction_snapshot_status(
     quote_time = str(ready_snapshot.get("as_of") or ready_snapshot.get("quote_time") or "") if ready else str(capture_result.get("as_of") or "")
     quote_source = str(ready_snapshot.get("source") or "") if ready else str(capture_result.get("source") or "")
     quote_count = int(ready_snapshot.get("count") or ready_snapshot.get("candidate_count") or 0) if ready else int(capture_result.get("quotes_count") or 0)
+
+    def delay_seconds(start_text: str, end_text: str) -> int:
+        try:
+            start = datetime.fromisoformat(start_text)
+            end = datetime.fromisoformat(end_text)
+        except (TypeError, ValueError):
+            return 0
+        return max(0, int((end - start).total_seconds()))
+
+    scheduled_slot = str(capture_result.get("scheduled_slot") or "")
+    runner_started_at = str(capture_result.get("runner_started_at") or capture_result.get("started_at") or "")
+    first_request_at = str(capture_result.get("first_request_at") or "")
+    auction_target = f"{trade_date10} 09:25:00"
     payload = {
         "schema": "auction_snapshot_status_v1",
         "date": trade_date10,
         "status": "success" if ready else ("recovered" if recovered else "missing"),
         "started_at": str(capture_result.get("started_at") or ""),
         "finished_at": str(capture_result.get("finished_at") or current.strftime("%Y-%m-%d %H:%M:%S")),
+        "scheduled_slot": scheduled_slot,
+        "runner_started_at": runner_started_at,
+        "prepared_at": str(capture_result.get("prepared_at") or ""),
+        "first_request_at": first_request_at,
+        "published_at": str(capture_result.get("published_at") or ""),
+        "workflow_run_id": str(capture_result.get("workflow_run_id") or ""),
+        "start_delay_seconds": delay_seconds(scheduled_slot, runner_started_at),
+        "capture_delay_seconds": delay_seconds(auction_target, first_request_at),
+        "publish_delay_seconds": 0,
         "session_rounds": int(capture_result.get("session_rounds") or 0),
         "attempts": int(capture_result.get("session_attempts") or capture_result.get("attempts") or 0),
         "codes_count": int(capture_result.get("codes_count") or 0),
@@ -461,6 +514,33 @@ def write_auction_snapshot_status(
     }
     cache_dir.mkdir(parents=True, exist_ok=True)
     path = cache_dir / f"auction_snapshot_status-{trade_date10.replace('-', '')}.json"
+    tmp = path.with_suffix(path.suffix + ".tmp")
+    tmp.write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    tmp.replace(path)
+    return path
+
+
+def mark_auction_snapshot_published(
+    *,
+    cache_dir: Path,
+    trade_date10: str,
+    now: datetime | None = None,
+) -> Path:
+    """在实际 push 前记录发布时间，状态时间不能用采集完成时间冒充。"""
+    path = cache_dir / f"auction_snapshot_status-{trade_date10.replace('-', '')}.json"
+    payload = _read_json(path)
+    if str(payload.get("date") or "") != trade_date10:
+        raise ValueError(f"auction status missing for {trade_date10}")
+    current = (now or _now_bj()).astimezone(TZ_BJ)
+    published_at = current.strftime("%Y-%m-%d %H:%M:%S")
+    payload["published_at"] = published_at
+    quote_time = str(payload.get("quote_time") or "")
+    try:
+        quote_dt = datetime.fromisoformat(quote_time)
+        publish_dt = datetime.fromisoformat(published_at)
+        payload["publish_delay_seconds"] = max(0, int((publish_dt - quote_dt).total_seconds()))
+    except (TypeError, ValueError):
+        payload["publish_delay_seconds"] = 0
     tmp = path.with_suffix(path.suffix + ".tmp")
     tmp.write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     tmp.replace(path)
