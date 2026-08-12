@@ -2,7 +2,7 @@
   "schema": "intraday_snapshot_v1",
   "render_mode": "snapshot_stream",
   "date": "2026-08-12",
-  "count": 4,
+  "count": 5,
   "interval_min": null,
   "simulated": false,
   "snapshots": [
@@ -264,11 +264,74 @@
       "shift_score": 78,
       "shift_label": "走强",
       "note": "情绪边际修复，但仍需确认持续性。"
+    },
+    {
+      "time": "10:10:04",
+      "ts_bj": "2026-08-12 10:10:04",
+      "date": "2026-08-12",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid_empty"
+      },
+      "pool_errors": {},
+      "zt": 50,
+      "dt": 0,
+      "zab": 6,
+      "zb": 10.7,
+      "fb": 89.3,
+      "jj": 26.0,
+      "lianban": 13,
+      "max_lb": 7,
+      "amount": "8087.8亿",
+      "bf": 0,
+      "heat": 67,
+      "risk": 9,
+      "headline": "走强",
+      "concepts": [
+        {
+          "name": "专用设备",
+          "lead": "同力天启",
+          "chg_pct": null
+        },
+        {
+          "name": "通用设备",
+          "lead": "华东数控",
+          "chg_pct": null
+        },
+        {
+          "name": "IT服务Ⅱ",
+          "lead": "鸿博股份",
+          "chg_pct": null
+        },
+        {
+          "name": "软件开发",
+          "lead": "云赛智联",
+          "chg_pct": null
+        },
+        {
+          "name": "汽车零部",
+          "lead": "秦安股份",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        }
+      ],
+      "shift_score": 77,
+      "shift_label": "走强",
+      "note": "情绪整体平稳，维持当前节奏。"
     }
   ],
   "latest": {
-    "time": "10:00:05",
-    "ts_bj": "2026-08-12 10:00:05",
+    "time": "10:10:04",
+    "ts_bj": "2026-08-12 10:10:04",
     "date": "2026-08-12",
     "source": "intraday_live",
     "provider": "必盈(实时)+必盈(实时)",
@@ -279,33 +342,28 @@
       "dtgc": "valid_empty"
     },
     "pool_errors": {},
-    "zt": 44,
+    "zt": 50,
     "dt": 0,
-    "zab": 5,
-    "zb": 10.2,
-    "fb": 89.8,
-    "jj": 29.5,
+    "zab": 6,
+    "zb": 10.7,
+    "fb": 89.3,
+    "jj": 26.0,
     "lianban": 13,
     "max_lb": 7,
-    "amount": "6822.2亿",
+    "amount": "8087.8亿",
     "bf": 0,
     "heat": 67,
-    "risk": 8,
+    "risk": 9,
     "headline": "走强",
     "concepts": [
-      {
-        "name": "通用设备",
-        "lead": "华东数控",
-        "chg_pct": null
-      },
       {
         "name": "专用设备",
         "lead": "同力天启",
         "chg_pct": null
       },
       {
-        "name": "汽车零部",
-        "lead": "秦安股份",
+        "name": "通用设备",
+        "lead": "华东数控",
         "chg_pct": null
       },
       {
@@ -315,7 +373,12 @@
       },
       {
         "name": "软件开发",
-        "lead": "格尔软件",
+        "lead": "云赛智联",
+        "chg_pct": null
+      },
+      {
+        "name": "汽车零部",
+        "lead": "秦安股份",
         "chg_pct": null
       }
     ],
@@ -325,15 +388,15 @@
         "text": "盘中模式：强制实时拉取"
       }
     ],
-    "shift_score": 78,
+    "shift_score": 77,
     "shift_label": "走强",
-    "note": "情绪边际修复，但仍需确认持续性。"
+    "note": "情绪整体平稳，维持当前节奏。"
   },
-  "updated_at": "2026-08-12 10:00:05",
-  "snapshot_sig": "2026-08-12|2026-08-12 10:00:05|4",
+  "updated_at": "2026-08-12 10:10:04",
+  "snapshot_sig": "2026-08-12|2026-08-12 10:10:04|5",
   "health": {
     "status": "valid",
-    "last_valid_at": "2026-08-12 10:00:05",
+    "last_valid_at": "2026-08-12 10:10:04",
     "rejected_reason": "",
     "source": {
       "status": "valid",
