@@ -1,6 +1,6 @@
 {
   "schema": "watchlist_v2",
-  "generated_at_bj": "2026-08-12 18:20:37",
+  "generated_at_bj": "2026-08-12 19:02:18",
   "data_date": "2026-08-12",
   "pools_date": "2026-08-12",
   "sector_resolution": {
@@ -20251,12 +20251,12 @@
         "prev_zt": 1,
         "pre_prev_zt": 2,
         "resilience": 541.38,
-        "strength": null,
+        "strength": 66.0,
         "strength_rank": null,
-        "strength_score": null,
-        "strength_source": "",
-        "tide_score": 85,
-        "confidence": "medium",
+        "strength_score": 66.0,
+        "strength_source": "sector_heatmap",
+        "tide_score": 89,
+        "confidence": "high",
         "warning_level": "none",
         "action_hint": "潮汐中性，按梯队和辨识度判断"
       },
@@ -20268,12 +20268,12 @@
         "prev_zt": 2,
         "pre_prev_zt": 3,
         "resilience": 191.38,
-        "strength": 66.0,
+        "strength": null,
         "strength_rank": null,
-        "strength_score": 66.0,
-        "strength_source": "sector_heatmap",
-        "tide_score": 89,
-        "confidence": "high",
+        "strength_score": null,
+        "strength_source": "",
+        "tide_score": 85,
+        "confidence": "medium",
         "warning_level": "none",
         "action_hint": "潮汐中性，按梯队和辨识度判断"
       },
@@ -25210,6 +25210,42 @@
         "action_hint": "芯片概念有观察价值，等待情绪/量能/消息继续共振。"
       },
       {
+        "name": "光通信",
+        "canonical_name": "光模块",
+        "status": "observe_candidate",
+        "base_tide_status": "neutral",
+        "action": "watch",
+        "tide_zone": "neutral",
+        "tide_phase": "neutral",
+        "core_score": 77,
+        "ebb_score": 30,
+        "tide_score": 89,
+        "emotion_score": 82,
+        "strength_score": 66,
+        "volume_score": 53,
+        "news_score": 86,
+        "market_score": 71,
+        "structure_score": 74,
+        "confidence": "high",
+        "confirms": {
+          "emotion": true,
+          "strength": true,
+          "volume": false,
+          "news": true,
+          "market": true
+        },
+        "reasons": [
+          "板块强度66",
+          "消息催化",
+          "低位新启动",
+          "中位承接活跃"
+        ],
+        "cautions": [
+          "高位负反馈"
+        ],
+        "action_hint": "光通信有观察价值，等待情绪/量能/消息继续共振。"
+      },
+      {
         "name": "人工智能",
         "canonical_name": "AI应用",
         "status": "observe_candidate",
@@ -25282,78 +25318,6 @@
         "action_hint": "AI应用（AIGC）有观察价值，等待情绪/量能/消息继续共振。"
       },
       {
-        "name": "光通信",
-        "canonical_name": "光模块",
-        "status": "observe_candidate",
-        "base_tide_status": "neutral",
-        "action": "watch",
-        "tide_zone": "neutral",
-        "tide_phase": "neutral",
-        "core_score": 75,
-        "ebb_score": 31,
-        "tide_score": 85,
-        "emotion_score": 82,
-        "strength_score": 65,
-        "volume_score": 53,
-        "news_score": 86,
-        "market_score": 71,
-        "structure_score": 74,
-        "confidence": "high",
-        "confirms": {
-          "emotion": true,
-          "strength": true,
-          "volume": false,
-          "news": true,
-          "market": true
-        },
-        "reasons": [
-          "板块强度65",
-          "消息催化",
-          "低位新启动",
-          "中位承接活跃"
-        ],
-        "cautions": [
-          "高位负反馈"
-        ],
-        "action_hint": "光通信有观察价值，等待情绪/量能/消息继续共振。"
-      },
-      {
-        "name": "专精特新",
-        "canonical_name": "专精特新",
-        "status": "observe_candidate",
-        "base_tide_status": "neutral",
-        "action": "watch",
-        "tide_zone": "neutral",
-        "tide_phase": "neutral",
-        "core_score": 71,
-        "ebb_score": 31,
-        "tide_score": 89,
-        "emotion_score": 82,
-        "strength_score": 66,
-        "volume_score": 53,
-        "news_score": 50,
-        "market_score": 71,
-        "structure_score": 74,
-        "confidence": "medium",
-        "confirms": {
-          "emotion": true,
-          "strength": true,
-          "volume": false,
-          "news": false,
-          "market": true
-        },
-        "reasons": [
-          "板块强度66",
-          "低位新启动",
-          "中位承接活跃",
-          "低位连板承接"
-        ],
-        "cautions": [
-          "高位负反馈"
-        ],
-        "action_hint": "专精特新有观察价值，等待情绪/量能/消息继续共振。"
-      },
-      {
         "name": "华为概念",
         "canonical_name": "华为",
         "status": "observe_candidate",
@@ -25388,6 +25352,42 @@
           "高位负反馈"
         ],
         "action_hint": "华为概念有观察价值，等待情绪/量能/消息继续共振。"
+      },
+      {
+        "name": "专精特新",
+        "canonical_name": "专精特新",
+        "status": "observe_candidate",
+        "base_tide_status": "neutral",
+        "action": "watch",
+        "tide_zone": "neutral",
+        "tide_phase": "neutral",
+        "core_score": 70,
+        "ebb_score": 32,
+        "tide_score": 85,
+        "emotion_score": 82,
+        "strength_score": 65,
+        "volume_score": 53,
+        "news_score": 50,
+        "market_score": 71,
+        "structure_score": 74,
+        "confidence": "medium",
+        "confirms": {
+          "emotion": true,
+          "strength": true,
+          "volume": false,
+          "news": false,
+          "market": true
+        },
+        "reasons": [
+          "板块强度65",
+          "低位新启动",
+          "中位承接活跃",
+          "低位连板承接"
+        ],
+        "cautions": [
+          "高位负反馈"
+        ],
+        "action_hint": "专精特新有观察价值，等待情绪/量能/消息继续共振。"
       },
       {
         "name": "液冷概念",
@@ -37203,11 +37203,11 @@
       "watch": [
         "人形机器人",
         "芯片概念",
+        "光通信",
         "人工智能",
         "AI应用（AIGC）",
-        "光通信",
-        "专精特新",
         "华为概念",
+        "专精特新",
         "液冷概念"
       ],
       "avoid": [
@@ -37224,11 +37224,11 @@
       "neutral": [
         "人形机器人",
         "芯片概念",
+        "光通信",
         "人工智能",
         "AI应用（AIGC）",
-        "光通信",
-        "专精特新",
         "华为概念",
+        "专精特新",
         "液冷概念"
       ],
       "ebbing": [
@@ -37241,7 +37241,7 @@
         "休闲食品",
         "光刻机"
       ],
-      "action_hint": "中性方向：人形机器人, 芯片概念, 人工智能，等待情绪/量能/消息继续共振。"
+      "action_hint": "中性方向：人形机器人, 芯片概念, 光通信，等待情绪/量能/消息继续共振。"
     }
   },
   "picks_advisor": {
