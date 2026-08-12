@@ -1,6 +1,6 @@
 {
   "schema": "watchlist_v2",
-  "generated_at_bj": "2026-08-12 16:32:44",
+  "generated_at_bj": "2026-08-12 17:16:34",
   "data_date": "2026-08-12",
   "pools_date": "2026-08-12",
   "sector_resolution": {
@@ -19129,12 +19129,12 @@
         "prev_zt": 2,
         "pre_prev_zt": 9,
         "resilience": 191.38,
-        "strength": null,
+        "strength": 66.0,
         "strength_rank": null,
-        "strength_score": null,
-        "strength_source": "",
-        "tide_score": 67,
-        "confidence": "medium",
+        "strength_score": 66.0,
+        "strength_source": "sector_heatmap",
+        "tide_score": 71,
+        "confidence": "high",
         "warning_level": "risk",
         "action_hint": "缩量反弹：降低追高权重，等待放量确认"
       },
@@ -19197,12 +19197,12 @@
         "prev_zt": 9,
         "pre_prev_zt": 6,
         "resilience": -80.84,
-        "strength": 66.0,
+        "strength": null,
         "strength_rank": null,
-        "strength_score": 66.0,
-        "strength_source": "sector_heatmap",
-        "tide_score": 19,
-        "confidence": "high",
+        "strength_score": null,
+        "strength_source": "",
+        "tide_score": 15,
+        "confidence": "medium",
         "warning_level": "watch",
         "action_hint": "弱于市场：降低主线权重"
       },
@@ -31669,11 +31669,11 @@
         "action": "no_new_position",
         "tide_zone": "ebbing",
         "tide_phase": "ebbing",
-        "core_score": 63,
-        "ebb_score": 58,
-        "tide_score": 67,
+        "core_score": 64,
+        "ebb_score": 57,
+        "tide_score": 71,
         "emotion_score": 82,
-        "strength_score": 65,
+        "strength_score": 66,
         "volume_score": 35,
         "news_score": 64,
         "market_score": 71,
@@ -31687,7 +31687,7 @@
           "market": true
         },
         "reasons": [
-          "板块强度65",
+          "板块强度66",
           "消息催化",
           "中位承接活跃",
           "低位连板承接"
@@ -33800,43 +33800,6 @@
         "action_hint": "陕西国资核心潮汐偏弱，降低权重，避免追高。"
       },
       {
-        "name": "新能源车",
-        "canonical_name": "新能源车",
-        "status": "avoid_weak",
-        "base_tide_status": "weak",
-        "action": "avoid",
-        "tide_zone": "ebbing",
-        "tide_phase": "ebbing",
-        "core_score": 46,
-        "ebb_score": 65,
-        "tide_score": 19,
-        "emotion_score": 82,
-        "strength_score": 66,
-        "volume_score": 45,
-        "news_score": 56,
-        "market_score": 71,
-        "structure_score": 52,
-        "confidence": "high",
-        "confirms": {
-          "emotion": true,
-          "strength": true,
-          "volume": false,
-          "news": false,
-          "market": true
-        },
-        "reasons": [
-          "板块强度66",
-          "消息催化",
-          "中位承接活跃",
-          "低位连板承接"
-        ],
-        "cautions": [
-          "潮汐偏弱",
-          "高位负反馈"
-        ],
-        "action_hint": "新能源车核心潮汐偏弱，降低权重，避免追高。"
-      },
-      {
         "name": "创新药",
         "canonical_name": "生物医药",
         "status": "avoid_weak",
@@ -33870,6 +33833,43 @@
           "高位负反馈"
         ],
         "action_hint": "创新药核心潮汐偏弱，降低权重，避免追高。"
+      },
+      {
+        "name": "新能源车",
+        "canonical_name": "新能源车",
+        "status": "avoid_weak",
+        "base_tide_status": "weak",
+        "action": "avoid",
+        "tide_zone": "ebbing",
+        "tide_phase": "ebbing",
+        "core_score": 44,
+        "ebb_score": 66,
+        "tide_score": 15,
+        "emotion_score": 82,
+        "strength_score": 65,
+        "volume_score": 45,
+        "news_score": 56,
+        "market_score": 71,
+        "structure_score": 52,
+        "confidence": "medium",
+        "confirms": {
+          "emotion": true,
+          "strength": true,
+          "volume": false,
+          "news": false,
+          "market": true
+        },
+        "reasons": [
+          "板块强度65",
+          "消息催化",
+          "中位承接活跃",
+          "低位连板承接"
+        ],
+        "cautions": [
+          "潮汐偏弱",
+          "高位负反馈"
+        ],
+        "action_hint": "新能源车核心潮汐偏弱，降低权重，避免追高。"
       },
       {
         "name": "太阳能（光伏）",
@@ -37506,7 +37506,7 @@
             "zt_placement": "relay",
             "style_tag": "龙头博弈",
             "style_confidence": 92,
-            "relay_power_score": 79,
+            "relay_power_score": 80,
             "tide_status": "observe_candidate",
             "tide_adjust": 3
           }
@@ -37703,7 +37703,7 @@
         "summary": "生物医药主线，买入 亚泰集团(生物医药核心) / 康恩贝(生物医药核心) / 浙江医药(生物医药核心)",
         "diagnostics": {
           "member_count": 4,
-          "avg_score": 28.8,
+          "avg_score": 30.2,
           "env_gate": "接力可做",
           "relay_hits": 0,
           "line_penalty": 4,
