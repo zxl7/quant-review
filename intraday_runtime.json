@@ -1,11 +1,11 @@
 {
   "schema": "intraday_runtime_v1",
   "date": "2026-08-12",
-  "updated_at": "2026-08-12 09:40:04",
+  "updated_at": "2026-08-12 09:50:05",
   "source": "必盈(实时)+必盈(实时)",
   "latest": {
-    "time": "09:40:04",
-    "ts_bj": "2026-08-12 09:40:04",
+    "time": "09:50:05",
+    "ts_bj": "2026-08-12 09:50:05",
     "date": "2026-08-12",
     "source": "intraday_live",
     "provider": "必盈(实时)+必盈(实时)",
@@ -16,18 +16,18 @@
       "dtgc": "valid_empty"
     },
     "pool_errors": {},
-    "zt": 22,
+    "zt": 34,
     "dt": 0,
-    "zab": 1,
-    "zb": 4.3,
-    "fb": 95.7,
-    "jj": 59.1,
+    "zab": 5,
+    "zb": 12.8,
+    "fb": 87.2,
+    "jj": 38.2,
     "lianban": 13,
     "max_lb": 7,
-    "amount": "3449.5亿",
+    "amount": "5357.0亿",
     "bf": 0,
-    "heat": 73,
-    "risk": 3,
+    "heat": 66,
+    "risk": 9,
     "headline": "走强",
     "concepts": [
       {
@@ -41,8 +41,8 @@
         "chg_pct": null
       },
       {
-        "name": "汽车零部",
-        "lead": "秦安股份",
+        "name": "软件开发",
+        "lead": "格尔软件",
         "chg_pct": null
       },
       {
@@ -62,9 +62,9 @@
         "text": "盘中模式：强制实时拉取"
       }
     ],
-    "shift_score": 83,
+    "shift_score": 76,
     "shift_label": "走强",
-    "note": "承接增强、分歧收敛，情绪明显回暖。"
+    "note": "炸板/跌停抬升，情绪明显走弱。"
   },
   "snapshots": [
     {
@@ -199,40 +199,103 @@
       "shift_score": 83,
       "shift_label": "走强",
       "note": "承接增强、分歧收敛，情绪明显回暖。"
+    },
+    {
+      "time": "09:50:05",
+      "ts_bj": "2026-08-12 09:50:05",
+      "date": "2026-08-12",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid_empty"
+      },
+      "pool_errors": {},
+      "zt": 34,
+      "dt": 0,
+      "zab": 5,
+      "zb": 12.8,
+      "fb": 87.2,
+      "jj": 38.2,
+      "lianban": 13,
+      "max_lb": 7,
+      "amount": "5357.0亿",
+      "bf": 0,
+      "heat": 66,
+      "risk": 9,
+      "headline": "走强",
+      "concepts": [
+        {
+          "name": "通用设备",
+          "lead": "华东数控",
+          "chg_pct": null
+        },
+        {
+          "name": "专用设备",
+          "lead": "同力天启",
+          "chg_pct": null
+        },
+        {
+          "name": "软件开发",
+          "lead": "格尔软件",
+          "chg_pct": null
+        },
+        {
+          "name": "房地产开",
+          "lead": "京投发展",
+          "chg_pct": null
+        },
+        {
+          "name": "IT服务Ⅱ",
+          "lead": "鸿博股份",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        }
+      ],
+      "shift_score": 76,
+      "shift_label": "走强",
+      "note": "炸板/跌停抬升，情绪明显走弱。"
     }
   ],
   "indices": [
     {
       "name": "上证指数",
       "code": "000001.SH",
-      "val": 3938.71,
-      "chg": 0.11735868979203566,
-      "cje": 154215716000.0,
-      "t": "2026-08-12 09:40:00"
+      "val": 3939.168,
+      "chg": 0.12900050913896224,
+      "cje": 240816623200.0,
+      "t": "2026-08-12 09:50:03"
     },
     {
       "name": "深证成指",
       "code": "399001.SZ",
-      "val": 14332.719,
-      "chg": 0.5138981614986187,
-      "cje": 188565893800.0,
-      "t": "2026-08-12 09:39:57"
+      "val": 14361.198,
+      "chg": 0.7136184871215125,
+      "cje": 294577631900.0,
+      "t": "2026-08-12 09:50:00"
     },
     {
       "name": "创业板指",
       "code": "399006.SZ",
-      "val": 3572.572,
-      "chg": 0.6595355976787745,
-      "cje": 92585612300.0,
-      "t": "2026-08-12 09:39:57"
+      "val": 3580.715,
+      "chg": 0.8889699095336234,
+      "cje": 143888783400.0,
+      "t": "2026-08-12 09:50:00"
     }
   ],
   "asOf": {
-    "indices": "09:39:57"
+    "indices": "09:50:00"
   },
   "health": {
     "status": "valid",
-    "last_valid_at": "2026-08-12 09:40:04",
+    "last_valid_at": "2026-08-12 09:50:05",
     "rejected_reason": "",
     "source": {
       "status": "valid",
@@ -250,29 +313,30 @@
       "message": "intraday_coverage_collecting",
       "date": "2026-08-12",
       "expected_count": 26,
-      "due_count": 2,
-      "observed_count": 2,
+      "due_count": 3,
+      "observed_count": 3,
       "observed_slots": [
         "09:30",
-        "09:40"
+        "09:40",
+        "09:50"
       ],
       "missing_slots": [],
       "duplicate_slots": [],
       "out_of_session": [],
       "monotonic": true,
-      "morning_coverage": 2,
+      "morning_coverage": 3,
       "afternoon_coverage": 0
     }
   },
   "live": {
     "market": {
-      "zt": 22,
+      "zt": 34,
       "dt": 0,
-      "zab": 1,
-      "zab_rate": 4.3,
+      "zab": 5,
+      "zab_rate": 12.8,
       "lianban": 13,
       "max_lianban": 7,
-      "amount": "3449.5亿"
+      "amount": "5357.0亿"
     },
     "alerts": [
       {
@@ -292,8 +356,8 @@
         "chg_pct": null
       },
       {
-        "name": "汽车零部",
-        "lead": "秦安股份",
+        "name": "软件开发",
+        "lead": "格尔软件",
         "chg_pct": null
       },
       {
