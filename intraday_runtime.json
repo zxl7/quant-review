@@ -1,11 +1,11 @@
 {
   "schema": "intraday_runtime_v1",
   "date": "2026-08-12",
-  "updated_at": "2026-08-12 10:20:06",
+  "updated_at": "2026-08-12 10:30:05",
   "source": "必盈(实时)+必盈(实时)",
   "latest": {
-    "time": "10:20:06",
-    "ts_bj": "2026-08-12 10:20:06",
+    "time": "10:30:05",
+    "ts_bj": "2026-08-12 10:30:05",
     "date": "2026-08-12",
     "source": "intraday_live",
     "provider": "必盈(实时)+必盈(实时)",
@@ -16,18 +16,18 @@
       "dtgc": "valid_empty"
     },
     "pool_errors": {},
-    "zt": 51,
+    "zt": 55,
     "dt": 0,
-    "zab": 7,
-    "zb": 12.1,
-    "fb": 87.9,
+    "zab": 6,
+    "zb": 9.8,
+    "fb": 90.2,
     "jj": 25.5,
-    "lianban": 13,
+    "lianban": 14,
     "max_lb": 7,
-    "amount": "9012.7亿",
+    "amount": "9805.5亿",
     "bf": 0,
-    "heat": 66,
-    "risk": 10,
+    "heat": 68,
+    "risk": 8,
     "headline": "走强",
     "concepts": [
       {
@@ -62,9 +62,9 @@
         "text": "盘中模式：强制实时拉取"
       }
     ],
-    "shift_score": 76,
+    "shift_score": 78,
     "shift_label": "走强",
-    "note": "情绪整体平稳，维持当前节奏。"
+    "note": "情绪边际修复，但仍需确认持续性。"
   },
   "snapshots": [
     {
@@ -451,40 +451,103 @@
       "shift_score": 76,
       "shift_label": "走强",
       "note": "情绪整体平稳，维持当前节奏。"
+    },
+    {
+      "time": "10:30:05",
+      "ts_bj": "2026-08-12 10:30:05",
+      "date": "2026-08-12",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid_empty"
+      },
+      "pool_errors": {},
+      "zt": 55,
+      "dt": 0,
+      "zab": 6,
+      "zb": 9.8,
+      "fb": 90.2,
+      "jj": 25.5,
+      "lianban": 14,
+      "max_lb": 7,
+      "amount": "9805.5亿",
+      "bf": 0,
+      "heat": 68,
+      "risk": 8,
+      "headline": "走强",
+      "concepts": [
+        {
+          "name": "专用设备",
+          "lead": "同力天启",
+          "chg_pct": null
+        },
+        {
+          "name": "通用设备",
+          "lead": "华东数控",
+          "chg_pct": null
+        },
+        {
+          "name": "IT服务Ⅱ",
+          "lead": "鸿博股份",
+          "chg_pct": null
+        },
+        {
+          "name": "软件开发",
+          "lead": "云赛智联",
+          "chg_pct": null
+        },
+        {
+          "name": "汽车零部",
+          "lead": "秦安股份",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        }
+      ],
+      "shift_score": 78,
+      "shift_label": "走强",
+      "note": "情绪边际修复，但仍需确认持续性。"
     }
   ],
   "indices": [
     {
       "name": "上证指数",
       "code": "000001.SH",
-      "val": 3938.64,
-      "chg": 0.11557937242459763,
-      "cje": 408726639200.0,
-      "t": "2026-08-12 10:20:03"
+      "val": 3936.785,
+      "chg": 0.06842746218759972,
+      "cje": 444855299300.0,
+      "t": "2026-08-12 10:30:06"
     },
     {
       "name": "深证成指",
       "code": "399001.SZ",
-      "val": 14358.427,
-      "chg": 0.6941857464248187,
-      "cje": 492011668400.0,
-      "t": "2026-08-12 10:20:00"
+      "val": 14358.374,
+      "chg": 0.6938140628243415,
+      "cje": 535456877600.0,
+      "t": "2026-08-12 10:30:00"
     },
     {
       "name": "创业板指",
       "code": "399006.SZ",
-      "val": 3579.482,
-      "chg": 0.8542293340065366,
-      "cje": 238446111500.0,
-      "t": "2026-08-12 10:20:03"
+      "val": 3583.318,
+      "chg": 0.9623111245352425,
+      "cje": 260649596600.0,
+      "t": "2026-08-12 10:30:03"
     }
   ],
   "asOf": {
-    "indices": "10:20:03"
+    "indices": "10:30:03"
   },
   "health": {
     "status": "valid",
-    "last_valid_at": "2026-08-12 10:20:06",
+    "last_valid_at": "2026-08-12 10:30:05",
     "rejected_reason": "",
     "source": {
       "status": "valid",
@@ -502,33 +565,34 @@
       "message": "intraday_coverage_collecting",
       "date": "2026-08-12",
       "expected_count": 26,
-      "due_count": 6,
-      "observed_count": 6,
+      "due_count": 7,
+      "observed_count": 7,
       "observed_slots": [
         "09:30",
         "09:40",
         "09:50",
         "10:00",
         "10:10",
-        "10:20"
+        "10:20",
+        "10:30"
       ],
       "missing_slots": [],
       "duplicate_slots": [],
       "out_of_session": [],
       "monotonic": true,
-      "morning_coverage": 6,
+      "morning_coverage": 7,
       "afternoon_coverage": 0
     }
   },
   "live": {
     "market": {
-      "zt": 51,
+      "zt": 55,
       "dt": 0,
-      "zab": 7,
-      "zab_rate": 12.1,
-      "lianban": 13,
+      "zab": 6,
+      "zab_rate": 9.8,
+      "lianban": 14,
       "max_lianban": 7,
-      "amount": "9012.7亿"
+      "amount": "9805.5亿"
     },
     "alerts": [
       {
