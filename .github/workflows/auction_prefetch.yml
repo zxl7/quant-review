@@ -1,11 +1,24 @@
 name: Capture auction snapshot
 
 on:
-  # 三个提前触发共享单飞锁；前一会话失败后由最新候补接管。
-  schedule:
-    - cron: "45 0 * * 1-5"
-    - cron: "0 1 * * 1-5"
-    - cron: "15 1 * * 1-5"
+  # 自动采集由已稳定启动的上午盘中会话调用；手动入口只负责当日恢复。
+  workflow_call:
+    inputs:
+      scheduled_clock:
+        description: "调用方计划启动时间（北京时间 HH:MM:SS）"
+        required: false
+        default: "06:15:00"
+        type: string
+      wait_for_auction:
+        description: "提前会话是否等待到竞价窗口"
+        required: false
+        default: true
+        type: boolean
+    secrets:
+      BIYING_TOKEN:
+        required: true
+      BIYING_BASE_URL:
+        required: false
   workflow_dispatch:
 
 permissions:
@@ -23,12 +36,12 @@ env:
 jobs:
   capture:
     runs-on: ubuntu-latest
-    timeout-minutes: 70
+    timeout-minutes: 240
     steps:
       - name: Record runner timing
         id: runtime
         env:
-          RUN_SCHEDULE: ${{ github.event.schedule || '' }}
+          SCHEDULED_CLOCK: ${{ inputs.scheduled_clock || '' }}
         run: |
           python3 - <<'PY'
           import datetime as dt
@@ -36,12 +49,7 @@ jobs:
           from zoneinfo import ZoneInfo
 
           now = dt.datetime.now(ZoneInfo("Asia/Shanghai"))
-          slot_by_cron = {
-              "45 0 * * 1-5": "08:45:00",
-              "0 1 * * 1-5": "09:00:00",
-              "15 1 * * 1-5": "09:15:00",
-          }
-          scheduled_clock = slot_by_cron.get(os.environ.get("RUN_SCHEDULE", ""), now.strftime("%H:%M:%S"))
+          scheduled_clock = os.environ.get("SCHEDULED_CLOCK", "") or now.strftime("%H:%M:%S")
           scheduled_slot = f"{now:%Y-%m-%d} {scheduled_clock}"
           runner_started_at = now.strftime("%Y-%m-%d %H:%M:%S")
           with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as fh:
@@ -105,30 +113,54 @@ jobs:
           cp -f site_prev/cache/stock_research_realtime_quotes-*.json cache/ 2>/dev/null || true
           cp -f site_prev/cache/trade_days_cache.json cache/ 2>/dev/null || true
 
+      - name: Check existing auction outcome
+        id: existing
+        if: ${{ steps.trade.outputs.is_trade_today == 'true' }}
+        env:
+          RUN_DATE: ${{ steps.trade.outputs.date10 }}
+        run: |
+          set -euo pipefail
+          PYTHONPATH=. python3 - <<'PY'
+          import os
+          from pathlib import Path
+          from daily_review.application.workflow_schedule import (
+              describe_auction_snapshot_status,
+              resolve_auction_snapshot_prefetch_plan,
+          )
+
+          cache_dir = Path("site_prev/cache")
+          plan = resolve_auction_snapshot_prefetch_plan(cache_dir, os.environ["RUN_DATE"])
+          status = describe_auction_snapshot_status(cache_dir, os.environ["RUN_DATE"])
+          ready = plan["status"] == "auction_snapshot_ready_skip" or status.get("status") == "recovered"
+          print(f"existing_auction_ready={ready} plan={plan} status={status}")
+          with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as fh:
+              fh.write(f"ready={'true' if ready else 'false'}\n")
+          PY
+
       - name: Mark preparation complete
         id: prepared
-        if: ${{ steps.trade.outputs.is_trade_today == 'true' }}
+        if: ${{ steps.trade.outputs.is_trade_today == 'true' && steps.existing.outputs.ready != 'true' }}
         run: echo "prepared_at=$(date '+%Y-%m-%d %H:%M:%S')" >> "$GITHUB_OUTPUT"
 
-      - name: Wait for auction window after preparation
-        if: ${{ steps.trade.outputs.is_trade_today == 'true' && github.event_name == 'schedule' }}
+      - name: Wait until final cache refresh
+        if: ${{ steps.trade.outputs.is_trade_today == 'true' && steps.existing.outputs.ready != 'true' && inputs.wait_for_auction == true }}
         run: |
           set -euo pipefail
           wait_seconds="$(python3 - <<'PY'
           from datetime import datetime, timedelta, timezone
 
           now = datetime.now(timezone(timedelta(hours=8)))
-          target = now.replace(hour=9, minute=25, second=0, microsecond=0)
+          target = now.replace(hour=9, minute=24, second=30, microsecond=0)
           print(max(0, int((target - now).total_seconds())))
           PY
           )"
           if [ "${wait_seconds}" -gt 0 ]; then
-            echo "Preparation complete; waiting ${wait_seconds}s for 09:25:00"
+            echo "Preparation complete; waiting ${wait_seconds}s for 09:24:30 cache refresh"
             sleep "${wait_seconds}"
           fi
 
       - name: Refresh published cache before capture
-        if: ${{ steps.trade.outputs.is_trade_today == 'true' }}
+        if: ${{ steps.trade.outputs.is_trade_today == 'true' && steps.existing.outputs.ready != 'true' }}
         run: |
           set -euo pipefail
           git -C site_prev fetch origin gh-pages
@@ -139,7 +171,7 @@ jobs:
 
       - name: Capture 09:25 auction quotes
         id: capture
-        if: ${{ steps.trade.outputs.is_trade_today == 'true' }}
+        if: ${{ steps.trade.outputs.is_trade_today == 'true' && steps.existing.outputs.ready != 'true' }}
         env:
           BIYING_TOKEN: ${{ secrets.BIYING_TOKEN }}
           BIYING_BASE_URL: ${{ secrets.BIYING_BASE_URL }}
@@ -199,7 +231,7 @@ jobs:
 
       - name: Publish auction cache and status
         id: publish
-        if: ${{ steps.trade.outputs.is_trade_today == 'true' && always() }}
+        if: ${{ steps.trade.outputs.is_trade_today == 'true' && steps.existing.outputs.ready != 'true' && always() }}
         run: |
           set -euo pipefail
           echo "changed=false" >> "$GITHUB_OUTPUT"

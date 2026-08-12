@@ -22,6 +22,7 @@ on:
 
 permissions:
   contents: write
+  actions: write
 
 concurrency:
   group: ${{ github.event_name == 'workflow_dispatch' && format('intraday-runtime-manual-{0}', github.run_id) || (github.event.schedule == '15 22 * * 0-4' || github.event.schedule == '30 22 * * 0-4') && 'intraday-runtime-morning' || 'intraday-runtime-afternoon' }}
@@ -32,6 +33,15 @@ env:
   PYTHONUNBUFFERED: "1"
 
 jobs:
+  auction_capture:
+    # 两条上午启动均可承接；现有上午并发锁保证实际只会有一个会话先运行。
+    if: ${{ github.event_name == 'schedule' && (github.event.schedule == '15 22 * * 0-4' || github.event.schedule == '30 22 * * 0-4') }}
+    uses: ./.github/workflows/auction_prefetch.yml
+    with:
+      scheduled_clock: ${{ github.event.schedule == '15 22 * * 0-4' && '06:15:00' || '06:30:00' }}
+      wait_for_auction: true
+    secrets: inherit
+
   runtime:
     runs-on: ubuntu-latest
     timeout-minutes: 350
