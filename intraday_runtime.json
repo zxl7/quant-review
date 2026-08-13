@@ -1,37 +1,34 @@
 {
   "schema": "intraday_runtime_v1",
   "date": "2026-08-13",
-  "updated_at": "2026-08-13 09:30:27",
-  "source": "必盈(实时)",
+  "updated_at": "2026-08-13 09:40:03",
+  "source": "必盈(实时)+必盈(实时)",
   "latest": {
-    "time": "09:30:27",
-    "ts_bj": "2026-08-13 09:30:27",
+    "time": "09:40:03",
+    "ts_bj": "2026-08-13 09:40:03",
     "date": "2026-08-13",
     "source": "intraday_live",
-    "provider": "必盈(实时)",
-    "data_quality": "partial",
+    "provider": "必盈(实时)+必盈(实时)",
+    "data_quality": "valid",
     "pool_status": {
       "ztgc": "valid",
-      "zbgc": "failed",
-      "dtgc": "failed"
+      "zbgc": "valid",
+      "dtgc": "valid_empty"
     },
-    "pool_errors": {
-      "zbgc": "empty_response",
-      "dtgc": "empty_response"
-    },
-    "zt": 20,
-    "dt": null,
-    "zab": null,
-    "zb": null,
-    "fb": null,
-    "jj": 75.0,
-    "lianban": 15,
+    "pool_errors": {},
+    "zt": 29,
+    "dt": 0,
+    "zab": 2,
+    "zb": 6.5,
+    "fb": 93.5,
+    "jj": 55.2,
+    "lianban": 16,
     "max_lb": 5,
-    "amount": "",
+    "amount": "4381.8亿",
     "bf": 0,
-    "heat": null,
-    "risk": null,
-    "headline": "数据部分可用",
+    "heat": 68,
+    "risk": 4,
+    "headline": "走强",
     "concepts": [
       {
         "name": "汽车零部",
@@ -49,13 +46,13 @@
         "chg_pct": null
       },
       {
-        "name": "影视院线",
-        "lead": "北京文化",
+        "name": "通用设备",
+        "lead": "蓝盾光电",
         "chg_pct": null
       },
       {
-        "name": "通用设备",
-        "lead": "蓝盾光电",
+        "name": "元件",
+        "lead": "江海股份",
         "chg_pct": null
       }
     ],
@@ -63,15 +60,11 @@
       {
         "level": "info",
         "text": "盘中模式：强制实时拉取"
-      },
-      {
-        "level": "warn",
-        "text": "盘中三池响应不完整，保留最近有效数据"
       }
     ],
-    "shift_score": null,
-    "shift_label": "数据部分可用",
-    "note": "本槽位仅部分三池成功；节点已保留，缺失指标不参与判断。"
+    "shift_score": 80,
+    "shift_label": "走强",
+    "note": "承接增强、分歧收敛，情绪明显回暖。"
   },
   "snapshots": [
     {
@@ -143,52 +136,112 @@
       "shift_score": null,
       "shift_label": "数据部分可用",
       "note": "本槽位仅部分三池成功；节点已保留，缺失指标不参与判断。"
+    },
+    {
+      "time": "09:40:03",
+      "ts_bj": "2026-08-13 09:40:03",
+      "date": "2026-08-13",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid_empty"
+      },
+      "pool_errors": {},
+      "zt": 29,
+      "dt": 0,
+      "zab": 2,
+      "zb": 6.5,
+      "fb": 93.5,
+      "jj": 55.2,
+      "lianban": 16,
+      "max_lb": 5,
+      "amount": "4381.8亿",
+      "bf": 0,
+      "heat": 68,
+      "risk": 4,
+      "headline": "走强",
+      "concepts": [
+        {
+          "name": "汽车零部",
+          "lead": "秦安股份",
+          "chg_pct": null
+        },
+        {
+          "name": "IT服务Ⅱ",
+          "lead": "鸿博股份",
+          "chg_pct": null
+        },
+        {
+          "name": "通信设备",
+          "lead": "通鼎互联",
+          "chg_pct": null
+        },
+        {
+          "name": "通用设备",
+          "lead": "蓝盾光电",
+          "chg_pct": null
+        },
+        {
+          "name": "元件",
+          "lead": "江海股份",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        }
+      ],
+      "shift_score": 80,
+      "shift_label": "走强",
+      "note": "承接增强、分歧收敛，情绪明显回暖。"
     }
   ],
   "indices": [
     {
       "name": "上证指数",
       "code": "000001.SH",
-      "val": 3957.52,
-      "chg": 0.2747882711396251,
-      "cje": 22198519300.0,
-      "t": "2026-08-13 09:30:24"
+      "val": 3966.056,
+      "chg": 0.4910715982440879,
+      "cje": 195840833700.0,
+      "t": "2026-08-13 09:40:00"
     },
     {
       "name": "深证成指",
       "code": "399001.SZ",
-      "val": 14538.984,
-      "chg": 0.8641134330209638,
-      "cje": 42915227200.0,
-      "t": "2026-08-13 09:30:21"
+      "val": 14523.675,
+      "chg": 0.7579073382521524,
+      "cje": 241758892400.0,
+      "t": "2026-08-13 09:39:57"
     },
     {
       "name": "创业板指",
       "code": "399006.SZ",
-      "val": 3652.888,
-      "chg": 1.4104057540024078,
-      "cje": 19552126900.0,
-      "t": "2026-08-13 09:30:21"
+      "val": 3640.925,
+      "chg": 1.0782924551454198,
+      "cje": 117826269900.0,
+      "t": "2026-08-13 09:39:57"
     }
   ],
   "asOf": {
-    "indices": "09:30:21"
+    "indices": "09:39:57"
   },
   "health": {
-    "status": "degraded",
-    "last_valid_at": "2026-08-13 09:30:27",
+    "status": "valid",
+    "last_valid_at": "2026-08-13 09:40:03",
     "rejected_reason": "",
     "source": {
-      "status": "partial",
+      "status": "valid",
       "pool_status": {
         "ztgc": "valid",
-        "zbgc": "failed",
-        "dtgc": "failed"
+        "zbgc": "valid",
+        "dtgc": "valid_empty"
       },
-      "pool_errors": {
-        "zbgc": "empty_response",
-        "dtgc": "empty_response"
-      }
+      "pool_errors": {}
     },
     "indices_status": "valid",
     "coverage": {
@@ -197,37 +250,34 @@
       "message": "intraday_coverage_collecting",
       "date": "2026-08-13",
       "expected_count": 26,
-      "due_count": 1,
-      "observed_count": 1,
+      "due_count": 2,
+      "observed_count": 2,
       "observed_slots": [
-        "09:30"
+        "09:30",
+        "09:40"
       ],
       "missing_slots": [],
       "duplicate_slots": [],
       "out_of_session": [],
       "monotonic": true,
-      "morning_coverage": 1,
+      "morning_coverage": 2,
       "afternoon_coverage": 0
     }
   },
   "live": {
     "market": {
-      "zt": 20,
-      "dt": null,
-      "zab": null,
-      "zab_rate": null,
-      "lianban": 15,
+      "zt": 29,
+      "dt": 0,
+      "zab": 2,
+      "zab_rate": 6.5,
+      "lianban": 16,
       "max_lianban": 5,
-      "amount": ""
+      "amount": "4381.8亿"
     },
     "alerts": [
       {
         "level": "info",
         "text": "盘中模式：强制实时拉取"
-      },
-      {
-        "level": "warn",
-        "text": "盘中三池响应不完整，保留最近有效数据"
       }
     ],
     "concepts": [
@@ -247,13 +297,13 @@
         "chg_pct": null
       },
       {
-        "name": "影视院线",
-        "lead": "北京文化",
+        "name": "通用设备",
+        "lead": "蓝盾光电",
         "chg_pct": null
       },
       {
-        "name": "通用设备",
-        "lead": "蓝盾光电",
+        "name": "元件",
+        "lead": "江海股份",
         "chg_pct": null
       }
     ]

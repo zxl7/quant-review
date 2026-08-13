@@ -2,7 +2,7 @@
   "schema": "intraday_snapshot_v1",
   "render_mode": "snapshot_stream",
   "date": "2026-08-13",
-  "count": 1,
+  "count": 2,
   "interval_min": null,
   "simulated": false,
   "snapshots": [
@@ -75,37 +75,97 @@
       "shift_score": null,
       "shift_label": "数据部分可用",
       "note": "本槽位仅部分三池成功；节点已保留，缺失指标不参与判断。"
+    },
+    {
+      "time": "09:40:03",
+      "ts_bj": "2026-08-13 09:40:03",
+      "date": "2026-08-13",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid_empty"
+      },
+      "pool_errors": {},
+      "zt": 29,
+      "dt": 0,
+      "zab": 2,
+      "zb": 6.5,
+      "fb": 93.5,
+      "jj": 55.2,
+      "lianban": 16,
+      "max_lb": 5,
+      "amount": "4381.8亿",
+      "bf": 0,
+      "heat": 68,
+      "risk": 4,
+      "headline": "走强",
+      "concepts": [
+        {
+          "name": "汽车零部",
+          "lead": "秦安股份",
+          "chg_pct": null
+        },
+        {
+          "name": "IT服务Ⅱ",
+          "lead": "鸿博股份",
+          "chg_pct": null
+        },
+        {
+          "name": "通信设备",
+          "lead": "通鼎互联",
+          "chg_pct": null
+        },
+        {
+          "name": "通用设备",
+          "lead": "蓝盾光电",
+          "chg_pct": null
+        },
+        {
+          "name": "元件",
+          "lead": "江海股份",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        }
+      ],
+      "shift_score": 80,
+      "shift_label": "走强",
+      "note": "承接增强、分歧收敛，情绪明显回暖。"
     }
   ],
   "latest": {
-    "time": "09:30:27",
-    "ts_bj": "2026-08-13 09:30:27",
+    "time": "09:40:03",
+    "ts_bj": "2026-08-13 09:40:03",
     "date": "2026-08-13",
     "source": "intraday_live",
-    "provider": "必盈(实时)",
-    "data_quality": "partial",
+    "provider": "必盈(实时)+必盈(实时)",
+    "data_quality": "valid",
     "pool_status": {
       "ztgc": "valid",
-      "zbgc": "failed",
-      "dtgc": "failed"
+      "zbgc": "valid",
+      "dtgc": "valid_empty"
     },
-    "pool_errors": {
-      "zbgc": "empty_response",
-      "dtgc": "empty_response"
-    },
-    "zt": 20,
-    "dt": null,
-    "zab": null,
-    "zb": null,
-    "fb": null,
-    "jj": 75.0,
-    "lianban": 15,
+    "pool_errors": {},
+    "zt": 29,
+    "dt": 0,
+    "zab": 2,
+    "zb": 6.5,
+    "fb": 93.5,
+    "jj": 55.2,
+    "lianban": 16,
     "max_lb": 5,
-    "amount": "",
+    "amount": "4381.8亿",
     "bf": 0,
-    "heat": null,
-    "risk": null,
-    "headline": "数据部分可用",
+    "heat": 68,
+    "risk": 4,
+    "headline": "走强",
     "concepts": [
       {
         "name": "汽车零部",
@@ -123,13 +183,13 @@
         "chg_pct": null
       },
       {
-        "name": "影视院线",
-        "lead": "北京文化",
+        "name": "通用设备",
+        "lead": "蓝盾光电",
         "chg_pct": null
       },
       {
-        "name": "通用设备",
-        "lead": "蓝盾光电",
+        "name": "元件",
+        "lead": "江海股份",
         "chg_pct": null
       }
     ],
@@ -137,33 +197,26 @@
       {
         "level": "info",
         "text": "盘中模式：强制实时拉取"
-      },
-      {
-        "level": "warn",
-        "text": "盘中三池响应不完整，保留最近有效数据"
       }
     ],
-    "shift_score": null,
-    "shift_label": "数据部分可用",
-    "note": "本槽位仅部分三池成功；节点已保留，缺失指标不参与判断。"
+    "shift_score": 80,
+    "shift_label": "走强",
+    "note": "承接增强、分歧收敛，情绪明显回暖。"
   },
-  "updated_at": "2026-08-13 09:30:27",
-  "snapshot_sig": "2026-08-13|2026-08-13 09:30:27|1",
+  "updated_at": "2026-08-13 09:40:03",
+  "snapshot_sig": "2026-08-13|2026-08-13 09:40:03|2",
   "health": {
-    "status": "degraded",
-    "last_valid_at": "2026-08-13 09:30:27",
+    "status": "valid",
+    "last_valid_at": "2026-08-13 09:40:03",
     "rejected_reason": "",
     "source": {
-      "status": "partial",
+      "status": "valid",
       "pool_status": {
         "ztgc": "valid",
-        "zbgc": "failed",
-        "dtgc": "failed"
+        "zbgc": "valid",
+        "dtgc": "valid_empty"
       },
-      "pool_errors": {
-        "zbgc": "empty_response",
-        "dtgc": "empty_response"
-      }
+      "pool_errors": {}
     }
   }
 }
