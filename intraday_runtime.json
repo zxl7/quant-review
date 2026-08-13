@@ -1,11 +1,11 @@
 {
   "schema": "intraday_runtime_v1",
   "date": "2026-08-13",
-  "updated_at": "2026-08-13 10:40:03",
+  "updated_at": "2026-08-13 10:50:04",
   "source": "必盈(实时)+必盈(实时)",
   "latest": {
-    "time": "10:40:03",
-    "ts_bj": "2026-08-13 10:40:03",
+    "time": "10:50:04",
+    "ts_bj": "2026-08-13 10:50:04",
     "date": "2026-08-13",
     "source": "intraday_live",
     "provider": "必盈(实时)+必盈(实时)",
@@ -16,20 +16,25 @@
       "dtgc": "valid"
     },
     "pool_errors": {},
-    "zt": 50,
+    "zt": 52,
     "dt": 1,
-    "zab": 15,
-    "zb": 23.1,
-    "fb": 76.9,
-    "jj": 40.0,
-    "lianban": 20,
+    "zab": 18,
+    "zb": 25.7,
+    "fb": 74.3,
+    "jj": 40.4,
+    "lianban": 21,
     "max_lb": 5,
-    "amount": "12841.4亿",
+    "amount": "13646.4亿",
     "bf": 0,
-    "heat": 61,
-    "risk": 21,
+    "heat": 60,
+    "risk": 24,
     "headline": "修复",
     "concepts": [
+      {
+        "name": "医疗服务",
+        "lead": "澳洋健康",
+        "chg_pct": null
+      },
       {
         "name": "汽车零部",
         "lead": "秦安股份",
@@ -46,13 +51,8 @@
         "chg_pct": null
       },
       {
-        "name": "医疗服务",
-        "lead": "澳洋健康",
-        "chg_pct": null
-      },
-      {
-        "name": "通信设备",
-        "lead": "星网锐捷",
+        "name": "元件",
+        "lead": "江海股份",
         "chg_pct": null
       }
     ],
@@ -60,11 +60,15 @@
       {
         "level": "info",
         "text": "盘中模式：强制实时拉取"
+      },
+      {
+        "level": "warn",
+        "text": "炸板率偏高（25.7%）→ 注意回封质量"
       }
     ],
-    "shift_score": 69,
+    "shift_score": 67,
     "shift_label": "修复",
-    "note": "情绪整体平稳，维持当前节奏。"
+    "note": "情绪略有回落，注意午后分歧。"
   },
   "snapshots": [
     {
@@ -577,40 +581,107 @@
       "shift_score": 69,
       "shift_label": "修复",
       "note": "情绪整体平稳，维持当前节奏。"
+    },
+    {
+      "time": "10:50:04",
+      "ts_bj": "2026-08-13 10:50:04",
+      "date": "2026-08-13",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid"
+      },
+      "pool_errors": {},
+      "zt": 52,
+      "dt": 1,
+      "zab": 18,
+      "zb": 25.7,
+      "fb": 74.3,
+      "jj": 40.4,
+      "lianban": 21,
+      "max_lb": 5,
+      "amount": "13646.4亿",
+      "bf": 0,
+      "heat": 60,
+      "risk": 24,
+      "headline": "修复",
+      "concepts": [
+        {
+          "name": "医疗服务",
+          "lead": "澳洋健康",
+          "chg_pct": null
+        },
+        {
+          "name": "汽车零部",
+          "lead": "秦安股份",
+          "chg_pct": null
+        },
+        {
+          "name": "IT服务Ⅱ",
+          "lead": "鸿博股份",
+          "chg_pct": null
+        },
+        {
+          "name": "电力",
+          "lead": "惠天热电",
+          "chg_pct": null
+        },
+        {
+          "name": "元件",
+          "lead": "江海股份",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        },
+        {
+          "level": "warn",
+          "text": "炸板率偏高（25.7%）→ 注意回封质量"
+        }
+      ],
+      "shift_score": 67,
+      "shift_label": "修复",
+      "note": "情绪略有回落，注意午后分歧。"
     }
   ],
   "indices": [
     {
       "name": "上证指数",
       "code": "000001.SH",
-      "val": 3963.313,
-      "chg": 0.42157005580646795,
-      "cje": 582584946100.0,
-      "t": "2026-08-13 10:40:00"
+      "val": 3963.867,
+      "chg": 0.43560718832941675,
+      "cje": 620318660300.0,
+      "t": "2026-08-13 10:50:03"
     },
     {
       "name": "深证成指",
       "code": "399001.SZ",
-      "val": 14518.798,
-      "chg": 0.7240731802936115,
-      "cje": 701118043600.0,
-      "t": "2026-08-13 10:39:57"
+      "val": 14508.017,
+      "chg": 0.6492800580973502,
+      "cje": 743995469300.0,
+      "t": "2026-08-13 10:49:57"
     },
     {
       "name": "创业板指",
       "code": "399006.SZ",
-      "val": 3654.159,
-      "chg": 1.4456908833886237,
-      "cje": 341412978600.0,
-      "t": "2026-08-13 10:39:57"
+      "val": 3650.847,
+      "chg": 1.3537441103539056,
+      "cje": 363372175600.0,
+      "t": "2026-08-13 10:49:57"
     }
   ],
   "asOf": {
-    "indices": "10:39:57"
+    "indices": "10:49:57"
   },
   "health": {
     "status": "valid",
-    "last_valid_at": "2026-08-13 10:40:03",
+    "last_valid_at": "2026-08-13 10:50:04",
     "rejected_reason": "",
     "source": {
       "status": "valid",
@@ -628,8 +699,8 @@
       "message": "intraday_coverage_collecting",
       "date": "2026-08-13",
       "expected_count": 26,
-      "due_count": 8,
-      "observed_count": 8,
+      "due_count": 9,
+      "observed_count": 9,
       "observed_slots": [
         "09:30",
         "09:40",
@@ -638,33 +709,43 @@
         "10:10",
         "10:20",
         "10:30",
-        "10:40"
+        "10:40",
+        "10:50"
       ],
       "missing_slots": [],
       "duplicate_slots": [],
       "out_of_session": [],
       "monotonic": true,
-      "morning_coverage": 8,
+      "morning_coverage": 9,
       "afternoon_coverage": 0
     }
   },
   "live": {
     "market": {
-      "zt": 50,
+      "zt": 52,
       "dt": 1,
-      "zab": 15,
-      "zab_rate": 23.1,
-      "lianban": 20,
+      "zab": 18,
+      "zab_rate": 25.7,
+      "lianban": 21,
       "max_lianban": 5,
-      "amount": "12841.4亿"
+      "amount": "13646.4亿"
     },
     "alerts": [
       {
         "level": "info",
         "text": "盘中模式：强制实时拉取"
+      },
+      {
+        "level": "warn",
+        "text": "炸板率偏高（25.7%）→ 注意回封质量"
       }
     ],
     "concepts": [
+      {
+        "name": "医疗服务",
+        "lead": "澳洋健康",
+        "chg_pct": null
+      },
       {
         "name": "汽车零部",
         "lead": "秦安股份",
@@ -681,13 +762,8 @@
         "chg_pct": null
       },
       {
-        "name": "医疗服务",
-        "lead": "澳洋健康",
-        "chg_pct": null
-      },
-      {
-        "name": "通信设备",
-        "lead": "星网锐捷",
+        "name": "元件",
+        "lead": "江海股份",
         "chg_pct": null
       }
     ]
