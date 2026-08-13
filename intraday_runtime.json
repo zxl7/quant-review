@@ -1,58 +1,61 @@
 {
   "schema": "intraday_runtime_v1",
-  "date": "2026-08-12",
-  "updated_at": "2026-08-12 15:00:05",
-  "source": "必盈(实时)+必盈(实时)",
+  "date": "2026-08-13",
+  "updated_at": "2026-08-13 09:30:27",
+  "source": "必盈(实时)",
   "latest": {
-    "time": "15:00:05",
-    "ts_bj": "2026-08-12 15:00:05",
-    "date": "2026-08-12",
+    "time": "09:30:27",
+    "ts_bj": "2026-08-13 09:30:27",
+    "date": "2026-08-13",
     "source": "intraday_live",
-    "provider": "必盈(实时)+必盈(实时)",
-    "data_quality": "valid",
+    "provider": "必盈(实时)",
+    "data_quality": "partial",
     "pool_status": {
       "ztgc": "valid",
-      "zbgc": "valid",
-      "dtgc": "valid_empty"
+      "zbgc": "failed",
+      "dtgc": "failed"
     },
-    "pool_errors": {},
-    "zt": 92,
-    "dt": 0,
-    "zab": 12,
-    "zb": 11.5,
-    "fb": 88.5,
-    "jj": 17.4,
-    "lianban": 16,
-    "max_lb": 7,
-    "amount": "21524.2亿",
+    "pool_errors": {
+      "zbgc": "empty_response",
+      "dtgc": "empty_response"
+    },
+    "zt": 20,
+    "dt": null,
+    "zab": null,
+    "zb": null,
+    "fb": null,
+    "jj": 75.0,
+    "lianban": 15,
+    "max_lb": 5,
+    "amount": "",
     "bf": 0,
-    "heat": 71,
-    "risk": 12,
-    "headline": "走强",
+    "heat": null,
+    "risk": null,
+    "headline": "数据部分可用",
     "concepts": [
-      {
-        "name": "通用设备",
-        "lead": "华东数控",
-        "chg_pct": null
-      },
-      {
-        "name": "专用设备",
-        "lead": "同力天启",
-        "chg_pct": null
-      },
-      {
-        "name": "房地产开",
-        "lead": "京投发展",
-        "chg_pct": null
-      },
-      {
-        "name": "电网设备",
-        "lead": "长城科技",
-        "chg_pct": null
-      },
       {
         "name": "汽车零部",
         "lead": "秦安股份",
+        "chg_pct": null
+      },
+      {
+        "name": "IT服务Ⅱ",
+        "lead": "鸿博股份",
+        "chg_pct": null
+      },
+      {
+        "name": "通信设备",
+        "lead": "通鼎互联",
+        "chg_pct": null
+      },
+      {
+        "name": "影视院线",
+        "lead": "北京文化",
+        "chg_pct": null
+      },
+      {
+        "name": "通用设备",
+        "lead": "蓝盾光电",
         "chg_pct": null
       }
     ],
@@ -60,17 +63,21 @@
       {
         "level": "info",
         "text": "盘中模式：强制实时拉取"
+      },
+      {
+        "level": "warn",
+        "text": "盘中三池响应不完整，保留最近有效数据"
       }
     ],
-    "shift_score": 78,
-    "shift_label": "走强",
-    "note": "情绪整体平稳，维持当前节奏。"
+    "shift_score": null,
+    "shift_label": "数据部分可用",
+    "note": "本槽位仅部分三池成功；节点已保留，缺失指标不参与判断。"
   },
   "snapshots": [
     {
-      "time": "09:30:22",
-      "ts_bj": "2026-08-12 09:30:22",
-      "date": "2026-08-12",
+      "time": "09:30:27",
+      "ts_bj": "2026-08-13 09:30:27",
+      "date": "2026-08-13",
       "source": "intraday_live",
       "provider": "必盈(实时)",
       "data_quality": "partial",
@@ -83,14 +90,14 @@
         "zbgc": "empty_response",
         "dtgc": "empty_response"
       },
-      "zt": 10,
+      "zt": 20,
       "dt": null,
       "zab": null,
       "zb": null,
       "fb": null,
-      "jj": 70.0,
-      "lianban": 7,
-      "max_lb": 4,
+      "jj": 75.0,
+      "lianban": 15,
+      "max_lb": 5,
       "amount": "",
       "bf": 0,
       "heat": null,
@@ -98,8 +105,8 @@
       "headline": "数据部分可用",
       "concepts": [
         {
-          "name": "专用设备",
-          "lead": "同力天启",
+          "name": "汽车零部",
+          "lead": "秦安股份",
           "chg_pct": null
         },
         {
@@ -108,8 +115,8 @@
           "chg_pct": null
         },
         {
-          "name": "汽车零部",
-          "lead": "秦安股份",
+          "name": "通信设备",
+          "lead": "通鼎互联",
           "chg_pct": null
         },
         {
@@ -136,1688 +143,117 @@
       "shift_score": null,
       "shift_label": "数据部分可用",
       "note": "本槽位仅部分三池成功；节点已保留，缺失指标不参与判断。"
-    },
-    {
-      "time": "09:40:04",
-      "ts_bj": "2026-08-12 09:40:04",
-      "date": "2026-08-12",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid_empty"
-      },
-      "pool_errors": {},
-      "zt": 22,
-      "dt": 0,
-      "zab": 1,
-      "zb": 4.3,
-      "fb": 95.7,
-      "jj": 59.1,
-      "lianban": 13,
-      "max_lb": 7,
-      "amount": "3449.5亿",
-      "bf": 0,
-      "heat": 73,
-      "risk": 3,
-      "headline": "走强",
-      "concepts": [
-        {
-          "name": "通用设备",
-          "lead": "华东数控",
-          "chg_pct": null
-        },
-        {
-          "name": "专用设备",
-          "lead": "同力天启",
-          "chg_pct": null
-        },
-        {
-          "name": "汽车零部",
-          "lead": "秦安股份",
-          "chg_pct": null
-        },
-        {
-          "name": "房地产开",
-          "lead": "京投发展",
-          "chg_pct": null
-        },
-        {
-          "name": "IT服务Ⅱ",
-          "lead": "鸿博股份",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        }
-      ],
-      "shift_score": 83,
-      "shift_label": "走强",
-      "note": "承接增强、分歧收敛，情绪明显回暖。"
-    },
-    {
-      "time": "09:50:05",
-      "ts_bj": "2026-08-12 09:50:05",
-      "date": "2026-08-12",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid_empty"
-      },
-      "pool_errors": {},
-      "zt": 34,
-      "dt": 0,
-      "zab": 5,
-      "zb": 12.8,
-      "fb": 87.2,
-      "jj": 38.2,
-      "lianban": 13,
-      "max_lb": 7,
-      "amount": "5357.0亿",
-      "bf": 0,
-      "heat": 66,
-      "risk": 9,
-      "headline": "走强",
-      "concepts": [
-        {
-          "name": "通用设备",
-          "lead": "华东数控",
-          "chg_pct": null
-        },
-        {
-          "name": "专用设备",
-          "lead": "同力天启",
-          "chg_pct": null
-        },
-        {
-          "name": "软件开发",
-          "lead": "格尔软件",
-          "chg_pct": null
-        },
-        {
-          "name": "房地产开",
-          "lead": "京投发展",
-          "chg_pct": null
-        },
-        {
-          "name": "IT服务Ⅱ",
-          "lead": "鸿博股份",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        }
-      ],
-      "shift_score": 76,
-      "shift_label": "走强",
-      "note": "炸板/跌停抬升，情绪明显走弱。"
-    },
-    {
-      "time": "10:00:05",
-      "ts_bj": "2026-08-12 10:00:05",
-      "date": "2026-08-12",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid_empty"
-      },
-      "pool_errors": {},
-      "zt": 44,
-      "dt": 0,
-      "zab": 5,
-      "zb": 10.2,
-      "fb": 89.8,
-      "jj": 29.5,
-      "lianban": 13,
-      "max_lb": 7,
-      "amount": "6822.2亿",
-      "bf": 0,
-      "heat": 67,
-      "risk": 8,
-      "headline": "走强",
-      "concepts": [
-        {
-          "name": "通用设备",
-          "lead": "华东数控",
-          "chg_pct": null
-        },
-        {
-          "name": "专用设备",
-          "lead": "同力天启",
-          "chg_pct": null
-        },
-        {
-          "name": "汽车零部",
-          "lead": "秦安股份",
-          "chg_pct": null
-        },
-        {
-          "name": "IT服务Ⅱ",
-          "lead": "鸿博股份",
-          "chg_pct": null
-        },
-        {
-          "name": "软件开发",
-          "lead": "格尔软件",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        }
-      ],
-      "shift_score": 78,
-      "shift_label": "走强",
-      "note": "情绪边际修复，但仍需确认持续性。"
-    },
-    {
-      "time": "10:10:04",
-      "ts_bj": "2026-08-12 10:10:04",
-      "date": "2026-08-12",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid_empty"
-      },
-      "pool_errors": {},
-      "zt": 50,
-      "dt": 0,
-      "zab": 6,
-      "zb": 10.7,
-      "fb": 89.3,
-      "jj": 26.0,
-      "lianban": 13,
-      "max_lb": 7,
-      "amount": "8087.8亿",
-      "bf": 0,
-      "heat": 67,
-      "risk": 9,
-      "headline": "走强",
-      "concepts": [
-        {
-          "name": "专用设备",
-          "lead": "同力天启",
-          "chg_pct": null
-        },
-        {
-          "name": "通用设备",
-          "lead": "华东数控",
-          "chg_pct": null
-        },
-        {
-          "name": "IT服务Ⅱ",
-          "lead": "鸿博股份",
-          "chg_pct": null
-        },
-        {
-          "name": "软件开发",
-          "lead": "云赛智联",
-          "chg_pct": null
-        },
-        {
-          "name": "汽车零部",
-          "lead": "秦安股份",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        }
-      ],
-      "shift_score": 77,
-      "shift_label": "走强",
-      "note": "情绪整体平稳，维持当前节奏。"
-    },
-    {
-      "time": "10:20:06",
-      "ts_bj": "2026-08-12 10:20:06",
-      "date": "2026-08-12",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid_empty"
-      },
-      "pool_errors": {},
-      "zt": 51,
-      "dt": 0,
-      "zab": 7,
-      "zb": 12.1,
-      "fb": 87.9,
-      "jj": 25.5,
-      "lianban": 13,
-      "max_lb": 7,
-      "amount": "9012.7亿",
-      "bf": 0,
-      "heat": 66,
-      "risk": 10,
-      "headline": "走强",
-      "concepts": [
-        {
-          "name": "专用设备",
-          "lead": "同力天启",
-          "chg_pct": null
-        },
-        {
-          "name": "通用设备",
-          "lead": "华东数控",
-          "chg_pct": null
-        },
-        {
-          "name": "IT服务Ⅱ",
-          "lead": "鸿博股份",
-          "chg_pct": null
-        },
-        {
-          "name": "软件开发",
-          "lead": "云赛智联",
-          "chg_pct": null
-        },
-        {
-          "name": "汽车零部",
-          "lead": "秦安股份",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        }
-      ],
-      "shift_score": 76,
-      "shift_label": "走强",
-      "note": "情绪整体平稳，维持当前节奏。"
-    },
-    {
-      "time": "10:30:05",
-      "ts_bj": "2026-08-12 10:30:05",
-      "date": "2026-08-12",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid_empty"
-      },
-      "pool_errors": {},
-      "zt": 55,
-      "dt": 0,
-      "zab": 6,
-      "zb": 9.8,
-      "fb": 90.2,
-      "jj": 25.5,
-      "lianban": 14,
-      "max_lb": 7,
-      "amount": "9805.5亿",
-      "bf": 0,
-      "heat": 68,
-      "risk": 8,
-      "headline": "走强",
-      "concepts": [
-        {
-          "name": "专用设备",
-          "lead": "同力天启",
-          "chg_pct": null
-        },
-        {
-          "name": "通用设备",
-          "lead": "华东数控",
-          "chg_pct": null
-        },
-        {
-          "name": "IT服务Ⅱ",
-          "lead": "鸿博股份",
-          "chg_pct": null
-        },
-        {
-          "name": "软件开发",
-          "lead": "云赛智联",
-          "chg_pct": null
-        },
-        {
-          "name": "汽车零部",
-          "lead": "秦安股份",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        }
-      ],
-      "shift_score": 78,
-      "shift_label": "走强",
-      "note": "情绪边际修复，但仍需确认持续性。"
-    },
-    {
-      "time": "10:40:05",
-      "ts_bj": "2026-08-12 10:40:05",
-      "date": "2026-08-12",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid_empty"
-      },
-      "pool_errors": {},
-      "zt": 59,
-      "dt": 0,
-      "zab": 7,
-      "zb": 10.6,
-      "fb": 89.4,
-      "jj": 25.4,
-      "lianban": 15,
-      "max_lb": 7,
-      "amount": "10659.0亿",
-      "bf": 0,
-      "heat": 68,
-      "risk": 9,
-      "headline": "走强",
-      "concepts": [
-        {
-          "name": "专用设备",
-          "lead": "同力天启",
-          "chg_pct": null
-        },
-        {
-          "name": "通用设备",
-          "lead": "华东数控",
-          "chg_pct": null
-        },
-        {
-          "name": "软件开发",
-          "lead": "云赛智联",
-          "chg_pct": null
-        },
-        {
-          "name": "汽车零部",
-          "lead": "秦安股份",
-          "chg_pct": null
-        },
-        {
-          "name": "房地产开",
-          "lead": "京投发展",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        }
-      ],
-      "shift_score": 78,
-      "shift_label": "走强",
-      "note": "情绪整体平稳，维持当前节奏。"
-    },
-    {
-      "time": "10:50:07",
-      "ts_bj": "2026-08-12 10:50:07",
-      "date": "2026-08-12",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid_empty"
-      },
-      "pool_errors": {},
-      "zt": 60,
-      "dt": 0,
-      "zab": 8,
-      "zb": 11.8,
-      "fb": 88.2,
-      "jj": 25.0,
-      "lianban": 15,
-      "max_lb": 7,
-      "amount": "11370.5亿",
-      "bf": 0,
-      "heat": 68,
-      "risk": 10,
-      "headline": "走强",
-      "concepts": [
-        {
-          "name": "专用设备",
-          "lead": "同力天启",
-          "chg_pct": null
-        },
-        {
-          "name": "通用设备",
-          "lead": "华东数控",
-          "chg_pct": null
-        },
-        {
-          "name": "软件开发",
-          "lead": "云赛智联",
-          "chg_pct": null
-        },
-        {
-          "name": "汽车零部",
-          "lead": "秦安股份",
-          "chg_pct": null
-        },
-        {
-          "name": "房地产开",
-          "lead": "京投发展",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        }
-      ],
-      "shift_score": 77,
-      "shift_label": "走强",
-      "note": "情绪整体平稳，维持当前节奏。"
-    },
-    {
-      "time": "11:00:05",
-      "ts_bj": "2026-08-12 11:00:05",
-      "date": "2026-08-12",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid_empty"
-      },
-      "pool_errors": {},
-      "zt": 63,
-      "dt": 0,
-      "zab": 9,
-      "zb": 12.5,
-      "fb": 87.5,
-      "jj": 23.8,
-      "lianban": 15,
-      "max_lb": 7,
-      "amount": "12061.8亿",
-      "bf": 0,
-      "heat": 68,
-      "risk": 11,
-      "headline": "走强",
-      "concepts": [
-        {
-          "name": "专用设备",
-          "lead": "同力天启",
-          "chg_pct": null
-        },
-        {
-          "name": "通用设备",
-          "lead": "华东数控",
-          "chg_pct": null
-        },
-        {
-          "name": "汽车零部",
-          "lead": "秦安股份",
-          "chg_pct": null
-        },
-        {
-          "name": "软件开发",
-          "lead": "云赛智联",
-          "chg_pct": null
-        },
-        {
-          "name": "房地产开",
-          "lead": "京投发展",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        }
-      ],
-      "shift_score": 77,
-      "shift_label": "走强",
-      "note": "情绪整体平稳，维持当前节奏。"
-    },
-    {
-      "time": "11:10:05",
-      "ts_bj": "2026-08-12 11:10:05",
-      "date": "2026-08-12",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid_empty"
-      },
-      "pool_errors": {},
-      "zt": 64,
-      "dt": 0,
-      "zab": 8,
-      "zb": 11.1,
-      "fb": 88.9,
-      "jj": 23.4,
-      "lianban": 15,
-      "max_lb": 7,
-      "amount": "12770.7亿",
-      "bf": 0,
-      "heat": 68,
-      "risk": 10,
-      "headline": "走强",
-      "concepts": [
-        {
-          "name": "专用设备",
-          "lead": "同力天启",
-          "chg_pct": null
-        },
-        {
-          "name": "通用设备",
-          "lead": "华东数控",
-          "chg_pct": null
-        },
-        {
-          "name": "汽车零部",
-          "lead": "秦安股份",
-          "chg_pct": null
-        },
-        {
-          "name": "软件开发",
-          "lead": "云赛智联",
-          "chg_pct": null
-        },
-        {
-          "name": "房地产开",
-          "lead": "京投发展",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        }
-      ],
-      "shift_score": 77,
-      "shift_label": "走强",
-      "note": "情绪整体平稳，维持当前节奏。"
-    },
-    {
-      "time": "11:20:07",
-      "ts_bj": "2026-08-12 11:20:07",
-      "date": "2026-08-12",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid_empty"
-      },
-      "pool_errors": {},
-      "zt": 68,
-      "dt": 0,
-      "zab": 8,
-      "zb": 10.5,
-      "fb": 89.5,
-      "jj": 22.1,
-      "lianban": 15,
-      "max_lb": 7,
-      "amount": "13348.2亿",
-      "bf": 0,
-      "heat": 69,
-      "risk": 9,
-      "headline": "走强",
-      "concepts": [
-        {
-          "name": "专用设备",
-          "lead": "同力天启",
-          "chg_pct": null
-        },
-        {
-          "name": "通用设备",
-          "lead": "华东数控",
-          "chg_pct": null
-        },
-        {
-          "name": "汽车零部",
-          "lead": "秦安股份",
-          "chg_pct": null
-        },
-        {
-          "name": "软件开发",
-          "lead": "云赛智联",
-          "chg_pct": null
-        },
-        {
-          "name": "医疗服务",
-          "lead": "百花医药",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        }
-      ],
-      "shift_score": 78,
-      "shift_label": "走强",
-      "note": "情绪整体平稳，维持当前节奏。"
-    },
-    {
-      "time": "11:30:05",
-      "ts_bj": "2026-08-12 11:30:05",
-      "date": "2026-08-12",
-      "source": "intraday_live",
-      "provider": "必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid_empty"
-      },
-      "pool_errors": {},
-      "zt": 70,
-      "dt": 0,
-      "zab": 6,
-      "zb": 7.9,
-      "fb": 92.1,
-      "jj": 21.4,
-      "lianban": 15,
-      "max_lb": 7,
-      "amount": "13818.9亿",
-      "bf": 0,
-      "heat": 70,
-      "risk": 7,
-      "headline": "走强",
-      "concepts": [],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        },
-        {
-          "level": "warn",
-          "text": "板块数据获取失败或为空（稍后重试）"
-        }
-      ],
-      "shift_score": 80,
-      "shift_label": "走强",
-      "note": "情绪边际修复，但仍需确认持续性。"
-    },
-    {
-      "time": "13:00:25",
-      "ts_bj": "2026-08-12 13:00:25",
-      "date": "2026-08-12",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid_empty"
-      },
-      "pool_errors": {},
-      "zt": 71,
-      "dt": 0,
-      "zab": 6,
-      "zb": 7.8,
-      "fb": 92.2,
-      "jj": 21.1,
-      "lianban": 15,
-      "max_lb": 7,
-      "amount": "13961.3亿",
-      "bf": 0,
-      "heat": 70,
-      "risk": 7,
-      "headline": "走强",
-      "concepts": [
-        {
-          "name": "通用设备",
-          "lead": "华东数控",
-          "chg_pct": null
-        },
-        {
-          "name": "专用设备",
-          "lead": "同力天启",
-          "chg_pct": null
-        },
-        {
-          "name": "汽车零部",
-          "lead": "秦安股份",
-          "chg_pct": null
-        },
-        {
-          "name": "软件开发",
-          "lead": "云赛智联",
-          "chg_pct": null
-        },
-        {
-          "name": "医疗服务",
-          "lead": "百花医药",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        }
-      ],
-      "shift_score": 80,
-      "shift_label": "走强",
-      "note": "情绪整体平稳，维持当前节奏。"
-    },
-    {
-      "time": "13:10:08",
-      "ts_bj": "2026-08-12 13:10:08",
-      "date": "2026-08-12",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid_empty"
-      },
-      "pool_errors": {},
-      "zt": 69,
-      "dt": 0,
-      "zab": 7,
-      "zb": 9.2,
-      "fb": 90.8,
-      "jj": 20.3,
-      "lianban": 14,
-      "max_lb": 7,
-      "amount": "14680.8亿",
-      "bf": 0,
-      "heat": 69,
-      "risk": 8,
-      "headline": "走强",
-      "concepts": [
-        {
-          "name": "通用设备",
-          "lead": "华东数控",
-          "chg_pct": null
-        },
-        {
-          "name": "专用设备",
-          "lead": "同力天启",
-          "chg_pct": null
-        },
-        {
-          "name": "汽车零部",
-          "lead": "秦安股份",
-          "chg_pct": null
-        },
-        {
-          "name": "软件开发",
-          "lead": "云赛智联",
-          "chg_pct": null
-        },
-        {
-          "name": "医疗服务",
-          "lead": "百花医药",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        }
-      ],
-      "shift_score": 79,
-      "shift_label": "走强",
-      "note": "情绪整体平稳，维持当前节奏。"
-    },
-    {
-      "time": "13:20:06",
-      "ts_bj": "2026-08-12 13:20:06",
-      "date": "2026-08-12",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid_empty"
-      },
-      "pool_errors": {},
-      "zt": 71,
-      "dt": 0,
-      "zab": 9,
-      "zb": 11.2,
-      "fb": 88.8,
-      "jj": 21.1,
-      "lianban": 15,
-      "max_lb": 7,
-      "amount": "15338.9亿",
-      "bf": 0,
-      "heat": 69,
-      "risk": 10,
-      "headline": "走强",
-      "concepts": [
-        {
-          "name": "通用设备",
-          "lead": "华东数控",
-          "chg_pct": null
-        },
-        {
-          "name": "专用设备",
-          "lead": "同力天启",
-          "chg_pct": null
-        },
-        {
-          "name": "汽车零部",
-          "lead": "秦安股份",
-          "chg_pct": null
-        },
-        {
-          "name": "软件开发",
-          "lead": "云赛智联",
-          "chg_pct": null
-        },
-        {
-          "name": "医疗服务",
-          "lead": "百花医药",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        }
-      ],
-      "shift_score": 78,
-      "shift_label": "走强",
-      "note": "情绪整体平稳，维持当前节奏。"
-    },
-    {
-      "time": "13:30:07",
-      "ts_bj": "2026-08-12 13:30:07",
-      "date": "2026-08-12",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid_empty"
-      },
-      "pool_errors": {},
-      "zt": 72,
-      "dt": 0,
-      "zab": 11,
-      "zb": 13.3,
-      "fb": 86.7,
-      "jj": 20.8,
-      "lianban": 15,
-      "max_lb": 7,
-      "amount": "15993.9亿",
-      "bf": 0,
-      "heat": 68,
-      "risk": 12,
-      "headline": "走强",
-      "concepts": [
-        {
-          "name": "通用设备",
-          "lead": "华东数控",
-          "chg_pct": null
-        },
-        {
-          "name": "专用设备",
-          "lead": "同力天启",
-          "chg_pct": null
-        },
-        {
-          "name": "汽车零部",
-          "lead": "秦安股份",
-          "chg_pct": null
-        },
-        {
-          "name": "软件开发",
-          "lead": "云赛智联",
-          "chg_pct": null
-        },
-        {
-          "name": "医疗服务",
-          "lead": "百花医药",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        }
-      ],
-      "shift_score": 76,
-      "shift_label": "走强",
-      "note": "情绪略有回落，注意午后分歧。"
-    },
-    {
-      "time": "13:40:06",
-      "ts_bj": "2026-08-12 13:40:06",
-      "date": "2026-08-12",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid_empty"
-      },
-      "pool_errors": {},
-      "zt": 75,
-      "dt": 0,
-      "zab": 10,
-      "zb": 11.8,
-      "fb": 88.2,
-      "jj": 20.0,
-      "lianban": 15,
-      "max_lb": 7,
-      "amount": "16490.9亿",
-      "bf": 0,
-      "heat": 69,
-      "risk": 11,
-      "headline": "走强",
-      "concepts": [
-        {
-          "name": "通用设备",
-          "lead": "华东数控",
-          "chg_pct": null
-        },
-        {
-          "name": "专用设备",
-          "lead": "同力天启",
-          "chg_pct": null
-        },
-        {
-          "name": "汽车零部",
-          "lead": "秦安股份",
-          "chg_pct": null
-        },
-        {
-          "name": "电网设备",
-          "lead": "风范股份",
-          "chg_pct": null
-        },
-        {
-          "name": "软件开发",
-          "lead": "云赛智联",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        }
-      ],
-      "shift_score": 77,
-      "shift_label": "走强",
-      "note": "情绪整体平稳，维持当前节奏。"
-    },
-    {
-      "time": "13:50:04",
-      "ts_bj": "2026-08-12 13:50:04",
-      "date": "2026-08-12",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid_empty"
-      },
-      "pool_errors": {},
-      "zt": 75,
-      "dt": 0,
-      "zab": 11,
-      "zb": 12.8,
-      "fb": 87.2,
-      "jj": 20.0,
-      "lianban": 15,
-      "max_lb": 7,
-      "amount": "16986.6亿",
-      "bf": 0,
-      "heat": 69,
-      "risk": 12,
-      "headline": "走强",
-      "concepts": [
-        {
-          "name": "通用设备",
-          "lead": "华东数控",
-          "chg_pct": null
-        },
-        {
-          "name": "专用设备",
-          "lead": "同力天启",
-          "chg_pct": null
-        },
-        {
-          "name": "汽车零部",
-          "lead": "秦安股份",
-          "chg_pct": null
-        },
-        {
-          "name": "软件开发",
-          "lead": "云赛智联",
-          "chg_pct": null
-        },
-        {
-          "name": "医疗服务",
-          "lead": "百花医药",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        }
-      ],
-      "shift_score": 77,
-      "shift_label": "走强",
-      "note": "情绪整体平稳，维持当前节奏。"
-    },
-    {
-      "time": "14:00:06",
-      "ts_bj": "2026-08-12 14:00:06",
-      "date": "2026-08-12",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid_empty"
-      },
-      "pool_errors": {},
-      "zt": 79,
-      "dt": 0,
-      "zab": 11,
-      "zb": 12.2,
-      "fb": 87.8,
-      "jj": 19.0,
-      "lianban": 15,
-      "max_lb": 7,
-      "amount": "17510.7亿",
-      "bf": 0,
-      "heat": 69,
-      "risk": 12,
-      "headline": "走强",
-      "concepts": [
-        {
-          "name": "通用设备",
-          "lead": "华东数控",
-          "chg_pct": null
-        },
-        {
-          "name": "专用设备",
-          "lead": "同力天启",
-          "chg_pct": null
-        },
-        {
-          "name": "房地产开",
-          "lead": "京投发展",
-          "chg_pct": null
-        },
-        {
-          "name": "汽车零部",
-          "lead": "秦安股份",
-          "chg_pct": null
-        },
-        {
-          "name": "软件开发",
-          "lead": "云赛智联",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        }
-      ],
-      "shift_score": 77,
-      "shift_label": "走强",
-      "note": "情绪整体平稳，维持当前节奏。"
-    },
-    {
-      "time": "14:10:05",
-      "ts_bj": "2026-08-12 14:10:05",
-      "date": "2026-08-12",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid_empty"
-      },
-      "pool_errors": {},
-      "zt": 83,
-      "dt": 0,
-      "zab": 10,
-      "zb": 10.8,
-      "fb": 89.2,
-      "jj": 18.1,
-      "lianban": 15,
-      "max_lb": 7,
-      "amount": "18041.6亿",
-      "bf": 0,
-      "heat": 70,
-      "risk": 10,
-      "headline": "走强",
-      "concepts": [
-        {
-          "name": "通用设备",
-          "lead": "华东数控",
-          "chg_pct": null
-        },
-        {
-          "name": "专用设备",
-          "lead": "同力天启",
-          "chg_pct": null
-        },
-        {
-          "name": "房地产开",
-          "lead": "京投发展",
-          "chg_pct": null
-        },
-        {
-          "name": "汽车零部",
-          "lead": "秦安股份",
-          "chg_pct": null
-        },
-        {
-          "name": "电网设备",
-          "lead": "风范股份",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        }
-      ],
-      "shift_score": 78,
-      "shift_label": "走强",
-      "note": "情绪整体平稳，维持当前节奏。"
-    },
-    {
-      "time": "14:20:06",
-      "ts_bj": "2026-08-12 14:20:06",
-      "date": "2026-08-12",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid_empty"
-      },
-      "pool_errors": {},
-      "zt": 84,
-      "dt": 0,
-      "zab": 11,
-      "zb": 11.6,
-      "fb": 88.4,
-      "jj": 17.9,
-      "lianban": 15,
-      "max_lb": 7,
-      "amount": "18479.7亿",
-      "bf": 0,
-      "heat": 70,
-      "risk": 11,
-      "headline": "走强",
-      "concepts": [
-        {
-          "name": "通用设备",
-          "lead": "华东数控",
-          "chg_pct": null
-        },
-        {
-          "name": "专用设备",
-          "lead": "同力天启",
-          "chg_pct": null
-        },
-        {
-          "name": "房地产开",
-          "lead": "京投发展",
-          "chg_pct": null
-        },
-        {
-          "name": "汽车零部",
-          "lead": "秦安股份",
-          "chg_pct": null
-        },
-        {
-          "name": "装修装饰",
-          "lead": "宝鹰股份",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        }
-      ],
-      "shift_score": 78,
-      "shift_label": "走强",
-      "note": "情绪整体平稳，维持当前节奏。"
-    },
-    {
-      "time": "14:30:06",
-      "ts_bj": "2026-08-12 14:30:06",
-      "date": "2026-08-12",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid_empty"
-      },
-      "pool_errors": {},
-      "zt": 85,
-      "dt": 0,
-      "zab": 11,
-      "zb": 11.5,
-      "fb": 88.5,
-      "jj": 17.6,
-      "lianban": 15,
-      "max_lb": 7,
-      "amount": "18971.5亿",
-      "bf": 0,
-      "heat": 70,
-      "risk": 11,
-      "headline": "走强",
-      "concepts": [
-        {
-          "name": "通用设备",
-          "lead": "华东数控",
-          "chg_pct": null
-        },
-        {
-          "name": "专用设备",
-          "lead": "同力天启",
-          "chg_pct": null
-        },
-        {
-          "name": "房地产开",
-          "lead": "京投发展",
-          "chg_pct": null
-        },
-        {
-          "name": "汽车零部",
-          "lead": "秦安股份",
-          "chg_pct": null
-        },
-        {
-          "name": "装修装饰",
-          "lead": "宝鹰股份",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        }
-      ],
-      "shift_score": 78,
-      "shift_label": "走强",
-      "note": "情绪整体平稳，维持当前节奏。"
-    },
-    {
-      "time": "14:40:08",
-      "ts_bj": "2026-08-12 14:40:08",
-      "date": "2026-08-12",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid_empty"
-      },
-      "pool_errors": {},
-      "zt": 90,
-      "dt": 0,
-      "zab": 10,
-      "zb": 10.0,
-      "fb": 90.0,
-      "jj": 16.7,
-      "lianban": 15,
-      "max_lb": 7,
-      "amount": "19566.4亿",
-      "bf": 0,
-      "heat": 71,
-      "risk": 10,
-      "headline": "走强",
-      "concepts": [
-        {
-          "name": "通用设备",
-          "lead": "华东数控",
-          "chg_pct": null
-        },
-        {
-          "name": "专用设备",
-          "lead": "同力天启",
-          "chg_pct": null
-        },
-        {
-          "name": "房地产开",
-          "lead": "京投发展",
-          "chg_pct": null
-        },
-        {
-          "name": "汽车零部",
-          "lead": "秦安股份",
-          "chg_pct": null
-        },
-        {
-          "name": "装修装饰",
-          "lead": "宝鹰股份",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        }
-      ],
-      "shift_score": 79,
-      "shift_label": "走强",
-      "note": "情绪整体平稳，维持当前节奏。"
-    },
-    {
-      "time": "14:50:07",
-      "ts_bj": "2026-08-12 14:50:07",
-      "date": "2026-08-12",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid_empty"
-      },
-      "pool_errors": {},
-      "zt": 93,
-      "dt": 0,
-      "zab": 11,
-      "zb": 10.6,
-      "fb": 89.4,
-      "jj": 17.2,
-      "lianban": 16,
-      "max_lb": 7,
-      "amount": "20402.3亿",
-      "bf": 0,
-      "heat": 72,
-      "risk": 11,
-      "headline": "走强",
-      "concepts": [
-        {
-          "name": "通用设备",
-          "lead": "华东数控",
-          "chg_pct": null
-        },
-        {
-          "name": "专用设备",
-          "lead": "同力天启",
-          "chg_pct": null
-        },
-        {
-          "name": "房地产开",
-          "lead": "京投发展",
-          "chg_pct": null
-        },
-        {
-          "name": "汽车零部",
-          "lead": "秦安股份",
-          "chg_pct": null
-        },
-        {
-          "name": "电网设备",
-          "lead": "长城科技",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        }
-      ],
-      "shift_score": 79,
-      "shift_label": "走强",
-      "note": "情绪整体平稳，维持当前节奏。"
-    },
-    {
-      "time": "15:00:05",
-      "ts_bj": "2026-08-12 15:00:05",
-      "date": "2026-08-12",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid_empty"
-      },
-      "pool_errors": {},
-      "zt": 92,
-      "dt": 0,
-      "zab": 12,
-      "zb": 11.5,
-      "fb": 88.5,
-      "jj": 17.4,
-      "lianban": 16,
-      "max_lb": 7,
-      "amount": "21524.2亿",
-      "bf": 0,
-      "heat": 71,
-      "risk": 12,
-      "headline": "走强",
-      "concepts": [
-        {
-          "name": "通用设备",
-          "lead": "华东数控",
-          "chg_pct": null
-        },
-        {
-          "name": "专用设备",
-          "lead": "同力天启",
-          "chg_pct": null
-        },
-        {
-          "name": "房地产开",
-          "lead": "京投发展",
-          "chg_pct": null
-        },
-        {
-          "name": "电网设备",
-          "lead": "长城科技",
-          "chg_pct": null
-        },
-        {
-          "name": "汽车零部",
-          "lead": "秦安股份",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        }
-      ],
-      "shift_score": 78,
-      "shift_label": "走强",
-      "note": "情绪整体平稳，维持当前节奏。"
     }
   ],
   "indices": [
     {
       "name": "上证指数",
       "code": "000001.SH",
-      "val": 3947.642,
-      "chg": 0.3443995858765916,
-      "cje": 980941336000.0,
-      "t": "2026-08-12 15:00:03"
+      "val": 3957.52,
+      "chg": 0.2747882711396251,
+      "cje": 22198519300.0,
+      "t": "2026-08-13 09:30:24"
     },
     {
       "name": "深证成指",
       "code": "399001.SZ",
-      "val": 14414.427,
-      "chg": 1.086908041269497,
-      "cje": 1166300716000.0,
-      "t": "2026-08-12 15:00:03"
+      "val": 14538.984,
+      "chg": 0.8641134330209638,
+      "cje": 42915227200.0,
+      "t": "2026-08-13 09:30:21"
     },
     {
       "name": "创业板指",
       "code": "399006.SZ",
-      "val": 3602.084,
-      "chg": 1.4910553583886126,
-      "cje": 564721503100.0,
-      "t": "2026-08-12 15:00:03"
+      "val": 3652.888,
+      "chg": 1.4104057540024078,
+      "cje": 19552126900.0,
+      "t": "2026-08-13 09:30:21"
     }
   ],
   "asOf": {
-    "indices": "15:00:03"
+    "indices": "09:30:21"
   },
   "health": {
-    "status": "valid",
-    "last_valid_at": "2026-08-12 15:00:05",
+    "status": "degraded",
+    "last_valid_at": "2026-08-13 09:30:27",
     "rejected_reason": "",
     "source": {
-      "status": "valid",
+      "status": "partial",
       "pool_status": {
         "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid_empty"
+        "zbgc": "failed",
+        "dtgc": "failed"
       },
-      "pool_errors": {}
+      "pool_errors": {
+        "zbgc": "empty_response",
+        "dtgc": "empty_response"
+      }
     },
     "indices_status": "valid",
     "coverage": {
       "ok": true,
-      "status": "complete",
-      "message": "intraday_coverage_complete",
-      "date": "2026-08-12",
+      "status": "collecting",
+      "message": "intraday_coverage_collecting",
+      "date": "2026-08-13",
       "expected_count": 26,
-      "due_count": 26,
-      "observed_count": 26,
+      "due_count": 1,
+      "observed_count": 1,
       "observed_slots": [
-        "09:30",
-        "09:40",
-        "09:50",
-        "10:00",
-        "10:10",
-        "10:20",
-        "10:30",
-        "10:40",
-        "10:50",
-        "11:00",
-        "11:10",
-        "11:20",
-        "11:30",
-        "13:00",
-        "13:10",
-        "13:20",
-        "13:30",
-        "13:40",
-        "13:50",
-        "14:00",
-        "14:10",
-        "14:20",
-        "14:30",
-        "14:40",
-        "14:50",
-        "15:00"
+        "09:30"
       ],
       "missing_slots": [],
       "duplicate_slots": [],
       "out_of_session": [],
       "monotonic": true,
-      "morning_coverage": 13,
-      "afternoon_coverage": 13
+      "morning_coverage": 1,
+      "afternoon_coverage": 0
     }
   },
   "live": {
     "market": {
-      "zt": 92,
-      "dt": 0,
-      "zab": 12,
-      "zab_rate": 11.5,
-      "lianban": 16,
-      "max_lianban": 7,
-      "amount": "21524.2亿"
+      "zt": 20,
+      "dt": null,
+      "zab": null,
+      "zab_rate": null,
+      "lianban": 15,
+      "max_lianban": 5,
+      "amount": ""
     },
     "alerts": [
       {
         "level": "info",
         "text": "盘中模式：强制实时拉取"
+      },
+      {
+        "level": "warn",
+        "text": "盘中三池响应不完整，保留最近有效数据"
       }
     ],
     "concepts": [
       {
-        "name": "通用设备",
-        "lead": "华东数控",
-        "chg_pct": null
-      },
-      {
-        "name": "专用设备",
-        "lead": "同力天启",
-        "chg_pct": null
-      },
-      {
-        "name": "房地产开",
-        "lead": "京投发展",
-        "chg_pct": null
-      },
-      {
-        "name": "电网设备",
-        "lead": "长城科技",
-        "chg_pct": null
-      },
-      {
         "name": "汽车零部",
         "lead": "秦安股份",
+        "chg_pct": null
+      },
+      {
+        "name": "IT服务Ⅱ",
+        "lead": "鸿博股份",
+        "chg_pct": null
+      },
+      {
+        "name": "通信设备",
+        "lead": "通鼎互联",
+        "chg_pct": null
+      },
+      {
+        "name": "影视院线",
+        "lead": "北京文化",
+        "chg_pct": null
+      },
+      {
+        "name": "通用设备",
+        "lead": "蓝盾光电",
         "chg_pct": null
       }
     ]
