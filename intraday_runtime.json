@@ -1,11 +1,11 @@
 {
   "schema": "intraday_runtime_v1",
   "date": "2026-08-13",
-  "updated_at": "2026-08-13 10:00:03",
+  "updated_at": "2026-08-13 10:10:03",
   "source": "必盈(实时)+必盈(实时)",
   "latest": {
-    "time": "10:00:03",
-    "ts_bj": "2026-08-13 10:00:03",
+    "time": "10:10:03",
+    "ts_bj": "2026-08-13 10:10:03",
     "date": "2026-08-13",
     "source": "intraday_live",
     "provider": "必盈(实时)+必盈(实时)",
@@ -16,28 +16,23 @@
       "dtgc": "valid_empty"
     },
     "pool_errors": {},
-    "zt": 45,
+    "zt": 44,
     "dt": 0,
-    "zab": 8,
-    "zb": 15.1,
-    "fb": 84.9,
-    "jj": 42.2,
+    "zab": 11,
+    "zb": 20.0,
+    "fb": 80.0,
+    "jj": 43.2,
     "lianban": 19,
     "max_lb": 5,
-    "amount": "8301.2亿",
+    "amount": "9615.9亿",
     "bf": 0,
-    "heat": 64,
-    "risk": 12,
-    "headline": "走强",
+    "heat": 62,
+    "risk": 16,
+    "headline": "修复",
     "concepts": [
       {
         "name": "汽车零部",
         "lead": "秦安股份",
-        "chg_pct": null
-      },
-      {
-        "name": "通用设备",
-        "lead": "蓝盾光电",
         "chg_pct": null
       },
       {
@@ -48,6 +43,11 @@
       {
         "name": "电力",
         "lead": "惠天热电",
+        "chg_pct": null
+      },
+      {
+        "name": "医疗服务",
+        "lead": "澳洋健康",
         "chg_pct": null
       },
       {
@@ -62,8 +62,8 @@
         "text": "盘中模式：强制实时拉取"
       }
     ],
-    "shift_score": 74,
-    "shift_label": "走强",
+    "shift_score": 71,
+    "shift_label": "修复",
     "note": "情绪略有回落，注意午后分歧。"
   },
   "snapshots": [
@@ -325,40 +325,103 @@
       "shift_score": 74,
       "shift_label": "走强",
       "note": "情绪略有回落，注意午后分歧。"
+    },
+    {
+      "time": "10:10:03",
+      "ts_bj": "2026-08-13 10:10:03",
+      "date": "2026-08-13",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid_empty"
+      },
+      "pool_errors": {},
+      "zt": 44,
+      "dt": 0,
+      "zab": 11,
+      "zb": 20.0,
+      "fb": 80.0,
+      "jj": 43.2,
+      "lianban": 19,
+      "max_lb": 5,
+      "amount": "9615.9亿",
+      "bf": 0,
+      "heat": 62,
+      "risk": 16,
+      "headline": "修复",
+      "concepts": [
+        {
+          "name": "汽车零部",
+          "lead": "秦安股份",
+          "chg_pct": null
+        },
+        {
+          "name": "IT服务Ⅱ",
+          "lead": "鸿博股份",
+          "chg_pct": null
+        },
+        {
+          "name": "电力",
+          "lead": "惠天热电",
+          "chg_pct": null
+        },
+        {
+          "name": "医疗服务",
+          "lead": "澳洋健康",
+          "chg_pct": null
+        },
+        {
+          "name": "饮料乳品",
+          "lead": "皇氏集团",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        }
+      ],
+      "shift_score": 71,
+      "shift_label": "修复",
+      "note": "情绪略有回落，注意午后分歧。"
     }
   ],
   "indices": [
     {
       "name": "上证指数",
       "code": "000001.SH",
-      "val": 3963.698,
-      "chg": 0.4313251027763797,
-      "cje": 374985187300.0,
-      "t": "2026-08-13 09:59:57"
+      "val": 3964.968,
+      "chg": 0.463504088884939,
+      "cje": 435436713700.0,
+      "t": "2026-08-13 10:10:00"
     },
     {
       "name": "深证成指",
       "code": "399001.SZ",
-      "val": 14540.086,
-      "chg": 0.8717585513458125,
-      "cje": 454551554100.0,
-      "t": "2026-08-13 09:59:57"
+      "val": 14574.027,
+      "chg": 1.1072240332550185,
+      "cje": 525033970300.0,
+      "t": "2026-08-13 10:09:54"
     },
     {
       "name": "创业板指",
       "code": "399006.SZ",
-      "val": 3657.452,
-      "chg": 1.537110183993499,
-      "cje": 221343692300.0,
-      "t": "2026-08-13 09:59:57"
+      "val": 3672.484,
+      "chg": 1.9544241611245072,
+      "cje": 255927716100.0,
+      "t": "2026-08-13 10:09:57"
     }
   ],
   "asOf": {
-    "indices": "09:59:57"
+    "indices": "10:09:57"
   },
   "health": {
     "status": "valid",
-    "last_valid_at": "2026-08-13 10:00:03",
+    "last_valid_at": "2026-08-13 10:10:03",
     "rejected_reason": "",
     "source": {
       "status": "valid",
@@ -376,31 +439,32 @@
       "message": "intraday_coverage_collecting",
       "date": "2026-08-13",
       "expected_count": 26,
-      "due_count": 4,
-      "observed_count": 4,
+      "due_count": 5,
+      "observed_count": 5,
       "observed_slots": [
         "09:30",
         "09:40",
         "09:50",
-        "10:00"
+        "10:00",
+        "10:10"
       ],
       "missing_slots": [],
       "duplicate_slots": [],
       "out_of_session": [],
       "monotonic": true,
-      "morning_coverage": 4,
+      "morning_coverage": 5,
       "afternoon_coverage": 0
     }
   },
   "live": {
     "market": {
-      "zt": 45,
+      "zt": 44,
       "dt": 0,
-      "zab": 8,
-      "zab_rate": 15.1,
+      "zab": 11,
+      "zab_rate": 20.0,
       "lianban": 19,
       "max_lianban": 5,
-      "amount": "8301.2亿"
+      "amount": "9615.9亿"
     },
     "alerts": [
       {
@@ -415,11 +479,6 @@
         "chg_pct": null
       },
       {
-        "name": "通用设备",
-        "lead": "蓝盾光电",
-        "chg_pct": null
-      },
-      {
         "name": "IT服务Ⅱ",
         "lead": "鸿博股份",
         "chg_pct": null
@@ -427,6 +486,11 @@
       {
         "name": "电力",
         "lead": "惠天热电",
+        "chg_pct": null
+      },
+      {
+        "name": "医疗服务",
+        "lead": "澳洋健康",
         "chg_pct": null
       },
       {
