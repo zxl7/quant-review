@@ -1,11 +1,11 @@
 {
   "schema": "intraday_runtime_v1",
   "date": "2026-08-13",
-  "updated_at": "2026-08-13 14:50:04",
+  "updated_at": "2026-08-13 15:00:07",
   "source": "必盈(实时)+必盈(实时)",
   "latest": {
-    "time": "14:50:04",
-    "ts_bj": "2026-08-13 14:50:04",
+    "time": "15:00:07",
+    "ts_bj": "2026-08-13 15:00:07",
     "date": "2026-08-13",
     "source": "intraday_live",
     "provider": "必盈(实时)+必盈(实时)",
@@ -17,17 +17,17 @@
     },
     "pool_errors": {},
     "zt": 61,
-    "dt": 2,
-    "zab": 33,
-    "zb": 35.1,
-    "fb": 64.9,
-    "jj": 34.4,
-    "lianban": 21,
+    "dt": 3,
+    "zab": 34,
+    "zb": 35.8,
+    "fb": 64.2,
+    "jj": 36.1,
+    "lianban": 22,
     "max_lb": 5,
-    "amount": "24148.9亿",
+    "amount": "25509.2亿",
     "bf": 0,
     "heat": 56,
-    "risk": 37,
+    "risk": 39,
     "headline": "分歧",
     "concepts": [
       {
@@ -63,12 +63,12 @@
       },
       {
         "level": "danger",
-        "text": "炸板率高（35.1%）→ 分歧偏强，谨慎接力"
+        "text": "炸板率高（35.8%）→ 分歧偏强，谨慎接力"
       }
     ],
-    "shift_score": 59,
+    "shift_score": 58,
     "shift_label": "分歧",
-    "note": "情绪略有回落，注意午后分歧。"
+    "note": "情绪整体平稳，维持当前节奏。"
   },
   "snapshots": [
     {
@@ -1704,40 +1704,107 @@
       "shift_score": 59,
       "shift_label": "分歧",
       "note": "情绪略有回落，注意午后分歧。"
+    },
+    {
+      "time": "15:00:07",
+      "ts_bj": "2026-08-13 15:00:07",
+      "date": "2026-08-13",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid"
+      },
+      "pool_errors": {},
+      "zt": 61,
+      "dt": 3,
+      "zab": 34,
+      "zb": 35.8,
+      "fb": 64.2,
+      "jj": 36.1,
+      "lianban": 22,
+      "max_lb": 5,
+      "amount": "25509.2亿",
+      "bf": 0,
+      "heat": 56,
+      "risk": 39,
+      "headline": "分歧",
+      "concepts": [
+        {
+          "name": "医疗服务",
+          "lead": "澳洋健康",
+          "chg_pct": null
+        },
+        {
+          "name": "电力",
+          "lead": "惠天热电",
+          "chg_pct": null
+        },
+        {
+          "name": "汽车零部",
+          "lead": "秦安股份",
+          "chg_pct": null
+        },
+        {
+          "name": "通信设备",
+          "lead": "星网锐捷",
+          "chg_pct": null
+        },
+        {
+          "name": "中药Ⅱ",
+          "lead": "陇神戎发",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        },
+        {
+          "level": "danger",
+          "text": "炸板率高（35.8%）→ 分歧偏强，谨慎接力"
+        }
+      ],
+      "shift_score": 58,
+      "shift_label": "分歧",
+      "note": "情绪整体平稳，维持当前节奏。"
     }
   ],
   "indices": [
     {
       "name": "上证指数",
       "code": "000001.SH",
-      "val": 3931.254,
-      "chg": -0.390733972267802,
-      "cje": 1102825851600.0,
-      "t": "2026-08-13 14:50:03"
+      "val": 3926.974,
+      "chg": -0.4991796892320756,
+      "cje": 1164075693700.0,
+      "t": "2026-08-13 15:00:06"
     },
     {
       "name": "深证成指",
       "code": "399001.SZ",
-      "val": 14320.34,
-      "chg": -0.6527279925868682,
-      "cje": 1311036999800.0,
-      "t": "2026-08-13 14:50:00"
+      "val": 14289.442,
+      "chg": -0.8670826804284387,
+      "cje": 1386713670800.0,
+      "t": "2026-08-13 15:00:03"
     },
     {
       "name": "创业板指",
       "code": "399006.SZ",
-      "val": 3595.137,
-      "chg": -0.19286057737686468,
-      "cje": 629371737600.0,
-      "t": "2026-08-13 14:50:00"
+      "val": 3586.043,
+      "chg": -0.44532553932667074,
+      "cje": 665249480900.0,
+      "t": "2026-08-13 15:00:03"
     }
   ],
   "asOf": {
-    "indices": "14:50:00"
+    "indices": "15:00:03"
   },
   "health": {
     "status": "valid",
-    "last_valid_at": "2026-08-13 14:50:04",
+    "last_valid_at": "2026-08-13 15:00:07",
     "rejected_reason": "",
     "source": {
       "status": "valid",
@@ -1751,12 +1818,12 @@
     "indices_status": "valid",
     "coverage": {
       "ok": true,
-      "status": "collecting",
-      "message": "intraday_coverage_collecting",
+      "status": "complete",
+      "message": "intraday_coverage_complete",
       "date": "2026-08-13",
       "expected_count": 26,
-      "due_count": 25,
-      "observed_count": 25,
+      "due_count": 26,
+      "observed_count": 26,
       "observed_slots": [
         "09:30",
         "09:40",
@@ -1782,25 +1849,26 @@
         "14:20",
         "14:30",
         "14:40",
-        "14:50"
+        "14:50",
+        "15:00"
       ],
       "missing_slots": [],
       "duplicate_slots": [],
       "out_of_session": [],
       "monotonic": true,
       "morning_coverage": 13,
-      "afternoon_coverage": 12
+      "afternoon_coverage": 13
     }
   },
   "live": {
     "market": {
       "zt": 61,
-      "dt": 2,
-      "zab": 33,
-      "zab_rate": 35.1,
-      "lianban": 21,
+      "dt": 3,
+      "zab": 34,
+      "zab_rate": 35.8,
+      "lianban": 22,
       "max_lianban": 5,
-      "amount": "24148.9亿"
+      "amount": "25509.2亿"
     },
     "alerts": [
       {
@@ -1809,7 +1877,7 @@
       },
       {
         "level": "danger",
-        "text": "炸板率高（35.1%）→ 分歧偏强，谨慎接力"
+        "text": "炸板率高（35.8%）→ 分歧偏强，谨慎接力"
       }
     ],
     "concepts": [
