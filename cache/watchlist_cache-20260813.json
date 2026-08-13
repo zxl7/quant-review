@@ -1,6 +1,6 @@
 {
   "schema": "watchlist_v2",
-  "generated_at_bj": "2026-08-13 16:35:25",
+  "generated_at_bj": "2026-08-13 17:14:47",
   "data_date": "2026-08-13",
   "pools_date": "2026-08-13",
   "sector_resolution": {
@@ -21664,12 +21664,12 @@
         "prev_zt": 4,
         "pre_prev_zt": 1,
         "resilience": 35.87,
-        "strength": null,
+        "strength": 56.0,
         "strength_rank": null,
-        "strength_score": null,
-        "strength_source": "",
-        "tide_score": 70,
-        "confidence": "medium",
+        "strength_score": 56.0,
+        "strength_source": "sector_heatmap",
+        "tide_score": 71,
+        "confidence": "high",
         "warning_level": "none",
         "action_hint": "潮汐中性，按梯队和辨识度判断"
       },
@@ -21715,12 +21715,12 @@
         "prev_zt": 1,
         "pre_prev_zt": null,
         "resilience": 235.87,
-        "strength": null,
+        "strength": 56.0,
         "strength_rank": null,
-        "strength_score": null,
-        "strength_source": "",
-        "tide_score": 85,
-        "confidence": "medium",
+        "strength_score": 56.0,
+        "strength_source": "sector_heatmap",
+        "tide_score": 86,
+        "confidence": "high",
         "warning_level": "none",
         "action_hint": "潮汐中性，按梯队和辨识度判断"
       },
@@ -21749,12 +21749,12 @@
         "prev_zt": 1,
         "pre_prev_zt": null,
         "resilience": 235.87,
-        "strength": 56.0,
+        "strength": null,
         "strength_rank": null,
-        "strength_score": 56.0,
-        "strength_source": "sector_heatmap",
-        "tide_score": 86,
-        "confidence": "high",
+        "strength_score": null,
+        "strength_source": "",
+        "tide_score": 85,
+        "confidence": "medium",
         "warning_level": "none",
         "action_hint": "潮汐中性，按梯队和辨识度判断"
       },
@@ -25069,6 +25069,42 @@
         "action_hint": "华为概念核心潮汐中性，按梯队和个股辨识度处理。"
       },
       {
+        "name": "F5G",
+        "canonical_name": "F5G",
+        "status": "observe_candidate",
+        "base_tide_status": "neutral",
+        "action": "watch",
+        "tide_zone": "neutral",
+        "tide_phase": "neutral",
+        "core_score": 69,
+        "ebb_score": 33,
+        "tide_score": 86,
+        "emotion_score": 66,
+        "strength_score": 56,
+        "volume_score": 72,
+        "news_score": 56,
+        "market_score": 59,
+        "structure_score": 74,
+        "confidence": "medium",
+        "confirms": {
+          "emotion": true,
+          "strength": false,
+          "volume": true,
+          "news": false,
+          "market": false
+        },
+        "reasons": [
+          "消息催化",
+          "低位新启动",
+          "低位连板承接"
+        ],
+        "cautions": [
+          "市场退潮",
+          "高位负反馈"
+        ],
+        "action_hint": "F5G有观察价值，等待情绪/量能/消息继续共振。"
+      },
+      {
         "name": "字节跳动概念",
         "canonical_name": "字节跳动",
         "status": "observe_candidate",
@@ -25137,77 +25173,6 @@
           "高位负反馈"
         ],
         "action_hint": "虚拟现实有观察价值，等待情绪/量能/消息继续共振。"
-      },
-      {
-        "name": "F5G",
-        "canonical_name": "F5G",
-        "status": "observe_candidate",
-        "base_tide_status": "neutral",
-        "action": "watch",
-        "tide_zone": "neutral",
-        "tide_phase": "neutral",
-        "core_score": 68,
-        "ebb_score": 34,
-        "tide_score": 85,
-        "emotion_score": 66,
-        "strength_score": 53,
-        "volume_score": 72,
-        "news_score": 56,
-        "market_score": 59,
-        "structure_score": 74,
-        "confidence": "medium",
-        "confirms": {
-          "emotion": true,
-          "strength": false,
-          "volume": true,
-          "news": false,
-          "market": false
-        },
-        "reasons": [
-          "消息催化",
-          "低位新启动",
-          "低位连板承接"
-        ],
-        "cautions": [
-          "市场退潮",
-          "高位负反馈"
-        ],
-        "action_hint": "F5G有观察价值，等待情绪/量能/消息继续共振。"
-      },
-      {
-        "name": "证金汇金",
-        "canonical_name": "证金汇金",
-        "status": "observe_candidate",
-        "base_tide_status": "neutral",
-        "action": "watch",
-        "tide_zone": "neutral",
-        "tide_phase": "neutral",
-        "core_score": 68,
-        "ebb_score": 33,
-        "tide_score": 86,
-        "emotion_score": 66,
-        "strength_score": 56,
-        "volume_score": 72,
-        "news_score": 50,
-        "market_score": 59,
-        "structure_score": 74,
-        "confidence": "medium",
-        "confirms": {
-          "emotion": true,
-          "strength": false,
-          "volume": true,
-          "news": false,
-          "market": false
-        },
-        "reasons": [
-          "低位新启动",
-          "低位连板承接"
-        ],
-        "cautions": [
-          "市场退潮",
-          "高位负反馈"
-        ],
-        "action_hint": "证金汇金有观察价值，等待情绪/量能/消息继续共振。"
       },
       {
         "name": "边缘计算",
@@ -25315,6 +25280,41 @@
           "高位负反馈"
         ],
         "action_hint": "智能家居有观察价值，等待情绪/量能/消息继续共振。"
+      },
+      {
+        "name": "证金汇金",
+        "canonical_name": "证金汇金",
+        "status": "observe_candidate",
+        "base_tide_status": "neutral",
+        "action": "watch",
+        "tide_zone": "neutral",
+        "tide_phase": "neutral",
+        "core_score": 67,
+        "ebb_score": 34,
+        "tide_score": 85,
+        "emotion_score": 66,
+        "strength_score": 53,
+        "volume_score": 72,
+        "news_score": 50,
+        "market_score": 59,
+        "structure_score": 74,
+        "confidence": "low",
+        "confirms": {
+          "emotion": true,
+          "strength": false,
+          "volume": true,
+          "news": false,
+          "market": false
+        },
+        "reasons": [
+          "低位新启动",
+          "低位连板承接"
+        ],
+        "cautions": [
+          "市场退潮",
+          "高位负反馈"
+        ],
+        "action_hint": "证金汇金有观察价值，等待情绪/量能/消息继续共振。"
       },
       {
         "name": "充电桩",
@@ -25681,7 +25681,7 @@
         "tide_phase": "neutral",
         "core_score": 63,
         "ebb_score": 36,
-        "tide_score": 70,
+        "tide_score": 71,
         "emotion_score": 66,
         "strength_score": 56,
         "volume_score": 72,
@@ -36835,7 +36835,7 @@
             "zt_placement": "relay",
             "style_tag": "龙头博弈",
             "style_confidence": 92,
-            "relay_power_score": 77,
+            "relay_power_score": 78,
             "tide_status": "observe_candidate",
             "tide_adjust": 3
           }
@@ -37096,7 +37096,7 @@
             "zt_placement": "watch",
             "style_tag": "容量",
             "style_confidence": 78,
-            "relay_power_score": 59,
+            "relay_power_score": 60,
             "tide_status": "avoid_weak",
             "tide_adjust": -6
           }
@@ -37170,7 +37170,7 @@
             "zt_placement": "relay",
             "style_tag": "接力",
             "style_confidence": 82,
-            "relay_power_score": 76,
+            "relay_power_score": 77,
             "tide_status": "observe_candidate",
             "tide_adjust": 3
           },
