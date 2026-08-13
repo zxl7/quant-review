@@ -2,7 +2,7 @@
   "schema": "intraday_snapshot_v1",
   "render_mode": "snapshot_stream",
   "date": "2026-08-13",
-  "count": 19,
+  "count": 20,
   "interval_min": null,
   "simulated": false,
   "snapshots": [
@@ -1237,11 +1237,78 @@
       "shift_score": 68,
       "shift_label": "修复",
       "note": "情绪整体平稳，维持当前节奏。"
+    },
+    {
+      "time": "14:00:05",
+      "ts_bj": "2026-08-13 14:00:05",
+      "date": "2026-08-13",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid"
+      },
+      "pool_errors": {},
+      "zt": 68,
+      "dt": 1,
+      "zab": 25,
+      "zb": 26.9,
+      "fb": 73.1,
+      "jj": 32.4,
+      "lianban": 22,
+      "max_lb": 5,
+      "amount": "10824.1亿",
+      "bf": 0,
+      "heat": 60,
+      "risk": 28,
+      "headline": "修复",
+      "concepts": [
+        {
+          "name": "医疗服务",
+          "lead": "澳洋健康",
+          "chg_pct": null
+        },
+        {
+          "name": "电力",
+          "lead": "惠天热电",
+          "chg_pct": null
+        },
+        {
+          "name": "汽车零部",
+          "lead": "秦安股份",
+          "chg_pct": null
+        },
+        {
+          "name": "房地产开",
+          "lead": "京投发展",
+          "chg_pct": null
+        },
+        {
+          "name": "消费电子",
+          "lead": "华勤技术",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        },
+        {
+          "level": "warn",
+          "text": "炸板率偏高（26.9%）→ 注意回封质量"
+        }
+      ],
+      "shift_score": 65,
+      "shift_label": "修复",
+      "note": "情绪略有回落，注意午后分歧。"
     }
   ],
   "latest": {
-    "time": "13:50:06",
-    "ts_bj": "2026-08-13 13:50:06",
+    "time": "14:00:05",
+    "ts_bj": "2026-08-13 14:00:05",
     "date": "2026-08-13",
     "source": "intraday_live",
     "provider": "必盈(实时)+必盈(实时)",
@@ -1252,18 +1319,18 @@
       "dtgc": "valid"
     },
     "pool_errors": {},
-    "zt": 71,
+    "zt": 68,
     "dt": 1,
-    "zab": 21,
-    "zb": 22.8,
-    "fb": 77.2,
-    "jj": 31.0,
+    "zab": 25,
+    "zb": 26.9,
+    "fb": 73.1,
+    "jj": 32.4,
     "lianban": 22,
     "max_lb": 5,
-    "amount": "19239.3亿",
+    "amount": "10824.1亿",
     "bf": 0,
-    "heat": 62,
-    "risk": 23,
+    "heat": 60,
+    "risk": 28,
     "headline": "修复",
     "concepts": [
       {
@@ -1282,13 +1349,13 @@
         "chg_pct": null
       },
       {
-        "name": "通信设备",
-        "lead": "剑桥科技",
+        "name": "房地产开",
+        "lead": "京投发展",
         "chg_pct": null
       },
       {
-        "name": "房地产开",
-        "lead": "京投发展",
+        "name": "消费电子",
+        "lead": "华勤技术",
         "chg_pct": null
       }
     ],
@@ -1296,17 +1363,21 @@
       {
         "level": "info",
         "text": "盘中模式：强制实时拉取"
+      },
+      {
+        "level": "warn",
+        "text": "炸板率偏高（26.9%）→ 注意回封质量"
       }
     ],
-    "shift_score": 68,
+    "shift_score": 65,
     "shift_label": "修复",
-    "note": "情绪整体平稳，维持当前节奏。"
+    "note": "情绪略有回落，注意午后分歧。"
   },
-  "updated_at": "2026-08-13 13:50:06",
-  "snapshot_sig": "2026-08-13|2026-08-13 13:50:06|19",
+  "updated_at": "2026-08-13 14:00:05",
+  "snapshot_sig": "2026-08-13|2026-08-13 14:00:05|20",
   "health": {
     "status": "valid",
-    "last_valid_at": "2026-08-13 13:50:06",
+    "last_valid_at": "2026-08-13 14:00:05",
     "rejected_reason": "",
     "source": {
       "status": "valid",
