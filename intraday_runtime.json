@@ -1,11 +1,11 @@
 {
   "schema": "intraday_runtime_v1",
   "date": "2026-08-13",
-  "updated_at": "2026-08-13 11:30:04",
+  "updated_at": "2026-08-13 13:00:22",
   "source": "必盈(实时)+必盈(实时)",
   "latest": {
-    "time": "11:30:04",
-    "ts_bj": "2026-08-13 11:30:04",
+    "time": "13:00:22",
+    "ts_bj": "2026-08-13 13:00:22",
     "date": "2026-08-13",
     "source": "intraday_live",
     "provider": "必盈(实时)+必盈(实时)",
@@ -24,7 +24,7 @@
     "jj": 37.0,
     "lianban": 20,
     "max_lb": 5,
-    "amount": "15894.6亿",
+    "amount": "16009.3亿",
     "bf": 0,
     "heat": 58,
     "risk": 26,
@@ -916,40 +916,107 @@
       "shift_score": 65,
       "shift_label": "修复",
       "note": "情绪整体平稳，维持当前节奏。"
+    },
+    {
+      "time": "13:00:22",
+      "ts_bj": "2026-08-13 13:00:22",
+      "date": "2026-08-13",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid_empty"
+      },
+      "pool_errors": {},
+      "zt": 54,
+      "dt": 0,
+      "zab": 22,
+      "zb": 28.9,
+      "fb": 71.1,
+      "jj": 37.0,
+      "lianban": 20,
+      "max_lb": 5,
+      "amount": "16009.3亿",
+      "bf": 0,
+      "heat": 58,
+      "risk": 26,
+      "headline": "修复",
+      "concepts": [
+        {
+          "name": "医疗服务",
+          "lead": "澳洋健康",
+          "chg_pct": null
+        },
+        {
+          "name": "汽车零部",
+          "lead": "秦安股份",
+          "chg_pct": null
+        },
+        {
+          "name": "电力",
+          "lead": "惠天热电",
+          "chg_pct": null
+        },
+        {
+          "name": "饮料乳品",
+          "lead": "一鸣食品",
+          "chg_pct": null
+        },
+        {
+          "name": "通用设备",
+          "lead": "蓝盾光电",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        },
+        {
+          "level": "warn",
+          "text": "炸板率偏高（28.9%）→ 注意回封质量"
+        }
+      ],
+      "shift_score": 65,
+      "shift_label": "修复",
+      "note": "情绪整体平稳，维持当前节奏。"
     }
   ],
   "indices": [
     {
       "name": "上证指数",
       "code": "000001.SH",
-      "val": 3963.152,
-      "chg": 0.4174906725281372,
-      "cje": 724396255500.0,
-      "t": "2026-08-13 11:30:03"
+      "val": 3963.727,
+      "chg": 0.43205989852216564,
+      "cje": 729232672100.0,
+      "t": "2026-08-13 13:00:21"
     },
     {
       "name": "深证成指",
       "code": "399001.SZ",
-      "val": 14521.771,
-      "chg": 0.7446983497852601,
-      "cje": 864984669200.0,
-      "t": "2026-08-13 11:29:57"
+      "val": 14535.47,
+      "chg": 0.8397350793063066,
+      "cje": 870930255700.0,
+      "t": "2026-08-13 13:00:15"
     },
     {
       "name": "创业板指",
       "code": "399006.SZ",
-      "val": 3660.406,
-      "chg": 1.619118265981585,
-      "cje": 424572640200.0,
-      "t": "2026-08-13 11:29:57"
+      "val": 3666.08,
+      "chg": 1.7766381905585795,
+      "cje": 427402392200.0,
+      "t": "2026-08-13 13:00:15"
     }
   ],
   "asOf": {
-    "indices": "11:29:57"
+    "indices": "13:00:15"
   },
   "health": {
     "status": "valid",
-    "last_valid_at": "2026-08-13 11:30:04",
+    "last_valid_at": "2026-08-13 13:00:22",
     "rejected_reason": "",
     "source": {
       "status": "valid",
@@ -967,8 +1034,8 @@
       "message": "intraday_coverage_collecting",
       "date": "2026-08-13",
       "expected_count": 26,
-      "due_count": 13,
-      "observed_count": 13,
+      "due_count": 14,
+      "observed_count": 14,
       "observed_slots": [
         "09:30",
         "09:40",
@@ -982,14 +1049,15 @@
         "11:00",
         "11:10",
         "11:20",
-        "11:30"
+        "11:30",
+        "13:00"
       ],
       "missing_slots": [],
       "duplicate_slots": [],
       "out_of_session": [],
       "monotonic": true,
       "morning_coverage": 13,
-      "afternoon_coverage": 0
+      "afternoon_coverage": 1
     }
   },
   "live": {
@@ -1000,7 +1068,7 @@
       "zab_rate": 28.9,
       "lianban": 20,
       "max_lianban": 5,
-      "amount": "15894.6亿"
+      "amount": "16009.3亿"
     },
     "alerts": [
       {
