@@ -4,12 +4,12 @@
   "meta": {
     "asOf": {
       "indices": "11:30:03",
-      "pools": "11:34:43",
-      "themes": "11:34:43",
+      "pools": "11:44:06",
+      "themes": "11:44:06",
       "plate_rotate": "2026-08-12"
     },
     "version": "1.0",
-    "generatedAt": "2026-08-13 11:34:43"
+    "generatedAt": "2026-08-13 11:44:06"
   },
   "indices": [
     {
@@ -260,7 +260,7 @@
         "riskClass": "orange-text"
       },
       {
-        "name": "海上风电",
+        "name": "光伏玻璃",
         "zt": 4,
         "zb": 0,
         "dt": 0,
@@ -280,7 +280,7 @@
         "riskClass": "green-text"
       },
       {
-        "name": "光伏玻璃",
+        "name": "海上风电",
         "zt": 4,
         "zb": 0,
         "dt": 0,
@@ -18598,7 +18598,7 @@
     }
   ],
   "moodSignals": {
-    "updatedAt": "2026-08-13 11:34:43",
+    "updatedAt": "2026-08-13 11:44:06",
     "headline": "震荡中性，等待确认点",
     "pos": [
       {
@@ -24205,9 +24205,10 @@
         "2026-08-06",
         "2026-08-07",
         "2026-08-10",
-        "2026-08-11"
+        "2026-08-11",
+        "2026-08-12"
       ],
-      "generated_at_bj": "2026-08-13 11:46:23",
+      "generated_at_bj": "2026-08-13 12:01:33",
       "generated_from": [
         "ztAnalysis.relay/watch.close_push",
         "ztAnalysis.relay/watch.close_push",
@@ -24265,24 +24266,24 @@
       "source_module": "ztAnalysis.relay/watch",
       "latest_recommendation_date": "2026-08-12",
       "active_trade_date": "2026-08-13",
-      "latest_closed_trade_date": "2026-08-12",
-      "latest_closed_recommendation_date": "2026-08-11",
+      "latest_closed_trade_date": "2026-08-13",
+      "latest_closed_recommendation_date": "2026-08-12",
       "default_display_trade_date": "2026-08-13",
       "default_display_recommendation_date": "2026-08-12",
       "has_pending_next_trade_day": false
     },
     "summary": {
-      "total_samples": 438,
+      "total_samples": 446,
       "source_samples": 454,
-      "filtered_non_backtest_samples": 16,
-      "eligible_samples": 238,
-      "expected_count": 92,
+      "filtered_non_backtest_samples": 8,
+      "eligible_samples": 239,
+      "expected_count": 93,
       "super_count": 146,
-      "pending_count": 123,
-      "wait_reseal_count": 123,
-      "rejected_count": 77,
+      "pending_count": 127,
+      "wait_reseal_count": 127,
+      "rejected_count": 80,
       "unique_codes": 283,
-      "trade_days": 47,
+      "trade_days": 48,
       "priced_codes": 281,
       "missing_price_codes": [
         "000003",
@@ -24309,11 +24310,11 @@
       "by_bucket": [
         {
           "name": "relay",
-          "count": 66
+          "count": 68
         },
         {
           "name": "watch",
-          "count": 372
+          "count": 378
         }
       ],
       "by_open_status": [
@@ -24323,15 +24324,15 @@
         },
         {
           "name": "pending",
-          "count": 123
+          "count": 127
         },
         {
           "name": "reject",
-          "count": 77
+          "count": 80
         },
         {
           "name": "expected",
-          "count": 92
+          "count": 93
         }
       ],
       "by_mainline": [
@@ -24348,12 +24349,12 @@
           "count": 25
         },
         {
-          "name": "新材料",
+          "name": "机器人概念",
           "count": 20
         },
         {
-          "name": "机器人概念",
-          "count": 19
+          "name": "新材料",
+          "count": 20
         },
         {
           "name": "芯片概念",
@@ -24705,6 +24706,13 @@
           "expected": 5,
           "pending": 0,
           "reject": 2
+        },
+        {
+          "date": "2026-08-12",
+          "super": 0,
+          "expected": 1,
+          "pending": 4,
+          "reject": 3
         }
       ]
     },
@@ -24713,20 +24721,20 @@
         "key": "next_day",
         "label": "隔日收益",
         "status": "ready",
-        "covered": 238,
-        "total": 438,
-        "eligible": 238,
+        "covered": 239,
+        "total": 446,
+        "eligible": 239,
         "coverage": 100.0,
         "pending": 0,
         "missing": 0,
         "skipped": 0,
         "win_count": 127,
         "flat_count": 1,
-        "loss_count": 110,
-        "win_rate": 53.4,
-        "avg_return": 0.67,
+        "loss_count": 111,
+        "win_rate": 53.1,
+        "avg_return": 0.66,
         "avg_win_return": 5.05,
-        "avg_loss_return": -4.37,
+        "avg_loss_return": -4.35,
         "by_open_status": {
           "super": {
             "covered": 146,
@@ -24734,9 +24742,9 @@
             "avg_return": 0.06
           },
           "expected": {
-            "covered": 92,
-            "win_rate": 53.3,
-            "avg_return": 1.65
+            "covered": 93,
+            "win_rate": 52.7,
+            "avg_return": 1.61
           },
           "reject": {
             "covered": 0,
@@ -24747,21 +24755,21 @@
         "scopes": {
           "all": {
             "status": "ready",
-            "covered": 238,
-            "total": 438,
-            "base_total": 438,
-            "eligible": 438,
-            "coverage": 54.3,
+            "covered": 239,
+            "total": 446,
+            "base_total": 446,
+            "eligible": 446,
+            "coverage": 53.6,
             "pending": 0,
             "missing": 0,
-            "skipped": 200,
+            "skipped": 207,
             "win_count": 127,
             "flat_count": 1,
-            "loss_count": 110,
-            "win_rate": 53.4,
-            "avg_return": 0.67,
+            "loss_count": 111,
+            "win_rate": 53.1,
+            "avg_return": 0.66,
             "avg_win_return": 5.05,
-            "avg_loss_return": -4.37,
+            "avg_loss_return": -4.35,
             "by_open_status": {
               "super": {
                 "covered": 146,
@@ -24769,9 +24777,9 @@
                 "avg_return": 0.06
               },
               "expected": {
-                "covered": 92,
-                "win_rate": 53.3,
-                "avg_return": 1.65
+                "covered": 93,
+                "win_rate": 52.7,
+                "avg_return": 1.61
               },
               "reject": {
                 "covered": 0,
@@ -24782,21 +24790,21 @@
           },
           "tradable": {
             "status": "ready",
-            "covered": 238,
-            "total": 238,
-            "base_total": 438,
-            "eligible": 238,
+            "covered": 239,
+            "total": 239,
+            "base_total": 446,
+            "eligible": 239,
             "coverage": 100.0,
             "pending": 0,
             "missing": 0,
             "skipped": 0,
             "win_count": 127,
             "flat_count": 1,
-            "loss_count": 110,
-            "win_rate": 53.4,
-            "avg_return": 0.67,
+            "loss_count": 111,
+            "win_rate": 53.1,
+            "avg_return": 0.66,
             "avg_win_return": 5.05,
-            "avg_loss_return": -4.37,
+            "avg_loss_return": -4.35,
             "by_open_status": {
               "super": {
                 "covered": 146,
@@ -24804,9 +24812,9 @@
                 "avg_return": 0.06
               },
               "expected": {
-                "covered": 92,
-                "win_rate": 53.3,
-                "avg_return": 1.65
+                "covered": 93,
+                "win_rate": 52.7,
+                "avg_return": 1.61
               },
               "reject": {
                 "covered": 0,
@@ -24822,20 +24830,20 @@
         "key": "hold_2d",
         "label": "2日收益",
         "status": "ready",
-        "covered": 231,
-        "total": 438,
-        "eligible": 238,
+        "covered": 232,
+        "total": 446,
+        "eligible": 239,
         "coverage": 97.1,
         "pending": 7,
         "missing": 0,
         "skipped": 0,
         "win_count": 113,
         "flat_count": 2,
-        "loss_count": 116,
-        "win_rate": 48.9,
-        "avg_return": 0.01,
+        "loss_count": 117,
+        "win_rate": 48.7,
+        "avg_return": -0.01,
         "avg_win_return": 7.14,
-        "avg_loss_return": -6.94,
+        "avg_loss_return": -6.92,
         "by_open_status": {
           "super": {
             "covered": 144,
@@ -24843,9 +24851,9 @@
             "avg_return": -0.56
           },
           "expected": {
-            "covered": 87,
-            "win_rate": 50.6,
-            "avg_return": 0.94
+            "covered": 88,
+            "win_rate": 50.0,
+            "avg_return": 0.88
           },
           "reject": {
             "covered": 0,
@@ -24856,21 +24864,21 @@
         "scopes": {
           "all": {
             "status": "ready",
-            "covered": 231,
-            "total": 438,
-            "base_total": 438,
-            "eligible": 438,
-            "coverage": 52.7,
+            "covered": 232,
+            "total": 446,
+            "base_total": 446,
+            "eligible": 446,
+            "coverage": 52.0,
             "pending": 7,
             "missing": 0,
-            "skipped": 200,
+            "skipped": 207,
             "win_count": 113,
             "flat_count": 2,
-            "loss_count": 116,
-            "win_rate": 48.9,
-            "avg_return": 0.01,
+            "loss_count": 117,
+            "win_rate": 48.7,
+            "avg_return": -0.01,
             "avg_win_return": 7.14,
-            "avg_loss_return": -6.94,
+            "avg_loss_return": -6.92,
             "by_open_status": {
               "super": {
                 "covered": 144,
@@ -24878,9 +24886,9 @@
                 "avg_return": -0.56
               },
               "expected": {
-                "covered": 87,
-                "win_rate": 50.6,
-                "avg_return": 0.94
+                "covered": 88,
+                "win_rate": 50.0,
+                "avg_return": 0.88
               },
               "reject": {
                 "covered": 0,
@@ -24891,21 +24899,21 @@
           },
           "tradable": {
             "status": "ready",
-            "covered": 231,
-            "total": 238,
-            "base_total": 438,
-            "eligible": 238,
+            "covered": 232,
+            "total": 239,
+            "base_total": 446,
+            "eligible": 239,
             "coverage": 97.1,
             "pending": 7,
             "missing": 0,
             "skipped": 0,
             "win_count": 113,
             "flat_count": 2,
-            "loss_count": 116,
-            "win_rate": 48.9,
-            "avg_return": 0.01,
+            "loss_count": 117,
+            "win_rate": 48.7,
+            "avg_return": -0.01,
             "avg_win_return": 7.14,
-            "avg_loss_return": -6.94,
+            "avg_loss_return": -6.92,
             "by_open_status": {
               "super": {
                 "covered": 144,
@@ -24913,9 +24921,9 @@
                 "avg_return": -0.56
               },
               "expected": {
-                "covered": 87,
-                "win_rate": 50.6,
-                "avg_return": 0.94
+                "covered": 88,
+                "win_rate": 50.0,
+                "avg_return": 0.88
               },
               "reject": {
                 "covered": 0,
@@ -24931,30 +24939,30 @@
         "key": "hold_3d",
         "label": "3日收益",
         "status": "ready",
-        "covered": 224,
-        "total": 438,
-        "eligible": 238,
-        "coverage": 94.1,
-        "pending": 14,
+        "covered": 228,
+        "total": 446,
+        "eligible": 239,
+        "coverage": 95.4,
+        "pending": 11,
         "missing": 0,
         "skipped": 0,
-        "win_count": 102,
+        "win_count": 104,
         "flat_count": 0,
-        "loss_count": 122,
-        "win_rate": 45.5,
-        "avg_return": -0.79,
-        "avg_win_return": 8.39,
-        "avg_loss_return": -8.47,
+        "loss_count": 124,
+        "win_rate": 45.6,
+        "avg_return": -0.71,
+        "avg_win_return": 8.4,
+        "avg_loss_return": -8.35,
         "by_open_status": {
           "super": {
-            "covered": 139,
-            "win_rate": 45.3,
-            "avg_return": -1.23
+            "covered": 142,
+            "win_rate": 45.1,
+            "avg_return": -1.15
           },
           "expected": {
-            "covered": 85,
-            "win_rate": 45.9,
-            "avg_return": -0.08
+            "covered": 86,
+            "win_rate": 46.5,
+            "avg_return": 0.01
           },
           "reject": {
             "covered": 0,
@@ -24965,31 +24973,31 @@
         "scopes": {
           "all": {
             "status": "ready",
-            "covered": 224,
-            "total": 438,
-            "base_total": 438,
-            "eligible": 438,
+            "covered": 228,
+            "total": 446,
+            "base_total": 446,
+            "eligible": 446,
             "coverage": 51.1,
-            "pending": 14,
+            "pending": 11,
             "missing": 0,
-            "skipped": 200,
-            "win_count": 102,
+            "skipped": 207,
+            "win_count": 104,
             "flat_count": 0,
-            "loss_count": 122,
-            "win_rate": 45.5,
-            "avg_return": -0.79,
-            "avg_win_return": 8.39,
-            "avg_loss_return": -8.47,
+            "loss_count": 124,
+            "win_rate": 45.6,
+            "avg_return": -0.71,
+            "avg_win_return": 8.4,
+            "avg_loss_return": -8.35,
             "by_open_status": {
               "super": {
-                "covered": 139,
-                "win_rate": 45.3,
-                "avg_return": -1.23
+                "covered": 142,
+                "win_rate": 45.1,
+                "avg_return": -1.15
               },
               "expected": {
-                "covered": 85,
-                "win_rate": 45.9,
-                "avg_return": -0.08
+                "covered": 86,
+                "win_rate": 46.5,
+                "avg_return": 0.01
               },
               "reject": {
                 "covered": 0,
@@ -25000,31 +25008,31 @@
           },
           "tradable": {
             "status": "ready",
-            "covered": 224,
-            "total": 238,
-            "base_total": 438,
-            "eligible": 238,
-            "coverage": 94.1,
-            "pending": 14,
+            "covered": 228,
+            "total": 239,
+            "base_total": 446,
+            "eligible": 239,
+            "coverage": 95.4,
+            "pending": 11,
             "missing": 0,
             "skipped": 0,
-            "win_count": 102,
+            "win_count": 104,
             "flat_count": 0,
-            "loss_count": 122,
-            "win_rate": 45.5,
-            "avg_return": -0.79,
-            "avg_win_return": 8.39,
-            "avg_loss_return": -8.47,
+            "loss_count": 124,
+            "win_rate": 45.6,
+            "avg_return": -0.71,
+            "avg_win_return": 8.4,
+            "avg_loss_return": -8.35,
             "by_open_status": {
               "super": {
-                "covered": 139,
-                "win_rate": 45.3,
-                "avg_return": -1.23
+                "covered": 142,
+                "win_rate": 45.1,
+                "avg_return": -1.15
               },
               "expected": {
-                "covered": 85,
-                "win_rate": 45.9,
-                "avg_return": -0.08
+                "covered": 86,
+                "win_rate": 46.5,
+                "avg_return": 0.01
               },
               "reject": {
                 "covered": 0,
@@ -25050,9 +25058,9 @@
       "has_realtime_snapshot": true,
       "latest_recommendation_date": "2026-08-12",
       "active_trade_date": "2026-08-13",
-      "latest_historical_recommendation_date": "2026-08-11",
-      "latest_closed_trade_date": "2026-08-12",
-      "latest_closed_recommendation_date": "2026-08-11",
+      "latest_historical_recommendation_date": "2026-08-12",
+      "latest_closed_trade_date": "2026-08-13",
+      "latest_closed_recommendation_date": "2026-08-12",
       "default_display_trade_date": "2026-08-13",
       "default_display_recommendation_date": "2026-08-12",
       "has_pending_next_trade_day": false,
@@ -25805,28 +25813,34 @@
             "status": "pending",
             "label": "谨慎接力",
             "gap_pct": 7.28,
-            "note": "竞价涨幅 +7.28% 大于 5% ，属于高开过猛，先观察承接，不直接买入。",
+            "note": "开盘高开 +7.28% 大于 5% ，先观察承接，不按固定买入直接入场。",
             "can_enter": false,
             "prev_close": 12.91,
             "open_price": 13.85,
-            "close_price": null,
-            "close_pct": null,
-            "gap_trap": false
+            "close_price": 13.64,
+            "close_pct": 5.65,
+            "gap_trap": true
           },
           "next_day": {
-            "status": "pending",
-            "label": "隔日收益",
-            "note": "已拿到 9:25 开盘判断，待收盘后补齐收益表现。"
+            "status": "skipped",
+            "label": "未入场",
+            "note": "开盘高开 +7.28% 大于 5% ，先观察承接，不按固定买入直接入场。",
+            "gap_pct": 7.28,
+            "gap_trap": true
           },
           "hold_2d": {
-            "status": "pending",
-            "label": "2日收益",
-            "note": "已拿到 9:25 开盘判断，待收盘后补齐收益表现。"
+            "status": "skipped",
+            "label": "未入场",
+            "note": "开盘高开 +7.28% 大于 5% ，先观察承接，不按固定买入直接入场。",
+            "gap_pct": 7.28,
+            "gap_trap": true
           },
           "hold_3d": {
-            "status": "pending",
-            "label": "3日收益",
-            "note": "已拿到 9:25 开盘判断，待收盘后补齐收益表现。"
+            "status": "skipped",
+            "label": "未入场",
+            "note": "开盘高开 +7.28% 大于 5% ，先观察承接，不按固定买入直接入场。",
+            "gap_pct": 7.28,
+            "gap_trap": true
           }
         },
         "prev_close": 12.91,
@@ -25913,28 +25927,34 @@
             "status": "reject",
             "label": "低于预期",
             "gap_pct": 3.27,
-            "note": "竞价涨幅 +3.27%，未落在预期区间或超预期范围。",
+            "note": "低于+4%% 或 竞价量能",
             "can_enter": false,
             "prev_close": 6.42,
             "open_price": 6.63,
-            "close_price": null,
-            "close_pct": null,
-            "gap_trap": false
+            "close_price": 6.45,
+            "close_pct": 0.47,
+            "gap_trap": true
           },
           "next_day": {
-            "status": "pending",
-            "label": "隔日收益",
-            "note": "已拿到 9:25 开盘判断，待收盘后补齐收益表现。"
+            "status": "skipped",
+            "label": "未入场",
+            "note": "低于+4%% 或 竞价量能",
+            "gap_pct": 3.27,
+            "gap_trap": true
           },
           "hold_2d": {
-            "status": "pending",
-            "label": "2日收益",
-            "note": "已拿到 9:25 开盘判断，待收盘后补齐收益表现。"
+            "status": "skipped",
+            "label": "未入场",
+            "note": "低于+4%% 或 竞价量能",
+            "gap_pct": 3.27,
+            "gap_trap": true
           },
           "hold_3d": {
-            "status": "pending",
-            "label": "3日收益",
-            "note": "已拿到 9:25 开盘判断，待收盘后补齐收益表现。"
+            "status": "skipped",
+            "label": "未入场",
+            "note": "低于+4%% 或 竞价量能",
+            "gap_pct": 3.27,
+            "gap_trap": true
           }
         },
         "prev_close": 6.42,
@@ -26126,31 +26146,37 @@
         "daily_rank": 4,
         "performance": {
           "open_check": {
-            "status": "unavailable",
-            "label": "无法判断",
-            "gap_pct": null,
-            "note": "未拿到 9:25 实时报价，当前不生成买入信号。",
+            "status": "pending",
+            "label": "谨慎接力",
+            "gap_pct": 10.02,
+            "note": "开盘高开 +10.02% 大于 5% ，先观察承接，不按固定买入直接入场。",
             "can_enter": false,
-            "prev_close": null,
-            "open_price": null,
-            "close_price": null,
-            "close_pct": null,
+            "prev_close": 5.69,
+            "open_price": 6.26,
+            "close_price": 6.26,
+            "close_pct": 10.02,
             "gap_trap": false
           },
           "next_day": {
-            "status": "pending",
-            "label": "隔日收益",
-            "note": "已拿到 9:25 开盘判断，待收盘后补齐收益表现。"
+            "status": "skipped",
+            "label": "未入场",
+            "note": "开盘高开 +10.02% 大于 5% ，先观察承接，不按固定买入直接入场。",
+            "gap_pct": 10.02,
+            "gap_trap": false
           },
           "hold_2d": {
-            "status": "pending",
-            "label": "2日收益",
-            "note": "已拿到 9:25 开盘判断，待收盘后补齐收益表现。"
+            "status": "skipped",
+            "label": "未入场",
+            "note": "开盘高开 +10.02% 大于 5% ，先观察承接，不按固定买入直接入场。",
+            "gap_pct": 10.02,
+            "gap_trap": false
           },
           "hold_3d": {
-            "status": "pending",
-            "label": "3日收益",
-            "note": "已拿到 9:25 开盘判断，待收盘后补齐收益表现。"
+            "status": "skipped",
+            "label": "未入场",
+            "note": "开盘高开 +10.02% 大于 5% ，先观察承接，不按固定买入直接入场。",
+            "gap_pct": 10.02,
+            "gap_trap": false
           }
         },
         "auction_amount_need_yi": 0.0,
@@ -26227,31 +26253,37 @@
         "daily_rank": 5,
         "performance": {
           "open_check": {
-            "status": "unavailable",
-            "label": "无法判断",
-            "gap_pct": null,
-            "note": "未拿到 9:25 实时报价，当前不生成买入信号。",
+            "status": "pending",
+            "label": "谨慎接力",
+            "gap_pct": 10.07,
+            "note": "开盘高开 +10.07% 大于 5% ，先观察承接，不按固定买入直接入场。",
             "can_enter": false,
-            "prev_close": null,
-            "open_price": null,
-            "close_price": null,
-            "close_pct": null,
+            "prev_close": 4.37,
+            "open_price": 4.81,
+            "close_price": 4.81,
+            "close_pct": 10.07,
             "gap_trap": false
           },
           "next_day": {
-            "status": "pending",
-            "label": "隔日收益",
-            "note": "已拿到 9:25 开盘判断，待收盘后补齐收益表现。"
+            "status": "skipped",
+            "label": "未入场",
+            "note": "开盘高开 +10.07% 大于 5% ，先观察承接，不按固定买入直接入场。",
+            "gap_pct": 10.07,
+            "gap_trap": false
           },
           "hold_2d": {
-            "status": "pending",
-            "label": "2日收益",
-            "note": "已拿到 9:25 开盘判断，待收盘后补齐收益表现。"
+            "status": "skipped",
+            "label": "未入场",
+            "note": "开盘高开 +10.07% 大于 5% ，先观察承接，不按固定买入直接入场。",
+            "gap_pct": 10.07,
+            "gap_trap": false
           },
           "hold_3d": {
-            "status": "pending",
-            "label": "3日收益",
-            "note": "已拿到 9:25 开盘判断，待收盘后补齐收益表现。"
+            "status": "skipped",
+            "label": "未入场",
+            "note": "开盘高开 +10.07% 大于 5% ，先观察承接，不按固定买入直接入场。",
+            "gap_pct": 10.07,
+            "gap_trap": false
           }
         },
         "auction_amount_need_yi": 0.0,
@@ -26331,28 +26363,40 @@
             "status": "expected",
             "label": "符合预期",
             "gap_pct": 0.18,
-            "note": "竞价涨幅 +0.18% 落在预期区间 -1.00%~+1.00%，按计划买入。",
+            "note": "平开（-1%~+1%%）+ 竞价量能≥0.15亿",
             "can_enter": true,
             "prev_close": 5.42,
             "open_price": 5.43,
-            "close_price": null,
-            "close_pct": null,
-            "gap_trap": false
+            "close_price": 5.31,
+            "close_pct": -2.03,
+            "gap_trap": true
           },
           "next_day": {
-            "status": "pending",
+            "status": "covered",
             "label": "隔日收益",
-            "note": "已拿到 9:25 开盘判断，待收盘后补齐收益表现。"
+            "entry_date": "2026-08-13",
+            "exit_date": "2026-08-13",
+            "entry_open": 5.43,
+            "exit_close": 5.31,
+            "return_pct": -2.21,
+            "win": false,
+            "flat": false,
+            "loss": true,
+            "days_after_pick": 1
           },
           "hold_2d": {
             "status": "pending",
             "label": "2日收益",
-            "note": "已拿到 9:25 开盘判断，待收盘后补齐收益表现。"
+            "entry_date": "2026-08-13",
+            "note": "当前仅拿到 1 个后续交易日，尚不足以计算 T+2",
+            "gap_trap": true
           },
           "hold_3d": {
             "status": "pending",
             "label": "3日收益",
-            "note": "已拿到 9:25 开盘判断，待收盘后补齐收益表现。"
+            "entry_date": "2026-08-13",
+            "note": "当前仅拿到 1 个后续交易日，尚不足以计算 T+3",
+            "gap_trap": true
           }
         },
         "prev_close": 5.42,
@@ -26439,28 +26483,34 @@
             "status": "reject",
             "label": "低于预期",
             "gap_pct": -1.8,
-            "note": "竞价涨幅 -1.80%，未落在预期区间或超预期范围。",
+            "note": "低于-1%% 或 竞价量能",
             "can_enter": false,
             "prev_close": 4.44,
             "open_price": 4.36,
-            "close_price": null,
-            "close_pct": null,
+            "close_price": 4.88,
+            "close_pct": 9.91,
             "gap_trap": false
           },
           "next_day": {
-            "status": "pending",
-            "label": "隔日收益",
-            "note": "已拿到 9:25 开盘判断，待收盘后补齐收益表现。"
+            "status": "skipped",
+            "label": "未入场",
+            "note": "低于-1%% 或 竞价量能",
+            "gap_pct": -1.8,
+            "gap_trap": false
           },
           "hold_2d": {
-            "status": "pending",
-            "label": "2日收益",
-            "note": "已拿到 9:25 开盘判断，待收盘后补齐收益表现。"
+            "status": "skipped",
+            "label": "未入场",
+            "note": "低于-1%% 或 竞价量能",
+            "gap_pct": -1.8,
+            "gap_trap": false
           },
           "hold_3d": {
-            "status": "pending",
-            "label": "3日收益",
-            "note": "已拿到 9:25 开盘判断，待收盘后补齐收益表现。"
+            "status": "skipped",
+            "label": "未入场",
+            "note": "低于-1%% 或 竞价量能",
+            "gap_pct": -1.8,
+            "gap_trap": false
           }
         },
         "prev_close": 4.44,
@@ -26655,28 +26705,34 @@
             "status": "reject",
             "label": "低于预期",
             "gap_pct": -2.14,
-            "note": "竞价涨幅 -2.14%，未落在预期区间或超预期范围。",
+            "note": "低于+0%% 或 竞价量能",
             "can_enter": false,
             "prev_close": 12.17,
             "open_price": 11.91,
-            "close_price": null,
-            "close_pct": null,
+            "close_price": 12.24,
+            "close_pct": 0.58,
             "gap_trap": false
           },
           "next_day": {
-            "status": "pending",
-            "label": "隔日收益",
-            "note": "已拿到 9:25 开盘判断，待收盘后补齐收益表现。"
+            "status": "skipped",
+            "label": "未入场",
+            "note": "低于+0%% 或 竞价量能",
+            "gap_pct": -2.14,
+            "gap_trap": false
           },
           "hold_2d": {
-            "status": "pending",
-            "label": "2日收益",
-            "note": "已拿到 9:25 开盘判断，待收盘后补齐收益表现。"
+            "status": "skipped",
+            "label": "未入场",
+            "note": "低于+0%% 或 竞价量能",
+            "gap_pct": -2.14,
+            "gap_trap": false
           },
           "hold_3d": {
-            "status": "pending",
-            "label": "3日收益",
-            "note": "已拿到 9:25 开盘判断，待收盘后补齐收益表现。"
+            "status": "skipped",
+            "label": "未入场",
+            "note": "低于+0%% 或 竞价量能",
+            "gap_pct": -2.14,
+            "gap_trap": false
           }
         },
         "prev_close": 12.17,
@@ -26763,28 +26819,34 @@
             "status": "pending",
             "label": "谨慎接力",
             "gap_pct": 10.0,
-            "note": "竞价涨幅 +10.00% 大于 5% ，属于高开过猛，先观察承接，不直接买入。",
+            "note": "开盘高开 +10.00% 大于 5% ，先观察承接，不按固定买入直接入场。",
             "can_enter": false,
             "prev_close": 4.2,
             "open_price": 4.62,
-            "close_price": null,
-            "close_pct": null,
+            "close_price": 4.62,
+            "close_pct": 10.0,
             "gap_trap": false
           },
           "next_day": {
-            "status": "pending",
-            "label": "隔日收益",
-            "note": "已拿到 9:25 开盘判断，待收盘后补齐收益表现。"
+            "status": "skipped",
+            "label": "未入场",
+            "note": "开盘高开 +10.00% 大于 5% ，先观察承接，不按固定买入直接入场。",
+            "gap_pct": 10.0,
+            "gap_trap": false
           },
           "hold_2d": {
-            "status": "pending",
-            "label": "2日收益",
-            "note": "已拿到 9:25 开盘判断，待收盘后补齐收益表现。"
+            "status": "skipped",
+            "label": "未入场",
+            "note": "开盘高开 +10.00% 大于 5% ，先观察承接，不按固定买入直接入场。",
+            "gap_pct": 10.0,
+            "gap_trap": false
           },
           "hold_3d": {
-            "status": "pending",
-            "label": "3日收益",
-            "note": "已拿到 9:25 开盘判断，待收盘后补齐收益表现。"
+            "status": "skipped",
+            "label": "未入场",
+            "note": "开盘高开 +10.00% 大于 5% ，先观察承接，不按固定买入直接入场。",
+            "gap_pct": 10.0,
+            "gap_trap": false
           }
         },
         "prev_close": 4.2,
@@ -27601,24 +27663,37 @@
         "daily_rank": 1,
         "performance": {
           "open_check": {
-            "status": "missing",
-            "label": "无后续价格",
-            "note": "推荐日后没有可用交易日价格"
+            "status": "pending",
+            "label": "谨慎接力",
+            "gap_pct": 7.28,
+            "note": "开盘高开 +7.28% 大于 5% ，先观察承接，不按固定买入直接入场。",
+            "can_enter": false,
+            "prev_close": 12.91,
+            "open_price": 13.85,
+            "close_price": 13.64,
+            "close_pct": 5.65,
+            "gap_trap": true
           },
           "next_day": {
-            "status": "missing",
-            "label": "隔日收益",
-            "note": "推荐日后没有可用交易日价格"
+            "status": "skipped",
+            "label": "未入场",
+            "note": "开盘高开 +7.28% 大于 5% ，先观察承接，不按固定买入直接入场。",
+            "gap_pct": 7.28,
+            "gap_trap": true
           },
           "hold_2d": {
-            "status": "missing",
-            "label": "2日收益",
-            "note": "推荐日后没有可用交易日价格"
+            "status": "skipped",
+            "label": "未入场",
+            "note": "开盘高开 +7.28% 大于 5% ，先观察承接，不按固定买入直接入场。",
+            "gap_pct": 7.28,
+            "gap_trap": true
           },
           "hold_3d": {
-            "status": "missing",
-            "label": "3日收益",
-            "note": "推荐日后没有可用交易日价格"
+            "status": "skipped",
+            "label": "未入场",
+            "note": "开盘高开 +7.28% 大于 5% ，先观察承接，不按固定买入直接入场。",
+            "gap_pct": 7.28,
+            "gap_trap": true
           }
         }
       },
@@ -29746,24 +29821,37 @@
         "daily_rank": 2,
         "performance": {
           "open_check": {
-            "status": "missing",
-            "label": "无后续价格",
-            "note": "推荐日后没有可用交易日价格"
+            "status": "reject",
+            "label": "低于预期",
+            "gap_pct": 3.27,
+            "note": "低于+4%% 或 竞价量能",
+            "can_enter": false,
+            "prev_close": 6.42,
+            "open_price": 6.63,
+            "close_price": 6.45,
+            "close_pct": 0.47,
+            "gap_trap": true
           },
           "next_day": {
-            "status": "missing",
-            "label": "隔日收益",
-            "note": "推荐日后没有可用交易日价格"
+            "status": "skipped",
+            "label": "未入场",
+            "note": "低于+4%% 或 竞价量能",
+            "gap_pct": 3.27,
+            "gap_trap": true
           },
           "hold_2d": {
-            "status": "missing",
-            "label": "2日收益",
-            "note": "推荐日后没有可用交易日价格"
+            "status": "skipped",
+            "label": "未入场",
+            "note": "低于+4%% 或 竞价量能",
+            "gap_pct": 3.27,
+            "gap_trap": true
           },
           "hold_3d": {
-            "status": "missing",
-            "label": "3日收益",
-            "note": "推荐日后没有可用交易日价格"
+            "status": "skipped",
+            "label": "未入场",
+            "note": "低于+4%% 或 竞价量能",
+            "gap_pct": 3.27,
+            "gap_trap": true
           }
         }
       },
@@ -36980,24 +37068,37 @@
         "daily_rank": 4,
         "performance": {
           "open_check": {
-            "status": "missing",
-            "label": "无后续价格",
-            "note": "推荐日后没有可用交易日价格"
+            "status": "pending",
+            "label": "谨慎接力",
+            "gap_pct": 10.02,
+            "note": "开盘高开 +10.02% 大于 5% ，先观察承接，不按固定买入直接入场。",
+            "can_enter": false,
+            "prev_close": 5.69,
+            "open_price": 6.26,
+            "close_price": 6.26,
+            "close_pct": 10.02,
+            "gap_trap": false
           },
           "next_day": {
-            "status": "missing",
-            "label": "隔日收益",
-            "note": "推荐日后没有可用交易日价格"
+            "status": "skipped",
+            "label": "未入场",
+            "note": "开盘高开 +10.02% 大于 5% ，先观察承接，不按固定买入直接入场。",
+            "gap_pct": 10.02,
+            "gap_trap": false
           },
           "hold_2d": {
-            "status": "missing",
-            "label": "2日收益",
-            "note": "推荐日后没有可用交易日价格"
+            "status": "skipped",
+            "label": "未入场",
+            "note": "开盘高开 +10.02% 大于 5% ，先观察承接，不按固定买入直接入场。",
+            "gap_pct": 10.02,
+            "gap_trap": false
           },
           "hold_3d": {
-            "status": "missing",
-            "label": "3日收益",
-            "note": "推荐日后没有可用交易日价格"
+            "status": "skipped",
+            "label": "未入场",
+            "note": "开盘高开 +10.02% 大于 5% ，先观察承接，不按固定买入直接入场。",
+            "gap_pct": 10.02,
+            "gap_trap": false
           }
         }
       },
@@ -40154,24 +40255,37 @@
         "daily_rank": 5,
         "performance": {
           "open_check": {
-            "status": "missing",
-            "label": "无后续价格",
-            "note": "推荐日后没有可用交易日价格"
+            "status": "pending",
+            "label": "谨慎接力",
+            "gap_pct": 10.07,
+            "note": "开盘高开 +10.07% 大于 5% ，先观察承接，不按固定买入直接入场。",
+            "can_enter": false,
+            "prev_close": 4.37,
+            "open_price": 4.81,
+            "close_price": 4.81,
+            "close_pct": 10.07,
+            "gap_trap": false
           },
           "next_day": {
-            "status": "missing",
-            "label": "隔日收益",
-            "note": "推荐日后没有可用交易日价格"
+            "status": "skipped",
+            "label": "未入场",
+            "note": "开盘高开 +10.07% 大于 5% ，先观察承接，不按固定买入直接入场。",
+            "gap_pct": 10.07,
+            "gap_trap": false
           },
           "hold_2d": {
-            "status": "missing",
-            "label": "2日收益",
-            "note": "推荐日后没有可用交易日价格"
+            "status": "skipped",
+            "label": "未入场",
+            "note": "开盘高开 +10.07% 大于 5% ，先观察承接，不按固定买入直接入场。",
+            "gap_pct": 10.07,
+            "gap_trap": false
           },
           "hold_3d": {
-            "status": "missing",
-            "label": "3日收益",
-            "note": "推荐日后没有可用交易日价格"
+            "status": "skipped",
+            "label": "未入场",
+            "note": "开盘高开 +10.07% 大于 5% ，先观察承接，不按固定买入直接入场。",
+            "gap_pct": 10.07,
+            "gap_trap": false
           }
         }
       },
@@ -40399,11 +40513,17 @@
             "days_after_pick": 2
           },
           "hold_3d": {
-            "status": "pending",
+            "status": "covered",
             "label": "3日收益",
             "entry_date": "2026-08-11",
-            "note": "当前仅拿到 2 个后续交易日，尚不足以计算 T+3",
-            "gap_trap": false
+            "exit_date": "2026-08-13",
+            "entry_open": 53.01,
+            "exit_close": 58.39,
+            "return_pct": 10.15,
+            "win": true,
+            "flat": false,
+            "loss": false,
+            "days_after_pick": 3
           }
         }
       },
@@ -44106,24 +44226,43 @@
         "daily_rank": 6,
         "performance": {
           "open_check": {
-            "status": "missing",
-            "label": "无后续价格",
-            "note": "推荐日后没有可用交易日价格"
+            "status": "expected",
+            "label": "符合预期",
+            "gap_pct": 0.18,
+            "note": "平开（-1%~+1%%）+ 竞价量能≥0.15亿",
+            "can_enter": true,
+            "prev_close": 5.42,
+            "open_price": 5.43,
+            "close_price": 5.31,
+            "close_pct": -2.03,
+            "gap_trap": true
           },
           "next_day": {
-            "status": "missing",
+            "status": "covered",
             "label": "隔日收益",
-            "note": "推荐日后没有可用交易日价格"
+            "entry_date": "2026-08-13",
+            "exit_date": "2026-08-13",
+            "entry_open": 5.43,
+            "exit_close": 5.31,
+            "return_pct": -2.21,
+            "win": false,
+            "flat": false,
+            "loss": true,
+            "days_after_pick": 1
           },
           "hold_2d": {
-            "status": "missing",
+            "status": "pending",
             "label": "2日收益",
-            "note": "推荐日后没有可用交易日价格"
+            "entry_date": "2026-08-13",
+            "note": "当前仅拿到 1 个后续交易日，尚不足以计算 T+2",
+            "gap_trap": true
           },
           "hold_3d": {
-            "status": "missing",
+            "status": "pending",
             "label": "3日收益",
-            "note": "推荐日后没有可用交易日价格"
+            "entry_date": "2026-08-13",
+            "note": "当前仅拿到 1 个后续交易日，尚不足以计算 T+3",
+            "gap_trap": true
           }
         }
       },
@@ -47641,24 +47780,37 @@
         "daily_rank": 7,
         "performance": {
           "open_check": {
-            "status": "missing",
-            "label": "无后续价格",
-            "note": "推荐日后没有可用交易日价格"
+            "status": "reject",
+            "label": "低于预期",
+            "gap_pct": -1.8,
+            "note": "低于-1%% 或 竞价量能",
+            "can_enter": false,
+            "prev_close": 4.44,
+            "open_price": 4.36,
+            "close_price": 4.88,
+            "close_pct": 9.91,
+            "gap_trap": false
           },
           "next_day": {
-            "status": "missing",
-            "label": "隔日收益",
-            "note": "推荐日后没有可用交易日价格"
+            "status": "skipped",
+            "label": "未入场",
+            "note": "低于-1%% 或 竞价量能",
+            "gap_pct": -1.8,
+            "gap_trap": false
           },
           "hold_2d": {
-            "status": "missing",
-            "label": "2日收益",
-            "note": "推荐日后没有可用交易日价格"
+            "status": "skipped",
+            "label": "未入场",
+            "note": "低于-1%% 或 竞价量能",
+            "gap_pct": -1.8,
+            "gap_trap": false
           },
           "hold_3d": {
-            "status": "missing",
-            "label": "3日收益",
-            "note": "推荐日后没有可用交易日价格"
+            "status": "skipped",
+            "label": "未入场",
+            "note": "低于-1%% 或 竞价量能",
+            "gap_pct": -1.8,
+            "gap_trap": false
           }
         }
       },
@@ -53441,17 +53593,23 @@
             "days_after_pick": 1
           },
           "hold_2d": {
-            "status": "pending",
+            "status": "covered",
             "label": "2日收益",
             "entry_date": "2026-08-12",
-            "note": "当前仅拿到 1 个后续交易日，尚不足以计算 T+2",
-            "gap_trap": false
+            "exit_date": "2026-08-13",
+            "entry_open": 10.38,
+            "exit_close": 9.93,
+            "return_pct": -4.34,
+            "win": false,
+            "flat": false,
+            "loss": true,
+            "days_after_pick": 2
           },
           "hold_3d": {
             "status": "pending",
             "label": "3日收益",
             "entry_date": "2026-08-12",
-            "note": "当前仅拿到 1 个后续交易日，尚不足以计算 T+3",
+            "note": "当前仅拿到 2 个后续交易日，尚不足以计算 T+3",
             "gap_trap": false
           }
         }
@@ -54733,11 +54891,17 @@
             "days_after_pick": 2
           },
           "hold_3d": {
-            "status": "pending",
+            "status": "covered",
             "label": "3日收益",
             "entry_date": "2026-08-11",
-            "note": "当前仅拿到 2 个后续交易日，尚不足以计算 T+3",
-            "gap_trap": false
+            "exit_date": "2026-08-13",
+            "entry_open": 42.01,
+            "exit_close": 41.05,
+            "return_pct": -2.29,
+            "win": false,
+            "flat": false,
+            "loss": true,
+            "days_after_pick": 3
           }
         }
       },
@@ -56467,24 +56631,37 @@
         "daily_rank": 9,
         "performance": {
           "open_check": {
-            "status": "missing",
-            "label": "无后续价格",
-            "note": "推荐日后没有可用交易日价格"
+            "status": "reject",
+            "label": "低于预期",
+            "gap_pct": -2.14,
+            "note": "低于+0%% 或 竞价量能",
+            "can_enter": false,
+            "prev_close": 12.17,
+            "open_price": 11.91,
+            "close_price": 12.24,
+            "close_pct": 0.58,
+            "gap_trap": false
           },
           "next_day": {
-            "status": "missing",
-            "label": "隔日收益",
-            "note": "推荐日后没有可用交易日价格"
+            "status": "skipped",
+            "label": "未入场",
+            "note": "低于+0%% 或 竞价量能",
+            "gap_pct": -2.14,
+            "gap_trap": false
           },
           "hold_2d": {
-            "status": "missing",
-            "label": "2日收益",
-            "note": "推荐日后没有可用交易日价格"
+            "status": "skipped",
+            "label": "未入场",
+            "note": "低于+0%% 或 竞价量能",
+            "gap_pct": -2.14,
+            "gap_trap": false
           },
           "hold_3d": {
-            "status": "missing",
-            "label": "3日收益",
-            "note": "推荐日后没有可用交易日价格"
+            "status": "skipped",
+            "label": "未入场",
+            "note": "低于+0%% 或 竞价量能",
+            "gap_pct": -2.14,
+            "gap_trap": false
           }
         }
       },
@@ -57848,11 +58025,17 @@
             "days_after_pick": 2
           },
           "hold_3d": {
-            "status": "pending",
+            "status": "covered",
             "label": "3日收益",
             "entry_date": "2026-08-11",
-            "note": "当前仅拿到 2 个后续交易日，尚不足以计算 T+3",
-            "gap_trap": false
+            "exit_date": "2026-08-13",
+            "entry_open": 14.0,
+            "exit_close": 15.1,
+            "return_pct": 7.86,
+            "win": true,
+            "flat": false,
+            "loss": false,
+            "days_after_pick": 3
           }
         }
       },
@@ -60843,24 +61026,37 @@
         "daily_rank": 10,
         "performance": {
           "open_check": {
-            "status": "missing",
-            "label": "无后续价格",
-            "note": "推荐日后没有可用交易日价格"
+            "status": "pending",
+            "label": "谨慎接力",
+            "gap_pct": 10.0,
+            "note": "开盘高开 +10.00% 大于 5% ，先观察承接，不按固定买入直接入场。",
+            "can_enter": false,
+            "prev_close": 4.2,
+            "open_price": 4.62,
+            "close_price": 4.62,
+            "close_pct": 10.0,
+            "gap_trap": false
           },
           "next_day": {
-            "status": "missing",
-            "label": "隔日收益",
-            "note": "推荐日后没有可用交易日价格"
+            "status": "skipped",
+            "label": "未入场",
+            "note": "开盘高开 +10.00% 大于 5% ，先观察承接，不按固定买入直接入场。",
+            "gap_pct": 10.0,
+            "gap_trap": false
           },
           "hold_2d": {
-            "status": "missing",
-            "label": "2日收益",
-            "note": "推荐日后没有可用交易日价格"
+            "status": "skipped",
+            "label": "未入场",
+            "note": "开盘高开 +10.00% 大于 5% ，先观察承接，不按固定买入直接入场。",
+            "gap_pct": 10.0,
+            "gap_trap": false
           },
           "hold_3d": {
-            "status": "missing",
-            "label": "3日收益",
-            "note": "推荐日后没有可用交易日价格"
+            "status": "skipped",
+            "label": "未入场",
+            "note": "开盘高开 +10.00% 大于 5% ，先观察承接，不按固定买入直接入场。",
+            "gap_pct": 10.0,
+            "gap_trap": false
           }
         }
       },
@@ -67765,11 +67961,17 @@
             "days_after_pick": 2
           },
           "hold_3d": {
-            "status": "pending",
+            "status": "covered",
             "label": "3日收益",
             "entry_date": "2026-08-11",
-            "note": "当前仅拿到 2 个后续交易日，尚不足以计算 T+3",
-            "gap_trap": true
+            "exit_date": "2026-08-13",
+            "entry_open": 21.5,
+            "exit_close": 21.45,
+            "return_pct": -0.23,
+            "win": false,
+            "flat": false,
+            "loss": true,
+            "days_after_pick": 3
           }
         }
       },
@@ -74599,6 +74801,537 @@
     ],
     "historicalSnapshots": [
       {
+        "reference_date": "2026-08-12",
+        "trade_date": "2026-08-13",
+        "entry_window": "09:25-09:30",
+        "quote_time": "2026-08-13 09:25:00",
+        "source_module": "ztAnalysis.relay/watch",
+        "quote_source": "prefetched_realtime_quotes",
+        "candidate_count": 8,
+        "quoted_count": 8,
+        "buy_count": 1,
+        "direct_super_count": 0,
+        "direct_expected_count": 1,
+        "pending_count": 4,
+        "rejected_count": 3,
+        "unavailable_count": 0,
+        "buy_list": [
+          {
+            "date10": "2026-08-12",
+            "trade_date10": "2026-08-13",
+            "code": "000715",
+            "name": "中兴商业",
+            "bucket": "watch",
+            "bucket_label": "观察池",
+            "placement_label": "观察池",
+            "score": 67,
+            "daily_rank": 6,
+            "relay_rank": 0,
+            "watch_rank": 3,
+            "relay_selection_mode": "",
+            "watch_group": "高标/题材核心",
+            "main_line": "低价",
+            "score_label": "观察因子",
+            "reason_text": "梯队完整 · 高度修复 · 温和放量 · 封板稳 · 晋级生态强(56%/43%) · 断板风险高 预期 平开（-1%~+1%%）+ 竞价量能≥0.15亿 超预期 高开≥+1%% + 竞价量能≥0.15亿 低预期 低于-1%% 或 竞价量能",
+            "factor_hint": "环境81(接力可做) / 板块32 / 龙头48 / 接力77 / 容量47 / 风险28 / 潮汐+13 / 梯队76 / 条件触发",
+            "hit_rules": [],
+            "block_reasons": [],
+            "leader_factor_score": 48.0,
+            "relay_factor_score": 77.0,
+            "leader_philosophy_score": 21.0,
+            "break_risk": 93.0,
+            "environment_score": 81.0,
+            "capacity_factor_score": 47.0,
+            "step_context_score": 59.0,
+            "tide_relay_gate": 14.0,
+            "theme_ladder_profile": {
+              "label": "梯队完整",
+              "score": 76.0,
+              "gap_count": 0,
+              "front_count": 4,
+              "leader_boards": 3,
+              "has_carry": true
+            },
+            "expected_text": "平开（-1%~+1%%）+ 竞价量能≥0.15亿",
+            "super_text": "高开≥+1%% + 竞价量能≥0.15亿",
+            "low_text": "低于-1%% 或 竞价量能",
+            "signal_status": "expected",
+            "signal_label": "符合预期",
+            "decision_status": "buy",
+            "decision_label": "直接买入",
+            "prev_close": 5.42,
+            "open_price": 5.43,
+            "gap_pct": 0.18,
+            "close_price": 5.31,
+            "close_pct": -2.03,
+            "note": "竞价涨幅 +0.18% 落在预期区间 -1.00%~+1.00%，按计划买入。",
+            "gap_trap": true,
+            "next_day_status": "covered",
+            "next_day_label": "隔日收益",
+            "next_day_return_pct": -2.21,
+            "next_day_note": "",
+            "hold_2d_status": "pending",
+            "hold_2d_return_pct": null,
+            "hold_3d_status": "pending",
+            "hold_3d_return_pct": null,
+            "auction_price": 5.43,
+            "auction_amount_yi": 0.08,
+            "auction_amount_need_yi": 0.0,
+            "quote_time": "2026-08-13 09:25:00",
+            "rule_text": "平开（-1%~+1%%）+ 竞价量能≥0.15亿"
+          }
+        ],
+        "pending_list": [
+          {
+            "date10": "2026-08-12",
+            "trade_date10": "2026-08-13",
+            "code": "002229",
+            "name": "鸿博股份",
+            "bucket": "relay",
+            "bucket_label": "接力候选",
+            "placement_label": "接力候选",
+            "score": 88,
+            "daily_rank": 1,
+            "relay_rank": 1,
+            "watch_rank": 0,
+            "relay_selection_mode": "broad",
+            "watch_group": "",
+            "main_line": "数字经济",
+            "score_label": "推荐因子",
+            "reason_text": "数字经济龙头带动 · 梯队带动城地香江 · 强主线 · 近7日新高 · 加速确认 · 封板稳 · 早封 · 断板风险高 预期 高开（+4%~+7%%）+ 竞价量能≥0.32亿 超预期 高开≥+7%% + 竞价量能≥0.32亿 低预期 低于+4%% 或 竞价量能",
+            "factor_hint": "环境81(接力可做) / 板块60 / 龙头90 / 接力94 / 容量50 / 风险49 / 潮汐+4 / 梯队46 / 强候选",
+            "hit_rules": [],
+            "block_reasons": [],
+            "leader_factor_score": 90.0,
+            "relay_factor_score": 94.0,
+            "leader_philosophy_score": 100.0,
+            "break_risk": 77.0,
+            "environment_score": 81.0,
+            "capacity_factor_score": 50.0,
+            "step_context_score": 100.0,
+            "tide_relay_gate": 3.0,
+            "theme_ladder_profile": {
+              "label": "中位承接",
+              "score": 46.0,
+              "gap_count": 0,
+              "front_count": 2,
+              "leader_boards": 2,
+              "has_carry": true
+            },
+            "expected_text": "高开（+4%~+7%%）+ 竞价量能≥0.32亿",
+            "super_text": "高开≥+7%% + 竞价量能≥0.32亿",
+            "low_text": "低于+4%% 或 竞价量能",
+            "signal_status": "pending",
+            "signal_label": "谨慎接力",
+            "decision_status": "pending",
+            "decision_label": "观察",
+            "prev_close": 12.91,
+            "open_price": 13.85,
+            "gap_pct": 7.28,
+            "close_price": 13.64,
+            "close_pct": 5.65,
+            "note": "竞价涨幅 +7.28% 大于 5% ，属于高开过猛，先观察承接，不直接买入。",
+            "gap_trap": true,
+            "next_day_status": "skipped",
+            "next_day_label": "未入场",
+            "next_day_return_pct": null,
+            "next_day_note": "开盘高开 +7.28% 大于 5% ，先观察承接，不按固定买入直接入场。",
+            "hold_2d_status": "skipped",
+            "hold_2d_return_pct": null,
+            "hold_3d_status": "skipped",
+            "hold_3d_return_pct": null,
+            "auction_price": 13.85,
+            "auction_amount_yi": 1.96,
+            "auction_amount_need_yi": 0.0,
+            "quote_time": "2026-08-13 09:25:00",
+            "rule_text": "高开≥+7%% + 竞价量能≥0.32亿"
+          },
+          {
+            "date10": "2026-08-12",
+            "trade_date10": "2026-08-13",
+            "code": "000802",
+            "name": "北京文化",
+            "bucket": "watch",
+            "bucket_label": "观察池",
+            "placement_label": "观察池",
+            "score": 80,
+            "daily_rank": 4,
+            "relay_rank": 0,
+            "watch_rank": 1,
+            "relay_selection_mode": "",
+            "watch_group": "高标/题材核心",
+            "main_line": "低价",
+            "score_label": "观察因子",
+            "reason_text": "梯队完整 · 近7日新高 · 一年新高 · 高度修复 · 换手承接 · 封板稳 · 早封 · 断板风险高 预期 高开（+2%~+5%%）+ 竞价量能≥0.50亿 超预期 高开≥+5%% + 竞价量能≥0.50亿 低预期 低于+2%% 或 竞价量能",
+            "factor_hint": "环境81(接力可做) / 板块30 / 龙头72 / 接力100 / 容量49 / 风险35 / 潮汐+13 / 梯队76 / 强候选",
+            "hit_rules": [],
+            "block_reasons": [],
+            "leader_factor_score": 72.0,
+            "relay_factor_score": 100.0,
+            "leader_philosophy_score": 40.0,
+            "break_risk": 89.0,
+            "environment_score": 81.0,
+            "capacity_factor_score": 49.0,
+            "step_context_score": 89.0,
+            "tide_relay_gate": 14.0,
+            "theme_ladder_profile": {
+              "label": "梯队完整",
+              "score": 76.0,
+              "gap_count": 0,
+              "front_count": 4,
+              "leader_boards": 3,
+              "has_carry": true
+            },
+            "expected_text": "高开（+2%~+5%%）+ 竞价量能≥0.50亿",
+            "super_text": "高开≥+5%% + 竞价量能≥0.50亿",
+            "low_text": "低于+2%% 或 竞价量能",
+            "signal_status": "pending",
+            "signal_label": "谨慎接力",
+            "decision_status": "pending",
+            "decision_label": "观察",
+            "prev_close": 5.69,
+            "open_price": 6.26,
+            "gap_pct": 10.02,
+            "close_price": 6.26,
+            "close_pct": 10.02,
+            "note": "开盘高开 +10.02% 大于 5% ，先观察承接，不按固定买入直接入场。",
+            "gap_trap": false,
+            "next_day_status": "skipped",
+            "next_day_label": "未入场",
+            "next_day_return_pct": null,
+            "next_day_note": "开盘高开 +10.02% 大于 5% ，先观察承接，不按固定买入直接入场。",
+            "hold_2d_status": "skipped",
+            "hold_2d_return_pct": null,
+            "hold_3d_status": "skipped",
+            "hold_3d_return_pct": null
+          },
+          {
+            "date10": "2026-08-12",
+            "trade_date10": "2026-08-13",
+            "code": "002081",
+            "name": "金 螳 螂",
+            "bucket": "watch",
+            "bucket_label": "观察池",
+            "placement_label": "观察池",
+            "score": 69,
+            "daily_rank": 5,
+            "relay_rank": 0,
+            "watch_rank": 2,
+            "relay_selection_mode": "",
+            "watch_group": "高标/题材核心",
+            "main_line": "低价",
+            "score_label": "观察因子",
+            "reason_text": "梯队完整 · 近7日新高 · 高度修复 · 封板稳 · 早封 · 晋级生态强(56%/43%) · 断板风险高 · 缩量封板(参与难度大) 预期 平开（-1%~+1%%）+ 竞价量能≥0.17亿 超预期 高开≥+1%% + 竞价量能≥0.17亿 低预期 低于-1%% 或 竞价量能",
+            "factor_hint": "环境81(接力可做) / 板块36 / 龙头52 / 接力86 / 容量44 / 风险12 / 潮汐+13 / 梯队76 / 条件触发",
+            "hit_rules": [],
+            "block_reasons": [],
+            "leader_factor_score": 52.0,
+            "relay_factor_score": 86.0,
+            "leader_philosophy_score": 20.0,
+            "break_risk": 100.0,
+            "environment_score": 81.0,
+            "capacity_factor_score": 44.0,
+            "step_context_score": 59.0,
+            "tide_relay_gate": 14.0,
+            "theme_ladder_profile": {
+              "label": "梯队完整",
+              "score": 76.0,
+              "gap_count": 0,
+              "front_count": 4,
+              "leader_boards": 3,
+              "has_carry": true
+            },
+            "expected_text": "平开（-1%~+1%%）+ 竞价量能≥0.17亿",
+            "super_text": "高开≥+1%% + 竞价量能≥0.17亿",
+            "low_text": "低于-1%% 或 竞价量能",
+            "signal_status": "pending",
+            "signal_label": "谨慎接力",
+            "decision_status": "pending",
+            "decision_label": "观察",
+            "prev_close": 4.37,
+            "open_price": 4.81,
+            "gap_pct": 10.07,
+            "close_price": 4.81,
+            "close_pct": 10.07,
+            "note": "开盘高开 +10.07% 大于 5% ，先观察承接，不按固定买入直接入场。",
+            "gap_trap": false,
+            "next_day_status": "skipped",
+            "next_day_label": "未入场",
+            "next_day_return_pct": null,
+            "next_day_note": "开盘高开 +10.07% 大于 5% ，先观察承接，不按固定买入直接入场。",
+            "hold_2d_status": "skipped",
+            "hold_2d_return_pct": null,
+            "hold_3d_status": "skipped",
+            "hold_3d_return_pct": null
+          },
+          {
+            "date10": "2026-08-12",
+            "trade_date10": "2026-08-13",
+            "code": "002329",
+            "name": "皇氏集团",
+            "bucket": "watch",
+            "bucket_label": "观察池",
+            "placement_label": "观察池",
+            "score": 55,
+            "daily_rank": 10,
+            "relay_rank": 0,
+            "watch_rank": 7,
+            "relay_selection_mode": "",
+            "watch_group": "高位分歧",
+            "main_line": "",
+            "score_label": "观察因子",
+            "reason_text": "近7日新高 · 高度修复 · 反复回封 · 早封 · 晋级生态强(56%/43%) · 断板风险高 · 分歧偏大 预期 高开（+0%~+2%%）+ 竞价量能≥0.23亿 超预期 高开≥+2%% + 竞价量能≥0.23亿 低预期 低于+0%% 或 竞价量能",
+            "factor_hint": "环境81(接力可做) / 板块35 / 龙头64 / 接力68 / 容量43 / 风险17 / 潮汐+0 / 梯队0 / 只观察",
+            "hit_rules": [],
+            "block_reasons": [],
+            "leader_factor_score": 64.0,
+            "relay_factor_score": 68.0,
+            "leader_philosophy_score": 20.0,
+            "break_risk": 97.0,
+            "environment_score": 81.0,
+            "capacity_factor_score": 43.0,
+            "step_context_score": 89.0,
+            "tide_relay_gate": 0.0,
+            "theme_ladder_profile": {
+              "label": "",
+              "score": 0.0,
+              "gap_count": 0,
+              "front_count": 0,
+              "leader_boards": 0,
+              "has_carry": false
+            },
+            "expected_text": "高开（+0%~+2%%）+ 竞价量能≥0.23亿",
+            "super_text": "高开≥+2%% + 竞价量能≥0.23亿",
+            "low_text": "低于+0%% 或 竞价量能",
+            "signal_status": "pending",
+            "signal_label": "谨慎接力",
+            "decision_status": "pending",
+            "decision_label": "观察",
+            "prev_close": 4.2,
+            "open_price": 4.62,
+            "gap_pct": 10.0,
+            "close_price": 4.62,
+            "close_pct": 10.0,
+            "note": "竞价涨幅 +10.00% 大于 5% ，属于高开过猛，先观察承接，不直接买入。",
+            "gap_trap": false,
+            "next_day_status": "skipped",
+            "next_day_label": "未入场",
+            "next_day_return_pct": null,
+            "next_day_note": "开盘高开 +10.00% 大于 5% ，先观察承接，不按固定买入直接入场。",
+            "hold_2d_status": "skipped",
+            "hold_2d_return_pct": null,
+            "hold_3d_status": "skipped",
+            "hold_3d_return_pct": null,
+            "auction_price": 4.62,
+            "auction_amount_yi": 0.77,
+            "auction_amount_need_yi": 0.0,
+            "quote_time": "2026-08-13 09:25:00",
+            "rule_text": "高开≥+2%% + 竞价量能≥0.23亿"
+          }
+        ],
+        "rejected_list": [
+          {
+            "date10": "2026-08-12",
+            "trade_date10": "2026-08-13",
+            "code": "002031",
+            "name": "巨轮智能",
+            "bucket": "relay",
+            "bucket_label": "接力候选",
+            "placement_label": "接力候选",
+            "score": 89,
+            "daily_rank": 2,
+            "relay_rank": 2,
+            "watch_rank": 0,
+            "relay_selection_mode": "broad",
+            "watch_group": "",
+            "main_line": "机器人概念",
+            "score_label": "推荐因子",
+            "reason_text": "机器人概念龙头带动 · 梯队带动长城科技 · 近7日新高 · 高度修复 · 温和放量 · 封板稳 · 早封 · 断板风险高 预期 高开（+4%~+7%%）+ 竞价量能≥1.28亿 超预期 高开≥+7%% + 竞价量能≥1.28亿 低预期 低于+4%% 或 竞价量能",
+            "factor_hint": "环境81(接力可做) / 板块54 / 龙头86 / 接力91 / 容量91 / 风险42 / 潮汐+4 / 梯队46 / 强候选",
+            "hit_rules": [],
+            "block_reasons": [],
+            "leader_factor_score": 86.0,
+            "relay_factor_score": 91.0,
+            "leader_philosophy_score": 82.0,
+            "break_risk": 87.0,
+            "environment_score": 81.0,
+            "capacity_factor_score": 91.0,
+            "step_context_score": 100.0,
+            "tide_relay_gate": 3.0,
+            "theme_ladder_profile": {
+              "label": "中位承接",
+              "score": 46.0,
+              "gap_count": 0,
+              "front_count": 2,
+              "leader_boards": 2,
+              "has_carry": true
+            },
+            "expected_text": "高开（+4%~+7%%）+ 竞价量能≥1.28亿",
+            "super_text": "高开≥+7%% + 竞价量能≥1.28亿",
+            "low_text": "低于+4%% 或 竞价量能",
+            "signal_status": "reject",
+            "signal_label": "低于预期",
+            "decision_status": "reject",
+            "decision_label": "未达买点",
+            "prev_close": 6.42,
+            "open_price": 6.63,
+            "gap_pct": 3.27,
+            "close_price": 6.45,
+            "close_pct": 0.47,
+            "note": "竞价涨幅 +3.27%，未落在预期区间或超预期范围。",
+            "gap_trap": true,
+            "next_day_status": "skipped",
+            "next_day_label": "未入场",
+            "next_day_return_pct": null,
+            "next_day_note": "低于+4%% 或 竞价量能",
+            "hold_2d_status": "skipped",
+            "hold_2d_return_pct": null,
+            "hold_3d_status": "skipped",
+            "hold_3d_return_pct": null,
+            "auction_price": 6.63,
+            "auction_amount_yi": 1.06,
+            "auction_amount_need_yi": 0.0,
+            "quote_time": "2026-08-13 09:25:00",
+            "rule_text": "低于+4%% 或 竞价量能"
+          },
+          {
+            "date10": "2026-08-12",
+            "trade_date10": "2026-08-13",
+            "code": "000692",
+            "name": "惠天热电",
+            "bucket": "watch",
+            "bucket_label": "观察池",
+            "placement_label": "观察池",
+            "score": 67,
+            "daily_rank": 7,
+            "relay_rank": 0,
+            "watch_rank": 4,
+            "relay_selection_mode": "",
+            "watch_group": "高标/题材核心",
+            "main_line": "低价",
+            "score_label": "观察因子",
+            "reason_text": "梯队完整 · 近7日新高 · 高度修复 · 温和放量 · 早封 · 晋级生态强(56%/43%) · 断板风险高 · 分歧偏大 预期 平开（-1%~+1%%）+ 竞价量能≥0.15亿 超预期 高开≥+1%% + 竞价量能≥0.15亿 低预期 低于-1%% 或 竞价量能",
+            "factor_hint": "环境81(接力可做) / 板块30 / 龙头52 / 接力75 / 容量49 / 风险16 / 潮汐+13 / 梯队76 / 条件触发",
+            "hit_rules": [],
+            "block_reasons": [],
+            "leader_factor_score": 52.0,
+            "relay_factor_score": 75.0,
+            "leader_philosophy_score": 20.0,
+            "break_risk": 100.0,
+            "environment_score": 81.0,
+            "capacity_factor_score": 49.0,
+            "step_context_score": 59.0,
+            "tide_relay_gate": 14.0,
+            "theme_ladder_profile": {
+              "label": "梯队完整",
+              "score": 76.0,
+              "gap_count": 0,
+              "front_count": 4,
+              "leader_boards": 3,
+              "has_carry": true
+            },
+            "expected_text": "平开（-1%~+1%%）+ 竞价量能≥0.15亿",
+            "super_text": "高开≥+1%% + 竞价量能≥0.15亿",
+            "low_text": "低于-1%% 或 竞价量能",
+            "signal_status": "reject",
+            "signal_label": "低于预期",
+            "decision_status": "reject",
+            "decision_label": "未达买点",
+            "prev_close": 4.44,
+            "open_price": 4.36,
+            "gap_pct": -1.8,
+            "close_price": 4.88,
+            "close_pct": 9.91,
+            "note": "竞价涨幅 -1.80%，未落在预期区间或超预期范围。",
+            "gap_trap": false,
+            "next_day_status": "skipped",
+            "next_day_label": "未入场",
+            "next_day_return_pct": null,
+            "next_day_note": "低于-1%% 或 竞价量能",
+            "hold_2d_status": "skipped",
+            "hold_2d_return_pct": null,
+            "hold_3d_status": "skipped",
+            "hold_3d_return_pct": null,
+            "auction_price": 4.36,
+            "auction_amount_yi": 0.08,
+            "auction_amount_need_yi": 0.0,
+            "quote_time": "2026-08-13 09:25:00",
+            "rule_text": "低于-1%% 或 竞价量能"
+          },
+          {
+            "date10": "2026-08-12",
+            "trade_date10": "2026-08-13",
+            "code": "002248",
+            "name": "华东数控",
+            "bucket": "watch",
+            "bucket_label": "观察池",
+            "placement_label": "观察池",
+            "score": 56,
+            "daily_rank": 9,
+            "relay_rank": 0,
+            "watch_rank": 6,
+            "relay_selection_mode": "",
+            "watch_group": "高位分歧",
+            "main_line": "",
+            "score_label": "观察因子",
+            "reason_text": "行业内涨停集中 · 近7日新高 · 高度修复 · 分歧烂板 · 早封 · 晋级生态强(56%/43%) · 断板风险高 · 分歧偏大 预期 高开（+0%~+2%%）+ 竞价量能≥0.39亿 超预期 高开≥+2%% + 竞价量能≥0.39亿 低预期 低于+0%% 或 竞价量能",
+            "factor_hint": "环境81(接力可做) / 板块55 / 龙头61 / 接力62 / 容量42 / 风险9 / 潮汐+0 / 梯队0 / 只观察",
+            "hit_rules": [],
+            "block_reasons": [],
+            "leader_factor_score": 61.0,
+            "relay_factor_score": 62.0,
+            "leader_philosophy_score": 20.0,
+            "break_risk": 97.0,
+            "environment_score": 81.0,
+            "capacity_factor_score": 42.0,
+            "step_context_score": 89.0,
+            "tide_relay_gate": 0.0,
+            "theme_ladder_profile": {
+              "label": "",
+              "score": 0.0,
+              "gap_count": 0,
+              "front_count": 0,
+              "leader_boards": 0,
+              "has_carry": false
+            },
+            "expected_text": "高开（+0%~+2%%）+ 竞价量能≥0.39亿",
+            "super_text": "高开≥+2%% + 竞价量能≥0.39亿",
+            "low_text": "低于+0%% 或 竞价量能",
+            "signal_status": "reject",
+            "signal_label": "低于预期",
+            "decision_status": "reject",
+            "decision_label": "未达买点",
+            "prev_close": 12.17,
+            "open_price": 11.91,
+            "gap_pct": -2.14,
+            "close_price": 12.24,
+            "close_pct": 0.58,
+            "note": "竞价涨幅 -2.14%，未落在预期区间或超预期范围。",
+            "gap_trap": false,
+            "next_day_status": "skipped",
+            "next_day_label": "未入场",
+            "next_day_return_pct": null,
+            "next_day_note": "低于+0%% 或 竞价量能",
+            "hold_2d_status": "skipped",
+            "hold_2d_return_pct": null,
+            "hold_3d_status": "skipped",
+            "hold_3d_return_pct": null,
+            "auction_price": 11.91,
+            "auction_amount_yi": 0.5,
+            "auction_amount_need_yi": 0.0,
+            "quote_time": "2026-08-13 09:25:00",
+            "rule_text": "低于+0%% 或 竞价量能"
+          }
+        ],
+        "unavailable_list": [],
+        "diagnostics": {
+          "source": "workflow_prefetch",
+          "recovered": false,
+          "used_prefetched_snapshot": true,
+          "note": "已复用 2026-08-13 的09:25 竞价快照恢复竞价判断；收盘收益字段仍按历史闭环记录计算。"
+        }
+      },
+      {
         "reference_date": "2026-08-11",
         "trade_date": "2026-08-12",
         "entry_window": "09:25-09:30",
@@ -75052,8 +75785,8 @@
             "next_day_label": "隔日收益",
             "next_day_return_pct": -1.73,
             "next_day_note": "",
-            "hold_2d_status": "pending",
-            "hold_2d_return_pct": null,
+            "hold_2d_status": "covered",
+            "hold_2d_return_pct": -4.34,
             "hold_3d_status": "pending",
             "hold_3d_return_pct": null,
             "auction_price": 10.38,
@@ -75274,8 +76007,8 @@
             "next_day_note": "",
             "hold_2d_status": "covered",
             "hold_2d_return_pct": 13.32,
-            "hold_3d_status": "pending",
-            "hold_3d_return_pct": null,
+            "hold_3d_status": "covered",
+            "hold_3d_return_pct": 10.15,
             "auction_price": 53.01,
             "auction_amount_yi": 21.8,
             "auction_amount_need_yi": 0.0,
@@ -75402,8 +76135,8 @@
             "next_day_note": "",
             "hold_2d_status": "covered",
             "hold_2d_return_pct": -0.62,
-            "hold_3d_status": "pending",
-            "hold_3d_return_pct": null,
+            "hold_3d_status": "covered",
+            "hold_3d_return_pct": -2.29,
             "auction_price": 42.01,
             "auction_amount_yi": 20.01,
             "auction_amount_need_yi": 0.0,
@@ -75530,8 +76263,8 @@
             "next_day_note": "",
             "hold_2d_status": "covered",
             "hold_2d_return_pct": -1.26,
-            "hold_3d_status": "pending",
-            "hold_3d_return_pct": null,
+            "hold_3d_status": "covered",
+            "hold_3d_return_pct": -0.23,
             "auction_price": 21.5,
             "auction_amount_yi": 19.17,
             "auction_amount_need_yi": 0.0,
@@ -75658,8 +76391,8 @@
             "next_day_note": "",
             "hold_2d_status": "covered",
             "hold_2d_return_pct": 10.43,
-            "hold_3d_status": "pending",
-            "hold_3d_return_pct": null,
+            "hold_3d_status": "covered",
+            "hold_3d_return_pct": 7.86,
             "auction_price": 14.0,
             "auction_amount_yi": 28.08,
             "auction_amount_need_yi": 0.0,
@@ -146751,11 +147484,17 @@
             "days_after_pick": 2
           },
           "hold_3d": {
-            "status": "pending",
+            "status": "covered",
             "label": "3日收益",
             "entry_date": "2026-08-11",
-            "note": "当前仅拿到 2 个后续交易日，尚不足以计算 T+3",
-            "gap_trap": false
+            "exit_date": "2026-08-13",
+            "entry_open": 53.01,
+            "exit_close": 58.39,
+            "return_pct": 10.15,
+            "win": true,
+            "flat": false,
+            "loss": false,
+            "days_after_pick": 3
           }
         }
       },
@@ -147078,11 +147817,17 @@
             "days_after_pick": 2
           },
           "hold_3d": {
-            "status": "pending",
+            "status": "covered",
             "label": "3日收益",
             "entry_date": "2026-08-11",
-            "note": "当前仅拿到 2 个后续交易日，尚不足以计算 T+3",
-            "gap_trap": false
+            "exit_date": "2026-08-13",
+            "entry_open": 42.01,
+            "exit_close": 41.05,
+            "return_pct": -2.29,
+            "win": false,
+            "flat": false,
+            "loss": true,
+            "days_after_pick": 3
           }
         }
       },
@@ -147191,11 +147936,17 @@
             "days_after_pick": 2
           },
           "hold_3d": {
-            "status": "pending",
+            "status": "covered",
             "label": "3日收益",
             "entry_date": "2026-08-11",
-            "note": "当前仅拿到 2 个后续交易日，尚不足以计算 T+3",
-            "gap_trap": false
+            "exit_date": "2026-08-13",
+            "entry_open": 14.0,
+            "exit_close": 15.1,
+            "return_pct": 7.86,
+            "win": true,
+            "flat": false,
+            "loss": false,
+            "days_after_pick": 3
           }
         }
       },
@@ -147417,11 +148168,17 @@
             "days_after_pick": 2
           },
           "hold_3d": {
-            "status": "pending",
+            "status": "covered",
             "label": "3日收益",
             "entry_date": "2026-08-11",
-            "note": "当前仅拿到 2 个后续交易日，尚不足以计算 T+3",
-            "gap_trap": true
+            "exit_date": "2026-08-13",
+            "entry_open": 21.5,
+            "exit_close": 21.45,
+            "return_pct": -0.23,
+            "win": false,
+            "flat": false,
+            "loss": true,
+            "days_after_pick": 3
           }
         }
       },
@@ -148046,17 +148803,23 @@
             "days_after_pick": 1
           },
           "hold_2d": {
-            "status": "pending",
+            "status": "covered",
             "label": "2日收益",
             "entry_date": "2026-08-12",
-            "note": "当前仅拿到 1 个后续交易日，尚不足以计算 T+2",
-            "gap_trap": false
+            "exit_date": "2026-08-13",
+            "entry_open": 10.38,
+            "exit_close": 9.93,
+            "return_pct": -4.34,
+            "win": false,
+            "flat": false,
+            "loss": true,
+            "days_after_pick": 2
           },
           "hold_3d": {
             "status": "pending",
             "label": "3日收益",
             "entry_date": "2026-08-12",
-            "note": "当前仅拿到 1 个后续交易日，尚不足以计算 T+3",
+            "note": "当前仅拿到 2 个后续交易日，尚不足以计算 T+3",
             "gap_trap": false
           }
         }
@@ -148375,13 +149138,827 @@
             "gap_trap": false
           }
         }
+      },
+      {
+        "date": "20260812",
+        "date10": "2026-08-12",
+        "code": "002229",
+        "name": "鸿博股份",
+        "bucket": "relay",
+        "bucket_label": "接力候选",
+        "score": 88,
+        "score_band": "强候选",
+        "score_sub_label": "兜底候选 · 仅超预期",
+        "main_line": "数字经济",
+        "style_tag": "加速确认",
+        "lbc": 2,
+        "cje_yi": 3.34,
+        "turnover": 50.0,
+        "tide_status": "接力可做",
+        "next_step": "2进3",
+        "plate_name": "",
+        "hy": "IT服务Ⅱ",
+        "factor_hint": "环境81(接力可做) / 板块60 / 龙头90 / 接力94 / 容量50 / 风险49 / 潮汐+4 / 梯队46 / 强候选",
+        "relay_rank": 1,
+        "watch_rank": 0,
+        "relay_selection_mode": "broad",
+        "watch_group": "",
+        "score_label": "推荐因子",
+        "placement_label": "接力候选",
+        "leader_factor_score": 90.0,
+        "relay_factor_score": 94.0,
+        "leader_philosophy_score": 100.0,
+        "break_risk": 77.0,
+        "environment_score": 81.0,
+        "capacity_factor_score": 50.0,
+        "step_context_score": 100.0,
+        "tide_relay_gate": 3.0,
+        "theme_ladder_profile": {
+          "label": "中位承接",
+          "score": 46.0,
+          "gap_count": 0,
+          "front_count": 2,
+          "leader_boards": 2,
+          "has_carry": true
+        },
+        "hit_rules": [],
+        "block_reasons": [],
+        "reason_html": "<span class=\"reason-bits\">数字经济龙头带动 · 梯队带动城地香江 · 强主线 · 近7日新高 · 加速确认 · 封板稳 · 早封 · 断板风险高</span><div class=\"exp-wrap\"><div class=\"exp-row\"><span class=\"exp-pill pill-pre\">预期</span>高开（+4%~+7%%）+ 竞价量能≥0.32亿</div><div class=\"exp-row\"><span class=\"exp-pill pill-hi\">超预期</span>高开≥+7%% + 竞价量能≥0.32亿</div><div class=\"exp-row\"><span class=\"exp-pill pill-lo\">低预期</span>低于+4%% 或 竞价量能<0.22亿</div></div>",
+        "reason_text": "数字经济龙头带动 · 梯队带动城地香江 · 强主线 · 近7日新高 · 加速确认 · 封板稳 · 早封 · 断板风险高 预期 高开（+4%~+7%%）+ 竞价量能≥0.32亿 超预期 高开≥+7%% + 竞价量能≥0.32亿 低预期 低于+4%% 或 竞价量能",
+        "expectation": {
+          "expected_text": "高开（+4%~+7%%）+ 竞价量能≥0.32亿",
+          "super_text": "高开≥+7%% + 竞价量能≥0.32亿",
+          "low_text": "低于+4%% 或 竞价量能",
+          "expected_range": [
+            4.0,
+            7.0
+          ],
+          "super_gap_min": 7.0,
+          "auction_amount_min_yi": null,
+          "surge_pct_min": null,
+          "volume_expand_ratio": null,
+          "super_requires_reseal": false,
+          "super_requires_open_board_limit": null,
+          "seal_amount_min_yi": null,
+          "raw_text": "数字经济龙头带动 · 梯队带动城地香江 · 强主线 · 近7日新高 · 加速确认 · 封板稳 · 早封 · 断板风险高 预期 高开（+4%~+7%%）+ 竞价量能≥0.32亿 超预期 高开≥+7%% + 竞价量能≥0.32亿 低预期 低于+4%% 或 竞价量能"
+        },
+        "trade_date10": "2026-08-13",
+        "daily_rank": 1,
+        "performance": {
+          "open_check": {
+            "status": "pending",
+            "label": "谨慎接力",
+            "gap_pct": 7.28,
+            "note": "开盘高开 +7.28% 大于 5% ，先观察承接，不按固定买入直接入场。",
+            "can_enter": false,
+            "prev_close": 12.91,
+            "open_price": 13.85,
+            "close_price": 13.64,
+            "close_pct": 5.65,
+            "gap_trap": true
+          },
+          "next_day": {
+            "status": "skipped",
+            "label": "未入场",
+            "note": "开盘高开 +7.28% 大于 5% ，先观察承接，不按固定买入直接入场。",
+            "gap_pct": 7.28,
+            "gap_trap": true
+          },
+          "hold_2d": {
+            "status": "skipped",
+            "label": "未入场",
+            "note": "开盘高开 +7.28% 大于 5% ，先观察承接，不按固定买入直接入场。",
+            "gap_pct": 7.28,
+            "gap_trap": true
+          },
+          "hold_3d": {
+            "status": "skipped",
+            "label": "未入场",
+            "note": "开盘高开 +7.28% 大于 5% ，先观察承接，不按固定买入直接入场。",
+            "gap_pct": 7.28,
+            "gap_trap": true
+          }
+        }
+      },
+      {
+        "date": "20260812",
+        "date10": "2026-08-12",
+        "code": "002031",
+        "name": "巨轮智能",
+        "bucket": "relay",
+        "bucket_label": "接力候选",
+        "score": 89,
+        "score_band": "强候选",
+        "score_sub_label": "兜底候选 · 仅超预期",
+        "main_line": "机器人概念",
+        "style_tag": "温和放量",
+        "lbc": 2,
+        "cje_yi": 13.52,
+        "turnover": 91.0,
+        "tide_status": "接力可做",
+        "next_step": "2进3",
+        "plate_name": "",
+        "hy": "专用设备",
+        "factor_hint": "环境81(接力可做) / 板块54 / 龙头86 / 接力91 / 容量91 / 风险42 / 潮汐+4 / 梯队46 / 强候选",
+        "relay_rank": 2,
+        "watch_rank": 0,
+        "relay_selection_mode": "broad",
+        "watch_group": "",
+        "score_label": "推荐因子",
+        "placement_label": "接力候选",
+        "leader_factor_score": 86.0,
+        "relay_factor_score": 91.0,
+        "leader_philosophy_score": 82.0,
+        "break_risk": 87.0,
+        "environment_score": 81.0,
+        "capacity_factor_score": 91.0,
+        "step_context_score": 100.0,
+        "tide_relay_gate": 3.0,
+        "theme_ladder_profile": {
+          "label": "中位承接",
+          "score": 46.0,
+          "gap_count": 0,
+          "front_count": 2,
+          "leader_boards": 2,
+          "has_carry": true
+        },
+        "hit_rules": [],
+        "block_reasons": [],
+        "reason_html": "<span class=\"reason-bits\">机器人概念龙头带动 · 梯队带动长城科技 · 近7日新高 · 高度修复 · 温和放量 · 封板稳 · 早封 · 断板风险高</span><div class=\"exp-wrap\"><div class=\"exp-row\"><span class=\"exp-pill pill-pre\">预期</span>高开（+4%~+7%%）+ 竞价量能≥1.28亿</div><div class=\"exp-row\"><span class=\"exp-pill pill-hi\">超预期</span>高开≥+7%% + 竞价量能≥1.28亿</div><div class=\"exp-row\"><span class=\"exp-pill pill-lo\">低预期</span>低于+4%% 或 竞价量能<0.90亿</div></div>",
+        "reason_text": "机器人概念龙头带动 · 梯队带动长城科技 · 近7日新高 · 高度修复 · 温和放量 · 封板稳 · 早封 · 断板风险高 预期 高开（+4%~+7%%）+ 竞价量能≥1.28亿 超预期 高开≥+7%% + 竞价量能≥1.28亿 低预期 低于+4%% 或 竞价量能",
+        "expectation": {
+          "expected_text": "高开（+4%~+7%%）+ 竞价量能≥1.28亿",
+          "super_text": "高开≥+7%% + 竞价量能≥1.28亿",
+          "low_text": "低于+4%% 或 竞价量能",
+          "expected_range": [
+            4.0,
+            7.0
+          ],
+          "super_gap_min": 7.0,
+          "auction_amount_min_yi": null,
+          "surge_pct_min": null,
+          "volume_expand_ratio": null,
+          "super_requires_reseal": false,
+          "super_requires_open_board_limit": null,
+          "seal_amount_min_yi": null,
+          "raw_text": "机器人概念龙头带动 · 梯队带动长城科技 · 近7日新高 · 高度修复 · 温和放量 · 封板稳 · 早封 · 断板风险高 预期 高开（+4%~+7%%）+ 竞价量能≥1.28亿 超预期 高开≥+7%% + 竞价量能≥1.28亿 低预期 低于+4%% 或 竞价量能"
+        },
+        "trade_date10": "2026-08-13",
+        "daily_rank": 2,
+        "performance": {
+          "open_check": {
+            "status": "reject",
+            "label": "低于预期",
+            "gap_pct": 3.27,
+            "note": "低于+4%% 或 竞价量能",
+            "can_enter": false,
+            "prev_close": 6.42,
+            "open_price": 6.63,
+            "close_price": 6.45,
+            "close_pct": 0.47,
+            "gap_trap": true
+          },
+          "next_day": {
+            "status": "skipped",
+            "label": "未入场",
+            "note": "低于+4%% 或 竞价量能",
+            "gap_pct": 3.27,
+            "gap_trap": true
+          },
+          "hold_2d": {
+            "status": "skipped",
+            "label": "未入场",
+            "note": "低于+4%% 或 竞价量能",
+            "gap_pct": 3.27,
+            "gap_trap": true
+          },
+          "hold_3d": {
+            "status": "skipped",
+            "label": "未入场",
+            "note": "低于+4%% 或 竞价量能",
+            "gap_pct": 3.27,
+            "gap_trap": true
+          }
+        }
+      },
+      {
+        "date": "20260812",
+        "date10": "2026-08-12",
+        "code": "000802",
+        "name": "北京文化",
+        "bucket": "watch",
+        "bucket_label": "观察池",
+        "score": 80,
+        "score_band": "强候选",
+        "score_sub_label": "高标/题材核心 · 强候选",
+        "main_line": "低价",
+        "style_tag": "高换手承接",
+        "lbc": 3,
+        "cje_yi": 6.63,
+        "turnover": 49.0,
+        "tide_status": "接力可做",
+        "next_step": "3进4",
+        "plate_name": "",
+        "hy": "影视院线",
+        "factor_hint": "环境81(接力可做) / 板块30 / 龙头72 / 接力100 / 容量49 / 风险35 / 潮汐+13 / 梯队76 / 强候选",
+        "relay_rank": 0,
+        "watch_rank": 1,
+        "relay_selection_mode": "",
+        "watch_group": "高标/题材核心",
+        "score_label": "观察因子",
+        "placement_label": "观察池",
+        "leader_factor_score": 72.0,
+        "relay_factor_score": 100.0,
+        "leader_philosophy_score": 40.0,
+        "break_risk": 89.0,
+        "environment_score": 81.0,
+        "capacity_factor_score": 49.0,
+        "step_context_score": 89.0,
+        "tide_relay_gate": 14.0,
+        "theme_ladder_profile": {
+          "label": "梯队完整",
+          "score": 76.0,
+          "gap_count": 0,
+          "front_count": 4,
+          "leader_boards": 3,
+          "has_carry": true
+        },
+        "hit_rules": [],
+        "block_reasons": [],
+        "reason_html": "<span class=\"reason-bits\">梯队完整 · 近7日新高 · 一年新高 · 高度修复 · 换手承接 · 封板稳 · 早封 · 断板风险高</span><div class=\"exp-wrap\"><div class=\"exp-row\"><span class=\"exp-pill pill-pre\">预期</span>高开（+2%~+5%%）+ 竞价量能≥0.50亿</div><div class=\"exp-row\"><span class=\"exp-pill pill-hi\">超预期</span>高开≥+5%% + 竞价量能≥0.50亿</div><div class=\"exp-row\"><span class=\"exp-pill pill-lo\">低预期</span>低于+2%% 或 竞价量能<0.35亿</div></div>",
+        "reason_text": "梯队完整 · 近7日新高 · 一年新高 · 高度修复 · 换手承接 · 封板稳 · 早封 · 断板风险高 预期 高开（+2%~+5%%）+ 竞价量能≥0.50亿 超预期 高开≥+5%% + 竞价量能≥0.50亿 低预期 低于+2%% 或 竞价量能",
+        "expectation": {
+          "expected_text": "高开（+2%~+5%%）+ 竞价量能≥0.50亿",
+          "super_text": "高开≥+5%% + 竞价量能≥0.50亿",
+          "low_text": "低于+2%% 或 竞价量能",
+          "expected_range": [
+            2.0,
+            5.0
+          ],
+          "super_gap_min": 5.0,
+          "auction_amount_min_yi": null,
+          "surge_pct_min": null,
+          "volume_expand_ratio": null,
+          "super_requires_reseal": false,
+          "super_requires_open_board_limit": null,
+          "seal_amount_min_yi": null,
+          "raw_text": "梯队完整 · 近7日新高 · 一年新高 · 高度修复 · 换手承接 · 封板稳 · 早封 · 断板风险高 预期 高开（+2%~+5%%）+ 竞价量能≥0.50亿 超预期 高开≥+5%% + 竞价量能≥0.50亿 低预期 低于+2%% 或 竞价量能"
+        },
+        "trade_date10": "2026-08-13",
+        "daily_rank": 4,
+        "performance": {
+          "open_check": {
+            "status": "pending",
+            "label": "谨慎接力",
+            "gap_pct": 10.02,
+            "note": "开盘高开 +10.02% 大于 5% ，先观察承接，不按固定买入直接入场。",
+            "can_enter": false,
+            "prev_close": 5.69,
+            "open_price": 6.26,
+            "close_price": 6.26,
+            "close_pct": 10.02,
+            "gap_trap": false
+          },
+          "next_day": {
+            "status": "skipped",
+            "label": "未入场",
+            "note": "开盘高开 +10.02% 大于 5% ，先观察承接，不按固定买入直接入场。",
+            "gap_pct": 10.02,
+            "gap_trap": false
+          },
+          "hold_2d": {
+            "status": "skipped",
+            "label": "未入场",
+            "note": "开盘高开 +10.02% 大于 5% ，先观察承接，不按固定买入直接入场。",
+            "gap_pct": 10.02,
+            "gap_trap": false
+          },
+          "hold_3d": {
+            "status": "skipped",
+            "label": "未入场",
+            "note": "开盘高开 +10.02% 大于 5% ，先观察承接，不按固定买入直接入场。",
+            "gap_pct": 10.02,
+            "gap_trap": false
+          }
+        }
+      },
+      {
+        "date": "20260812",
+        "date10": "2026-08-12",
+        "code": "002081",
+        "name": "金 螳 螂",
+        "bucket": "watch",
+        "bucket_label": "观察池",
+        "score": 69,
+        "score_band": "条件触发",
+        "score_sub_label": "高标/题材核心 · 条件触发",
+        "main_line": "低价",
+        "style_tag": "",
+        "lbc": 1,
+        "cje_yi": 2.84,
+        "turnover": 44.0,
+        "tide_status": "接力可做",
+        "next_step": "1进2",
+        "plate_name": "",
+        "hy": "装修装饰",
+        "factor_hint": "环境81(接力可做) / 板块36 / 龙头52 / 接力86 / 容量44 / 风险12 / 潮汐+13 / 梯队76 / 条件触发",
+        "relay_rank": 0,
+        "watch_rank": 2,
+        "relay_selection_mode": "",
+        "watch_group": "高标/题材核心",
+        "score_label": "观察因子",
+        "placement_label": "观察池",
+        "leader_factor_score": 52.0,
+        "relay_factor_score": 86.0,
+        "leader_philosophy_score": 20.0,
+        "break_risk": 100.0,
+        "environment_score": 81.0,
+        "capacity_factor_score": 44.0,
+        "step_context_score": 59.0,
+        "tide_relay_gate": 14.0,
+        "theme_ladder_profile": {
+          "label": "梯队完整",
+          "score": 76.0,
+          "gap_count": 0,
+          "front_count": 4,
+          "leader_boards": 3,
+          "has_carry": true
+        },
+        "hit_rules": [],
+        "block_reasons": [],
+        "reason_html": "<span class=\"reason-bits\">梯队完整 · 近7日新高 · 高度修复 · 封板稳 · 早封 · 晋级生态强(56%/43%) · 断板风险高 · 缩量封板(参与难度大)</span><div class=\"exp-wrap\"><div class=\"exp-row\"><span class=\"exp-pill pill-pre\">预期</span>平开（-1%~+1%%）+ 竞价量能≥0.17亿</div><div class=\"exp-row\"><span class=\"exp-pill pill-hi\">超预期</span>高开≥+1%% + 竞价量能≥0.17亿</div><div class=\"exp-row\"><span class=\"exp-pill pill-lo\">低预期</span>低于-1%% 或 竞价量能<0.12亿</div></div>",
+        "reason_text": "梯队完整 · 近7日新高 · 高度修复 · 封板稳 · 早封 · 晋级生态强(56%/43%) · 断板风险高 · 缩量封板(参与难度大) 预期 平开（-1%~+1%%）+ 竞价量能≥0.17亿 超预期 高开≥+1%% + 竞价量能≥0.17亿 低预期 低于-1%% 或 竞价量能",
+        "expectation": {
+          "expected_text": "平开（-1%~+1%%）+ 竞价量能≥0.17亿",
+          "super_text": "高开≥+1%% + 竞价量能≥0.17亿",
+          "low_text": "低于-1%% 或 竞价量能",
+          "expected_range": [
+            -1.0,
+            1.0
+          ],
+          "super_gap_min": 1.0,
+          "auction_amount_min_yi": null,
+          "surge_pct_min": null,
+          "volume_expand_ratio": null,
+          "super_requires_reseal": false,
+          "super_requires_open_board_limit": null,
+          "seal_amount_min_yi": null,
+          "raw_text": "梯队完整 · 近7日新高 · 高度修复 · 封板稳 · 早封 · 晋级生态强(56%/43%) · 断板风险高 · 缩量封板(参与难度大) 预期 平开（-1%~+1%%）+ 竞价量能≥0.17亿 超预期 高开≥+1%% + 竞价量能≥0.17亿 低预期 低于-1%% 或 竞价量能"
+        },
+        "trade_date10": "2026-08-13",
+        "daily_rank": 5,
+        "performance": {
+          "open_check": {
+            "status": "pending",
+            "label": "谨慎接力",
+            "gap_pct": 10.07,
+            "note": "开盘高开 +10.07% 大于 5% ，先观察承接，不按固定买入直接入场。",
+            "can_enter": false,
+            "prev_close": 4.37,
+            "open_price": 4.81,
+            "close_price": 4.81,
+            "close_pct": 10.07,
+            "gap_trap": false
+          },
+          "next_day": {
+            "status": "skipped",
+            "label": "未入场",
+            "note": "开盘高开 +10.07% 大于 5% ，先观察承接，不按固定买入直接入场。",
+            "gap_pct": 10.07,
+            "gap_trap": false
+          },
+          "hold_2d": {
+            "status": "skipped",
+            "label": "未入场",
+            "note": "开盘高开 +10.07% 大于 5% ，先观察承接，不按固定买入直接入场。",
+            "gap_pct": 10.07,
+            "gap_trap": false
+          },
+          "hold_3d": {
+            "status": "skipped",
+            "label": "未入场",
+            "note": "开盘高开 +10.07% 大于 5% ，先观察承接，不按固定买入直接入场。",
+            "gap_pct": 10.07,
+            "gap_trap": false
+          }
+        }
+      },
+      {
+        "date": "20260812",
+        "date10": "2026-08-12",
+        "code": "000715",
+        "name": "中兴商业",
+        "bucket": "watch",
+        "bucket_label": "观察池",
+        "score": 67,
+        "score_band": "条件触发",
+        "score_sub_label": "高标/题材核心 · 条件触发",
+        "main_line": "低价",
+        "style_tag": "",
+        "lbc": 1,
+        "cje_yi": 1.46,
+        "turnover": 47.0,
+        "tide_status": "接力可做",
+        "next_step": "1进2",
+        "plate_name": "",
+        "hy": "一般零售",
+        "factor_hint": "环境81(接力可做) / 板块32 / 龙头48 / 接力77 / 容量47 / 风险28 / 潮汐+13 / 梯队76 / 条件触发",
+        "relay_rank": 0,
+        "watch_rank": 3,
+        "relay_selection_mode": "",
+        "watch_group": "高标/题材核心",
+        "score_label": "观察因子",
+        "placement_label": "观察池",
+        "leader_factor_score": 48.0,
+        "relay_factor_score": 77.0,
+        "leader_philosophy_score": 21.0,
+        "break_risk": 93.0,
+        "environment_score": 81.0,
+        "capacity_factor_score": 47.0,
+        "step_context_score": 59.0,
+        "tide_relay_gate": 14.0,
+        "theme_ladder_profile": {
+          "label": "梯队完整",
+          "score": 76.0,
+          "gap_count": 0,
+          "front_count": 4,
+          "leader_boards": 3,
+          "has_carry": true
+        },
+        "hit_rules": [],
+        "block_reasons": [],
+        "reason_html": "<span class=\"reason-bits\">梯队完整 · 高度修复 · 温和放量 · 封板稳 · 晋级生态强(56%/43%) · 断板风险高</span><div class=\"exp-wrap\"><div class=\"exp-row\"><span class=\"exp-pill pill-pre\">预期</span>平开（-1%~+1%%）+ 竞价量能≥0.15亿</div><div class=\"exp-row\"><span class=\"exp-pill pill-hi\">超预期</span>高开≥+1%% + 竞价量能≥0.15亿</div><div class=\"exp-row\"><span class=\"exp-pill pill-lo\">低预期</span>低于-1%% 或 竞价量能<0.10亿</div></div>",
+        "reason_text": "梯队完整 · 高度修复 · 温和放量 · 封板稳 · 晋级生态强(56%/43%) · 断板风险高 预期 平开（-1%~+1%%）+ 竞价量能≥0.15亿 超预期 高开≥+1%% + 竞价量能≥0.15亿 低预期 低于-1%% 或 竞价量能",
+        "expectation": {
+          "expected_text": "平开（-1%~+1%%）+ 竞价量能≥0.15亿",
+          "super_text": "高开≥+1%% + 竞价量能≥0.15亿",
+          "low_text": "低于-1%% 或 竞价量能",
+          "expected_range": [
+            -1.0,
+            1.0
+          ],
+          "super_gap_min": 1.0,
+          "auction_amount_min_yi": null,
+          "surge_pct_min": null,
+          "volume_expand_ratio": null,
+          "super_requires_reseal": false,
+          "super_requires_open_board_limit": null,
+          "seal_amount_min_yi": null,
+          "raw_text": "梯队完整 · 高度修复 · 温和放量 · 封板稳 · 晋级生态强(56%/43%) · 断板风险高 预期 平开（-1%~+1%%）+ 竞价量能≥0.15亿 超预期 高开≥+1%% + 竞价量能≥0.15亿 低预期 低于-1%% 或 竞价量能"
+        },
+        "trade_date10": "2026-08-13",
+        "daily_rank": 6,
+        "performance": {
+          "open_check": {
+            "status": "expected",
+            "label": "符合预期",
+            "gap_pct": 0.18,
+            "note": "平开（-1%~+1%%）+ 竞价量能≥0.15亿",
+            "can_enter": true,
+            "prev_close": 5.42,
+            "open_price": 5.43,
+            "close_price": 5.31,
+            "close_pct": -2.03,
+            "gap_trap": true
+          },
+          "next_day": {
+            "status": "covered",
+            "label": "隔日收益",
+            "entry_date": "2026-08-13",
+            "exit_date": "2026-08-13",
+            "entry_open": 5.43,
+            "exit_close": 5.31,
+            "return_pct": -2.21,
+            "win": false,
+            "flat": false,
+            "loss": true,
+            "days_after_pick": 1
+          },
+          "hold_2d": {
+            "status": "pending",
+            "label": "2日收益",
+            "entry_date": "2026-08-13",
+            "note": "当前仅拿到 1 个后续交易日，尚不足以计算 T+2",
+            "gap_trap": true
+          },
+          "hold_3d": {
+            "status": "pending",
+            "label": "3日收益",
+            "entry_date": "2026-08-13",
+            "note": "当前仅拿到 1 个后续交易日，尚不足以计算 T+3",
+            "gap_trap": true
+          }
+        }
+      },
+      {
+        "date": "20260812",
+        "date10": "2026-08-12",
+        "code": "000692",
+        "name": "惠天热电",
+        "bucket": "watch",
+        "bucket_label": "观察池",
+        "score": 67,
+        "score_band": "条件触发",
+        "score_sub_label": "高标/题材核心 · 条件触发",
+        "main_line": "低价",
+        "style_tag": "",
+        "lbc": 1,
+        "cje_yi": 2.26,
+        "turnover": 49.0,
+        "tide_status": "接力可做",
+        "next_step": "1进2",
+        "plate_name": "",
+        "hy": "电力",
+        "factor_hint": "环境81(接力可做) / 板块30 / 龙头52 / 接力75 / 容量49 / 风险16 / 潮汐+13 / 梯队76 / 条件触发",
+        "relay_rank": 0,
+        "watch_rank": 4,
+        "relay_selection_mode": "",
+        "watch_group": "高标/题材核心",
+        "score_label": "观察因子",
+        "placement_label": "观察池",
+        "leader_factor_score": 52.0,
+        "relay_factor_score": 75.0,
+        "leader_philosophy_score": 20.0,
+        "break_risk": 100.0,
+        "environment_score": 81.0,
+        "capacity_factor_score": 49.0,
+        "step_context_score": 59.0,
+        "tide_relay_gate": 14.0,
+        "theme_ladder_profile": {
+          "label": "梯队完整",
+          "score": 76.0,
+          "gap_count": 0,
+          "front_count": 4,
+          "leader_boards": 3,
+          "has_carry": true
+        },
+        "hit_rules": [],
+        "block_reasons": [],
+        "reason_html": "<span class=\"reason-bits\">梯队完整 · 近7日新高 · 高度修复 · 温和放量 · 早封 · 晋级生态强(56%/43%) · 断板风险高 · 分歧偏大</span><div class=\"exp-wrap\"><div class=\"exp-row\"><span class=\"exp-pill pill-pre\">预期</span>平开（-1%~+1%%）+ 竞价量能≥0.15亿</div><div class=\"exp-row\"><span class=\"exp-pill pill-hi\">超预期</span>高开≥+1%% + 竞价量能≥0.15亿</div><div class=\"exp-row\"><span class=\"exp-pill pill-lo\">低预期</span>低于-1%% 或 竞价量能<0.10亿</div></div>",
+        "reason_text": "梯队完整 · 近7日新高 · 高度修复 · 温和放量 · 早封 · 晋级生态强(56%/43%) · 断板风险高 · 分歧偏大 预期 平开（-1%~+1%%）+ 竞价量能≥0.15亿 超预期 高开≥+1%% + 竞价量能≥0.15亿 低预期 低于-1%% 或 竞价量能",
+        "expectation": {
+          "expected_text": "平开（-1%~+1%%）+ 竞价量能≥0.15亿",
+          "super_text": "高开≥+1%% + 竞价量能≥0.15亿",
+          "low_text": "低于-1%% 或 竞价量能",
+          "expected_range": [
+            -1.0,
+            1.0
+          ],
+          "super_gap_min": 1.0,
+          "auction_amount_min_yi": null,
+          "surge_pct_min": null,
+          "volume_expand_ratio": null,
+          "super_requires_reseal": false,
+          "super_requires_open_board_limit": null,
+          "seal_amount_min_yi": null,
+          "raw_text": "梯队完整 · 近7日新高 · 高度修复 · 温和放量 · 早封 · 晋级生态强(56%/43%) · 断板风险高 · 分歧偏大 预期 平开（-1%~+1%%）+ 竞价量能≥0.15亿 超预期 高开≥+1%% + 竞价量能≥0.15亿 低预期 低于-1%% 或 竞价量能"
+        },
+        "trade_date10": "2026-08-13",
+        "daily_rank": 7,
+        "performance": {
+          "open_check": {
+            "status": "reject",
+            "label": "低于预期",
+            "gap_pct": -1.8,
+            "note": "低于-1%% 或 竞价量能",
+            "can_enter": false,
+            "prev_close": 4.44,
+            "open_price": 4.36,
+            "close_price": 4.88,
+            "close_pct": 9.91,
+            "gap_trap": false
+          },
+          "next_day": {
+            "status": "skipped",
+            "label": "未入场",
+            "note": "低于-1%% 或 竞价量能",
+            "gap_pct": -1.8,
+            "gap_trap": false
+          },
+          "hold_2d": {
+            "status": "skipped",
+            "label": "未入场",
+            "note": "低于-1%% 或 竞价量能",
+            "gap_pct": -1.8,
+            "gap_trap": false
+          },
+          "hold_3d": {
+            "status": "skipped",
+            "label": "未入场",
+            "note": "低于-1%% 或 竞价量能",
+            "gap_pct": -1.8,
+            "gap_trap": false
+          }
+        }
+      },
+      {
+        "date": "20260812",
+        "date10": "2026-08-12",
+        "code": "002248",
+        "name": "华东数控",
+        "bucket": "watch",
+        "bucket_label": "观察池",
+        "score": 56,
+        "score_band": "只观察",
+        "score_sub_label": "高位分歧 · 只观察",
+        "main_line": "",
+        "style_tag": "分歧烂板",
+        "lbc": 3,
+        "cje_yi": 8.63,
+        "turnover": 42.0,
+        "tide_status": "接力可做",
+        "next_step": "3进4",
+        "plate_name": "",
+        "hy": "通用设备",
+        "factor_hint": "环境81(接力可做) / 板块55 / 龙头61 / 接力62 / 容量42 / 风险9 / 潮汐+0 / 梯队0 / 只观察",
+        "relay_rank": 0,
+        "watch_rank": 6,
+        "relay_selection_mode": "",
+        "watch_group": "高位分歧",
+        "score_label": "观察因子",
+        "placement_label": "观察池",
+        "leader_factor_score": 61.0,
+        "relay_factor_score": 62.0,
+        "leader_philosophy_score": 20.0,
+        "break_risk": 97.0,
+        "environment_score": 81.0,
+        "capacity_factor_score": 42.0,
+        "step_context_score": 89.0,
+        "tide_relay_gate": 0.0,
+        "theme_ladder_profile": {
+          "label": "",
+          "score": 0.0,
+          "gap_count": 0,
+          "front_count": 0,
+          "leader_boards": 0,
+          "has_carry": false
+        },
+        "hit_rules": [],
+        "block_reasons": [],
+        "reason_html": "<span class=\"reason-bits\">行业内涨停集中 · 近7日新高 · 高度修复 · 分歧烂板 · 早封 · 晋级生态强(56%/43%) · 断板风险高 · 分歧偏大</span><div class=\"exp-wrap\"><div class=\"exp-row\"><span class=\"exp-pill pill-pre\">预期</span>高开（+0%~+2%%）+ 竞价量能≥0.39亿</div><div class=\"exp-row\"><span class=\"exp-pill pill-hi\">超预期</span>高开≥+2%% + 竞价量能≥0.39亿</div><div class=\"exp-row\"><span class=\"exp-pill pill-lo\">低预期</span>低于+0%% 或 竞价量能<0.27亿</div></div>",
+        "reason_text": "行业内涨停集中 · 近7日新高 · 高度修复 · 分歧烂板 · 早封 · 晋级生态强(56%/43%) · 断板风险高 · 分歧偏大 预期 高开（+0%~+2%%）+ 竞价量能≥0.39亿 超预期 高开≥+2%% + 竞价量能≥0.39亿 低预期 低于+0%% 或 竞价量能",
+        "expectation": {
+          "expected_text": "高开（+0%~+2%%）+ 竞价量能≥0.39亿",
+          "super_text": "高开≥+2%% + 竞价量能≥0.39亿",
+          "low_text": "低于+0%% 或 竞价量能",
+          "expected_range": [
+            0.0,
+            2.0
+          ],
+          "super_gap_min": 2.0,
+          "auction_amount_min_yi": null,
+          "surge_pct_min": null,
+          "volume_expand_ratio": null,
+          "super_requires_reseal": false,
+          "super_requires_open_board_limit": null,
+          "seal_amount_min_yi": null,
+          "raw_text": "行业内涨停集中 · 近7日新高 · 高度修复 · 分歧烂板 · 早封 · 晋级生态强(56%/43%) · 断板风险高 · 分歧偏大 预期 高开（+0%~+2%%）+ 竞价量能≥0.39亿 超预期 高开≥+2%% + 竞价量能≥0.39亿 低预期 低于+0%% 或 竞价量能"
+        },
+        "trade_date10": "2026-08-13",
+        "daily_rank": 9,
+        "performance": {
+          "open_check": {
+            "status": "reject",
+            "label": "低于预期",
+            "gap_pct": -2.14,
+            "note": "低于+0%% 或 竞价量能",
+            "can_enter": false,
+            "prev_close": 12.17,
+            "open_price": 11.91,
+            "close_price": 12.24,
+            "close_pct": 0.58,
+            "gap_trap": false
+          },
+          "next_day": {
+            "status": "skipped",
+            "label": "未入场",
+            "note": "低于+0%% 或 竞价量能",
+            "gap_pct": -2.14,
+            "gap_trap": false
+          },
+          "hold_2d": {
+            "status": "skipped",
+            "label": "未入场",
+            "note": "低于+0%% 或 竞价量能",
+            "gap_pct": -2.14,
+            "gap_trap": false
+          },
+          "hold_3d": {
+            "status": "skipped",
+            "label": "未入场",
+            "note": "低于+0%% 或 竞价量能",
+            "gap_pct": -2.14,
+            "gap_trap": false
+          }
+        }
+      },
+      {
+        "date": "20260812",
+        "date10": "2026-08-12",
+        "code": "002329",
+        "name": "皇氏集团",
+        "bucket": "watch",
+        "bucket_label": "观察池",
+        "score": 55,
+        "score_band": "只观察",
+        "score_sub_label": "高位分歧 · 只观察",
+        "main_line": "",
+        "style_tag": "反复回封",
+        "lbc": 3,
+        "cje_yi": 5.15,
+        "turnover": 43.0,
+        "tide_status": "接力可做",
+        "next_step": "3进4",
+        "plate_name": "",
+        "hy": "饮料乳品",
+        "factor_hint": "环境81(接力可做) / 板块35 / 龙头64 / 接力68 / 容量43 / 风险17 / 潮汐+0 / 梯队0 / 只观察",
+        "relay_rank": 0,
+        "watch_rank": 7,
+        "relay_selection_mode": "",
+        "watch_group": "高位分歧",
+        "score_label": "观察因子",
+        "placement_label": "观察池",
+        "leader_factor_score": 64.0,
+        "relay_factor_score": 68.0,
+        "leader_philosophy_score": 20.0,
+        "break_risk": 97.0,
+        "environment_score": 81.0,
+        "capacity_factor_score": 43.0,
+        "step_context_score": 89.0,
+        "tide_relay_gate": 0.0,
+        "theme_ladder_profile": {
+          "label": "",
+          "score": 0.0,
+          "gap_count": 0,
+          "front_count": 0,
+          "leader_boards": 0,
+          "has_carry": false
+        },
+        "hit_rules": [],
+        "block_reasons": [],
+        "reason_html": "<span class=\"reason-bits\">近7日新高 · 高度修复 · 反复回封 · 早封 · 晋级生态强(56%/43%) · 断板风险高 · 分歧偏大</span><div class=\"exp-wrap\"><div class=\"exp-row\"><span class=\"exp-pill pill-pre\">预期</span>高开（+0%~+2%%）+ 竞价量能≥0.23亿</div><div class=\"exp-row\"><span class=\"exp-pill pill-hi\">超预期</span>高开≥+2%% + 竞价量能≥0.23亿</div><div class=\"exp-row\"><span class=\"exp-pill pill-lo\">低预期</span>低于+0%% 或 竞价量能<0.16亿</div></div>",
+        "reason_text": "近7日新高 · 高度修复 · 反复回封 · 早封 · 晋级生态强(56%/43%) · 断板风险高 · 分歧偏大 预期 高开（+0%~+2%%）+ 竞价量能≥0.23亿 超预期 高开≥+2%% + 竞价量能≥0.23亿 低预期 低于+0%% 或 竞价量能",
+        "expectation": {
+          "expected_text": "高开（+0%~+2%%）+ 竞价量能≥0.23亿",
+          "super_text": "高开≥+2%% + 竞价量能≥0.23亿",
+          "low_text": "低于+0%% 或 竞价量能",
+          "expected_range": [
+            0.0,
+            2.0
+          ],
+          "super_gap_min": 2.0,
+          "auction_amount_min_yi": null,
+          "surge_pct_min": null,
+          "volume_expand_ratio": null,
+          "super_requires_reseal": false,
+          "super_requires_open_board_limit": null,
+          "seal_amount_min_yi": null,
+          "raw_text": "近7日新高 · 高度修复 · 反复回封 · 早封 · 晋级生态强(56%/43%) · 断板风险高 · 分歧偏大 预期 高开（+0%~+2%%）+ 竞价量能≥0.23亿 超预期 高开≥+2%% + 竞价量能≥0.23亿 低预期 低于+0%% 或 竞价量能"
+        },
+        "trade_date10": "2026-08-13",
+        "daily_rank": 10,
+        "performance": {
+          "open_check": {
+            "status": "pending",
+            "label": "谨慎接力",
+            "gap_pct": 10.0,
+            "note": "开盘高开 +10.00% 大于 5% ，先观察承接，不按固定买入直接入场。",
+            "can_enter": false,
+            "prev_close": 4.2,
+            "open_price": 4.62,
+            "close_price": 4.62,
+            "close_pct": 10.0,
+            "gap_trap": false
+          },
+          "next_day": {
+            "status": "skipped",
+            "label": "未入场",
+            "note": "开盘高开 +10.00% 大于 5% ，先观察承接，不按固定买入直接入场。",
+            "gap_pct": 10.0,
+            "gap_trap": false
+          },
+          "hold_2d": {
+            "status": "skipped",
+            "label": "未入场",
+            "note": "开盘高开 +10.00% 大于 5% ，先观察承接，不按固定买入直接入场。",
+            "gap_pct": 10.0,
+            "gap_trap": false
+          },
+          "hold_3d": {
+            "status": "skipped",
+            "label": "未入场",
+            "note": "开盘高开 +10.00% 大于 5% ，先观察承接，不按固定买入直接入场。",
+            "gap_pct": 10.0,
+            "gap_trap": false
+          }
+        }
       }
     ],
     "diagnostics": {
       "price_history": {
         "source": "cache+api",
-        "fetched": 281,
-        "cached": 0,
+        "fetched": 240,
+        "cached": 41,
         "missing": [
           "000003",
           "920305"
@@ -148409,34 +149986,18 @@
         "920305",
         "920305",
         "920305",
-        "002229",
-        "002031",
         "600162",
-        "000802",
-        "002081",
-        "000715",
-        "000692",
         "600721",
-        "002248",
-        "002329",
         "605179"
       ],
       "display_only_codes": [
-        "002229",
-        "002031",
         "600162",
         "000003",
-        "000802",
-        "002081",
         "920305",
-        "000715",
         "920305",
-        "000692",
         "920305",
         "000004",
         "600721",
-        "002248",
-        "002329",
         "605179"
       ]
     }
@@ -149994,7 +151555,7 @@
     "asOf": "2026-08-12",
     "requestedDate": "2026-08-13",
     "source": "https://www.duanxianxia.com/web/platerotat",
-    "refreshedAt": "2026-08-13T11:40:29+08:00",
+    "refreshedAt": "2026-08-13T11:53:59+08:00",
     "stale": true
   },
   "conceptFundFlowTop": [
