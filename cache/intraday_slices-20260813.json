@@ -2,7 +2,7 @@
   "schema": "intraday_snapshot_v1",
   "render_mode": "snapshot_stream",
   "date": "2026-08-13",
-  "count": 12,
+  "count": 13,
   "interval_min": null,
   "simulated": false,
   "snapshots": [
@@ -784,11 +784,78 @@
       "shift_score": 66,
       "shift_label": "修复",
       "note": "情绪整体平稳，维持当前节奏。"
+    },
+    {
+      "time": "11:30:04",
+      "ts_bj": "2026-08-13 11:30:04",
+      "date": "2026-08-13",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid_empty"
+      },
+      "pool_errors": {},
+      "zt": 54,
+      "dt": 0,
+      "zab": 22,
+      "zb": 28.9,
+      "fb": 71.1,
+      "jj": 37.0,
+      "lianban": 20,
+      "max_lb": 5,
+      "amount": "15894.6亿",
+      "bf": 0,
+      "heat": 58,
+      "risk": 26,
+      "headline": "修复",
+      "concepts": [
+        {
+          "name": "医疗服务",
+          "lead": "澳洋健康",
+          "chg_pct": null
+        },
+        {
+          "name": "汽车零部",
+          "lead": "秦安股份",
+          "chg_pct": null
+        },
+        {
+          "name": "电力",
+          "lead": "惠天热电",
+          "chg_pct": null
+        },
+        {
+          "name": "饮料乳品",
+          "lead": "一鸣食品",
+          "chg_pct": null
+        },
+        {
+          "name": "通用设备",
+          "lead": "蓝盾光电",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        },
+        {
+          "level": "warn",
+          "text": "炸板率偏高（28.9%）→ 注意回封质量"
+        }
+      ],
+      "shift_score": 65,
+      "shift_label": "修复",
+      "note": "情绪整体平稳，维持当前节奏。"
     }
   ],
   "latest": {
-    "time": "11:20:03",
-    "ts_bj": "2026-08-13 11:20:03",
+    "time": "11:30:04",
+    "ts_bj": "2026-08-13 11:30:04",
     "date": "2026-08-13",
     "source": "intraday_live",
     "provider": "必盈(实时)+必盈(实时)",
@@ -799,18 +866,18 @@
       "dtgc": "valid_empty"
     },
     "pool_errors": {},
-    "zt": 53,
+    "zt": 54,
     "dt": 0,
-    "zab": 20,
-    "zb": 27.4,
-    "fb": 72.6,
-    "jj": 37.7,
+    "zab": 22,
+    "zb": 28.9,
+    "fb": 71.1,
+    "jj": 37.0,
     "lianban": 20,
     "max_lb": 5,
-    "amount": "15423.7亿",
+    "amount": "15894.6亿",
     "bf": 0,
-    "heat": 59,
-    "risk": 24,
+    "heat": 58,
+    "risk": 26,
     "headline": "修复",
     "concepts": [
       {
@@ -846,18 +913,18 @@
       },
       {
         "level": "warn",
-        "text": "炸板率偏高（27.4%）→ 注意回封质量"
+        "text": "炸板率偏高（28.9%）→ 注意回封质量"
       }
     ],
-    "shift_score": 66,
+    "shift_score": 65,
     "shift_label": "修复",
     "note": "情绪整体平稳，维持当前节奏。"
   },
-  "updated_at": "2026-08-13 11:20:03",
-  "snapshot_sig": "2026-08-13|2026-08-13 11:20:03|12",
+  "updated_at": "2026-08-13 11:30:04",
+  "snapshot_sig": "2026-08-13|2026-08-13 11:30:04|13",
   "health": {
     "status": "valid",
-    "last_valid_at": "2026-08-13 11:20:03",
+    "last_valid_at": "2026-08-13 11:30:04",
     "rejected_reason": "",
     "source": {
       "status": "valid",
