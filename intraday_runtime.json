@@ -1,11 +1,11 @@
 {
   "schema": "intraday_runtime_v1",
   "date": "2026-08-14",
-  "updated_at": "2026-08-14 10:50:05",
+  "updated_at": "2026-08-14 11:00:04",
   "source": "必盈(实时)+必盈(实时)",
   "latest": {
-    "time": "10:50:05",
-    "ts_bj": "2026-08-14 10:50:05",
+    "time": "11:00:04",
+    "ts_bj": "2026-08-14 11:00:04",
     "date": "2026-08-14",
     "source": "intraday_live",
     "provider": "必盈(实时)+必盈(实时)",
@@ -16,15 +16,15 @@
       "dtgc": "valid"
     },
     "pool_errors": {},
-    "zt": 39,
+    "zt": 40,
     "dt": 6,
     "zab": 17,
-    "zb": 30.4,
-    "fb": 69.6,
-    "jj": 28.2,
+    "zb": 29.8,
+    "fb": 70.2,
+    "jj": 27.5,
     "lianban": 11,
     "max_lb": 5,
-    "amount": "11714.5亿",
+    "amount": "12336.1亿",
     "bf": 0,
     "heat": 53,
     "risk": 33,
@@ -63,7 +63,7 @@
       },
       {
         "level": "warn",
-        "text": "炸板率偏高（30.4%）→ 注意回封质量"
+        "text": "炸板率偏高（29.8%）→ 注意回封质量"
       }
     ],
     "shift_score": 59,
@@ -676,40 +676,107 @@
       "shift_score": 59,
       "shift_label": "分歧",
       "note": "情绪整体平稳，维持当前节奏。"
+    },
+    {
+      "time": "11:00:04",
+      "ts_bj": "2026-08-14 11:00:04",
+      "date": "2026-08-14",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid"
+      },
+      "pool_errors": {},
+      "zt": 40,
+      "dt": 6,
+      "zab": 17,
+      "zb": 29.8,
+      "fb": 70.2,
+      "jj": 27.5,
+      "lianban": 11,
+      "max_lb": 5,
+      "amount": "12336.1亿",
+      "bf": 0,
+      "heat": 53,
+      "risk": 33,
+      "headline": "分歧",
+      "concepts": [
+        {
+          "name": "汽车零部",
+          "lead": "坤泰股份",
+          "chg_pct": null
+        },
+        {
+          "name": "通信设备",
+          "lead": "共进股份",
+          "chg_pct": null
+        },
+        {
+          "name": "装修装饰",
+          "lead": "金 螳 螂",
+          "chg_pct": null
+        },
+        {
+          "name": "化学纤维",
+          "lead": "华西股份",
+          "chg_pct": null
+        },
+        {
+          "name": "医疗服务",
+          "lead": "澳洋健康",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        },
+        {
+          "level": "warn",
+          "text": "炸板率偏高（29.8%）→ 注意回封质量"
+        }
+      ],
+      "shift_score": 59,
+      "shift_label": "分歧",
+      "note": "情绪整体平稳，维持当前节奏。"
     }
   ],
   "indices": [
     {
       "name": "上证指数",
       "code": "000001.SH",
-      "val": 3918.487,
-      "chg": -0.21589191653096132,
-      "cje": 537868679900.0,
-      "t": "2026-08-14 10:50:03"
+      "val": 3910.849,
+      "chg": -0.4103932680836214,
+      "cje": 567045531400.0,
+      "t": "2026-08-14 11:00:00"
     },
     {
       "name": "深证成指",
       "code": "399001.SZ",
-      "val": 14311.615,
-      "chg": 0.1551705098071757,
-      "cje": 633453829800.0,
-      "t": "2026-08-14 10:50:03"
+      "val": 14270.885,
+      "chg": -0.12986511299740663,
+      "cje": 666006643000.0,
+      "t": "2026-08-14 10:59:57"
     },
     {
       "name": "创业板指",
       "code": "399006.SZ",
-      "val": 3616.306,
-      "chg": 0.8439106837257645,
-      "cje": 304595090700.0,
-      "t": "2026-08-14 10:50:03"
+      "val": 3603.868,
+      "chg": 0.49706598610222513,
+      "cje": 320517089500.0,
+      "t": "2026-08-14 10:59:57"
     }
   ],
   "asOf": {
-    "indices": "10:50:03"
+    "indices": "10:59:57"
   },
   "health": {
     "status": "valid",
-    "last_valid_at": "2026-08-14 10:50:05",
+    "last_valid_at": "2026-08-14 11:00:04",
     "rejected_reason": "",
     "source": {
       "status": "valid",
@@ -727,8 +794,8 @@
       "message": "intraday_coverage_collecting",
       "date": "2026-08-14",
       "expected_count": 26,
-      "due_count": 9,
-      "observed_count": 9,
+      "due_count": 10,
+      "observed_count": 10,
       "observed_slots": [
         "09:30",
         "09:40",
@@ -738,25 +805,26 @@
         "10:20",
         "10:30",
         "10:40",
-        "10:50"
+        "10:50",
+        "11:00"
       ],
       "missing_slots": [],
       "duplicate_slots": [],
       "out_of_session": [],
       "monotonic": true,
-      "morning_coverage": 9,
+      "morning_coverage": 10,
       "afternoon_coverage": 0
     }
   },
   "live": {
     "market": {
-      "zt": 39,
+      "zt": 40,
       "dt": 6,
       "zab": 17,
-      "zab_rate": 30.4,
+      "zab_rate": 29.8,
       "lianban": 11,
       "max_lianban": 5,
-      "amount": "11714.5亿"
+      "amount": "12336.1亿"
     },
     "alerts": [
       {
@@ -765,7 +833,7 @@
       },
       {
         "level": "warn",
-        "text": "炸板率偏高（30.4%）→ 注意回封质量"
+        "text": "炸板率偏高（29.8%）→ 注意回封质量"
       }
     ],
     "concepts": [
