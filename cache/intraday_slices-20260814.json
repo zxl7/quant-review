@@ -2,7 +2,7 @@
   "schema": "intraday_snapshot_v1",
   "render_mode": "snapshot_stream",
   "date": "2026-08-14",
-  "count": 2,
+  "count": 3,
   "interval_min": null,
   "simulated": false,
   "snapshots": [
@@ -142,11 +142,78 @@
       "shift_score": 60,
       "shift_label": "修复",
       "note": "承接增强、分歧收敛，情绪明显回暖。"
+    },
+    {
+      "time": "09:50:03",
+      "ts_bj": "2026-08-14 09:50:03",
+      "date": "2026-08-14",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid"
+      },
+      "pool_errors": {},
+      "zt": 25,
+      "dt": 7,
+      "zab": 10,
+      "zb": 28.6,
+      "fb": 71.4,
+      "jj": 36.0,
+      "lianban": 9,
+      "max_lb": 3,
+      "amount": "5831.3亿",
+      "bf": 0,
+      "heat": 49,
+      "risk": 31,
+      "headline": "分歧",
+      "concepts": [
+        {
+          "name": "化学纤维",
+          "lead": "华西股份",
+          "chg_pct": null
+        },
+        {
+          "name": "医疗服务",
+          "lead": "澳洋健康",
+          "chg_pct": null
+        },
+        {
+          "name": "通信设备",
+          "lead": "共进股份",
+          "chg_pct": null
+        },
+        {
+          "name": "元件",
+          "lead": "华正新材",
+          "chg_pct": null
+        },
+        {
+          "name": "专用设备",
+          "lead": "快意电梯",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        },
+        {
+          "level": "warn",
+          "text": "炸板率偏高（28.6%）→ 注意回封质量"
+        }
+      ],
+      "shift_score": 57,
+      "shift_label": "分歧",
+      "note": "情绪略有回落，注意午后分歧。"
     }
   ],
   "latest": {
-    "time": "09:40:03",
-    "ts_bj": "2026-08-14 09:40:03",
+    "time": "09:50:03",
+    "ts_bj": "2026-08-14 09:50:03",
     "date": "2026-08-14",
     "source": "intraday_live",
     "provider": "必盈(实时)+必盈(实时)",
@@ -157,30 +224,20 @@
       "dtgc": "valid"
     },
     "pool_errors": {},
-    "zt": 16,
-    "dt": 3,
-    "zab": 8,
-    "zb": 33.3,
-    "fb": 66.7,
-    "jj": 50.0,
-    "lianban": 8,
+    "zt": 25,
+    "dt": 7,
+    "zab": 10,
+    "zb": 28.6,
+    "fb": 71.4,
+    "jj": 36.0,
+    "lianban": 9,
     "max_lb": 3,
-    "amount": "3841.8亿",
+    "amount": "5831.3亿",
     "bf": 0,
     "heat": 49,
-    "risk": 26,
-    "headline": "修复",
+    "risk": 31,
+    "headline": "分歧",
     "concepts": [
-      {
-        "name": "软件开发",
-        "lead": "理工能科",
-        "chg_pct": null
-      },
-      {
-        "name": "塑料",
-        "lead": "天洋新材",
-        "chg_pct": null
-      },
       {
         "name": "化学纤维",
         "lead": "华西股份",
@@ -192,8 +249,18 @@
         "chg_pct": null
       },
       {
-        "name": "汽车零部",
-        "lead": "坤泰股份",
+        "name": "通信设备",
+        "lead": "共进股份",
+        "chg_pct": null
+      },
+      {
+        "name": "元件",
+        "lead": "华正新材",
+        "chg_pct": null
+      },
+      {
+        "name": "专用设备",
+        "lead": "快意电梯",
         "chg_pct": null
       }
     ],
@@ -204,18 +271,18 @@
       },
       {
         "level": "warn",
-        "text": "炸板率偏高（33.3%）→ 注意回封质量"
+        "text": "炸板率偏高（28.6%）→ 注意回封质量"
       }
     ],
-    "shift_score": 60,
-    "shift_label": "修复",
-    "note": "承接增强、分歧收敛，情绪明显回暖。"
+    "shift_score": 57,
+    "shift_label": "分歧",
+    "note": "情绪略有回落，注意午后分歧。"
   },
-  "updated_at": "2026-08-14 09:40:03",
-  "snapshot_sig": "2026-08-14|2026-08-14 09:40:03|2",
+  "updated_at": "2026-08-14 09:50:03",
+  "snapshot_sig": "2026-08-14|2026-08-14 09:50:03|3",
   "health": {
     "status": "valid",
-    "last_valid_at": "2026-08-14 09:40:03",
+    "last_valid_at": "2026-08-14 09:50:03",
     "rejected_reason": "",
     "source": {
       "status": "valid",
