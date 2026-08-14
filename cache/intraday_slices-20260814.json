@@ -2,7 +2,7 @@
   "schema": "intraday_snapshot_v1",
   "render_mode": "snapshot_stream",
   "date": "2026-08-14",
-  "count": 20,
+  "count": 21,
   "interval_min": null,
   "simulated": false,
   "snapshots": [
@@ -1348,11 +1348,78 @@
       "shift_score": 58,
       "shift_label": "分歧",
       "note": "情绪整体平稳，维持当前节奏。"
+    },
+    {
+      "time": "14:10:05",
+      "ts_bj": "2026-08-14 14:10:05",
+      "date": "2026-08-14",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid"
+      },
+      "pool_errors": {},
+      "zt": 51,
+      "dt": 6,
+      "zab": 22,
+      "zb": 30.1,
+      "fb": 69.9,
+      "jj": 21.6,
+      "lianban": 11,
+      "max_lb": 5,
+      "amount": "17797.3亿",
+      "bf": 0,
+      "heat": 54,
+      "risk": 35,
+      "headline": "分歧",
+      "concepts": [
+        {
+          "name": "通信设备",
+          "lead": "共进股份",
+          "chg_pct": null
+        },
+        {
+          "name": "装修装饰",
+          "lead": "金 螳 螂",
+          "chg_pct": null
+        },
+        {
+          "name": "汽车零部",
+          "lead": "坤泰股份",
+          "chg_pct": null
+        },
+        {
+          "name": "环境治理",
+          "lead": "祥龙电业",
+          "chg_pct": null
+        },
+        {
+          "name": "化学纤维",
+          "lead": "华西股份",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        },
+        {
+          "level": "warn",
+          "text": "炸板率偏高（30.1%）→ 注意回封质量"
+        }
+      ],
+      "shift_score": 59,
+      "shift_label": "分歧",
+      "note": "情绪整体平稳，维持当前节奏。"
     }
   ],
   "latest": {
-    "time": "14:00:08",
-    "ts_bj": "2026-08-14 14:00:08",
+    "time": "14:10:05",
+    "ts_bj": "2026-08-14 14:10:05",
     "date": "2026-08-14",
     "source": "intraday_live",
     "provider": "必盈(实时)+必盈(实时)",
@@ -1363,23 +1430,28 @@
       "dtgc": "valid"
     },
     "pool_errors": {},
-    "zt": 49,
+    "zt": 51,
     "dt": 6,
-    "zab": 21,
-    "zb": 30.0,
-    "fb": 70.0,
-    "jj": 22.4,
+    "zab": 22,
+    "zb": 30.1,
+    "fb": 69.9,
+    "jj": 21.6,
     "lianban": 11,
     "max_lb": 5,
-    "amount": "17236.2亿",
+    "amount": "17797.3亿",
     "bf": 0,
-    "heat": 53,
+    "heat": 54,
     "risk": 35,
     "headline": "分歧",
     "concepts": [
       {
         "name": "通信设备",
         "lead": "共进股份",
+        "chg_pct": null
+      },
+      {
+        "name": "装修装饰",
+        "lead": "金 螳 螂",
         "chg_pct": null
       },
       {
@@ -1390,11 +1462,6 @@
       {
         "name": "环境治理",
         "lead": "祥龙电业",
-        "chg_pct": null
-      },
-      {
-        "name": "装修装饰",
-        "lead": "金 螳 螂",
         "chg_pct": null
       },
       {
@@ -1410,18 +1477,18 @@
       },
       {
         "level": "warn",
-        "text": "炸板率偏高（30.0%）→ 注意回封质量"
+        "text": "炸板率偏高（30.1%）→ 注意回封质量"
       }
     ],
-    "shift_score": 58,
+    "shift_score": 59,
     "shift_label": "分歧",
     "note": "情绪整体平稳，维持当前节奏。"
   },
-  "updated_at": "2026-08-14 14:00:08",
-  "snapshot_sig": "2026-08-14|2026-08-14 14:00:08|20",
+  "updated_at": "2026-08-14 14:10:05",
+  "snapshot_sig": "2026-08-14|2026-08-14 14:10:05|21",
   "health": {
     "status": "valid",
-    "last_valid_at": "2026-08-14 14:00:08",
+    "last_valid_at": "2026-08-14 14:10:05",
     "rejected_reason": "",
     "source": {
       "status": "valid",
