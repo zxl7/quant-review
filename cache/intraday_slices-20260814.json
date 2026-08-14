@@ -2,7 +2,7 @@
   "schema": "intraday_snapshot_v1",
   "render_mode": "snapshot_stream",
   "date": "2026-08-14",
-  "count": 7,
+  "count": 8,
   "interval_min": null,
   "simulated": false,
   "snapshots": [
@@ -477,11 +477,78 @@
       "shift_score": 61,
       "shift_label": "修复",
       "note": "情绪整体平稳，维持当前节奏。"
+    },
+    {
+      "time": "10:40:04",
+      "ts_bj": "2026-08-14 10:40:04",
+      "date": "2026-08-14",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid"
+      },
+      "pool_errors": {},
+      "zt": 37,
+      "dt": 6,
+      "zab": 16,
+      "zb": 30.2,
+      "fb": 69.8,
+      "jj": 29.7,
+      "lianban": 11,
+      "max_lb": 5,
+      "amount": "11099.8亿",
+      "bf": 0,
+      "heat": 53,
+      "risk": 33,
+      "headline": "分歧",
+      "concepts": [
+        {
+          "name": "汽车零部",
+          "lead": "坤泰股份",
+          "chg_pct": null
+        },
+        {
+          "name": "通信设备",
+          "lead": "共进股份",
+          "chg_pct": null
+        },
+        {
+          "name": "装修装饰",
+          "lead": "金 螳 螂",
+          "chg_pct": null
+        },
+        {
+          "name": "化学纤维",
+          "lead": "华西股份",
+          "chg_pct": null
+        },
+        {
+          "name": "医疗服务",
+          "lead": "澳洋健康",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        },
+        {
+          "level": "warn",
+          "text": "炸板率偏高（30.2%）→ 注意回封质量"
+        }
+      ],
+      "shift_score": 59,
+      "shift_label": "分歧",
+      "note": "情绪略有回落，注意午后分歧。"
     }
   ],
   "latest": {
-    "time": "10:30:03",
-    "ts_bj": "2026-08-14 10:30:03",
+    "time": "10:40:04",
+    "ts_bj": "2026-08-14 10:40:04",
     "date": "2026-08-14",
     "source": "intraday_live",
     "provider": "必盈(实时)+必盈(实时)",
@@ -492,23 +559,28 @@
       "dtgc": "valid"
     },
     "pool_errors": {},
-    "zt": 38,
+    "zt": 37,
     "dt": 6,
-    "zab": 14,
-    "zb": 26.9,
-    "fb": 73.1,
-    "jj": 31.6,
-    "lianban": 12,
+    "zab": 16,
+    "zb": 30.2,
+    "fb": 69.8,
+    "jj": 29.7,
+    "lianban": 11,
     "max_lb": 5,
-    "amount": "10279.7亿",
+    "amount": "11099.8亿",
     "bf": 0,
-    "heat": 55,
-    "risk": 30,
-    "headline": "修复",
+    "heat": 53,
+    "risk": 33,
+    "headline": "分歧",
     "concepts": [
       {
         "name": "汽车零部",
         "lead": "坤泰股份",
+        "chg_pct": null
+      },
+      {
+        "name": "通信设备",
+        "lead": "共进股份",
         "chg_pct": null
       },
       {
@@ -525,11 +597,6 @@
         "name": "医疗服务",
         "lead": "澳洋健康",
         "chg_pct": null
-      },
-      {
-        "name": "通信设备",
-        "lead": "共进股份",
-        "chg_pct": null
       }
     ],
     "alerts": [
@@ -539,18 +606,18 @@
       },
       {
         "level": "warn",
-        "text": "炸板率偏高（26.9%）→ 注意回封质量"
+        "text": "炸板率偏高（30.2%）→ 注意回封质量"
       }
     ],
-    "shift_score": 61,
-    "shift_label": "修复",
-    "note": "情绪整体平稳，维持当前节奏。"
+    "shift_score": 59,
+    "shift_label": "分歧",
+    "note": "情绪略有回落，注意午后分歧。"
   },
-  "updated_at": "2026-08-14 10:30:03",
-  "snapshot_sig": "2026-08-14|2026-08-14 10:30:03|7",
+  "updated_at": "2026-08-14 10:40:04",
+  "snapshot_sig": "2026-08-14|2026-08-14 10:40:04|8",
   "health": {
     "status": "valid",
-    "last_valid_at": "2026-08-14 10:30:03",
+    "last_valid_at": "2026-08-14 10:40:04",
     "rejected_reason": "",
     "source": {
       "status": "valid",
