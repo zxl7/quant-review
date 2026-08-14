@@ -1,11 +1,11 @@
 {
   "schema": "intraday_runtime_v1",
   "date": "2026-08-14",
-  "updated_at": "2026-08-14 10:10:04",
+  "updated_at": "2026-08-14 10:20:04",
   "source": "必盈(实时)+必盈(实时)",
   "latest": {
-    "time": "10:10:04",
-    "ts_bj": "2026-08-14 10:10:04",
+    "time": "10:20:04",
+    "ts_bj": "2026-08-14 10:20:04",
     "date": "2026-08-14",
     "source": "intraday_live",
     "provider": "必盈(实时)+必盈(实时)",
@@ -18,23 +18,18 @@
     "pool_errors": {},
     "zt": 33,
     "dt": 6,
-    "zab": 12,
-    "zb": 26.7,
-    "fb": 73.3,
-    "jj": 30.3,
-    "lianban": 10,
-    "max_lb": 3,
-    "amount": "8443.9亿",
+    "zab": 13,
+    "zb": 28.3,
+    "fb": 71.7,
+    "jj": 33.3,
+    "lianban": 11,
+    "max_lb": 5,
+    "amount": "9365.6亿",
     "bf": 0,
-    "heat": 50,
-    "risk": 29,
-    "headline": "分歧",
+    "heat": 54,
+    "risk": 30,
+    "headline": "修复",
     "concepts": [
-      {
-        "name": "专用设备",
-        "lead": "创力集团",
-        "chg_pct": null
-      },
       {
         "name": "化学纤维",
         "lead": "华西股份",
@@ -54,6 +49,11 @@
         "name": "通信设备",
         "lead": "共进股份",
         "chg_pct": null
+      },
+      {
+        "name": "软件开发",
+        "lead": "理工能科",
+        "chg_pct": null
       }
     ],
     "alerts": [
@@ -63,11 +63,11 @@
       },
       {
         "level": "warn",
-        "text": "炸板率偏高（26.7%）→ 注意回封质量"
+        "text": "炸板率偏高（28.3%）→ 注意回封质量"
       }
     ],
-    "shift_score": 59,
-    "shift_label": "分歧",
+    "shift_score": 61,
+    "shift_label": "修复",
     "note": "情绪边际修复，但仍需确认持续性。"
   },
   "snapshots": [
@@ -408,40 +408,107 @@
       "shift_score": 59,
       "shift_label": "分歧",
       "note": "情绪边际修复，但仍需确认持续性。"
+    },
+    {
+      "time": "10:20:04",
+      "ts_bj": "2026-08-14 10:20:04",
+      "date": "2026-08-14",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid"
+      },
+      "pool_errors": {},
+      "zt": 33,
+      "dt": 6,
+      "zab": 13,
+      "zb": 28.3,
+      "fb": 71.7,
+      "jj": 33.3,
+      "lianban": 11,
+      "max_lb": 5,
+      "amount": "9365.6亿",
+      "bf": 0,
+      "heat": 54,
+      "risk": 30,
+      "headline": "修复",
+      "concepts": [
+        {
+          "name": "化学纤维",
+          "lead": "华西股份",
+          "chg_pct": null
+        },
+        {
+          "name": "医疗服务",
+          "lead": "澳洋健康",
+          "chg_pct": null
+        },
+        {
+          "name": "汽车零部",
+          "lead": "坤泰股份",
+          "chg_pct": null
+        },
+        {
+          "name": "通信设备",
+          "lead": "共进股份",
+          "chg_pct": null
+        },
+        {
+          "name": "软件开发",
+          "lead": "理工能科",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        },
+        {
+          "level": "warn",
+          "text": "炸板率偏高（28.3%）→ 注意回封质量"
+        }
+      ],
+      "shift_score": 61,
+      "shift_label": "修复",
+      "note": "情绪边际修复，但仍需确认持续性。"
     }
   ],
   "indices": [
     {
       "name": "上证指数",
       "code": "000001.SH",
-      "val": 3925.019,
-      "chg": -0.04955480886639854,
-      "cje": 387571685800.0,
-      "t": "2026-08-14 10:10:03"
+      "val": 3921.255,
+      "chg": -0.14540491193580884,
+      "cje": 429479863100.0,
+      "t": "2026-08-14 10:20:03"
     },
     {
       "name": "深证成指",
       "code": "399001.SZ",
-      "val": 14284.645,
-      "chg": -0.03357024018151767,
-      "cje": 456255715300.0,
-      "t": "2026-08-14 10:10:00"
+      "val": 14286.562,
+      "chg": -0.020154740821924328,
+      "cje": 506745366800.0,
+      "t": "2026-08-14 10:19:54"
     },
     {
       "name": "创业板指",
       "code": "399006.SZ",
-      "val": 3593.052,
-      "chg": 0.19545220177226022,
-      "cje": 214749244300.0,
-      "t": "2026-08-14 10:10:00"
+      "val": 3598.783,
+      "chg": 0.3552662363501994,
+      "cje": 240504428000.0,
+      "t": "2026-08-14 10:20:00"
     }
   ],
   "asOf": {
-    "indices": "10:10:00"
+    "indices": "10:20:00"
   },
   "health": {
     "status": "valid",
-    "last_valid_at": "2026-08-14 10:10:04",
+    "last_valid_at": "2026-08-14 10:20:04",
     "rejected_reason": "",
     "source": {
       "status": "valid",
@@ -459,20 +526,21 @@
       "message": "intraday_coverage_collecting",
       "date": "2026-08-14",
       "expected_count": 26,
-      "due_count": 5,
-      "observed_count": 5,
+      "due_count": 6,
+      "observed_count": 6,
       "observed_slots": [
         "09:30",
         "09:40",
         "09:50",
         "10:00",
-        "10:10"
+        "10:10",
+        "10:20"
       ],
       "missing_slots": [],
       "duplicate_slots": [],
       "out_of_session": [],
       "monotonic": true,
-      "morning_coverage": 5,
+      "morning_coverage": 6,
       "afternoon_coverage": 0
     }
   },
@@ -480,11 +548,11 @@
     "market": {
       "zt": 33,
       "dt": 6,
-      "zab": 12,
-      "zab_rate": 26.7,
-      "lianban": 10,
-      "max_lianban": 3,
-      "amount": "8443.9亿"
+      "zab": 13,
+      "zab_rate": 28.3,
+      "lianban": 11,
+      "max_lianban": 5,
+      "amount": "9365.6亿"
     },
     "alerts": [
       {
@@ -493,15 +561,10 @@
       },
       {
         "level": "warn",
-        "text": "炸板率偏高（26.7%）→ 注意回封质量"
+        "text": "炸板率偏高（28.3%）→ 注意回封质量"
       }
     ],
     "concepts": [
-      {
-        "name": "专用设备",
-        "lead": "创力集团",
-        "chg_pct": null
-      },
       {
         "name": "化学纤维",
         "lead": "华西股份",
@@ -520,6 +583,11 @@
       {
         "name": "通信设备",
         "lead": "共进股份",
+        "chg_pct": null
+      },
+      {
+        "name": "软件开发",
+        "lead": "理工能科",
         "chg_pct": null
       }
     ]
