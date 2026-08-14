@@ -2,7 +2,7 @@
   "schema": "intraday_snapshot_v1",
   "render_mode": "snapshot_stream",
   "date": "2026-08-14",
-  "count": 4,
+  "count": 5,
   "interval_min": null,
   "simulated": false,
   "snapshots": [
@@ -276,11 +276,78 @@
       "shift_score": 56,
       "shift_label": "分歧",
       "note": "情绪整体平稳，维持当前节奏。"
+    },
+    {
+      "time": "10:10:04",
+      "ts_bj": "2026-08-14 10:10:04",
+      "date": "2026-08-14",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid"
+      },
+      "pool_errors": {},
+      "zt": 33,
+      "dt": 6,
+      "zab": 12,
+      "zb": 26.7,
+      "fb": 73.3,
+      "jj": 30.3,
+      "lianban": 10,
+      "max_lb": 3,
+      "amount": "8443.9亿",
+      "bf": 0,
+      "heat": 50,
+      "risk": 29,
+      "headline": "分歧",
+      "concepts": [
+        {
+          "name": "专用设备",
+          "lead": "创力集团",
+          "chg_pct": null
+        },
+        {
+          "name": "化学纤维",
+          "lead": "华西股份",
+          "chg_pct": null
+        },
+        {
+          "name": "医疗服务",
+          "lead": "澳洋健康",
+          "chg_pct": null
+        },
+        {
+          "name": "汽车零部",
+          "lead": "坤泰股份",
+          "chg_pct": null
+        },
+        {
+          "name": "通信设备",
+          "lead": "共进股份",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        },
+        {
+          "level": "warn",
+          "text": "炸板率偏高（26.7%）→ 注意回封质量"
+        }
+      ],
+      "shift_score": 59,
+      "shift_label": "分歧",
+      "note": "情绪边际修复，但仍需确认持续性。"
     }
   ],
   "latest": {
-    "time": "10:00:05",
-    "ts_bj": "2026-08-14 10:00:05",
+    "time": "10:10:04",
+    "ts_bj": "2026-08-14 10:10:04",
     "date": "2026-08-14",
     "source": "intraday_live",
     "provider": "必盈(实时)+必盈(实时)",
@@ -291,20 +358,25 @@
       "dtgc": "valid"
     },
     "pool_errors": {},
-    "zt": 27,
-    "dt": 5,
-    "zab": 13,
-    "zb": 32.5,
-    "fb": 67.5,
-    "jj": 33.3,
-    "lianban": 9,
+    "zt": 33,
+    "dt": 6,
+    "zab": 12,
+    "zb": 26.7,
+    "fb": 73.3,
+    "jj": 30.3,
+    "lianban": 10,
     "max_lb": 3,
-    "amount": "7333.4亿",
+    "amount": "8443.9亿",
     "bf": 0,
-    "heat": 47,
-    "risk": 31,
+    "heat": 50,
+    "risk": 29,
     "headline": "分歧",
     "concepts": [
+      {
+        "name": "专用设备",
+        "lead": "创力集团",
+        "chg_pct": null
+      },
       {
         "name": "化学纤维",
         "lead": "华西股份",
@@ -316,18 +388,13 @@
         "chg_pct": null
       },
       {
+        "name": "汽车零部",
+        "lead": "坤泰股份",
+        "chg_pct": null
+      },
+      {
         "name": "通信设备",
         "lead": "共进股份",
-        "chg_pct": null
-      },
-      {
-        "name": "元件",
-        "lead": "华正新材",
-        "chg_pct": null
-      },
-      {
-        "name": "医药商业",
-        "lead": "开开实业",
         "chg_pct": null
       }
     ],
@@ -338,18 +405,18 @@
       },
       {
         "level": "warn",
-        "text": "炸板率偏高（32.5%）→ 注意回封质量"
+        "text": "炸板率偏高（26.7%）→ 注意回封质量"
       }
     ],
-    "shift_score": 56,
+    "shift_score": 59,
     "shift_label": "分歧",
-    "note": "情绪整体平稳，维持当前节奏。"
+    "note": "情绪边际修复，但仍需确认持续性。"
   },
-  "updated_at": "2026-08-14 10:00:05",
-  "snapshot_sig": "2026-08-14|2026-08-14 10:00:05|4",
+  "updated_at": "2026-08-14 10:10:04",
+  "snapshot_sig": "2026-08-14|2026-08-14 10:10:04|5",
   "health": {
     "status": "valid",
-    "last_valid_at": "2026-08-14 10:00:05",
+    "last_valid_at": "2026-08-14 10:10:04",
     "rejected_reason": "",
     "source": {
       "status": "valid",
