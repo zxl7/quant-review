@@ -2,7 +2,7 @@
   "schema": "intraday_snapshot_v1",
   "render_mode": "snapshot_stream",
   "date": "2026-08-17",
-  "count": 1,
+  "count": 2,
   "interval_min": null,
   "simulated": false,
   "snapshots": [
@@ -75,61 +75,121 @@
       "shift_score": null,
       "shift_label": "数据部分可用",
       "note": "本槽位仅部分三池成功；节点已保留，缺失指标不参与判断。"
+    },
+    {
+      "time": "09:40:03",
+      "ts_bj": "2026-08-17 09:40:03",
+      "date": "2026-08-17",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid"
+      },
+      "pool_errors": {},
+      "zt": 21,
+      "dt": 1,
+      "zab": 2,
+      "zb": 8.7,
+      "fb": 91.3,
+      "jj": 61.9,
+      "lianban": 13,
+      "max_lb": 4,
+      "amount": "4040.4亿",
+      "bf": 0,
+      "heat": 65,
+      "risk": 7,
+      "headline": "走强",
+      "concepts": [
+        {
+          "name": "汽车零部",
+          "lead": "正裕工业",
+          "chg_pct": null
+        },
+        {
+          "name": "装修装饰",
+          "lead": "金 螳 螂",
+          "chg_pct": null
+        },
+        {
+          "name": "塑料",
+          "lead": "天洋新材",
+          "chg_pct": null
+        },
+        {
+          "name": "通信设备",
+          "lead": "共进股份",
+          "chg_pct": null
+        },
+        {
+          "name": "化学制药",
+          "lead": "神奇制药",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        }
+      ],
+      "shift_score": 77,
+      "shift_label": "走强",
+      "note": "承接增强、分歧收敛，情绪明显回暖。"
     }
   ],
   "latest": {
-    "time": "09:30:21",
-    "ts_bj": "2026-08-17 09:30:21",
+    "time": "09:40:03",
+    "ts_bj": "2026-08-17 09:40:03",
     "date": "2026-08-17",
     "source": "intraday_live",
-    "provider": "必盈(实时)",
-    "data_quality": "partial",
+    "provider": "必盈(实时)+必盈(实时)",
+    "data_quality": "valid",
     "pool_status": {
       "ztgc": "valid",
-      "zbgc": "failed",
-      "dtgc": "failed"
+      "zbgc": "valid",
+      "dtgc": "valid"
     },
-    "pool_errors": {
-      "zbgc": "empty_response",
-      "dtgc": "empty_response"
-    },
-    "zt": 6,
-    "dt": null,
-    "zab": null,
-    "zb": null,
-    "fb": null,
-    "jj": 66.7,
-    "lianban": 4,
+    "pool_errors": {},
+    "zt": 21,
+    "dt": 1,
+    "zab": 2,
+    "zb": 8.7,
+    "fb": 91.3,
+    "jj": 61.9,
+    "lianban": 13,
     "max_lb": 4,
-    "amount": "",
+    "amount": "4040.4亿",
     "bf": 0,
-    "heat": null,
-    "risk": null,
-    "headline": "数据部分可用",
+    "heat": 65,
+    "risk": 7,
+    "headline": "走强",
     "concepts": [
+      {
+        "name": "汽车零部",
+        "lead": "正裕工业",
+        "chg_pct": null
+      },
+      {
+        "name": "装修装饰",
+        "lead": "金 螳 螂",
+        "chg_pct": null
+      },
       {
         "name": "塑料",
         "lead": "天洋新材",
         "chg_pct": null
       },
       {
-        "name": "电子化学",
-        "lead": "中石科技",
+        "name": "通信设备",
+        "lead": "共进股份",
         "chg_pct": null
       },
       {
-        "name": "化学制品",
-        "lead": "圣达生物",
-        "chg_pct": null
-      },
-      {
-        "name": "休闲食品",
-        "lead": "桂发祥",
-        "chg_pct": null
-      },
-      {
-        "name": "农产品加",
-        "lead": "金健米业",
+        "name": "化学制药",
+        "lead": "神奇制药",
         "chg_pct": null
       }
     ],
@@ -137,33 +197,26 @@
       {
         "level": "info",
         "text": "盘中模式：强制实时拉取"
-      },
-      {
-        "level": "warn",
-        "text": "盘中三池响应不完整，保留最近有效数据"
       }
     ],
-    "shift_score": null,
-    "shift_label": "数据部分可用",
-    "note": "本槽位仅部分三池成功；节点已保留，缺失指标不参与判断。"
+    "shift_score": 77,
+    "shift_label": "走强",
+    "note": "承接增强、分歧收敛，情绪明显回暖。"
   },
-  "updated_at": "2026-08-17 09:30:21",
-  "snapshot_sig": "2026-08-17|2026-08-17 09:30:21|1",
+  "updated_at": "2026-08-17 09:40:03",
+  "snapshot_sig": "2026-08-17|2026-08-17 09:40:03|2",
   "health": {
-    "status": "degraded",
-    "last_valid_at": "2026-08-17 09:30:21",
+    "status": "valid",
+    "last_valid_at": "2026-08-17 09:40:03",
     "rejected_reason": "",
     "source": {
-      "status": "partial",
+      "status": "valid",
       "pool_status": {
         "ztgc": "valid",
-        "zbgc": "failed",
-        "dtgc": "failed"
+        "zbgc": "valid",
+        "dtgc": "valid"
       },
-      "pool_errors": {
-        "zbgc": "empty_response",
-        "dtgc": "empty_response"
-      }
+      "pool_errors": {}
     }
   }
 }
