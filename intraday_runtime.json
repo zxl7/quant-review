@@ -1,56 +1,70 @@
 {
   "schema": "intraday_runtime_v1",
   "date": "2026-08-17",
-  "updated_at": "2026-08-17 10:50:04",
-  "source": "unknown",
+  "updated_at": "2026-08-17 11:00:04",
+  "source": "必盈(实时)+必盈(实时)",
   "latest": {
-    "time": "10:50:04",
-    "ts_bj": "2026-08-17 10:50:04",
+    "time": "11:00:04",
+    "ts_bj": "2026-08-17 11:00:04",
     "date": "2026-08-17",
     "source": "intraday_live",
-    "provider": "unknown",
-    "data_quality": "unavailable",
+    "provider": "必盈(实时)+必盈(实时)",
+    "data_quality": "valid",
     "pool_status": {
-      "ztgc": "failed",
-      "zbgc": "failed",
-      "dtgc": "failed"
+      "ztgc": "valid",
+      "zbgc": "valid",
+      "dtgc": "valid"
     },
-    "pool_errors": {
-      "ztgc": "HTTP Error 429: Too Many Requests",
-      "zbgc": "HTTP Error 429: Too Many Requests",
-      "dtgc": "HTTP Error 429: Too Many Requests"
-    },
-    "zt": null,
-    "dt": null,
-    "zab": null,
-    "zb": null,
-    "fb": null,
-    "jj": null,
-    "lianban": null,
-    "max_lb": null,
-    "amount": "",
+    "pool_errors": {},
+    "zt": 67,
+    "dt": 1,
+    "zab": 9,
+    "zb": 11.8,
+    "fb": 88.2,
+    "jj": 20.9,
+    "lianban": 14,
+    "max_lb": 4,
+    "amount": "13174.4亿",
     "bf": 0,
-    "heat": null,
-    "risk": null,
-    "headline": "数据暂缺",
-    "concepts": [],
+    "heat": 61,
+    "risk": 12,
+    "headline": "走强",
+    "concepts": [
+      {
+        "name": "化学制品",
+        "lead": "圣达生物",
+        "chg_pct": null
+      },
+      {
+        "name": "塑料",
+        "lead": "天洋新材",
+        "chg_pct": null
+      },
+      {
+        "name": "化学制药",
+        "lead": "神奇制药",
+        "chg_pct": null
+      },
+      {
+        "name": "电子化学",
+        "lead": "中石科技",
+        "chg_pct": null
+      },
+      {
+        "name": "汽车零部",
+        "lead": "正裕工业",
+        "chg_pct": null
+      }
+    ],
     "alerts": [
       {
         "level": "info",
         "text": "盘中模式：强制实时拉取"
-      },
-      {
-        "level": "warn",
-        "text": "盘中三池响应不完整，保留最近有效数据"
-      },
-      {
-        "level": "warn",
-        "text": "三池请求均超时，本槽位跳过板块补抓并等待下一节点"
       }
     ],
-    "shift_score": null,
-    "shift_label": "数据暂缺",
-    "note": "本槽位三池请求均未成功，已记录数据暂缺；等待下一节点自动恢复。"
+    "shift_score": 72,
+    "shift_label": "走强",
+    "note": "承接增强、分歧收敛，情绪明显回暖。"
   },
   "snapshots": [
     {
@@ -612,38 +626,122 @@
       "shift_score": null,
       "shift_label": "数据暂缺",
       "note": "本槽位三池请求均未成功，已记录数据暂缺；等待下一节点自动恢复。"
+    },
+    {
+      "time": "11:00:04",
+      "ts_bj": "2026-08-17 11:00:04",
+      "date": "2026-08-17",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid"
+      },
+      "pool_errors": {},
+      "zt": 67,
+      "dt": 1,
+      "zab": 9,
+      "zb": 11.8,
+      "fb": 88.2,
+      "jj": 20.9,
+      "lianban": 14,
+      "max_lb": 4,
+      "amount": "13174.4亿",
+      "bf": 0,
+      "heat": 61,
+      "risk": 12,
+      "headline": "走强",
+      "concepts": [
+        {
+          "name": "化学制品",
+          "lead": "圣达生物",
+          "chg_pct": null
+        },
+        {
+          "name": "塑料",
+          "lead": "天洋新材",
+          "chg_pct": null
+        },
+        {
+          "name": "化学制药",
+          "lead": "神奇制药",
+          "chg_pct": null
+        },
+        {
+          "name": "电子化学",
+          "lead": "中石科技",
+          "chg_pct": null
+        },
+        {
+          "name": "汽车零部",
+          "lead": "正裕工业",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        }
+      ],
+      "shift_score": 72,
+      "shift_label": "走强",
+      "note": "承接增强、分歧收敛，情绪明显回暖。"
     }
   ],
-  "indices": [],
+  "indices": [
+    {
+      "name": "上证指数",
+      "code": "000001.SH",
+      "val": 3952.862,
+      "chg": 0.6540577758674465,
+      "cje": 624184199100.0,
+      "t": "2026-08-17 11:00:00"
+    },
+    {
+      "name": "深证成指",
+      "code": "399001.SZ",
+      "val": 14518.473,
+      "chg": 1.1436847691337175,
+      "cje": 692449162500.0,
+      "t": "2026-08-17 10:59:57"
+    },
+    {
+      "name": "创业板指",
+      "code": "399006.SZ",
+      "val": 3670.001,
+      "chg": 1.2051963752555341,
+      "cje": 339028122700.0,
+      "t": "2026-08-17 10:59:57"
+    }
+  ],
   "asOf": {
-    "indices": ""
+    "indices": "10:59:57"
   },
   "health": {
-    "status": "degraded",
-    "last_valid_at": "2026-08-17 10:50:04",
+    "status": "valid",
+    "last_valid_at": "2026-08-17 11:00:04",
     "rejected_reason": "",
     "source": {
-      "status": "partial",
+      "status": "valid",
       "pool_status": {
-        "ztgc": "failed",
-        "zbgc": "failed",
-        "dtgc": "failed"
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid"
       },
-      "pool_errors": {
-        "ztgc": "HTTP Error 429: Too Many Requests",
-        "zbgc": "HTTP Error 429: Too Many Requests",
-        "dtgc": "HTTP Error 429: Too Many Requests"
-      }
+      "pool_errors": {}
     },
-    "indices_status": "unavailable",
+    "indices_status": "valid",
     "coverage": {
       "ok": true,
       "status": "collecting",
       "message": "intraday_coverage_collecting",
       "date": "2026-08-17",
       "expected_count": 26,
-      "due_count": 9,
-      "observed_count": 9,
+      "due_count": 10,
+      "observed_count": 10,
       "observed_slots": [
         "09:30",
         "09:40",
@@ -653,40 +751,59 @@
         "10:20",
         "10:30",
         "10:40",
-        "10:50"
+        "10:50",
+        "11:00"
       ],
       "missing_slots": [],
       "duplicate_slots": [],
       "out_of_session": [],
       "monotonic": true,
-      "morning_coverage": 9,
+      "morning_coverage": 10,
       "afternoon_coverage": 0
     }
   },
   "live": {
     "market": {
-      "zt": null,
-      "dt": null,
-      "zab": null,
-      "zab_rate": null,
-      "lianban": null,
-      "max_lianban": null,
-      "amount": ""
+      "zt": 67,
+      "dt": 1,
+      "zab": 9,
+      "zab_rate": 11.8,
+      "lianban": 14,
+      "max_lianban": 4,
+      "amount": "13174.4亿"
     },
     "alerts": [
       {
         "level": "info",
         "text": "盘中模式：强制实时拉取"
-      },
-      {
-        "level": "warn",
-        "text": "盘中三池响应不完整，保留最近有效数据"
-      },
-      {
-        "level": "warn",
-        "text": "三池请求均超时，本槽位跳过板块补抓并等待下一节点"
       }
     ],
-    "concepts": []
+    "concepts": [
+      {
+        "name": "化学制品",
+        "lead": "圣达生物",
+        "chg_pct": null
+      },
+      {
+        "name": "塑料",
+        "lead": "天洋新材",
+        "chg_pct": null
+      },
+      {
+        "name": "化学制药",
+        "lead": "神奇制药",
+        "chg_pct": null
+      },
+      {
+        "name": "电子化学",
+        "lead": "中石科技",
+        "chg_pct": null
+      },
+      {
+        "name": "汽车零部",
+        "lead": "正裕工业",
+        "chg_pct": null
+      }
+    ]
   }
 }
