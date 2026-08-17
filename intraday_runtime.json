@@ -1,70 +1,56 @@
 {
   "schema": "intraday_runtime_v1",
   "date": "2026-08-17",
-  "updated_at": "2026-08-17 10:40:03",
-  "source": "必盈(实时)+必盈(实时)",
+  "updated_at": "2026-08-17 10:50:04",
+  "source": "unknown",
   "latest": {
-    "time": "10:40:03",
-    "ts_bj": "2026-08-17 10:40:03",
+    "time": "10:50:04",
+    "ts_bj": "2026-08-17 10:50:04",
     "date": "2026-08-17",
     "source": "intraday_live",
-    "provider": "必盈(实时)+必盈(实时)",
-    "data_quality": "valid",
+    "provider": "unknown",
+    "data_quality": "unavailable",
     "pool_status": {
-      "ztgc": "valid",
-      "zbgc": "valid",
-      "dtgc": "valid"
+      "ztgc": "failed",
+      "zbgc": "failed",
+      "dtgc": "failed"
     },
-    "pool_errors": {},
-    "zt": 60,
-    "dt": 1,
-    "zab": 12,
-    "zb": 16.7,
-    "fb": 83.3,
-    "jj": 21.7,
-    "lianban": 13,
-    "max_lb": 4,
-    "amount": "11678.7亿",
+    "pool_errors": {
+      "ztgc": "HTTP Error 429: Too Many Requests",
+      "zbgc": "HTTP Error 429: Too Many Requests",
+      "dtgc": "HTTP Error 429: Too Many Requests"
+    },
+    "zt": null,
+    "dt": null,
+    "zab": null,
+    "zb": null,
+    "fb": null,
+    "jj": null,
+    "lianban": null,
+    "max_lb": null,
+    "amount": "",
     "bf": 0,
-    "heat": 58,
-    "risk": 16,
-    "headline": "修复",
-    "concepts": [
-      {
-        "name": "化学制品",
-        "lead": "圣达生物",
-        "chg_pct": null
-      },
-      {
-        "name": "塑料",
-        "lead": "天洋新材",
-        "chg_pct": null
-      },
-      {
-        "name": "化学制药",
-        "lead": "神奇制药",
-        "chg_pct": null
-      },
-      {
-        "name": "汽车零部",
-        "lead": "正裕工业",
-        "chg_pct": null
-      },
-      {
-        "name": "一般零售",
-        "lead": "供销大集",
-        "chg_pct": null
-      }
-    ],
+    "heat": null,
+    "risk": null,
+    "headline": "数据暂缺",
+    "concepts": [],
     "alerts": [
       {
         "level": "info",
         "text": "盘中模式：强制实时拉取"
+      },
+      {
+        "level": "warn",
+        "text": "盘中三池响应不完整，保留最近有效数据"
+      },
+      {
+        "level": "warn",
+        "text": "三池请求均超时，本槽位跳过板块补抓并等待下一节点"
       }
     ],
-    "shift_score": 69,
-    "shift_label": "修复",
-    "note": "情绪整体平稳，维持当前节奏。"
+    "shift_score": null,
+    "shift_label": "数据暂缺",
+    "note": "本槽位三池请求均未成功，已记录数据暂缺；等待下一节点自动恢复。"
   },
   "snapshots": [
     {
@@ -577,59 +563,87 @@
       "shift_score": 69,
       "shift_label": "修复",
       "note": "情绪整体平稳，维持当前节奏。"
-    }
-  ],
-  "indices": [
-    {
-      "name": "上证指数",
-      "code": "000001.SH",
-      "val": 3946.545,
-      "chg": 0.4932042770683092,
-      "cje": 554021062000.0,
-      "t": "2026-08-17 10:40:00"
     },
     {
-      "name": "深证成指",
-      "code": "399001.SZ",
-      "val": 14453.046,
-      "chg": 0.6878842270663748,
-      "cje": 613496131600.0,
-      "t": "2026-08-17 10:39:57"
-    },
-    {
-      "name": "创业板指",
-      "code": "399006.SZ",
-      "val": 3649.87,
-      "chg": 0.6500570692361896,
-      "cje": 300465078500.0,
-      "t": "2026-08-17 10:40:00"
+      "time": "10:50:04",
+      "ts_bj": "2026-08-17 10:50:04",
+      "date": "2026-08-17",
+      "source": "intraday_live",
+      "provider": "unknown",
+      "data_quality": "unavailable",
+      "pool_status": {
+        "ztgc": "failed",
+        "zbgc": "failed",
+        "dtgc": "failed"
+      },
+      "pool_errors": {
+        "ztgc": "HTTP Error 429: Too Many Requests",
+        "zbgc": "HTTP Error 429: Too Many Requests",
+        "dtgc": "HTTP Error 429: Too Many Requests"
+      },
+      "zt": null,
+      "dt": null,
+      "zab": null,
+      "zb": null,
+      "fb": null,
+      "jj": null,
+      "lianban": null,
+      "max_lb": null,
+      "amount": "",
+      "bf": 0,
+      "heat": null,
+      "risk": null,
+      "headline": "数据暂缺",
+      "concepts": [],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        },
+        {
+          "level": "warn",
+          "text": "盘中三池响应不完整，保留最近有效数据"
+        },
+        {
+          "level": "warn",
+          "text": "三池请求均超时，本槽位跳过板块补抓并等待下一节点"
+        }
+      ],
+      "shift_score": null,
+      "shift_label": "数据暂缺",
+      "note": "本槽位三池请求均未成功，已记录数据暂缺；等待下一节点自动恢复。"
     }
   ],
+  "indices": [],
   "asOf": {
-    "indices": "10:40:00"
+    "indices": ""
   },
   "health": {
-    "status": "valid",
-    "last_valid_at": "2026-08-17 10:40:03",
+    "status": "degraded",
+    "last_valid_at": "2026-08-17 10:50:04",
     "rejected_reason": "",
     "source": {
-      "status": "valid",
+      "status": "partial",
       "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid"
+        "ztgc": "failed",
+        "zbgc": "failed",
+        "dtgc": "failed"
       },
-      "pool_errors": {}
+      "pool_errors": {
+        "ztgc": "HTTP Error 429: Too Many Requests",
+        "zbgc": "HTTP Error 429: Too Many Requests",
+        "dtgc": "HTTP Error 429: Too Many Requests"
+      }
     },
-    "indices_status": "valid",
+    "indices_status": "unavailable",
     "coverage": {
       "ok": true,
       "status": "collecting",
       "message": "intraday_coverage_collecting",
       "date": "2026-08-17",
       "expected_count": 26,
-      "due_count": 8,
-      "observed_count": 8,
+      "due_count": 9,
+      "observed_count": 9,
       "observed_slots": [
         "09:30",
         "09:40",
@@ -638,58 +652,41 @@
         "10:10",
         "10:20",
         "10:30",
-        "10:40"
+        "10:40",
+        "10:50"
       ],
       "missing_slots": [],
       "duplicate_slots": [],
       "out_of_session": [],
       "monotonic": true,
-      "morning_coverage": 8,
+      "morning_coverage": 9,
       "afternoon_coverage": 0
     }
   },
   "live": {
     "market": {
-      "zt": 60,
-      "dt": 1,
-      "zab": 12,
-      "zab_rate": 16.7,
-      "lianban": 13,
-      "max_lianban": 4,
-      "amount": "11678.7亿"
+      "zt": null,
+      "dt": null,
+      "zab": null,
+      "zab_rate": null,
+      "lianban": null,
+      "max_lianban": null,
+      "amount": ""
     },
     "alerts": [
       {
         "level": "info",
         "text": "盘中模式：强制实时拉取"
+      },
+      {
+        "level": "warn",
+        "text": "盘中三池响应不完整，保留最近有效数据"
+      },
+      {
+        "level": "warn",
+        "text": "三池请求均超时，本槽位跳过板块补抓并等待下一节点"
       }
     ],
-    "concepts": [
-      {
-        "name": "化学制品",
-        "lead": "圣达生物",
-        "chg_pct": null
-      },
-      {
-        "name": "塑料",
-        "lead": "天洋新材",
-        "chg_pct": null
-      },
-      {
-        "name": "化学制药",
-        "lead": "神奇制药",
-        "chg_pct": null
-      },
-      {
-        "name": "汽车零部",
-        "lead": "正裕工业",
-        "chg_pct": null
-      },
-      {
-        "name": "一般零售",
-        "lead": "供销大集",
-        "chg_pct": null
-      }
-    ]
+    "concepts": []
   }
 }
