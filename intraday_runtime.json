@@ -1,46 +1,38 @@
 {
   "schema": "intraday_runtime_v1",
   "date": "2026-08-18",
-  "updated_at": "2026-08-18 09:30:27",
-  "source": "必盈(实时)",
+  "updated_at": "2026-08-18 09:40:04",
+  "source": "必盈(实时)+必盈(实时)",
   "latest": {
-    "time": "09:30:27",
-    "ts_bj": "2026-08-18 09:30:27",
+    "time": "09:40:04",
+    "ts_bj": "2026-08-18 09:40:04",
     "date": "2026-08-18",
     "source": "intraday_live",
-    "provider": "必盈(实时)",
-    "data_quality": "partial",
+    "provider": "必盈(实时)+必盈(实时)",
+    "data_quality": "valid",
     "pool_status": {
       "ztgc": "valid",
-      "zbgc": "failed",
-      "dtgc": "failed"
+      "zbgc": "valid",
+      "dtgc": "valid"
     },
-    "pool_errors": {
-      "zbgc": "empty_response",
-      "dtgc": "empty_response"
-    },
-    "zt": 13,
-    "dt": null,
-    "zab": null,
-    "zb": null,
-    "fb": null,
-    "jj": 61.5,
-    "lianban": 8,
+    "pool_errors": {},
+    "zt": 24,
+    "dt": 1,
+    "zab": 5,
+    "zb": 17.2,
+    "fb": 82.8,
+    "jj": 50.0,
+    "lianban": 12,
     "max_lb": 4,
-    "amount": "",
+    "amount": "4099.6亿",
     "bf": 0,
-    "heat": null,
-    "risk": null,
-    "headline": "数据部分可用",
+    "heat": 59,
+    "risk": 13,
+    "headline": "修复",
     "concepts": [
       {
         "name": "化学制药",
         "lead": "神奇制药",
-        "chg_pct": null
-      },
-      {
-        "name": "化学制品",
-        "lead": "圣达生物",
         "chg_pct": null
       },
       {
@@ -49,13 +41,18 @@
         "chg_pct": null
       },
       {
-        "name": "休闲食品",
-        "lead": "桂发祥",
+        "name": "电子化学",
+        "lead": "中石科技",
         "chg_pct": null
       },
       {
-        "name": "农化制品",
-        "lead": "红四方",
+        "name": "化学制品",
+        "lead": "圣达生物",
+        "chg_pct": null
+      },
+      {
+        "name": "休闲食品",
+        "lead": "桂发祥",
         "chg_pct": null
       }
     ],
@@ -63,15 +60,11 @@
       {
         "level": "info",
         "text": "盘中模式：强制实时拉取"
-      },
-      {
-        "level": "warn",
-        "text": "盘中三池响应不完整，保留最近有效数据"
       }
     ],
-    "shift_score": null,
-    "shift_label": "数据部分可用",
-    "note": "本槽位仅部分三池成功；节点已保留，缺失指标不参与判断。"
+    "shift_score": 71,
+    "shift_label": "修复",
+    "note": "承接增强、分歧收敛，情绪明显回暖。"
   },
   "snapshots": [
     {
@@ -143,52 +136,112 @@
       "shift_score": null,
       "shift_label": "数据部分可用",
       "note": "本槽位仅部分三池成功；节点已保留，缺失指标不参与判断。"
+    },
+    {
+      "time": "09:40:04",
+      "ts_bj": "2026-08-18 09:40:04",
+      "date": "2026-08-18",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid"
+      },
+      "pool_errors": {},
+      "zt": 24,
+      "dt": 1,
+      "zab": 5,
+      "zb": 17.2,
+      "fb": 82.8,
+      "jj": 50.0,
+      "lianban": 12,
+      "max_lb": 4,
+      "amount": "4099.6亿",
+      "bf": 0,
+      "heat": 59,
+      "risk": 13,
+      "headline": "修复",
+      "concepts": [
+        {
+          "name": "化学制药",
+          "lead": "神奇制药",
+          "chg_pct": null
+        },
+        {
+          "name": "汽车零部",
+          "lead": "正裕工业",
+          "chg_pct": null
+        },
+        {
+          "name": "电子化学",
+          "lead": "中石科技",
+          "chg_pct": null
+        },
+        {
+          "name": "化学制品",
+          "lead": "圣达生物",
+          "chg_pct": null
+        },
+        {
+          "name": "休闲食品",
+          "lead": "桂发祥",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        }
+      ],
+      "shift_score": 71,
+      "shift_label": "修复",
+      "note": "承接增强、分歧收敛，情绪明显回暖。"
     }
   ],
   "indices": [
     {
       "name": "上证指数",
       "code": "000001.SH",
-      "val": 3978.41,
-      "chg": -0.10656210657516677,
-      "cje": 22310792400.0,
-      "t": "2026-08-18 09:30:27"
+      "val": 3990.13,
+      "chg": 0.1877140218557804,
+      "cje": 194809193500.0,
+      "t": "2026-08-18 09:40:00"
     },
     {
       "name": "深证成指",
       "code": "399001.SZ",
-      "val": 14698.476,
-      "chg": -0.03943751051989349,
-      "cje": 36868278000.0,
-      "t": "2026-08-18 09:30:24"
+      "val": 14733.904,
+      "chg": 0.201499223865174,
+      "cje": 212126199100.0,
+      "t": "2026-08-18 09:39:57"
     },
     {
       "name": "创业板指",
       "code": "399006.SZ",
-      "val": 3735.292,
-      "chg": -0.13007475354644837,
-      "cje": 17734727500.0,
-      "t": "2026-08-18 09:30:27"
+      "val": 3747.415,
+      "chg": 0.19405602492087393,
+      "cje": 99178461000.0,
+      "t": "2026-08-18 09:39:57"
     }
   ],
   "asOf": {
-    "indices": "09:30:27"
+    "indices": "09:39:57"
   },
   "health": {
-    "status": "degraded",
-    "last_valid_at": "2026-08-18 09:30:27",
+    "status": "valid",
+    "last_valid_at": "2026-08-18 09:40:04",
     "rejected_reason": "",
     "source": {
-      "status": "partial",
+      "status": "valid",
       "pool_status": {
         "ztgc": "valid",
-        "zbgc": "failed",
-        "dtgc": "failed"
+        "zbgc": "valid",
+        "dtgc": "valid"
       },
-      "pool_errors": {
-        "zbgc": "empty_response",
-        "dtgc": "empty_response"
-      }
+      "pool_errors": {}
     },
     "indices_status": "valid",
     "coverage": {
@@ -197,37 +250,34 @@
       "message": "intraday_coverage_collecting",
       "date": "2026-08-18",
       "expected_count": 26,
-      "due_count": 1,
-      "observed_count": 1,
+      "due_count": 2,
+      "observed_count": 2,
       "observed_slots": [
-        "09:30"
+        "09:30",
+        "09:40"
       ],
       "missing_slots": [],
       "duplicate_slots": [],
       "out_of_session": [],
       "monotonic": true,
-      "morning_coverage": 1,
+      "morning_coverage": 2,
       "afternoon_coverage": 0
     }
   },
   "live": {
     "market": {
-      "zt": 13,
-      "dt": null,
-      "zab": null,
-      "zab_rate": null,
-      "lianban": 8,
+      "zt": 24,
+      "dt": 1,
+      "zab": 5,
+      "zab_rate": 17.2,
+      "lianban": 12,
       "max_lianban": 4,
-      "amount": ""
+      "amount": "4099.6亿"
     },
     "alerts": [
       {
         "level": "info",
         "text": "盘中模式：强制实时拉取"
-      },
-      {
-        "level": "warn",
-        "text": "盘中三池响应不完整，保留最近有效数据"
       }
     ],
     "concepts": [
@@ -237,23 +287,23 @@
         "chg_pct": null
       },
       {
-        "name": "化学制品",
-        "lead": "圣达生物",
-        "chg_pct": null
-      },
-      {
         "name": "汽车零部",
         "lead": "正裕工业",
         "chg_pct": null
       },
       {
-        "name": "休闲食品",
-        "lead": "桂发祥",
+        "name": "电子化学",
+        "lead": "中石科技",
         "chg_pct": null
       },
       {
-        "name": "农化制品",
-        "lead": "红四方",
+        "name": "化学制品",
+        "lead": "圣达生物",
+        "chg_pct": null
+      },
+      {
+        "name": "休闲食品",
+        "lead": "桂发祥",
         "chg_pct": null
       }
     ]
