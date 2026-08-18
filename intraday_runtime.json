@@ -1,48 +1,46 @@
 {
   "schema": "intraday_runtime_v1",
-  "date": "2026-08-17",
-  "updated_at": "2026-08-17 15:00:05",
-  "source": "必盈(实时)+必盈(实时)",
+  "date": "2026-08-18",
+  "updated_at": "2026-08-18 09:30:27",
+  "source": "必盈(实时)",
   "latest": {
-    "time": "15:00:05",
-    "ts_bj": "2026-08-17 15:00:05",
-    "date": "2026-08-17",
+    "time": "09:30:27",
+    "ts_bj": "2026-08-18 09:30:27",
+    "date": "2026-08-18",
     "source": "intraday_live",
-    "provider": "必盈(实时)+必盈(实时)",
-    "data_quality": "valid",
+    "provider": "必盈(实时)",
+    "data_quality": "partial",
     "pool_status": {
       "ztgc": "valid",
-      "zbgc": "valid",
-      "dtgc": "valid"
+      "zbgc": "failed",
+      "dtgc": "failed"
     },
-    "pool_errors": {},
-    "zt": 107,
-    "dt": 1,
-    "zab": 11,
-    "zb": 9.3,
-    "fb": 90.7,
-    "jj": 14.0,
-    "lianban": 15,
+    "pool_errors": {
+      "zbgc": "empty_response",
+      "dtgc": "empty_response"
+    },
+    "zt": 13,
+    "dt": null,
+    "zab": null,
+    "zb": null,
+    "fb": null,
+    "jj": 61.5,
+    "lianban": 8,
     "max_lb": 4,
-    "amount": "23874.6亿",
+    "amount": "",
     "bf": 0,
-    "heat": 66,
-    "risk": 12,
-    "headline": "走强",
+    "heat": null,
+    "risk": null,
+    "headline": "数据部分可用",
     "concepts": [
+      {
+        "name": "化学制药",
+        "lead": "神奇制药",
+        "chg_pct": null
+      },
       {
         "name": "化学制品",
         "lead": "圣达生物",
-        "chg_pct": null
-      },
-      {
-        "name": "元件",
-        "lead": "华正新材",
-        "chg_pct": null
-      },
-      {
-        "name": "专用设备",
-        "lead": "越剑智能",
         "chg_pct": null
       },
       {
@@ -51,8 +49,13 @@
         "chg_pct": null
       },
       {
-        "name": "通用设备",
-        "lead": "冰轮环境",
+        "name": "休闲食品",
+        "lead": "桂发祥",
+        "chg_pct": null
+      },
+      {
+        "name": "农化制品",
+        "lead": "红四方",
         "chg_pct": null
       }
     ],
@@ -60,17 +63,21 @@
       {
         "level": "info",
         "text": "盘中模式：强制实时拉取"
+      },
+      {
+        "level": "warn",
+        "text": "盘中三池响应不完整，保留最近有效数据"
       }
     ],
-    "shift_score": 75,
-    "shift_label": "走强",
-    "note": "情绪边际修复，但仍需确认持续性。"
+    "shift_score": null,
+    "shift_label": "数据部分可用",
+    "note": "本槽位仅部分三池成功；节点已保留，缺失指标不参与判断。"
   },
   "snapshots": [
     {
-      "time": "09:30:21",
-      "ts_bj": "2026-08-17 09:30:21",
-      "date": "2026-08-17",
+      "time": "09:30:27",
+      "ts_bj": "2026-08-18 09:30:27",
+      "date": "2026-08-18",
       "source": "intraday_live",
       "provider": "必盈(实时)",
       "data_quality": "partial",
@@ -83,13 +90,13 @@
         "zbgc": "empty_response",
         "dtgc": "empty_response"
       },
-      "zt": 6,
+      "zt": 13,
       "dt": null,
       "zab": null,
       "zb": null,
       "fb": null,
-      "jj": 66.7,
-      "lianban": 4,
+      "jj": 61.5,
+      "lianban": 8,
       "max_lb": 4,
       "amount": "",
       "bf": 0,
@@ -98,13 +105,8 @@
       "headline": "数据部分可用",
       "concepts": [
         {
-          "name": "塑料",
-          "lead": "天洋新材",
-          "chg_pct": null
-        },
-        {
-          "name": "电子化学",
-          "lead": "中石科技",
+          "name": "化学制药",
+          "lead": "神奇制药",
           "chg_pct": null
         },
         {
@@ -113,13 +115,18 @@
           "chg_pct": null
         },
         {
+          "name": "汽车零部",
+          "lead": "正裕工业",
+          "chg_pct": null
+        },
+        {
           "name": "休闲食品",
           "lead": "桂发祥",
           "chg_pct": null
         },
         {
-          "name": "农产品加",
-          "lead": "金健米业",
+          "name": "农化制品",
+          "lead": "红四方",
           "chg_pct": null
         }
       ],
@@ -136,1686 +143,102 @@
       "shift_score": null,
       "shift_label": "数据部分可用",
       "note": "本槽位仅部分三池成功；节点已保留，缺失指标不参与判断。"
-    },
-    {
-      "time": "09:40:03",
-      "ts_bj": "2026-08-17 09:40:03",
-      "date": "2026-08-17",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid"
-      },
-      "pool_errors": {},
-      "zt": 21,
-      "dt": 1,
-      "zab": 2,
-      "zb": 8.7,
-      "fb": 91.3,
-      "jj": 61.9,
-      "lianban": 13,
-      "max_lb": 4,
-      "amount": "4040.4亿",
-      "bf": 0,
-      "heat": 65,
-      "risk": 7,
-      "headline": "走强",
-      "concepts": [
-        {
-          "name": "汽车零部",
-          "lead": "正裕工业",
-          "chg_pct": null
-        },
-        {
-          "name": "装修装饰",
-          "lead": "金 螳 螂",
-          "chg_pct": null
-        },
-        {
-          "name": "塑料",
-          "lead": "天洋新材",
-          "chg_pct": null
-        },
-        {
-          "name": "通信设备",
-          "lead": "共进股份",
-          "chg_pct": null
-        },
-        {
-          "name": "化学制药",
-          "lead": "神奇制药",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        }
-      ],
-      "shift_score": 77,
-      "shift_label": "走强",
-      "note": "承接增强、分歧收敛，情绪明显回暖。"
-    },
-    {
-      "time": "09:50:03",
-      "ts_bj": "2026-08-17 09:50:03",
-      "date": "2026-08-17",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid"
-      },
-      "pool_errors": {},
-      "zt": 32,
-      "dt": 1,
-      "zab": 5,
-      "zb": 13.5,
-      "fb": 86.5,
-      "jj": 40.6,
-      "lianban": 13,
-      "max_lb": 4,
-      "amount": "6123.6亿",
-      "bf": 0,
-      "heat": 60,
-      "risk": 11,
-      "headline": "走强",
-      "concepts": [
-        {
-          "name": "中药Ⅱ",
-          "lead": "华森制药",
-          "chg_pct": null
-        },
-        {
-          "name": "专用设备",
-          "lead": "越剑智能",
-          "chg_pct": null
-        },
-        {
-          "name": "化学制品",
-          "lead": "圣达生物",
-          "chg_pct": null
-        },
-        {
-          "name": "汽车零部",
-          "lead": "正裕工业",
-          "chg_pct": null
-        },
-        {
-          "name": "农产品加",
-          "lead": "金健米业",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        }
-      ],
-      "shift_score": 72,
-      "shift_label": "走强",
-      "note": "炸板/跌停抬升，情绪明显走弱。"
-    },
-    {
-      "time": "10:00:03",
-      "ts_bj": "2026-08-17 10:00:03",
-      "date": "2026-08-17",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid"
-      },
-      "pool_errors": {},
-      "zt": 44,
-      "dt": 2,
-      "zab": 8,
-      "zb": 15.4,
-      "fb": 84.6,
-      "jj": 29.5,
-      "lianban": 13,
-      "max_lb": 4,
-      "amount": "7864.1亿",
-      "bf": 0,
-      "heat": 58,
-      "risk": 15,
-      "headline": "修复",
-      "concepts": [
-        {
-          "name": "化学制品",
-          "lead": "圣达生物",
-          "chg_pct": null
-        },
-        {
-          "name": "塑料",
-          "lead": "天洋新材",
-          "chg_pct": null
-        },
-        {
-          "name": "化学制药",
-          "lead": "神奇制药",
-          "chg_pct": null
-        },
-        {
-          "name": "元件",
-          "lead": "华正新材",
-          "chg_pct": null
-        },
-        {
-          "name": "电子化学",
-          "lead": "中石科技",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        }
-      ],
-      "shift_score": 69,
-      "shift_label": "修复",
-      "note": "情绪略有回落，注意午后分歧。"
-    },
-    {
-      "time": "10:10:03",
-      "ts_bj": "2026-08-17 10:10:03",
-      "date": "2026-08-17",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid"
-      },
-      "pool_errors": {},
-      "zt": 49,
-      "dt": 2,
-      "zab": 9,
-      "zb": 15.5,
-      "fb": 84.5,
-      "jj": 28.6,
-      "lianban": 14,
-      "max_lb": 4,
-      "amount": "9122.9亿",
-      "bf": 0,
-      "heat": 59,
-      "risk": 16,
-      "headline": "修复",
-      "concepts": [
-        {
-          "name": "化学制品",
-          "lead": "圣达生物",
-          "chg_pct": null
-        },
-        {
-          "name": "塑料",
-          "lead": "天洋新材",
-          "chg_pct": null
-        },
-        {
-          "name": "化学制药",
-          "lead": "神奇制药",
-          "chg_pct": null
-        },
-        {
-          "name": "汽车零部",
-          "lead": "正裕工业",
-          "chg_pct": null
-        },
-        {
-          "name": "电子化学",
-          "lead": "中石科技",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        }
-      ],
-      "shift_score": 70,
-      "shift_label": "修复",
-      "note": "情绪整体平稳，维持当前节奏。"
-    },
-    {
-      "time": "10:20:05",
-      "ts_bj": "2026-08-17 10:20:05",
-      "date": "2026-08-17",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid"
-      },
-      "pool_errors": {},
-      "zt": 54,
-      "dt": 2,
-      "zab": 11,
-      "zb": 16.9,
-      "fb": 83.1,
-      "jj": 24.1,
-      "lianban": 13,
-      "max_lb": 4,
-      "amount": "10151.1亿",
-      "bf": 0,
-      "heat": 58,
-      "risk": 17,
-      "headline": "修复",
-      "concepts": [
-        {
-          "name": "化学制品",
-          "lead": "圣达生物",
-          "chg_pct": null
-        },
-        {
-          "name": "塑料",
-          "lead": "天洋新材",
-          "chg_pct": null
-        },
-        {
-          "name": "化学制药",
-          "lead": "神奇制药",
-          "chg_pct": null
-        },
-        {
-          "name": "汽车零部",
-          "lead": "正裕工业",
-          "chg_pct": null
-        },
-        {
-          "name": "电子化学",
-          "lead": "中石科技",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        }
-      ],
-      "shift_score": 68,
-      "shift_label": "修复",
-      "note": "情绪略有回落，注意午后分歧。"
-    },
-    {
-      "time": "10:30:04",
-      "ts_bj": "2026-08-17 10:30:04",
-      "date": "2026-08-17",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid"
-      },
-      "pool_errors": {},
-      "zt": 57,
-      "dt": 1,
-      "zab": 11,
-      "zb": 16.2,
-      "fb": 83.8,
-      "jj": 22.8,
-      "lianban": 13,
-      "max_lb": 4,
-      "amount": "10954.9亿",
-      "bf": 0,
-      "heat": 58,
-      "risk": 15,
-      "headline": "修复",
-      "concepts": [
-        {
-          "name": "化学制品",
-          "lead": "圣达生物",
-          "chg_pct": null
-        },
-        {
-          "name": "塑料",
-          "lead": "天洋新材",
-          "chg_pct": null
-        },
-        {
-          "name": "化学制药",
-          "lead": "神奇制药",
-          "chg_pct": null
-        },
-        {
-          "name": "汽车零部",
-          "lead": "正裕工业",
-          "chg_pct": null
-        },
-        {
-          "name": "电子化学",
-          "lead": "中石科技",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        }
-      ],
-      "shift_score": 69,
-      "shift_label": "修复",
-      "note": "情绪整体平稳，维持当前节奏。"
-    },
-    {
-      "time": "10:40:03",
-      "ts_bj": "2026-08-17 10:40:03",
-      "date": "2026-08-17",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid"
-      },
-      "pool_errors": {},
-      "zt": 60,
-      "dt": 1,
-      "zab": 12,
-      "zb": 16.7,
-      "fb": 83.3,
-      "jj": 21.7,
-      "lianban": 13,
-      "max_lb": 4,
-      "amount": "11678.7亿",
-      "bf": 0,
-      "heat": 58,
-      "risk": 16,
-      "headline": "修复",
-      "concepts": [
-        {
-          "name": "化学制品",
-          "lead": "圣达生物",
-          "chg_pct": null
-        },
-        {
-          "name": "塑料",
-          "lead": "天洋新材",
-          "chg_pct": null
-        },
-        {
-          "name": "化学制药",
-          "lead": "神奇制药",
-          "chg_pct": null
-        },
-        {
-          "name": "汽车零部",
-          "lead": "正裕工业",
-          "chg_pct": null
-        },
-        {
-          "name": "一般零售",
-          "lead": "供销大集",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        }
-      ],
-      "shift_score": 69,
-      "shift_label": "修复",
-      "note": "情绪整体平稳，维持当前节奏。"
-    },
-    {
-      "time": "10:50:04",
-      "ts_bj": "2026-08-17 10:50:04",
-      "date": "2026-08-17",
-      "source": "intraday_live",
-      "provider": "unknown",
-      "data_quality": "unavailable",
-      "pool_status": {
-        "ztgc": "failed",
-        "zbgc": "failed",
-        "dtgc": "failed"
-      },
-      "pool_errors": {
-        "ztgc": "HTTP Error 429: Too Many Requests",
-        "zbgc": "HTTP Error 429: Too Many Requests",
-        "dtgc": "HTTP Error 429: Too Many Requests"
-      },
-      "zt": null,
-      "dt": null,
-      "zab": null,
-      "zb": null,
-      "fb": null,
-      "jj": null,
-      "lianban": null,
-      "max_lb": null,
-      "amount": "",
-      "bf": 0,
-      "heat": null,
-      "risk": null,
-      "headline": "数据暂缺",
-      "concepts": [],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        },
-        {
-          "level": "warn",
-          "text": "盘中三池响应不完整，保留最近有效数据"
-        },
-        {
-          "level": "warn",
-          "text": "三池请求均超时，本槽位跳过板块补抓并等待下一节点"
-        }
-      ],
-      "shift_score": null,
-      "shift_label": "数据暂缺",
-      "note": "本槽位三池请求均未成功，已记录数据暂缺；等待下一节点自动恢复。"
-    },
-    {
-      "time": "11:00:04",
-      "ts_bj": "2026-08-17 11:00:04",
-      "date": "2026-08-17",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid"
-      },
-      "pool_errors": {},
-      "zt": 67,
-      "dt": 1,
-      "zab": 9,
-      "zb": 11.8,
-      "fb": 88.2,
-      "jj": 20.9,
-      "lianban": 14,
-      "max_lb": 4,
-      "amount": "13174.4亿",
-      "bf": 0,
-      "heat": 61,
-      "risk": 12,
-      "headline": "走强",
-      "concepts": [
-        {
-          "name": "化学制品",
-          "lead": "圣达生物",
-          "chg_pct": null
-        },
-        {
-          "name": "塑料",
-          "lead": "天洋新材",
-          "chg_pct": null
-        },
-        {
-          "name": "化学制药",
-          "lead": "神奇制药",
-          "chg_pct": null
-        },
-        {
-          "name": "电子化学",
-          "lead": "中石科技",
-          "chg_pct": null
-        },
-        {
-          "name": "汽车零部",
-          "lead": "正裕工业",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        }
-      ],
-      "shift_score": 72,
-      "shift_label": "走强",
-      "note": "承接增强、分歧收敛，情绪明显回暖。"
-    },
-    {
-      "time": "11:10:04",
-      "ts_bj": "2026-08-17 11:10:04",
-      "date": "2026-08-17",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid"
-      },
-      "pool_errors": {},
-      "zt": 72,
-      "dt": 2,
-      "zab": 8,
-      "zb": 10.0,
-      "fb": 90.0,
-      "jj": 19.4,
-      "lianban": 14,
-      "max_lb": 4,
-      "amount": "13892.8亿",
-      "bf": 0,
-      "heat": 63,
-      "risk": 12,
-      "headline": "走强",
-      "concepts": [
-        {
-          "name": "化学制品",
-          "lead": "圣达生物",
-          "chg_pct": null
-        },
-        {
-          "name": "电子化学",
-          "lead": "中石科技",
-          "chg_pct": null
-        },
-        {
-          "name": "塑料",
-          "lead": "天洋新材",
-          "chg_pct": null
-        },
-        {
-          "name": "化学制药",
-          "lead": "神奇制药",
-          "chg_pct": null
-        },
-        {
-          "name": "专用设备",
-          "lead": "越剑智能",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        }
-      ],
-      "shift_score": 74,
-      "shift_label": "走强",
-      "note": "情绪边际修复，但仍需确认持续性。"
-    },
-    {
-      "time": "11:20:04",
-      "ts_bj": "2026-08-17 11:20:04",
-      "date": "2026-08-17",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid"
-      },
-      "pool_errors": {},
-      "zt": 76,
-      "dt": 2,
-      "zab": 10,
-      "zb": 11.6,
-      "fb": 88.4,
-      "jj": 18.4,
-      "lianban": 14,
-      "max_lb": 4,
-      "amount": "14455.1亿",
-      "bf": 0,
-      "heat": 62,
-      "risk": 14,
-      "headline": "走强",
-      "concepts": [
-        {
-          "name": "化学制品",
-          "lead": "圣达生物",
-          "chg_pct": null
-        },
-        {
-          "name": "电子化学",
-          "lead": "中石科技",
-          "chg_pct": null
-        },
-        {
-          "name": "塑料",
-          "lead": "天洋新材",
-          "chg_pct": null
-        },
-        {
-          "name": "化学制药",
-          "lead": "神奇制药",
-          "chg_pct": null
-        },
-        {
-          "name": "专用设备",
-          "lead": "越剑智能",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        }
-      ],
-      "shift_score": 72,
-      "shift_label": "走强",
-      "note": "情绪略有回落，注意午后分歧。"
-    },
-    {
-      "time": "11:30:03",
-      "ts_bj": "2026-08-17 11:30:03",
-      "date": "2026-08-17",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid"
-      },
-      "pool_errors": {},
-      "zt": 74,
-      "dt": 2,
-      "zab": 13,
-      "zb": 14.9,
-      "fb": 85.1,
-      "jj": 18.9,
-      "lianban": 14,
-      "max_lb": 4,
-      "amount": "14970.9亿",
-      "bf": 0,
-      "heat": 61,
-      "risk": 17,
-      "headline": "修复",
-      "concepts": [
-        {
-          "name": "化学制品",
-          "lead": "圣达生物",
-          "chg_pct": null
-        },
-        {
-          "name": "塑料",
-          "lead": "天洋新材",
-          "chg_pct": null
-        },
-        {
-          "name": "化学制药",
-          "lead": "神奇制药",
-          "chg_pct": null
-        },
-        {
-          "name": "电子化学",
-          "lead": "中石科技",
-          "chg_pct": null
-        },
-        {
-          "name": "专用设备",
-          "lead": "越剑智能",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        }
-      ],
-      "shift_score": 70,
-      "shift_label": "修复",
-      "note": "情绪略有回落，注意午后分歧。"
-    },
-    {
-      "time": "13:00:24",
-      "ts_bj": "2026-08-17 13:00:24",
-      "date": "2026-08-17",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid"
-      },
-      "pool_errors": {},
-      "zt": 78,
-      "dt": 1,
-      "zab": 12,
-      "zb": 13.3,
-      "fb": 86.7,
-      "jj": 17.9,
-      "lianban": 14,
-      "max_lb": 4,
-      "amount": "15100.7亿",
-      "bf": 0,
-      "heat": 62,
-      "risk": 14,
-      "headline": "走强",
-      "concepts": [
-        {
-          "name": "化学制品",
-          "lead": "圣达生物",
-          "chg_pct": null
-        },
-        {
-          "name": "汽车零部",
-          "lead": "正裕工业",
-          "chg_pct": null
-        },
-        {
-          "name": "塑料",
-          "lead": "天洋新材",
-          "chg_pct": null
-        },
-        {
-          "name": "化学制药",
-          "lead": "神奇制药",
-          "chg_pct": null
-        },
-        {
-          "name": "电子化学",
-          "lead": "中石科技",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        }
-      ],
-      "shift_score": 72,
-      "shift_label": "走强",
-      "note": "情绪边际修复，但仍需确认持续性。"
-    },
-    {
-      "time": "13:10:08",
-      "ts_bj": "2026-08-17 13:10:08",
-      "date": "2026-08-17",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid"
-      },
-      "pool_errors": {},
-      "zt": 83,
-      "dt": 1,
-      "zab": 13,
-      "zb": 13.5,
-      "fb": 86.5,
-      "jj": 16.9,
-      "lianban": 14,
-      "max_lb": 4,
-      "amount": "15938.5亿",
-      "bf": 0,
-      "heat": 62,
-      "risk": 15,
-      "headline": "走强",
-      "concepts": [
-        {
-          "name": "化学制品",
-          "lead": "圣达生物",
-          "chg_pct": null
-        },
-        {
-          "name": "汽车零部",
-          "lead": "正裕工业",
-          "chg_pct": null
-        },
-        {
-          "name": "塑料",
-          "lead": "天洋新材",
-          "chg_pct": null
-        },
-        {
-          "name": "化学制药",
-          "lead": "神奇制药",
-          "chg_pct": null
-        },
-        {
-          "name": "电子化学",
-          "lead": "中石科技",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        }
-      ],
-      "shift_score": 72,
-      "shift_label": "走强",
-      "note": "情绪整体平稳，维持当前节奏。"
-    },
-    {
-      "time": "13:20:06",
-      "ts_bj": "2026-08-17 13:20:06",
-      "date": "2026-08-17",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid"
-      },
-      "pool_errors": {},
-      "zt": 85,
-      "dt": 2,
-      "zab": 13,
-      "zb": 13.3,
-      "fb": 86.7,
-      "jj": 16.5,
-      "lianban": 14,
-      "max_lb": 4,
-      "amount": "16671.3亿",
-      "bf": 0,
-      "heat": 63,
-      "risk": 16,
-      "headline": "走强",
-      "concepts": [
-        {
-          "name": "化学制品",
-          "lead": "圣达生物",
-          "chg_pct": null
-        },
-        {
-          "name": "汽车零部",
-          "lead": "正裕工业",
-          "chg_pct": null
-        },
-        {
-          "name": "塑料",
-          "lead": "天洋新材",
-          "chg_pct": null
-        },
-        {
-          "name": "化学制药",
-          "lead": "神奇制药",
-          "chg_pct": null
-        },
-        {
-          "name": "电子化学",
-          "lead": "中石科技",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        }
-      ],
-      "shift_score": 72,
-      "shift_label": "走强",
-      "note": "情绪整体平稳，维持当前节奏。"
-    },
-    {
-      "time": "13:30:05",
-      "ts_bj": "2026-08-17 13:30:05",
-      "date": "2026-08-17",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid"
-      },
-      "pool_errors": {},
-      "zt": 85,
-      "dt": 2,
-      "zab": 14,
-      "zb": 14.1,
-      "fb": 85.9,
-      "jj": 16.5,
-      "lianban": 14,
-      "max_lb": 4,
-      "amount": "17312.2亿",
-      "bf": 0,
-      "heat": 62,
-      "risk": 17,
-      "headline": "修复",
-      "concepts": [
-        {
-          "name": "化学制品",
-          "lead": "圣达生物",
-          "chg_pct": null
-        },
-        {
-          "name": "汽车零部",
-          "lead": "正裕工业",
-          "chg_pct": null
-        },
-        {
-          "name": "塑料",
-          "lead": "天洋新材",
-          "chg_pct": null
-        },
-        {
-          "name": "化学制药",
-          "lead": "神奇制药",
-          "chg_pct": null
-        },
-        {
-          "name": "电子化学",
-          "lead": "中石科技",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        }
-      ],
-      "shift_score": 71,
-      "shift_label": "修复",
-      "note": "情绪整体平稳，维持当前节奏。"
-    },
-    {
-      "time": "13:40:04",
-      "ts_bj": "2026-08-17 13:40:04",
-      "date": "2026-08-17",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid"
-      },
-      "pool_errors": {},
-      "zt": 87,
-      "dt": 2,
-      "zab": 14,
-      "zb": 13.9,
-      "fb": 86.1,
-      "jj": 17.2,
-      "lianban": 15,
-      "max_lb": 4,
-      "amount": "17891.1亿",
-      "bf": 0,
-      "heat": 63,
-      "risk": 17,
-      "headline": "修复",
-      "concepts": [
-        {
-          "name": "化学制品",
-          "lead": "圣达生物",
-          "chg_pct": null
-        },
-        {
-          "name": "汽车零部",
-          "lead": "正裕工业",
-          "chg_pct": null
-        },
-        {
-          "name": "塑料",
-          "lead": "天洋新材",
-          "chg_pct": null
-        },
-        {
-          "name": "通信设备",
-          "lead": "共进股份",
-          "chg_pct": null
-        },
-        {
-          "name": "化学制药",
-          "lead": "神奇制药",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        }
-      ],
-      "shift_score": 71,
-      "shift_label": "修复",
-      "note": "情绪整体平稳，维持当前节奏。"
-    },
-    {
-      "time": "13:50:04",
-      "ts_bj": "2026-08-17 13:50:04",
-      "date": "2026-08-17",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid"
-      },
-      "pool_errors": {},
-      "zt": 91,
-      "dt": 2,
-      "zab": 15,
-      "zb": 14.2,
-      "fb": 85.8,
-      "jj": 16.5,
-      "lianban": 15,
-      "max_lb": 4,
-      "amount": "18481.9亿",
-      "bf": 0,
-      "heat": 63,
-      "risk": 18,
-      "headline": "修复",
-      "concepts": [
-        {
-          "name": "化学制品",
-          "lead": "圣达生物",
-          "chg_pct": null
-        },
-        {
-          "name": "元件",
-          "lead": "华正新材",
-          "chg_pct": null
-        },
-        {
-          "name": "汽车零部",
-          "lead": "正裕工业",
-          "chg_pct": null
-        },
-        {
-          "name": "通用设备",
-          "lead": "冰轮环境",
-          "chg_pct": null
-        },
-        {
-          "name": "塑料",
-          "lead": "天洋新材",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        }
-      ],
-      "shift_score": 71,
-      "shift_label": "修复",
-      "note": "情绪整体平稳，维持当前节奏。"
-    },
-    {
-      "time": "14:00:06",
-      "ts_bj": "2026-08-17 14:00:06",
-      "date": "2026-08-17",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid"
-      },
-      "pool_errors": {},
-      "zt": 92,
-      "dt": 2,
-      "zab": 15,
-      "zb": 14.0,
-      "fb": 86.0,
-      "jj": 16.3,
-      "lianban": 15,
-      "max_lb": 4,
-      "amount": "19059.2亿",
-      "bf": 0,
-      "heat": 63,
-      "risk": 17,
-      "headline": "修复",
-      "concepts": [
-        {
-          "name": "化学制品",
-          "lead": "圣达生物",
-          "chg_pct": null
-        },
-        {
-          "name": "元件",
-          "lead": "华正新材",
-          "chg_pct": null
-        },
-        {
-          "name": "汽车零部",
-          "lead": "正裕工业",
-          "chg_pct": null
-        },
-        {
-          "name": "通用设备",
-          "lead": "冰轮环境",
-          "chg_pct": null
-        },
-        {
-          "name": "塑料",
-          "lead": "天洋新材",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        }
-      ],
-      "shift_score": 71,
-      "shift_label": "修复",
-      "note": "情绪整体平稳，维持当前节奏。"
-    },
-    {
-      "time": "14:10:05",
-      "ts_bj": "2026-08-17 14:10:05",
-      "date": "2026-08-17",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid"
-      },
-      "pool_errors": {},
-      "zt": 94,
-      "dt": 2,
-      "zab": 15,
-      "zb": 13.8,
-      "fb": 86.2,
-      "jj": 16.0,
-      "lianban": 15,
-      "max_lb": 4,
-      "amount": "19664.9亿",
-      "bf": 0,
-      "heat": 64,
-      "risk": 17,
-      "headline": "走强",
-      "concepts": [
-        {
-          "name": "化学制品",
-          "lead": "圣达生物",
-          "chg_pct": null
-        },
-        {
-          "name": "元件",
-          "lead": "华正新材",
-          "chg_pct": null
-        },
-        {
-          "name": "汽车零部",
-          "lead": "正裕工业",
-          "chg_pct": null
-        },
-        {
-          "name": "通用设备",
-          "lead": "冰轮环境",
-          "chg_pct": null
-        },
-        {
-          "name": "塑料",
-          "lead": "天洋新材",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        }
-      ],
-      "shift_score": 72,
-      "shift_label": "走强",
-      "note": "情绪整体平稳，维持当前节奏。"
-    },
-    {
-      "time": "14:20:05",
-      "ts_bj": "2026-08-17 14:20:05",
-      "date": "2026-08-17",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid"
-      },
-      "pool_errors": {},
-      "zt": 97,
-      "dt": 2,
-      "zab": 14,
-      "zb": 12.6,
-      "fb": 87.4,
-      "jj": 15.5,
-      "lianban": 15,
-      "max_lb": 4,
-      "amount": "20283.4亿",
-      "bf": 0,
-      "heat": 65,
-      "risk": 16,
-      "headline": "走强",
-      "concepts": [
-        {
-          "name": "化学制品",
-          "lead": "圣达生物",
-          "chg_pct": null
-        },
-        {
-          "name": "元件",
-          "lead": "华正新材",
-          "chg_pct": null
-        },
-        {
-          "name": "汽车零部",
-          "lead": "正裕工业",
-          "chg_pct": null
-        },
-        {
-          "name": "通用设备",
-          "lead": "冰轮环境",
-          "chg_pct": null
-        },
-        {
-          "name": "塑料",
-          "lead": "天洋新材",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        }
-      ],
-      "shift_score": 73,
-      "shift_label": "走强",
-      "note": "情绪整体平稳，维持当前节奏。"
-    },
-    {
-      "time": "14:30:05",
-      "ts_bj": "2026-08-17 14:30:05",
-      "date": "2026-08-17",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid"
-      },
-      "pool_errors": {},
-      "zt": 100,
-      "dt": 2,
-      "zab": 13,
-      "zb": 11.5,
-      "fb": 88.5,
-      "jj": 15.0,
-      "lianban": 15,
-      "max_lb": 4,
-      "amount": "20908.7亿",
-      "bf": 0,
-      "heat": 65,
-      "risk": 15,
-      "headline": "走强",
-      "concepts": [
-        {
-          "name": "化学制品",
-          "lead": "圣达生物",
-          "chg_pct": null
-        },
-        {
-          "name": "元件",
-          "lead": "华正新材",
-          "chg_pct": null
-        },
-        {
-          "name": "专用设备",
-          "lead": "越剑智能",
-          "chg_pct": null
-        },
-        {
-          "name": "汽车零部",
-          "lead": "正裕工业",
-          "chg_pct": null
-        },
-        {
-          "name": "通用设备",
-          "lead": "冰轮环境",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        }
-      ],
-      "shift_score": 73,
-      "shift_label": "走强",
-      "note": "情绪整体平稳，维持当前节奏。"
-    },
-    {
-      "time": "14:40:08",
-      "ts_bj": "2026-08-17 14:40:08",
-      "date": "2026-08-17",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid"
-      },
-      "pool_errors": {},
-      "zt": 100,
-      "dt": 3,
-      "zab": 13,
-      "zb": 11.5,
-      "fb": 88.5,
-      "jj": 15.0,
-      "lianban": 15,
-      "max_lb": 4,
-      "amount": "21619.8亿",
-      "bf": 0,
-      "heat": 65,
-      "risk": 17,
-      "headline": "走强",
-      "concepts": [
-        {
-          "name": "化学制品",
-          "lead": "圣达生物",
-          "chg_pct": null
-        },
-        {
-          "name": "元件",
-          "lead": "华正新材",
-          "chg_pct": null
-        },
-        {
-          "name": "专用设备",
-          "lead": "越剑智能",
-          "chg_pct": null
-        },
-        {
-          "name": "汽车零部",
-          "lead": "正裕工业",
-          "chg_pct": null
-        },
-        {
-          "name": "通用设备",
-          "lead": "冰轮环境",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        }
-      ],
-      "shift_score": 73,
-      "shift_label": "走强",
-      "note": "情绪整体平稳，维持当前节奏。"
-    },
-    {
-      "time": "14:50:05",
-      "ts_bj": "2026-08-17 14:50:05",
-      "date": "2026-08-17",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid"
-      },
-      "pool_errors": {},
-      "zt": 102,
-      "dt": 2,
-      "zab": 13,
-      "zb": 11.3,
-      "fb": 88.7,
-      "jj": 14.7,
-      "lianban": 15,
-      "max_lb": 4,
-      "amount": "22569.8亿",
-      "bf": 0,
-      "heat": 65,
-      "risk": 15,
-      "headline": "走强",
-      "concepts": [
-        {
-          "name": "化学制品",
-          "lead": "圣达生物",
-          "chg_pct": null
-        },
-        {
-          "name": "元件",
-          "lead": "华正新材",
-          "chg_pct": null
-        },
-        {
-          "name": "专用设备",
-          "lead": "越剑智能",
-          "chg_pct": null
-        },
-        {
-          "name": "汽车零部",
-          "lead": "正裕工业",
-          "chg_pct": null
-        },
-        {
-          "name": "通用设备",
-          "lead": "冰轮环境",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        }
-      ],
-      "shift_score": 73,
-      "shift_label": "走强",
-      "note": "情绪整体平稳，维持当前节奏。"
-    },
-    {
-      "time": "15:00:05",
-      "ts_bj": "2026-08-17 15:00:05",
-      "date": "2026-08-17",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid"
-      },
-      "pool_errors": {},
-      "zt": 107,
-      "dt": 1,
-      "zab": 11,
-      "zb": 9.3,
-      "fb": 90.7,
-      "jj": 14.0,
-      "lianban": 15,
-      "max_lb": 4,
-      "amount": "23874.6亿",
-      "bf": 0,
-      "heat": 66,
-      "risk": 12,
-      "headline": "走强",
-      "concepts": [
-        {
-          "name": "化学制品",
-          "lead": "圣达生物",
-          "chg_pct": null
-        },
-        {
-          "name": "元件",
-          "lead": "华正新材",
-          "chg_pct": null
-        },
-        {
-          "name": "专用设备",
-          "lead": "越剑智能",
-          "chg_pct": null
-        },
-        {
-          "name": "汽车零部",
-          "lead": "正裕工业",
-          "chg_pct": null
-        },
-        {
-          "name": "通用设备",
-          "lead": "冰轮环境",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        }
-      ],
-      "shift_score": 75,
-      "shift_label": "走强",
-      "note": "情绪边际修复，但仍需确认持续性。"
     }
   ],
   "indices": [
     {
       "name": "上证指数",
       "code": "000001.SH",
-      "val": 3982.934,
-      "chg": 1.419798858008917,
-      "cje": 1107265879800.0,
-      "t": "2026-08-17 15:00:03"
+      "val": 3978.41,
+      "chg": -0.10656210657516677,
+      "cje": 22310792400.0,
+      "t": "2026-08-18 09:30:27"
     },
     {
       "name": "深证成指",
       "code": "399001.SZ",
-      "val": 14704.521,
-      "chg": 2.4397976774215144,
-      "cje": 1260021843000.0,
-      "t": "2026-08-17 14:57:03"
+      "val": 14698.476,
+      "chg": -0.03943751051989349,
+      "cje": 36868278000.0,
+      "t": "2026-08-18 09:30:24"
     },
     {
       "name": "创业板指",
       "code": "399006.SZ",
-      "val": 3740.157,
-      "chg": 3.1398421033908734,
-      "cje": 631620807500.0,
-      "t": "2026-08-17 15:00:03"
+      "val": 3735.292,
+      "chg": -0.13007475354644837,
+      "cje": 17734727500.0,
+      "t": "2026-08-18 09:30:27"
     }
   ],
   "asOf": {
-    "indices": "15:00:03"
+    "indices": "09:30:27"
   },
   "health": {
-    "status": "valid",
-    "last_valid_at": "2026-08-17 15:00:05",
+    "status": "degraded",
+    "last_valid_at": "2026-08-18 09:30:27",
     "rejected_reason": "",
     "source": {
-      "status": "valid",
+      "status": "partial",
       "pool_status": {
         "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid"
+        "zbgc": "failed",
+        "dtgc": "failed"
       },
-      "pool_errors": {}
+      "pool_errors": {
+        "zbgc": "empty_response",
+        "dtgc": "empty_response"
+      }
     },
     "indices_status": "valid",
     "coverage": {
       "ok": true,
-      "status": "complete",
-      "message": "intraday_coverage_complete",
-      "date": "2026-08-17",
+      "status": "collecting",
+      "message": "intraday_coverage_collecting",
+      "date": "2026-08-18",
       "expected_count": 26,
-      "due_count": 26,
-      "observed_count": 26,
+      "due_count": 1,
+      "observed_count": 1,
       "observed_slots": [
-        "09:30",
-        "09:40",
-        "09:50",
-        "10:00",
-        "10:10",
-        "10:20",
-        "10:30",
-        "10:40",
-        "10:50",
-        "11:00",
-        "11:10",
-        "11:20",
-        "11:30",
-        "13:00",
-        "13:10",
-        "13:20",
-        "13:30",
-        "13:40",
-        "13:50",
-        "14:00",
-        "14:10",
-        "14:20",
-        "14:30",
-        "14:40",
-        "14:50",
-        "15:00"
+        "09:30"
       ],
       "missing_slots": [],
       "duplicate_slots": [],
       "out_of_session": [],
       "monotonic": true,
-      "morning_coverage": 13,
-      "afternoon_coverage": 13
+      "morning_coverage": 1,
+      "afternoon_coverage": 0
     }
   },
   "live": {
     "market": {
-      "zt": 107,
-      "dt": 1,
-      "zab": 11,
-      "zab_rate": 9.3,
-      "lianban": 15,
+      "zt": 13,
+      "dt": null,
+      "zab": null,
+      "zab_rate": null,
+      "lianban": 8,
       "max_lianban": 4,
-      "amount": "23874.6亿"
+      "amount": ""
     },
     "alerts": [
       {
         "level": "info",
         "text": "盘中模式：强制实时拉取"
+      },
+      {
+        "level": "warn",
+        "text": "盘中三池响应不完整，保留最近有效数据"
       }
     ],
     "concepts": [
       {
+        "name": "化学制药",
+        "lead": "神奇制药",
+        "chg_pct": null
+      },
+      {
         "name": "化学制品",
         "lead": "圣达生物",
-        "chg_pct": null
-      },
-      {
-        "name": "元件",
-        "lead": "华正新材",
-        "chg_pct": null
-      },
-      {
-        "name": "专用设备",
-        "lead": "越剑智能",
         "chg_pct": null
       },
       {
@@ -1824,8 +247,13 @@
         "chg_pct": null
       },
       {
-        "name": "通用设备",
-        "lead": "冰轮环境",
+        "name": "休闲食品",
+        "lead": "桂发祥",
+        "chg_pct": null
+      },
+      {
+        "name": "农化制品",
+        "lead": "红四方",
         "chg_pct": null
       }
     ]
