@@ -1,11 +1,11 @@
 {
   "schema": "intraday_runtime_v1",
   "date": "2026-08-18",
-  "updated_at": "2026-08-18 14:30:05",
+  "updated_at": "2026-08-18 14:40:06",
   "source": "必盈(实时)+必盈(实时)",
   "latest": {
-    "time": "14:30:05",
-    "ts_bj": "2026-08-18 14:30:05",
+    "time": "14:40:06",
+    "ts_bj": "2026-08-18 14:40:06",
     "date": "2026-08-18",
     "source": "intraday_live",
     "provider": "必盈(实时)+必盈(实时)",
@@ -16,18 +16,18 @@
       "dtgc": "valid"
     },
     "pool_errors": {},
-    "zt": 65,
-    "dt": 4,
-    "zab": 24,
-    "zb": 27.0,
-    "fb": 73.0,
-    "jj": 26.2,
+    "zt": 71,
+    "dt": 6,
+    "zab": 23,
+    "zb": 24.5,
+    "fb": 75.5,
+    "jj": 23.9,
     "lianban": 17,
     "max_lb": 4,
-    "amount": "21282.1亿",
+    "amount": "22050.9亿",
     "bf": 0,
-    "heat": 56,
-    "risk": 32,
+    "heat": 57,
+    "risk": 33,
     "headline": "修复",
     "concepts": [
       {
@@ -60,10 +60,6 @@
       {
         "level": "info",
         "text": "盘中模式：强制实时拉取"
-      },
-      {
-        "level": "warn",
-        "text": "炸板率偏高（27.0%）→ 注意回封质量"
       }
     ],
     "shift_score": 61,
@@ -1554,40 +1550,103 @@
       "shift_score": 61,
       "shift_label": "修复",
       "note": "情绪整体平稳，维持当前节奏。"
+    },
+    {
+      "time": "14:40:06",
+      "ts_bj": "2026-08-18 14:40:06",
+      "date": "2026-08-18",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid"
+      },
+      "pool_errors": {},
+      "zt": 71,
+      "dt": 6,
+      "zab": 23,
+      "zb": 24.5,
+      "fb": 75.5,
+      "jj": 23.9,
+      "lianban": 17,
+      "max_lb": 4,
+      "amount": "22050.9亿",
+      "bf": 0,
+      "heat": 57,
+      "risk": 33,
+      "headline": "修复",
+      "concepts": [
+        {
+          "name": "种植业",
+          "lead": "农发种业",
+          "chg_pct": null
+        },
+        {
+          "name": "汽车零部",
+          "lead": "正裕工业",
+          "chg_pct": null
+        },
+        {
+          "name": "化学制药",
+          "lead": "神奇制药",
+          "chg_pct": null
+        },
+        {
+          "name": "农产品加",
+          "lead": "京粮控股",
+          "chg_pct": null
+        },
+        {
+          "name": "一般零售",
+          "lead": "浙江东日",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        }
+      ],
+      "shift_score": 61,
+      "shift_label": "修复",
+      "note": "情绪整体平稳，维持当前节奏。"
     }
   ],
   "indices": [
     {
       "name": "上证指数",
       "code": "000001.SH",
-      "val": 3988.306,
-      "chg": 0.14191541620236264,
-      "cje": 1010366185300.0,
-      "t": "2026-08-18 14:30:03"
+      "val": 3991.316,
+      "chg": 0.21749315908436453,
+      "cje": 1046758594700.0,
+      "t": "2026-08-18 14:40:06"
     },
     {
       "name": "深证成指",
       "code": "399001.SZ",
-      "val": 14607.032,
-      "chg": -0.6613246827878314,
-      "cje": 1117031439400.0,
-      "t": "2026-08-18 14:29:57"
+      "val": 14634.259,
+      "chg": -0.4761608443802882,
+      "cje": 1158098035700.0,
+      "t": "2026-08-18 14:40:00"
     },
     {
       "name": "创业板指",
       "code": "399006.SZ",
-      "val": 3702.746,
-      "chg": -1.0002521284534327,
-      "cje": 538081970900.0,
-      "t": "2026-08-18 14:30:03"
+      "val": 3712.304,
+      "chg": -0.7447013587932289,
+      "cje": 558331833100.0,
+      "t": "2026-08-18 14:40:00"
     }
   ],
   "asOf": {
-    "indices": "14:30:03"
+    "indices": "14:40:00"
   },
   "health": {
     "status": "valid",
-    "last_valid_at": "2026-08-18 14:30:05",
+    "last_valid_at": "2026-08-18 14:40:06",
     "rejected_reason": "",
     "source": {
       "status": "valid",
@@ -1605,8 +1664,8 @@
       "message": "intraday_coverage_collecting",
       "date": "2026-08-18",
       "expected_count": 26,
-      "due_count": 23,
-      "observed_count": 23,
+      "due_count": 24,
+      "observed_count": 24,
       "observed_slots": [
         "09:30",
         "09:40",
@@ -1630,34 +1689,31 @@
         "14:00",
         "14:10",
         "14:20",
-        "14:30"
+        "14:30",
+        "14:40"
       ],
       "missing_slots": [],
       "duplicate_slots": [],
       "out_of_session": [],
       "monotonic": true,
       "morning_coverage": 13,
-      "afternoon_coverage": 10
+      "afternoon_coverage": 11
     }
   },
   "live": {
     "market": {
-      "zt": 65,
-      "dt": 4,
-      "zab": 24,
-      "zab_rate": 27.0,
+      "zt": 71,
+      "dt": 6,
+      "zab": 23,
+      "zab_rate": 24.5,
       "lianban": 17,
       "max_lianban": 4,
-      "amount": "21282.1亿"
+      "amount": "22050.9亿"
     },
     "alerts": [
       {
         "level": "info",
         "text": "盘中模式：强制实时拉取"
-      },
-      {
-        "level": "warn",
-        "text": "炸板率偏高（27.0%）→ 注意回封质量"
       }
     ],
     "concepts": [
