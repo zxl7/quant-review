@@ -2,7 +2,7 @@
   "schema": "intraday_snapshot_v1",
   "render_mode": "snapshot_stream",
   "date": "2026-08-18",
-  "count": 16,
+  "count": 17,
   "interval_min": null,
   "simulated": false,
   "snapshots": [
@@ -1020,11 +1020,78 @@
       "shift_score": 61,
       "shift_label": "修复",
       "note": "情绪边际修复，但仍需确认持续性。"
+    },
+    {
+      "time": "13:30:05",
+      "ts_bj": "2026-08-18 13:30:05",
+      "date": "2026-08-18",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid"
+      },
+      "pool_errors": {},
+      "zt": 61,
+      "dt": 3,
+      "zab": 23,
+      "zb": 27.4,
+      "fb": 72.6,
+      "jj": 26.2,
+      "lianban": 16,
+      "max_lb": 4,
+      "amount": "18050.4亿",
+      "bf": 0,
+      "heat": 55,
+      "risk": 30,
+      "headline": "修复",
+      "concepts": [
+        {
+          "name": "种植业",
+          "lead": "农发种业",
+          "chg_pct": null
+        },
+        {
+          "name": "化学制药",
+          "lead": "神奇制药",
+          "chg_pct": null
+        },
+        {
+          "name": "汽车零部",
+          "lead": "正裕工业",
+          "chg_pct": null
+        },
+        {
+          "name": "农产品加",
+          "lead": "京粮控股",
+          "chg_pct": null
+        },
+        {
+          "name": "养殖业",
+          "lead": "罗 牛 山",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        },
+        {
+          "level": "warn",
+          "text": "炸板率偏高（27.4%）→ 注意回封质量"
+        }
+      ],
+      "shift_score": 61,
+      "shift_label": "修复",
+      "note": "情绪整体平稳，维持当前节奏。"
     }
   ],
   "latest": {
-    "time": "13:20:06",
-    "ts_bj": "2026-08-18 13:20:06",
+    "time": "13:30:05",
+    "ts_bj": "2026-08-18 13:30:05",
     "date": "2026-08-18",
     "source": "intraday_live",
     "provider": "必盈(实时)+必盈(实时)",
@@ -1035,15 +1102,15 @@
       "dtgc": "valid"
     },
     "pool_errors": {},
-    "zt": 60,
+    "zt": 61,
     "dt": 3,
     "zab": 23,
-    "zb": 27.7,
-    "fb": 72.3,
-    "jj": 25.0,
-    "lianban": 15,
+    "zb": 27.4,
+    "fb": 72.6,
+    "jj": 26.2,
+    "lianban": 16,
     "max_lb": 4,
-    "amount": "17588.9亿",
+    "amount": "18050.4亿",
     "bf": 0,
     "heat": 55,
     "risk": 30,
@@ -1082,18 +1149,18 @@
       },
       {
         "level": "warn",
-        "text": "炸板率偏高（27.7%）→ 注意回封质量"
+        "text": "炸板率偏高（27.4%）→ 注意回封质量"
       }
     ],
     "shift_score": 61,
     "shift_label": "修复",
-    "note": "情绪边际修复，但仍需确认持续性。"
+    "note": "情绪整体平稳，维持当前节奏。"
   },
-  "updated_at": "2026-08-18 13:20:06",
-  "snapshot_sig": "2026-08-18|2026-08-18 13:20:06|16",
+  "updated_at": "2026-08-18 13:30:05",
+  "snapshot_sig": "2026-08-18|2026-08-18 13:30:05|17",
   "health": {
     "status": "valid",
-    "last_valid_at": "2026-08-18 13:20:06",
+    "last_valid_at": "2026-08-18 13:30:05",
     "rejected_reason": "",
     "source": {
       "status": "valid",
