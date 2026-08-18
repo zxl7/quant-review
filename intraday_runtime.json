@@ -1,11 +1,11 @@
 {
   "schema": "intraday_runtime_v1",
   "date": "2026-08-18",
-  "updated_at": "2026-08-18 10:20:05",
+  "updated_at": "2026-08-18 10:30:04",
   "source": "必盈(实时)+必盈(实时)",
   "latest": {
-    "time": "10:20:05",
-    "ts_bj": "2026-08-18 10:20:05",
+    "time": "10:30:04",
+    "ts_bj": "2026-08-18 10:30:04",
     "date": "2026-08-18",
     "source": "intraday_live",
     "provider": "必盈(实时)+必盈(实时)",
@@ -16,23 +16,28 @@
       "dtgc": "valid"
     },
     "pool_errors": {},
-    "zt": 54,
+    "zt": 56,
     "dt": 1,
-    "zab": 14,
-    "zb": 20.6,
-    "fb": 79.4,
-    "jj": 37.0,
-    "lianban": 20,
+    "zab": 18,
+    "zb": 24.3,
+    "fb": 75.7,
+    "jj": 33.9,
+    "lianban": 19,
     "max_lb": 5,
-    "amount": "10850.5亿",
+    "amount": "11933.1亿",
     "bf": 0,
-    "heat": 62,
-    "risk": 19,
+    "heat": 60,
+    "risk": 23,
     "headline": "修复",
     "concepts": [
       {
         "name": "种植业",
         "lead": "农发种业",
+        "chg_pct": null
+      },
+      {
+        "name": "农产品加",
+        "lead": "京粮控股",
         "chg_pct": null
       },
       {
@@ -43,11 +48,6 @@
       {
         "name": "化学制品",
         "lead": "圣达生物",
-        "chg_pct": null
-      },
-      {
-        "name": "光学光电",
-        "lead": "沃格光电",
         "chg_pct": null
       },
       {
@@ -62,9 +62,9 @@
         "text": "盘中模式：强制实时拉取"
       }
     ],
-    "shift_score": 70,
+    "shift_score": 67,
     "shift_label": "修复",
-    "note": "情绪整体平稳，维持当前节奏。"
+    "note": "情绪略有回落，注意午后分歧。"
   },
   "snapshots": [
     {
@@ -451,40 +451,103 @@
       "shift_score": 70,
       "shift_label": "修复",
       "note": "情绪整体平稳，维持当前节奏。"
+    },
+    {
+      "time": "10:30:04",
+      "ts_bj": "2026-08-18 10:30:04",
+      "date": "2026-08-18",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid"
+      },
+      "pool_errors": {},
+      "zt": 56,
+      "dt": 1,
+      "zab": 18,
+      "zb": 24.3,
+      "fb": 75.7,
+      "jj": 33.9,
+      "lianban": 19,
+      "max_lb": 5,
+      "amount": "11933.1亿",
+      "bf": 0,
+      "heat": 60,
+      "risk": 23,
+      "headline": "修复",
+      "concepts": [
+        {
+          "name": "种植业",
+          "lead": "农发种业",
+          "chg_pct": null
+        },
+        {
+          "name": "农产品加",
+          "lead": "京粮控股",
+          "chg_pct": null
+        },
+        {
+          "name": "化学制药",
+          "lead": "神奇制药",
+          "chg_pct": null
+        },
+        {
+          "name": "化学制品",
+          "lead": "圣达生物",
+          "chg_pct": null
+        },
+        {
+          "name": "养殖业",
+          "lead": "罗 牛 山",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        }
+      ],
+      "shift_score": 67,
+      "shift_label": "修复",
+      "note": "情绪略有回落，注意午后分歧。"
     }
   ],
   "indices": [
     {
       "name": "上证指数",
       "code": "000001.SH",
-      "val": 3980.042,
-      "chg": -0.06558440678000349,
-      "cje": 514711008400.0,
-      "t": "2026-08-18 10:20:03"
+      "val": 3973.465,
+      "chg": -0.23072554130988662,
+      "cje": 566179666900.0,
+      "t": "2026-08-18 10:30:00"
     },
     {
       "name": "深证成指",
       "code": "399001.SZ",
-      "val": 14619.61,
-      "chg": -0.5757849332932026,
-      "cje": 570084368100.0,
-      "t": "2026-08-18 10:20:03"
+      "val": 14576.071,
+      "chg": -0.8718824967568937,
+      "cje": 625885678700.0,
+      "t": "2026-08-18 10:30:00"
     },
     {
       "name": "创业板指",
       "code": "399006.SZ",
-      "val": 3709.447,
-      "chg": -0.8210885264976854,
-      "cje": 272044575400.0,
-      "t": "2026-08-18 10:20:03"
+      "val": 3696.768,
+      "chg": -1.1600849910846023,
+      "cje": 300007125700.0,
+      "t": "2026-08-18 10:30:00"
     }
   ],
   "asOf": {
-    "indices": "10:20:03"
+    "indices": "10:30:00"
   },
   "health": {
     "status": "valid",
-    "last_valid_at": "2026-08-18 10:20:05",
+    "last_valid_at": "2026-08-18 10:30:04",
     "rejected_reason": "",
     "source": {
       "status": "valid",
@@ -502,33 +565,34 @@
       "message": "intraday_coverage_collecting",
       "date": "2026-08-18",
       "expected_count": 26,
-      "due_count": 6,
-      "observed_count": 6,
+      "due_count": 7,
+      "observed_count": 7,
       "observed_slots": [
         "09:30",
         "09:40",
         "09:50",
         "10:00",
         "10:10",
-        "10:20"
+        "10:20",
+        "10:30"
       ],
       "missing_slots": [],
       "duplicate_slots": [],
       "out_of_session": [],
       "monotonic": true,
-      "morning_coverage": 6,
+      "morning_coverage": 7,
       "afternoon_coverage": 0
     }
   },
   "live": {
     "market": {
-      "zt": 54,
+      "zt": 56,
       "dt": 1,
-      "zab": 14,
-      "zab_rate": 20.6,
-      "lianban": 20,
+      "zab": 18,
+      "zab_rate": 24.3,
+      "lianban": 19,
       "max_lianban": 5,
-      "amount": "10850.5亿"
+      "amount": "11933.1亿"
     },
     "alerts": [
       {
@@ -543,6 +607,11 @@
         "chg_pct": null
       },
       {
+        "name": "农产品加",
+        "lead": "京粮控股",
+        "chg_pct": null
+      },
+      {
         "name": "化学制药",
         "lead": "神奇制药",
         "chg_pct": null
@@ -550,11 +619,6 @@
       {
         "name": "化学制品",
         "lead": "圣达生物",
-        "chg_pct": null
-      },
-      {
-        "name": "光学光电",
-        "lead": "沃格光电",
         "chg_pct": null
       },
       {
