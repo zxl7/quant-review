@@ -1,11 +1,11 @@
 {
   "schema": "intraday_runtime_v1",
   "date": "2026-08-19",
-  "updated_at": "2026-08-19 10:20:04",
+  "updated_at": "2026-08-19 10:30:04",
   "source": "必盈(实时)+必盈(实时)",
   "latest": {
-    "time": "10:20:04",
-    "ts_bj": "2026-08-19 10:20:04",
+    "time": "10:30:04",
+    "ts_bj": "2026-08-19 10:30:04",
     "date": "2026-08-19",
     "source": "intraday_live",
     "provider": "必盈(实时)+必盈(实时)",
@@ -16,18 +16,18 @@
       "dtgc": "valid"
     },
     "pool_errors": {},
-    "zt": 28,
-    "dt": 15,
-    "zab": 9,
-    "zb": 24.3,
-    "fb": 75.7,
-    "jj": 28.6,
+    "zt": 27,
+    "dt": 16,
+    "zab": 13,
+    "zb": 32.5,
+    "fb": 67.5,
+    "jj": 29.6,
     "lianban": 8,
     "max_lb": 5,
-    "amount": "11078.0亿",
+    "amount": "12146.6亿",
     "bf": 0,
-    "heat": 54,
-    "risk": 40,
+    "heat": 51,
+    "risk": 48,
     "headline": "分歧",
     "concepts": [
       {
@@ -41,13 +41,13 @@
         "chg_pct": null
       },
       {
-        "name": "电网设备",
-        "lead": "日丰股份",
+        "name": "焦炭Ⅱ",
+        "lead": "美锦能源",
         "chg_pct": null
       },
       {
-        "name": "焦炭Ⅱ",
-        "lead": "美锦能源",
+        "name": "电网设备",
+        "lead": "日丰股份",
         "chg_pct": null
       },
       {
@@ -63,12 +63,16 @@
       },
       {
         "level": "warn",
-        "text": "跌停偏多（15）→ 控制追高"
+        "text": "跌停偏多（16）→ 控制追高"
+      },
+      {
+        "level": "warn",
+        "text": "炸板率偏高（32.5%）→ 注意回封质量"
       }
     ],
-    "shift_score": 57,
+    "shift_score": 51,
     "shift_label": "分歧",
-    "note": "情绪略有回落，注意午后分歧。"
+    "note": "炸板/跌停抬升，情绪明显走弱。"
   },
   "snapshots": [
     {
@@ -466,40 +470,111 @@
       "shift_score": 57,
       "shift_label": "分歧",
       "note": "情绪略有回落，注意午后分歧。"
+    },
+    {
+      "time": "10:30:04",
+      "ts_bj": "2026-08-19 10:30:04",
+      "date": "2026-08-19",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid"
+      },
+      "pool_errors": {},
+      "zt": 27,
+      "dt": 16,
+      "zab": 13,
+      "zb": 32.5,
+      "fb": 67.5,
+      "jj": 29.6,
+      "lianban": 8,
+      "max_lb": 5,
+      "amount": "12146.6亿",
+      "bf": 0,
+      "heat": 51,
+      "risk": 48,
+      "headline": "分歧",
+      "concepts": [
+        {
+          "name": "化学制药",
+          "lead": "神奇制药",
+          "chg_pct": null
+        },
+        {
+          "name": "农产品加",
+          "lead": "京粮控股",
+          "chg_pct": null
+        },
+        {
+          "name": "焦炭Ⅱ",
+          "lead": "美锦能源",
+          "chg_pct": null
+        },
+        {
+          "name": "电网设备",
+          "lead": "日丰股份",
+          "chg_pct": null
+        },
+        {
+          "name": "家居用品",
+          "lead": "好太太",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        },
+        {
+          "level": "warn",
+          "text": "跌停偏多（16）→ 控制追高"
+        },
+        {
+          "level": "warn",
+          "text": "炸板率偏高（32.5%）→ 注意回封质量"
+        }
+      ],
+      "shift_score": 51,
+      "shift_label": "分歧",
+      "note": "炸板/跌停抬升，情绪明显走弱。"
     }
   ],
   "indices": [
     {
       "name": "上证指数",
       "code": "000001.SH",
-      "val": 3918.794,
-      "chg": -1.7920940359431314,
-      "cje": 528713402800.0,
-      "t": "2026-08-19 10:20:00"
+      "val": 3922.931,
+      "chg": -1.688417724564345,
+      "cje": 582293911300.0,
+      "t": "2026-08-19 10:30:03"
     },
     {
       "name": "深证成指",
       "code": "399001.SZ",
-      "val": 14128.476,
-      "chg": -3.3784863663827562,
-      "cje": 577571856700.0,
-      "t": "2026-08-19 10:19:57"
+      "val": 14139.586,
+      "chg": -3.30250754060782,
+      "cje": 631620839600.0,
+      "t": "2026-08-19 10:30:03"
     },
     {
       "name": "创业板指",
       "code": "399006.SZ",
-      "val": 3553.411,
-      "chg": -4.106094482217961,
-      "cje": 280916417300.0,
-      "t": "2026-08-19 10:20:00"
+      "val": 3551.078,
+      "chg": -4.169053841991709,
+      "cje": 307439524300.0,
+      "t": "2026-08-19 10:30:03"
     }
   ],
   "asOf": {
-    "indices": "10:20:00"
+    "indices": "10:30:03"
   },
   "health": {
     "status": "valid",
-    "last_valid_at": "2026-08-19 10:20:04",
+    "last_valid_at": "2026-08-19 10:30:04",
     "rejected_reason": "",
     "source": {
       "status": "valid",
@@ -517,33 +592,34 @@
       "message": "intraday_coverage_collecting",
       "date": "2026-08-19",
       "expected_count": 26,
-      "due_count": 6,
-      "observed_count": 6,
+      "due_count": 7,
+      "observed_count": 7,
       "observed_slots": [
         "09:30",
         "09:40",
         "09:50",
         "10:00",
         "10:10",
-        "10:20"
+        "10:20",
+        "10:30"
       ],
       "missing_slots": [],
       "duplicate_slots": [],
       "out_of_session": [],
       "monotonic": true,
-      "morning_coverage": 6,
+      "morning_coverage": 7,
       "afternoon_coverage": 0
     }
   },
   "live": {
     "market": {
-      "zt": 28,
-      "dt": 15,
-      "zab": 9,
-      "zab_rate": 24.3,
+      "zt": 27,
+      "dt": 16,
+      "zab": 13,
+      "zab_rate": 32.5,
       "lianban": 8,
       "max_lianban": 5,
-      "amount": "11078.0亿"
+      "amount": "12146.6亿"
     },
     "alerts": [
       {
@@ -552,7 +628,11 @@
       },
       {
         "level": "warn",
-        "text": "跌停偏多（15）→ 控制追高"
+        "text": "跌停偏多（16）→ 控制追高"
+      },
+      {
+        "level": "warn",
+        "text": "炸板率偏高（32.5%）→ 注意回封质量"
       }
     ],
     "concepts": [
@@ -567,13 +647,13 @@
         "chg_pct": null
       },
       {
-        "name": "电网设备",
-        "lead": "日丰股份",
+        "name": "焦炭Ⅱ",
+        "lead": "美锦能源",
         "chg_pct": null
       },
       {
-        "name": "焦炭Ⅱ",
-        "lead": "美锦能源",
+        "name": "电网设备",
+        "lead": "日丰股份",
         "chg_pct": null
       },
       {
