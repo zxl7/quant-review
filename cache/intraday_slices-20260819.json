@@ -2,7 +2,7 @@
   "schema": "intraday_snapshot_v1",
   "render_mode": "snapshot_stream",
   "date": "2026-08-19",
-  "count": 22,
+  "count": 23,
   "interval_min": null,
   "simulated": false,
   "snapshots": [
@@ -1515,11 +1515,82 @@
       "shift_score": 49,
       "shift_label": "分歧",
       "note": "情绪整体平稳，维持当前节奏。"
+    },
+    {
+      "time": "14:30:12",
+      "ts_bj": "2026-08-19 14:30:12",
+      "date": "2026-08-19",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid"
+      },
+      "pool_errors": {},
+      "zt": 35,
+      "dt": 87,
+      "zab": 13,
+      "zb": 27.1,
+      "fb": 72.9,
+      "jj": 17.1,
+      "lianban": 6,
+      "max_lb": 3,
+      "amount": "21853.2亿",
+      "bf": 0,
+      "heat": 47,
+      "risk": 51,
+      "headline": "分歧",
+      "concepts": [
+        {
+          "name": "农产品加",
+          "lead": "京粮控股",
+          "chg_pct": null
+        },
+        {
+          "name": "房地产服",
+          "lead": "我爱我家",
+          "chg_pct": null
+        },
+        {
+          "name": "厨卫电器",
+          "lead": "亿田智能",
+          "chg_pct": null
+        },
+        {
+          "name": "化学制药",
+          "lead": "亨迪药业",
+          "chg_pct": null
+        },
+        {
+          "name": "焦炭Ⅱ",
+          "lead": "美锦能源",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        },
+        {
+          "level": "danger",
+          "text": "跌停偏多（87）→ 亏钱扩散风险上升"
+        },
+        {
+          "level": "warn",
+          "text": "炸板率偏高（27.1%）→ 注意回封质量"
+        }
+      ],
+      "shift_score": 48,
+      "shift_label": "分歧",
+      "note": "情绪整体平稳，维持当前节奏。"
     }
   ],
   "latest": {
-    "time": "14:20:05",
-    "ts_bj": "2026-08-19 14:20:05",
+    "time": "14:30:12",
+    "ts_bj": "2026-08-19 14:30:12",
     "date": "2026-08-19",
     "source": "intraday_live",
     "provider": "必盈(实时)+必盈(实时)",
@@ -1530,18 +1601,18 @@
       "dtgc": "valid"
     },
     "pool_errors": {},
-    "zt": 36,
-    "dt": 77,
-    "zab": 12,
-    "zb": 25.0,
-    "fb": 75.0,
-    "jj": 16.7,
+    "zt": 35,
+    "dt": 87,
+    "zab": 13,
+    "zb": 27.1,
+    "fb": 72.9,
+    "jj": 17.1,
     "lianban": 6,
     "max_lb": 3,
-    "amount": "21258.3亿",
+    "amount": "21853.2亿",
     "bf": 0,
-    "heat": 48,
-    "risk": 49,
+    "heat": 47,
+    "risk": 51,
     "headline": "分歧",
     "concepts": [
       {
@@ -1560,13 +1631,13 @@
         "chg_pct": null
       },
       {
-        "name": "焦炭Ⅱ",
-        "lead": "美锦能源",
+        "name": "化学制药",
+        "lead": "亨迪药业",
         "chg_pct": null
       },
       {
-        "name": "电网设备",
-        "lead": "日丰股份",
+        "name": "焦炭Ⅱ",
+        "lead": "美锦能源",
         "chg_pct": null
       }
     ],
@@ -1577,22 +1648,22 @@
       },
       {
         "level": "danger",
-        "text": "跌停偏多（77）→ 亏钱扩散风险上升"
+        "text": "跌停偏多（87）→ 亏钱扩散风险上升"
       },
       {
         "level": "warn",
-        "text": "炸板率偏高（25.0%）→ 注意回封质量"
+        "text": "炸板率偏高（27.1%）→ 注意回封质量"
       }
     ],
-    "shift_score": 49,
+    "shift_score": 48,
     "shift_label": "分歧",
     "note": "情绪整体平稳，维持当前节奏。"
   },
-  "updated_at": "2026-08-19 14:20:05",
-  "snapshot_sig": "2026-08-19|2026-08-19 14:20:05|22",
+  "updated_at": "2026-08-19 14:30:12",
+  "snapshot_sig": "2026-08-19|2026-08-19 14:30:12|23",
   "health": {
     "status": "valid",
-    "last_valid_at": "2026-08-19 14:20:05",
+    "last_valid_at": "2026-08-19 14:30:12",
     "rejected_reason": "",
     "source": {
       "status": "valid",
