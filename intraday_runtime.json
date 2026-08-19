@@ -1,11 +1,11 @@
 {
   "schema": "intraday_runtime_v1",
   "date": "2026-08-19",
-  "updated_at": "2026-08-19 13:40:05",
+  "updated_at": "2026-08-19 13:50:07",
   "source": "必盈(实时)+必盈(实时)",
   "latest": {
-    "time": "13:40:05",
-    "ts_bj": "2026-08-19 13:40:05",
+    "time": "13:50:07",
+    "ts_bj": "2026-08-19 13:50:07",
     "date": "2026-08-19",
     "source": "intraday_live",
     "provider": "必盈(实时)+必盈(实时)",
@@ -17,14 +17,14 @@
     },
     "pool_errors": {},
     "zt": 33,
-    "dt": 45,
+    "dt": 56,
     "zab": 13,
     "zb": 28.3,
     "fb": 71.7,
     "jj": 18.2,
     "lianban": 6,
     "max_lb": 3,
-    "amount": "19284.2亿",
+    "amount": "19696.8亿",
     "bf": 0,
     "heat": 46,
     "risk": 51,
@@ -63,7 +63,7 @@
       },
       {
         "level": "danger",
-        "text": "跌停偏多（45）→ 亏钱扩散风险上升"
+        "text": "跌停偏多（56）→ 亏钱扩散风险上升"
       },
       {
         "level": "warn",
@@ -1300,40 +1300,111 @@
       "shift_score": 47,
       "shift_label": "走弱",
       "note": "情绪整体平稳，维持当前节奏。"
+    },
+    {
+      "time": "13:50:07",
+      "ts_bj": "2026-08-19 13:50:07",
+      "date": "2026-08-19",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid"
+      },
+      "pool_errors": {},
+      "zt": 33,
+      "dt": 56,
+      "zab": 13,
+      "zb": 28.3,
+      "fb": 71.7,
+      "jj": 18.2,
+      "lianban": 6,
+      "max_lb": 3,
+      "amount": "19696.8亿",
+      "bf": 0,
+      "heat": 46,
+      "risk": 51,
+      "headline": "走弱",
+      "concepts": [
+        {
+          "name": "农产品加",
+          "lead": "京粮控股",
+          "chg_pct": null
+        },
+        {
+          "name": "房地产服",
+          "lead": "我爱我家",
+          "chg_pct": null
+        },
+        {
+          "name": "焦炭Ⅱ",
+          "lead": "美锦能源",
+          "chg_pct": null
+        },
+        {
+          "name": "电网设备",
+          "lead": "日丰股份",
+          "chg_pct": null
+        },
+        {
+          "name": "炼化及贸",
+          "lead": "恒逸石化",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        },
+        {
+          "level": "danger",
+          "text": "跌停偏多（56）→ 亏钱扩散风险上升"
+        },
+        {
+          "level": "warn",
+          "text": "炸板率偏高（28.3%）→ 注意回封质量"
+        }
+      ],
+      "shift_score": 47,
+      "shift_label": "走弱",
+      "note": "情绪整体平稳，维持当前节奏。"
     }
   ],
   "indices": [
     {
       "name": "上证指数",
       "code": "000001.SH",
-      "val": 3907.809,
-      "chg": -2.067386344499063,
-      "cje": 933683195600.0,
-      "t": "2026-08-19 13:40:00"
+      "val": 3902.108,
+      "chg": -2.210257664578937,
+      "cje": 954751404600.0,
+      "t": "2026-08-19 13:50:06"
     },
     {
       "name": "深证成指",
       "code": "399001.SZ",
-      "val": 14038.849,
-      "chg": -3.9914255398958973,
-      "cje": 994195217000.0,
-      "t": "2026-08-19 13:39:57"
+      "val": 13995.442,
+      "chg": -4.288276385117599,
+      "cje": 1014514738900.0,
+      "t": "2026-08-19 13:50:00"
     },
     {
       "name": "创业板指",
       "code": "399006.SZ",
-      "val": 3525.627,
-      "chg": -4.855885674654205,
-      "cje": 485848991900.0,
-      "t": "2026-08-19 13:40:03"
+      "val": 3511.687,
+      "chg": -5.232076619894676,
+      "cje": 495515892400.0,
+      "t": "2026-08-19 13:50:03"
     }
   ],
   "asOf": {
-    "indices": "13:40:03"
+    "indices": "13:50:03"
   },
   "health": {
     "status": "valid",
-    "last_valid_at": "2026-08-19 13:40:05",
+    "last_valid_at": "2026-08-19 13:50:07",
     "rejected_reason": "",
     "source": {
       "status": "valid",
@@ -1351,8 +1422,8 @@
       "message": "intraday_coverage_collecting",
       "date": "2026-08-19",
       "expected_count": 26,
-      "due_count": 18,
-      "observed_count": 18,
+      "due_count": 19,
+      "observed_count": 19,
       "observed_slots": [
         "09:30",
         "09:40",
@@ -1371,25 +1442,26 @@
         "13:10",
         "13:20",
         "13:30",
-        "13:40"
+        "13:40",
+        "13:50"
       ],
       "missing_slots": [],
       "duplicate_slots": [],
       "out_of_session": [],
       "monotonic": true,
       "morning_coverage": 13,
-      "afternoon_coverage": 5
+      "afternoon_coverage": 6
     }
   },
   "live": {
     "market": {
       "zt": 33,
-      "dt": 45,
+      "dt": 56,
       "zab": 13,
       "zab_rate": 28.3,
       "lianban": 6,
       "max_lianban": 3,
-      "amount": "19284.2亿"
+      "amount": "19696.8亿"
     },
     "alerts": [
       {
@@ -1398,7 +1470,7 @@
       },
       {
         "level": "danger",
-        "text": "跌停偏多（45）→ 亏钱扩散风险上升"
+        "text": "跌停偏多（56）→ 亏钱扩散风险上升"
       },
       {
         "level": "warn",
