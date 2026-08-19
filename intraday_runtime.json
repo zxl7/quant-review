@@ -1,61 +1,39 @@
 {
   "schema": "intraday_runtime_v1",
   "date": "2026-08-19",
-  "updated_at": "2026-08-19 10:40:04",
-  "source": "必盈(实时)+必盈(实时)",
+  "updated_at": "2026-08-19 10:50:05",
+  "source": "unknown",
   "latest": {
-    "time": "10:40:04",
-    "ts_bj": "2026-08-19 10:40:04",
+    "time": "10:50:05",
+    "ts_bj": "2026-08-19 10:50:05",
     "date": "2026-08-19",
     "source": "intraday_live",
-    "provider": "必盈(实时)+必盈(实时)",
-    "data_quality": "valid",
+    "provider": "unknown",
+    "data_quality": "unavailable",
     "pool_status": {
-      "ztgc": "valid",
-      "zbgc": "valid",
-      "dtgc": "valid"
+      "ztgc": "failed",
+      "zbgc": "failed",
+      "dtgc": "failed"
     },
-    "pool_errors": {},
-    "zt": 28,
-    "dt": 16,
-    "zab": 11,
-    "zb": 28.2,
-    "fb": 71.8,
-    "jj": 28.6,
-    "lianban": 8,
-    "max_lb": 5,
-    "amount": "13239.0亿",
+    "pool_errors": {
+      "ztgc": "HTTP Error 429: Too Many Requests",
+      "zbgc": "HTTP Error 429: Too Many Requests",
+      "dtgc": "HTTP Error 429: Too Many Requests"
+    },
+    "zt": null,
+    "dt": null,
+    "zab": null,
+    "zb": null,
+    "fb": null,
+    "jj": null,
+    "lianban": null,
+    "max_lb": null,
+    "amount": "",
     "bf": 0,
-    "heat": 52,
-    "risk": 44,
-    "headline": "分歧",
-    "concepts": [
-      {
-        "name": "化学制药",
-        "lead": "神奇制药",
-        "chg_pct": null
-      },
-      {
-        "name": "农产品加",
-        "lead": "京粮控股",
-        "chg_pct": null
-      },
-      {
-        "name": "焦炭Ⅱ",
-        "lead": "美锦能源",
-        "chg_pct": null
-      },
-      {
-        "name": "电网设备",
-        "lead": "日丰股份",
-        "chg_pct": null
-      },
-      {
-        "name": "房地产服",
-        "lead": "中交发展",
-        "chg_pct": null
-      }
-    ],
+    "heat": null,
+    "risk": null,
+    "headline": "数据暂缺",
+    "concepts": [],
     "alerts": [
       {
         "level": "info",
@@ -63,16 +41,16 @@
       },
       {
         "level": "warn",
-        "text": "跌停偏多（16）→ 控制追高"
+        "text": "盘中三池响应不完整，保留最近有效数据"
       },
       {
         "level": "warn",
-        "text": "炸板率偏高（28.2%）→ 注意回封质量"
+        "text": "三池请求均超时，本槽位跳过板块补抓并等待下一节点"
       }
     ],
-    "shift_score": 54,
-    "shift_label": "分歧",
-    "note": "情绪边际修复，但仍需确认持续性。"
+    "shift_score": null,
+    "shift_label": "数据暂缺",
+    "note": "本槽位三池请求均未成功，已记录数据暂缺；等待下一节点自动恢复。"
   },
   "snapshots": [
     {
@@ -612,59 +590,87 @@
       "shift_score": 54,
       "shift_label": "分歧",
       "note": "情绪边际修复，但仍需确认持续性。"
-    }
-  ],
-  "indices": [
-    {
-      "name": "上证指数",
-      "code": "000001.SH",
-      "val": 3912.87,
-      "chg": -1.9405539026600527,
-      "cje": 637336712100.0,
-      "t": "2026-08-19 10:40:03"
     },
     {
-      "name": "深证成指",
-      "code": "399001.SZ",
-      "val": 14086.763,
-      "chg": -3.663752321337774,
-      "cje": 686320589600.0,
-      "t": "2026-08-19 10:40:00"
-    },
-    {
-      "name": "创业板指",
-      "code": "399006.SZ",
-      "val": 3533.362,
-      "chg": -4.647145576990283,
-      "cje": 335269378400.0,
-      "t": "2026-08-19 10:40:00"
+      "time": "10:50:05",
+      "ts_bj": "2026-08-19 10:50:05",
+      "date": "2026-08-19",
+      "source": "intraday_live",
+      "provider": "unknown",
+      "data_quality": "unavailable",
+      "pool_status": {
+        "ztgc": "failed",
+        "zbgc": "failed",
+        "dtgc": "failed"
+      },
+      "pool_errors": {
+        "ztgc": "HTTP Error 429: Too Many Requests",
+        "zbgc": "HTTP Error 429: Too Many Requests",
+        "dtgc": "HTTP Error 429: Too Many Requests"
+      },
+      "zt": null,
+      "dt": null,
+      "zab": null,
+      "zb": null,
+      "fb": null,
+      "jj": null,
+      "lianban": null,
+      "max_lb": null,
+      "amount": "",
+      "bf": 0,
+      "heat": null,
+      "risk": null,
+      "headline": "数据暂缺",
+      "concepts": [],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        },
+        {
+          "level": "warn",
+          "text": "盘中三池响应不完整，保留最近有效数据"
+        },
+        {
+          "level": "warn",
+          "text": "三池请求均超时，本槽位跳过板块补抓并等待下一节点"
+        }
+      ],
+      "shift_score": null,
+      "shift_label": "数据暂缺",
+      "note": "本槽位三池请求均未成功，已记录数据暂缺；等待下一节点自动恢复。"
     }
   ],
+  "indices": [],
   "asOf": {
-    "indices": "10:40:00"
+    "indices": ""
   },
   "health": {
-    "status": "valid",
-    "last_valid_at": "2026-08-19 10:40:04",
+    "status": "degraded",
+    "last_valid_at": "2026-08-19 10:50:05",
     "rejected_reason": "",
     "source": {
-      "status": "valid",
+      "status": "partial",
       "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid"
+        "ztgc": "failed",
+        "zbgc": "failed",
+        "dtgc": "failed"
       },
-      "pool_errors": {}
+      "pool_errors": {
+        "ztgc": "HTTP Error 429: Too Many Requests",
+        "zbgc": "HTTP Error 429: Too Many Requests",
+        "dtgc": "HTTP Error 429: Too Many Requests"
+      }
     },
-    "indices_status": "valid",
+    "indices_status": "unavailable",
     "coverage": {
       "ok": true,
       "status": "collecting",
       "message": "intraday_coverage_collecting",
       "date": "2026-08-19",
       "expected_count": 26,
-      "due_count": 8,
-      "observed_count": 8,
+      "due_count": 9,
+      "observed_count": 9,
       "observed_slots": [
         "09:30",
         "09:40",
@@ -673,25 +679,26 @@
         "10:10",
         "10:20",
         "10:30",
-        "10:40"
+        "10:40",
+        "10:50"
       ],
       "missing_slots": [],
       "duplicate_slots": [],
       "out_of_session": [],
       "monotonic": true,
-      "morning_coverage": 8,
+      "morning_coverage": 9,
       "afternoon_coverage": 0
     }
   },
   "live": {
     "market": {
-      "zt": 28,
-      "dt": 16,
-      "zab": 11,
-      "zab_rate": 28.2,
-      "lianban": 8,
-      "max_lianban": 5,
-      "amount": "13239.0亿"
+      "zt": null,
+      "dt": null,
+      "zab": null,
+      "zab_rate": null,
+      "lianban": null,
+      "max_lianban": null,
+      "amount": ""
     },
     "alerts": [
       {
@@ -700,39 +707,13 @@
       },
       {
         "level": "warn",
-        "text": "跌停偏多（16）→ 控制追高"
+        "text": "盘中三池响应不完整，保留最近有效数据"
       },
       {
         "level": "warn",
-        "text": "炸板率偏高（28.2%）→ 注意回封质量"
+        "text": "三池请求均超时，本槽位跳过板块补抓并等待下一节点"
       }
     ],
-    "concepts": [
-      {
-        "name": "化学制药",
-        "lead": "神奇制药",
-        "chg_pct": null
-      },
-      {
-        "name": "农产品加",
-        "lead": "京粮控股",
-        "chg_pct": null
-      },
-      {
-        "name": "焦炭Ⅱ",
-        "lead": "美锦能源",
-        "chg_pct": null
-      },
-      {
-        "name": "电网设备",
-        "lead": "日丰股份",
-        "chg_pct": null
-      },
-      {
-        "name": "房地产服",
-        "lead": "中交发展",
-        "chg_pct": null
-      }
-    ]
+    "concepts": []
   }
 }
