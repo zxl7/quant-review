@@ -1,11 +1,11 @@
 {
   "schema": "intraday_runtime_v1",
   "date": "2026-08-19",
-  "updated_at": "2026-08-19 11:30:05",
+  "updated_at": "2026-08-19 13:00:28",
   "source": "必盈(实时)+必盈(实时)",
   "latest": {
-    "time": "11:30:05",
-    "ts_bj": "2026-08-19 11:30:05",
+    "time": "13:00:28",
+    "ts_bj": "2026-08-19 13:00:28",
     "date": "2026-08-19",
     "source": "intraday_live",
     "provider": "必盈(实时)+必盈(实时)",
@@ -16,25 +16,20 @@
       "dtgc": "valid"
     },
     "pool_errors": {},
-    "zt": 31,
-    "dt": 32,
-    "zab": 13,
-    "zb": 29.5,
-    "fb": 70.5,
-    "jj": 22.6,
-    "lianban": 7,
-    "max_lb": 5,
-    "amount": "16181.5亿",
+    "zt": 29,
+    "dt": 35,
+    "zab": 15,
+    "zb": 34.1,
+    "fb": 65.9,
+    "jj": 20.7,
+    "lianban": 6,
+    "max_lb": 3,
+    "amount": "16333.2亿",
     "bf": 0,
-    "heat": 51,
-    "risk": 52,
-    "headline": "分歧",
+    "heat": 44,
+    "risk": 56,
+    "headline": "走弱",
     "concepts": [
-      {
-        "name": "化学制药",
-        "lead": "神奇制药",
-        "chg_pct": null
-      },
       {
         "name": "农产品加",
         "lead": "京粮控股",
@@ -54,6 +49,11 @@
         "name": "电网设备",
         "lead": "日丰股份",
         "chg_pct": null
+      },
+      {
+        "name": "家居用品",
+        "lead": "好太太",
+        "chg_pct": null
       }
     ],
     "alerts": [
@@ -63,16 +63,16 @@
       },
       {
         "level": "danger",
-        "text": "跌停偏多（32）→ 亏钱扩散风险上升"
+        "text": "跌停偏多（35）→ 亏钱扩散风险上升"
       },
       {
         "level": "warn",
-        "text": "炸板率偏高（29.5%）→ 注意回封质量"
+        "text": "炸板率偏高（34.1%）→ 注意回封质量"
       }
     ],
-    "shift_score": 50,
-    "shift_label": "分歧",
-    "note": "情绪整体平稳，维持当前节奏。"
+    "shift_score": 44,
+    "shift_label": "走弱",
+    "note": "炸板/跌停抬升，情绪明显走弱。"
   },
   "snapshots": [
     {
@@ -945,40 +945,111 @@
       "shift_score": 50,
       "shift_label": "分歧",
       "note": "情绪整体平稳，维持当前节奏。"
+    },
+    {
+      "time": "13:00:28",
+      "ts_bj": "2026-08-19 13:00:28",
+      "date": "2026-08-19",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid"
+      },
+      "pool_errors": {},
+      "zt": 29,
+      "dt": 35,
+      "zab": 15,
+      "zb": 34.1,
+      "fb": 65.9,
+      "jj": 20.7,
+      "lianban": 6,
+      "max_lb": 3,
+      "amount": "16333.2亿",
+      "bf": 0,
+      "heat": 44,
+      "risk": 56,
+      "headline": "走弱",
+      "concepts": [
+        {
+          "name": "农产品加",
+          "lead": "京粮控股",
+          "chg_pct": null
+        },
+        {
+          "name": "房地产服",
+          "lead": "我爱我家",
+          "chg_pct": null
+        },
+        {
+          "name": "焦炭Ⅱ",
+          "lead": "美锦能源",
+          "chg_pct": null
+        },
+        {
+          "name": "电网设备",
+          "lead": "日丰股份",
+          "chg_pct": null
+        },
+        {
+          "name": "家居用品",
+          "lead": "好太太",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        },
+        {
+          "level": "danger",
+          "text": "跌停偏多（35）→ 亏钱扩散风险上升"
+        },
+        {
+          "level": "warn",
+          "text": "炸板率偏高（34.1%）→ 注意回封质量"
+        }
+      ],
+      "shift_score": 44,
+      "shift_label": "走弱",
+      "note": "炸板/跌停抬升，情绪明显走弱。"
     }
   ],
   "indices": [
     {
       "name": "上证指数",
       "code": "000001.SH",
-      "val": 3912.171,
-      "chg": -1.9580713649887393,
-      "cje": 784068944000.0,
-      "t": "2026-08-19 11:30:03"
+      "val": 3908.774,
+      "chg": -2.04320272340153,
+      "cje": 789828597300.0,
+      "t": "2026-08-19 13:00:24"
     },
     {
       "name": "深证成指",
       "code": "399001.SZ",
-      "val": 14041.816,
-      "chg": -3.971134884983719,
-      "cje": 834074794800.0,
-      "t": "2026-08-19 11:30:00"
+      "val": 14020.495,
+      "chg": -4.116944474933997,
+      "cje": 842103581100.0,
+      "t": "2026-08-19 13:00:24"
     },
     {
       "name": "创业板指",
       "code": "399006.SZ",
-      "val": 3520.968,
-      "chg": -4.98161548913594,
-      "cje": 407424662500.0,
-      "t": "2026-08-19 11:30:03"
+      "val": 3514.314,
+      "chg": -5.161183247359045,
+      "cje": 411027791500.0,
+      "t": "2026-08-19 13:00:24"
     }
   ],
   "asOf": {
-    "indices": "11:30:03"
+    "indices": "13:00:24"
   },
   "health": {
     "status": "valid",
-    "last_valid_at": "2026-08-19 11:30:05",
+    "last_valid_at": "2026-08-19 13:00:28",
     "rejected_reason": "",
     "source": {
       "status": "valid",
@@ -996,8 +1067,8 @@
       "message": "intraday_coverage_collecting",
       "date": "2026-08-19",
       "expected_count": 26,
-      "due_count": 13,
-      "observed_count": 13,
+      "due_count": 14,
+      "observed_count": 14,
       "observed_slots": [
         "09:30",
         "09:40",
@@ -1011,25 +1082,26 @@
         "11:00",
         "11:10",
         "11:20",
-        "11:30"
+        "11:30",
+        "13:00"
       ],
       "missing_slots": [],
       "duplicate_slots": [],
       "out_of_session": [],
       "monotonic": true,
       "morning_coverage": 13,
-      "afternoon_coverage": 0
+      "afternoon_coverage": 1
     }
   },
   "live": {
     "market": {
-      "zt": 31,
-      "dt": 32,
-      "zab": 13,
-      "zab_rate": 29.5,
-      "lianban": 7,
-      "max_lianban": 5,
-      "amount": "16181.5亿"
+      "zt": 29,
+      "dt": 35,
+      "zab": 15,
+      "zab_rate": 34.1,
+      "lianban": 6,
+      "max_lianban": 3,
+      "amount": "16333.2亿"
     },
     "alerts": [
       {
@@ -1038,19 +1110,14 @@
       },
       {
         "level": "danger",
-        "text": "跌停偏多（32）→ 亏钱扩散风险上升"
+        "text": "跌停偏多（35）→ 亏钱扩散风险上升"
       },
       {
         "level": "warn",
-        "text": "炸板率偏高（29.5%）→ 注意回封质量"
+        "text": "炸板率偏高（34.1%）→ 注意回封质量"
       }
     ],
     "concepts": [
-      {
-        "name": "化学制药",
-        "lead": "神奇制药",
-        "chg_pct": null
-      },
       {
         "name": "农产品加",
         "lead": "京粮控股",
@@ -1069,6 +1136,11 @@
       {
         "name": "电网设备",
         "lead": "日丰股份",
+        "chg_pct": null
+      },
+      {
+        "name": "家居用品",
+        "lead": "好太太",
         "chg_pct": null
       }
     ]
