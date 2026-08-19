@@ -1,37 +1,50 @@
 {
   "schema": "intraday_runtime_v1",
   "date": "2026-08-19",
-  "updated_at": "2026-08-19 09:30:22",
-  "source": "必盈(实时)",
+  "updated_at": "2026-08-19 09:40:04",
+  "source": "必盈(实时)+必盈(实时)",
   "latest": {
-    "time": "09:30:22",
-    "ts_bj": "2026-08-19 09:30:22",
+    "time": "09:40:04",
+    "ts_bj": "2026-08-19 09:40:04",
     "date": "2026-08-19",
     "source": "intraday_live",
-    "provider": "必盈(实时)",
-    "data_quality": "partial",
+    "provider": "必盈(实时)+必盈(实时)",
+    "data_quality": "valid",
     "pool_status": {
       "ztgc": "valid",
-      "zbgc": "failed",
+      "zbgc": "valid",
       "dtgc": "valid"
     },
-    "pool_errors": {
-      "zbgc": "empty_response"
-    },
-    "zt": 7,
-    "dt": 2,
-    "zab": null,
-    "zb": null,
-    "fb": null,
-    "jj": 57.1,
-    "lianban": 4,
-    "max_lb": 3,
-    "amount": "",
+    "pool_errors": {},
+    "zt": 20,
+    "dt": 6,
+    "zab": 4,
+    "zb": 16.7,
+    "fb": 83.3,
+    "jj": 40.0,
+    "lianban": 8,
+    "max_lb": 5,
+    "amount": "4515.8亿",
     "bf": 0,
-    "heat": null,
-    "risk": null,
-    "headline": "数据部分可用",
+    "heat": 59,
+    "risk": 20,
+    "headline": "修复",
     "concepts": [
+      {
+        "name": "化学制药",
+        "lead": "神奇制药",
+        "chg_pct": null
+      },
+      {
+        "name": "房地产服",
+        "lead": "我爱我家",
+        "chg_pct": null
+      },
+      {
+        "name": "农产品加",
+        "lead": "京粮控股",
+        "chg_pct": null
+      },
       {
         "name": "农化制品",
         "lead": "红四方",
@@ -41,36 +54,17 @@
         "name": "种植业",
         "lead": "农发种业",
         "chg_pct": null
-      },
-      {
-        "name": "农产品加",
-        "lead": "金健米业",
-        "chg_pct": null
-      },
-      {
-        "name": "光学光电",
-        "lead": "深华发Ａ",
-        "chg_pct": null
-      },
-      {
-        "name": "焦炭Ⅱ",
-        "lead": "宝泰隆",
-        "chg_pct": null
       }
     ],
     "alerts": [
       {
         "level": "info",
         "text": "盘中模式：强制实时拉取"
-      },
-      {
-        "level": "warn",
-        "text": "盘中三池响应不完整，保留最近有效数据"
       }
     ],
-    "shift_score": null,
-    "shift_label": "数据部分可用",
-    "note": "本槽位仅部分三池成功；节点已保留，缺失指标不参与判断。"
+    "shift_score": 68,
+    "shift_label": "修复",
+    "note": "承接增强、分歧收敛，情绪明显回暖。"
   },
   "snapshots": [
     {
@@ -141,51 +135,112 @@
       "shift_score": null,
       "shift_label": "数据部分可用",
       "note": "本槽位仅部分三池成功；节点已保留，缺失指标不参与判断。"
+    },
+    {
+      "time": "09:40:04",
+      "ts_bj": "2026-08-19 09:40:04",
+      "date": "2026-08-19",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid"
+      },
+      "pool_errors": {},
+      "zt": 20,
+      "dt": 6,
+      "zab": 4,
+      "zb": 16.7,
+      "fb": 83.3,
+      "jj": 40.0,
+      "lianban": 8,
+      "max_lb": 5,
+      "amount": "4515.8亿",
+      "bf": 0,
+      "heat": 59,
+      "risk": 20,
+      "headline": "修复",
+      "concepts": [
+        {
+          "name": "化学制药",
+          "lead": "神奇制药",
+          "chg_pct": null
+        },
+        {
+          "name": "房地产服",
+          "lead": "我爱我家",
+          "chg_pct": null
+        },
+        {
+          "name": "农产品加",
+          "lead": "京粮控股",
+          "chg_pct": null
+        },
+        {
+          "name": "农化制品",
+          "lead": "红四方",
+          "chg_pct": null
+        },
+        {
+          "name": "种植业",
+          "lead": "农发种业",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        }
+      ],
+      "shift_score": 68,
+      "shift_label": "修复",
+      "note": "承接增强、分歧收敛，情绪明显回暖。"
     }
   ],
   "indices": [
     {
       "name": "上证指数",
       "code": "000001.SH",
-      "val": 3953.191,
-      "chg": -0.9300795127388862,
-      "cje": 23877671300.0,
-      "t": "2026-08-19 09:30:18"
+      "val": 3954.721,
+      "chg": -0.8917365694443352,
+      "cje": 213965698600.0,
+      "t": "2026-08-19 09:40:03"
     },
     {
       "name": "深证成指",
       "code": "399001.SZ",
-      "val": 14287.341,
-      "chg": -2.292043868026629,
-      "cje": 42009961600.0,
-      "t": "2026-08-19 09:30:18"
+      "val": 14333.665,
+      "chg": -1.9752443068026346,
+      "cje": 236951099000.0,
+      "t": "2026-08-19 09:40:00"
     },
     {
       "name": "创业板指",
       "code": "399006.SZ",
-      "val": 3594.333,
-      "chg": -3.0017554677896614,
-      "cje": 20186270000.0,
-      "t": "2026-08-19 09:30:18"
+      "val": 3612.48,
+      "chg": -2.512032578027913,
+      "cje": 114299105200.0,
+      "t": "2026-08-19 09:40:00"
     }
   ],
   "asOf": {
-    "indices": "09:30:18"
+    "indices": "09:40:00"
   },
   "health": {
-    "status": "degraded",
-    "last_valid_at": "2026-08-19 09:30:22",
+    "status": "valid",
+    "last_valid_at": "2026-08-19 09:40:04",
     "rejected_reason": "",
     "source": {
-      "status": "partial",
+      "status": "valid",
       "pool_status": {
         "ztgc": "valid",
-        "zbgc": "failed",
+        "zbgc": "valid",
         "dtgc": "valid"
       },
-      "pool_errors": {
-        "zbgc": "empty_response"
-      }
+      "pool_errors": {}
     },
     "indices_status": "valid",
     "coverage": {
@@ -194,40 +249,52 @@
       "message": "intraday_coverage_collecting",
       "date": "2026-08-19",
       "expected_count": 26,
-      "due_count": 1,
-      "observed_count": 1,
+      "due_count": 2,
+      "observed_count": 2,
       "observed_slots": [
-        "09:30"
+        "09:30",
+        "09:40"
       ],
       "missing_slots": [],
       "duplicate_slots": [],
       "out_of_session": [],
       "monotonic": true,
-      "morning_coverage": 1,
+      "morning_coverage": 2,
       "afternoon_coverage": 0
     }
   },
   "live": {
     "market": {
-      "zt": 7,
-      "dt": 2,
-      "zab": null,
-      "zab_rate": null,
-      "lianban": 4,
-      "max_lianban": 3,
-      "amount": ""
+      "zt": 20,
+      "dt": 6,
+      "zab": 4,
+      "zab_rate": 16.7,
+      "lianban": 8,
+      "max_lianban": 5,
+      "amount": "4515.8亿"
     },
     "alerts": [
       {
         "level": "info",
         "text": "盘中模式：强制实时拉取"
-      },
-      {
-        "level": "warn",
-        "text": "盘中三池响应不完整，保留最近有效数据"
       }
     ],
     "concepts": [
+      {
+        "name": "化学制药",
+        "lead": "神奇制药",
+        "chg_pct": null
+      },
+      {
+        "name": "房地产服",
+        "lead": "我爱我家",
+        "chg_pct": null
+      },
+      {
+        "name": "农产品加",
+        "lead": "京粮控股",
+        "chg_pct": null
+      },
       {
         "name": "农化制品",
         "lead": "红四方",
@@ -236,21 +303,6 @@
       {
         "name": "种植业",
         "lead": "农发种业",
-        "chg_pct": null
-      },
-      {
-        "name": "农产品加",
-        "lead": "金健米业",
-        "chg_pct": null
-      },
-      {
-        "name": "光学光电",
-        "lead": "深华发Ａ",
-        "chg_pct": null
-      },
-      {
-        "name": "焦炭Ⅱ",
-        "lead": "宝泰隆",
         "chg_pct": null
       }
     ]
