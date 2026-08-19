@@ -2,7 +2,7 @@
   "schema": "intraday_snapshot_v1",
   "render_mode": "snapshot_stream",
   "date": "2026-08-19",
-  "count": 10,
+  "count": 11,
   "interval_min": null,
   "simulated": false,
   "snapshots": [
@@ -663,11 +663,82 @@
       "shift_score": 52,
       "shift_label": "分歧",
       "note": "承接增强、分歧收敛，情绪明显回暖。"
+    },
+    {
+      "time": "11:10:05",
+      "ts_bj": "2026-08-19 11:10:05",
+      "date": "2026-08-19",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid"
+      },
+      "pool_errors": {},
+      "zt": 30,
+      "dt": 23,
+      "zab": 12,
+      "zb": 28.6,
+      "fb": 71.4,
+      "jj": 23.3,
+      "lianban": 7,
+      "max_lb": 5,
+      "amount": "15075.4亿",
+      "bf": 0,
+      "heat": 51,
+      "risk": 51,
+      "headline": "分歧",
+      "concepts": [
+        {
+          "name": "化学制药",
+          "lead": "神奇制药",
+          "chg_pct": null
+        },
+        {
+          "name": "农产品加",
+          "lead": "京粮控股",
+          "chg_pct": null
+        },
+        {
+          "name": "房地产服",
+          "lead": "我爱我家",
+          "chg_pct": null
+        },
+        {
+          "name": "焦炭Ⅱ",
+          "lead": "美锦能源",
+          "chg_pct": null
+        },
+        {
+          "name": "电网设备",
+          "lead": "日丰股份",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        },
+        {
+          "level": "danger",
+          "text": "跌停偏多（23）→ 亏钱扩散风险上升"
+        },
+        {
+          "level": "warn",
+          "text": "炸板率偏高（28.6%）→ 注意回封质量"
+        }
+      ],
+      "shift_score": 50,
+      "shift_label": "分歧",
+      "note": "情绪略有回落，注意午后分歧。"
     }
   ],
   "latest": {
-    "time": "11:00:07",
-    "ts_bj": "2026-08-19 11:00:07",
+    "time": "11:10:05",
+    "ts_bj": "2026-08-19 11:10:05",
     "date": "2026-08-19",
     "source": "intraday_live",
     "provider": "必盈(实时)+必盈(实时)",
@@ -679,17 +750,17 @@
     },
     "pool_errors": {},
     "zt": 30,
-    "dt": 21,
-    "zab": 11,
-    "zb": 26.8,
-    "fb": 73.2,
-    "jj": 26.7,
-    "lianban": 8,
+    "dt": 23,
+    "zab": 12,
+    "zb": 28.6,
+    "fb": 71.4,
+    "jj": 23.3,
+    "lianban": 7,
     "max_lb": 5,
-    "amount": "14525.1亿",
+    "amount": "15075.4亿",
     "bf": 0,
-    "heat": 53,
-    "risk": 50,
+    "heat": 51,
+    "risk": 51,
     "headline": "分歧",
     "concepts": [
       {
@@ -725,22 +796,22 @@
       },
       {
         "level": "danger",
-        "text": "跌停偏多（21）→ 亏钱扩散风险上升"
+        "text": "跌停偏多（23）→ 亏钱扩散风险上升"
       },
       {
         "level": "warn",
-        "text": "炸板率偏高（26.8%）→ 注意回封质量"
+        "text": "炸板率偏高（28.6%）→ 注意回封质量"
       }
     ],
-    "shift_score": 52,
+    "shift_score": 50,
     "shift_label": "分歧",
-    "note": "承接增强、分歧收敛，情绪明显回暖。"
+    "note": "情绪略有回落，注意午后分歧。"
   },
-  "updated_at": "2026-08-19 11:00:07",
-  "snapshot_sig": "2026-08-19|2026-08-19 11:00:07|10",
+  "updated_at": "2026-08-19 11:10:05",
+  "snapshot_sig": "2026-08-19|2026-08-19 11:10:05|11",
   "health": {
     "status": "valid",
-    "last_valid_at": "2026-08-19 11:00:07",
+    "last_valid_at": "2026-08-19 11:10:05",
     "rejected_reason": "",
     "source": {
       "status": "valid",
