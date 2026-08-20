@@ -1,36 +1,34 @@
 {
   "schema": "intraday_runtime_v1",
   "date": "2026-08-20",
-  "updated_at": "2026-08-20 09:30:32",
-  "source": "必盈(实时)",
+  "updated_at": "2026-08-20 09:40:04",
+  "source": "必盈(实时)+必盈(实时)",
   "latest": {
-    "time": "09:30:32",
-    "ts_bj": "2026-08-20 09:30:32",
+    "time": "09:40:04",
+    "ts_bj": "2026-08-20 09:40:04",
     "date": "2026-08-20",
     "source": "intraday_live",
-    "provider": "必盈(实时)",
-    "data_quality": "partial",
+    "provider": "必盈(实时)+必盈(实时)",
+    "data_quality": "valid",
     "pool_status": {
       "ztgc": "valid",
-      "zbgc": "failed",
+      "zbgc": "valid",
       "dtgc": "valid"
     },
-    "pool_errors": {
-      "zbgc": "empty_response"
-    },
-    "zt": 19,
-    "dt": 6,
-    "zab": null,
-    "zb": null,
-    "fb": null,
-    "jj": 10.5,
-    "lianban": 2,
-    "max_lb": 2,
-    "amount": "",
+    "pool_errors": {},
+    "zt": 37,
+    "dt": 8,
+    "zab": 7,
+    "zb": 15.9,
+    "fb": 84.1,
+    "jj": 13.5,
+    "lianban": 5,
+    "max_lb": 4,
+    "amount": "4015.2亿",
     "bf": 0,
-    "heat": null,
-    "risk": null,
-    "headline": "数据部分可用",
+    "heat": 53,
+    "risk": 24,
+    "headline": "修复",
     "concepts": [
       {
         "name": "化学制药",
@@ -39,12 +37,22 @@
       },
       {
         "name": "生物制品",
-        "lead": "智飞生物",
+        "lead": "沃森生物",
+        "chg_pct": null
+      },
+      {
+        "name": "医疗器械",
+        "lead": "华大智造",
         "chg_pct": null
       },
       {
         "name": "中药Ⅱ",
         "lead": "汉森制药",
+        "chg_pct": null
+      },
+      {
+        "name": "农产品加",
+        "lead": "金健米业",
         "chg_pct": null
       }
     ],
@@ -52,15 +60,11 @@
       {
         "level": "info",
         "text": "盘中模式：强制实时拉取"
-      },
-      {
-        "level": "warn",
-        "text": "盘中三池响应不完整，保留最近有效数据"
       }
     ],
-    "shift_score": null,
-    "shift_label": "数据部分可用",
-    "note": "本槽位仅部分三池成功；节点已保留，缺失指标不参与判断。"
+    "shift_score": 63,
+    "shift_label": "修复",
+    "note": "承接增强、分歧收敛，情绪明显回暖。"
   },
   "snapshots": [
     {
@@ -121,51 +125,112 @@
       "shift_score": null,
       "shift_label": "数据部分可用",
       "note": "本槽位仅部分三池成功；节点已保留，缺失指标不参与判断。"
+    },
+    {
+      "time": "09:40:04",
+      "ts_bj": "2026-08-20 09:40:04",
+      "date": "2026-08-20",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid"
+      },
+      "pool_errors": {},
+      "zt": 37,
+      "dt": 8,
+      "zab": 7,
+      "zb": 15.9,
+      "fb": 84.1,
+      "jj": 13.5,
+      "lianban": 5,
+      "max_lb": 4,
+      "amount": "4015.2亿",
+      "bf": 0,
+      "heat": 53,
+      "risk": 24,
+      "headline": "修复",
+      "concepts": [
+        {
+          "name": "化学制药",
+          "lead": "哈三联",
+          "chg_pct": null
+        },
+        {
+          "name": "生物制品",
+          "lead": "沃森生物",
+          "chg_pct": null
+        },
+        {
+          "name": "医疗器械",
+          "lead": "华大智造",
+          "chg_pct": null
+        },
+        {
+          "name": "中药Ⅱ",
+          "lead": "汉森制药",
+          "chg_pct": null
+        },
+        {
+          "name": "农产品加",
+          "lead": "金健米业",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        }
+      ],
+      "shift_score": 63,
+      "shift_label": "修复",
+      "note": "承接增强、分歧收敛，情绪明显回暖。"
     }
   ],
   "indices": [
     {
       "name": "上证指数",
       "code": "000001.SH",
-      "val": 3907.121,
-      "chg": 0.32608176515026027,
-      "cje": 25292755300.0,
-      "t": "2026-08-20 09:30:30"
+      "val": 3910.103,
+      "chg": 0.40265281985362755,
+      "cje": 193185366300.0,
+      "t": "2026-08-20 09:40:00"
     },
     {
       "name": "深证成指",
       "code": "399001.SZ",
-      "val": 13995.875,
-      "chg": 0.7611363792131285,
-      "cje": 38825381300.0,
-      "t": "2026-08-20 09:30:24"
+      "val": 13998.79,
+      "chg": 0.7821224706540348,
+      "cje": 207747859000.0,
+      "t": "2026-08-20 09:39:57"
     },
     {
       "name": "创业板指",
       "code": "399006.SZ",
-      "val": 3502.205,
-      "chg": 0.82660307649965,
-      "cje": 19507811100.0,
-      "t": "2026-08-20 09:30:24"
+      "val": 3502.607,
+      "chg": 0.838176440833479,
+      "cje": 103041788600.0,
+      "t": "2026-08-20 09:39:57"
     }
   ],
   "asOf": {
-    "indices": "09:30:24"
+    "indices": "09:39:57"
   },
   "health": {
-    "status": "degraded",
-    "last_valid_at": "2026-08-20 09:30:32",
+    "status": "valid",
+    "last_valid_at": "2026-08-20 09:40:04",
     "rejected_reason": "",
     "source": {
-      "status": "partial",
+      "status": "valid",
       "pool_status": {
         "ztgc": "valid",
-        "zbgc": "failed",
+        "zbgc": "valid",
         "dtgc": "valid"
       },
-      "pool_errors": {
-        "zbgc": "empty_response"
-      }
+      "pool_errors": {}
     },
     "indices_status": "valid",
     "coverage": {
@@ -174,37 +239,34 @@
       "message": "intraday_coverage_collecting",
       "date": "2026-08-20",
       "expected_count": 26,
-      "due_count": 1,
-      "observed_count": 1,
+      "due_count": 2,
+      "observed_count": 2,
       "observed_slots": [
-        "09:30"
+        "09:30",
+        "09:40"
       ],
       "missing_slots": [],
       "duplicate_slots": [],
       "out_of_session": [],
       "monotonic": true,
-      "morning_coverage": 1,
+      "morning_coverage": 2,
       "afternoon_coverage": 0
     }
   },
   "live": {
     "market": {
-      "zt": 19,
-      "dt": 6,
-      "zab": null,
-      "zab_rate": null,
-      "lianban": 2,
-      "max_lianban": 2,
-      "amount": ""
+      "zt": 37,
+      "dt": 8,
+      "zab": 7,
+      "zab_rate": 15.9,
+      "lianban": 5,
+      "max_lianban": 4,
+      "amount": "4015.2亿"
     },
     "alerts": [
       {
         "level": "info",
         "text": "盘中模式：强制实时拉取"
-      },
-      {
-        "level": "warn",
-        "text": "盘中三池响应不完整，保留最近有效数据"
       }
     ],
     "concepts": [
@@ -215,12 +277,22 @@
       },
       {
         "name": "生物制品",
-        "lead": "智飞生物",
+        "lead": "沃森生物",
+        "chg_pct": null
+      },
+      {
+        "name": "医疗器械",
+        "lead": "华大智造",
         "chg_pct": null
       },
       {
         "name": "中药Ⅱ",
         "lead": "汉森制药",
+        "chg_pct": null
+      },
+      {
+        "name": "农产品加",
+        "lead": "金健米业",
         "chg_pct": null
       }
     ]
