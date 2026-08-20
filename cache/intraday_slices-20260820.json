@@ -2,7 +2,7 @@
   "schema": "intraday_snapshot_v1",
   "render_mode": "snapshot_stream",
   "date": "2026-08-20",
-  "count": 25,
+  "count": 26,
   "interval_min": null,
   "simulated": false,
   "snapshots": [
@@ -1658,11 +1658,82 @@
       "shift_score": 48,
       "shift_label": "分歧",
       "note": "情绪整体平稳，维持当前节奏。"
+    },
+    {
+      "time": "15:00:07",
+      "ts_bj": "2026-08-20 15:00:07",
+      "date": "2026-08-20",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid"
+      },
+      "pool_errors": {},
+      "zt": 78,
+      "dt": 11,
+      "zab": 46,
+      "zb": 37.1,
+      "fb": 62.9,
+      "jj": 5.1,
+      "lianban": 4,
+      "max_lb": 4,
+      "amount": "20793.6亿",
+      "bf": 0,
+      "heat": 49,
+      "risk": 52,
+      "headline": "分歧",
+      "concepts": [
+        {
+          "name": "生物制品",
+          "lead": "安科生物",
+          "chg_pct": null
+        },
+        {
+          "name": "化学制药",
+          "lead": "石药创新",
+          "chg_pct": null
+        },
+        {
+          "name": "医疗服务",
+          "lead": "博腾股份",
+          "chg_pct": null
+        },
+        {
+          "name": "医疗器械",
+          "lead": "华大智造",
+          "chg_pct": null
+        },
+        {
+          "name": "专用设备",
+          "lead": "速达股份",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        },
+        {
+          "level": "warn",
+          "text": "跌停偏多（11）→ 控制追高"
+        },
+        {
+          "level": "danger",
+          "text": "炸板率高（37.1%）→ 分歧偏强，谨慎接力"
+        }
+      ],
+      "shift_score": 49,
+      "shift_label": "分歧",
+      "note": "情绪整体平稳，维持当前节奏。"
     }
   ],
   "latest": {
-    "time": "14:50:06",
-    "ts_bj": "2026-08-20 14:50:06",
+    "time": "15:00:07",
+    "ts_bj": "2026-08-20 15:00:07",
     "date": "2026-08-20",
     "source": "intraday_live",
     "provider": "必盈(实时)+必盈(实时)",
@@ -1673,17 +1744,17 @@
       "dtgc": "valid"
     },
     "pool_errors": {},
-    "zt": 77,
+    "zt": 78,
     "dt": 11,
-    "zab": 47,
-    "zb": 37.9,
-    "fb": 62.1,
-    "jj": 5.2,
+    "zab": 46,
+    "zb": 37.1,
+    "fb": 62.9,
+    "jj": 5.1,
     "lianban": 4,
     "max_lb": 4,
-    "amount": "19830.8亿",
+    "amount": "20793.6亿",
     "bf": 0,
-    "heat": 48,
+    "heat": 49,
     "risk": 52,
     "headline": "分歧",
     "concepts": [
@@ -1724,18 +1795,18 @@
       },
       {
         "level": "danger",
-        "text": "炸板率高（37.9%）→ 分歧偏强，谨慎接力"
+        "text": "炸板率高（37.1%）→ 分歧偏强，谨慎接力"
       }
     ],
-    "shift_score": 48,
+    "shift_score": 49,
     "shift_label": "分歧",
     "note": "情绪整体平稳，维持当前节奏。"
   },
-  "updated_at": "2026-08-20 14:50:06",
-  "snapshot_sig": "2026-08-20|2026-08-20 14:50:06|25",
+  "updated_at": "2026-08-20 15:00:07",
+  "snapshot_sig": "2026-08-20|2026-08-20 15:00:07|26",
   "health": {
     "status": "valid",
-    "last_valid_at": "2026-08-20 14:50:06",
+    "last_valid_at": "2026-08-20 15:00:07",
     "rejected_reason": "",
     "source": {
       "status": "valid",
