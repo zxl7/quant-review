@@ -1,11 +1,11 @@
 {
   "schema": "intraday_runtime_v1",
   "date": "2026-08-20",
-  "updated_at": "2026-08-20 10:20:04",
+  "updated_at": "2026-08-20 10:30:03",
   "source": "必盈(实时)+必盈(实时)",
   "latest": {
-    "time": "10:20:04",
-    "ts_bj": "2026-08-20 10:20:04",
+    "time": "10:30:03",
+    "ts_bj": "2026-08-20 10:30:03",
     "date": "2026-08-20",
     "source": "intraday_live",
     "provider": "必盈(实时)+必盈(实时)",
@@ -17,18 +17,18 @@
     },
     "pool_errors": {},
     "zt": 62,
-    "dt": 2,
-    "zab": 23,
-    "zb": 27.1,
-    "fb": 72.9,
+    "dt": 6,
+    "zab": 27,
+    "zb": 30.3,
+    "fb": 69.7,
     "jj": 6.5,
     "lianban": 4,
     "max_lb": 4,
-    "amount": "9760.1亿",
+    "amount": "10575.2亿",
     "bf": 0,
-    "heat": 51,
-    "risk": 28,
-    "headline": "修复",
+    "heat": 49,
+    "risk": 38,
+    "headline": "分歧",
     "concepts": [
       {
         "name": "化学制药",
@@ -63,12 +63,12 @@
       },
       {
         "level": "warn",
-        "text": "炸板率偏高（27.1%）→ 注意回封质量"
+        "text": "炸板率偏高（30.3%）→ 注意回封质量"
       }
     ],
-    "shift_score": 60,
-    "shift_label": "修复",
-    "note": "情绪整体平稳，维持当前节奏。"
+    "shift_score": 54,
+    "shift_label": "分歧",
+    "note": "炸板/跌停抬升，情绪明显走弱。"
   },
   "snapshots": [
     {
@@ -456,40 +456,107 @@
       "shift_score": 60,
       "shift_label": "修复",
       "note": "情绪整体平稳，维持当前节奏。"
+    },
+    {
+      "time": "10:30:03",
+      "ts_bj": "2026-08-20 10:30:03",
+      "date": "2026-08-20",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid"
+      },
+      "pool_errors": {},
+      "zt": 62,
+      "dt": 6,
+      "zab": 27,
+      "zb": 30.3,
+      "fb": 69.7,
+      "jj": 6.5,
+      "lianban": 4,
+      "max_lb": 4,
+      "amount": "10575.2亿",
+      "bf": 0,
+      "heat": 49,
+      "risk": 38,
+      "headline": "分歧",
+      "concepts": [
+        {
+          "name": "化学制药",
+          "lead": "石药创新",
+          "chg_pct": null
+        },
+        {
+          "name": "生物制品",
+          "lead": "沃森生物",
+          "chg_pct": null
+        },
+        {
+          "name": "医疗服务",
+          "lead": "博腾股份",
+          "chg_pct": null
+        },
+        {
+          "name": "医疗器械",
+          "lead": "华大智造",
+          "chg_pct": null
+        },
+        {
+          "name": "专用设备",
+          "lead": "速达股份",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        },
+        {
+          "level": "warn",
+          "text": "炸板率偏高（30.3%）→ 注意回封质量"
+        }
+      ],
+      "shift_score": 54,
+      "shift_label": "分歧",
+      "note": "炸板/跌停抬升，情绪明显走弱。"
     }
   ],
   "indices": [
     {
       "name": "上证指数",
       "code": "000001.SH",
-      "val": 3907.787,
-      "chg": 0.3431831475890333,
-      "cje": 480609289100.0,
-      "t": "2026-08-20 10:20:00"
+      "val": 3907.44,
+      "chg": 0.33427296784991534,
+      "cje": 521969675200.0,
+      "t": "2026-08-20 10:30:03"
     },
     {
       "name": "深证成指",
       "code": "399001.SZ",
-      "val": 13985.067,
-      "chg": 0.6833258556133803,
-      "cje": 494159076300.0,
-      "t": "2026-08-20 10:19:57"
+      "val": 14004.392,
+      "chg": 0.8224532028159216,
+      "cje": 535236797600.0,
+      "t": "2026-08-20 10:29:57"
     },
     {
       "name": "创业板指",
       "code": "399006.SZ",
-      "val": 3495.573,
-      "chg": 0.6356713544550091,
-      "cje": 247488934300.0,
-      "t": "2026-08-20 10:19:57"
+      "val": 3504.715,
+      "chg": 0.8988646299272867,
+      "cje": 268431223700.0,
+      "t": "2026-08-20 10:29:57"
     }
   ],
   "asOf": {
-    "indices": "10:19:57"
+    "indices": "10:29:57"
   },
   "health": {
     "status": "valid",
-    "last_valid_at": "2026-08-20 10:20:04",
+    "last_valid_at": "2026-08-20 10:30:03",
     "rejected_reason": "",
     "source": {
       "status": "valid",
@@ -507,33 +574,34 @@
       "message": "intraday_coverage_collecting",
       "date": "2026-08-20",
       "expected_count": 26,
-      "due_count": 6,
-      "observed_count": 6,
+      "due_count": 7,
+      "observed_count": 7,
       "observed_slots": [
         "09:30",
         "09:40",
         "09:50",
         "10:00",
         "10:10",
-        "10:20"
+        "10:20",
+        "10:30"
       ],
       "missing_slots": [],
       "duplicate_slots": [],
       "out_of_session": [],
       "monotonic": true,
-      "morning_coverage": 6,
+      "morning_coverage": 7,
       "afternoon_coverage": 0
     }
   },
   "live": {
     "market": {
       "zt": 62,
-      "dt": 2,
-      "zab": 23,
-      "zab_rate": 27.1,
+      "dt": 6,
+      "zab": 27,
+      "zab_rate": 30.3,
       "lianban": 4,
       "max_lianban": 4,
-      "amount": "9760.1亿"
+      "amount": "10575.2亿"
     },
     "alerts": [
       {
@@ -542,7 +610,7 @@
       },
       {
         "level": "warn",
-        "text": "炸板率偏高（27.1%）→ 注意回封质量"
+        "text": "炸板率偏高（30.3%）→ 注意回封质量"
       }
     ],
     "concepts": [
