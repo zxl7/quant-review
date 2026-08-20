@@ -2,7 +2,7 @@
   "schema": "intraday_snapshot_v1",
   "render_mode": "snapshot_stream",
   "date": "2026-08-20",
-  "count": 17,
+  "count": 18,
   "interval_min": null,
   "simulated": false,
   "snapshots": [
@@ -1102,11 +1102,78 @@
       "shift_score": 56,
       "shift_label": "分歧",
       "note": "情绪略有回落，注意午后分歧。"
+    },
+    {
+      "time": "13:40:05",
+      "ts_bj": "2026-08-20 13:40:05",
+      "date": "2026-08-20",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid"
+      },
+      "pool_errors": {},
+      "zt": 83,
+      "dt": 6,
+      "zab": 38,
+      "zb": 31.4,
+      "fb": 68.6,
+      "jj": 4.8,
+      "lianban": 4,
+      "max_lb": 4,
+      "amount": "15987.9亿",
+      "bf": 0,
+      "heat": 52,
+      "risk": 41,
+      "headline": "分歧",
+      "concepts": [
+        {
+          "name": "生物制品",
+          "lead": "义翘神州",
+          "chg_pct": null
+        },
+        {
+          "name": "化学制药",
+          "lead": "石药创新",
+          "chg_pct": null
+        },
+        {
+          "name": "医疗服务",
+          "lead": "凯莱英",
+          "chg_pct": null
+        },
+        {
+          "name": "医疗器械",
+          "lead": "华大智造",
+          "chg_pct": null
+        },
+        {
+          "name": "专用设备",
+          "lead": "速达股份",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        },
+        {
+          "level": "warn",
+          "text": "炸板率偏高（31.4%）→ 注意回封质量"
+        }
+      ],
+      "shift_score": 55,
+      "shift_label": "分歧",
+      "note": "情绪整体平稳，维持当前节奏。"
     }
   ],
   "latest": {
-    "time": "13:30:07",
-    "ts_bj": "2026-08-20 13:30:07",
+    "time": "13:40:05",
+    "ts_bj": "2026-08-20 13:40:05",
     "date": "2026-08-20",
     "source": "intraday_live",
     "provider": "必盈(实时)+必盈(实时)",
@@ -1117,18 +1184,18 @@
       "dtgc": "valid"
     },
     "pool_errors": {},
-    "zt": 82,
-    "dt": 4,
-    "zab": 36,
-    "zb": 30.5,
-    "fb": 69.5,
-    "jj": 4.9,
+    "zt": 83,
+    "dt": 6,
+    "zab": 38,
+    "zb": 31.4,
+    "fb": 68.6,
+    "jj": 4.8,
     "lianban": 4,
     "max_lb": 4,
-    "amount": "15379.6亿",
+    "amount": "15987.9亿",
     "bf": 0,
     "heat": 52,
-    "risk": 38,
+    "risk": 41,
     "headline": "分歧",
     "concepts": [
       {
@@ -1152,8 +1219,8 @@
         "chg_pct": null
       },
       {
-        "name": "通信设备",
-        "lead": "通鼎互联",
+        "name": "专用设备",
+        "lead": "速达股份",
         "chg_pct": null
       }
     ],
@@ -1164,18 +1231,18 @@
       },
       {
         "level": "warn",
-        "text": "炸板率偏高（30.5%）→ 注意回封质量"
+        "text": "炸板率偏高（31.4%）→ 注意回封质量"
       }
     ],
-    "shift_score": 56,
+    "shift_score": 55,
     "shift_label": "分歧",
-    "note": "情绪略有回落，注意午后分歧。"
+    "note": "情绪整体平稳，维持当前节奏。"
   },
-  "updated_at": "2026-08-20 13:30:07",
-  "snapshot_sig": "2026-08-20|2026-08-20 13:30:07|17",
+  "updated_at": "2026-08-20 13:40:05",
+  "snapshot_sig": "2026-08-20|2026-08-20 13:40:05|18",
   "health": {
     "status": "valid",
-    "last_valid_at": "2026-08-20 13:30:07",
+    "last_valid_at": "2026-08-20 13:40:05",
     "rejected_reason": "",
     "source": {
       "status": "valid",
