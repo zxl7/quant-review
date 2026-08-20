@@ -1,0 +1,146 @@
+{
+  "schema": "intraday_snapshot_v1",
+  "render_mode": "snapshot_stream",
+  "date": "2026-08-20",
+  "count": 1,
+  "interval_min": null,
+  "simulated": false,
+  "snapshots": [
+    {
+      "time": "09:30:32",
+      "ts_bj": "2026-08-20 09:30:32",
+      "date": "2026-08-20",
+      "source": "intraday_live",
+      "provider": "必盈(实时)",
+      "data_quality": "partial",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "failed",
+        "dtgc": "valid"
+      },
+      "pool_errors": {
+        "zbgc": "empty_response"
+      },
+      "zt": 19,
+      "dt": 6,
+      "zab": null,
+      "zb": null,
+      "fb": null,
+      "jj": 10.5,
+      "lianban": 2,
+      "max_lb": 2,
+      "amount": "",
+      "bf": 0,
+      "heat": null,
+      "risk": null,
+      "headline": "数据部分可用",
+      "concepts": [
+        {
+          "name": "化学制药",
+          "lead": "哈三联",
+          "chg_pct": null
+        },
+        {
+          "name": "生物制品",
+          "lead": "智飞生物",
+          "chg_pct": null
+        },
+        {
+          "name": "中药Ⅱ",
+          "lead": "汉森制药",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        },
+        {
+          "level": "warn",
+          "text": "盘中三池响应不完整，保留最近有效数据"
+        }
+      ],
+      "shift_score": null,
+      "shift_label": "数据部分可用",
+      "note": "本槽位仅部分三池成功；节点已保留，缺失指标不参与判断。"
+    }
+  ],
+  "latest": {
+    "time": "09:30:32",
+    "ts_bj": "2026-08-20 09:30:32",
+    "date": "2026-08-20",
+    "source": "intraday_live",
+    "provider": "必盈(实时)",
+    "data_quality": "partial",
+    "pool_status": {
+      "ztgc": "valid",
+      "zbgc": "failed",
+      "dtgc": "valid"
+    },
+    "pool_errors": {
+      "zbgc": "empty_response"
+    },
+    "zt": 19,
+    "dt": 6,
+    "zab": null,
+    "zb": null,
+    "fb": null,
+    "jj": 10.5,
+    "lianban": 2,
+    "max_lb": 2,
+    "amount": "",
+    "bf": 0,
+    "heat": null,
+    "risk": null,
+    "headline": "数据部分可用",
+    "concepts": [
+      {
+        "name": "化学制药",
+        "lead": "哈三联",
+        "chg_pct": null
+      },
+      {
+        "name": "生物制品",
+        "lead": "智飞生物",
+        "chg_pct": null
+      },
+      {
+        "name": "中药Ⅱ",
+        "lead": "汉森制药",
+        "chg_pct": null
+      }
+    ],
+    "alerts": [
+      {
+        "level": "info",
+        "text": "盘中模式：强制实时拉取"
+      },
+      {
+        "level": "warn",
+        "text": "盘中三池响应不完整，保留最近有效数据"
+      }
+    ],
+    "shift_score": null,
+    "shift_label": "数据部分可用",
+    "note": "本槽位仅部分三池成功；节点已保留，缺失指标不参与判断。"
+  },
+  "updated_at": "2026-08-20 09:30:32",
+  "snapshot_sig": "2026-08-20|2026-08-20 09:30:32|1",
+  "health": {
+    "status": "degraded",
+    "last_valid_at": "2026-08-20 09:30:32",
+    "rejected_reason": "",
+    "source": {
+      "status": "partial",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "failed",
+        "dtgc": "valid"
+      },
+      "pool_errors": {
+        "zbgc": "empty_response"
+      }
+    }
+  }
+}
