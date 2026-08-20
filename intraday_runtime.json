@@ -1,39 +1,61 @@
 {
   "schema": "intraday_runtime_v1",
   "date": "2026-08-20",
-  "updated_at": "2026-08-20 10:50:03",
-  "source": "unknown",
+  "updated_at": "2026-08-20 11:00:03",
+  "source": "必盈(实时)+必盈(实时)",
   "latest": {
-    "time": "10:50:03",
-    "ts_bj": "2026-08-20 10:50:03",
+    "time": "11:00:03",
+    "ts_bj": "2026-08-20 11:00:03",
     "date": "2026-08-20",
     "source": "intraday_live",
-    "provider": "unknown",
-    "data_quality": "unavailable",
+    "provider": "必盈(实时)+必盈(实时)",
+    "data_quality": "valid",
     "pool_status": {
-      "ztgc": "failed",
-      "zbgc": "failed",
-      "dtgc": "failed"
+      "ztgc": "valid",
+      "zbgc": "valid",
+      "dtgc": "valid"
     },
-    "pool_errors": {
-      "ztgc": "HTTP Error 429: Too Many Requests",
-      "zbgc": "HTTP Error 429: Too Many Requests",
-      "dtgc": "HTTP Error 429: Too Many Requests"
-    },
-    "zt": null,
-    "dt": null,
-    "zab": null,
-    "zb": null,
-    "fb": null,
-    "jj": null,
-    "lianban": null,
-    "max_lb": null,
-    "amount": "",
+    "pool_errors": {},
+    "zt": 74,
+    "dt": 4,
+    "zab": 26,
+    "zb": 26.0,
+    "fb": 74.0,
+    "jj": 5.4,
+    "lianban": 4,
+    "max_lb": 4,
+    "amount": "12385.6亿",
     "bf": 0,
-    "heat": null,
-    "risk": null,
-    "headline": "数据暂缺",
-    "concepts": [],
+    "heat": 53,
+    "risk": 32,
+    "headline": "分歧",
+    "concepts": [
+      {
+        "name": "化学制药",
+        "lead": "石药创新",
+        "chg_pct": null
+      },
+      {
+        "name": "生物制品",
+        "lead": "沃森生物",
+        "chg_pct": null
+      },
+      {
+        "name": "医疗服务",
+        "lead": "博腾股份",
+        "chg_pct": null
+      },
+      {
+        "name": "医疗器械",
+        "lead": "华大智造",
+        "chg_pct": null
+      },
+      {
+        "name": "专用设备",
+        "lead": "速达股份",
+        "chg_pct": null
+      }
+    ],
     "alerts": [
       {
         "level": "info",
@@ -41,16 +63,12 @@
       },
       {
         "level": "warn",
-        "text": "盘中三池响应不完整，保留最近有效数据"
-      },
-      {
-        "level": "warn",
-        "text": "三池请求均超时，本槽位跳过板块补抓并等待下一节点"
+        "text": "炸板率偏高（26.0%）→ 注意回封质量"
       }
     ],
-    "shift_score": null,
-    "shift_label": "数据暂缺",
-    "note": "本槽位三池请求均未成功，已记录数据暂缺；等待下一节点自动恢复。"
+    "shift_score": 59,
+    "shift_label": "分歧",
+    "note": "承接增强、分歧收敛，情绪明显回暖。"
   },
   "snapshots": [
     {
@@ -621,38 +639,126 @@
       "shift_score": null,
       "shift_label": "数据暂缺",
       "note": "本槽位三池请求均未成功，已记录数据暂缺；等待下一节点自动恢复。"
+    },
+    {
+      "time": "11:00:03",
+      "ts_bj": "2026-08-20 11:00:03",
+      "date": "2026-08-20",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid"
+      },
+      "pool_errors": {},
+      "zt": 74,
+      "dt": 4,
+      "zab": 26,
+      "zb": 26.0,
+      "fb": 74.0,
+      "jj": 5.4,
+      "lianban": 4,
+      "max_lb": 4,
+      "amount": "12385.6亿",
+      "bf": 0,
+      "heat": 53,
+      "risk": 32,
+      "headline": "分歧",
+      "concepts": [
+        {
+          "name": "化学制药",
+          "lead": "石药创新",
+          "chg_pct": null
+        },
+        {
+          "name": "生物制品",
+          "lead": "沃森生物",
+          "chg_pct": null
+        },
+        {
+          "name": "医疗服务",
+          "lead": "博腾股份",
+          "chg_pct": null
+        },
+        {
+          "name": "医疗器械",
+          "lead": "华大智造",
+          "chg_pct": null
+        },
+        {
+          "name": "专用设备",
+          "lead": "速达股份",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        },
+        {
+          "level": "warn",
+          "text": "炸板率偏高（26.0%）→ 注意回封质量"
+        }
+      ],
+      "shift_score": 59,
+      "shift_label": "分歧",
+      "note": "承接增强、分歧收敛，情绪明显回暖。"
     }
   ],
-  "indices": [],
+  "indices": [
+    {
+      "name": "上证指数",
+      "code": "000001.SH",
+      "val": 3905.797,
+      "chg": 0.29208442228397435,
+      "cje": 610358440200.0,
+      "t": "2026-08-20 11:00:03"
+    },
+    {
+      "name": "深证成指",
+      "code": "399001.SZ",
+      "val": 14031.922,
+      "chg": 1.0206511778992802,
+      "cje": 628001730000.0,
+      "t": "2026-08-20 10:59:57"
+    },
+    {
+      "name": "创业板指",
+      "code": "399006.SZ",
+      "val": 3513.827,
+      "chg": 1.1611942214940492,
+      "cje": 316671125900.0,
+      "t": "2026-08-20 10:59:57"
+    }
+  ],
   "asOf": {
-    "indices": ""
+    "indices": "10:59:57"
   },
   "health": {
-    "status": "degraded",
-    "last_valid_at": "2026-08-20 10:50:03",
+    "status": "valid",
+    "last_valid_at": "2026-08-20 11:00:03",
     "rejected_reason": "",
     "source": {
-      "status": "partial",
+      "status": "valid",
       "pool_status": {
-        "ztgc": "failed",
-        "zbgc": "failed",
-        "dtgc": "failed"
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid"
       },
-      "pool_errors": {
-        "ztgc": "HTTP Error 429: Too Many Requests",
-        "zbgc": "HTTP Error 429: Too Many Requests",
-        "dtgc": "HTTP Error 429: Too Many Requests"
-      }
+      "pool_errors": {}
     },
-    "indices_status": "unavailable",
+    "indices_status": "valid",
     "coverage": {
       "ok": true,
       "status": "collecting",
       "message": "intraday_coverage_collecting",
       "date": "2026-08-20",
       "expected_count": 26,
-      "due_count": 9,
-      "observed_count": 9,
+      "due_count": 10,
+      "observed_count": 10,
       "observed_slots": [
         "09:30",
         "09:40",
@@ -662,25 +768,26 @@
         "10:20",
         "10:30",
         "10:40",
-        "10:50"
+        "10:50",
+        "11:00"
       ],
       "missing_slots": [],
       "duplicate_slots": [],
       "out_of_session": [],
       "monotonic": true,
-      "morning_coverage": 9,
+      "morning_coverage": 10,
       "afternoon_coverage": 0
     }
   },
   "live": {
     "market": {
-      "zt": null,
-      "dt": null,
-      "zab": null,
-      "zab_rate": null,
-      "lianban": null,
-      "max_lianban": null,
-      "amount": ""
+      "zt": 74,
+      "dt": 4,
+      "zab": 26,
+      "zab_rate": 26.0,
+      "lianban": 4,
+      "max_lianban": 4,
+      "amount": "12385.6亿"
     },
     "alerts": [
       {
@@ -689,13 +796,35 @@
       },
       {
         "level": "warn",
-        "text": "盘中三池响应不完整，保留最近有效数据"
-      },
-      {
-        "level": "warn",
-        "text": "三池请求均超时，本槽位跳过板块补抓并等待下一节点"
+        "text": "炸板率偏高（26.0%）→ 注意回封质量"
       }
     ],
-    "concepts": []
+    "concepts": [
+      {
+        "name": "化学制药",
+        "lead": "石药创新",
+        "chg_pct": null
+      },
+      {
+        "name": "生物制品",
+        "lead": "沃森生物",
+        "chg_pct": null
+      },
+      {
+        "name": "医疗服务",
+        "lead": "博腾股份",
+        "chg_pct": null
+      },
+      {
+        "name": "医疗器械",
+        "lead": "华大智造",
+        "chg_pct": null
+      },
+      {
+        "name": "专用设备",
+        "lead": "速达股份",
+        "chg_pct": null
+      }
+    ]
   }
 }
