@@ -2,7 +2,7 @@
   "schema": "intraday_snapshot_v1",
   "render_mode": "snapshot_stream",
   "date": "2026-08-20",
-  "count": 14,
+  "count": 15,
   "interval_min": null,
   "simulated": false,
   "snapshots": [
@@ -901,11 +901,78 @@
       "shift_score": 60,
       "shift_label": "修复",
       "note": "情绪边际修复，但仍需确认持续性。"
+    },
+    {
+      "time": "13:10:05",
+      "ts_bj": "2026-08-20 13:10:05",
+      "date": "2026-08-20",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid"
+      },
+      "pool_errors": {},
+      "zt": 82,
+      "dt": 6,
+      "zab": 31,
+      "zb": 27.4,
+      "fb": 72.6,
+      "jj": 4.9,
+      "lianban": 4,
+      "max_lb": 4,
+      "amount": "14428.8亿",
+      "bf": 0,
+      "heat": 53,
+      "risk": 38,
+      "headline": "分歧",
+      "concepts": [
+        {
+          "name": "生物制品",
+          "lead": "义翘神州",
+          "chg_pct": null
+        },
+        {
+          "name": "化学制药",
+          "lead": "石药创新",
+          "chg_pct": null
+        },
+        {
+          "name": "医疗服务",
+          "lead": "凯莱英",
+          "chg_pct": null
+        },
+        {
+          "name": "通信设备",
+          "lead": "通鼎互联",
+          "chg_pct": null
+        },
+        {
+          "name": "医疗器械",
+          "lead": "华大智造",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        },
+        {
+          "level": "warn",
+          "text": "炸板率偏高（27.4%）→ 注意回封质量"
+        }
+      ],
+      "shift_score": 57,
+      "shift_label": "分歧",
+      "note": "情绪略有回落，注意午后分歧。"
     }
   ],
   "latest": {
-    "time": "13:00:24",
-    "ts_bj": "2026-08-20 13:00:24",
+    "time": "13:10:05",
+    "ts_bj": "2026-08-20 13:10:05",
     "date": "2026-08-20",
     "source": "intraday_live",
     "provider": "必盈(实时)+必盈(实时)",
@@ -917,27 +984,27 @@
     },
     "pool_errors": {},
     "zt": 82,
-    "dt": 5,
-    "zab": 26,
-    "zb": 24.1,
-    "fb": 75.9,
+    "dt": 6,
+    "zab": 31,
+    "zb": 27.4,
+    "fb": 72.6,
     "jj": 4.9,
     "lianban": 4,
     "max_lb": 4,
-    "amount": "13833.0亿",
+    "amount": "14428.8亿",
     "bf": 0,
-    "heat": 55,
-    "risk": 32,
-    "headline": "修复",
+    "heat": 53,
+    "risk": 38,
+    "headline": "分歧",
     "concepts": [
-      {
-        "name": "化学制药",
-        "lead": "石药创新",
-        "chg_pct": null
-      },
       {
         "name": "生物制品",
         "lead": "义翘神州",
+        "chg_pct": null
+      },
+      {
+        "name": "化学制药",
+        "lead": "石药创新",
         "chg_pct": null
       },
       {
@@ -951,8 +1018,8 @@
         "chg_pct": null
       },
       {
-        "name": "专用设备",
-        "lead": "速达股份",
+        "name": "医疗器械",
+        "lead": "华大智造",
         "chg_pct": null
       }
     ],
@@ -960,17 +1027,21 @@
       {
         "level": "info",
         "text": "盘中模式：强制实时拉取"
+      },
+      {
+        "level": "warn",
+        "text": "炸板率偏高（27.4%）→ 注意回封质量"
       }
     ],
-    "shift_score": 60,
-    "shift_label": "修复",
-    "note": "情绪边际修复，但仍需确认持续性。"
+    "shift_score": 57,
+    "shift_label": "分歧",
+    "note": "情绪略有回落，注意午后分歧。"
   },
-  "updated_at": "2026-08-20 13:00:24",
-  "snapshot_sig": "2026-08-20|2026-08-20 13:00:24|14",
+  "updated_at": "2026-08-20 13:10:05",
+  "snapshot_sig": "2026-08-20|2026-08-20 13:10:05|15",
   "health": {
     "status": "valid",
-    "last_valid_at": "2026-08-20 13:00:24",
+    "last_valid_at": "2026-08-20 13:10:05",
     "rejected_reason": "",
     "source": {
       "status": "valid",
