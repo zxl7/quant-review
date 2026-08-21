@@ -1,41 +1,43 @@
 {
   "schema": "intraday_runtime_v1",
   "date": "2026-08-21",
-  "updated_at": "2026-08-21 09:30:21",
-  "source": "必盈(实时)",
+  "updated_at": "2026-08-21 09:40:04",
+  "source": "必盈(实时)+必盈(实时)",
   "latest": {
-    "time": "09:30:21",
-    "ts_bj": "2026-08-21 09:30:21",
+    "time": "09:40:04",
+    "ts_bj": "2026-08-21 09:40:04",
     "date": "2026-08-21",
     "source": "intraday_live",
-    "provider": "必盈(实时)",
-    "data_quality": "partial",
+    "provider": "必盈(实时)+必盈(实时)",
+    "data_quality": "valid",
     "pool_status": {
       "ztgc": "valid",
-      "zbgc": "failed",
-      "dtgc": "failed"
+      "zbgc": "valid",
+      "dtgc": "valid"
     },
-    "pool_errors": {
-      "zbgc": "empty_response",
-      "dtgc": "empty_response"
-    },
-    "zt": 10,
-    "dt": null,
-    "zab": null,
-    "zb": null,
-    "fb": null,
-    "jj": 60.0,
-    "lianban": 6,
+    "pool_errors": {},
+    "zt": 18,
+    "dt": 5,
+    "zab": 2,
+    "zb": 10.0,
+    "fb": 90.0,
+    "jj": 55.6,
+    "lianban": 10,
     "max_lb": 3,
-    "amount": "",
+    "amount": "3323.0亿",
     "bf": 0,
-    "heat": null,
-    "risk": null,
-    "headline": "数据部分可用",
+    "heat": 61,
+    "risk": 14,
+    "headline": "走强",
     "concepts": [
       {
         "name": "化学制药",
         "lead": "中 关 村",
+        "chg_pct": null
+      },
+      {
+        "name": "通用设备",
+        "lead": "杭齿前进",
         "chg_pct": null
       },
       {
@@ -44,18 +46,13 @@
         "chg_pct": null
       },
       {
-        "name": "医疗服务",
-        "lead": "贝瑞基因",
+        "name": "家居用品",
+        "lead": "志邦家居",
         "chg_pct": null
       },
       {
-        "name": "饰品",
-        "lead": "深中华A",
-        "chg_pct": null
-      },
-      {
-        "name": "通信设备",
-        "lead": "楚天龙",
+        "name": "消费电子",
+        "lead": "科森科技",
         "chg_pct": null
       }
     ],
@@ -63,15 +60,11 @@
       {
         "level": "info",
         "text": "盘中模式：强制实时拉取"
-      },
-      {
-        "level": "warn",
-        "text": "盘中三池响应不完整，保留最近有效数据"
       }
     ],
-    "shift_score": null,
-    "shift_label": "数据部分可用",
-    "note": "本槽位仅部分三池成功；节点已保留，缺失指标不参与判断。"
+    "shift_score": 72,
+    "shift_label": "走强",
+    "note": "承接增强、分歧收敛，情绪明显回暖。"
   },
   "snapshots": [
     {
@@ -143,52 +136,112 @@
       "shift_score": null,
       "shift_label": "数据部分可用",
       "note": "本槽位仅部分三池成功；节点已保留，缺失指标不参与判断。"
+    },
+    {
+      "time": "09:40:04",
+      "ts_bj": "2026-08-21 09:40:04",
+      "date": "2026-08-21",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid"
+      },
+      "pool_errors": {},
+      "zt": 18,
+      "dt": 5,
+      "zab": 2,
+      "zb": 10.0,
+      "fb": 90.0,
+      "jj": 55.6,
+      "lianban": 10,
+      "max_lb": 3,
+      "amount": "3323.0亿",
+      "bf": 0,
+      "heat": 61,
+      "risk": 14,
+      "headline": "走强",
+      "concepts": [
+        {
+          "name": "化学制药",
+          "lead": "中 关 村",
+          "chg_pct": null
+        },
+        {
+          "name": "通用设备",
+          "lead": "杭齿前进",
+          "chg_pct": null
+        },
+        {
+          "name": "中药Ⅱ",
+          "lead": "汉森制药",
+          "chg_pct": null
+        },
+        {
+          "name": "家居用品",
+          "lead": "志邦家居",
+          "chg_pct": null
+        },
+        {
+          "name": "消费电子",
+          "lead": "科森科技",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        }
+      ],
+      "shift_score": 72,
+      "shift_label": "走强",
+      "note": "承接增强、分歧收敛，情绪明显回暖。"
     }
   ],
   "indices": [
     {
       "name": "上证指数",
       "code": "000001.SH",
-      "val": 3892.565,
-      "chg": -0.28577861993723297,
-      "cje": 13882016200.0,
-      "t": "2026-08-21 09:30:18"
+      "val": 3887.679,
+      "chg": -0.41094125322992897,
+      "cje": 157465962500.0,
+      "t": "2026-08-21 09:40:00"
     },
     {
       "name": "深证成指",
       "code": "399001.SZ",
-      "val": 13932.585,
-      "chg": -0.2876735848075035,
-      "cje": 26151082800.0,
-      "t": "2026-08-21 09:30:15"
+      "val": 13892.201,
+      "chg": -0.5766926426457392,
+      "cje": 173880796900.0,
+      "t": "2026-08-21 09:39:57"
     },
     {
       "name": "创业板指",
       "code": "399006.SZ",
-      "val": 3493.451,
-      "chg": -0.061162796884871765,
-      "cje": 13001630600.0,
-      "t": "2026-08-21 09:30:15"
+      "val": 3489.608,
+      "chg": -0.171101350873909,
+      "cje": 88458544900.0,
+      "t": "2026-08-21 09:39:57"
     }
   ],
   "asOf": {
-    "indices": "09:30:15"
+    "indices": "09:39:57"
   },
   "health": {
-    "status": "degraded",
-    "last_valid_at": "2026-08-21 09:30:21",
+    "status": "valid",
+    "last_valid_at": "2026-08-21 09:40:04",
     "rejected_reason": "",
     "source": {
-      "status": "partial",
+      "status": "valid",
       "pool_status": {
         "ztgc": "valid",
-        "zbgc": "failed",
-        "dtgc": "failed"
+        "zbgc": "valid",
+        "dtgc": "valid"
       },
-      "pool_errors": {
-        "zbgc": "empty_response",
-        "dtgc": "empty_response"
-      }
+      "pool_errors": {}
     },
     "indices_status": "valid",
     "coverage": {
@@ -197,37 +250,34 @@
       "message": "intraday_coverage_collecting",
       "date": "2026-08-21",
       "expected_count": 26,
-      "due_count": 1,
-      "observed_count": 1,
+      "due_count": 2,
+      "observed_count": 2,
       "observed_slots": [
-        "09:30"
+        "09:30",
+        "09:40"
       ],
       "missing_slots": [],
       "duplicate_slots": [],
       "out_of_session": [],
       "monotonic": true,
-      "morning_coverage": 1,
+      "morning_coverage": 2,
       "afternoon_coverage": 0
     }
   },
   "live": {
     "market": {
-      "zt": 10,
-      "dt": null,
-      "zab": null,
-      "zab_rate": null,
-      "lianban": 6,
+      "zt": 18,
+      "dt": 5,
+      "zab": 2,
+      "zab_rate": 10.0,
+      "lianban": 10,
       "max_lianban": 3,
-      "amount": ""
+      "amount": "3323.0亿"
     },
     "alerts": [
       {
         "level": "info",
         "text": "盘中模式：强制实时拉取"
-      },
-      {
-        "level": "warn",
-        "text": "盘中三池响应不完整，保留最近有效数据"
       }
     ],
     "concepts": [
@@ -237,23 +287,23 @@
         "chg_pct": null
       },
       {
+        "name": "通用设备",
+        "lead": "杭齿前进",
+        "chg_pct": null
+      },
+      {
         "name": "中药Ⅱ",
         "lead": "汉森制药",
         "chg_pct": null
       },
       {
-        "name": "医疗服务",
-        "lead": "贝瑞基因",
+        "name": "家居用品",
+        "lead": "志邦家居",
         "chg_pct": null
       },
       {
-        "name": "饰品",
-        "lead": "深中华A",
-        "chg_pct": null
-      },
-      {
-        "name": "通信设备",
-        "lead": "楚天龙",
+        "name": "消费电子",
+        "lead": "科森科技",
         "chg_pct": null
       }
     ]
