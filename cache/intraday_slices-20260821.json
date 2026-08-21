@@ -2,7 +2,7 @@
   "schema": "intraday_snapshot_v1",
   "render_mode": "snapshot_stream",
   "date": "2026-08-21",
-  "count": 16,
+  "count": 17,
   "interval_min": null,
   "simulated": false,
   "snapshots": [
@@ -1042,11 +1042,82 @@
       "shift_score": 52,
       "shift_label": "分歧",
       "note": "情绪略有回落，注意午后分歧。"
+    },
+    {
+      "time": "13:30:05",
+      "ts_bj": "2026-08-21 13:30:05",
+      "date": "2026-08-21",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid"
+      },
+      "pool_errors": {},
+      "zt": 45,
+      "dt": 11,
+      "zab": 18,
+      "zb": 28.6,
+      "fb": 71.4,
+      "jj": 24.4,
+      "lianban": 11,
+      "max_lb": 3,
+      "amount": "13989.2亿",
+      "bf": 0,
+      "heat": 50,
+      "risk": 40,
+      "headline": "分歧",
+      "concepts": [
+        {
+          "name": "通信设备",
+          "lead": "星网锐捷",
+          "chg_pct": null
+        },
+        {
+          "name": "专用设备",
+          "lead": "江钨装备",
+          "chg_pct": null
+        },
+        {
+          "name": "化学制品",
+          "lead": "日科化学",
+          "chg_pct": null
+        },
+        {
+          "name": "通用设备",
+          "lead": "宇环数控",
+          "chg_pct": null
+        },
+        {
+          "name": "消费电子",
+          "lead": "科森科技",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        },
+        {
+          "level": "warn",
+          "text": "跌停偏多（11）→ 控制追高"
+        },
+        {
+          "level": "warn",
+          "text": "炸板率偏高（28.6%）→ 注意回封质量"
+        }
+      ],
+      "shift_score": 54,
+      "shift_label": "分歧",
+      "note": "情绪边际修复，但仍需确认持续性。"
     }
   ],
   "latest": {
-    "time": "13:20:04",
-    "ts_bj": "2026-08-21 13:20:04",
+    "time": "13:30:05",
+    "ts_bj": "2026-08-21 13:30:05",
     "date": "2026-08-21",
     "source": "intraday_live",
     "provider": "必盈(实时)+必盈(实时)",
@@ -1057,18 +1128,18 @@
       "dtgc": "valid"
     },
     "pool_errors": {},
-    "zt": 42,
+    "zt": 45,
     "dt": 11,
-    "zab": 20,
-    "zb": 32.3,
-    "fb": 67.7,
-    "jj": 26.2,
+    "zab": 18,
+    "zb": 28.6,
+    "fb": 71.4,
+    "jj": 24.4,
     "lianban": 11,
     "max_lb": 3,
-    "amount": "13591.9亿",
+    "amount": "13989.2亿",
     "bf": 0,
-    "heat": 48,
-    "risk": 43,
+    "heat": 50,
+    "risk": 40,
     "headline": "分歧",
     "concepts": [
       {
@@ -1108,18 +1179,18 @@
       },
       {
         "level": "warn",
-        "text": "炸板率偏高（32.3%）→ 注意回封质量"
+        "text": "炸板率偏高（28.6%）→ 注意回封质量"
       }
     ],
-    "shift_score": 52,
+    "shift_score": 54,
     "shift_label": "分歧",
-    "note": "情绪略有回落，注意午后分歧。"
+    "note": "情绪边际修复，但仍需确认持续性。"
   },
-  "updated_at": "2026-08-21 13:20:04",
-  "snapshot_sig": "2026-08-21|2026-08-21 13:20:04|16",
+  "updated_at": "2026-08-21 13:30:05",
+  "snapshot_sig": "2026-08-21|2026-08-21 13:30:05|17",
   "health": {
     "status": "valid",
-    "last_valid_at": "2026-08-21 13:20:04",
+    "last_valid_at": "2026-08-21 13:30:05",
     "rejected_reason": "",
     "source": {
       "status": "valid",
