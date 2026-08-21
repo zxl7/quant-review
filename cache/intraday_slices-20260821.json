@@ -2,7 +2,7 @@
   "schema": "intraday_snapshot_v1",
   "render_mode": "snapshot_stream",
   "date": "2026-08-21",
-  "count": 10,
+  "count": 11,
   "interval_min": null,
   "simulated": false,
   "snapshots": [
@@ -640,11 +640,74 @@
       "shift_score": 58,
       "shift_label": "分歧",
       "note": "承接增强、分歧收敛，情绪明显回暖。"
+    },
+    {
+      "time": "11:10:04",
+      "ts_bj": "2026-08-21 11:10:04",
+      "date": "2026-08-21",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid"
+      },
+      "pool_errors": {},
+      "zt": 43,
+      "dt": 9,
+      "zab": 14,
+      "zb": 24.6,
+      "fb": 75.4,
+      "jj": 25.6,
+      "lianban": 11,
+      "max_lb": 3,
+      "amount": "11808.8亿",
+      "bf": 0,
+      "heat": 51,
+      "risk": 33,
+      "headline": "分歧",
+      "concepts": [
+        {
+          "name": "通信设备",
+          "lead": "星网锐捷",
+          "chg_pct": null
+        },
+        {
+          "name": "化学制品",
+          "lead": "日科化学",
+          "chg_pct": null
+        },
+        {
+          "name": "通用设备",
+          "lead": "宇环数控",
+          "chg_pct": null
+        },
+        {
+          "name": "消费电子",
+          "lead": "科森科技",
+          "chg_pct": null
+        },
+        {
+          "name": "化学制药",
+          "lead": "双鹭药业",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        }
+      ],
+      "shift_score": 58,
+      "shift_label": "分歧",
+      "note": "情绪整体平稳，维持当前节奏。"
     }
   ],
   "latest": {
-    "time": "11:00:04",
-    "ts_bj": "2026-08-21 11:00:04",
+    "time": "11:10:04",
+    "ts_bj": "2026-08-21 11:10:04",
     "date": "2026-08-21",
     "source": "intraday_live",
     "provider": "必盈(实时)+必盈(实时)",
@@ -655,18 +718,18 @@
       "dtgc": "valid"
     },
     "pool_errors": {},
-    "zt": 41,
-    "dt": 8,
+    "zt": 43,
+    "dt": 9,
     "zab": 14,
-    "zb": 25.5,
-    "fb": 74.5,
-    "jj": 24.4,
-    "lianban": 10,
+    "zb": 24.6,
+    "fb": 75.4,
+    "jj": 25.6,
+    "lianban": 11,
     "max_lb": 3,
-    "amount": "11400.6亿",
+    "amount": "11808.8亿",
     "bf": 0,
-    "heat": 50,
-    "risk": 32,
+    "heat": 51,
+    "risk": 33,
     "headline": "分歧",
     "concepts": [
       {
@@ -680,6 +743,11 @@
         "chg_pct": null
       },
       {
+        "name": "通用设备",
+        "lead": "宇环数控",
+        "chg_pct": null
+      },
+      {
         "name": "消费电子",
         "lead": "科森科技",
         "chg_pct": null
@@ -688,32 +756,23 @@
         "name": "化学制药",
         "lead": "双鹭药业",
         "chg_pct": null
-      },
-      {
-        "name": "专用设备",
-        "lead": "江钨装备",
-        "chg_pct": null
       }
     ],
     "alerts": [
       {
         "level": "info",
         "text": "盘中模式：强制实时拉取"
-      },
-      {
-        "level": "warn",
-        "text": "炸板率偏高（25.5%）→ 注意回封质量"
       }
     ],
     "shift_score": 58,
     "shift_label": "分歧",
-    "note": "承接增强、分歧收敛，情绪明显回暖。"
+    "note": "情绪整体平稳，维持当前节奏。"
   },
-  "updated_at": "2026-08-21 11:00:04",
-  "snapshot_sig": "2026-08-21|2026-08-21 11:00:04|10",
+  "updated_at": "2026-08-21 11:10:04",
+  "snapshot_sig": "2026-08-21|2026-08-21 11:10:04|11",
   "health": {
     "status": "valid",
-    "last_valid_at": "2026-08-21 11:00:04",
+    "last_valid_at": "2026-08-21 11:10:04",
     "rejected_reason": "",
     "source": {
       "status": "valid",
