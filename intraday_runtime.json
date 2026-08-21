@@ -1,11 +1,11 @@
 {
   "schema": "intraday_runtime_v1",
   "date": "2026-08-21",
-  "updated_at": "2026-08-21 10:30:04",
+  "updated_at": "2026-08-21 10:40:04",
   "source": "必盈(实时)+必盈(实时)",
   "latest": {
-    "time": "10:30:04",
-    "ts_bj": "2026-08-21 10:30:04",
+    "time": "10:40:04",
+    "ts_bj": "2026-08-21 10:40:04",
     "date": "2026-08-21",
     "source": "intraday_live",
     "provider": "必盈(实时)+必盈(实时)",
@@ -16,30 +16,20 @@
       "dtgc": "valid"
     },
     "pool_errors": {},
-    "zt": 39,
+    "zt": 37,
     "dt": 9,
-    "zab": 11,
-    "zb": 22.0,
-    "fb": 78.0,
-    "jj": 23.1,
-    "lianban": 9,
+    "zab": 15,
+    "zb": 28.8,
+    "fb": 71.2,
+    "jj": 27.0,
+    "lianban": 10,
     "max_lb": 3,
-    "amount": "9571.8亿",
+    "amount": "10342.1亿",
     "bf": 0,
-    "heat": 51,
-    "risk": 31,
+    "heat": 49,
+    "risk": 36,
     "headline": "分歧",
     "concepts": [
-      {
-        "name": "通信设备",
-        "lead": "星网锐捷",
-        "chg_pct": null
-      },
-      {
-        "name": "通用设备",
-        "lead": "国仪公司-U",
-        "chg_pct": null
-      },
       {
         "name": "化学制品",
         "lead": "日科化学",
@@ -54,15 +44,29 @@
         "name": "化学制药",
         "lead": "双鹭药业",
         "chg_pct": null
+      },
+      {
+        "name": "专用设备",
+        "lead": "江钨装备",
+        "chg_pct": null
+      },
+      {
+        "name": "通信设备",
+        "lead": "东信和平",
+        "chg_pct": null
       }
     ],
     "alerts": [
       {
         "level": "info",
         "text": "盘中模式：强制实时拉取"
+      },
+      {
+        "level": "warn",
+        "text": "炸板率偏高（28.8%）→ 注意回封质量"
       }
     ],
-    "shift_score": 59,
+    "shift_score": 55,
     "shift_label": "分歧",
     "note": "情绪略有回落，注意午后分歧。"
   },
@@ -518,40 +522,107 @@
       "shift_score": 59,
       "shift_label": "分歧",
       "note": "情绪略有回落，注意午后分歧。"
+    },
+    {
+      "time": "10:40:04",
+      "ts_bj": "2026-08-21 10:40:04",
+      "date": "2026-08-21",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid"
+      },
+      "pool_errors": {},
+      "zt": 37,
+      "dt": 9,
+      "zab": 15,
+      "zb": 28.8,
+      "fb": 71.2,
+      "jj": 27.0,
+      "lianban": 10,
+      "max_lb": 3,
+      "amount": "10342.1亿",
+      "bf": 0,
+      "heat": 49,
+      "risk": 36,
+      "headline": "分歧",
+      "concepts": [
+        {
+          "name": "化学制品",
+          "lead": "日科化学",
+          "chg_pct": null
+        },
+        {
+          "name": "消费电子",
+          "lead": "科森科技",
+          "chg_pct": null
+        },
+        {
+          "name": "化学制药",
+          "lead": "双鹭药业",
+          "chg_pct": null
+        },
+        {
+          "name": "专用设备",
+          "lead": "江钨装备",
+          "chg_pct": null
+        },
+        {
+          "name": "通信设备",
+          "lead": "东信和平",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        },
+        {
+          "level": "warn",
+          "text": "炸板率偏高（28.8%）→ 注意回封质量"
+        }
+      ],
+      "shift_score": 55,
+      "shift_label": "分歧",
+      "note": "情绪略有回落，注意午后分歧。"
     }
   ],
   "indices": [
     {
       "name": "上证指数",
       "code": "000001.SH",
-      "val": 3905.409,
-      "chg": 0.043240795128547914,
-      "cje": 452175746300.0,
-      "t": "2026-08-21 10:30:00"
+      "val": 3901.19,
+      "chg": -0.06483557610802486,
+      "cje": 488517222400.0,
+      "t": "2026-08-21 10:40:03"
     },
     {
       "name": "深证成指",
       "code": "399001.SZ",
-      "val": 14089.842,
-      "chg": 0.8377788215531302,
-      "cje": 504470867700.0,
-      "t": "2026-08-21 10:30:00"
+      "val": 14057.239,
+      "chg": 0.6044466022905441,
+      "cje": 545505072000.0,
+      "t": "2026-08-21 10:40:00"
     },
     {
       "name": "创业板指",
       "code": "399006.SZ",
-      "val": 3548.856,
-      "chg": 1.523834752884286,
-      "cje": 255509167900.0,
-      "t": "2026-08-21 10:30:00"
+      "val": 3533.103,
+      "chg": 1.07318108622038,
+      "cje": 275713382600.0,
+      "t": "2026-08-21 10:40:00"
     }
   ],
   "asOf": {
-    "indices": "10:30:00"
+    "indices": "10:40:00"
   },
   "health": {
     "status": "valid",
-    "last_valid_at": "2026-08-21 10:30:04",
+    "last_valid_at": "2026-08-21 10:40:04",
     "rejected_reason": "",
     "source": {
       "status": "valid",
@@ -569,8 +640,8 @@
       "message": "intraday_coverage_collecting",
       "date": "2026-08-21",
       "expected_count": 26,
-      "due_count": 7,
-      "observed_count": 7,
+      "due_count": 8,
+      "observed_count": 8,
       "observed_slots": [
         "09:30",
         "09:40",
@@ -578,43 +649,38 @@
         "10:00",
         "10:10",
         "10:20",
-        "10:30"
+        "10:30",
+        "10:40"
       ],
       "missing_slots": [],
       "duplicate_slots": [],
       "out_of_session": [],
       "monotonic": true,
-      "morning_coverage": 7,
+      "morning_coverage": 8,
       "afternoon_coverage": 0
     }
   },
   "live": {
     "market": {
-      "zt": 39,
+      "zt": 37,
       "dt": 9,
-      "zab": 11,
-      "zab_rate": 22.0,
-      "lianban": 9,
+      "zab": 15,
+      "zab_rate": 28.8,
+      "lianban": 10,
       "max_lianban": 3,
-      "amount": "9571.8亿"
+      "amount": "10342.1亿"
     },
     "alerts": [
       {
         "level": "info",
         "text": "盘中模式：强制实时拉取"
+      },
+      {
+        "level": "warn",
+        "text": "炸板率偏高（28.8%）→ 注意回封质量"
       }
     ],
     "concepts": [
-      {
-        "name": "通信设备",
-        "lead": "星网锐捷",
-        "chg_pct": null
-      },
-      {
-        "name": "通用设备",
-        "lead": "国仪公司-U",
-        "chg_pct": null
-      },
       {
         "name": "化学制品",
         "lead": "日科化学",
@@ -628,6 +694,16 @@
       {
         "name": "化学制药",
         "lead": "双鹭药业",
+        "chg_pct": null
+      },
+      {
+        "name": "专用设备",
+        "lead": "江钨装备",
+        "chg_pct": null
+      },
+      {
+        "name": "通信设备",
+        "lead": "东信和平",
         "chg_pct": null
       }
     ]
