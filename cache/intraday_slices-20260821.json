@@ -2,7 +2,7 @@
   "schema": "intraday_snapshot_v1",
   "render_mode": "snapshot_stream",
   "date": "2026-08-21",
-  "count": 23,
+  "count": 24,
   "interval_min": null,
   "simulated": false,
   "snapshots": [
@@ -1539,11 +1539,82 @@
       "shift_score": 53,
       "shift_label": "分歧",
       "note": "情绪整体平稳，维持当前节奏。"
+    },
+    {
+      "time": "14:40:05",
+      "ts_bj": "2026-08-21 14:40:05",
+      "date": "2026-08-21",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid"
+      },
+      "pool_errors": {},
+      "zt": 53,
+      "dt": 14,
+      "zab": 18,
+      "zb": 25.4,
+      "fb": 74.6,
+      "jj": 20.8,
+      "lianban": 11,
+      "max_lb": 3,
+      "amount": "17132.6亿",
+      "bf": 0,
+      "heat": 51,
+      "risk": 43,
+      "headline": "分歧",
+      "concepts": [
+        {
+          "name": "通信设备",
+          "lead": "通鼎互联",
+          "chg_pct": null
+        },
+        {
+          "name": "消费电子",
+          "lead": "科森科技",
+          "chg_pct": null
+        },
+        {
+          "name": "化学制药",
+          "lead": "双鹭药业",
+          "chg_pct": null
+        },
+        {
+          "name": "专用设备",
+          "lead": "江钨装备",
+          "chg_pct": null
+        },
+        {
+          "name": "化学制品",
+          "lead": "日科化学",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        },
+        {
+          "level": "warn",
+          "text": "跌停偏多（14）→ 控制追高"
+        },
+        {
+          "level": "warn",
+          "text": "炸板率偏高（25.4%）→ 注意回封质量"
+        }
+      ],
+      "shift_score": 54,
+      "shift_label": "分歧",
+      "note": "情绪整体平稳，维持当前节奏。"
     }
   ],
   "latest": {
-    "time": "14:30:04",
-    "ts_bj": "2026-08-21 14:30:04",
+    "time": "14:40:05",
+    "ts_bj": "2026-08-21 14:40:05",
     "date": "2026-08-21",
     "source": "intraday_live",
     "provider": "必盈(实时)+必盈(实时)",
@@ -1554,23 +1625,33 @@
       "dtgc": "valid"
     },
     "pool_errors": {},
-    "zt": 49,
+    "zt": 53,
     "dt": 14,
     "zab": 18,
-    "zb": 26.9,
-    "fb": 73.1,
-    "jj": 22.4,
+    "zb": 25.4,
+    "fb": 74.6,
+    "jj": 20.8,
     "lianban": 11,
     "max_lb": 3,
-    "amount": "16521.2亿",
+    "amount": "17132.6亿",
     "bf": 0,
-    "heat": 50,
-    "risk": 44,
+    "heat": 51,
+    "risk": 43,
     "headline": "分歧",
     "concepts": [
       {
         "name": "通信设备",
-        "lead": "星网锐捷",
+        "lead": "通鼎互联",
+        "chg_pct": null
+      },
+      {
+        "name": "消费电子",
+        "lead": "科森科技",
+        "chg_pct": null
+      },
+      {
+        "name": "化学制药",
+        "lead": "双鹭药业",
         "chg_pct": null
       },
       {
@@ -1581,16 +1662,6 @@
       {
         "name": "化学制品",
         "lead": "日科化学",
-        "chg_pct": null
-      },
-      {
-        "name": "通用设备",
-        "lead": "宇环数控",
-        "chg_pct": null
-      },
-      {
-        "name": "消费电子",
-        "lead": "科森科技",
         "chg_pct": null
       }
     ],
@@ -1605,18 +1676,18 @@
       },
       {
         "level": "warn",
-        "text": "炸板率偏高（26.9%）→ 注意回封质量"
+        "text": "炸板率偏高（25.4%）→ 注意回封质量"
       }
     ],
-    "shift_score": 53,
+    "shift_score": 54,
     "shift_label": "分歧",
     "note": "情绪整体平稳，维持当前节奏。"
   },
-  "updated_at": "2026-08-21 14:30:04",
-  "snapshot_sig": "2026-08-21|2026-08-21 14:30:04|23",
+  "updated_at": "2026-08-21 14:40:05",
+  "snapshot_sig": "2026-08-21|2026-08-21 14:40:05|24",
   "health": {
     "status": "valid",
-    "last_valid_at": "2026-08-21 14:30:04",
+    "last_valid_at": "2026-08-21 14:40:05",
     "rejected_reason": "",
     "source": {
       "status": "valid",
