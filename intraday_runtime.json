@@ -1,11 +1,11 @@
 {
   "schema": "intraday_runtime_v1",
   "date": "2026-08-21",
-  "updated_at": "2026-08-21 11:30:04",
+  "updated_at": "2026-08-21 13:00:25",
   "source": "必盈(实时)+必盈(实时)",
   "latest": {
-    "time": "11:30:04",
-    "ts_bj": "2026-08-21 11:30:04",
+    "time": "13:00:25",
+    "ts_bj": "2026-08-21 13:00:25",
     "date": "2026-08-21",
     "source": "intraday_live",
     "provider": "必盈(实时)+必盈(实时)",
@@ -16,20 +16,25 @@
       "dtgc": "valid"
     },
     "pool_errors": {},
-    "zt": 42,
+    "zt": 45,
     "dt": 8,
-    "zab": 16,
-    "zb": 27.6,
-    "fb": 72.4,
-    "jj": 26.2,
+    "zab": 15,
+    "zb": 25.0,
+    "fb": 75.0,
+    "jj": 24.4,
     "lianban": 11,
     "max_lb": 3,
-    "amount": "12533.6亿",
+    "amount": "12632.8亿",
     "bf": 0,
-    "heat": 50,
-    "risk": 34,
+    "heat": 51,
+    "risk": 32,
     "headline": "分歧",
     "concepts": [
+      {
+        "name": "化学制药",
+        "lead": "双鹭药业",
+        "chg_pct": null
+      },
       {
         "name": "通信设备",
         "lead": "星网锐捷",
@@ -49,11 +54,6 @@
         "name": "消费电子",
         "lead": "科森科技",
         "chg_pct": null
-      },
-      {
-        "name": "化学制药",
-        "lead": "双鹭药业",
-        "chg_pct": null
       }
     ],
     "alerts": [
@@ -63,10 +63,10 @@
       },
       {
         "level": "warn",
-        "text": "炸板率偏高（27.6%）→ 注意回封质量"
+        "text": "炸板率偏高（25.0%）→ 注意回封质量"
       }
     ],
-    "shift_score": 57,
+    "shift_score": 58,
     "shift_label": "分歧",
     "note": "情绪整体平稳，维持当前节奏。"
   },
@@ -902,40 +902,107 @@
       "shift_score": 57,
       "shift_label": "分歧",
       "note": "情绪整体平稳，维持当前节奏。"
+    },
+    {
+      "time": "13:00:25",
+      "ts_bj": "2026-08-21 13:00:25",
+      "date": "2026-08-21",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid"
+      },
+      "pool_errors": {},
+      "zt": 45,
+      "dt": 8,
+      "zab": 15,
+      "zb": 25.0,
+      "fb": 75.0,
+      "jj": 24.4,
+      "lianban": 11,
+      "max_lb": 3,
+      "amount": "12632.8亿",
+      "bf": 0,
+      "heat": 51,
+      "risk": 32,
+      "headline": "分歧",
+      "concepts": [
+        {
+          "name": "化学制药",
+          "lead": "双鹭药业",
+          "chg_pct": null
+        },
+        {
+          "name": "通信设备",
+          "lead": "星网锐捷",
+          "chg_pct": null
+        },
+        {
+          "name": "化学制品",
+          "lead": "日科化学",
+          "chg_pct": null
+        },
+        {
+          "name": "通用设备",
+          "lead": "宇环数控",
+          "chg_pct": null
+        },
+        {
+          "name": "消费电子",
+          "lead": "科森科技",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        },
+        {
+          "level": "warn",
+          "text": "炸板率偏高（25.0%）→ 注意回封质量"
+        }
+      ],
+      "shift_score": 58,
+      "shift_label": "分歧",
+      "note": "情绪整体平稳，维持当前节奏。"
     }
   ],
   "indices": [
     {
       "name": "上证指数",
       "code": "000001.SH",
-      "val": 3903.805,
-      "chg": 0.0021517931225062616,
-      "cje": 590670293500.0,
-      "t": "2026-08-21 11:30:03"
+      "val": 3904.387,
+      "chg": 0.01706064547133792,
+      "cje": 594785019900.0,
+      "t": "2026-08-21 13:00:24"
     },
     {
       "name": "深证成指",
       "code": "399001.SZ",
-      "val": 14061.485,
-      "chg": 0.634834253825346,
-      "cje": 662690861300.0,
-      "t": "2026-08-21 11:30:00"
+      "val": 14080.981,
+      "chg": 0.7743626698221271,
+      "cje": 667770928500.0,
+      "t": "2026-08-21 13:00:21"
     },
     {
       "name": "创业板指",
       "code": "399006.SZ",
-      "val": 3538.013,
-      "chg": 1.2136438236875096,
-      "cje": 332451767500.0,
-      "t": "2026-08-21 11:30:00"
+      "val": 3546.002,
+      "chg": 1.442188998763871,
+      "cje": 334911586500.0,
+      "t": "2026-08-21 13:00:21"
     }
   ],
   "asOf": {
-    "indices": "11:30:00"
+    "indices": "13:00:21"
   },
   "health": {
     "status": "valid",
-    "last_valid_at": "2026-08-21 11:30:04",
+    "last_valid_at": "2026-08-21 13:00:25",
     "rejected_reason": "",
     "source": {
       "status": "valid",
@@ -953,8 +1020,8 @@
       "message": "intraday_coverage_collecting",
       "date": "2026-08-21",
       "expected_count": 26,
-      "due_count": 13,
-      "observed_count": 13,
+      "due_count": 14,
+      "observed_count": 14,
       "observed_slots": [
         "09:30",
         "09:40",
@@ -968,25 +1035,26 @@
         "11:00",
         "11:10",
         "11:20",
-        "11:30"
+        "11:30",
+        "13:00"
       ],
       "missing_slots": [],
       "duplicate_slots": [],
       "out_of_session": [],
       "monotonic": true,
       "morning_coverage": 13,
-      "afternoon_coverage": 0
+      "afternoon_coverage": 1
     }
   },
   "live": {
     "market": {
-      "zt": 42,
+      "zt": 45,
       "dt": 8,
-      "zab": 16,
-      "zab_rate": 27.6,
+      "zab": 15,
+      "zab_rate": 25.0,
       "lianban": 11,
       "max_lianban": 3,
-      "amount": "12533.6亿"
+      "amount": "12632.8亿"
     },
     "alerts": [
       {
@@ -995,10 +1063,15 @@
       },
       {
         "level": "warn",
-        "text": "炸板率偏高（27.6%）→ 注意回封质量"
+        "text": "炸板率偏高（25.0%）→ 注意回封质量"
       }
     ],
     "concepts": [
+      {
+        "name": "化学制药",
+        "lead": "双鹭药业",
+        "chg_pct": null
+      },
       {
         "name": "通信设备",
         "lead": "星网锐捷",
@@ -1017,11 +1090,6 @@
       {
         "name": "消费电子",
         "lead": "科森科技",
-        "chg_pct": null
-      },
-      {
-        "name": "化学制药",
-        "lead": "双鹭药业",
         "chg_pct": null
       }
     ]
