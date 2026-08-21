@@ -1,11 +1,11 @@
 {
   "schema": "intraday_runtime_v1",
   "date": "2026-08-21",
-  "updated_at": "2026-08-21 13:30:05",
+  "updated_at": "2026-08-21 13:40:05",
   "source": "必盈(实时)+必盈(实时)",
   "latest": {
-    "time": "13:30:05",
-    "ts_bj": "2026-08-21 13:30:05",
+    "time": "13:40:05",
+    "ts_bj": "2026-08-21 13:40:05",
     "date": "2026-08-21",
     "source": "intraday_live",
     "provider": "必盈(实时)+必盈(实时)",
@@ -21,12 +21,12 @@
     "zab": 18,
     "zb": 28.6,
     "fb": 71.4,
-    "jj": 24.4,
-    "lianban": 11,
+    "jj": 22.2,
+    "lianban": 10,
     "max_lb": 3,
-    "amount": "13989.2亿",
+    "amount": "14399.2亿",
     "bf": 0,
-    "heat": 50,
+    "heat": 49,
     "risk": 40,
     "headline": "分歧",
     "concepts": [
@@ -72,7 +72,7 @@
     ],
     "shift_score": 54,
     "shift_label": "分歧",
-    "note": "情绪边际修复，但仍需确认持续性。"
+    "note": "情绪整体平稳，维持当前节奏。"
   },
   "snapshots": [
     {
@@ -1182,40 +1182,111 @@
       "shift_score": 54,
       "shift_label": "分歧",
       "note": "情绪边际修复，但仍需确认持续性。"
+    },
+    {
+      "time": "13:40:05",
+      "ts_bj": "2026-08-21 13:40:05",
+      "date": "2026-08-21",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid"
+      },
+      "pool_errors": {},
+      "zt": 45,
+      "dt": 11,
+      "zab": 18,
+      "zb": 28.6,
+      "fb": 71.4,
+      "jj": 22.2,
+      "lianban": 10,
+      "max_lb": 3,
+      "amount": "14399.2亿",
+      "bf": 0,
+      "heat": 49,
+      "risk": 40,
+      "headline": "分歧",
+      "concepts": [
+        {
+          "name": "通信设备",
+          "lead": "星网锐捷",
+          "chg_pct": null
+        },
+        {
+          "name": "专用设备",
+          "lead": "江钨装备",
+          "chg_pct": null
+        },
+        {
+          "name": "化学制品",
+          "lead": "日科化学",
+          "chg_pct": null
+        },
+        {
+          "name": "通用设备",
+          "lead": "宇环数控",
+          "chg_pct": null
+        },
+        {
+          "name": "消费电子",
+          "lead": "科森科技",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        },
+        {
+          "level": "warn",
+          "text": "跌停偏多（11）→ 控制追高"
+        },
+        {
+          "level": "warn",
+          "text": "炸板率偏高（28.6%）→ 注意回封质量"
+        }
+      ],
+      "shift_score": 54,
+      "shift_label": "分歧",
+      "note": "情绪整体平稳，维持当前节奏。"
     }
   ],
   "indices": [
     {
       "name": "上证指数",
       "code": "000001.SH",
-      "val": 3899.794,
-      "chg": -0.10059632847737159,
-      "cje": 656212568800.0,
-      "t": "2026-08-21 13:30:03"
+      "val": 3898.637,
+      "chg": -0.13023471708146747,
+      "cje": 675708790000.0,
+      "t": "2026-08-21 13:40:03"
     },
     {
       "name": "深证成指",
       "code": "399001.SZ",
-      "val": 14079.105,
-      "chg": 0.7609365666004405,
-      "cje": 742232653600.0,
-      "t": "2026-08-21 13:30:00"
+      "val": 14041.647,
+      "chg": 0.49285822199603635,
+      "cje": 763865880600.0,
+      "t": "2026-08-21 13:40:00"
     },
     {
       "name": "创业板指",
       "code": "399006.SZ",
-      "val": 3544.832,
-      "chg": 1.4087182446220061,
-      "cje": 371136764400.0,
-      "t": "2026-08-21 13:30:03"
+      "val": 3532.247,
+      "chg": 1.048693081480686,
+      "cje": 381601836600.0,
+      "t": "2026-08-21 13:40:03"
     }
   ],
   "asOf": {
-    "indices": "13:30:03"
+    "indices": "13:40:03"
   },
   "health": {
     "status": "valid",
-    "last_valid_at": "2026-08-21 13:30:05",
+    "last_valid_at": "2026-08-21 13:40:05",
     "rejected_reason": "",
     "source": {
       "status": "valid",
@@ -1233,8 +1304,8 @@
       "message": "intraday_coverage_collecting",
       "date": "2026-08-21",
       "expected_count": 26,
-      "due_count": 17,
-      "observed_count": 17,
+      "due_count": 18,
+      "observed_count": 18,
       "observed_slots": [
         "09:30",
         "09:40",
@@ -1252,14 +1323,15 @@
         "13:00",
         "13:10",
         "13:20",
-        "13:30"
+        "13:30",
+        "13:40"
       ],
       "missing_slots": [],
       "duplicate_slots": [],
       "out_of_session": [],
       "monotonic": true,
       "morning_coverage": 13,
-      "afternoon_coverage": 4
+      "afternoon_coverage": 5
     }
   },
   "live": {
@@ -1268,9 +1340,9 @@
       "dt": 11,
       "zab": 18,
       "zab_rate": 28.6,
-      "lianban": 11,
+      "lianban": 10,
       "max_lianban": 3,
-      "amount": "13989.2亿"
+      "amount": "14399.2亿"
     },
     "alerts": [
       {
