@@ -2,7 +2,7 @@
   "schema": "intraday_snapshot_v1",
   "render_mode": "snapshot_stream",
   "date": "2026-08-24",
-  "count": 8,
+  "count": 9,
   "interval_min": null,
   "simulated": false,
   "snapshots": [
@@ -513,61 +513,88 @@
       "shift_score": 57,
       "shift_label": "分歧",
       "note": "炸板/跌停抬升，情绪明显走弱。"
+    },
+    {
+      "time": "10:50:05",
+      "ts_bj": "2026-08-24 10:50:05",
+      "date": "2026-08-24",
+      "source": "intraday_live",
+      "provider": "unknown",
+      "data_quality": "unavailable",
+      "pool_status": {
+        "ztgc": "failed",
+        "zbgc": "failed",
+        "dtgc": "failed"
+      },
+      "pool_errors": {
+        "ztgc": "HTTP Error 429: Too Many Requests",
+        "zbgc": "HTTP Error 429: Too Many Requests",
+        "dtgc": "HTTP Error 429: Too Many Requests"
+      },
+      "zt": null,
+      "dt": null,
+      "zab": null,
+      "zb": null,
+      "fb": null,
+      "jj": null,
+      "lianban": null,
+      "max_lb": null,
+      "amount": "",
+      "bf": 0,
+      "heat": null,
+      "risk": null,
+      "headline": "数据暂缺",
+      "concepts": [],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        },
+        {
+          "level": "warn",
+          "text": "盘中三池响应不完整，保留最近有效数据"
+        },
+        {
+          "level": "warn",
+          "text": "三池请求均超时，本槽位跳过板块补抓并等待下一节点"
+        }
+      ],
+      "shift_score": null,
+      "shift_label": "数据暂缺",
+      "note": "本槽位三池请求均未成功，已记录数据暂缺；等待下一节点自动恢复。"
     }
   ],
   "latest": {
-    "time": "10:40:05",
-    "ts_bj": "2026-08-24 10:40:05",
+    "time": "10:50:05",
+    "ts_bj": "2026-08-24 10:50:05",
     "date": "2026-08-24",
     "source": "intraday_live",
-    "provider": "必盈(实时)+必盈(实时)",
-    "data_quality": "valid",
+    "provider": "unknown",
+    "data_quality": "unavailable",
     "pool_status": {
-      "ztgc": "valid",
-      "zbgc": "valid",
-      "dtgc": "valid"
+      "ztgc": "failed",
+      "zbgc": "failed",
+      "dtgc": "failed"
     },
-    "pool_errors": {},
-    "zt": 39,
-    "dt": 8,
-    "zab": 15,
-    "zb": 27.8,
-    "fb": 72.2,
-    "jj": 25.6,
-    "lianban": 10,
-    "max_lb": 4,
-    "amount": "10810.9亿",
+    "pool_errors": {
+      "ztgc": "HTTP Error 429: Too Many Requests",
+      "zbgc": "HTTP Error 429: Too Many Requests",
+      "dtgc": "HTTP Error 429: Too Many Requests"
+    },
+    "zt": null,
+    "dt": null,
+    "zab": null,
+    "zb": null,
+    "fb": null,
+    "jj": null,
+    "lianban": null,
+    "max_lb": null,
+    "amount": "",
     "bf": 0,
-    "heat": 51,
-    "risk": 34,
-    "headline": "分歧",
-    "concepts": [
-      {
-        "name": "电池",
-        "lead": "圣阳股份",
-        "chg_pct": null
-      },
-      {
-        "name": "电力",
-        "lead": "协鑫能科",
-        "chg_pct": null
-      },
-      {
-        "name": "汽车零部",
-        "lead": "浙江世宝",
-        "chg_pct": null
-      },
-      {
-        "name": "中药Ⅱ",
-        "lead": "汉森制药",
-        "chg_pct": null
-      },
-      {
-        "name": "化学制药",
-        "lead": "中 关 村",
-        "chg_pct": null
-      }
-    ],
+    "heat": null,
+    "risk": null,
+    "headline": "数据暂缺",
+    "concepts": [],
     "alerts": [
       {
         "level": "info",
@@ -575,27 +602,35 @@
       },
       {
         "level": "warn",
-        "text": "炸板率偏高（27.8%）→ 注意回封质量"
+        "text": "盘中三池响应不完整，保留最近有效数据"
+      },
+      {
+        "level": "warn",
+        "text": "三池请求均超时，本槽位跳过板块补抓并等待下一节点"
       }
     ],
-    "shift_score": 57,
-    "shift_label": "分歧",
-    "note": "炸板/跌停抬升，情绪明显走弱。"
+    "shift_score": null,
+    "shift_label": "数据暂缺",
+    "note": "本槽位三池请求均未成功，已记录数据暂缺；等待下一节点自动恢复。"
   },
-  "updated_at": "2026-08-24 10:40:05",
-  "snapshot_sig": "2026-08-24|2026-08-24 10:40:05|8",
+  "updated_at": "2026-08-24 10:50:05",
+  "snapshot_sig": "2026-08-24|2026-08-24 10:50:05|9",
   "health": {
-    "status": "valid",
-    "last_valid_at": "2026-08-24 10:40:05",
+    "status": "degraded",
+    "last_valid_at": "2026-08-24 10:50:05",
     "rejected_reason": "",
     "source": {
-      "status": "valid",
+      "status": "partial",
       "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid"
+        "ztgc": "failed",
+        "zbgc": "failed",
+        "dtgc": "failed"
       },
-      "pool_errors": {}
+      "pool_errors": {
+        "ztgc": "HTTP Error 429: Too Many Requests",
+        "zbgc": "HTTP Error 429: Too Many Requests",
+        "dtgc": "HTTP Error 429: Too Many Requests"
+      }
     }
   }
 }
