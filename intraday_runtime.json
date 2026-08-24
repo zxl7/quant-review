@@ -1,11 +1,11 @@
 {
   "schema": "intraday_runtime_v1",
   "date": "2026-08-24",
-  "updated_at": "2026-08-24 09:30:33",
+  "updated_at": "2026-08-24 09:40:05",
   "source": "必盈(实时)+必盈(实时)",
   "latest": {
-    "time": "09:30:33",
-    "ts_bj": "2026-08-24 09:30:33",
+    "time": "09:40:05",
+    "ts_bj": "2026-08-24 09:40:05",
     "date": "2026-08-24",
     "source": "intraday_live",
     "provider": "必盈(实时)+必盈(实时)",
@@ -16,25 +16,20 @@
       "dtgc": "valid"
     },
     "pool_errors": {},
-    "zt": 12,
+    "zt": 28,
     "dt": 1,
-    "zab": 1,
-    "zb": 7.7,
-    "fb": 92.3,
-    "jj": 33.3,
-    "lianban": 4,
+    "zab": 4,
+    "zb": 12.5,
+    "fb": 87.5,
+    "jj": 35.7,
+    "lianban": 10,
     "max_lb": 4,
-    "amount": "607.6亿",
+    "amount": "3789.8亿",
     "bf": 0,
-    "heat": 57,
-    "risk": 6,
-    "headline": "走强",
+    "heat": 58,
+    "risk": 10,
+    "headline": "修复",
     "concepts": [
-      {
-        "name": "汽车零部",
-        "lead": "浙江世宝",
-        "chg_pct": null
-      },
       {
         "name": "中药Ⅱ",
         "lead": "汉森制药",
@@ -42,17 +37,22 @@
       },
       {
         "name": "化学制药",
-        "lead": "中 关 村",
+        "lead": "键凯科技",
         "chg_pct": null
       },
       {
-        "name": "饰品",
-        "lead": "深中华A",
+        "name": "通信设备",
+        "lead": "楚天龙",
         "chg_pct": null
       },
       {
         "name": "一般零售",
         "lead": "新华百货",
+        "chg_pct": null
+      },
+      {
+        "name": "小金属",
+        "lead": "金钼股份",
         "chg_pct": null
       }
     ],
@@ -62,9 +62,9 @@
         "text": "盘中模式：强制实时拉取"
       }
     ],
-    "shift_score": 73,
-    "shift_label": "走强",
-    "note": "盘中实时切片已接入，可逐点观察情绪变化。"
+    "shift_score": 71,
+    "shift_label": "修复",
+    "note": "情绪略有回落，注意午后分歧。"
   },
   "snapshots": [
     {
@@ -129,40 +129,103 @@
       "shift_score": 73,
       "shift_label": "走强",
       "note": "盘中实时切片已接入，可逐点观察情绪变化。"
+    },
+    {
+      "time": "09:40:05",
+      "ts_bj": "2026-08-24 09:40:05",
+      "date": "2026-08-24",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid"
+      },
+      "pool_errors": {},
+      "zt": 28,
+      "dt": 1,
+      "zab": 4,
+      "zb": 12.5,
+      "fb": 87.5,
+      "jj": 35.7,
+      "lianban": 10,
+      "max_lb": 4,
+      "amount": "3789.8亿",
+      "bf": 0,
+      "heat": 58,
+      "risk": 10,
+      "headline": "修复",
+      "concepts": [
+        {
+          "name": "中药Ⅱ",
+          "lead": "汉森制药",
+          "chg_pct": null
+        },
+        {
+          "name": "化学制药",
+          "lead": "键凯科技",
+          "chg_pct": null
+        },
+        {
+          "name": "通信设备",
+          "lead": "楚天龙",
+          "chg_pct": null
+        },
+        {
+          "name": "一般零售",
+          "lead": "新华百货",
+          "chg_pct": null
+        },
+        {
+          "name": "小金属",
+          "lead": "金钼股份",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        }
+      ],
+      "shift_score": 71,
+      "shift_label": "修复",
+      "note": "情绪略有回落，注意午后分歧。"
     }
   ],
   "indices": [
     {
       "name": "上证指数",
       "code": "000001.SH",
-      "val": 3899.901,
-      "chg": -0.13576759005870206,
-      "cje": 19944852400.0,
-      "t": "2026-08-24 09:30:30"
+      "val": 3897.394,
+      "chg": -0.19996399674998191,
+      "cje": 172350450600.0,
+      "t": "2026-08-24 09:40:03"
     },
     {
       "name": "深证成指",
       "code": "399001.SZ",
-      "val": 14099.768,
-      "chg": 0.039732746196869256,
-      "cje": 38197908300.0,
-      "t": "2026-08-24 09:30:30"
+      "val": 13969.948,
+      "chg": -0.8813574522454916,
+      "cje": 205876958900.0,
+      "t": "2026-08-24 09:40:03"
     },
     {
       "name": "创业板指",
       "code": "399006.SZ",
-      "val": 3540.197,
-      "chg": -0.15176651028407379,
-      "cje": 16933568700.0,
-      "t": "2026-08-24 09:30:30"
+      "val": 3492.791,
+      "chg": -1.4888122613576633,
+      "cje": 96734696400.0,
+      "t": "2026-08-24 09:40:00"
     }
   ],
   "asOf": {
-    "indices": "09:30:30"
+    "indices": "09:40:00"
   },
   "health": {
     "status": "valid",
-    "last_valid_at": "2026-08-24 09:30:33",
+    "last_valid_at": "2026-08-24 09:40:05",
     "rejected_reason": "",
     "source": {
       "status": "valid",
@@ -180,28 +243,29 @@
       "message": "intraday_coverage_collecting",
       "date": "2026-08-24",
       "expected_count": 26,
-      "due_count": 1,
-      "observed_count": 1,
+      "due_count": 2,
+      "observed_count": 2,
       "observed_slots": [
-        "09:30"
+        "09:30",
+        "09:40"
       ],
       "missing_slots": [],
       "duplicate_slots": [],
       "out_of_session": [],
       "monotonic": true,
-      "morning_coverage": 1,
+      "morning_coverage": 2,
       "afternoon_coverage": 0
     }
   },
   "live": {
     "market": {
-      "zt": 12,
+      "zt": 28,
       "dt": 1,
-      "zab": 1,
-      "zab_rate": 7.7,
-      "lianban": 4,
+      "zab": 4,
+      "zab_rate": 12.5,
+      "lianban": 10,
       "max_lianban": 4,
-      "amount": "607.6亿"
+      "amount": "3789.8亿"
     },
     "alerts": [
       {
@@ -211,28 +275,28 @@
     ],
     "concepts": [
       {
-        "name": "汽车零部",
-        "lead": "浙江世宝",
-        "chg_pct": null
-      },
-      {
         "name": "中药Ⅱ",
         "lead": "汉森制药",
         "chg_pct": null
       },
       {
         "name": "化学制药",
-        "lead": "中 关 村",
+        "lead": "键凯科技",
         "chg_pct": null
       },
       {
-        "name": "饰品",
-        "lead": "深中华A",
+        "name": "通信设备",
+        "lead": "楚天龙",
         "chg_pct": null
       },
       {
         "name": "一般零售",
         "lead": "新华百货",
+        "chg_pct": null
+      },
+      {
+        "name": "小金属",
+        "lead": "金钼股份",
         "chg_pct": null
       }
     ]
