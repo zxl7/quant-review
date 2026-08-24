@@ -1,11 +1,11 @@
 {
   "schema": "intraday_runtime_v1",
   "date": "2026-08-24",
-  "updated_at": "2026-08-24 10:50:05",
+  "updated_at": "2026-08-24 11:00:05",
   "source": "unknown",
   "latest": {
-    "time": "10:50:05",
-    "ts_bj": "2026-08-24 10:50:05",
+    "time": "11:00:05",
+    "ts_bj": "2026-08-24 11:00:05",
     "date": "2026-08-24",
     "source": "intraday_live",
     "provider": "unknown",
@@ -609,6 +609,55 @@
       "shift_score": null,
       "shift_label": "数据暂缺",
       "note": "本槽位三池请求均未成功，已记录数据暂缺；等待下一节点自动恢复。"
+    },
+    {
+      "time": "11:00:05",
+      "ts_bj": "2026-08-24 11:00:05",
+      "date": "2026-08-24",
+      "source": "intraday_live",
+      "provider": "unknown",
+      "data_quality": "unavailable",
+      "pool_status": {
+        "ztgc": "failed",
+        "zbgc": "failed",
+        "dtgc": "failed"
+      },
+      "pool_errors": {
+        "ztgc": "HTTP Error 429: Too Many Requests",
+        "zbgc": "HTTP Error 429: Too Many Requests",
+        "dtgc": "HTTP Error 429: Too Many Requests"
+      },
+      "zt": null,
+      "dt": null,
+      "zab": null,
+      "zb": null,
+      "fb": null,
+      "jj": null,
+      "lianban": null,
+      "max_lb": null,
+      "amount": "",
+      "bf": 0,
+      "heat": null,
+      "risk": null,
+      "headline": "数据暂缺",
+      "concepts": [],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        },
+        {
+          "level": "warn",
+          "text": "盘中三池响应不完整，保留最近有效数据"
+        },
+        {
+          "level": "warn",
+          "text": "三池请求均超时，本槽位跳过板块补抓并等待下一节点"
+        }
+      ],
+      "shift_score": null,
+      "shift_label": "数据暂缺",
+      "note": "本槽位三池请求均未成功，已记录数据暂缺；等待下一节点自动恢复。"
     }
   ],
   "indices": [],
@@ -617,7 +666,7 @@
   },
   "health": {
     "status": "degraded",
-    "last_valid_at": "2026-08-24 10:50:05",
+    "last_valid_at": "2026-08-24 11:00:05",
     "rejected_reason": "",
     "source": {
       "status": "partial",
@@ -639,8 +688,8 @@
       "message": "intraday_coverage_collecting",
       "date": "2026-08-24",
       "expected_count": 26,
-      "due_count": 9,
-      "observed_count": 9,
+      "due_count": 10,
+      "observed_count": 10,
       "observed_slots": [
         "09:30",
         "09:40",
@@ -650,13 +699,14 @@
         "10:20",
         "10:30",
         "10:40",
-        "10:50"
+        "10:50",
+        "11:00"
       ],
       "missing_slots": [],
       "duplicate_slots": [],
       "out_of_session": [],
       "monotonic": true,
-      "morning_coverage": 9,
+      "morning_coverage": 10,
       "afternoon_coverage": 0
     }
   },
