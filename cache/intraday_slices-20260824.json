@@ -2,7 +2,7 @@
   "schema": "intraday_snapshot_v1",
   "render_mode": "snapshot_stream",
   "date": "2026-08-24",
-  "count": 4,
+  "count": 5,
   "interval_min": null,
   "simulated": false,
   "snapshots": [
@@ -257,11 +257,74 @@
       "shift_score": 64,
       "shift_label": "修复",
       "note": "炸板/跌停抬升，情绪明显走弱。"
+    },
+    {
+      "time": "10:10:04",
+      "ts_bj": "2026-08-24 10:10:04",
+      "date": "2026-08-24",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid"
+      },
+      "pool_errors": {},
+      "zt": 38,
+      "dt": 6,
+      "zab": 8,
+      "zb": 17.4,
+      "fb": 82.6,
+      "jj": 23.7,
+      "lianban": 9,
+      "max_lb": 4,
+      "amount": "8411.1亿",
+      "bf": 0,
+      "heat": 55,
+      "risk": 22,
+      "headline": "修复",
+      "concepts": [
+        {
+          "name": "电池",
+          "lead": "圣阳股份",
+          "chg_pct": null
+        },
+        {
+          "name": "电力",
+          "lead": "协鑫能科",
+          "chg_pct": null
+        },
+        {
+          "name": "汽车零部",
+          "lead": "浙江世宝",
+          "chg_pct": null
+        },
+        {
+          "name": "中药Ⅱ",
+          "lead": "汉森制药",
+          "chg_pct": null
+        },
+        {
+          "name": "化学制药",
+          "lead": "中 关 村",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        }
+      ],
+      "shift_score": 65,
+      "shift_label": "修复",
+      "note": "情绪整体平稳，维持当前节奏。"
     }
   ],
   "latest": {
-    "time": "10:00:04",
-    "ts_bj": "2026-08-24 10:00:04",
+    "time": "10:10:04",
+    "ts_bj": "2026-08-24 10:10:04",
     "date": "2026-08-24",
     "source": "intraday_live",
     "provider": "必盈(实时)+必盈(实时)",
@@ -272,20 +335,25 @@
       "dtgc": "valid"
     },
     "pool_errors": {},
-    "zt": 36,
-    "dt": 5,
+    "zt": 38,
+    "dt": 6,
     "zab": 8,
-    "zb": 18.2,
-    "fb": 81.8,
-    "jj": 22.2,
-    "lianban": 8,
+    "zb": 17.4,
+    "fb": 82.6,
+    "jj": 23.7,
+    "lianban": 9,
     "max_lb": 4,
-    "amount": "7261.1亿",
+    "amount": "8411.1亿",
     "bf": 0,
-    "heat": 54,
-    "risk": 21,
+    "heat": 55,
+    "risk": 22,
     "headline": "修复",
     "concepts": [
+      {
+        "name": "电池",
+        "lead": "圣阳股份",
+        "chg_pct": null
+      },
       {
         "name": "电力",
         "lead": "协鑫能科",
@@ -305,11 +373,6 @@
         "name": "化学制药",
         "lead": "中 关 村",
         "chg_pct": null
-      },
-      {
-        "name": "通信设备",
-        "lead": "东信和平",
-        "chg_pct": null
       }
     ],
     "alerts": [
@@ -318,15 +381,15 @@
         "text": "盘中模式：强制实时拉取"
       }
     ],
-    "shift_score": 64,
+    "shift_score": 65,
     "shift_label": "修复",
-    "note": "炸板/跌停抬升，情绪明显走弱。"
+    "note": "情绪整体平稳，维持当前节奏。"
   },
-  "updated_at": "2026-08-24 10:00:04",
-  "snapshot_sig": "2026-08-24|2026-08-24 10:00:04|4",
+  "updated_at": "2026-08-24 10:10:04",
+  "snapshot_sig": "2026-08-24|2026-08-24 10:10:04|5",
   "health": {
     "status": "valid",
-    "last_valid_at": "2026-08-24 10:00:04",
+    "last_valid_at": "2026-08-24 10:10:04",
     "rejected_reason": "",
     "source": {
       "status": "valid",
