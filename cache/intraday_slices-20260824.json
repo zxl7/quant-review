@@ -2,7 +2,7 @@
   "schema": "intraday_snapshot_v1",
   "render_mode": "snapshot_stream",
   "date": "2026-08-24",
-  "count": 7,
+  "count": 8,
   "interval_min": null,
   "simulated": false,
   "snapshots": [
@@ -446,11 +446,78 @@
       "shift_score": 62,
       "shift_label": "修复",
       "note": "情绪略有回落，注意午后分歧。"
+    },
+    {
+      "time": "10:40:05",
+      "ts_bj": "2026-08-24 10:40:05",
+      "date": "2026-08-24",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid"
+      },
+      "pool_errors": {},
+      "zt": 39,
+      "dt": 8,
+      "zab": 15,
+      "zb": 27.8,
+      "fb": 72.2,
+      "jj": 25.6,
+      "lianban": 10,
+      "max_lb": 4,
+      "amount": "10810.9亿",
+      "bf": 0,
+      "heat": 51,
+      "risk": 34,
+      "headline": "分歧",
+      "concepts": [
+        {
+          "name": "电池",
+          "lead": "圣阳股份",
+          "chg_pct": null
+        },
+        {
+          "name": "电力",
+          "lead": "协鑫能科",
+          "chg_pct": null
+        },
+        {
+          "name": "汽车零部",
+          "lead": "浙江世宝",
+          "chg_pct": null
+        },
+        {
+          "name": "中药Ⅱ",
+          "lead": "汉森制药",
+          "chg_pct": null
+        },
+        {
+          "name": "化学制药",
+          "lead": "中 关 村",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        },
+        {
+          "level": "warn",
+          "text": "炸板率偏高（27.8%）→ 注意回封质量"
+        }
+      ],
+      "shift_score": 57,
+      "shift_label": "分歧",
+      "note": "炸板/跌停抬升，情绪明显走弱。"
     }
   ],
   "latest": {
-    "time": "10:30:04",
-    "ts_bj": "2026-08-24 10:30:04",
+    "time": "10:40:05",
+    "ts_bj": "2026-08-24 10:40:05",
     "date": "2026-08-24",
     "source": "intraday_live",
     "provider": "必盈(实时)+必盈(实时)",
@@ -461,19 +528,19 @@
       "dtgc": "valid"
     },
     "pool_errors": {},
-    "zt": 41,
-    "dt": 6,
-    "zab": 12,
-    "zb": 22.6,
-    "fb": 77.4,
-    "jj": 24.4,
+    "zt": 39,
+    "dt": 8,
+    "zab": 15,
+    "zb": 27.8,
+    "fb": 72.2,
+    "jj": 25.6,
     "lianban": 10,
     "max_lb": 4,
-    "amount": "10084.1亿",
+    "amount": "10810.9亿",
     "bf": 0,
-    "heat": 54,
-    "risk": 27,
-    "headline": "修复",
+    "heat": 51,
+    "risk": 34,
+    "headline": "分歧",
     "concepts": [
       {
         "name": "电池",
@@ -505,17 +572,21 @@
       {
         "level": "info",
         "text": "盘中模式：强制实时拉取"
+      },
+      {
+        "level": "warn",
+        "text": "炸板率偏高（27.8%）→ 注意回封质量"
       }
     ],
-    "shift_score": 62,
-    "shift_label": "修复",
-    "note": "情绪略有回落，注意午后分歧。"
+    "shift_score": 57,
+    "shift_label": "分歧",
+    "note": "炸板/跌停抬升，情绪明显走弱。"
   },
-  "updated_at": "2026-08-24 10:30:04",
-  "snapshot_sig": "2026-08-24|2026-08-24 10:30:04|7",
+  "updated_at": "2026-08-24 10:40:05",
+  "snapshot_sig": "2026-08-24|2026-08-24 10:40:05|8",
   "health": {
     "status": "valid",
-    "last_valid_at": "2026-08-24 10:30:04",
+    "last_valid_at": "2026-08-24 10:40:05",
     "rejected_reason": "",
     "source": {
       "status": "valid",
