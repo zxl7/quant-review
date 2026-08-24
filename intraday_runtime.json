@@ -1,11 +1,11 @@
 {
   "schema": "intraday_runtime_v1",
   "date": "2026-08-24",
-  "updated_at": "2026-08-24 09:50:05",
+  "updated_at": "2026-08-24 10:00:04",
   "source": "必盈(实时)+必盈(实时)",
   "latest": {
-    "time": "09:50:05",
-    "ts_bj": "2026-08-24 09:50:05",
+    "time": "10:00:04",
+    "ts_bj": "2026-08-24 10:00:04",
     "date": "2026-08-24",
     "source": "intraday_live",
     "provider": "必盈(实时)+必盈(实时)",
@@ -16,28 +16,23 @@
       "dtgc": "valid"
     },
     "pool_errors": {},
-    "zt": 34,
-    "dt": 4,
-    "zab": 4,
-    "zb": 10.5,
-    "fb": 89.5,
-    "jj": 26.5,
-    "lianban": 9,
+    "zt": 36,
+    "dt": 5,
+    "zab": 8,
+    "zb": 18.2,
+    "fb": 81.8,
+    "jj": 22.2,
+    "lianban": 8,
     "max_lb": 4,
-    "amount": "5808.2亿",
+    "amount": "7261.1亿",
     "bf": 0,
-    "heat": 58,
-    "risk": 14,
+    "heat": 54,
+    "risk": 21,
     "headline": "修复",
     "concepts": [
       {
-        "name": "化学制药",
-        "lead": "键凯科技",
-        "chg_pct": null
-      },
-      {
-        "name": "电池",
-        "lead": "圣阳股份",
+        "name": "电力",
+        "lead": "协鑫能科",
         "chg_pct": null
       },
       {
@@ -48,6 +43,11 @@
       {
         "name": "中药Ⅱ",
         "lead": "汉森制药",
+        "chg_pct": null
+      },
+      {
+        "name": "化学制药",
+        "lead": "中 关 村",
         "chg_pct": null
       },
       {
@@ -62,9 +62,9 @@
         "text": "盘中模式：强制实时拉取"
       }
     ],
-    "shift_score": 70,
+    "shift_score": 64,
     "shift_label": "修复",
-    "note": "情绪整体平稳，维持当前节奏。"
+    "note": "炸板/跌停抬升，情绪明显走弱。"
   },
   "snapshots": [
     {
@@ -255,40 +255,103 @@
       "shift_score": 70,
       "shift_label": "修复",
       "note": "情绪整体平稳，维持当前节奏。"
+    },
+    {
+      "time": "10:00:04",
+      "ts_bj": "2026-08-24 10:00:04",
+      "date": "2026-08-24",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid"
+      },
+      "pool_errors": {},
+      "zt": 36,
+      "dt": 5,
+      "zab": 8,
+      "zb": 18.2,
+      "fb": 81.8,
+      "jj": 22.2,
+      "lianban": 8,
+      "max_lb": 4,
+      "amount": "7261.1亿",
+      "bf": 0,
+      "heat": 54,
+      "risk": 21,
+      "headline": "修复",
+      "concepts": [
+        {
+          "name": "电力",
+          "lead": "协鑫能科",
+          "chg_pct": null
+        },
+        {
+          "name": "汽车零部",
+          "lead": "浙江世宝",
+          "chg_pct": null
+        },
+        {
+          "name": "中药Ⅱ",
+          "lead": "汉森制药",
+          "chg_pct": null
+        },
+        {
+          "name": "化学制药",
+          "lead": "中 关 村",
+          "chg_pct": null
+        },
+        {
+          "name": "通信设备",
+          "lead": "东信和平",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        }
+      ],
+      "shift_score": 64,
+      "shift_label": "修复",
+      "note": "炸板/跌停抬升，情绪明显走弱。"
     }
   ],
   "indices": [
     {
       "name": "上证指数",
       "code": "000001.SH",
-      "val": 3893.233,
-      "chg": -0.30651415560214923,
-      "cje": 265859149400.0,
-      "t": "2026-08-24 09:50:03"
+      "val": 3885.527,
+      "chg": -0.5038406454158704,
+      "cje": 334820165900.0,
+      "t": "2026-08-24 10:00:03"
     },
     {
       "name": "深证成指",
       "code": "399001.SZ",
-      "val": 13923.687,
-      "chg": -1.2095854114978604,
-      "cje": 314053026500.0,
-      "t": "2026-08-24 09:50:00"
+      "val": 13845.899,
+      "chg": -1.7615016367053395,
+      "cje": 390917888600.0,
+      "t": "2026-08-24 09:59:57"
     },
     {
       "name": "创业板指",
       "code": "399006.SZ",
-      "val": 3478.213,
-      "chg": -1.8999723035285017,
-      "cje": 151072070000.0,
-      "t": "2026-08-24 09:50:00"
+      "val": 3448.991,
+      "chg": -2.724153861514258,
+      "cje": 189272465500.0,
+      "t": "2026-08-24 09:59:57"
     }
   ],
   "asOf": {
-    "indices": "09:50:00"
+    "indices": "09:59:57"
   },
   "health": {
     "status": "valid",
-    "last_valid_at": "2026-08-24 09:50:05",
+    "last_valid_at": "2026-08-24 10:00:04",
     "rejected_reason": "",
     "source": {
       "status": "valid",
@@ -306,30 +369,31 @@
       "message": "intraday_coverage_collecting",
       "date": "2026-08-24",
       "expected_count": 26,
-      "due_count": 3,
-      "observed_count": 3,
+      "due_count": 4,
+      "observed_count": 4,
       "observed_slots": [
         "09:30",
         "09:40",
-        "09:50"
+        "09:50",
+        "10:00"
       ],
       "missing_slots": [],
       "duplicate_slots": [],
       "out_of_session": [],
       "monotonic": true,
-      "morning_coverage": 3,
+      "morning_coverage": 4,
       "afternoon_coverage": 0
     }
   },
   "live": {
     "market": {
-      "zt": 34,
-      "dt": 4,
-      "zab": 4,
-      "zab_rate": 10.5,
-      "lianban": 9,
+      "zt": 36,
+      "dt": 5,
+      "zab": 8,
+      "zab_rate": 18.2,
+      "lianban": 8,
       "max_lianban": 4,
-      "amount": "5808.2亿"
+      "amount": "7261.1亿"
     },
     "alerts": [
       {
@@ -339,13 +403,8 @@
     ],
     "concepts": [
       {
-        "name": "化学制药",
-        "lead": "键凯科技",
-        "chg_pct": null
-      },
-      {
-        "name": "电池",
-        "lead": "圣阳股份",
+        "name": "电力",
+        "lead": "协鑫能科",
         "chg_pct": null
       },
       {
@@ -356,6 +415,11 @@
       {
         "name": "中药Ⅱ",
         "lead": "汉森制药",
+        "chg_pct": null
+      },
+      {
+        "name": "化学制药",
+        "lead": "中 关 村",
         "chg_pct": null
       },
       {
