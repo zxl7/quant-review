@@ -2,7 +2,7 @@
   "schema": "intraday_snapshot_v1",
   "render_mode": "snapshot_stream",
   "date": "2026-08-24",
-  "count": 14,
+  "count": 15,
   "interval_min": null,
   "simulated": false,
   "snapshots": [
@@ -887,11 +887,82 @@
       "shift_score": 56,
       "shift_label": "分歧",
       "note": "情绪整体平稳，维持当前节奏。"
+    },
+    {
+      "time": "13:10:05",
+      "ts_bj": "2026-08-24 13:10:05",
+      "date": "2026-08-24",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid"
+      },
+      "pool_errors": {},
+      "zt": 42,
+      "dt": 12,
+      "zab": 16,
+      "zb": 27.6,
+      "fb": 72.4,
+      "jj": 19.0,
+      "lianban": 8,
+      "max_lb": 4,
+      "amount": "14290.5亿",
+      "bf": 0,
+      "heat": 50,
+      "risk": 40,
+      "headline": "分歧",
+      "concepts": [
+        {
+          "name": "电池",
+          "lead": "圣阳股份",
+          "chg_pct": null
+        },
+        {
+          "name": "电力",
+          "lead": "协鑫能科",
+          "chg_pct": null
+        },
+        {
+          "name": "汽车零部",
+          "lead": "浙江世宝",
+          "chg_pct": null
+        },
+        {
+          "name": "中药Ⅱ",
+          "lead": "汉森制药",
+          "chg_pct": null
+        },
+        {
+          "name": "化学制药",
+          "lead": "中 关 村",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        },
+        {
+          "level": "warn",
+          "text": "跌停偏多（12）→ 控制追高"
+        },
+        {
+          "level": "warn",
+          "text": "炸板率偏高（27.6%）→ 注意回封质量"
+        }
+      ],
+      "shift_score": 54,
+      "shift_label": "分歧",
+      "note": "情绪略有回落，注意午后分歧。"
     }
   ],
   "latest": {
-    "time": "13:00:23",
-    "ts_bj": "2026-08-24 13:00:23",
+    "time": "13:10:05",
+    "ts_bj": "2026-08-24 13:10:05",
     "date": "2026-08-24",
     "source": "intraday_live",
     "provider": "必盈(实时)+必盈(实时)",
@@ -902,18 +973,18 @@
       "dtgc": "valid"
     },
     "pool_errors": {},
-    "zt": 41,
-    "dt": 9,
+    "zt": 42,
+    "dt": 12,
     "zab": 16,
-    "zb": 28.1,
-    "fb": 71.9,
-    "jj": 19.5,
+    "zb": 27.6,
+    "fb": 72.4,
+    "jj": 19.0,
     "lianban": 8,
     "max_lb": 4,
-    "amount": "13793.6亿",
+    "amount": "14290.5亿",
     "bf": 0,
     "heat": 50,
-    "risk": 36,
+    "risk": 40,
     "headline": "分歧",
     "concepts": [
       {
@@ -923,7 +994,7 @@
       },
       {
         "name": "电力",
-        "lead": "南网能源",
+        "lead": "协鑫能科",
         "chg_pct": null
       },
       {
@@ -949,18 +1020,22 @@
       },
       {
         "level": "warn",
-        "text": "炸板率偏高（28.1%）→ 注意回封质量"
+        "text": "跌停偏多（12）→ 控制追高"
+      },
+      {
+        "level": "warn",
+        "text": "炸板率偏高（27.6%）→ 注意回封质量"
       }
     ],
-    "shift_score": 56,
+    "shift_score": 54,
     "shift_label": "分歧",
-    "note": "情绪整体平稳，维持当前节奏。"
+    "note": "情绪略有回落，注意午后分歧。"
   },
-  "updated_at": "2026-08-24 13:00:23",
-  "snapshot_sig": "2026-08-24|2026-08-24 13:00:23|14",
+  "updated_at": "2026-08-24 13:10:05",
+  "snapshot_sig": "2026-08-24|2026-08-24 13:10:05|15",
   "health": {
     "status": "valid",
-    "last_valid_at": "2026-08-24 13:00:23",
+    "last_valid_at": "2026-08-24 13:10:05",
     "rejected_reason": "",
     "source": {
       "status": "valid",
