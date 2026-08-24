@@ -2,7 +2,7 @@
   "schema": "intraday_snapshot_v1",
   "render_mode": "snapshot_stream",
   "date": "2026-08-24",
-  "count": 20,
+  "count": 21,
   "interval_min": null,
   "simulated": false,
   "snapshots": [
@@ -1313,11 +1313,82 @@
       "shift_score": 49,
       "shift_label": "分歧",
       "note": "情绪整体平稳，维持当前节奏。"
+    },
+    {
+      "time": "14:10:04",
+      "ts_bj": "2026-08-24 14:10:04",
+      "date": "2026-08-24",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid"
+      },
+      "pool_errors": {},
+      "zt": 42,
+      "dt": 16,
+      "zab": 19,
+      "zb": 31.1,
+      "fb": 68.9,
+      "jj": 19.0,
+      "lianban": 8,
+      "max_lb": 4,
+      "amount": "17031.0亿",
+      "bf": 0,
+      "heat": 49,
+      "risk": 50,
+      "headline": "分歧",
+      "concepts": [
+        {
+          "name": "电池",
+          "lead": "圣阳股份",
+          "chg_pct": null
+        },
+        {
+          "name": "电力",
+          "lead": "协鑫能科",
+          "chg_pct": null
+        },
+        {
+          "name": "中药Ⅱ",
+          "lead": "汉森制药",
+          "chg_pct": null
+        },
+        {
+          "name": "化学制药",
+          "lead": "中 关 村",
+          "chg_pct": null
+        },
+        {
+          "name": "通信设备",
+          "lead": "楚天龙",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        },
+        {
+          "level": "warn",
+          "text": "跌停偏多（16）→ 控制追高"
+        },
+        {
+          "level": "warn",
+          "text": "炸板率偏高（31.1%）→ 注意回封质量"
+        }
+      ],
+      "shift_score": 49,
+      "shift_label": "分歧",
+      "note": "情绪整体平稳，维持当前节奏。"
     }
   ],
   "latest": {
-    "time": "14:00:05",
-    "ts_bj": "2026-08-24 14:00:05",
+    "time": "14:10:04",
+    "ts_bj": "2026-08-24 14:10:04",
     "date": "2026-08-24",
     "source": "intraday_live",
     "provider": "必盈(实时)+必盈(实时)",
@@ -1328,15 +1399,15 @@
       "dtgc": "valid"
     },
     "pool_errors": {},
-    "zt": 41,
+    "zt": 42,
     "dt": 16,
     "zab": 19,
-    "zb": 31.7,
-    "fb": 68.3,
-    "jj": 19.5,
+    "zb": 31.1,
+    "fb": 68.9,
+    "jj": 19.0,
     "lianban": 8,
     "max_lb": 4,
-    "amount": "16577.1亿",
+    "amount": "17031.0亿",
     "bf": 0,
     "heat": 49,
     "risk": 50,
@@ -1379,18 +1450,18 @@
       },
       {
         "level": "warn",
-        "text": "炸板率偏高（31.7%）→ 注意回封质量"
+        "text": "炸板率偏高（31.1%）→ 注意回封质量"
       }
     ],
     "shift_score": 49,
     "shift_label": "分歧",
     "note": "情绪整体平稳，维持当前节奏。"
   },
-  "updated_at": "2026-08-24 14:00:05",
-  "snapshot_sig": "2026-08-24|2026-08-24 14:00:05|20",
+  "updated_at": "2026-08-24 14:10:04",
+  "snapshot_sig": "2026-08-24|2026-08-24 14:10:04|21",
   "health": {
     "status": "valid",
-    "last_valid_at": "2026-08-24 14:00:05",
+    "last_valid_at": "2026-08-24 14:10:04",
     "rejected_reason": "",
     "source": {
       "status": "valid",
