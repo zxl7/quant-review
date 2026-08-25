@@ -2,7 +2,7 @@
   "schema": "intraday_snapshot_v1",
   "render_mode": "snapshot_stream",
   "date": "2026-08-25",
-  "count": 16,
+  "count": 17,
   "interval_min": null,
   "simulated": false,
   "snapshots": [
@@ -1028,11 +1028,78 @@
       "shift_score": 60,
       "shift_label": "修复",
       "note": "情绪整体平稳，维持当前节奏。"
+    },
+    {
+      "time": "13:30:05",
+      "ts_bj": "2026-08-25 13:30:05",
+      "date": "2026-08-25",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid"
+      },
+      "pool_errors": {},
+      "zt": 54,
+      "dt": 1,
+      "zab": 22,
+      "zb": 28.9,
+      "fb": 71.1,
+      "jj": 14.8,
+      "lianban": 8,
+      "max_lb": 5,
+      "amount": "13793.4亿",
+      "bf": 0,
+      "heat": 53,
+      "risk": 27,
+      "headline": "修复",
+      "concepts": [
+        {
+          "name": "汽车零部",
+          "lead": "浙江世宝",
+          "chg_pct": null
+        },
+        {
+          "name": "农化制品",
+          "lead": "红四方",
+          "chg_pct": null
+        },
+        {
+          "name": "中药Ⅱ",
+          "lead": "汉森制药",
+          "chg_pct": null
+        },
+        {
+          "name": "通信设备",
+          "lead": "楚天龙",
+          "chg_pct": null
+        },
+        {
+          "name": "通用设备",
+          "lead": "中南文化",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        },
+        {
+          "level": "warn",
+          "text": "炸板率偏高（28.9%）→ 注意回封质量"
+        }
+      ],
+      "shift_score": 61,
+      "shift_label": "修复",
+      "note": "情绪整体平稳，维持当前节奏。"
     }
   ],
   "latest": {
-    "time": "13:20:05",
-    "ts_bj": "2026-08-25 13:20:05",
+    "time": "13:30:05",
+    "ts_bj": "2026-08-25 13:30:05",
     "date": "2026-08-25",
     "source": "intraday_live",
     "provider": "必盈(实时)+必盈(实时)",
@@ -1043,20 +1110,25 @@
       "dtgc": "valid"
     },
     "pool_errors": {},
-    "zt": 52,
-    "dt": 2,
-    "zab": 23,
-    "zb": 30.7,
-    "fb": 69.3,
-    "jj": 15.4,
+    "zt": 54,
+    "dt": 1,
+    "zab": 22,
+    "zb": 28.9,
+    "fb": 71.1,
+    "jj": 14.8,
     "lianban": 8,
     "max_lb": 5,
-    "amount": "13237.3亿",
+    "amount": "13793.4亿",
     "bf": 0,
-    "heat": 52,
-    "risk": 30,
+    "heat": 53,
+    "risk": 27,
     "headline": "修复",
     "concepts": [
+      {
+        "name": "汽车零部",
+        "lead": "浙江世宝",
+        "chg_pct": null
+      },
       {
         "name": "农化制品",
         "lead": "红四方",
@@ -1076,11 +1148,6 @@
         "name": "通用设备",
         "lead": "中南文化",
         "chg_pct": null
-      },
-      {
-        "name": "家居用品",
-        "lead": "海鸥住工",
-        "chg_pct": null
       }
     ],
     "alerts": [
@@ -1090,18 +1157,18 @@
       },
       {
         "level": "warn",
-        "text": "炸板率偏高（30.7%）→ 注意回封质量"
+        "text": "炸板率偏高（28.9%）→ 注意回封质量"
       }
     ],
-    "shift_score": 60,
+    "shift_score": 61,
     "shift_label": "修复",
     "note": "情绪整体平稳，维持当前节奏。"
   },
-  "updated_at": "2026-08-25 13:20:05",
-  "snapshot_sig": "2026-08-25|2026-08-25 13:20:05|16",
+  "updated_at": "2026-08-25 13:30:05",
+  "snapshot_sig": "2026-08-25|2026-08-25 13:30:05|17",
   "health": {
     "status": "valid",
-    "last_valid_at": "2026-08-25 13:20:05",
+    "last_valid_at": "2026-08-25 13:30:05",
     "rejected_reason": "",
     "source": {
       "status": "valid",
