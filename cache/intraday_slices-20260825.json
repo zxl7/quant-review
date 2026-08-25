@@ -2,7 +2,7 @@
   "schema": "intraday_snapshot_v1",
   "render_mode": "snapshot_stream",
   "date": "2026-08-25",
-  "count": 10,
+  "count": 11,
   "interval_min": null,
   "simulated": false,
   "snapshots": [
@@ -626,11 +626,78 @@
       "shift_score": 60,
       "shift_label": "修复",
       "note": "承接增强、分歧收敛，情绪明显回暖。"
+    },
+    {
+      "time": "11:10:04",
+      "ts_bj": "2026-08-25 11:10:04",
+      "date": "2026-08-25",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid"
+      },
+      "pool_errors": {},
+      "zt": 45,
+      "dt": 2,
+      "zab": 19,
+      "zb": 29.7,
+      "fb": 70.3,
+      "jj": 20.0,
+      "lianban": 9,
+      "max_lb": 5,
+      "amount": "10777.3亿",
+      "bf": 0,
+      "heat": 52,
+      "risk": 28,
+      "headline": "修复",
+      "concepts": [
+        {
+          "name": "农化制品",
+          "lead": "红四方",
+          "chg_pct": null
+        },
+        {
+          "name": "中药Ⅱ",
+          "lead": "汉森制药",
+          "chg_pct": null
+        },
+        {
+          "name": "通信设备",
+          "lead": "楚天龙",
+          "chg_pct": null
+        },
+        {
+          "name": "种植业",
+          "lead": "登海种业",
+          "chg_pct": null
+        },
+        {
+          "name": "家电零部",
+          "lead": "联合精密",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        },
+        {
+          "level": "warn",
+          "text": "炸板率偏高（29.7%）→ 注意回封质量"
+        }
+      ],
+      "shift_score": 60,
+      "shift_label": "修复",
+      "note": "情绪整体平稳，维持当前节奏。"
     }
   ],
   "latest": {
-    "time": "11:00:04",
-    "ts_bj": "2026-08-25 11:00:04",
+    "time": "11:10:04",
+    "ts_bj": "2026-08-25 11:10:04",
     "date": "2026-08-25",
     "source": "intraday_live",
     "provider": "必盈(实时)+必盈(实时)",
@@ -641,15 +708,15 @@
       "dtgc": "valid"
     },
     "pool_errors": {},
-    "zt": 44,
+    "zt": 45,
     "dt": 2,
     "zab": 19,
-    "zb": 30.2,
-    "fb": 69.8,
-    "jj": 20.5,
+    "zb": 29.7,
+    "fb": 70.3,
+    "jj": 20.0,
     "lianban": 9,
     "max_lb": 5,
-    "amount": "10398.4亿",
+    "amount": "10777.3亿",
     "bf": 0,
     "heat": 52,
     "risk": 28,
@@ -671,13 +738,13 @@
         "chg_pct": null
       },
       {
-        "name": "家电零部",
-        "lead": "联合精密",
+        "name": "种植业",
+        "lead": "登海种业",
         "chg_pct": null
       },
       {
-        "name": "通用设备",
-        "lead": "中南文化",
+        "name": "家电零部",
+        "lead": "联合精密",
         "chg_pct": null
       }
     ],
@@ -688,18 +755,18 @@
       },
       {
         "level": "warn",
-        "text": "炸板率偏高（30.2%）→ 注意回封质量"
+        "text": "炸板率偏高（29.7%）→ 注意回封质量"
       }
     ],
     "shift_score": 60,
     "shift_label": "修复",
-    "note": "承接增强、分歧收敛，情绪明显回暖。"
+    "note": "情绪整体平稳，维持当前节奏。"
   },
-  "updated_at": "2026-08-25 11:00:04",
-  "snapshot_sig": "2026-08-25|2026-08-25 11:00:04|10",
+  "updated_at": "2026-08-25 11:10:04",
+  "snapshot_sig": "2026-08-25|2026-08-25 11:10:04|11",
   "health": {
     "status": "valid",
-    "last_valid_at": "2026-08-25 11:00:04",
+    "last_valid_at": "2026-08-25 11:10:04",
     "rejected_reason": "",
     "source": {
       "status": "valid",
