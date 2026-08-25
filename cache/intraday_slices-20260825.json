@@ -2,7 +2,7 @@
   "schema": "intraday_snapshot_v1",
   "render_mode": "snapshot_stream",
   "date": "2026-08-25",
-  "count": 5,
+  "count": 6,
   "interval_min": null,
   "simulated": false,
   "snapshots": [
@@ -331,11 +331,74 @@
       "shift_score": 64,
       "shift_label": "修复",
       "note": "情绪略有回落，注意午后分歧。"
+    },
+    {
+      "time": "10:20:06",
+      "ts_bj": "2026-08-25 10:20:06",
+      "date": "2026-08-25",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid"
+      },
+      "pool_errors": {},
+      "zt": 44,
+      "dt": 2,
+      "zab": 11,
+      "zb": 20.0,
+      "fb": 80.0,
+      "jj": 20.5,
+      "lianban": 9,
+      "max_lb": 5,
+      "amount": "8100.2亿",
+      "bf": 0,
+      "heat": 56,
+      "risk": 19,
+      "headline": "修复",
+      "concepts": [
+        {
+          "name": "化学制药",
+          "lead": "誉衡药业",
+          "chg_pct": null
+        },
+        {
+          "name": "种植业",
+          "lead": "登海种业",
+          "chg_pct": null
+        },
+        {
+          "name": "农化制品",
+          "lead": "红四方",
+          "chg_pct": null
+        },
+        {
+          "name": "中药Ⅱ",
+          "lead": "汉森制药",
+          "chg_pct": null
+        },
+        {
+          "name": "家电零部",
+          "lead": "联合精密",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        }
+      ],
+      "shift_score": 66,
+      "shift_label": "修复",
+      "note": "情绪边际修复，但仍需确认持续性。"
     }
   ],
   "latest": {
-    "time": "10:10:05",
-    "ts_bj": "2026-08-25 10:10:05",
+    "time": "10:20:06",
+    "ts_bj": "2026-08-25 10:20:06",
     "date": "2026-08-25",
     "source": "intraday_live",
     "provider": "必盈(实时)+必盈(实时)",
@@ -346,20 +409,25 @@
       "dtgc": "valid"
     },
     "pool_errors": {},
-    "zt": 39,
-    "dt": 1,
-    "zab": 13,
-    "zb": 25.0,
-    "fb": 75.0,
-    "jj": 23.1,
+    "zt": 44,
+    "dt": 2,
+    "zab": 11,
+    "zb": 20.0,
+    "fb": 80.0,
+    "jj": 20.5,
     "lianban": 9,
     "max_lb": 5,
-    "amount": "7271.5亿",
+    "amount": "8100.2亿",
     "bf": 0,
-    "heat": 54,
-    "risk": 21,
+    "heat": 56,
+    "risk": 19,
     "headline": "修复",
     "concepts": [
+      {
+        "name": "化学制药",
+        "lead": "誉衡药业",
+        "chg_pct": null
+      },
       {
         "name": "种植业",
         "lead": "登海种业",
@@ -379,32 +447,23 @@
         "name": "家电零部",
         "lead": "联合精密",
         "chg_pct": null
-      },
-      {
-        "name": "汽车零部",
-        "lead": "浙江世宝",
-        "chg_pct": null
       }
     ],
     "alerts": [
       {
         "level": "info",
         "text": "盘中模式：强制实时拉取"
-      },
-      {
-        "level": "warn",
-        "text": "炸板率偏高（25.0%）→ 注意回封质量"
       }
     ],
-    "shift_score": 64,
+    "shift_score": 66,
     "shift_label": "修复",
-    "note": "情绪略有回落，注意午后分歧。"
+    "note": "情绪边际修复，但仍需确认持续性。"
   },
-  "updated_at": "2026-08-25 10:10:05",
-  "snapshot_sig": "2026-08-25|2026-08-25 10:10:05|5",
+  "updated_at": "2026-08-25 10:20:06",
+  "snapshot_sig": "2026-08-25|2026-08-25 10:20:06|6",
   "health": {
     "status": "valid",
-    "last_valid_at": "2026-08-25 10:10:05",
+    "last_valid_at": "2026-08-25 10:20:06",
     "rejected_reason": "",
     "source": {
       "status": "valid",
