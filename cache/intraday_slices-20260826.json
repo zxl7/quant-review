@@ -2,7 +2,7 @@
   "schema": "intraday_snapshot_v1",
   "render_mode": "snapshot_stream",
   "date": "2026-08-26",
-  "count": 10,
+  "count": 11,
   "interval_min": null,
   "simulated": false,
   "snapshots": [
@@ -640,75 +640,148 @@
       "shift_score": null,
       "shift_label": "数据暂缺",
       "note": "本槽位三池请求均未成功，已记录数据暂缺；等待下一节点自动恢复。"
+    },
+    {
+      "time": "11:10:07",
+      "ts_bj": "2026-08-26 11:10:07",
+      "date": "2026-08-26",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid_empty"
+      },
+      "pool_errors": {},
+      "zt": 48,
+      "dt": 0,
+      "zab": 14,
+      "zb": 22.6,
+      "fb": 77.4,
+      "jj": 27.1,
+      "lianban": 13,
+      "max_lb": 5,
+      "amount": "11483.6亿",
+      "bf": 0,
+      "heat": 57,
+      "risk": 19,
+      "headline": "修复",
+      "concepts": [
+        {
+          "name": "工业金属",
+          "lead": "江西铜业",
+          "chg_pct": null
+        },
+        {
+          "name": "饰品",
+          "lead": "深中华A",
+          "chg_pct": null
+        },
+        {
+          "name": "电网设备",
+          "lead": "杭电股份",
+          "chg_pct": null
+        },
+        {
+          "name": "通信设备",
+          "lead": "楚天龙",
+          "chg_pct": null
+        },
+        {
+          "name": "家居用品",
+          "lead": "海鸥住工",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        }
+      ],
+      "shift_score": 67,
+      "shift_label": "修复",
+      "note": "承接增强、分歧收敛，情绪明显回暖。"
     }
   ],
   "latest": {
-    "time": "11:00:06",
-    "ts_bj": "2026-08-26 11:00:06",
+    "time": "11:10:07",
+    "ts_bj": "2026-08-26 11:10:07",
     "date": "2026-08-26",
     "source": "intraday_live",
-    "provider": "unknown",
-    "data_quality": "unavailable",
+    "provider": "必盈(实时)+必盈(实时)",
+    "data_quality": "valid",
     "pool_status": {
-      "ztgc": "failed",
-      "zbgc": "failed",
-      "dtgc": "failed"
+      "ztgc": "valid",
+      "zbgc": "valid",
+      "dtgc": "valid_empty"
     },
-    "pool_errors": {
-      "ztgc": "HTTP Error 429: Too Many Requests",
-      "zbgc": "HTTP Error 429: Too Many Requests",
-      "dtgc": "HTTP Error 429: Too Many Requests"
-    },
-    "zt": null,
-    "dt": null,
-    "zab": null,
-    "zb": null,
-    "fb": null,
-    "jj": null,
-    "lianban": null,
-    "max_lb": null,
-    "amount": "",
+    "pool_errors": {},
+    "zt": 48,
+    "dt": 0,
+    "zab": 14,
+    "zb": 22.6,
+    "fb": 77.4,
+    "jj": 27.1,
+    "lianban": 13,
+    "max_lb": 5,
+    "amount": "11483.6亿",
     "bf": 0,
-    "heat": null,
-    "risk": null,
-    "headline": "数据暂缺",
-    "concepts": [],
+    "heat": 57,
+    "risk": 19,
+    "headline": "修复",
+    "concepts": [
+      {
+        "name": "工业金属",
+        "lead": "江西铜业",
+        "chg_pct": null
+      },
+      {
+        "name": "饰品",
+        "lead": "深中华A",
+        "chg_pct": null
+      },
+      {
+        "name": "电网设备",
+        "lead": "杭电股份",
+        "chg_pct": null
+      },
+      {
+        "name": "通信设备",
+        "lead": "楚天龙",
+        "chg_pct": null
+      },
+      {
+        "name": "家居用品",
+        "lead": "海鸥住工",
+        "chg_pct": null
+      }
+    ],
     "alerts": [
       {
         "level": "info",
         "text": "盘中模式：强制实时拉取"
-      },
-      {
-        "level": "warn",
-        "text": "盘中三池响应不完整，保留最近有效数据"
-      },
-      {
-        "level": "warn",
-        "text": "三池请求均超时，本槽位跳过板块补抓并等待下一节点"
       }
     ],
-    "shift_score": null,
-    "shift_label": "数据暂缺",
-    "note": "本槽位三池请求均未成功，已记录数据暂缺；等待下一节点自动恢复。"
+    "shift_score": 67,
+    "shift_label": "修复",
+    "note": "承接增强、分歧收敛，情绪明显回暖。"
   },
-  "updated_at": "2026-08-26 11:00:06",
-  "snapshot_sig": "2026-08-26|2026-08-26 11:00:06|10",
+  "updated_at": "2026-08-26 11:10:07",
+  "snapshot_sig": "2026-08-26|2026-08-26 11:10:07|11",
   "health": {
-    "status": "degraded",
-    "last_valid_at": "2026-08-26 11:00:06",
+    "status": "valid",
+    "last_valid_at": "2026-08-26 11:10:07",
     "rejected_reason": "",
     "source": {
-      "status": "partial",
+      "status": "valid",
       "pool_status": {
-        "ztgc": "failed",
-        "zbgc": "failed",
-        "dtgc": "failed"
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid_empty"
       },
-      "pool_errors": {
-        "ztgc": "HTTP Error 429: Too Many Requests",
-        "zbgc": "HTTP Error 429: Too Many Requests",
-        "dtgc": "HTTP Error 429: Too Many Requests"
-      }
+      "pool_errors": {}
     }
   }
 }
