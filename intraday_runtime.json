@@ -1,11 +1,11 @@
 {
   "schema": "intraday_runtime_v1",
   "date": "2026-08-26",
-  "updated_at": "2026-08-26 13:00:25",
+  "updated_at": "2026-08-26 13:10:05",
   "source": "必盈(实时)+必盈(实时)",
   "latest": {
-    "time": "13:00:25",
-    "ts_bj": "2026-08-26 13:00:25",
+    "time": "13:10:05",
+    "ts_bj": "2026-08-26 13:10:05",
     "date": "2026-08-26",
     "source": "intraday_live",
     "provider": "必盈(实时)+必盈(实时)",
@@ -16,18 +16,18 @@
       "dtgc": "valid_empty"
     },
     "pool_errors": {},
-    "zt": 51,
+    "zt": 50,
     "dt": 0,
-    "zab": 14,
-    "zb": 21.5,
-    "fb": 78.5,
-    "jj": 25.5,
+    "zab": 17,
+    "zb": 25.4,
+    "fb": 74.6,
+    "jj": 26.0,
     "lianban": 13,
     "max_lb": 5,
-    "amount": "12422.6亿",
+    "amount": "12905.5亿",
     "bf": 0,
-    "heat": 58,
-    "risk": 18,
+    "heat": 56,
+    "risk": 22,
     "headline": "修复",
     "concepts": [
       {
@@ -51,8 +51,8 @@
         "chg_pct": null
       },
       {
-        "name": "计算机设",
-        "lead": "新 大 陆",
+        "name": "家居用品",
+        "lead": "海鸥住工",
         "chg_pct": null
       }
     ],
@@ -60,11 +60,15 @@
       {
         "level": "info",
         "text": "盘中模式：强制实时拉取"
+      },
+      {
+        "level": "warn",
+        "text": "炸板率偏高（25.4%）→ 注意回封质量"
       }
     ],
-    "shift_score": 68,
+    "shift_score": 65,
     "shift_label": "修复",
-    "note": "情绪整体平稳，维持当前节奏。"
+    "note": "情绪略有回落，注意午后分歧。"
   },
   "snapshots": [
     {
@@ -953,40 +957,107 @@
       "shift_score": 68,
       "shift_label": "修复",
       "note": "情绪整体平稳，维持当前节奏。"
+    },
+    {
+      "time": "13:10:05",
+      "ts_bj": "2026-08-26 13:10:05",
+      "date": "2026-08-26",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid_empty"
+      },
+      "pool_errors": {},
+      "zt": 50,
+      "dt": 0,
+      "zab": 17,
+      "zb": 25.4,
+      "fb": 74.6,
+      "jj": 26.0,
+      "lianban": 13,
+      "max_lb": 5,
+      "amount": "12905.5亿",
+      "bf": 0,
+      "heat": 56,
+      "risk": 22,
+      "headline": "修复",
+      "concepts": [
+        {
+          "name": "工业金属",
+          "lead": "江西铜业",
+          "chg_pct": null
+        },
+        {
+          "name": "饰品",
+          "lead": "深中华A",
+          "chg_pct": null
+        },
+        {
+          "name": "通信设备",
+          "lead": "楚天龙",
+          "chg_pct": null
+        },
+        {
+          "name": "电网设备",
+          "lead": "杭电股份",
+          "chg_pct": null
+        },
+        {
+          "name": "家居用品",
+          "lead": "海鸥住工",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        },
+        {
+          "level": "warn",
+          "text": "炸板率偏高（25.4%）→ 注意回封质量"
+        }
+      ],
+      "shift_score": 65,
+      "shift_label": "修复",
+      "note": "情绪略有回落，注意午后分歧。"
     }
   ],
   "indices": [
     {
       "name": "上证指数",
       "code": "000001.SH",
-      "val": 3913.849,
-      "chg": 0.6274417044076982,
-      "cje": 585099686700.0,
-      "t": "2026-08-26 13:00:21"
+      "val": 3912.429,
+      "chg": 0.5909326394896939,
+      "cje": 609803597900.0,
+      "t": "2026-08-26 13:10:03"
     },
     {
       "name": "深证成指",
       "code": "399001.SZ",
-      "val": 13900.242,
-      "chg": 1.1230501323706752,
-      "cje": 655736356600.0,
-      "t": "2026-08-26 13:00:21"
+      "val": 13892.677,
+      "chg": 1.0680154161224662,
+      "cje": 680553417900.0,
+      "t": "2026-08-26 13:10:00"
     },
     {
       "name": "创业板指",
       "code": "399006.SZ",
-      "val": 3443.142,
-      "chg": 1.342952128246673,
-      "cje": 310085469300.0,
-      "t": "2026-08-26 13:00:21"
+      "val": 3439.254,
+      "chg": 1.2285155473927278,
+      "cje": 322131790800.0,
+      "t": "2026-08-26 13:10:00"
     }
   ],
   "asOf": {
-    "indices": "13:00:21"
+    "indices": "13:10:00"
   },
   "health": {
     "status": "valid",
-    "last_valid_at": "2026-08-26 13:00:25",
+    "last_valid_at": "2026-08-26 13:10:05",
     "rejected_reason": "",
     "source": {
       "status": "valid",
@@ -1004,8 +1075,8 @@
       "message": "intraday_coverage_collecting",
       "date": "2026-08-26",
       "expected_count": 26,
-      "due_count": 14,
-      "observed_count": 14,
+      "due_count": 15,
+      "observed_count": 15,
       "observed_slots": [
         "09:30",
         "09:40",
@@ -1020,30 +1091,35 @@
         "11:10",
         "11:20",
         "11:30",
-        "13:00"
+        "13:00",
+        "13:10"
       ],
       "missing_slots": [],
       "duplicate_slots": [],
       "out_of_session": [],
       "monotonic": true,
       "morning_coverage": 13,
-      "afternoon_coverage": 1
+      "afternoon_coverage": 2
     }
   },
   "live": {
     "market": {
-      "zt": 51,
+      "zt": 50,
       "dt": 0,
-      "zab": 14,
-      "zab_rate": 21.5,
+      "zab": 17,
+      "zab_rate": 25.4,
       "lianban": 13,
       "max_lianban": 5,
-      "amount": "12422.6亿"
+      "amount": "12905.5亿"
     },
     "alerts": [
       {
         "level": "info",
         "text": "盘中模式：强制实时拉取"
+      },
+      {
+        "level": "warn",
+        "text": "炸板率偏高（25.4%）→ 注意回封质量"
       }
     ],
     "concepts": [
@@ -1068,8 +1144,8 @@
         "chg_pct": null
       },
       {
-        "name": "计算机设",
-        "lead": "新 大 陆",
+        "name": "家居用品",
+        "lead": "海鸥住工",
         "chg_pct": null
       }
     ]

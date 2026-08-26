@@ -2,7 +2,7 @@
   "schema": "intraday_snapshot_v1",
   "render_mode": "snapshot_stream",
   "date": "2026-08-26",
-  "count": 14,
+  "count": 15,
   "interval_min": null,
   "simulated": false,
   "snapshots": [
@@ -892,11 +892,78 @@
       "shift_score": 68,
       "shift_label": "修复",
       "note": "情绪整体平稳，维持当前节奏。"
+    },
+    {
+      "time": "13:10:05",
+      "ts_bj": "2026-08-26 13:10:05",
+      "date": "2026-08-26",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid_empty"
+      },
+      "pool_errors": {},
+      "zt": 50,
+      "dt": 0,
+      "zab": 17,
+      "zb": 25.4,
+      "fb": 74.6,
+      "jj": 26.0,
+      "lianban": 13,
+      "max_lb": 5,
+      "amount": "12905.5亿",
+      "bf": 0,
+      "heat": 56,
+      "risk": 22,
+      "headline": "修复",
+      "concepts": [
+        {
+          "name": "工业金属",
+          "lead": "江西铜业",
+          "chg_pct": null
+        },
+        {
+          "name": "饰品",
+          "lead": "深中华A",
+          "chg_pct": null
+        },
+        {
+          "name": "通信设备",
+          "lead": "楚天龙",
+          "chg_pct": null
+        },
+        {
+          "name": "电网设备",
+          "lead": "杭电股份",
+          "chg_pct": null
+        },
+        {
+          "name": "家居用品",
+          "lead": "海鸥住工",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        },
+        {
+          "level": "warn",
+          "text": "炸板率偏高（25.4%）→ 注意回封质量"
+        }
+      ],
+      "shift_score": 65,
+      "shift_label": "修复",
+      "note": "情绪略有回落，注意午后分歧。"
     }
   ],
   "latest": {
-    "time": "13:00:25",
-    "ts_bj": "2026-08-26 13:00:25",
+    "time": "13:10:05",
+    "ts_bj": "2026-08-26 13:10:05",
     "date": "2026-08-26",
     "source": "intraday_live",
     "provider": "必盈(实时)+必盈(实时)",
@@ -907,18 +974,18 @@
       "dtgc": "valid_empty"
     },
     "pool_errors": {},
-    "zt": 51,
+    "zt": 50,
     "dt": 0,
-    "zab": 14,
-    "zb": 21.5,
-    "fb": 78.5,
-    "jj": 25.5,
+    "zab": 17,
+    "zb": 25.4,
+    "fb": 74.6,
+    "jj": 26.0,
     "lianban": 13,
     "max_lb": 5,
-    "amount": "12422.6亿",
+    "amount": "12905.5亿",
     "bf": 0,
-    "heat": 58,
-    "risk": 18,
+    "heat": 56,
+    "risk": 22,
     "headline": "修复",
     "concepts": [
       {
@@ -942,8 +1009,8 @@
         "chg_pct": null
       },
       {
-        "name": "计算机设",
-        "lead": "新 大 陆",
+        "name": "家居用品",
+        "lead": "海鸥住工",
         "chg_pct": null
       }
     ],
@@ -951,17 +1018,21 @@
       {
         "level": "info",
         "text": "盘中模式：强制实时拉取"
+      },
+      {
+        "level": "warn",
+        "text": "炸板率偏高（25.4%）→ 注意回封质量"
       }
     ],
-    "shift_score": 68,
+    "shift_score": 65,
     "shift_label": "修复",
-    "note": "情绪整体平稳，维持当前节奏。"
+    "note": "情绪略有回落，注意午后分歧。"
   },
-  "updated_at": "2026-08-26 13:00:25",
-  "snapshot_sig": "2026-08-26|2026-08-26 13:00:25|14",
+  "updated_at": "2026-08-26 13:10:05",
+  "snapshot_sig": "2026-08-26|2026-08-26 13:10:05|15",
   "health": {
     "status": "valid",
-    "last_valid_at": "2026-08-26 13:00:25",
+    "last_valid_at": "2026-08-26 13:10:05",
     "rejected_reason": "",
     "source": {
       "status": "valid",
