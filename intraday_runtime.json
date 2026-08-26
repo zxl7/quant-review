@@ -1,11 +1,11 @@
 {
   "schema": "intraday_runtime_v1",
   "date": "2026-08-26",
-  "updated_at": "2026-08-26 10:10:04",
+  "updated_at": "2026-08-26 10:20:05",
   "source": "必盈(实时)+必盈(实时)",
   "latest": {
-    "time": "10:10:04",
-    "ts_bj": "2026-08-26 10:10:04",
+    "time": "10:20:05",
+    "ts_bj": "2026-08-26 10:20:05",
     "date": "2026-08-26",
     "source": "intraday_live",
     "provider": "必盈(实时)+必盈(实时)",
@@ -16,25 +16,20 @@
       "dtgc": "valid_empty"
     },
     "pool_errors": {},
-    "zt": 41,
+    "zt": 38,
     "dt": 0,
-    "zab": 11,
-    "zb": 21.2,
-    "fb": 78.8,
-    "jj": 31.7,
-    "lianban": 13,
-    "max_lb": 6,
-    "amount": "7226.3亿",
+    "zab": 14,
+    "zb": 26.9,
+    "fb": 73.1,
+    "jj": 31.6,
+    "lianban": 12,
+    "max_lb": 5,
+    "amount": "8097.7亿",
     "bf": 0,
-    "heat": 60,
-    "risk": 17,
+    "heat": 55,
+    "risk": 21,
     "headline": "修复",
     "concepts": [
-      {
-        "name": "中药Ⅱ",
-        "lead": "汉森制药",
-        "chg_pct": null
-      },
       {
         "name": "工业金属",
         "lead": "江西铜业",
@@ -54,17 +49,26 @@
         "name": "造纸",
         "lead": "青山纸业",
         "chg_pct": null
+      },
+      {
+        "name": "生物制品",
+        "lead": "卫光生物",
+        "chg_pct": null
       }
     ],
     "alerts": [
       {
         "level": "info",
         "text": "盘中模式：强制实时拉取"
+      },
+      {
+        "level": "warn",
+        "text": "炸板率偏高（26.9%）→ 注意回封质量"
       }
     ],
-    "shift_score": 70,
+    "shift_score": 65,
     "shift_label": "修复",
-    "note": "情绪略有回落，注意午后分歧。"
+    "note": "炸板/跌停抬升，情绪明显走弱。"
   },
   "snapshots": [
     {
@@ -388,40 +392,107 @@
       "shift_score": 70,
       "shift_label": "修复",
       "note": "情绪略有回落，注意午后分歧。"
+    },
+    {
+      "time": "10:20:05",
+      "ts_bj": "2026-08-26 10:20:05",
+      "date": "2026-08-26",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid_empty"
+      },
+      "pool_errors": {},
+      "zt": 38,
+      "dt": 0,
+      "zab": 14,
+      "zb": 26.9,
+      "fb": 73.1,
+      "jj": 31.6,
+      "lianban": 12,
+      "max_lb": 5,
+      "amount": "8097.7亿",
+      "bf": 0,
+      "heat": 55,
+      "risk": 21,
+      "headline": "修复",
+      "concepts": [
+        {
+          "name": "工业金属",
+          "lead": "江西铜业",
+          "chg_pct": null
+        },
+        {
+          "name": "饰品",
+          "lead": "深中华A",
+          "chg_pct": null
+        },
+        {
+          "name": "汽车零部",
+          "lead": "浙江世宝",
+          "chg_pct": null
+        },
+        {
+          "name": "造纸",
+          "lead": "青山纸业",
+          "chg_pct": null
+        },
+        {
+          "name": "生物制品",
+          "lead": "卫光生物",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        },
+        {
+          "level": "warn",
+          "text": "炸板率偏高（26.9%）→ 注意回封质量"
+        }
+      ],
+      "shift_score": 65,
+      "shift_label": "修复",
+      "note": "炸板/跌停抬升，情绪明显走弱。"
     }
   ],
   "indices": [
     {
       "name": "上证指数",
       "code": "000001.SH",
-      "val": 3899.448,
-      "chg": 0.257183222799132,
-      "cje": 338950775800.0,
-      "t": "2026-08-26 10:10:00"
+      "val": 3904.657,
+      "chg": 0.3911097855863751,
+      "cje": 381392399800.0,
+      "t": "2026-08-26 10:20:03"
     },
     {
       "name": "深证成指",
       "code": "399001.SZ",
-      "val": 13757.322,
-      "chg": 0.0833195776854815,
-      "cje": 382999273300.0,
-      "t": "2026-08-26 10:10:00"
+      "val": 13798.193,
+      "chg": 0.3806525436842058,
+      "cje": 428164663400.0,
+      "t": "2026-08-26 10:20:00"
     },
     {
       "name": "创业板指",
       "code": "399006.SZ",
-      "val": 3395.703,
-      "chg": -0.05333309786711459,
-      "cje": 180354994700.0,
-      "t": "2026-08-26 10:10:00"
+      "val": 3408.707,
+      "chg": 0.3294172358326603,
+      "cje": 200868008200.0,
+      "t": "2026-08-26 10:20:03"
     }
   ],
   "asOf": {
-    "indices": "10:10:00"
+    "indices": "10:20:03"
   },
   "health": {
     "status": "valid",
-    "last_valid_at": "2026-08-26 10:10:04",
+    "last_valid_at": "2026-08-26 10:20:05",
     "rejected_reason": "",
     "source": {
       "status": "valid",
@@ -439,45 +510,45 @@
       "message": "intraday_coverage_collecting",
       "date": "2026-08-26",
       "expected_count": 26,
-      "due_count": 5,
-      "observed_count": 5,
+      "due_count": 6,
+      "observed_count": 6,
       "observed_slots": [
         "09:30",
         "09:40",
         "09:50",
         "10:00",
-        "10:10"
+        "10:10",
+        "10:20"
       ],
       "missing_slots": [],
       "duplicate_slots": [],
       "out_of_session": [],
       "monotonic": true,
-      "morning_coverage": 5,
+      "morning_coverage": 6,
       "afternoon_coverage": 0
     }
   },
   "live": {
     "market": {
-      "zt": 41,
+      "zt": 38,
       "dt": 0,
-      "zab": 11,
-      "zab_rate": 21.2,
-      "lianban": 13,
-      "max_lianban": 6,
-      "amount": "7226.3亿"
+      "zab": 14,
+      "zab_rate": 26.9,
+      "lianban": 12,
+      "max_lianban": 5,
+      "amount": "8097.7亿"
     },
     "alerts": [
       {
         "level": "info",
         "text": "盘中模式：强制实时拉取"
+      },
+      {
+        "level": "warn",
+        "text": "炸板率偏高（26.9%）→ 注意回封质量"
       }
     ],
     "concepts": [
-      {
-        "name": "中药Ⅱ",
-        "lead": "汉森制药",
-        "chg_pct": null
-      },
       {
         "name": "工业金属",
         "lead": "江西铜业",
@@ -496,6 +567,11 @@
       {
         "name": "造纸",
         "lead": "青山纸业",
+        "chg_pct": null
+      },
+      {
+        "name": "生物制品",
+        "lead": "卫光生物",
         "chg_pct": null
       }
     ]
