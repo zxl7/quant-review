@@ -2,7 +2,7 @@
   "schema": "intraday_snapshot_v1",
   "render_mode": "snapshot_stream",
   "date": "2026-08-26",
-  "count": 8,
+  "count": 9,
   "interval_min": null,
   "simulated": false,
   "snapshots": [
@@ -528,11 +528,74 @@
       "shift_score": 64,
       "shift_label": "修复",
       "note": "情绪整体平稳，维持当前节奏。"
+    },
+    {
+      "time": "10:50:05",
+      "ts_bj": "2026-08-26 10:50:05",
+      "date": "2026-08-26",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid_empty"
+      },
+      "pool_errors": {},
+      "zt": 45,
+      "dt": 0,
+      "zab": 14,
+      "zb": 23.7,
+      "fb": 76.3,
+      "jj": 26.7,
+      "lianban": 12,
+      "max_lb": 5,
+      "amount": "",
+      "bf": 0,
+      "heat": 56,
+      "risk": 19,
+      "headline": "修复",
+      "concepts": [
+        {
+          "name": "工业金属",
+          "lead": "江西铜业",
+          "chg_pct": null
+        },
+        {
+          "name": "饰品",
+          "lead": "深中华A",
+          "chg_pct": null
+        },
+        {
+          "name": "计算机设",
+          "lead": "新 大 陆",
+          "chg_pct": null
+        },
+        {
+          "name": "通信设备",
+          "lead": "楚天龙",
+          "chg_pct": null
+        },
+        {
+          "name": "家居用品",
+          "lead": "海鸥住工",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        }
+      ],
+      "shift_score": 66,
+      "shift_label": "修复",
+      "note": "情绪边际修复，但仍需确认持续性。"
     }
   ],
   "latest": {
-    "time": "10:40:05",
-    "ts_bj": "2026-08-26 10:40:05",
+    "time": "10:50:05",
+    "ts_bj": "2026-08-26 10:50:05",
     "date": "2026-08-26",
     "source": "intraday_live",
     "provider": "必盈(实时)+必盈(实时)",
@@ -543,18 +606,18 @@
       "dtgc": "valid_empty"
     },
     "pool_errors": {},
-    "zt": 41,
+    "zt": 45,
     "dt": 0,
-    "zab": 16,
-    "zb": 28.1,
-    "fb": 71.9,
-    "jj": 29.3,
+    "zab": 14,
+    "zb": 23.7,
+    "fb": 76.3,
+    "jj": 26.7,
     "lianban": 12,
     "max_lb": 5,
-    "amount": "9645.8亿",
+    "amount": "",
     "bf": 0,
-    "heat": 55,
-    "risk": 23,
+    "heat": 56,
+    "risk": 19,
     "headline": "修复",
     "concepts": [
       {
@@ -568,18 +631,18 @@
         "chg_pct": null
       },
       {
+        "name": "计算机设",
+        "lead": "新 大 陆",
+        "chg_pct": null
+      },
+      {
+        "name": "通信设备",
+        "lead": "楚天龙",
+        "chg_pct": null
+      },
+      {
         "name": "家居用品",
         "lead": "海鸥住工",
-        "chg_pct": null
-      },
-      {
-        "name": "汽车零部",
-        "lead": "浙江世宝",
-        "chg_pct": null
-      },
-      {
-        "name": "造纸",
-        "lead": "青山纸业",
         "chg_pct": null
       }
     ],
@@ -587,21 +650,17 @@
       {
         "level": "info",
         "text": "盘中模式：强制实时拉取"
-      },
-      {
-        "level": "warn",
-        "text": "炸板率偏高（28.1%）→ 注意回封质量"
       }
     ],
-    "shift_score": 64,
+    "shift_score": 66,
     "shift_label": "修复",
-    "note": "情绪整体平稳，维持当前节奏。"
+    "note": "情绪边际修复，但仍需确认持续性。"
   },
-  "updated_at": "2026-08-26 10:40:05",
-  "snapshot_sig": "2026-08-26|2026-08-26 10:40:05|8",
+  "updated_at": "2026-08-26 10:50:05",
+  "snapshot_sig": "2026-08-26|2026-08-26 10:50:05|9",
   "health": {
     "status": "valid",
-    "last_valid_at": "2026-08-26 10:40:05",
+    "last_valid_at": "2026-08-26 10:50:05",
     "rejected_reason": "",
     "source": {
       "status": "valid",
