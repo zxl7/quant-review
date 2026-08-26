@@ -2,7 +2,7 @@
   "schema": "intraday_snapshot_v1",
   "render_mode": "snapshot_stream",
   "date": "2026-08-26",
-  "count": 6,
+  "count": 7,
   "interval_min": null,
   "simulated": false,
   "snapshots": [
@@ -394,11 +394,78 @@
       "shift_score": 65,
       "shift_label": "修复",
       "note": "炸板/跌停抬升，情绪明显走弱。"
+    },
+    {
+      "time": "10:30:04",
+      "ts_bj": "2026-08-26 10:30:04",
+      "date": "2026-08-26",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid_empty"
+      },
+      "pool_errors": {},
+      "zt": 39,
+      "dt": 0,
+      "zab": 15,
+      "zb": 27.8,
+      "fb": 72.2,
+      "jj": 28.2,
+      "lianban": 11,
+      "max_lb": 5,
+      "amount": "8798.6亿",
+      "bf": 0,
+      "heat": 54,
+      "risk": 22,
+      "headline": "修复",
+      "concepts": [
+        {
+          "name": "工业金属",
+          "lead": "江西铜业",
+          "chg_pct": null
+        },
+        {
+          "name": "饰品",
+          "lead": "深中华A",
+          "chg_pct": null
+        },
+        {
+          "name": "汽车零部",
+          "lead": "浙江世宝",
+          "chg_pct": null
+        },
+        {
+          "name": "造纸",
+          "lead": "青山纸业",
+          "chg_pct": null
+        },
+        {
+          "name": "装修装饰",
+          "lead": "豪尔赛",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        },
+        {
+          "level": "warn",
+          "text": "炸板率偏高（27.8%）→ 注意回封质量"
+        }
+      ],
+      "shift_score": 64,
+      "shift_label": "修复",
+      "note": "情绪整体平稳，维持当前节奏。"
     }
   ],
   "latest": {
-    "time": "10:20:05",
-    "ts_bj": "2026-08-26 10:20:05",
+    "time": "10:30:04",
+    "ts_bj": "2026-08-26 10:30:04",
     "date": "2026-08-26",
     "source": "intraday_live",
     "provider": "必盈(实时)+必盈(实时)",
@@ -409,18 +476,18 @@
       "dtgc": "valid_empty"
     },
     "pool_errors": {},
-    "zt": 38,
+    "zt": 39,
     "dt": 0,
-    "zab": 14,
-    "zb": 26.9,
-    "fb": 73.1,
-    "jj": 31.6,
-    "lianban": 12,
+    "zab": 15,
+    "zb": 27.8,
+    "fb": 72.2,
+    "jj": 28.2,
+    "lianban": 11,
     "max_lb": 5,
-    "amount": "8097.7亿",
+    "amount": "8798.6亿",
     "bf": 0,
-    "heat": 55,
-    "risk": 21,
+    "heat": 54,
+    "risk": 22,
     "headline": "修复",
     "concepts": [
       {
@@ -444,8 +511,8 @@
         "chg_pct": null
       },
       {
-        "name": "生物制品",
-        "lead": "卫光生物",
+        "name": "装修装饰",
+        "lead": "豪尔赛",
         "chg_pct": null
       }
     ],
@@ -456,18 +523,18 @@
       },
       {
         "level": "warn",
-        "text": "炸板率偏高（26.9%）→ 注意回封质量"
+        "text": "炸板率偏高（27.8%）→ 注意回封质量"
       }
     ],
-    "shift_score": 65,
+    "shift_score": 64,
     "shift_label": "修复",
-    "note": "炸板/跌停抬升，情绪明显走弱。"
+    "note": "情绪整体平稳，维持当前节奏。"
   },
-  "updated_at": "2026-08-26 10:20:05",
-  "snapshot_sig": "2026-08-26|2026-08-26 10:20:05|6",
+  "updated_at": "2026-08-26 10:30:04",
+  "snapshot_sig": "2026-08-26|2026-08-26 10:30:04|7",
   "health": {
     "status": "valid",
-    "last_valid_at": "2026-08-26 10:20:05",
+    "last_valid_at": "2026-08-26 10:30:04",
     "rejected_reason": "",
     "source": {
       "status": "valid",
