@@ -1,6 +1,6 @@
 {
   "schema": "watchlist_v2",
-  "generated_at_bj": "2026-08-26 17:57:56",
+  "generated_at_bj": "2026-08-26 18:34:34",
   "data_date": "2026-08-26",
   "pools_date": "2026-08-26",
   "sector_resolution": {
@@ -17272,12 +17272,12 @@
         "prev_zt": 6,
         "pre_prev_zt": 6,
         "resilience": -11.79,
-        "strength": null,
+        "strength": 58.0,
         "strength_rank": null,
-        "strength_score": null,
-        "strength_source": "",
-        "tide_score": 44,
-        "confidence": "medium",
+        "strength_score": 58.0,
+        "strength_source": "sector_heatmap",
+        "tide_score": 46,
+        "confidence": "high",
         "warning_level": "watch",
         "action_hint": "弱于市场：降低主线权重"
       },
@@ -19431,12 +19431,12 @@
         "prev_zt": 3,
         "pre_prev_zt": 5,
         "resilience": 54.87,
-        "strength": 58.0,
+        "strength": null,
         "strength_rank": null,
-        "strength_score": 58.0,
-        "strength_source": "sector_heatmap",
-        "tide_score": 82,
-        "confidence": "high",
+        "strength_score": null,
+        "strength_source": "",
+        "tide_score": 80,
+        "confidence": "medium",
         "warning_level": "none",
         "action_hint": "潮汐中性，按梯队和辨识度判断"
       },
@@ -22615,38 +22615,6 @@
         "action_hint": "光伏玻璃有观察价值，等待情绪/量能/消息继续共振。"
       },
       {
-        "name": "太阳能（光伏）",
-        "canonical_name": "太阳能（光伏）",
-        "status": "observe_candidate",
-        "base_tide_status": "neutral",
-        "action": "watch",
-        "tide_zone": "neutral",
-        "tide_phase": "neutral",
-        "core_score": 66,
-        "ebb_score": 34,
-        "tide_score": 82,
-        "emotion_score": 78,
-        "strength_score": 58,
-        "volume_score": 45,
-        "news_score": 56,
-        "market_score": 65,
-        "structure_score": 61,
-        "confidence": "medium",
-        "confirms": {
-          "emotion": true,
-          "strength": false,
-          "volume": false,
-          "news": false,
-          "market": true
-        },
-        "reasons": [
-          "消息催化",
-          "低位连板承接"
-        ],
-        "cautions": [],
-        "action_hint": "太阳能（光伏）有观察价值，等待情绪/量能/消息继续共振。"
-      },
-      {
         "name": "DeepSeek概念",
         "canonical_name": "DeepSeek",
         "status": "observe_candidate",
@@ -22972,6 +22940,38 @@
         ],
         "cautions": [],
         "action_hint": "储能有观察价值，等待情绪/量能/消息继续共振。"
+      },
+      {
+        "name": "太阳能（光伏）",
+        "canonical_name": "太阳能（光伏）",
+        "status": "observe_candidate",
+        "base_tide_status": "neutral",
+        "action": "watch",
+        "tide_zone": "neutral",
+        "tide_phase": "neutral",
+        "core_score": 64,
+        "ebb_score": 34,
+        "tide_score": 80,
+        "emotion_score": 78,
+        "strength_score": 56,
+        "volume_score": 45,
+        "news_score": 56,
+        "market_score": 65,
+        "structure_score": 61,
+        "confidence": "medium",
+        "confirms": {
+          "emotion": true,
+          "strength": false,
+          "volume": false,
+          "news": false,
+          "market": true
+        },
+        "reasons": [
+          "消息催化",
+          "低位连板承接"
+        ],
+        "cautions": [],
+        "action_hint": "太阳能（光伏）有观察价值，等待情绪/量能/消息继续共振。"
       },
       {
         "name": "比亚迪概念",
@@ -26700,6 +26700,40 @@
         "action_hint": "黄金核心潮汐偏弱，降低权重，避免追高。"
       },
       {
+        "name": "一带一路",
+        "canonical_name": "一带一路",
+        "status": "avoid_weak",
+        "base_tide_status": "weak",
+        "action": "avoid",
+        "tide_zone": "ebbing",
+        "tide_phase": "ebbing",
+        "core_score": 53,
+        "ebb_score": 60,
+        "tide_score": 46,
+        "emotion_score": 78,
+        "strength_score": 58,
+        "volume_score": 45,
+        "news_score": 56,
+        "market_score": 65,
+        "structure_score": 57,
+        "confidence": "medium",
+        "confirms": {
+          "emotion": true,
+          "strength": false,
+          "volume": false,
+          "news": false,
+          "market": true
+        },
+        "reasons": [
+          "消息催化",
+          "低位连板承接"
+        ],
+        "cautions": [
+          "潮汐偏弱"
+        ],
+        "action_hint": "一带一路核心潮汐偏弱，降低权重，避免追高。"
+      },
+      {
         "name": "国资改革",
         "canonical_name": "国资改革",
         "status": "avoid_weak",
@@ -26732,40 +26766,6 @@
           "潮汐偏弱"
         ],
         "action_hint": "国资改革核心潮汐偏弱，降低权重，避免追高。"
-      },
-      {
-        "name": "一带一路",
-        "canonical_name": "一带一路",
-        "status": "avoid_weak",
-        "base_tide_status": "weak",
-        "action": "avoid",
-        "tide_zone": "ebbing",
-        "tide_phase": "ebbing",
-        "core_score": 52,
-        "ebb_score": 61,
-        "tide_score": 44,
-        "emotion_score": 78,
-        "strength_score": 56,
-        "volume_score": 45,
-        "news_score": 56,
-        "market_score": 65,
-        "structure_score": 57,
-        "confidence": "medium",
-        "confirms": {
-          "emotion": true,
-          "strength": false,
-          "volume": false,
-          "news": false,
-          "market": true
-        },
-        "reasons": [
-          "消息催化",
-          "低位连板承接"
-        ],
-        "cautions": [
-          "潮汐偏弱"
-        ],
-        "action_hint": "一带一路核心潮汐偏弱，降低权重，避免追高。"
       },
       {
         "name": "华为昇思",
@@ -32320,14 +32320,14 @@
         "充电桩",
         "数字经济",
         "光伏玻璃",
-        "太阳能（光伏）",
         "DeepSeek概念",
-        "F5G"
+        "F5G",
+        "燃料电池"
       ],
       "avoid": [
         "黄金",
-        "国资改革",
         "一带一路",
+        "国资改革",
         "华为昇思",
         "新能源车",
         "增持回购",
@@ -32341,14 +32341,14 @@
         "充电桩",
         "数字经济",
         "光伏玻璃",
-        "太阳能（光伏）",
         "DeepSeek概念",
-        "F5G"
+        "F5G",
+        "燃料电池"
       ],
       "ebbing": [
         "黄金",
-        "国资改革",
         "一带一路",
+        "国资改革",
         "华为昇思",
         "新能源车",
         "增持回购",
