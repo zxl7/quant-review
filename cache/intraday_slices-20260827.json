@@ -2,7 +2,7 @@
   "schema": "intraday_snapshot_v1",
   "render_mode": "snapshot_stream",
   "date": "2026-08-27",
-  "count": 1,
+  "count": 2,
   "interval_min": null,
   "simulated": false,
   "snapshots": [
@@ -68,11 +68,74 @@
       "shift_score": 69,
       "shift_label": "修复",
       "note": "盘中实时切片已接入，可逐点观察情绪变化。"
+    },
+    {
+      "time": "11:30:03",
+      "ts_bj": "2026-08-27 11:30:03",
+      "date": "2026-08-27",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid"
+      },
+      "pool_errors": {},
+      "zt": 62,
+      "dt": 2,
+      "zab": 15,
+      "zb": 19.5,
+      "fb": 80.5,
+      "jj": 22.6,
+      "lianban": 14,
+      "max_lb": 6,
+      "amount": "13516.9亿",
+      "bf": 0,
+      "heat": 62,
+      "risk": 20,
+      "headline": "修复",
+      "concepts": [
+        {
+          "name": "种植业",
+          "lead": "万向德农",
+          "chg_pct": null
+        },
+        {
+          "name": "元件",
+          "lead": "金安国纪",
+          "chg_pct": null
+        },
+        {
+          "name": "通信设备",
+          "lead": "楚天龙",
+          "chg_pct": null
+        },
+        {
+          "name": "电网设备",
+          "lead": "杭电股份",
+          "chg_pct": null
+        },
+        {
+          "name": "电子化学",
+          "lead": "天通股份",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        }
+      ],
+      "shift_score": 70,
+      "shift_label": "修复",
+      "note": "情绪整体平稳，维持当前节奏。"
     }
   ],
   "latest": {
-    "time": "11:20:25",
-    "ts_bj": "2026-08-27 11:20:25",
+    "time": "11:30:03",
+    "ts_bj": "2026-08-27 11:30:03",
     "date": "2026-08-27",
     "source": "intraday_live",
     "provider": "必盈(实时)+必盈(实时)",
@@ -83,28 +146,28 @@
       "dtgc": "valid"
     },
     "pool_errors": {},
-    "zt": 63,
+    "zt": 62,
     "dt": 2,
-    "zab": 16,
-    "zb": 20.3,
-    "fb": 79.7,
-    "jj": 22.2,
+    "zab": 15,
+    "zb": 19.5,
+    "fb": 80.5,
+    "jj": 22.6,
     "lianban": 14,
     "max_lb": 6,
-    "amount": "12982.9亿",
+    "amount": "13516.9亿",
     "bf": 0,
     "heat": 62,
-    "risk": 21,
+    "risk": 20,
     "headline": "修复",
     "concepts": [
       {
-        "name": "元件",
-        "lead": "金安国纪",
+        "name": "种植业",
+        "lead": "万向德农",
         "chg_pct": null
       },
       {
-        "name": "种植业",
-        "lead": "万向德农",
+        "name": "元件",
+        "lead": "金安国纪",
         "chg_pct": null
       },
       {
@@ -129,15 +192,15 @@
         "text": "盘中模式：强制实时拉取"
       }
     ],
-    "shift_score": 69,
+    "shift_score": 70,
     "shift_label": "修复",
-    "note": "盘中实时切片已接入，可逐点观察情绪变化。"
+    "note": "情绪整体平稳，维持当前节奏。"
   },
-  "updated_at": "2026-08-27 11:20:25",
-  "snapshot_sig": "2026-08-27|2026-08-27 11:20:25|1",
+  "updated_at": "2026-08-27 11:30:03",
+  "snapshot_sig": "2026-08-27|2026-08-27 11:30:03|2",
   "health": {
     "status": "valid",
-    "last_valid_at": "2026-08-27 11:20:25",
+    "last_valid_at": "2026-08-27 11:30:03",
     "rejected_reason": "",
     "source": {
       "status": "valid",
