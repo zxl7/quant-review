@@ -1,14 +1,13 @@
 name: Publish intraday runtime
 
 on:
-  # GitHub cron 提前数小时启动上午/下午会话，任务内等待开盘并按自然十分钟刻度循环。
-  # 2026-07-28 实测 cron 最长延迟约 2 小时 44 分，因此预留 3 小时以上缓冲。
-  # 上午 cron 使用 UTC 前一日 0-4，对应北京时间周一至周五；第二条是同会话兜底。
+  # 直接声明北京时间，修改 cron 以重新注册 GitHub schedule，并避开常见整点拥堵。
+  # 任务仍提前数小时启动，内部等待开盘并按自然十分钟刻度循环。
   schedule:
-    - cron: "15 22 * * 0-4"  # 北京时间 06:15，上午主任务
-    - cron: "30 22 * * 0-4"  # 北京时间 06:30，上午兜底
-    - cron: "45 1 * * 1-5"   # 北京时间 09:45，下午主任务
-    - cron: "0 2 * * 1-5"    # 北京时间 10:00，下午兜底
+    - cron: "11 6 * * 1-5"
+      timezone: "Asia/Shanghai"  # 上午主任务，本机在 06:14 分发兜底
+    - cron: "43 9 * * 1-5"
+      timezone: "Asia/Shanghai"  # 下午主任务，本机在 09:46 分发兜底
   workflow_dispatch:
     inputs:
       mode:
@@ -19,13 +18,23 @@ on:
         options:
           - once
           - remaining
+      session:
+        description: "remaining 会话；本机兜底显式传入，普通手动补跑保持 auto"
+        required: false
+        default: "auto"
+        type: choice
+        options:
+          - auto
+          - morning
+          - afternoon
 
 permissions:
   contents: write
   actions: write
 
 concurrency:
-  group: ${{ github.event_name == 'workflow_dispatch' && format('intraday-runtime-manual-{0}', github.run_id) || (github.event.schedule == '15 22 * * 0-4' || github.event.schedule == '30 22 * * 0-4') && 'intraday-runtime-morning' || 'intraday-runtime-afternoon' }}
+  # 本机 remaining 兜底与对应 schedule 共用通道，避免两套会话同时写入 gh-pages。
+  group: ${{ github.event_name == 'workflow_dispatch' && (github.event.inputs.mode != 'remaining' || github.event.inputs.session == 'auto') && format('intraday-runtime-manual-{0}', github.run_id) || github.event_name == 'workflow_dispatch' && github.event.inputs.session == 'morning' && 'intraday-runtime-morning' || github.event_name == 'workflow_dispatch' && github.event.inputs.session == 'afternoon' && 'intraday-runtime-afternoon' || github.event.schedule == '11 6 * * 1-5' && 'intraday-runtime-morning' || 'intraday-runtime-afternoon' }}
   cancel-in-progress: false
 
 env:
@@ -34,11 +43,11 @@ env:
 
 jobs:
   auction_capture:
-    # 两条上午启动均可承接；现有上午并发锁保证实际只会有一个会话先运行。
-    if: ${{ github.event_name == 'schedule' && (github.event.schedule == '15 22 * * 0-4' || github.event.schedule == '30 22 * * 0-4') }}
+    # 上午主任务负责竞价守窗；本机兜底直接分发同一可复用 workflow。
+    if: ${{ github.event_name == 'schedule' && github.event.schedule == '11 6 * * 1-5' }}
     uses: ./.github/workflows/auction_prefetch.yml
     with:
-      scheduled_clock: ${{ github.event.schedule == '15 22 * * 0-4' && '06:15:00' || '06:30:00' }}
+      scheduled_clock: "06:11:00"
       wait_for_auction: true
     secrets: inherit
 
@@ -60,6 +69,7 @@ jobs:
           EVENT_NAME: ${{ github.event_name }}
           SCHEDULE_EXPR: ${{ github.event.schedule || '' }}
           DISPATCH_MODE: ${{ github.event.inputs.mode || 'once' }}
+          SESSION_HINT: ${{ github.event.inputs.session || 'auto' }}
         run: |
           set -euo pipefail
           PYTHONPATH=. python3 - <<'PY'
@@ -71,6 +81,7 @@ jobs:
               os.environ["EVENT_NAME"],
               os.environ["SCHEDULE_EXPR"],
               dispatch_mode=os.environ["DISPATCH_MODE"],
+              session_hint=os.environ["SESSION_HINT"],
           )
           print("intraday_session=" + json.dumps(result, ensure_ascii=False, sort_keys=True))
           with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as fh:

@@ -85,11 +85,11 @@ cd web && npm run build       # 产出 dist/index.html（单文件）
 
 **触发**：
 - `push` 到 `main` 分支自动发布
-- `.github/workflows/intraday_runtime.yml` 在工作日北京时间 09:05/09:17、12:35/12:47 启动主任务与兜底任务，任务内按 10 分钟刻度覆盖 09:30–11:30、13:00–15:00
-- `.github/workflows/publish_pages.yml` 在 08:55/09:15 提前启动财富密码开盘链路，09:25–09:27 兜底，15:00/16:00/17:00/18:00 执行收盘复盘
+- `.github/workflows/intraday_runtime.yml` 使用 `Asia/Shanghai` 时区，在 06:11、09:43 启动上午和下午主任务；本机分别在 06:14、09:46 分发同通道兜底，任务内按 10 分钟刻度覆盖 09:30–11:30、13:00–15:00
+- `.github/workflows/publish_pages.yml` 在 09:26/09:31/09:36 执行开盘发布，在 15:07/16:13/17:19/18:27 执行收盘复盘，避开 GitHub Actions 整点拥堵
 - `workflow_dispatch` 可手动补跑，默认就是全量更新；只有需要竞价补抓时才传 `stock_research_query_tag=fore`
 
-现在建议以 GitHub Actions 为唯一生产调度入口，本地不再依赖 `launchd`/`gh workflow run` 常驻触发。
+GitHub `schedule` 为主通道；`tools/install_workflow_trigger_launchd.sh` 可安装本机兜底，在每个业务时点后 3 分钟发送 `workflow_dispatch`。兜底与对应 schedule 共用并发通道，只分发既有 workflow，不在本机执行取数、构建或覆盖线上产物。
 
 ---
 

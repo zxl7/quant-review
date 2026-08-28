@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN"
+  "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>Label</key>
+  <string>com.zxl.quant-review.workflow-trigger</string>
+  <key>ProgramArguments</key>
+  <array>
+    <string>/bin/bash</string>
+    <string>/Users/zxl/Library/Application Support/quant-review-workflow-trigger/trigger_publish_workflow.sh</string>
+  </array>
+  <!-- 每分钟只做本地时段判断；命中业务时点后才访问 GitHub，状态文件阻止重复分发。 -->
+  <key>StartInterval</key>
+  <integer>60</integer>
+  <key>RunAtLoad</key>
+  <true/>
+  <key>ProcessType</key>
+  <string>Background</string>
+  <key>EnvironmentVariables</key>
+  <dict>
+    <key>PATH</key>
+    <string>/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin</string>
+    <key>TZ</key>
+    <string>Asia/Shanghai</string>
+  </dict>
+  <key>StandardOutPath</key>
+  <string>/Users/zxl/Library/Application Support/quant-review-workflow-trigger/logs/workflow-trigger.log</string>
+  <key>StandardErrorPath</key>
+  <string>/Users/zxl/Library/Application Support/quant-review-workflow-trigger/logs/workflow-trigger.err.log</string>
+</dict>
+</plist>

@@ -10,20 +10,18 @@ from typing import Any, Callable
 TZ_BJ = timezone(timedelta(hours=8))
 
 SCHEDULE_MODE_BY_CRON: dict[str, str] = {
-    "26 1 * * 1-5": "open_fore",
-    "31 1 * * 1-5": "open_fore",
-    "36 1 * * 1-5": "open_fore",
-    "0 7 * * 1-5": "eod",
-    "0 8 * * 1-5": "eod",
-    "0 9 * * 1-5": "eod",
-    "0 10 * * 1-5": "eod",
+    "26 9 * * 1-5": "open_fore",
+    "31 9 * * 1-5": "open_fore",
+    "36 9 * * 1-5": "open_fore",
+    "7 15 * * 1-5": "eod",
+    "13 16 * * 1-5": "eod",
+    "19 17 * * 1-5": "eod",
+    "27 18 * * 1-5": "eod",
 }
 
 INTRADAY_SESSION_BY_CRON: dict[str, str] = {
-    "15 22 * * 0-4": "morning",
-    "30 22 * * 0-4": "morning",
-    "45 1 * * 1-5": "afternoon",
-    "0 2 * * 1-5": "afternoon",
+    "11 6 * * 1-5": "morning",
+    "43 9 * * 1-5": "afternoon",
 }
 INTRADAY_SESSION_WINDOWS: dict[str, tuple[tuple[int, int], tuple[int, int]]] = {
     "morning": ((9, 30), (11, 30)),
@@ -52,6 +50,7 @@ def resolve_intraday_session(
     schedule_expr: str,
     *,
     dispatch_mode: str = "once",
+    session_hint: str = "",
     now: datetime | None = None,
 ) -> dict[str, Any]:
     """解析 GitHub 托管的盘中会话，并把延迟启动对齐到下一个真实十分钟槽位。"""
@@ -72,18 +71,23 @@ def resolve_intraday_session(
 
     session = INTRADAY_SESSION_BY_CRON.get(str(schedule_expr or "").strip(), "")
     if is_manual:
-        clock = current.hour * 60 + current.minute
-        if 9 * 60 + 20 <= clock <= 11 * 60 + 30:
-            session = "morning"
-        elif 12 * 60 + 30 <= clock <= 15 * 60:
-            session = "afternoon"
+        # 本机兜底显式传入会话，确保可在开盘前与 schedule 进入同一并发通道。
+        hinted_session = str(session_hint or "").strip()
+        if hinted_session in INTRADAY_SESSION_WINDOWS:
+            session = hinted_session
+        else:
+            clock = current.hour * 60 + current.minute
+            if 6 * 60 <= clock <= 11 * 60 + 30:
+                session = "morning"
+            elif 12 * 60 + 30 <= clock <= 15 * 60:
+                session = "afternoon"
     if not session:
         return {"mode": "", "skip": True, "reason": "unknown_schedule", "is_fallback": False, "start_epoch": 0, "end_epoch": 0, "next_slot_epoch": 0, "wait_seconds": 0, "expected_iterations": 0}
 
     (start_hour, start_minute), (end_hour, end_minute) = INTRADAY_SESSION_WINDOWS[session]
     start = current.replace(hour=start_hour, minute=start_minute, second=0, microsecond=0)
     end = current.replace(hour=end_hour, minute=end_minute, second=0, microsecond=0)
-    is_fallback = not is_manual and str(schedule_expr or "").strip() in {"30 22 * * 0-4", "0 2 * * 1-5"}
+    is_fallback = is_manual and str(dispatch_mode or "").strip() == "remaining" and str(session_hint or "").strip() in INTRADAY_SESSION_WINDOWS
     common = {
         "mode": session,
         "is_fallback": is_fallback,

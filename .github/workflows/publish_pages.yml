@@ -23,16 +23,27 @@ on:
         required: false
         default: ""
         type: string
-  # 09:26 尽早发布，09:31/09:36 对缺失行情继续自动补抓并发布。
-  # - 15:00 / 16:00 / 17:00 / 18:00：执行收盘后全量复盘发布
+      schedule_slot:
+        description: "本机兜底对应的 cron 通道；普通手动补跑留空"
+        required: false
+        default: ""
+        type: string
+  # 直接声明北京时间；开盘发布保持原业务时点，收盘任务错开整点拥堵。
   schedule:
-    - cron: "26 1 * * 1-5"
-    - cron: "31 1 * * 1-5"
-    - cron: "36 1 * * 1-5"
-    - cron: "0 7 * * 1-5"
-    - cron: "0 9 * * 1-5"
-    - cron: "0 8 * * 1-5"
-    - cron: "0 10 * * 1-5"
+    - cron: "26 9 * * 1-5"
+      timezone: "Asia/Shanghai"
+    - cron: "31 9 * * 1-5"
+      timezone: "Asia/Shanghai"
+    - cron: "36 9 * * 1-5"
+      timezone: "Asia/Shanghai"
+    - cron: "7 15 * * 1-5"
+      timezone: "Asia/Shanghai"
+    - cron: "13 16 * * 1-5"
+      timezone: "Asia/Shanghai"
+    - cron: "19 17 * * 1-5"
+      timezone: "Asia/Shanghai"
+    - cron: "27 18 * * 1-5"
+      timezone: "Asia/Shanghai"
   # 提交代码后触发（除 gh-pages 外的所有分支）
   push:
     branches:
@@ -48,7 +59,8 @@ concurrency:
   # push 与 workflow_dispatch 分通道串行：
   # - 各自通道内仍按分支串行，避免同一来源的重复发布互相覆盖；
   # - 手动触发不再和同分支 push 共用一个等待队列，避免 queued run 被“更高优先级等待项”顶掉。
-  group: ${{ github.event_name == 'schedule' && github.event.schedule == '26 1 * * 1-5' && 'gh-pages-publish-open-0926' || github.event_name == 'schedule' && github.event.schedule == '31 1 * * 1-5' && 'gh-pages-publish-open-0931' || github.event_name == 'schedule' && github.event.schedule == '36 1 * * 1-5' && 'gh-pages-publish-open-0936' || github.event_name == 'schedule' && format('gh-pages-publish-schedule-{0}', github.event.schedule) || github.event_name == 'workflow_dispatch' && format('gh-pages-publish-dispatch-{0}', github.ref_name) || format('gh-pages-publish-push-{0}', github.ref_name) }}
+  # 本机兜底携带 schedule_slot，与对应 schedule 共用通道，避免重复发布互相覆盖。
+  group: ${{ github.event_name == 'schedule' && format('gh-pages-publish-schedule-{0}', github.event.schedule) || github.event_name == 'workflow_dispatch' && github.event.inputs.schedule_slot != '' && format('gh-pages-publish-schedule-{0}', github.event.inputs.schedule_slot) || github.event_name == 'workflow_dispatch' && format('gh-pages-publish-dispatch-{0}', github.ref_name) || format('gh-pages-publish-push-{0}', github.ref_name) }}
   # 不取消已在执行中的发布；仅让同通道的新请求接替旧的等待项。
   cancel-in-progress: false
 
@@ -421,7 +433,7 @@ jobs:
           is_trade_today="${{ steps.tradeday.outputs.is_trade_today }}"
           input_query_tag="${{ github.event.inputs.stock_research_query_tag || '' }}"
           schedule_expr="${{ github.event.schedule || '' }}"
-          if [ -z "${input_query_tag}" ] && { [ "${schedule_expr}" = "26 1 * * 1-5" ] || [ "${schedule_expr}" = "31 1 * * 1-5" ] || [ "${schedule_expr}" = "36 1 * * 1-5" ]; }; then
+          if [ -z "${input_query_tag}" ] && { [ "${schedule_expr}" = "26 9 * * 1-5" ] || [ "${schedule_expr}" = "31 9 * * 1-5" ] || [ "${schedule_expr}" = "36 9 * * 1-5" ]; }; then
             # 三次开盘发布都主动恢复缺失行情；已有合格快照时查询计划会自动复用，不重复抓取。
             input_query_tag="fore"
           fi
@@ -870,7 +882,7 @@ jobs:
       - name: Validate eod stock research closeout
         # 收盘闭环价格依赖行情商落库，延迟时只告警；预测池已有独立强校验，
         # 不能让非核心的历史回测闭环阻断当天页面发布。
-        if: ${{ steps.pushmode.outputs.mode == 'eod' && (github.event_name == 'workflow_dispatch' || github.event.schedule == '0 10 * * 1-5') && (github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true') && steps.warmup.outputs.skip != 'true' && steps.tradeday.outputs.is_trade_today == 'true' }}
+        if: ${{ steps.pushmode.outputs.mode == 'eod' && (github.event_name == 'workflow_dispatch' || github.event.schedule == '27 18 * * 1-5') && (github.event_name != 'schedule' || steps.timecheck.outputs.skip != 'true') && steps.warmup.outputs.skip != 'true' && steps.tradeday.outputs.is_trade_today == 'true' }}
         env:
           RUN_DATE: ${{ steps.pushmode.outputs.date10 }}
         run: |
@@ -1038,7 +1050,7 @@ jobs:
               resolve_auction_snapshot_prefetch_plan,
           )
 
-          if os.environ.get("SCHEDULE_EXPR") not in {"26 1 * * 1-5", "31 1 * * 1-5", "36 1 * * 1-5"}:
+          if os.environ.get("SCHEDULE_EXPR") not in {"26 9 * * 1-5", "31 9 * * 1-5", "36 9 * * 1-5"}:
               raise SystemExit(0)
           run_date = os.environ["RUN_DATE"]
           local_plan = resolve_auction_snapshot_prefetch_plan(Path("cache"), run_date)

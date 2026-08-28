@@ -52,14 +52,13 @@ class WorkflowScheduleTest(unittest.TestCase):
         intraday_workflow = (root / ".github" / "workflows" / "intraday_runtime.yml").read_text(encoding="utf-8")
         self.assertEqual(intraday_workflow.count("./qr.sh watch-slice"), 1)
         session_crons = (
-            "15 22 * * 0-4",
-            "30 22 * * 0-4",
-            "45 1 * * 1-5",
-            "0 2 * * 1-5",
+            "11 6 * * 1-5",
+            "43 9 * * 1-5",
         )
         for cron in session_crons:
             self.assertIn(f'cron: "{cron}"', intraday_workflow)
         self.assertEqual(intraday_workflow.count('    - cron: "'), len(session_crons))
+        self.assertEqual(intraday_workflow.count('timezone: "Asia/Shanghai"'), len(session_crons))
         self.assertIn("timeout-minutes: 350", intraday_workflow)
         self.assertIn("actions: write", intraday_workflow)
         self.assertIn("auction_capture:", intraday_workflow)
@@ -79,8 +78,8 @@ class WorkflowScheduleTest(unittest.TestCase):
             "- name: Validate eod account derivatives", 1
         )[0]
 
-        # 18:00 与手动 eod 都检查闭环完整性，但行情商延迟不能阻断当天页面上线。
-        self.assertIn("github.event.schedule == '0 10 * * 1-5'", closeout_step)
+        # 最晚一轮收盘任务与手动 eod 都检查闭环完整性，但行情商延迟不能阻断当天页面上线。
+        self.assertIn("github.event.schedule == '27 18 * * 1-5'", closeout_step)
         self.assertIn("github.event_name == 'workflow_dispatch'", closeout_step)
         self.assertIn("steps.pushmode.outputs.mode == 'eod'", closeout_step)
         self.assertIn("::warning title=Stock research closeout delayed::", closeout_step)
@@ -189,11 +188,11 @@ class WorkflowScheduleTest(unittest.TestCase):
 
     def test_open_fore_mode_survives_delayed_runner_start(self) -> None:
         delayed_now = datetime(2026, 6, 22, 10, 27, tzinfo=TZ_BJ)
-        result = resolve_publish_schedule_mode("schedule", "26 1 * * 1-5", now=delayed_now)
+        result = resolve_publish_schedule_mode("schedule", "26 9 * * 1-5", now=delayed_now)
         self.assertEqual(result["mode"], "open_fore")
         self.assertEqual(result["beijing_now"], "10:27")
 
-        fallback = resolve_publish_schedule_mode("schedule", "31 1 * * 1-5", now=delayed_now)
+        fallback = resolve_publish_schedule_mode("schedule", "31 9 * * 1-5", now=delayed_now)
         self.assertEqual(fallback["mode"], "open_fore")
 
     def test_old_early_open_controllers_are_no_longer_publish_triggers(self) -> None:
@@ -245,12 +244,12 @@ class WorkflowScheduleTest(unittest.TestCase):
         self.assertNotIn("Commit auction snapshot", publish)
         self.assertNotIn('cron: "25 1 * * 1-5"', publish)
         self.assertNotIn("auction_prefetch_retry", publish)
-        self.assertIn('cron: "26 1 * * 1-5"', publish)
-        self.assertIn('cron: "31 1 * * 1-5"', publish)
-        self.assertIn('cron: "36 1 * * 1-5"', publish)
-        self.assertIn("gh-pages-publish-open-0926", publish)
-        self.assertIn("gh-pages-publish-open-0931", publish)
-        self.assertIn("gh-pages-publish-open-0936", publish)
+        self.assertIn('cron: "26 9 * * 1-5"', publish)
+        self.assertIn('cron: "31 9 * * 1-5"', publish)
+        self.assertIn('cron: "36 9 * * 1-5"', publish)
+        self.assertEqual(publish.count('timezone: "Asia/Shanghai"'), 7)
+        self.assertIn("github.event.inputs.schedule_slot", publish)
+        self.assertIn("gh-pages-publish-schedule-{0}", publish)
         self.assertIn("cp -f site_prev/cache/stock_research_realtime_quotes-*.json cache/", publish)
         publish_commit = publish.split("- name: Commit & push to gh-pages", 1)[1]
         self.assertIn("Open build is stale; preserve the newer remote auction or recovery result.", publish_commit)
@@ -258,10 +257,10 @@ class WorkflowScheduleTest(unittest.TestCase):
         self.assertNotIn("stock_research_realtime_quotes", publish_commit)
         self.assertNotIn("cp -f cache/auction_snapshot_status", publish_commit)
 
-    def test_intraday_session_fallback_takes_over_remaining_morning(self) -> None:
+    def test_delayed_intraday_schedule_takes_over_remaining_morning(self) -> None:
         result = resolve_intraday_session(
             "schedule",
-            "30 22 * * 0-4",
+            "11 6 * * 1-5",
             now=datetime(2026, 6, 24, 9, 44, tzinfo=TZ_BJ),
         )
         self.assertFalse(result["skip"])
@@ -269,10 +268,10 @@ class WorkflowScheduleTest(unittest.TestCase):
         self.assertEqual(result["expected_iterations"], 11)
         self.assertEqual(datetime.fromtimestamp(result["next_slot_epoch"], TZ_BJ).strftime("%H:%M"), "09:50")
 
-    def test_intraday_session_queued_fallback_exits_after_window(self) -> None:
+    def test_intraday_session_queued_schedule_exits_after_window(self) -> None:
         result = resolve_intraday_session(
             "schedule",
-            "30 22 * * 0-4",
+            "11 6 * * 1-5",
             now=datetime(2026, 6, 24, 11, 31, tzinfo=TZ_BJ),
         )
         self.assertTrue(result["skip"])
@@ -300,22 +299,35 @@ class WorkflowScheduleTest(unittest.TestCase):
         self.assertEqual(datetime.fromtimestamp(result["next_slot_epoch"], TZ_BJ).strftime("%H:%M"), "14:40")
         self.assertEqual(result["expected_iterations"], 3)
 
+    def test_intraday_manual_fallback_can_select_future_session(self) -> None:
+        result = resolve_intraday_session(
+            "workflow_dispatch",
+            "",
+            dispatch_mode="remaining",
+            session_hint="afternoon",
+            now=datetime(2026, 6, 24, 9, 46, tzinfo=TZ_BJ),
+        )
+        self.assertFalse(result["skip"])
+        self.assertEqual(result["mode"], "afternoon")
+        self.assertEqual(result["reason"], "session_wait")
+        self.assertEqual(datetime.fromtimestamp(result["next_slot_epoch"], TZ_BJ).strftime("%H:%M"), "13:00")
+
     def test_intraday_early_primary_waits_for_open_and_covers_full_morning(self) -> None:
         result = resolve_intraday_session(
             "schedule",
-            "15 22 * * 0-4",
-            now=datetime(2026, 6, 24, 6, 15, tzinfo=TZ_BJ),
+            "11 6 * * 1-5",
+            now=datetime(2026, 6, 24, 6, 11, tzinfo=TZ_BJ),
         )
         self.assertFalse(result["skip"])
         self.assertEqual(result["reason"], "session_wait")
-        self.assertEqual(result["wait_seconds"], 3 * 60 * 60 + 15 * 60)
+        self.assertEqual(result["wait_seconds"], 3 * 60 * 60 + 19 * 60)
         self.assertEqual(result["expected_iterations"], 13)
 
     def test_intraday_afternoon_controller_never_collects_during_lunch(self) -> None:
         result = resolve_intraday_session(
             "schedule",
-            "45 1 * * 1-5",
-            now=datetime(2026, 6, 24, 9, 45, tzinfo=TZ_BJ),
+            "43 9 * * 1-5",
+            now=datetime(2026, 6, 24, 9, 43, tzinfo=TZ_BJ),
         )
         self.assertFalse(result["skip"])
         self.assertEqual(datetime.fromtimestamp(result["next_slot_epoch"], TZ_BJ).strftime("%H:%M"), "13:00")
@@ -324,7 +336,7 @@ class WorkflowScheduleTest(unittest.TestCase):
     def test_intraday_schedule_skips_non_weekday(self) -> None:
         result = resolve_intraday_session(
             "schedule",
-            "15 22 * * 0-4",
+            "11 6 * * 1-5",
             now=datetime(2026, 6, 27, 9, 5, tzinfo=TZ_BJ),
         )
         self.assertTrue(result["skip"])

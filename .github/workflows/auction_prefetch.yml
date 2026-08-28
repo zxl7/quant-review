@@ -20,13 +20,25 @@ on:
       BIYING_BASE_URL:
         required: false
   workflow_dispatch:
+    inputs:
+      scheduled_clock:
+        description: "计划启动时间（北京时间 HH:MM:SS）"
+        required: false
+        default: "06:11:00"
+        type: string
+      wait_for_auction:
+        description: "是否等待到竞价窗口"
+        required: false
+        default: true
+        type: boolean
 
 permissions:
   contents: write
   actions: write
 
 concurrency:
-  group: ${{ github.event_name == 'workflow_dispatch' && format('auction-prefetch-manual-{0}', github.run_id) || 'auction-prefetch-session' }}
+  # 手动兜底与可复用任务共用竞价通道，已有会话运行时不并发重复采集。
+  group: auction-prefetch-session
   cancel-in-progress: false
 
 env:
