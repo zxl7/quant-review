@@ -1,11 +1,11 @@
 {
   "schema": "intraday_runtime_v1",
   "date": "2026-08-31",
-  "updated_at": "2026-08-31 09:40:04",
+  "updated_at": "2026-08-31 09:50:04",
   "source": "必盈(实时)+必盈(实时)",
   "latest": {
-    "time": "09:40:04",
-    "ts_bj": "2026-08-31 09:40:04",
+    "time": "09:50:04",
+    "ts_bj": "2026-08-31 09:50:04",
     "date": "2026-08-31",
     "source": "intraday_live",
     "provider": "必盈(实时)+必盈(实时)",
@@ -16,23 +16,28 @@
       "dtgc": "valid"
     },
     "pool_errors": {},
-    "zt": 31,
-    "dt": 9,
-    "zab": 11,
-    "zb": 26.2,
-    "fb": 73.8,
-    "jj": 54.8,
-    "lianban": 17,
+    "zt": 37,
+    "dt": 10,
+    "zab": 14,
+    "zb": 27.5,
+    "fb": 72.5,
+    "jj": 37.8,
+    "lianban": 14,
     "max_lb": 6,
-    "amount": "4005.9亿",
+    "amount": "6006.9亿",
     "bf": 0,
-    "heat": 62,
-    "risk": 33,
+    "heat": 58,
+    "risk": 36,
     "headline": "修复",
     "concepts": [
       {
+        "name": "通用设备",
+        "lead": "海鸥股份",
+        "chg_pct": null
+      },
+      {
         "name": "房地产开",
-        "lead": "香江控股",
+        "lead": "深物业A",
         "chg_pct": null
       },
       {
@@ -49,11 +54,6 @@
         "name": "房地产服",
         "lead": "我爱我家",
         "chg_pct": null
-      },
-      {
-        "name": "农化制品",
-        "lead": "赤天化",
-        "chg_pct": null
       }
     ],
     "alerts": [
@@ -63,16 +63,20 @@
       },
       {
         "level": "warn",
-        "text": "炸板率偏高（26.2%）→ 注意回封质量"
+        "text": "跌停偏多（10）→ 控制追高"
+      },
+      {
+        "level": "warn",
+        "text": "炸板率偏高（27.5%）→ 注意回封质量"
       },
       {
         "level": "warn",
         "text": "高度6板 + 分歧不低 → 高位兑现/炸板风险"
       }
     ],
-    "shift_score": 64,
+    "shift_score": 61,
     "shift_label": "修复",
-    "note": "盘中实时切片已接入，可逐点观察情绪变化。"
+    "note": "情绪略有回落，注意午后分歧。"
   },
   "snapshots": [
     {
@@ -145,40 +149,115 @@
       "shift_score": 64,
       "shift_label": "修复",
       "note": "盘中实时切片已接入，可逐点观察情绪变化。"
+    },
+    {
+      "time": "09:50:04",
+      "ts_bj": "2026-08-31 09:50:04",
+      "date": "2026-08-31",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid"
+      },
+      "pool_errors": {},
+      "zt": 37,
+      "dt": 10,
+      "zab": 14,
+      "zb": 27.5,
+      "fb": 72.5,
+      "jj": 37.8,
+      "lianban": 14,
+      "max_lb": 6,
+      "amount": "6006.9亿",
+      "bf": 0,
+      "heat": 58,
+      "risk": 36,
+      "headline": "修复",
+      "concepts": [
+        {
+          "name": "通用设备",
+          "lead": "海鸥股份",
+          "chg_pct": null
+        },
+        {
+          "name": "房地产开",
+          "lead": "深物业A",
+          "chg_pct": null
+        },
+        {
+          "name": "家居用品",
+          "lead": "海鸥住工",
+          "chg_pct": null
+        },
+        {
+          "name": "种植业",
+          "lead": "万向德农",
+          "chg_pct": null
+        },
+        {
+          "name": "房地产服",
+          "lead": "我爱我家",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        },
+        {
+          "level": "warn",
+          "text": "跌停偏多（10）→ 控制追高"
+        },
+        {
+          "level": "warn",
+          "text": "炸板率偏高（27.5%）→ 注意回封质量"
+        },
+        {
+          "level": "warn",
+          "text": "高度6板 + 分歧不低 → 高位兑现/炸板风险"
+        }
+      ],
+      "shift_score": 61,
+      "shift_label": "修复",
+      "note": "情绪略有回落，注意午后分歧。"
     }
   ],
   "indices": [
     {
       "name": "上证指数",
       "code": "000001.SH",
-      "val": 3945.054,
-      "chg": -0.18028029600885992,
-      "cje": 190289423700.0,
-      "t": "2026-08-31 09:40:03"
+      "val": 3934.005,
+      "chg": -0.45984759293544086,
+      "cje": 286733940800.0,
+      "t": "2026-08-31 09:50:00"
     },
     {
       "name": "深证成指",
       "code": "399001.SZ",
-      "val": 13859.08,
-      "chg": -0.6735867228034381,
-      "cje": 209058792100.0,
-      "t": "2026-08-31 09:39:57"
+      "val": 13782.604,
+      "chg": -1.2216813136267066,
+      "cje": 313089133500.0,
+      "t": "2026-08-31 09:49:57"
     },
     {
       "name": "创业板指",
       "code": "399006.SZ",
-      "val": 3399.387,
-      "chg": -0.7304635175611638,
-      "cje": 96657602000.0,
-      "t": "2026-08-31 09:40:00"
+      "val": 3370.783,
+      "chg": -1.5657628881664252,
+      "cje": 146465086300.0,
+      "t": "2026-08-31 09:49:57"
     }
   ],
   "asOf": {
-    "indices": "09:40:00"
+    "indices": "09:49:57"
   },
   "health": {
     "status": "valid",
-    "last_valid_at": "2026-08-31 09:40:04",
+    "last_valid_at": "2026-08-31 09:50:04",
     "rejected_reason": "",
     "source": {
       "status": "valid",
@@ -196,10 +275,11 @@
       "message": "intraday_coverage_incomplete",
       "date": "2026-08-31",
       "expected_count": 26,
-      "due_count": 2,
-      "observed_count": 1,
+      "due_count": 3,
+      "observed_count": 2,
       "observed_slots": [
-        "09:40"
+        "09:40",
+        "09:50"
       ],
       "missing_slots": [
         "09:30"
@@ -207,19 +287,19 @@
       "duplicate_slots": [],
       "out_of_session": [],
       "monotonic": true,
-      "morning_coverage": 1,
+      "morning_coverage": 2,
       "afternoon_coverage": 0
     }
   },
   "live": {
     "market": {
-      "zt": 31,
-      "dt": 9,
-      "zab": 11,
-      "zab_rate": 26.2,
-      "lianban": 17,
+      "zt": 37,
+      "dt": 10,
+      "zab": 14,
+      "zab_rate": 27.5,
+      "lianban": 14,
       "max_lianban": 6,
-      "amount": "4005.9亿"
+      "amount": "6006.9亿"
     },
     "alerts": [
       {
@@ -228,7 +308,11 @@
       },
       {
         "level": "warn",
-        "text": "炸板率偏高（26.2%）→ 注意回封质量"
+        "text": "跌停偏多（10）→ 控制追高"
+      },
+      {
+        "level": "warn",
+        "text": "炸板率偏高（27.5%）→ 注意回封质量"
       },
       {
         "level": "warn",
@@ -237,8 +321,13 @@
     ],
     "concepts": [
       {
+        "name": "通用设备",
+        "lead": "海鸥股份",
+        "chg_pct": null
+      },
+      {
         "name": "房地产开",
-        "lead": "香江控股",
+        "lead": "深物业A",
         "chg_pct": null
       },
       {
@@ -254,11 +343,6 @@
       {
         "name": "房地产服",
         "lead": "我爱我家",
-        "chg_pct": null
-      },
-      {
-        "name": "农化制品",
-        "lead": "赤天化",
         "chg_pct": null
       }
     ]
