@@ -2,7 +2,7 @@
   "schema": "intraday_snapshot_v1",
   "render_mode": "snapshot_stream",
   "date": "2026-08-31",
-  "count": 11,
+  "count": 12,
   "interval_min": null,
   "simulated": false,
   "snapshots": [
@@ -822,11 +822,82 @@
       "shift_score": 54,
       "shift_label": "分歧",
       "note": "情绪整体平稳，维持当前节奏。"
+    },
+    {
+      "time": "11:30:05",
+      "ts_bj": "2026-08-31 11:30:05",
+      "date": "2026-08-31",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid"
+      },
+      "pool_errors": {},
+      "zt": 59,
+      "dt": 9,
+      "zab": 27,
+      "zb": 31.4,
+      "fb": 68.6,
+      "jj": 27.1,
+      "lianban": 16,
+      "max_lb": 6,
+      "amount": "13111.8亿",
+      "bf": 0,
+      "heat": 58,
+      "risk": 43,
+      "headline": "分歧",
+      "concepts": [
+        {
+          "name": "通用设备",
+          "lead": "海鸥股份",
+          "chg_pct": null
+        },
+        {
+          "name": "装修装饰",
+          "lead": "金 螳 螂",
+          "chg_pct": null
+        },
+        {
+          "name": "影视院线",
+          "lead": "博纳影业",
+          "chg_pct": null
+        },
+        {
+          "name": "汽车零部",
+          "lead": "华达科技",
+          "chg_pct": null
+        },
+        {
+          "name": "家居用品",
+          "lead": "海鸥住工",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        },
+        {
+          "level": "warn",
+          "text": "炸板率偏高（31.4%）→ 注意回封质量"
+        },
+        {
+          "level": "warn",
+          "text": "高度6板 + 分歧不低 → 高位兑现/炸板风险"
+        }
+      ],
+      "shift_score": 58,
+      "shift_label": "分歧",
+      "note": "情绪边际修复，但仍需确认持续性。"
     }
   ],
   "latest": {
-    "time": "11:20:04",
-    "ts_bj": "2026-08-31 11:20:04",
+    "time": "11:30:05",
+    "ts_bj": "2026-08-31 11:30:05",
     "date": "2026-08-31",
     "source": "intraday_live",
     "provider": "必盈(实时)+必盈(实时)",
@@ -837,18 +908,18 @@
       "dtgc": "valid"
     },
     "pool_errors": {},
-    "zt": 55,
-    "dt": 11,
-    "zab": 30,
-    "zb": 35.3,
-    "fb": 64.7,
-    "jj": 29.1,
+    "zt": 59,
+    "dt": 9,
+    "zab": 27,
+    "zb": 31.4,
+    "fb": 68.6,
+    "jj": 27.1,
     "lianban": 16,
     "max_lb": 6,
-    "amount": "12736.3亿",
+    "amount": "13111.8亿",
     "bf": 0,
-    "heat": 56,
-    "risk": 49,
+    "heat": 58,
+    "risk": 43,
     "headline": "分歧",
     "concepts": [
       {
@@ -884,26 +955,22 @@
       },
       {
         "level": "warn",
-        "text": "跌停偏多（11）→ 控制追高"
-      },
-      {
-        "level": "danger",
-        "text": "炸板率高（35.3%）→ 分歧偏强，谨慎接力"
+        "text": "炸板率偏高（31.4%）→ 注意回封质量"
       },
       {
         "level": "warn",
         "text": "高度6板 + 分歧不低 → 高位兑现/炸板风险"
       }
     ],
-    "shift_score": 54,
+    "shift_score": 58,
     "shift_label": "分歧",
-    "note": "情绪整体平稳，维持当前节奏。"
+    "note": "情绪边际修复，但仍需确认持续性。"
   },
-  "updated_at": "2026-08-31 11:20:04",
-  "snapshot_sig": "2026-08-31|2026-08-31 11:20:04|11",
+  "updated_at": "2026-08-31 11:30:05",
+  "snapshot_sig": "2026-08-31|2026-08-31 11:30:05|12",
   "health": {
     "status": "valid",
-    "last_valid_at": "2026-08-31 11:20:04",
+    "last_valid_at": "2026-08-31 11:30:05",
     "rejected_reason": "",
     "source": {
       "status": "valid",
