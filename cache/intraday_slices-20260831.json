@@ -2,7 +2,7 @@
   "schema": "intraday_snapshot_v1",
   "render_mode": "snapshot_stream",
   "date": "2026-08-31",
-  "count": 3,
+  "count": 4,
   "interval_min": null,
   "simulated": false,
   "snapshots": [
@@ -226,11 +226,86 @@
       "shift_score": 56,
       "shift_label": "分歧",
       "note": "炸板/跌停抬升，情绪明显走弱。"
+    },
+    {
+      "time": "10:10:05",
+      "ts_bj": "2026-08-31 10:10:05",
+      "date": "2026-08-31",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid"
+      },
+      "pool_errors": {},
+      "zt": 43,
+      "dt": 13,
+      "zab": 21,
+      "zb": 32.8,
+      "fb": 67.2,
+      "jj": 30.2,
+      "lianban": 13,
+      "max_lb": 6,
+      "amount": "8456.5亿",
+      "bf": 0,
+      "heat": 55,
+      "risk": 47,
+      "headline": "分歧",
+      "concepts": [
+        {
+          "name": "通用设备",
+          "lead": "海鸥股份",
+          "chg_pct": null
+        },
+        {
+          "name": "房地产开",
+          "lead": "深物业A",
+          "chg_pct": null
+        },
+        {
+          "name": "家居用品",
+          "lead": "海鸥住工",
+          "chg_pct": null
+        },
+        {
+          "name": "种植业",
+          "lead": "万向德农",
+          "chg_pct": null
+        },
+        {
+          "name": "装修装饰",
+          "lead": "金 螳 螂",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        },
+        {
+          "level": "warn",
+          "text": "跌停偏多（13）→ 控制追高"
+        },
+        {
+          "level": "warn",
+          "text": "炸板率偏高（32.8%）→ 注意回封质量"
+        },
+        {
+          "level": "warn",
+          "text": "高度6板 + 分歧不低 → 高位兑现/炸板风险"
+        }
+      ],
+      "shift_score": 54,
+      "shift_label": "分歧",
+      "note": "情绪略有回落，注意午后分歧。"
     }
   ],
   "latest": {
-    "time": "10:00:05",
-    "ts_bj": "2026-08-31 10:00:05",
+    "time": "10:10:05",
+    "ts_bj": "2026-08-31 10:10:05",
     "date": "2026-08-31",
     "source": "intraday_live",
     "provider": "必盈(实时)+必盈(实时)",
@@ -241,18 +316,18 @@
       "dtgc": "valid"
     },
     "pool_errors": {},
-    "zt": 42,
+    "zt": 43,
     "dt": 13,
-    "zab": 19,
-    "zb": 31.1,
-    "fb": 68.9,
-    "jj": 33.3,
-    "lianban": 14,
+    "zab": 21,
+    "zb": 32.8,
+    "fb": 67.2,
+    "jj": 30.2,
+    "lianban": 13,
     "max_lb": 6,
-    "amount": "7375.1亿",
+    "amount": "8456.5亿",
     "bf": 0,
-    "heat": 57,
-    "risk": 45,
+    "heat": 55,
+    "risk": 47,
     "headline": "分歧",
     "concepts": [
       {
@@ -261,13 +336,13 @@
         "chg_pct": null
       },
       {
-        "name": "家居用品",
-        "lead": "海鸥住工",
+        "name": "房地产开",
+        "lead": "深物业A",
         "chg_pct": null
       },
       {
-        "name": "房地产开",
-        "lead": "深物业A",
+        "name": "家居用品",
+        "lead": "海鸥住工",
         "chg_pct": null
       },
       {
@@ -292,22 +367,22 @@
       },
       {
         "level": "warn",
-        "text": "炸板率偏高（31.1%）→ 注意回封质量"
+        "text": "炸板率偏高（32.8%）→ 注意回封质量"
       },
       {
         "level": "warn",
         "text": "高度6板 + 分歧不低 → 高位兑现/炸板风险"
       }
     ],
-    "shift_score": 56,
+    "shift_score": 54,
     "shift_label": "分歧",
-    "note": "炸板/跌停抬升，情绪明显走弱。"
+    "note": "情绪略有回落，注意午后分歧。"
   },
-  "updated_at": "2026-08-31 10:00:05",
-  "snapshot_sig": "2026-08-31|2026-08-31 10:00:05|3",
+  "updated_at": "2026-08-31 10:10:05",
+  "snapshot_sig": "2026-08-31|2026-08-31 10:10:05|4",
   "health": {
     "status": "valid",
-    "last_valid_at": "2026-08-31 10:00:05",
+    "last_valid_at": "2026-08-31 10:10:05",
     "rejected_reason": "",
     "source": {
       "status": "valid",
