@@ -1,11 +1,11 @@
 {
   "schema": "intraday_runtime_v1",
   "date": "2026-09-01",
-  "updated_at": "2026-09-01 10:20:04",
+  "updated_at": "2026-09-01 10:30:04",
   "source": "必盈(实时)+必盈(实时)",
   "latest": {
-    "time": "10:20:04",
-    "ts_bj": "2026-09-01 10:20:04",
+    "time": "10:30:04",
+    "ts_bj": "2026-09-01 10:30:04",
     "date": "2026-09-01",
     "source": "intraday_live",
     "provider": "必盈(实时)+必盈(实时)",
@@ -16,18 +16,18 @@
       "dtgc": "valid"
     },
     "pool_errors": {},
-    "zt": 53,
-    "dt": 1,
-    "zab": 4,
-    "zb": 7.0,
-    "fb": 93.0,
-    "jj": 28.3,
+    "zt": 58,
+    "dt": 2,
+    "zab": 6,
+    "zb": 9.4,
+    "fb": 90.6,
+    "jj": 25.9,
     "lianban": 15,
     "max_lb": 7,
-    "amount": "9437.5亿",
+    "amount": "10300.7亿",
     "bf": 0,
     "heat": 69,
-    "risk": 7,
+    "risk": 11,
     "headline": "走强",
     "concepts": [
       {
@@ -62,9 +62,9 @@
         "text": "盘中模式：强制实时拉取"
       }
     ],
-    "shift_score": 79,
+    "shift_score": 77,
     "shift_label": "走强",
-    "note": "承接增强、分歧收敛，情绪明显回暖。"
+    "note": "情绪略有回落，注意午后分歧。"
   },
   "snapshots": [
     {
@@ -451,40 +451,103 @@
       "shift_score": 79,
       "shift_label": "走强",
       "note": "承接增强、分歧收敛，情绪明显回暖。"
+    },
+    {
+      "time": "10:30:04",
+      "ts_bj": "2026-09-01 10:30:04",
+      "date": "2026-09-01",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid"
+      },
+      "pool_errors": {},
+      "zt": 58,
+      "dt": 2,
+      "zab": 6,
+      "zb": 9.4,
+      "fb": 90.6,
+      "jj": 25.9,
+      "lianban": 15,
+      "max_lb": 7,
+      "amount": "10300.7亿",
+      "bf": 0,
+      "heat": 69,
+      "risk": 11,
+      "headline": "走强",
+      "concepts": [
+        {
+          "name": "种植业",
+          "lead": "万向德农",
+          "chg_pct": null
+        },
+        {
+          "name": "一般零售",
+          "lead": "国芳集团",
+          "chg_pct": null
+        },
+        {
+          "name": "汽车零部",
+          "lead": "浙江世宝",
+          "chg_pct": null
+        },
+        {
+          "name": "出版",
+          "lead": "时代出版",
+          "chg_pct": null
+        },
+        {
+          "name": "农产品加",
+          "lead": "金健米业",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        }
+      ],
+      "shift_score": 77,
+      "shift_label": "走强",
+      "note": "情绪略有回落，注意午后分歧。"
     }
   ],
   "indices": [
     {
       "name": "上证指数",
       "code": "000001.SH",
-      "val": 3986.885,
-      "chg": 0.014725442001587534,
-      "cje": 437107818000.0,
-      "t": "2026-09-01 10:20:00"
+      "val": 3980.258,
+      "chg": -0.15151902843189255,
+      "cje": 477570245200.0,
+      "t": "2026-09-01 10:30:03"
     },
     {
       "name": "深证成指",
       "code": "399001.SZ",
-      "val": 13928.854,
-      "chg": -0.6146487223650496,
-      "cje": 506244660500.0,
-      "t": "2026-09-01 10:19:57"
+      "val": 13869.948,
+      "chg": -1.0349556264621325,
+      "cje": 552502812100.0,
+      "t": "2026-09-01 10:30:00"
     },
     {
       "name": "创业板指",
       "code": "399006.SZ",
-      "val": 3397.027,
-      "chg": -1.21133655608066,
-      "cje": 231736750600.0,
-      "t": "2026-09-01 10:19:57"
+      "val": 3379.216,
+      "chg": -1.7292967855989012,
+      "cje": 253240702700.0,
+      "t": "2026-09-01 10:30:00"
     }
   ],
   "asOf": {
-    "indices": "10:19:57"
+    "indices": "10:30:00"
   },
   "health": {
     "status": "valid",
-    "last_valid_at": "2026-09-01 10:20:04",
+    "last_valid_at": "2026-09-01 10:30:04",
     "rejected_reason": "",
     "source": {
       "status": "valid",
@@ -502,33 +565,34 @@
       "message": "intraday_coverage_collecting",
       "date": "2026-09-01",
       "expected_count": 26,
-      "due_count": 6,
-      "observed_count": 6,
+      "due_count": 7,
+      "observed_count": 7,
       "observed_slots": [
         "09:30",
         "09:40",
         "09:50",
         "10:00",
         "10:10",
-        "10:20"
+        "10:20",
+        "10:30"
       ],
       "missing_slots": [],
       "duplicate_slots": [],
       "out_of_session": [],
       "monotonic": true,
-      "morning_coverage": 6,
+      "morning_coverage": 7,
       "afternoon_coverage": 0
     }
   },
   "live": {
     "market": {
-      "zt": 53,
-      "dt": 1,
-      "zab": 4,
-      "zab_rate": 7.0,
+      "zt": 58,
+      "dt": 2,
+      "zab": 6,
+      "zab_rate": 9.4,
       "lianban": 15,
       "max_lianban": 7,
-      "amount": "9437.5亿"
+      "amount": "10300.7亿"
     },
     "alerts": [
       {
