@@ -1,41 +1,38 @@
 {
   "schema": "intraday_runtime_v1",
   "date": "2026-09-01",
-  "updated_at": "2026-09-01 09:30:27",
-  "source": "必盈(实时)",
+  "updated_at": "2026-09-01 09:40:04",
+  "source": "必盈(实时)+必盈(实时)",
   "latest": {
-    "time": "09:30:27",
-    "ts_bj": "2026-09-01 09:30:27",
+    "time": "09:40:04",
+    "ts_bj": "2026-09-01 09:40:04",
     "date": "2026-09-01",
     "source": "intraday_live",
-    "provider": "必盈(实时)",
-    "data_quality": "partial",
+    "provider": "必盈(实时)+必盈(实时)",
+    "data_quality": "valid",
     "pool_status": {
       "ztgc": "valid",
-      "zbgc": "failed",
-      "dtgc": "failed"
+      "zbgc": "valid",
+      "dtgc": "valid"
     },
-    "pool_errors": {
-      "zbgc": "empty_response",
-      "dtgc": "empty_response"
-    },
-    "zt": 11,
-    "dt": null,
-    "zab": null,
-    "zb": null,
-    "fb": null,
-    "jj": 81.8,
-    "lianban": 9,
+    "pool_errors": {},
+    "zt": 24,
+    "dt": 1,
+    "zab": 3,
+    "zb": 11.1,
+    "fb": 88.9,
+    "jj": 58.3,
+    "lianban": 14,
     "max_lb": 7,
-    "amount": "",
+    "amount": "3676.6亿",
     "bf": 0,
-    "heat": null,
-    "risk": null,
-    "headline": "数据部分可用",
+    "heat": 70,
+    "risk": 9,
+    "headline": "走强",
     "concepts": [
       {
-        "name": "影视院线",
-        "lead": "中广天择",
+        "name": "出版",
+        "lead": "时代出版",
         "chg_pct": null
       },
       {
@@ -44,18 +41,18 @@
         "chg_pct": null
       },
       {
-        "name": "消费电子",
-        "lead": "捷荣技术",
-        "chg_pct": null
-      },
-      {
         "name": "种植业",
-        "lead": "新赛股份",
+        "lead": "万向德农",
         "chg_pct": null
       },
       {
-        "name": "林业Ⅱ",
-        "lead": "福建金森",
+        "name": "数字媒体",
+        "lead": "芒果超媒",
+        "chg_pct": null
+      },
+      {
+        "name": "影视院线",
+        "lead": "中广天择",
         "chg_pct": null
       }
     ],
@@ -63,15 +60,11 @@
       {
         "level": "info",
         "text": "盘中模式：强制实时拉取"
-      },
-      {
-        "level": "warn",
-        "text": "盘中三池响应不完整，保留最近有效数据"
       }
     ],
-    "shift_score": null,
-    "shift_label": "数据部分可用",
-    "note": "本槽位仅部分三池成功；节点已保留，缺失指标不参与判断。"
+    "shift_score": 79,
+    "shift_label": "走强",
+    "note": "承接增强、分歧收敛，情绪明显回暖。"
   },
   "snapshots": [
     {
@@ -143,52 +136,112 @@
       "shift_score": null,
       "shift_label": "数据部分可用",
       "note": "本槽位仅部分三池成功；节点已保留，缺失指标不参与判断。"
+    },
+    {
+      "time": "09:40:04",
+      "ts_bj": "2026-09-01 09:40:04",
+      "date": "2026-09-01",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid"
+      },
+      "pool_errors": {},
+      "zt": 24,
+      "dt": 1,
+      "zab": 3,
+      "zb": 11.1,
+      "fb": 88.9,
+      "jj": 58.3,
+      "lianban": 14,
+      "max_lb": 7,
+      "amount": "3676.6亿",
+      "bf": 0,
+      "heat": 70,
+      "risk": 9,
+      "headline": "走强",
+      "concepts": [
+        {
+          "name": "出版",
+          "lead": "时代出版",
+          "chg_pct": null
+        },
+        {
+          "name": "家居用品",
+          "lead": "海鸥住工",
+          "chg_pct": null
+        },
+        {
+          "name": "种植业",
+          "lead": "万向德农",
+          "chg_pct": null
+        },
+        {
+          "name": "数字媒体",
+          "lead": "芒果超媒",
+          "chg_pct": null
+        },
+        {
+          "name": "影视院线",
+          "lead": "中广天择",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        }
+      ],
+      "shift_score": 79,
+      "shift_label": "走强",
+      "note": "承接增强、分歧收敛，情绪明显回暖。"
     }
   ],
   "indices": [
     {
       "name": "上证指数",
       "code": "000001.SH",
-      "val": 3977.866,
-      "chg": -0.21152457744001552,
-      "cje": 18007680200.0,
-      "t": "2026-09-01 09:30:27"
+      "val": 3988.352,
+      "chg": 0.0515265040395898,
+      "cje": 169251452300.0,
+      "t": "2026-09-01 09:40:00"
     },
     {
       "name": "深证成指",
       "code": "399001.SZ",
-      "val": 14009.386,
-      "chg": -0.0400356846312487,
-      "cje": 34438415800.0,
-      "t": "2026-09-01 09:30:24"
+      "val": 13993.062,
+      "chg": -0.15651091470087003,
+      "cje": 197257924400.0,
+      "t": "2026-09-01 09:39:57"
     },
     {
       "name": "创业板指",
       "code": "399006.SZ",
-      "val": 3428.008,
-      "chg": -0.31038063722689685,
-      "cje": 14309672800.0,
-      "t": "2026-09-01 09:30:21"
+      "val": 3423.516,
+      "chg": -0.4410121206357892,
+      "cje": 90010797800.0,
+      "t": "2026-09-01 09:39:57"
     }
   ],
   "asOf": {
-    "indices": "09:30:21"
+    "indices": "09:39:57"
   },
   "health": {
-    "status": "degraded",
-    "last_valid_at": "2026-09-01 09:30:27",
+    "status": "valid",
+    "last_valid_at": "2026-09-01 09:40:04",
     "rejected_reason": "",
     "source": {
-      "status": "partial",
+      "status": "valid",
       "pool_status": {
         "ztgc": "valid",
-        "zbgc": "failed",
-        "dtgc": "failed"
+        "zbgc": "valid",
+        "dtgc": "valid"
       },
-      "pool_errors": {
-        "zbgc": "empty_response",
-        "dtgc": "empty_response"
-      }
+      "pool_errors": {}
     },
     "indices_status": "valid",
     "coverage": {
@@ -197,43 +250,40 @@
       "message": "intraday_coverage_collecting",
       "date": "2026-09-01",
       "expected_count": 26,
-      "due_count": 1,
-      "observed_count": 1,
+      "due_count": 2,
+      "observed_count": 2,
       "observed_slots": [
-        "09:30"
+        "09:30",
+        "09:40"
       ],
       "missing_slots": [],
       "duplicate_slots": [],
       "out_of_session": [],
       "monotonic": true,
-      "morning_coverage": 1,
+      "morning_coverage": 2,
       "afternoon_coverage": 0
     }
   },
   "live": {
     "market": {
-      "zt": 11,
-      "dt": null,
-      "zab": null,
-      "zab_rate": null,
-      "lianban": 9,
+      "zt": 24,
+      "dt": 1,
+      "zab": 3,
+      "zab_rate": 11.1,
+      "lianban": 14,
       "max_lianban": 7,
-      "amount": ""
+      "amount": "3676.6亿"
     },
     "alerts": [
       {
         "level": "info",
         "text": "盘中模式：强制实时拉取"
-      },
-      {
-        "level": "warn",
-        "text": "盘中三池响应不完整，保留最近有效数据"
       }
     ],
     "concepts": [
       {
-        "name": "影视院线",
-        "lead": "中广天择",
+        "name": "出版",
+        "lead": "时代出版",
         "chg_pct": null
       },
       {
@@ -242,18 +292,18 @@
         "chg_pct": null
       },
       {
-        "name": "消费电子",
-        "lead": "捷荣技术",
-        "chg_pct": null
-      },
-      {
         "name": "种植业",
-        "lead": "新赛股份",
+        "lead": "万向德农",
         "chg_pct": null
       },
       {
-        "name": "林业Ⅱ",
-        "lead": "福建金森",
+        "name": "数字媒体",
+        "lead": "芒果超媒",
+        "chg_pct": null
+      },
+      {
+        "name": "影视院线",
+        "lead": "中广天择",
         "chg_pct": null
       }
     ]
