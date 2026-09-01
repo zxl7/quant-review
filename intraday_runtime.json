@@ -1,11 +1,11 @@
 {
   "schema": "intraday_runtime_v1",
   "date": "2026-09-01",
-  "updated_at": "2026-09-01 09:50:04",
+  "updated_at": "2026-09-01 10:00:04",
   "source": "必盈(实时)+必盈(实时)",
   "latest": {
-    "time": "09:50:04",
-    "ts_bj": "2026-09-01 09:50:04",
+    "time": "10:00:04",
+    "ts_bj": "2026-09-01 10:00:04",
     "date": "2026-09-01",
     "source": "intraday_live",
     "provider": "必盈(实时)+必盈(实时)",
@@ -16,28 +16,28 @@
       "dtgc": "valid"
     },
     "pool_errors": {},
-    "zt": 37,
+    "zt": 44,
     "dt": 1,
-    "zab": 2,
-    "zb": 5.1,
-    "fb": 94.9,
-    "jj": 37.8,
-    "lianban": 14,
+    "zab": 5,
+    "zb": 10.2,
+    "fb": 89.8,
+    "jj": 34.1,
+    "lianban": 15,
     "max_lb": 7,
-    "amount": "5833.3亿",
+    "amount": "7357.3亿",
     "bf": 0,
-    "heat": 70,
-    "risk": 5,
+    "heat": 68,
+    "risk": 9,
     "headline": "走强",
     "concepts": [
       {
-        "name": "一般零售",
-        "lead": "国芳集团",
+        "name": "种植业",
+        "lead": "万向德农",
         "chg_pct": null
       },
       {
-        "name": "种植业",
-        "lead": "万向德农",
+        "name": "一般零售",
+        "lead": "国芳集团",
         "chg_pct": null
       },
       {
@@ -62,9 +62,9 @@
         "text": "盘中模式：强制实时拉取"
       }
     ],
-    "shift_score": 80,
+    "shift_score": 78,
     "shift_label": "走强",
-    "note": "情绪整体平稳，维持当前节奏。"
+    "note": "情绪略有回落，注意午后分歧。"
   },
   "snapshots": [
     {
@@ -262,40 +262,103 @@
       "shift_score": 80,
       "shift_label": "走强",
       "note": "情绪整体平稳，维持当前节奏。"
+    },
+    {
+      "time": "10:00:04",
+      "ts_bj": "2026-09-01 10:00:04",
+      "date": "2026-09-01",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid"
+      },
+      "pool_errors": {},
+      "zt": 44,
+      "dt": 1,
+      "zab": 5,
+      "zb": 10.2,
+      "fb": 89.8,
+      "jj": 34.1,
+      "lianban": 15,
+      "max_lb": 7,
+      "amount": "7357.3亿",
+      "bf": 0,
+      "heat": 68,
+      "risk": 9,
+      "headline": "走强",
+      "concepts": [
+        {
+          "name": "种植业",
+          "lead": "万向德农",
+          "chg_pct": null
+        },
+        {
+          "name": "一般零售",
+          "lead": "国芳集团",
+          "chg_pct": null
+        },
+        {
+          "name": "农产品加",
+          "lead": "金健米业",
+          "chg_pct": null
+        },
+        {
+          "name": "家居用品",
+          "lead": "海鸥住工",
+          "chg_pct": null
+        },
+        {
+          "name": "数字媒体",
+          "lead": "芒果超媒",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        }
+      ],
+      "shift_score": 78,
+      "shift_label": "走强",
+      "note": "情绪略有回落，注意午后分歧。"
     }
   ],
   "indices": [
     {
       "name": "上证指数",
       "code": "000001.SH",
-      "val": 3982.768,
-      "chg": -0.0885533394643287,
-      "cje": 270929368800.0,
-      "t": "2026-09-01 09:50:03"
+      "val": 3981.002,
+      "chg": -0.13285509512835775,
+      "cje": 340253911400.0,
+      "t": "2026-09-01 09:59:57"
     },
     {
       "name": "深证成指",
       "code": "399001.SZ",
-      "val": 13910.319,
-      "chg": -0.7468999101462519,
-      "cje": 311993912100.0,
-      "t": "2026-09-01 09:49:57"
+      "val": 13861.233,
+      "chg": -1.0971390147282887,
+      "cje": 394058902300.0,
+      "t": "2026-09-01 09:59:57"
     },
     {
       "name": "创业板指",
       "code": "399006.SZ",
-      "val": 3392.623,
-      "chg": -1.3394089187104008,
-      "cje": 144037007000.0,
-      "t": "2026-09-01 09:49:57"
+      "val": 3377.722,
+      "chg": -1.7727436770087086,
+      "cje": 181279866800.0,
+      "t": "2026-09-01 09:59:57"
     }
   ],
   "asOf": {
-    "indices": "09:49:57"
+    "indices": "09:59:57"
   },
   "health": {
     "status": "valid",
-    "last_valid_at": "2026-09-01 09:50:04",
+    "last_valid_at": "2026-09-01 10:00:04",
     "rejected_reason": "",
     "source": {
       "status": "valid",
@@ -313,30 +376,31 @@
       "message": "intraday_coverage_collecting",
       "date": "2026-09-01",
       "expected_count": 26,
-      "due_count": 3,
-      "observed_count": 3,
+      "due_count": 4,
+      "observed_count": 4,
       "observed_slots": [
         "09:30",
         "09:40",
-        "09:50"
+        "09:50",
+        "10:00"
       ],
       "missing_slots": [],
       "duplicate_slots": [],
       "out_of_session": [],
       "monotonic": true,
-      "morning_coverage": 3,
+      "morning_coverage": 4,
       "afternoon_coverage": 0
     }
   },
   "live": {
     "market": {
-      "zt": 37,
+      "zt": 44,
       "dt": 1,
-      "zab": 2,
-      "zab_rate": 5.1,
-      "lianban": 14,
+      "zab": 5,
+      "zab_rate": 10.2,
+      "lianban": 15,
       "max_lianban": 7,
-      "amount": "5833.3亿"
+      "amount": "7357.3亿"
     },
     "alerts": [
       {
@@ -346,13 +410,13 @@
     ],
     "concepts": [
       {
-        "name": "一般零售",
-        "lead": "国芳集团",
+        "name": "种植业",
+        "lead": "万向德农",
         "chg_pct": null
       },
       {
-        "name": "种植业",
-        "lead": "万向德农",
+        "name": "一般零售",
+        "lead": "国芳集团",
         "chg_pct": null
       },
       {
