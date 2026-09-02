@@ -1,36 +1,34 @@
 {
   "schema": "intraday_runtime_v1",
   "date": "2026-09-02",
-  "updated_at": "2026-09-02 09:30:30",
-  "source": "必盈(实时)",
+  "updated_at": "2026-09-02 09:40:04",
+  "source": "必盈(实时)+必盈(实时)",
   "latest": {
-    "time": "09:30:30",
-    "ts_bj": "2026-09-02 09:30:30",
+    "time": "09:40:04",
+    "ts_bj": "2026-09-02 09:40:04",
     "date": "2026-09-02",
     "source": "intraday_live",
-    "provider": "必盈(实时)",
-    "data_quality": "partial",
+    "provider": "必盈(实时)+必盈(实时)",
+    "data_quality": "valid",
     "pool_status": {
       "ztgc": "valid",
-      "zbgc": "failed",
+      "zbgc": "valid",
       "dtgc": "valid"
     },
-    "pool_errors": {
-      "zbgc": "empty_response"
-    },
-    "zt": 12,
+    "pool_errors": {},
+    "zt": 16,
     "dt": 1,
-    "zab": null,
-    "zb": null,
-    "fb": null,
-    "jj": 83.3,
-    "lianban": 10,
-    "max_lb": 4,
-    "amount": "",
+    "zab": 8,
+    "zb": 33.3,
+    "fb": 66.7,
+    "jj": 75.0,
+    "lianban": 12,
+    "max_lb": 5,
+    "amount": "3563.9亿",
     "bf": 0,
-    "heat": null,
-    "risk": null,
-    "headline": "数据部分可用",
+    "heat": 59,
+    "risk": 23,
+    "headline": "修复",
     "concepts": [
       {
         "name": "一般零售",
@@ -38,8 +36,8 @@
         "chg_pct": null
       },
       {
-        "name": "化学原料",
-        "lead": "英 力 特",
+        "name": "种植业",
+        "lead": "新赛股份",
         "chg_pct": null
       },
       {
@@ -48,13 +46,13 @@
         "chg_pct": null
       },
       {
-        "name": "林业Ⅱ",
-        "lead": "福建金森",
+        "name": "化学制品",
+        "lead": "集泰股份",
         "chg_pct": null
       },
       {
-        "name": "化学制品",
-        "lead": "集泰股份",
+        "name": "影视院线",
+        "lead": "欢瑞世纪",
         "chg_pct": null
       }
     ],
@@ -65,12 +63,12 @@
       },
       {
         "level": "warn",
-        "text": "盘中三池响应不完整，保留最近有效数据"
+        "text": "炸板率偏高（33.3%）→ 注意回封质量"
       }
     ],
-    "shift_score": null,
-    "shift_label": "数据部分可用",
-    "note": "本槽位仅部分三池成功；节点已保留，缺失指标不参与判断。"
+    "shift_score": 67,
+    "shift_label": "修复",
+    "note": "承接增强、分歧收敛，情绪明显回暖。"
   },
   "snapshots": [
     {
@@ -141,51 +139,116 @@
       "shift_score": null,
       "shift_label": "数据部分可用",
       "note": "本槽位仅部分三池成功；节点已保留，缺失指标不参与判断。"
+    },
+    {
+      "time": "09:40:04",
+      "ts_bj": "2026-09-02 09:40:04",
+      "date": "2026-09-02",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid"
+      },
+      "pool_errors": {},
+      "zt": 16,
+      "dt": 1,
+      "zab": 8,
+      "zb": 33.3,
+      "fb": 66.7,
+      "jj": 75.0,
+      "lianban": 12,
+      "max_lb": 5,
+      "amount": "3563.9亿",
+      "bf": 0,
+      "heat": 59,
+      "risk": 23,
+      "headline": "修复",
+      "concepts": [
+        {
+          "name": "一般零售",
+          "lead": "国芳集团",
+          "chg_pct": null
+        },
+        {
+          "name": "种植业",
+          "lead": "新赛股份",
+          "chg_pct": null
+        },
+        {
+          "name": "IT服务Ⅱ",
+          "lead": "竞业达",
+          "chg_pct": null
+        },
+        {
+          "name": "化学制品",
+          "lead": "集泰股份",
+          "chg_pct": null
+        },
+        {
+          "name": "影视院线",
+          "lead": "欢瑞世纪",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        },
+        {
+          "level": "warn",
+          "text": "炸板率偏高（33.3%）→ 注意回封质量"
+        }
+      ],
+      "shift_score": 67,
+      "shift_label": "修复",
+      "note": "承接增强、分歧收敛，情绪明显回暖。"
     }
   ],
   "indices": [
     {
       "name": "上证指数",
       "code": "000001.SH",
-      "val": 3964.88,
-      "chg": -0.3770960388835015,
-      "cje": 19661198100.0,
-      "t": "2026-09-02 09:30:27"
+      "val": 3947.371,
+      "chg": -0.8170330421358547,
+      "cje": 165106998500.0,
+      "t": "2026-09-02 09:40:00"
     },
     {
       "name": "深证成指",
       "code": "399001.SZ",
-      "val": 13725.831,
-      "chg": -1.0563870921328065,
-      "cje": 34996036100.0,
-      "t": "2026-09-02 09:30:24"
+      "val": 13679.213,
+      "chg": -1.3924362061382896,
+      "cje": 189220728700.0,
+      "t": "2026-09-02 09:39:54"
     },
     {
       "name": "创业板指",
       "code": "399006.SZ",
-      "val": 3344.859,
-      "chg": -1.431324647922601,
-      "cje": 15168054800.0,
-      "t": "2026-09-02 09:30:24"
+      "val": 3334.316,
+      "chg": -1.7420132432376692,
+      "cje": 84409158800.0,
+      "t": "2026-09-02 09:39:54"
     }
   ],
   "asOf": {
-    "indices": "09:30:24"
+    "indices": "09:39:54"
   },
   "health": {
-    "status": "degraded",
-    "last_valid_at": "2026-09-02 09:30:30",
+    "status": "valid",
+    "last_valid_at": "2026-09-02 09:40:04",
     "rejected_reason": "",
     "source": {
-      "status": "partial",
+      "status": "valid",
       "pool_status": {
         "ztgc": "valid",
-        "zbgc": "failed",
+        "zbgc": "valid",
         "dtgc": "valid"
       },
-      "pool_errors": {
-        "zbgc": "empty_response"
-      }
+      "pool_errors": {}
     },
     "indices_status": "valid",
     "coverage": {
@@ -194,28 +257,29 @@
       "message": "intraday_coverage_collecting",
       "date": "2026-09-02",
       "expected_count": 26,
-      "due_count": 1,
-      "observed_count": 1,
+      "due_count": 2,
+      "observed_count": 2,
       "observed_slots": [
-        "09:30"
+        "09:30",
+        "09:40"
       ],
       "missing_slots": [],
       "duplicate_slots": [],
       "out_of_session": [],
       "monotonic": true,
-      "morning_coverage": 1,
+      "morning_coverage": 2,
       "afternoon_coverage": 0
     }
   },
   "live": {
     "market": {
-      "zt": 12,
+      "zt": 16,
       "dt": 1,
-      "zab": null,
-      "zab_rate": null,
-      "lianban": 10,
-      "max_lianban": 4,
-      "amount": ""
+      "zab": 8,
+      "zab_rate": 33.3,
+      "lianban": 12,
+      "max_lianban": 5,
+      "amount": "3563.9亿"
     },
     "alerts": [
       {
@@ -224,7 +288,7 @@
       },
       {
         "level": "warn",
-        "text": "盘中三池响应不完整，保留最近有效数据"
+        "text": "炸板率偏高（33.3%）→ 注意回封质量"
       }
     ],
     "concepts": [
@@ -234,8 +298,8 @@
         "chg_pct": null
       },
       {
-        "name": "化学原料",
-        "lead": "英 力 特",
+        "name": "种植业",
+        "lead": "新赛股份",
         "chg_pct": null
       },
       {
@@ -244,13 +308,13 @@
         "chg_pct": null
       },
       {
-        "name": "林业Ⅱ",
-        "lead": "福建金森",
+        "name": "化学制品",
+        "lead": "集泰股份",
         "chg_pct": null
       },
       {
-        "name": "化学制品",
-        "lead": "集泰股份",
+        "name": "影视院线",
+        "lead": "欢瑞世纪",
         "chg_pct": null
       }
     ]
