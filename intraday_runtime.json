@@ -1,58 +1,60 @@
 {
   "schema": "intraday_runtime_v1",
-  "date": "2026-09-01",
-  "updated_at": "2026-09-01 15:00:07",
-  "source": "必盈(实时)+必盈(实时)",
+  "date": "2026-09-02",
+  "updated_at": "2026-09-02 09:30:30",
+  "source": "必盈(实时)",
   "latest": {
-    "time": "15:00:07",
-    "ts_bj": "2026-09-01 15:00:07",
-    "date": "2026-09-01",
+    "time": "09:30:30",
+    "ts_bj": "2026-09-02 09:30:30",
+    "date": "2026-09-02",
     "source": "intraday_live",
-    "provider": "必盈(实时)+必盈(实时)",
-    "data_quality": "valid",
+    "provider": "必盈(实时)",
+    "data_quality": "partial",
     "pool_status": {
       "ztgc": "valid",
-      "zbgc": "valid",
-      "dtgc": "valid_empty"
+      "zbgc": "failed",
+      "dtgc": "valid"
     },
-    "pool_errors": {},
-    "zt": 81,
-    "dt": 0,
-    "zab": 7,
-    "zb": 8.0,
-    "fb": 92.0,
-    "jj": 22.2,
-    "lianban": 18,
-    "max_lb": 7,
-    "amount": "20334.0亿",
+    "pool_errors": {
+      "zbgc": "empty_response"
+    },
+    "zt": 12,
+    "dt": 1,
+    "zab": null,
+    "zb": null,
+    "fb": null,
+    "jj": 83.3,
+    "lianban": 10,
+    "max_lb": 4,
+    "amount": "",
     "bf": 0,
-    "heat": 72,
-    "risk": 8,
-    "headline": "走强",
+    "heat": null,
+    "risk": null,
+    "headline": "数据部分可用",
     "concepts": [
-      {
-        "name": "种植业",
-        "lead": "万向德农",
-        "chg_pct": null
-      },
       {
         "name": "一般零售",
         "lead": "国芳集团",
         "chg_pct": null
       },
       {
-        "name": "汽车零部",
-        "lead": "浙江世宝",
-        "chg_pct": null
-      },
-      {
-        "name": "出版",
-        "lead": "时代出版",
+        "name": "化学原料",
+        "lead": "英 力 特",
         "chg_pct": null
       },
       {
         "name": "IT服务Ⅱ",
         "lead": "竞业达",
+        "chg_pct": null
+      },
+      {
+        "name": "林业Ⅱ",
+        "lead": "福建金森",
+        "chg_pct": null
+      },
+      {
+        "name": "化学制品",
+        "lead": "集泰股份",
         "chg_pct": null
       }
     ],
@@ -60,37 +62,40 @@
       {
         "level": "info",
         "text": "盘中模式：强制实时拉取"
+      },
+      {
+        "level": "warn",
+        "text": "盘中三池响应不完整，保留最近有效数据"
       }
     ],
-    "shift_score": 80,
-    "shift_label": "走强",
-    "note": "承接增强、分歧收敛，情绪明显回暖。"
+    "shift_score": null,
+    "shift_label": "数据部分可用",
+    "note": "本槽位仅部分三池成功；节点已保留，缺失指标不参与判断。"
   },
   "snapshots": [
     {
-      "time": "09:30:27",
-      "ts_bj": "2026-09-01 09:30:27",
-      "date": "2026-09-01",
+      "time": "09:30:30",
+      "ts_bj": "2026-09-02 09:30:30",
+      "date": "2026-09-02",
       "source": "intraday_live",
       "provider": "必盈(实时)",
       "data_quality": "partial",
       "pool_status": {
         "ztgc": "valid",
         "zbgc": "failed",
-        "dtgc": "failed"
+        "dtgc": "valid"
       },
       "pool_errors": {
-        "zbgc": "empty_response",
-        "dtgc": "empty_response"
+        "zbgc": "empty_response"
       },
-      "zt": 11,
-      "dt": null,
+      "zt": 12,
+      "dt": 1,
       "zab": null,
       "zb": null,
       "fb": null,
-      "jj": 81.8,
-      "lianban": 9,
-      "max_lb": 7,
+      "jj": 83.3,
+      "lianban": 10,
+      "max_lb": 4,
       "amount": "",
       "bf": 0,
       "heat": null,
@@ -98,28 +103,28 @@
       "headline": "数据部分可用",
       "concepts": [
         {
-          "name": "影视院线",
-          "lead": "中广天择",
+          "name": "一般零售",
+          "lead": "国芳集团",
           "chg_pct": null
         },
         {
-          "name": "家居用品",
-          "lead": "海鸥住工",
+          "name": "化学原料",
+          "lead": "英 力 特",
           "chg_pct": null
         },
         {
-          "name": "消费电子",
-          "lead": "捷荣技术",
-          "chg_pct": null
-        },
-        {
-          "name": "种植业",
-          "lead": "新赛股份",
+          "name": "IT服务Ⅱ",
+          "lead": "竞业达",
           "chg_pct": null
         },
         {
           "name": "林业Ⅱ",
           "lead": "福建金森",
+          "chg_pct": null
+        },
+        {
+          "name": "化学制品",
+          "lead": "集泰股份",
           "chg_pct": null
         }
       ],
@@ -136,1004 +141,116 @@
       "shift_score": null,
       "shift_label": "数据部分可用",
       "note": "本槽位仅部分三池成功；节点已保留，缺失指标不参与判断。"
-    },
-    {
-      "time": "09:40:04",
-      "ts_bj": "2026-09-01 09:40:04",
-      "date": "2026-09-01",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid"
-      },
-      "pool_errors": {},
-      "zt": 24,
-      "dt": 1,
-      "zab": 3,
-      "zb": 11.1,
-      "fb": 88.9,
-      "jj": 58.3,
-      "lianban": 14,
-      "max_lb": 7,
-      "amount": "3676.6亿",
-      "bf": 0,
-      "heat": 70,
-      "risk": 9,
-      "headline": "走强",
-      "concepts": [
-        {
-          "name": "出版",
-          "lead": "时代出版",
-          "chg_pct": null
-        },
-        {
-          "name": "家居用品",
-          "lead": "海鸥住工",
-          "chg_pct": null
-        },
-        {
-          "name": "种植业",
-          "lead": "万向德农",
-          "chg_pct": null
-        },
-        {
-          "name": "数字媒体",
-          "lead": "芒果超媒",
-          "chg_pct": null
-        },
-        {
-          "name": "影视院线",
-          "lead": "中广天择",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        }
-      ],
-      "shift_score": 79,
-      "shift_label": "走强",
-      "note": "承接增强、分歧收敛，情绪明显回暖。"
-    },
-    {
-      "time": "09:50:04",
-      "ts_bj": "2026-09-01 09:50:04",
-      "date": "2026-09-01",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid"
-      },
-      "pool_errors": {},
-      "zt": 37,
-      "dt": 1,
-      "zab": 2,
-      "zb": 5.1,
-      "fb": 94.9,
-      "jj": 37.8,
-      "lianban": 14,
-      "max_lb": 7,
-      "amount": "5833.3亿",
-      "bf": 0,
-      "heat": 70,
-      "risk": 5,
-      "headline": "走强",
-      "concepts": [
-        {
-          "name": "一般零售",
-          "lead": "国芳集团",
-          "chg_pct": null
-        },
-        {
-          "name": "种植业",
-          "lead": "万向德农",
-          "chg_pct": null
-        },
-        {
-          "name": "农产品加",
-          "lead": "金健米业",
-          "chg_pct": null
-        },
-        {
-          "name": "家居用品",
-          "lead": "海鸥住工",
-          "chg_pct": null
-        },
-        {
-          "name": "数字媒体",
-          "lead": "芒果超媒",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        }
-      ],
-      "shift_score": 80,
-      "shift_label": "走强",
-      "note": "情绪整体平稳，维持当前节奏。"
-    },
-    {
-      "time": "10:00:04",
-      "ts_bj": "2026-09-01 10:00:04",
-      "date": "2026-09-01",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid"
-      },
-      "pool_errors": {},
-      "zt": 44,
-      "dt": 1,
-      "zab": 5,
-      "zb": 10.2,
-      "fb": 89.8,
-      "jj": 34.1,
-      "lianban": 15,
-      "max_lb": 7,
-      "amount": "7357.3亿",
-      "bf": 0,
-      "heat": 68,
-      "risk": 9,
-      "headline": "走强",
-      "concepts": [
-        {
-          "name": "种植业",
-          "lead": "万向德农",
-          "chg_pct": null
-        },
-        {
-          "name": "一般零售",
-          "lead": "国芳集团",
-          "chg_pct": null
-        },
-        {
-          "name": "农产品加",
-          "lead": "金健米业",
-          "chg_pct": null
-        },
-        {
-          "name": "家居用品",
-          "lead": "海鸥住工",
-          "chg_pct": null
-        },
-        {
-          "name": "数字媒体",
-          "lead": "芒果超媒",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        }
-      ],
-      "shift_score": 78,
-      "shift_label": "走强",
-      "note": "情绪略有回落，注意午后分歧。"
-    },
-    {
-      "time": "10:10:04",
-      "ts_bj": "2026-09-01 10:10:04",
-      "date": "2026-09-01",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid"
-      },
-      "pool_errors": {},
-      "zt": 45,
-      "dt": 1,
-      "zab": 8,
-      "zb": 15.1,
-      "fb": 84.9,
-      "jj": 31.1,
-      "lianban": 14,
-      "max_lb": 7,
-      "amount": "8499.9亿",
-      "bf": 0,
-      "heat": 65,
-      "risk": 13,
-      "headline": "走强",
-      "concepts": [
-        {
-          "name": "种植业",
-          "lead": "万向德农",
-          "chg_pct": null
-        },
-        {
-          "name": "一般零售",
-          "lead": "国芳集团",
-          "chg_pct": null
-        },
-        {
-          "name": "农产品加",
-          "lead": "金健米业",
-          "chg_pct": null
-        },
-        {
-          "name": "家居用品",
-          "lead": "海鸥住工",
-          "chg_pct": null
-        },
-        {
-          "name": "数字媒体",
-          "lead": "芒果超媒",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        }
-      ],
-      "shift_score": 74,
-      "shift_label": "走强",
-      "note": "情绪略有回落，注意午后分歧。"
-    },
-    {
-      "time": "10:20:04",
-      "ts_bj": "2026-09-01 10:20:04",
-      "date": "2026-09-01",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid"
-      },
-      "pool_errors": {},
-      "zt": 53,
-      "dt": 1,
-      "zab": 4,
-      "zb": 7.0,
-      "fb": 93.0,
-      "jj": 28.3,
-      "lianban": 15,
-      "max_lb": 7,
-      "amount": "9437.5亿",
-      "bf": 0,
-      "heat": 69,
-      "risk": 7,
-      "headline": "走强",
-      "concepts": [
-        {
-          "name": "种植业",
-          "lead": "万向德农",
-          "chg_pct": null
-        },
-        {
-          "name": "一般零售",
-          "lead": "国芳集团",
-          "chg_pct": null
-        },
-        {
-          "name": "汽车零部",
-          "lead": "浙江世宝",
-          "chg_pct": null
-        },
-        {
-          "name": "出版",
-          "lead": "时代出版",
-          "chg_pct": null
-        },
-        {
-          "name": "农产品加",
-          "lead": "金健米业",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        }
-      ],
-      "shift_score": 79,
-      "shift_label": "走强",
-      "note": "承接增强、分歧收敛，情绪明显回暖。"
-    },
-    {
-      "time": "10:30:04",
-      "ts_bj": "2026-09-01 10:30:04",
-      "date": "2026-09-01",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid"
-      },
-      "pool_errors": {},
-      "zt": 58,
-      "dt": 2,
-      "zab": 6,
-      "zb": 9.4,
-      "fb": 90.6,
-      "jj": 25.9,
-      "lianban": 15,
-      "max_lb": 7,
-      "amount": "10300.7亿",
-      "bf": 0,
-      "heat": 69,
-      "risk": 11,
-      "headline": "走强",
-      "concepts": [
-        {
-          "name": "种植业",
-          "lead": "万向德农",
-          "chg_pct": null
-        },
-        {
-          "name": "一般零售",
-          "lead": "国芳集团",
-          "chg_pct": null
-        },
-        {
-          "name": "汽车零部",
-          "lead": "浙江世宝",
-          "chg_pct": null
-        },
-        {
-          "name": "出版",
-          "lead": "时代出版",
-          "chg_pct": null
-        },
-        {
-          "name": "农产品加",
-          "lead": "金健米业",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        }
-      ],
-      "shift_score": 77,
-      "shift_label": "走强",
-      "note": "情绪略有回落，注意午后分歧。"
-    },
-    {
-      "time": "10:40:04",
-      "ts_bj": "2026-09-01 10:40:04",
-      "date": "2026-09-01",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid"
-      },
-      "pool_errors": {},
-      "zt": 57,
-      "dt": 1,
-      "zab": 5,
-      "zb": 8.1,
-      "fb": 91.9,
-      "jj": 26.3,
-      "lianban": 15,
-      "max_lb": 7,
-      "amount": "11022.0亿",
-      "bf": 0,
-      "heat": 69,
-      "risk": 8,
-      "headline": "走强",
-      "concepts": [
-        {
-          "name": "种植业",
-          "lead": "万向德农",
-          "chg_pct": null
-        },
-        {
-          "name": "一般零售",
-          "lead": "国芳集团",
-          "chg_pct": null
-        },
-        {
-          "name": "汽车零部",
-          "lead": "浙江世宝",
-          "chg_pct": null
-        },
-        {
-          "name": "出版",
-          "lead": "时代出版",
-          "chg_pct": null
-        },
-        {
-          "name": "农产品加",
-          "lead": "金健米业",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        }
-      ],
-      "shift_score": 79,
-      "shift_label": "走强",
-      "note": "情绪边际修复，但仍需确认持续性。"
-    },
-    {
-      "time": "10:50:05",
-      "ts_bj": "2026-09-01 10:50:05",
-      "date": "2026-09-01",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid"
-      },
-      "pool_errors": {},
-      "zt": 58,
-      "dt": 1,
-      "zab": 5,
-      "zb": 7.9,
-      "fb": 92.1,
-      "jj": 25.9,
-      "lianban": 15,
-      "max_lb": 7,
-      "amount": "11604.3亿",
-      "bf": 0,
-      "heat": 69,
-      "risk": 8,
-      "headline": "走强",
-      "concepts": [
-        {
-          "name": "种植业",
-          "lead": "万向德农",
-          "chg_pct": null
-        },
-        {
-          "name": "一般零售",
-          "lead": "国芳集团",
-          "chg_pct": null
-        },
-        {
-          "name": "汽车零部",
-          "lead": "浙江世宝",
-          "chg_pct": null
-        },
-        {
-          "name": "出版",
-          "lead": "时代出版",
-          "chg_pct": null
-        },
-        {
-          "name": "农产品加",
-          "lead": "金健米业",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        }
-      ],
-      "shift_score": 79,
-      "shift_label": "走强",
-      "note": "情绪整体平稳，维持当前节奏。"
-    },
-    {
-      "time": "11:00:04",
-      "ts_bj": "2026-09-01 11:00:04",
-      "date": "2026-09-01",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid"
-      },
-      "pool_errors": {},
-      "zt": 59,
-      "dt": 1,
-      "zab": 5,
-      "zb": 7.8,
-      "fb": 92.2,
-      "jj": 27.1,
-      "lianban": 16,
-      "max_lb": 7,
-      "amount": "12162.3亿",
-      "bf": 0,
-      "heat": 70,
-      "risk": 8,
-      "headline": "走强",
-      "concepts": [
-        {
-          "name": "种植业",
-          "lead": "万向德农",
-          "chg_pct": null
-        },
-        {
-          "name": "一般零售",
-          "lead": "国芳集团",
-          "chg_pct": null
-        },
-        {
-          "name": "汽车零部",
-          "lead": "浙江世宝",
-          "chg_pct": null
-        },
-        {
-          "name": "出版",
-          "lead": "时代出版",
-          "chg_pct": null
-        },
-        {
-          "name": "影视院线",
-          "lead": "博纳影业",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        }
-      ],
-      "shift_score": 79,
-      "shift_label": "走强",
-      "note": "情绪整体平稳，维持当前节奏。"
-    },
-    {
-      "time": "11:10:05",
-      "ts_bj": "2026-09-01 11:10:05",
-      "date": "2026-09-01",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid"
-      },
-      "pool_errors": {},
-      "zt": 65,
-      "dt": 2,
-      "zab": 5,
-      "zb": 7.1,
-      "fb": 92.9,
-      "jj": 24.6,
-      "lianban": 16,
-      "max_lb": 7,
-      "amount": "12653.9亿",
-      "bf": 0,
-      "heat": 70,
-      "risk": 9,
-      "headline": "走强",
-      "concepts": [
-        {
-          "name": "种植业",
-          "lead": "万向德农",
-          "chg_pct": null
-        },
-        {
-          "name": "一般零售",
-          "lead": "国芳集团",
-          "chg_pct": null
-        },
-        {
-          "name": "汽车零部",
-          "lead": "浙江世宝",
-          "chg_pct": null
-        },
-        {
-          "name": "出版",
-          "lead": "时代出版",
-          "chg_pct": null
-        },
-        {
-          "name": "影视院线",
-          "lead": "博纳影业",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        }
-      ],
-      "shift_score": 79,
-      "shift_label": "走强",
-      "note": "情绪整体平稳，维持当前节奏。"
-    },
-    {
-      "time": "11:20:05",
-      "ts_bj": "2026-09-01 11:20:05",
-      "date": "2026-09-01",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid"
-      },
-      "pool_errors": {},
-      "zt": 65,
-      "dt": 1,
-      "zab": 5,
-      "zb": 7.1,
-      "fb": 92.9,
-      "jj": 26.2,
-      "lianban": 17,
-      "max_lb": 7,
-      "amount": "13039.2亿",
-      "bf": 0,
-      "heat": 71,
-      "risk": 8,
-      "headline": "走强",
-      "concepts": [
-        {
-          "name": "种植业",
-          "lead": "万向德农",
-          "chg_pct": null
-        },
-        {
-          "name": "一般零售",
-          "lead": "国芳集团",
-          "chg_pct": null
-        },
-        {
-          "name": "汽车零部",
-          "lead": "浙江世宝",
-          "chg_pct": null
-        },
-        {
-          "name": "出版",
-          "lead": "时代出版",
-          "chg_pct": null
-        },
-        {
-          "name": "影视院线",
-          "lead": "博纳影业",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        }
-      ],
-      "shift_score": 80,
-      "shift_label": "走强",
-      "note": "情绪整体平稳，维持当前节奏。"
-    },
-    {
-      "time": "11:30:04",
-      "ts_bj": "2026-09-01 11:30:04",
-      "date": "2026-09-01",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid"
-      },
-      "pool_errors": {},
-      "zt": 64,
-      "dt": 1,
-      "zab": 7,
-      "zb": 9.9,
-      "fb": 90.1,
-      "jj": 25.0,
-      "lianban": 16,
-      "max_lb": 7,
-      "amount": "13493.9亿",
-      "bf": 0,
-      "heat": 69,
-      "risk": 10,
-      "headline": "走强",
-      "concepts": [
-        {
-          "name": "种植业",
-          "lead": "万向德农",
-          "chg_pct": null
-        },
-        {
-          "name": "一般零售",
-          "lead": "国芳集团",
-          "chg_pct": null
-        },
-        {
-          "name": "汽车零部",
-          "lead": "浙江世宝",
-          "chg_pct": null
-        },
-        {
-          "name": "出版",
-          "lead": "时代出版",
-          "chg_pct": null
-        },
-        {
-          "name": "影视院线",
-          "lead": "博纳影业",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        }
-      ],
-      "shift_score": 78,
-      "shift_label": "走强",
-      "note": "情绪略有回落，注意午后分歧。"
-    },
-    {
-      "time": "14:50:33",
-      "ts_bj": "2026-09-01 14:50:33",
-      "date": "2026-09-01",
-      "source": "intraday_live",
-      "provider": "unknown",
-      "data_quality": "unavailable",
-      "pool_status": {
-        "ztgc": "failed",
-        "zbgc": "failed",
-        "dtgc": "failed"
-      },
-      "pool_errors": {
-        "ztgc": "HTTP Error 429: Too Many Requests",
-        "zbgc": "HTTP Error 429: Too Many Requests",
-        "dtgc": "HTTP Error 429: Too Many Requests"
-      },
-      "zt": null,
-      "dt": null,
-      "zab": null,
-      "zb": null,
-      "fb": null,
-      "jj": null,
-      "lianban": null,
-      "max_lb": null,
-      "amount": "",
-      "bf": 0,
-      "heat": null,
-      "risk": null,
-      "headline": "数据暂缺",
-      "concepts": [],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        },
-        {
-          "level": "warn",
-          "text": "盘中三池响应不完整，保留最近有效数据"
-        },
-        {
-          "level": "warn",
-          "text": "三池请求均超时，本槽位跳过板块补抓并等待下一节点"
-        }
-      ],
-      "shift_score": null,
-      "shift_label": "数据暂缺",
-      "note": "本槽位三池请求均未成功，已记录数据暂缺；等待下一节点自动恢复。"
-    },
-    {
-      "time": "15:00:07",
-      "ts_bj": "2026-09-01 15:00:07",
-      "date": "2026-09-01",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid_empty"
-      },
-      "pool_errors": {},
-      "zt": 81,
-      "dt": 0,
-      "zab": 7,
-      "zb": 8.0,
-      "fb": 92.0,
-      "jj": 22.2,
-      "lianban": 18,
-      "max_lb": 7,
-      "amount": "20334.0亿",
-      "bf": 0,
-      "heat": 72,
-      "risk": 8,
-      "headline": "走强",
-      "concepts": [
-        {
-          "name": "种植业",
-          "lead": "万向德农",
-          "chg_pct": null
-        },
-        {
-          "name": "一般零售",
-          "lead": "国芳集团",
-          "chg_pct": null
-        },
-        {
-          "name": "汽车零部",
-          "lead": "浙江世宝",
-          "chg_pct": null
-        },
-        {
-          "name": "出版",
-          "lead": "时代出版",
-          "chg_pct": null
-        },
-        {
-          "name": "IT服务Ⅱ",
-          "lead": "竞业达",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        }
-      ],
-      "shift_score": 80,
-      "shift_label": "走强",
-      "note": "承接增强、分歧收敛，情绪明显回暖。"
     }
   ],
   "indices": [
     {
       "name": "上证指数",
       "code": "000001.SH",
-      "val": 3979.888,
-      "chg": -0.16080082321993625,
-      "cje": 944307561400.0,
-      "t": "2026-09-01 15:00:06"
+      "val": 3964.88,
+      "chg": -0.3770960388835015,
+      "cje": 19661198100.0,
+      "t": "2026-09-02 09:30:27"
     },
     {
       "name": "深证成指",
       "code": "399001.SZ",
-      "val": 13872.377,
-      "chg": -1.0176241921421674,
-      "cje": 1089095260900.0,
-      "t": "2026-09-01 15:00:03"
+      "val": 13725.831,
+      "chg": -1.0563870921328065,
+      "cje": 34996036100.0,
+      "t": "2026-09-02 09:30:24"
     },
     {
       "name": "创业板指",
       "code": "399006.SZ",
-      "val": 3393.43,
-      "chg": -1.315940617928799,
-      "cje": 510927712100.0,
-      "t": "2026-09-01 15:00:03"
+      "val": 3344.859,
+      "chg": -1.431324647922601,
+      "cje": 15168054800.0,
+      "t": "2026-09-02 09:30:24"
     }
   ],
   "asOf": {
-    "indices": "15:00:03"
+    "indices": "09:30:24"
   },
   "health": {
-    "status": "valid",
-    "last_valid_at": "2026-09-01 15:00:07",
+    "status": "degraded",
+    "last_valid_at": "2026-09-02 09:30:30",
     "rejected_reason": "",
     "source": {
-      "status": "valid",
+      "status": "partial",
       "pool_status": {
         "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid_empty"
+        "zbgc": "failed",
+        "dtgc": "valid"
       },
-      "pool_errors": {}
+      "pool_errors": {
+        "zbgc": "empty_response"
+      }
     },
     "indices_status": "valid",
     "coverage": {
-      "ok": false,
-      "status": "degraded",
-      "message": "intraday_coverage_incomplete",
-      "date": "2026-09-01",
+      "ok": true,
+      "status": "collecting",
+      "message": "intraday_coverage_collecting",
+      "date": "2026-09-02",
       "expected_count": 26,
-      "due_count": 26,
-      "observed_count": 15,
+      "due_count": 1,
+      "observed_count": 1,
       "observed_slots": [
-        "09:30",
-        "09:40",
-        "09:50",
-        "10:00",
-        "10:10",
-        "10:20",
-        "10:30",
-        "10:40",
-        "10:50",
-        "11:00",
-        "11:10",
-        "11:20",
-        "11:30",
-        "14:50",
-        "15:00"
+        "09:30"
       ],
-      "missing_slots": [
-        "13:00",
-        "13:10",
-        "13:20",
-        "13:30",
-        "13:40",
-        "13:50",
-        "14:00",
-        "14:10",
-        "14:20",
-        "14:30",
-        "14:40"
-      ],
+      "missing_slots": [],
       "duplicate_slots": [],
       "out_of_session": [],
       "monotonic": true,
-      "morning_coverage": 13,
-      "afternoon_coverage": 2
+      "morning_coverage": 1,
+      "afternoon_coverage": 0
     }
   },
   "live": {
     "market": {
-      "zt": 81,
-      "dt": 0,
-      "zab": 7,
-      "zab_rate": 8.0,
-      "lianban": 18,
-      "max_lianban": 7,
-      "amount": "20334.0亿"
+      "zt": 12,
+      "dt": 1,
+      "zab": null,
+      "zab_rate": null,
+      "lianban": 10,
+      "max_lianban": 4,
+      "amount": ""
     },
     "alerts": [
       {
         "level": "info",
         "text": "盘中模式：强制实时拉取"
+      },
+      {
+        "level": "warn",
+        "text": "盘中三池响应不完整，保留最近有效数据"
       }
     ],
     "concepts": [
-      {
-        "name": "种植业",
-        "lead": "万向德农",
-        "chg_pct": null
-      },
       {
         "name": "一般零售",
         "lead": "国芳集团",
         "chg_pct": null
       },
       {
-        "name": "汽车零部",
-        "lead": "浙江世宝",
-        "chg_pct": null
-      },
-      {
-        "name": "出版",
-        "lead": "时代出版",
+        "name": "化学原料",
+        "lead": "英 力 特",
         "chg_pct": null
       },
       {
         "name": "IT服务Ⅱ",
         "lead": "竞业达",
+        "chg_pct": null
+      },
+      {
+        "name": "林业Ⅱ",
+        "lead": "福建金森",
+        "chg_pct": null
+      },
+      {
+        "name": "化学制品",
+        "lead": "集泰股份",
         "chg_pct": null
       }
     ]
