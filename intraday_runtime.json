@@ -1,11 +1,11 @@
 {
   "schema": "intraday_runtime_v1",
   "date": "2026-09-02",
-  "updated_at": "2026-09-02 09:40:04",
+  "updated_at": "2026-09-02 09:50:04",
   "source": "必盈(实时)+必盈(实时)",
   "latest": {
-    "time": "09:40:04",
-    "ts_bj": "2026-09-02 09:40:04",
+    "time": "09:50:04",
+    "ts_bj": "2026-09-02 09:50:04",
     "date": "2026-09-02",
     "source": "intraday_live",
     "provider": "必盈(实时)+必盈(实时)",
@@ -16,23 +16,33 @@
       "dtgc": "valid"
     },
     "pool_errors": {},
-    "zt": 16,
+    "zt": 22,
     "dt": 1,
-    "zab": 8,
+    "zab": 11,
     "zb": 33.3,
     "fb": 66.7,
-    "jj": 75.0,
-    "lianban": 12,
+    "jj": 50.0,
+    "lianban": 11,
     "max_lb": 5,
-    "amount": "3563.9亿",
+    "amount": "5272.2亿",
     "bf": 0,
-    "heat": 59,
-    "risk": 23,
+    "heat": 54,
+    "risk": 25,
     "headline": "修复",
     "concepts": [
       {
-        "name": "一般零售",
-        "lead": "国芳集团",
+        "name": "化学原料",
+        "lead": "英 力 特",
+        "chg_pct": null
+      },
+      {
+        "name": "塑料",
+        "lead": "沃特股份",
+        "chg_pct": null
+      },
+      {
+        "name": "专用设备",
+        "lead": "神开股份",
         "chg_pct": null
       },
       {
@@ -43,16 +53,6 @@
       {
         "name": "IT服务Ⅱ",
         "lead": "竞业达",
-        "chg_pct": null
-      },
-      {
-        "name": "化学制品",
-        "lead": "集泰股份",
-        "chg_pct": null
-      },
-      {
-        "name": "影视院线",
-        "lead": "欢瑞世纪",
         "chg_pct": null
       }
     ],
@@ -66,9 +66,9 @@
         "text": "炸板率偏高（33.3%）→ 注意回封质量"
       }
     ],
-    "shift_score": 67,
+    "shift_score": 63,
     "shift_label": "修复",
-    "note": "承接增强、分歧收敛，情绪明显回暖。"
+    "note": "情绪略有回落，注意午后分歧。"
   },
   "snapshots": [
     {
@@ -206,40 +206,107 @@
       "shift_score": 67,
       "shift_label": "修复",
       "note": "承接增强、分歧收敛，情绪明显回暖。"
+    },
+    {
+      "time": "09:50:04",
+      "ts_bj": "2026-09-02 09:50:04",
+      "date": "2026-09-02",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid"
+      },
+      "pool_errors": {},
+      "zt": 22,
+      "dt": 1,
+      "zab": 11,
+      "zb": 33.3,
+      "fb": 66.7,
+      "jj": 50.0,
+      "lianban": 11,
+      "max_lb": 5,
+      "amount": "5272.2亿",
+      "bf": 0,
+      "heat": 54,
+      "risk": 25,
+      "headline": "修复",
+      "concepts": [
+        {
+          "name": "化学原料",
+          "lead": "英 力 特",
+          "chg_pct": null
+        },
+        {
+          "name": "塑料",
+          "lead": "沃特股份",
+          "chg_pct": null
+        },
+        {
+          "name": "专用设备",
+          "lead": "神开股份",
+          "chg_pct": null
+        },
+        {
+          "name": "种植业",
+          "lead": "新赛股份",
+          "chg_pct": null
+        },
+        {
+          "name": "IT服务Ⅱ",
+          "lead": "竞业达",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        },
+        {
+          "level": "warn",
+          "text": "炸板率偏高（33.3%）→ 注意回封质量"
+        }
+      ],
+      "shift_score": 63,
+      "shift_label": "修复",
+      "note": "情绪略有回落，注意午后分歧。"
     }
   ],
   "indices": [
     {
       "name": "上证指数",
       "code": "000001.SH",
-      "val": 3947.371,
-      "chg": -0.8170330421358547,
-      "cje": 165106998500.0,
-      "t": "2026-09-02 09:40:00"
+      "val": 3947.345,
+      "chg": -0.8176863268514118,
+      "cje": 246555621600.0,
+      "t": "2026-09-02 09:50:03"
     },
     {
       "name": "深证成指",
       "code": "399001.SZ",
-      "val": 13679.213,
-      "chg": -1.3924362061382896,
-      "cje": 189220728700.0,
-      "t": "2026-09-02 09:39:54"
+      "val": 13657.358,
+      "chg": -1.5499795024313443,
+      "cje": 279246073200.0,
+      "t": "2026-09-02 09:49:57"
     },
     {
       "name": "创业板指",
       "code": "399006.SZ",
-      "val": 3334.316,
-      "chg": -1.7420132432376692,
-      "cje": 84409158800.0,
-      "t": "2026-09-02 09:39:54"
+      "val": 3327.853,
+      "chg": -1.932469507253716,
+      "cje": 125134180500.0,
+      "t": "2026-09-02 09:49:57"
     }
   ],
   "asOf": {
-    "indices": "09:39:54"
+    "indices": "09:49:57"
   },
   "health": {
     "status": "valid",
-    "last_valid_at": "2026-09-02 09:40:04",
+    "last_valid_at": "2026-09-02 09:50:04",
     "rejected_reason": "",
     "source": {
       "status": "valid",
@@ -257,29 +324,30 @@
       "message": "intraday_coverage_collecting",
       "date": "2026-09-02",
       "expected_count": 26,
-      "due_count": 2,
-      "observed_count": 2,
+      "due_count": 3,
+      "observed_count": 3,
       "observed_slots": [
         "09:30",
-        "09:40"
+        "09:40",
+        "09:50"
       ],
       "missing_slots": [],
       "duplicate_slots": [],
       "out_of_session": [],
       "monotonic": true,
-      "morning_coverage": 2,
+      "morning_coverage": 3,
       "afternoon_coverage": 0
     }
   },
   "live": {
     "market": {
-      "zt": 16,
+      "zt": 22,
       "dt": 1,
-      "zab": 8,
+      "zab": 11,
       "zab_rate": 33.3,
-      "lianban": 12,
+      "lianban": 11,
       "max_lianban": 5,
-      "amount": "3563.9亿"
+      "amount": "5272.2亿"
     },
     "alerts": [
       {
@@ -293,8 +361,18 @@
     ],
     "concepts": [
       {
-        "name": "一般零售",
-        "lead": "国芳集团",
+        "name": "化学原料",
+        "lead": "英 力 特",
+        "chg_pct": null
+      },
+      {
+        "name": "塑料",
+        "lead": "沃特股份",
+        "chg_pct": null
+      },
+      {
+        "name": "专用设备",
+        "lead": "神开股份",
         "chg_pct": null
       },
       {
@@ -305,16 +383,6 @@
       {
         "name": "IT服务Ⅱ",
         "lead": "竞业达",
-        "chg_pct": null
-      },
-      {
-        "name": "化学制品",
-        "lead": "集泰股份",
-        "chg_pct": null
-      },
-      {
-        "name": "影视院线",
-        "lead": "欢瑞世纪",
         "chg_pct": null
       }
     ]
