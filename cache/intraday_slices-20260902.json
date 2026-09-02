@@ -2,7 +2,7 @@
   "schema": "intraday_snapshot_v1",
   "render_mode": "snapshot_stream",
   "date": "2026-09-02",
-  "count": 9,
+  "count": 10,
   "interval_min": null,
   "simulated": false,
   "snapshots": [
@@ -610,11 +610,78 @@
       "shift_score": 62,
       "shift_label": "修复",
       "note": "情绪整体平稳，维持当前节奏。"
+    },
+    {
+      "time": "11:00:05",
+      "ts_bj": "2026-09-02 11:00:05",
+      "date": "2026-09-02",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid"
+      },
+      "pool_errors": {},
+      "zt": 38,
+      "dt": 4,
+      "zab": 15,
+      "zb": 28.3,
+      "fb": 71.7,
+      "jj": 34.2,
+      "lianban": 13,
+      "max_lb": 4,
+      "amount": "10864.4亿",
+      "bf": 0,
+      "heat": 53,
+      "risk": 28,
+      "headline": "修复",
+      "concepts": [
+        {
+          "name": "电网设备",
+          "lead": "远东股份",
+          "chg_pct": null
+        },
+        {
+          "name": "一般零售",
+          "lead": "国芳集团",
+          "chg_pct": null
+        },
+        {
+          "name": "地面兵装",
+          "lead": "内蒙一机",
+          "chg_pct": null
+        },
+        {
+          "name": "化学原料",
+          "lead": "英 力 特",
+          "chg_pct": null
+        },
+        {
+          "name": "汽车零部",
+          "lead": "飞龙股份",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        },
+        {
+          "level": "warn",
+          "text": "炸板率偏高（28.3%）→ 注意回封质量"
+        }
+      ],
+      "shift_score": 61,
+      "shift_label": "修复",
+      "note": "情绪整体平稳，维持当前节奏。"
     }
   ],
   "latest": {
-    "time": "10:50:04",
-    "ts_bj": "2026-09-02 10:50:04",
+    "time": "11:00:05",
+    "ts_bj": "2026-09-02 11:00:05",
     "date": "2026-09-02",
     "source": "intraday_live",
     "provider": "必盈(实时)+必盈(实时)",
@@ -625,18 +692,18 @@
       "dtgc": "valid"
     },
     "pool_errors": {},
-    "zt": 36,
-    "dt": 3,
-    "zab": 14,
-    "zb": 28.0,
-    "fb": 72.0,
-    "jj": 36.1,
+    "zt": 38,
+    "dt": 4,
+    "zab": 15,
+    "zb": 28.3,
+    "fb": 71.7,
+    "jj": 34.2,
     "lianban": 13,
     "max_lb": 4,
-    "amount": "10410.9亿",
+    "amount": "10864.4亿",
     "bf": 0,
     "heat": 53,
-    "risk": 26,
+    "risk": 28,
     "headline": "修复",
     "concepts": [
       {
@@ -672,18 +739,18 @@
       },
       {
         "level": "warn",
-        "text": "炸板率偏高（28.0%）→ 注意回封质量"
+        "text": "炸板率偏高（28.3%）→ 注意回封质量"
       }
     ],
-    "shift_score": 62,
+    "shift_score": 61,
     "shift_label": "修复",
     "note": "情绪整体平稳，维持当前节奏。"
   },
-  "updated_at": "2026-09-02 10:50:04",
-  "snapshot_sig": "2026-09-02|2026-09-02 10:50:04|9",
+  "updated_at": "2026-09-02 11:00:05",
+  "snapshot_sig": "2026-09-02|2026-09-02 11:00:05|10",
   "health": {
     "status": "valid",
-    "last_valid_at": "2026-09-02 10:50:04",
+    "last_valid_at": "2026-09-02 11:00:05",
     "rejected_reason": "",
     "source": {
       "status": "valid",
