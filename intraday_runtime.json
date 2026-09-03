@@ -1,11 +1,11 @@
 {
   "schema": "intraday_runtime_v1",
   "date": "2026-09-03",
-  "updated_at": "2026-09-03 11:10:04",
+  "updated_at": "2026-09-03 11:20:04",
   "source": "必盈(实时)+必盈(实时)",
   "latest": {
-    "time": "11:10:04",
-    "ts_bj": "2026-09-03 11:10:04",
+    "time": "11:20:04",
+    "ts_bj": "2026-09-03 11:20:04",
     "date": "2026-09-03",
     "source": "intraday_live",
     "provider": "必盈(实时)+必盈(实时)",
@@ -16,20 +16,30 @@
       "dtgc": "valid"
     },
     "pool_errors": {},
-    "zt": 35,
-    "dt": 9,
-    "zab": 21,
-    "zb": 37.5,
-    "fb": 62.5,
-    "jj": 25.7,
+    "zt": 39,
+    "dt": 8,
+    "zab": 19,
+    "zb": 32.8,
+    "fb": 67.2,
+    "jj": 23.1,
     "lianban": 9,
     "max_lb": 5,
-    "amount": "10063.5亿",
+    "amount": "10510.0亿",
     "bf": 0,
-    "heat": 49,
-    "risk": 44,
+    "heat": 51,
+    "risk": 39,
     "headline": "分歧",
     "concepts": [
+      {
+        "name": "汽车零部",
+        "lead": "光洋股份",
+        "chg_pct": null
+      },
+      {
+        "name": "航运港口",
+        "lead": "中远海能",
+        "chg_pct": null
+      },
       {
         "name": "包装印刷",
         "lead": "金富科技",
@@ -44,16 +54,6 @@
         "name": "影视院线",
         "lead": "欢瑞世纪",
         "chg_pct": null
-      },
-      {
-        "name": "汽车零部",
-        "lead": "光洋股份",
-        "chg_pct": null
-      },
-      {
-        "name": "航运港口",
-        "lead": "海通发展",
-        "chg_pct": null
       }
     ],
     "alerts": [
@@ -62,13 +62,13 @@
         "text": "盘中模式：强制实时拉取"
       },
       {
-        "level": "danger",
-        "text": "炸板率高（37.5%）→ 分歧偏强，谨慎接力"
+        "level": "warn",
+        "text": "炸板率偏高（32.8%）→ 注意回封质量"
       }
     ],
-    "shift_score": 52,
+    "shift_score": 55,
     "shift_label": "分歧",
-    "note": "情绪整体平稳，维持当前节奏。"
+    "note": "情绪边际修复，但仍需确认持续性。"
   },
   "snapshots": [
     {
@@ -801,40 +801,107 @@
       "shift_score": 52,
       "shift_label": "分歧",
       "note": "情绪整体平稳，维持当前节奏。"
+    },
+    {
+      "time": "11:20:04",
+      "ts_bj": "2026-09-03 11:20:04",
+      "date": "2026-09-03",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid"
+      },
+      "pool_errors": {},
+      "zt": 39,
+      "dt": 8,
+      "zab": 19,
+      "zb": 32.8,
+      "fb": 67.2,
+      "jj": 23.1,
+      "lianban": 9,
+      "max_lb": 5,
+      "amount": "10510.0亿",
+      "bf": 0,
+      "heat": 51,
+      "risk": 39,
+      "headline": "分歧",
+      "concepts": [
+        {
+          "name": "汽车零部",
+          "lead": "光洋股份",
+          "chg_pct": null
+        },
+        {
+          "name": "航运港口",
+          "lead": "中远海能",
+          "chg_pct": null
+        },
+        {
+          "name": "包装印刷",
+          "lead": "金富科技",
+          "chg_pct": null
+        },
+        {
+          "name": "一般零售",
+          "lead": "国芳集团",
+          "chg_pct": null
+        },
+        {
+          "name": "影视院线",
+          "lead": "欢瑞世纪",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        },
+        {
+          "level": "warn",
+          "text": "炸板率偏高（32.8%）→ 注意回封质量"
+        }
+      ],
+      "shift_score": 55,
+      "shift_label": "分歧",
+      "note": "情绪边际修复，但仍需确认持续性。"
     }
   ],
   "indices": [
     {
       "name": "上证指数",
       "code": "000001.SH",
-      "val": 3957.671,
-      "chg": 0.41317952618697723,
-      "cje": 471675187900.0,
-      "t": "2026-09-03 11:10:00"
+      "val": 3958.023,
+      "chg": 0.4221103946682759,
+      "cje": 493457571900.0,
+      "t": "2026-09-03 11:20:00"
     },
     {
       "name": "深证成指",
       "code": "399001.SZ",
-      "val": 13655.44,
-      "chg": 0.32246885677285636,
-      "cje": 533540906900.0,
-      "t": "2026-09-03 11:09:57"
+      "val": 13663.778,
+      "chg": 0.3837256705648503,
+      "cje": 557406458000.0,
+      "t": "2026-09-03 11:20:00"
     },
     {
       "name": "创业板指",
       "code": "399006.SZ",
-      "val": 3322.664,
-      "chg": 0.3146206362274832,
-      "cje": 245550726600.0,
-      "t": "2026-09-03 11:09:57"
+      "val": 3326.198,
+      "chg": 0.4213157066072727,
+      "cje": 256945076100.0,
+      "t": "2026-09-03 11:20:00"
     }
   ],
   "asOf": {
-    "indices": "11:09:57"
+    "indices": "11:20:00"
   },
   "health": {
     "status": "valid",
-    "last_valid_at": "2026-09-03 11:10:04",
+    "last_valid_at": "2026-09-03 11:20:04",
     "rejected_reason": "",
     "source": {
       "status": "valid",
@@ -852,8 +919,8 @@
       "message": "intraday_coverage_collecting",
       "date": "2026-09-03",
       "expected_count": 26,
-      "due_count": 11,
-      "observed_count": 11,
+      "due_count": 12,
+      "observed_count": 12,
       "observed_slots": [
         "09:30",
         "09:40",
@@ -865,25 +932,26 @@
         "10:40",
         "10:50",
         "11:00",
-        "11:10"
+        "11:10",
+        "11:20"
       ],
       "missing_slots": [],
       "duplicate_slots": [],
       "out_of_session": [],
       "monotonic": true,
-      "morning_coverage": 11,
+      "morning_coverage": 12,
       "afternoon_coverage": 0
     }
   },
   "live": {
     "market": {
-      "zt": 35,
-      "dt": 9,
-      "zab": 21,
-      "zab_rate": 37.5,
+      "zt": 39,
+      "dt": 8,
+      "zab": 19,
+      "zab_rate": 32.8,
       "lianban": 9,
       "max_lianban": 5,
-      "amount": "10063.5亿"
+      "amount": "10510.0亿"
     },
     "alerts": [
       {
@@ -891,11 +959,21 @@
         "text": "盘中模式：强制实时拉取"
       },
       {
-        "level": "danger",
-        "text": "炸板率高（37.5%）→ 分歧偏强，谨慎接力"
+        "level": "warn",
+        "text": "炸板率偏高（32.8%）→ 注意回封质量"
       }
     ],
     "concepts": [
+      {
+        "name": "汽车零部",
+        "lead": "光洋股份",
+        "chg_pct": null
+      },
+      {
+        "name": "航运港口",
+        "lead": "中远海能",
+        "chg_pct": null
+      },
       {
         "name": "包装印刷",
         "lead": "金富科技",
@@ -909,16 +987,6 @@
       {
         "name": "影视院线",
         "lead": "欢瑞世纪",
-        "chg_pct": null
-      },
-      {
-        "name": "汽车零部",
-        "lead": "光洋股份",
-        "chg_pct": null
-      },
-      {
-        "name": "航运港口",
-        "lead": "海通发展",
         "chg_pct": null
       }
     ]

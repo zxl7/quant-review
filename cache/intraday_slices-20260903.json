@@ -2,7 +2,7 @@
   "schema": "intraday_snapshot_v1",
   "render_mode": "snapshot_stream",
   "date": "2026-09-03",
-  "count": 11,
+  "count": 12,
   "interval_min": null,
   "simulated": false,
   "snapshots": [
@@ -736,11 +736,78 @@
       "shift_score": 52,
       "shift_label": "分歧",
       "note": "情绪整体平稳，维持当前节奏。"
+    },
+    {
+      "time": "11:20:04",
+      "ts_bj": "2026-09-03 11:20:04",
+      "date": "2026-09-03",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid"
+      },
+      "pool_errors": {},
+      "zt": 39,
+      "dt": 8,
+      "zab": 19,
+      "zb": 32.8,
+      "fb": 67.2,
+      "jj": 23.1,
+      "lianban": 9,
+      "max_lb": 5,
+      "amount": "10510.0亿",
+      "bf": 0,
+      "heat": 51,
+      "risk": 39,
+      "headline": "分歧",
+      "concepts": [
+        {
+          "name": "汽车零部",
+          "lead": "光洋股份",
+          "chg_pct": null
+        },
+        {
+          "name": "航运港口",
+          "lead": "中远海能",
+          "chg_pct": null
+        },
+        {
+          "name": "包装印刷",
+          "lead": "金富科技",
+          "chg_pct": null
+        },
+        {
+          "name": "一般零售",
+          "lead": "国芳集团",
+          "chg_pct": null
+        },
+        {
+          "name": "影视院线",
+          "lead": "欢瑞世纪",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        },
+        {
+          "level": "warn",
+          "text": "炸板率偏高（32.8%）→ 注意回封质量"
+        }
+      ],
+      "shift_score": 55,
+      "shift_label": "分歧",
+      "note": "情绪边际修复，但仍需确认持续性。"
     }
   ],
   "latest": {
-    "time": "11:10:04",
-    "ts_bj": "2026-09-03 11:10:04",
+    "time": "11:20:04",
+    "ts_bj": "2026-09-03 11:20:04",
     "date": "2026-09-03",
     "source": "intraday_live",
     "provider": "必盈(实时)+必盈(实时)",
@@ -751,20 +818,30 @@
       "dtgc": "valid"
     },
     "pool_errors": {},
-    "zt": 35,
-    "dt": 9,
-    "zab": 21,
-    "zb": 37.5,
-    "fb": 62.5,
-    "jj": 25.7,
+    "zt": 39,
+    "dt": 8,
+    "zab": 19,
+    "zb": 32.8,
+    "fb": 67.2,
+    "jj": 23.1,
     "lianban": 9,
     "max_lb": 5,
-    "amount": "10063.5亿",
+    "amount": "10510.0亿",
     "bf": 0,
-    "heat": 49,
-    "risk": 44,
+    "heat": 51,
+    "risk": 39,
     "headline": "分歧",
     "concepts": [
+      {
+        "name": "汽车零部",
+        "lead": "光洋股份",
+        "chg_pct": null
+      },
+      {
+        "name": "航运港口",
+        "lead": "中远海能",
+        "chg_pct": null
+      },
       {
         "name": "包装印刷",
         "lead": "金富科技",
@@ -779,16 +856,6 @@
         "name": "影视院线",
         "lead": "欢瑞世纪",
         "chg_pct": null
-      },
-      {
-        "name": "汽车零部",
-        "lead": "光洋股份",
-        "chg_pct": null
-      },
-      {
-        "name": "航运港口",
-        "lead": "海通发展",
-        "chg_pct": null
       }
     ],
     "alerts": [
@@ -797,19 +864,19 @@
         "text": "盘中模式：强制实时拉取"
       },
       {
-        "level": "danger",
-        "text": "炸板率高（37.5%）→ 分歧偏强，谨慎接力"
+        "level": "warn",
+        "text": "炸板率偏高（32.8%）→ 注意回封质量"
       }
     ],
-    "shift_score": 52,
+    "shift_score": 55,
     "shift_label": "分歧",
-    "note": "情绪整体平稳，维持当前节奏。"
+    "note": "情绪边际修复，但仍需确认持续性。"
   },
-  "updated_at": "2026-09-03 11:10:04",
-  "snapshot_sig": "2026-09-03|2026-09-03 11:10:04|11",
+  "updated_at": "2026-09-03 11:20:04",
+  "snapshot_sig": "2026-09-03|2026-09-03 11:20:04|12",
   "health": {
     "status": "valid",
-    "last_valid_at": "2026-09-03 11:10:04",
+    "last_valid_at": "2026-09-03 11:20:04",
     "rejected_reason": "",
     "source": {
       "status": "valid",
