@@ -2,7 +2,7 @@
   "schema": "intraday_snapshot_v1",
   "render_mode": "snapshot_stream",
   "date": "2026-09-03",
-  "count": 16,
+  "count": 17,
   "interval_min": null,
   "simulated": false,
   "snapshots": [
@@ -1061,11 +1061,82 @@
       "shift_score": 43,
       "shift_label": "走弱",
       "note": "情绪整体平稳，维持当前节奏。"
+    },
+    {
+      "time": "15:00:05",
+      "ts_bj": "2026-09-03 15:00:05",
+      "date": "2026-09-03",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid"
+      },
+      "pool_errors": {},
+      "zt": 43,
+      "dt": 18,
+      "zab": 33,
+      "zb": 43.4,
+      "fb": 56.6,
+      "jj": 18.6,
+      "lianban": 8,
+      "max_lb": 5,
+      "amount": "17589.2亿",
+      "bf": 0,
+      "heat": 46,
+      "risk": 66,
+      "headline": "走弱",
+      "concepts": [
+        {
+          "name": "一般零售",
+          "lead": "国芳集团",
+          "chg_pct": null
+        },
+        {
+          "name": "通用设备",
+          "lead": "金帝股份",
+          "chg_pct": null
+        },
+        {
+          "name": "汽车零部",
+          "lead": "新朋股份",
+          "chg_pct": null
+        },
+        {
+          "name": "包装印刷",
+          "lead": "金富科技",
+          "chg_pct": null
+        },
+        {
+          "name": "电网设备",
+          "lead": "太阳电缆",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        },
+        {
+          "level": "warn",
+          "text": "跌停偏多（18）→ 控制追高"
+        },
+        {
+          "level": "danger",
+          "text": "炸板率高（43.4%）→ 分歧偏强，谨慎接力"
+        }
+      ],
+      "shift_score": 41,
+      "shift_label": "走弱",
+      "note": "情绪略有回落，注意午后分歧。"
     }
   ],
   "latest": {
-    "time": "14:50:05",
-    "ts_bj": "2026-09-03 14:50:05",
+    "time": "15:00:05",
+    "ts_bj": "2026-09-03 15:00:05",
     "date": "2026-09-03",
     "source": "intraday_live",
     "provider": "必盈(实时)+必盈(实时)",
@@ -1076,25 +1147,20 @@
       "dtgc": "valid"
     },
     "pool_errors": {},
-    "zt": 44,
-    "dt": 16,
+    "zt": 43,
+    "dt": 18,
     "zab": 33,
-    "zb": 42.9,
-    "fb": 57.1,
-    "jj": 22.7,
-    "lianban": 10,
+    "zb": 43.4,
+    "fb": 56.6,
+    "jj": 18.6,
+    "lianban": 8,
     "max_lb": 5,
-    "amount": "16729.9亿",
+    "amount": "17589.2亿",
     "bf": 0,
-    "heat": 47,
-    "risk": 62,
+    "heat": 46,
+    "risk": 66,
     "headline": "走弱",
     "concepts": [
-      {
-        "name": "汽车零部",
-        "lead": "飞龙股份",
-        "chg_pct": null
-      },
       {
         "name": "一般零售",
         "lead": "国芳集团",
@@ -1103,6 +1169,11 @@
       {
         "name": "通用设备",
         "lead": "金帝股份",
+        "chg_pct": null
+      },
+      {
+        "name": "汽车零部",
+        "lead": "新朋股份",
         "chg_pct": null
       },
       {
@@ -1123,22 +1194,22 @@
       },
       {
         "level": "warn",
-        "text": "跌停偏多（16）→ 控制追高"
+        "text": "跌停偏多（18）→ 控制追高"
       },
       {
         "level": "danger",
-        "text": "炸板率高（42.9%）→ 分歧偏强，谨慎接力"
+        "text": "炸板率高（43.4%）→ 分歧偏强，谨慎接力"
       }
     ],
-    "shift_score": 43,
+    "shift_score": 41,
     "shift_label": "走弱",
-    "note": "情绪整体平稳，维持当前节奏。"
+    "note": "情绪略有回落，注意午后分歧。"
   },
-  "updated_at": "2026-09-03 14:50:05",
-  "snapshot_sig": "2026-09-03|2026-09-03 14:50:05|16",
+  "updated_at": "2026-09-03 15:00:05",
+  "snapshot_sig": "2026-09-03|2026-09-03 15:00:05|17",
   "health": {
     "status": "valid",
-    "last_valid_at": "2026-09-03 14:50:05",
+    "last_valid_at": "2026-09-03 15:00:05",
     "rejected_reason": "",
     "source": {
       "status": "valid",
