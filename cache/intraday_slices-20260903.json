@@ -2,7 +2,7 @@
   "schema": "intraday_snapshot_v1",
   "render_mode": "snapshot_stream",
   "date": "2026-09-03",
-  "count": 5,
+  "count": 6,
   "interval_min": null,
   "simulated": false,
   "snapshots": [
@@ -334,11 +334,78 @@
       "shift_score": 56,
       "shift_label": "分歧",
       "note": "情绪略有回落，注意午后分歧。"
+    },
+    {
+      "time": "10:20:03",
+      "ts_bj": "2026-09-03 10:20:03",
+      "date": "2026-09-03",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid"
+      },
+      "pool_errors": {},
+      "zt": 32,
+      "dt": 8,
+      "zab": 15,
+      "zb": 31.9,
+      "fb": 68.1,
+      "jj": 25.0,
+      "lianban": 8,
+      "max_lb": 5,
+      "amount": "7469.4亿",
+      "bf": 0,
+      "heat": 51,
+      "risk": 36,
+      "headline": "分歧",
+      "concepts": [
+        {
+          "name": "一般零售",
+          "lead": "国芳集团",
+          "chg_pct": null
+        },
+        {
+          "name": "影视院线",
+          "lead": "欢瑞世纪",
+          "chg_pct": null
+        },
+        {
+          "name": "汽车零部",
+          "lead": "光洋股份",
+          "chg_pct": null
+        },
+        {
+          "name": "航运港口",
+          "lead": "海通发展",
+          "chg_pct": null
+        },
+        {
+          "name": "电机Ⅱ",
+          "lead": "鸣志电器",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        },
+        {
+          "level": "warn",
+          "text": "炸板率偏高（31.9%）→ 注意回封质量"
+        }
+      ],
+      "shift_score": 56,
+      "shift_label": "分歧",
+      "note": "情绪整体平稳，维持当前节奏。"
     }
   ],
   "latest": {
-    "time": "10:10:04",
-    "ts_bj": "2026-09-03 10:10:04",
+    "time": "10:20:03",
+    "ts_bj": "2026-09-03 10:20:03",
     "date": "2026-09-03",
     "source": "intraday_live",
     "provider": "必盈(实时)+必盈(实时)",
@@ -349,18 +416,18 @@
       "dtgc": "valid"
     },
     "pool_errors": {},
-    "zt": 28,
-    "dt": 6,
+    "zt": 32,
+    "dt": 8,
     "zab": 15,
-    "zb": 34.9,
-    "fb": 65.1,
-    "jj": 32.1,
-    "lianban": 9,
+    "zb": 31.9,
+    "fb": 68.1,
+    "jj": 25.0,
+    "lianban": 8,
     "max_lb": 5,
-    "amount": "6732.0亿",
+    "amount": "7469.4亿",
     "bf": 0,
-    "heat": 50,
-    "risk": 35,
+    "heat": 51,
+    "risk": 36,
     "headline": "分歧",
     "concepts": [
       {
@@ -379,13 +446,13 @@
         "chg_pct": null
       },
       {
-        "name": "电机Ⅱ",
-        "lead": "鸣志电器",
+        "name": "航运港口",
+        "lead": "海通发展",
         "chg_pct": null
       },
       {
-        "name": "电力",
-        "lead": "郴电国际",
+        "name": "电机Ⅱ",
+        "lead": "鸣志电器",
         "chg_pct": null
       }
     ],
@@ -396,18 +463,18 @@
       },
       {
         "level": "warn",
-        "text": "炸板率偏高（34.9%）→ 注意回封质量"
+        "text": "炸板率偏高（31.9%）→ 注意回封质量"
       }
     ],
     "shift_score": 56,
     "shift_label": "分歧",
-    "note": "情绪略有回落，注意午后分歧。"
+    "note": "情绪整体平稳，维持当前节奏。"
   },
-  "updated_at": "2026-09-03 10:10:04",
-  "snapshot_sig": "2026-09-03|2026-09-03 10:10:04|5",
+  "updated_at": "2026-09-03 10:20:03",
+  "snapshot_sig": "2026-09-03|2026-09-03 10:20:03|6",
   "health": {
     "status": "valid",
-    "last_valid_at": "2026-09-03 10:10:04",
+    "last_valid_at": "2026-09-03 10:20:03",
     "rejected_reason": "",
     "source": {
       "status": "valid",
