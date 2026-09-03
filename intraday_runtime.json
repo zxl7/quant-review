@@ -1,60 +1,58 @@
 {
   "schema": "intraday_runtime_v1",
   "date": "2026-09-03",
-  "updated_at": "2026-09-03 09:30:25",
-  "source": "必盈(实时)",
+  "updated_at": "2026-09-03 09:40:04",
+  "source": "必盈(实时)+必盈(实时)",
   "latest": {
-    "time": "09:30:25",
-    "ts_bj": "2026-09-03 09:30:25",
+    "time": "09:40:04",
+    "ts_bj": "2026-09-03 09:40:04",
     "date": "2026-09-03",
     "source": "intraday_live",
-    "provider": "必盈(实时)",
-    "data_quality": "partial",
+    "provider": "必盈(实时)+必盈(实时)",
+    "data_quality": "valid",
     "pool_status": {
       "ztgc": "valid",
-      "zbgc": "failed",
+      "zbgc": "valid",
       "dtgc": "valid"
     },
-    "pool_errors": {
-      "zbgc": "empty_response"
-    },
-    "zt": 5,
-    "dt": 5,
-    "zab": null,
-    "zb": null,
-    "fb": null,
-    "jj": 80.0,
-    "lianban": 4,
-    "max_lb": 4,
-    "amount": "",
+    "pool_errors": {},
+    "zt": 18,
+    "dt": 7,
+    "zab": 2,
+    "zb": 10.0,
+    "fb": 90.0,
+    "jj": 38.9,
+    "lianban": 7,
+    "max_lb": 5,
+    "amount": "3087.9亿",
     "bf": 0,
-    "heat": null,
-    "risk": null,
-    "headline": "数据部分可用",
+    "heat": 61,
+    "risk": 17,
+    "headline": "修复",
     "concepts": [
-      {
-        "name": "影视院线",
-        "lead": "欢瑞世纪",
-        "chg_pct": null
-      },
-      {
-        "name": "化学制品",
-        "lead": "集泰股份",
-        "chg_pct": null
-      },
       {
         "name": "旅游及景",
         "lead": "云南旅游",
         "chg_pct": null
       },
       {
-        "name": "汽车零部",
-        "lead": "一彬科技",
+        "name": "影视院线",
+        "lead": "欢瑞世纪",
+        "chg_pct": null
+      },
+      {
+        "name": "电网设备",
+        "lead": "太阳电缆",
         "chg_pct": null
       },
       {
         "name": "IT服务Ⅱ",
-        "lead": "新炬网络",
+        "lead": "海量数据",
+        "chg_pct": null
+      },
+      {
+        "name": "一般零售",
+        "lead": "国芳集团",
         "chg_pct": null
       }
     ],
@@ -62,15 +60,11 @@
       {
         "level": "info",
         "text": "盘中模式：强制实时拉取"
-      },
-      {
-        "level": "warn",
-        "text": "盘中三池响应不完整，保留最近有效数据"
       }
     ],
-    "shift_score": null,
-    "shift_label": "数据部分可用",
-    "note": "本槽位仅部分三池成功；节点已保留，缺失指标不参与判断。"
+    "shift_score": 70,
+    "shift_label": "修复",
+    "note": "承接增强、分歧收敛，情绪明显回暖。"
   },
   "snapshots": [
     {
@@ -141,51 +135,112 @@
       "shift_score": null,
       "shift_label": "数据部分可用",
       "note": "本槽位仅部分三池成功；节点已保留，缺失指标不参与判断。"
+    },
+    {
+      "time": "09:40:04",
+      "ts_bj": "2026-09-03 09:40:04",
+      "date": "2026-09-03",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid"
+      },
+      "pool_errors": {},
+      "zt": 18,
+      "dt": 7,
+      "zab": 2,
+      "zb": 10.0,
+      "fb": 90.0,
+      "jj": 38.9,
+      "lianban": 7,
+      "max_lb": 5,
+      "amount": "3087.9亿",
+      "bf": 0,
+      "heat": 61,
+      "risk": 17,
+      "headline": "修复",
+      "concepts": [
+        {
+          "name": "旅游及景",
+          "lead": "云南旅游",
+          "chg_pct": null
+        },
+        {
+          "name": "影视院线",
+          "lead": "欢瑞世纪",
+          "chg_pct": null
+        },
+        {
+          "name": "电网设备",
+          "lead": "太阳电缆",
+          "chg_pct": null
+        },
+        {
+          "name": "IT服务Ⅱ",
+          "lead": "海量数据",
+          "chg_pct": null
+        },
+        {
+          "name": "一般零售",
+          "lead": "国芳集团",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        }
+      ],
+      "shift_score": 70,
+      "shift_label": "修复",
+      "note": "承接增强、分歧收敛，情绪明显回暖。"
     }
   ],
   "indices": [
     {
       "name": "上证指数",
       "code": "000001.SH",
-      "val": 3955.072,
-      "chg": 0.34723825578109196,
-      "cje": 14304766700.0,
-      "t": "2026-09-03 09:30:21"
+      "val": 3962.234,
+      "chg": 0.5289509832328008,
+      "cje": 144071765300.0,
+      "t": "2026-09-03 09:40:00"
     },
     {
       "name": "深证成指",
       "code": "399001.SZ",
-      "val": 13692.002,
-      "chg": 0.5910790301793024,
-      "cje": 26632491700.0,
-      "t": "2026-09-03 09:30:18"
+      "val": 13720.107,
+      "chg": 0.7975581320771216,
+      "cje": 163586965300.0,
+      "t": "2026-09-03 09:39:57"
     },
     {
       "name": "创业板指",
       "code": "399006.SZ",
-      "val": 3338.587,
-      "chg": 0.7953522733688335,
-      "cje": 11271984700.0,
-      "t": "2026-09-03 09:30:18"
+      "val": 3350.376,
+      "chg": 1.151274227162689,
+      "cje": 76710609600.0,
+      "t": "2026-09-03 09:39:57"
     }
   ],
   "asOf": {
-    "indices": "09:30:18"
+    "indices": "09:39:57"
   },
   "health": {
-    "status": "degraded",
-    "last_valid_at": "2026-09-03 09:30:25",
+    "status": "valid",
+    "last_valid_at": "2026-09-03 09:40:04",
     "rejected_reason": "",
     "source": {
-      "status": "partial",
+      "status": "valid",
       "pool_status": {
         "ztgc": "valid",
-        "zbgc": "failed",
+        "zbgc": "valid",
         "dtgc": "valid"
       },
-      "pool_errors": {
-        "zbgc": "empty_response"
-      }
+      "pool_errors": {}
     },
     "indices_status": "valid",
     "coverage": {
@@ -194,63 +249,60 @@
       "message": "intraday_coverage_collecting",
       "date": "2026-09-03",
       "expected_count": 26,
-      "due_count": 1,
-      "observed_count": 1,
+      "due_count": 2,
+      "observed_count": 2,
       "observed_slots": [
-        "09:30"
+        "09:30",
+        "09:40"
       ],
       "missing_slots": [],
       "duplicate_slots": [],
       "out_of_session": [],
       "monotonic": true,
-      "morning_coverage": 1,
+      "morning_coverage": 2,
       "afternoon_coverage": 0
     }
   },
   "live": {
     "market": {
-      "zt": 5,
-      "dt": 5,
-      "zab": null,
-      "zab_rate": null,
-      "lianban": 4,
-      "max_lianban": 4,
-      "amount": ""
+      "zt": 18,
+      "dt": 7,
+      "zab": 2,
+      "zab_rate": 10.0,
+      "lianban": 7,
+      "max_lianban": 5,
+      "amount": "3087.9亿"
     },
     "alerts": [
       {
         "level": "info",
         "text": "盘中模式：强制实时拉取"
-      },
-      {
-        "level": "warn",
-        "text": "盘中三池响应不完整，保留最近有效数据"
       }
     ],
     "concepts": [
-      {
-        "name": "影视院线",
-        "lead": "欢瑞世纪",
-        "chg_pct": null
-      },
-      {
-        "name": "化学制品",
-        "lead": "集泰股份",
-        "chg_pct": null
-      },
       {
         "name": "旅游及景",
         "lead": "云南旅游",
         "chg_pct": null
       },
       {
-        "name": "汽车零部",
-        "lead": "一彬科技",
+        "name": "影视院线",
+        "lead": "欢瑞世纪",
+        "chg_pct": null
+      },
+      {
+        "name": "电网设备",
+        "lead": "太阳电缆",
         "chg_pct": null
       },
       {
         "name": "IT服务Ⅱ",
-        "lead": "新炬网络",
+        "lead": "海量数据",
+        "chg_pct": null
+      },
+      {
+        "name": "一般零售",
+        "lead": "国芳集团",
         "chg_pct": null
       }
     ]
