@@ -1,58 +1,61 @@
 {
   "schema": "intraday_runtime_v1",
-  "date": "2026-09-03",
-  "updated_at": "2026-09-03 15:00:05",
-  "source": "必盈(实时)+必盈(实时)",
+  "date": "2026-09-04",
+  "updated_at": "2026-09-04 09:30:29",
+  "source": "必盈(实时)",
   "latest": {
-    "time": "15:00:05",
-    "ts_bj": "2026-09-03 15:00:05",
-    "date": "2026-09-03",
+    "time": "09:30:29",
+    "ts_bj": "2026-09-04 09:30:29",
+    "date": "2026-09-04",
     "source": "intraday_live",
-    "provider": "必盈(实时)+必盈(实时)",
-    "data_quality": "valid",
+    "provider": "必盈(实时)",
+    "data_quality": "partial",
     "pool_status": {
       "ztgc": "valid",
-      "zbgc": "valid",
-      "dtgc": "valid"
+      "zbgc": "failed",
+      "dtgc": "failed"
     },
-    "pool_errors": {},
-    "zt": 43,
-    "dt": 18,
-    "zab": 33,
-    "zb": 43.4,
-    "fb": 56.6,
-    "jj": 18.6,
-    "lianban": 8,
-    "max_lb": 5,
-    "amount": "17589.2亿",
+    "pool_errors": {
+      "zbgc": "empty_response",
+      "dtgc": "empty_response"
+    },
+    "zt": 7,
+    "dt": null,
+    "zab": null,
+    "zb": null,
+    "fb": null,
+    "jj": 57.1,
+    "lianban": 4,
+    "max_lb": 2,
+    "amount": "",
     "bf": 0,
-    "heat": 46,
-    "risk": 66,
-    "headline": "走弱",
+    "heat": null,
+    "risk": null,
+    "headline": "数据部分可用",
     "concepts": [
       {
-        "name": "一般零售",
-        "lead": "国芳集团",
+        "name": "电网设备",
+        "lead": "华盛昌",
         "chg_pct": null
       },
       {
-        "name": "通用设备",
-        "lead": "金帝股份",
+        "name": "铁路公路",
+        "lead": "大众交通",
+        "chg_pct": null
+      },
+      {
+        "name": "IT服务Ⅱ",
+        "lead": "新炬网络",
+        "chg_pct": null
+      },
+      {
+        "name": "电力",
+        "lead": "恒盛能源",
         "chg_pct": null
       },
       {
         "name": "汽车零部",
-        "lead": "新朋股份",
-        "chg_pct": null
-      },
-      {
-        "name": "包装印刷",
-        "lead": "金富科技",
-        "chg_pct": null
-      },
-      {
-        "name": "电网设备",
-        "lead": "太阳电缆",
+        "lead": "双环传动",
         "chg_pct": null
       }
     ],
@@ -63,41 +66,38 @@
       },
       {
         "level": "warn",
-        "text": "跌停偏多（18）→ 控制追高"
-      },
-      {
-        "level": "danger",
-        "text": "炸板率高（43.4%）→ 分歧偏强，谨慎接力"
+        "text": "盘中三池响应不完整，保留最近有效数据"
       }
     ],
-    "shift_score": 41,
-    "shift_label": "走弱",
-    "note": "情绪略有回落，注意午后分歧。"
+    "shift_score": null,
+    "shift_label": "数据部分可用",
+    "note": "本槽位仅部分三池成功；节点已保留，缺失指标不参与判断。"
   },
   "snapshots": [
     {
-      "time": "09:30:25",
-      "ts_bj": "2026-09-03 09:30:25",
-      "date": "2026-09-03",
+      "time": "09:30:29",
+      "ts_bj": "2026-09-04 09:30:29",
+      "date": "2026-09-04",
       "source": "intraday_live",
       "provider": "必盈(实时)",
       "data_quality": "partial",
       "pool_status": {
         "ztgc": "valid",
         "zbgc": "failed",
-        "dtgc": "valid"
+        "dtgc": "failed"
       },
       "pool_errors": {
-        "zbgc": "empty_response"
+        "zbgc": "empty_response",
+        "dtgc": "empty_response"
       },
-      "zt": 5,
-      "dt": 5,
+      "zt": 7,
+      "dt": null,
       "zab": null,
       "zb": null,
       "fb": null,
-      "jj": 80.0,
+      "jj": 57.1,
       "lianban": 4,
-      "max_lb": 4,
+      "max_lb": 2,
       "amount": "",
       "bf": 0,
       "heat": null,
@@ -105,28 +105,28 @@
       "headline": "数据部分可用",
       "concepts": [
         {
-          "name": "影视院线",
-          "lead": "欢瑞世纪",
+          "name": "电网设备",
+          "lead": "华盛昌",
           "chg_pct": null
         },
         {
-          "name": "化学制品",
-          "lead": "集泰股份",
-          "chg_pct": null
-        },
-        {
-          "name": "旅游及景",
-          "lead": "云南旅游",
-          "chg_pct": null
-        },
-        {
-          "name": "汽车零部",
-          "lead": "一彬科技",
+          "name": "铁路公路",
+          "lead": "大众交通",
           "chg_pct": null
         },
         {
           "name": "IT服务Ⅱ",
           "lead": "新炬网络",
+          "chg_pct": null
+        },
+        {
+          "name": "电力",
+          "lead": "恒盛能源",
+          "chg_pct": null
+        },
+        {
+          "name": "汽车零部",
+          "lead": "双环传动",
           "chg_pct": null
         }
       ],
@@ -143,1163 +143,82 @@
       "shift_score": null,
       "shift_label": "数据部分可用",
       "note": "本槽位仅部分三池成功；节点已保留，缺失指标不参与判断。"
-    },
-    {
-      "time": "09:40:04",
-      "ts_bj": "2026-09-03 09:40:04",
-      "date": "2026-09-03",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid"
-      },
-      "pool_errors": {},
-      "zt": 18,
-      "dt": 7,
-      "zab": 2,
-      "zb": 10.0,
-      "fb": 90.0,
-      "jj": 38.9,
-      "lianban": 7,
-      "max_lb": 5,
-      "amount": "3087.9亿",
-      "bf": 0,
-      "heat": 61,
-      "risk": 17,
-      "headline": "修复",
-      "concepts": [
-        {
-          "name": "旅游及景",
-          "lead": "云南旅游",
-          "chg_pct": null
-        },
-        {
-          "name": "影视院线",
-          "lead": "欢瑞世纪",
-          "chg_pct": null
-        },
-        {
-          "name": "电网设备",
-          "lead": "太阳电缆",
-          "chg_pct": null
-        },
-        {
-          "name": "IT服务Ⅱ",
-          "lead": "海量数据",
-          "chg_pct": null
-        },
-        {
-          "name": "一般零售",
-          "lead": "国芳集团",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        }
-      ],
-      "shift_score": 70,
-      "shift_label": "修复",
-      "note": "承接增强、分歧收敛，情绪明显回暖。"
-    },
-    {
-      "time": "09:50:04",
-      "ts_bj": "2026-09-03 09:50:04",
-      "date": "2026-09-03",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid"
-      },
-      "pool_errors": {},
-      "zt": 25,
-      "dt": 6,
-      "zab": 6,
-      "zb": 19.4,
-      "fb": 80.6,
-      "jj": 32.0,
-      "lianban": 8,
-      "max_lb": 5,
-      "amount": "4568.7亿",
-      "bf": 0,
-      "heat": 56,
-      "risk": 22,
-      "headline": "修复",
-      "concepts": [
-        {
-          "name": "IT服务Ⅱ",
-          "lead": "竞业达",
-          "chg_pct": null
-        },
-        {
-          "name": "影视院线",
-          "lead": "欢瑞世纪",
-          "chg_pct": null
-        },
-        {
-          "name": "电网设备",
-          "lead": "太阳电缆",
-          "chg_pct": null
-        },
-        {
-          "name": "旅游及景",
-          "lead": "云南旅游",
-          "chg_pct": null
-        },
-        {
-          "name": "一般零售",
-          "lead": "国芳集团",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        }
-      ],
-      "shift_score": 65,
-      "shift_label": "修复",
-      "note": "炸板/跌停抬升，情绪明显走弱。"
-    },
-    {
-      "time": "10:00:04",
-      "ts_bj": "2026-09-03 10:00:04",
-      "date": "2026-09-03",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid"
-      },
-      "pool_errors": {},
-      "zt": 28,
-      "dt": 5,
-      "zab": 12,
-      "zb": 30.0,
-      "fb": 70.0,
-      "jj": 32.1,
-      "lianban": 9,
-      "max_lb": 5,
-      "amount": "5781.8亿",
-      "bf": 0,
-      "heat": 52,
-      "risk": 29,
-      "headline": "修复",
-      "concepts": [
-        {
-          "name": "汽车零部",
-          "lead": "光洋股份",
-          "chg_pct": null
-        },
-        {
-          "name": "影视院线",
-          "lead": "欢瑞世纪",
-          "chg_pct": null
-        },
-        {
-          "name": "电网设备",
-          "lead": "太阳电缆",
-          "chg_pct": null
-        },
-        {
-          "name": "旅游及景",
-          "lead": "云南旅游",
-          "chg_pct": null
-        },
-        {
-          "name": "电机Ⅱ",
-          "lead": "鸣志电器",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        },
-        {
-          "level": "warn",
-          "text": "炸板率偏高（30.0%）→ 注意回封质量"
-        }
-      ],
-      "shift_score": 60,
-      "shift_label": "修复",
-      "note": "炸板/跌停抬升，情绪明显走弱。"
-    },
-    {
-      "time": "10:10:04",
-      "ts_bj": "2026-09-03 10:10:04",
-      "date": "2026-09-03",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid"
-      },
-      "pool_errors": {},
-      "zt": 28,
-      "dt": 6,
-      "zab": 15,
-      "zb": 34.9,
-      "fb": 65.1,
-      "jj": 32.1,
-      "lianban": 9,
-      "max_lb": 5,
-      "amount": "6732.0亿",
-      "bf": 0,
-      "heat": 50,
-      "risk": 35,
-      "headline": "分歧",
-      "concepts": [
-        {
-          "name": "一般零售",
-          "lead": "国芳集团",
-          "chg_pct": null
-        },
-        {
-          "name": "影视院线",
-          "lead": "欢瑞世纪",
-          "chg_pct": null
-        },
-        {
-          "name": "汽车零部",
-          "lead": "光洋股份",
-          "chg_pct": null
-        },
-        {
-          "name": "电机Ⅱ",
-          "lead": "鸣志电器",
-          "chg_pct": null
-        },
-        {
-          "name": "电力",
-          "lead": "郴电国际",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        },
-        {
-          "level": "warn",
-          "text": "炸板率偏高（34.9%）→ 注意回封质量"
-        }
-      ],
-      "shift_score": 56,
-      "shift_label": "分歧",
-      "note": "情绪略有回落，注意午后分歧。"
-    },
-    {
-      "time": "10:20:03",
-      "ts_bj": "2026-09-03 10:20:03",
-      "date": "2026-09-03",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid"
-      },
-      "pool_errors": {},
-      "zt": 32,
-      "dt": 8,
-      "zab": 15,
-      "zb": 31.9,
-      "fb": 68.1,
-      "jj": 25.0,
-      "lianban": 8,
-      "max_lb": 5,
-      "amount": "7469.4亿",
-      "bf": 0,
-      "heat": 51,
-      "risk": 36,
-      "headline": "分歧",
-      "concepts": [
-        {
-          "name": "一般零售",
-          "lead": "国芳集团",
-          "chg_pct": null
-        },
-        {
-          "name": "影视院线",
-          "lead": "欢瑞世纪",
-          "chg_pct": null
-        },
-        {
-          "name": "汽车零部",
-          "lead": "光洋股份",
-          "chg_pct": null
-        },
-        {
-          "name": "航运港口",
-          "lead": "海通发展",
-          "chg_pct": null
-        },
-        {
-          "name": "电机Ⅱ",
-          "lead": "鸣志电器",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        },
-        {
-          "level": "warn",
-          "text": "炸板率偏高（31.9%）→ 注意回封质量"
-        }
-      ],
-      "shift_score": 56,
-      "shift_label": "分歧",
-      "note": "情绪整体平稳，维持当前节奏。"
-    },
-    {
-      "time": "10:30:04",
-      "ts_bj": "2026-09-03 10:30:04",
-      "date": "2026-09-03",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid"
-      },
-      "pool_errors": {},
-      "zt": 34,
-      "dt": 8,
-      "zab": 16,
-      "zb": 32.0,
-      "fb": 68.0,
-      "jj": 26.5,
-      "lianban": 9,
-      "max_lb": 5,
-      "amount": "8074.9亿",
-      "bf": 0,
-      "heat": 51,
-      "risk": 37,
-      "headline": "分歧",
-      "concepts": [
-        {
-          "name": "一般零售",
-          "lead": "国芳集团",
-          "chg_pct": null
-        },
-        {
-          "name": "影视院线",
-          "lead": "欢瑞世纪",
-          "chg_pct": null
-        },
-        {
-          "name": "汽车零部",
-          "lead": "光洋股份",
-          "chg_pct": null
-        },
-        {
-          "name": "包装印刷",
-          "lead": "金富科技",
-          "chg_pct": null
-        },
-        {
-          "name": "航运港口",
-          "lead": "海通发展",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        },
-        {
-          "level": "warn",
-          "text": "炸板率偏高（32.0%）→ 注意回封质量"
-        }
-      ],
-      "shift_score": 56,
-      "shift_label": "分歧",
-      "note": "情绪整体平稳，维持当前节奏。"
-    },
-    {
-      "time": "10:40:04",
-      "ts_bj": "2026-09-03 10:40:04",
-      "date": "2026-09-03",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid"
-      },
-      "pool_errors": {},
-      "zt": 34,
-      "dt": 8,
-      "zab": 21,
-      "zb": 38.2,
-      "fb": 61.8,
-      "jj": 26.5,
-      "lianban": 9,
-      "max_lb": 5,
-      "amount": "8667.0亿",
-      "bf": 0,
-      "heat": 49,
-      "risk": 42,
-      "headline": "分歧",
-      "concepts": [
-        {
-          "name": "包装印刷",
-          "lead": "金富科技",
-          "chg_pct": null
-        },
-        {
-          "name": "一般零售",
-          "lead": "国芳集团",
-          "chg_pct": null
-        },
-        {
-          "name": "影视院线",
-          "lead": "欢瑞世纪",
-          "chg_pct": null
-        },
-        {
-          "name": "汽车零部",
-          "lead": "光洋股份",
-          "chg_pct": null
-        },
-        {
-          "name": "航运港口",
-          "lead": "海通发展",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        },
-        {
-          "level": "danger",
-          "text": "炸板率高（38.2%）→ 分歧偏强，谨慎接力"
-        }
-      ],
-      "shift_score": 53,
-      "shift_label": "分歧",
-      "note": "情绪略有回落，注意午后分歧。"
-    },
-    {
-      "time": "10:50:04",
-      "ts_bj": "2026-09-03 10:50:04",
-      "date": "2026-09-03",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid"
-      },
-      "pool_errors": {},
-      "zt": 33,
-      "dt": 8,
-      "zab": 22,
-      "zb": 40.0,
-      "fb": 60.0,
-      "jj": 27.3,
-      "lianban": 9,
-      "max_lb": 5,
-      "amount": "9138.3亿",
-      "bf": 0,
-      "heat": 48,
-      "risk": 44,
-      "headline": "分歧",
-      "concepts": [
-        {
-          "name": "一般零售",
-          "lead": "国芳集团",
-          "chg_pct": null
-        },
-        {
-          "name": "影视院线",
-          "lead": "欢瑞世纪",
-          "chg_pct": null
-        },
-        {
-          "name": "汽车零部",
-          "lead": "光洋股份",
-          "chg_pct": null
-        },
-        {
-          "name": "包装印刷",
-          "lead": "金富科技",
-          "chg_pct": null
-        },
-        {
-          "name": "航运港口",
-          "lead": "海通发展",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        },
-        {
-          "level": "danger",
-          "text": "炸板率高（40.0%）→ 分歧偏强，谨慎接力"
-        }
-      ],
-      "shift_score": 51,
-      "shift_label": "分歧",
-      "note": "情绪略有回落，注意午后分歧。"
-    },
-    {
-      "time": "11:00:04",
-      "ts_bj": "2026-09-03 11:00:04",
-      "date": "2026-09-03",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid"
-      },
-      "pool_errors": {},
-      "zt": 35,
-      "dt": 9,
-      "zab": 21,
-      "zb": 37.5,
-      "fb": 62.5,
-      "jj": 25.7,
-      "lianban": 9,
-      "max_lb": 5,
-      "amount": "9651.8亿",
-      "bf": 0,
-      "heat": 49,
-      "risk": 44,
-      "headline": "分歧",
-      "concepts": [
-        {
-          "name": "包装印刷",
-          "lead": "金富科技",
-          "chg_pct": null
-        },
-        {
-          "name": "一般零售",
-          "lead": "国芳集团",
-          "chg_pct": null
-        },
-        {
-          "name": "影视院线",
-          "lead": "欢瑞世纪",
-          "chg_pct": null
-        },
-        {
-          "name": "汽车零部",
-          "lead": "光洋股份",
-          "chg_pct": null
-        },
-        {
-          "name": "航运港口",
-          "lead": "海通发展",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        },
-        {
-          "level": "danger",
-          "text": "炸板率高（37.5%）→ 分歧偏强，谨慎接力"
-        }
-      ],
-      "shift_score": 52,
-      "shift_label": "分歧",
-      "note": "情绪整体平稳，维持当前节奏。"
-    },
-    {
-      "time": "11:10:04",
-      "ts_bj": "2026-09-03 11:10:04",
-      "date": "2026-09-03",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid"
-      },
-      "pool_errors": {},
-      "zt": 35,
-      "dt": 9,
-      "zab": 21,
-      "zb": 37.5,
-      "fb": 62.5,
-      "jj": 25.7,
-      "lianban": 9,
-      "max_lb": 5,
-      "amount": "10063.5亿",
-      "bf": 0,
-      "heat": 49,
-      "risk": 44,
-      "headline": "分歧",
-      "concepts": [
-        {
-          "name": "包装印刷",
-          "lead": "金富科技",
-          "chg_pct": null
-        },
-        {
-          "name": "一般零售",
-          "lead": "国芳集团",
-          "chg_pct": null
-        },
-        {
-          "name": "影视院线",
-          "lead": "欢瑞世纪",
-          "chg_pct": null
-        },
-        {
-          "name": "汽车零部",
-          "lead": "光洋股份",
-          "chg_pct": null
-        },
-        {
-          "name": "航运港口",
-          "lead": "海通发展",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        },
-        {
-          "level": "danger",
-          "text": "炸板率高（37.5%）→ 分歧偏强，谨慎接力"
-        }
-      ],
-      "shift_score": 52,
-      "shift_label": "分歧",
-      "note": "情绪整体平稳，维持当前节奏。"
-    },
-    {
-      "time": "11:20:04",
-      "ts_bj": "2026-09-03 11:20:04",
-      "date": "2026-09-03",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid"
-      },
-      "pool_errors": {},
-      "zt": 39,
-      "dt": 8,
-      "zab": 19,
-      "zb": 32.8,
-      "fb": 67.2,
-      "jj": 23.1,
-      "lianban": 9,
-      "max_lb": 5,
-      "amount": "10510.0亿",
-      "bf": 0,
-      "heat": 51,
-      "risk": 39,
-      "headline": "分歧",
-      "concepts": [
-        {
-          "name": "汽车零部",
-          "lead": "光洋股份",
-          "chg_pct": null
-        },
-        {
-          "name": "航运港口",
-          "lead": "中远海能",
-          "chg_pct": null
-        },
-        {
-          "name": "包装印刷",
-          "lead": "金富科技",
-          "chg_pct": null
-        },
-        {
-          "name": "一般零售",
-          "lead": "国芳集团",
-          "chg_pct": null
-        },
-        {
-          "name": "影视院线",
-          "lead": "欢瑞世纪",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        },
-        {
-          "level": "warn",
-          "text": "炸板率偏高（32.8%）→ 注意回封质量"
-        }
-      ],
-      "shift_score": 55,
-      "shift_label": "分歧",
-      "note": "情绪边际修复，但仍需确认持续性。"
-    },
-    {
-      "time": "11:30:03",
-      "ts_bj": "2026-09-03 11:30:03",
-      "date": "2026-09-03",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid"
-      },
-      "pool_errors": {},
-      "zt": 43,
-      "dt": 7,
-      "zab": 20,
-      "zb": 31.7,
-      "fb": 68.3,
-      "jj": 20.9,
-      "lianban": 9,
-      "max_lb": 5,
-      "amount": "10986.7亿",
-      "bf": 0,
-      "heat": 51,
-      "risk": 37,
-      "headline": "分歧",
-      "concepts": [
-        {
-          "name": "汽车零部",
-          "lead": "光洋股份",
-          "chg_pct": null
-        },
-        {
-          "name": "航运港口",
-          "lead": "中远海能",
-          "chg_pct": null
-        },
-        {
-          "name": "包装印刷",
-          "lead": "金富科技",
-          "chg_pct": null
-        },
-        {
-          "name": "一般零售",
-          "lead": "国芳集团",
-          "chg_pct": null
-        },
-        {
-          "name": "电网设备",
-          "lead": "太阳电缆",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        },
-        {
-          "level": "warn",
-          "text": "炸板率偏高（31.7%）→ 注意回封质量"
-        }
-      ],
-      "shift_score": 56,
-      "shift_label": "分歧",
-      "note": "情绪整体平稳，维持当前节奏。"
-    },
-    {
-      "time": "14:30:29",
-      "ts_bj": "2026-09-03 14:30:29",
-      "date": "2026-09-03",
-      "source": "intraday_live",
-      "provider": "unknown",
-      "data_quality": "unavailable",
-      "pool_status": {
-        "ztgc": "failed",
-        "zbgc": "failed",
-        "dtgc": "failed"
-      },
-      "pool_errors": {
-        "ztgc": "HTTP Error 429: Too Many Requests",
-        "zbgc": "HTTP Error 429: Too Many Requests",
-        "dtgc": "HTTP Error 429: Too Many Requests"
-      },
-      "zt": null,
-      "dt": null,
-      "zab": null,
-      "zb": null,
-      "fb": null,
-      "jj": null,
-      "lianban": null,
-      "max_lb": null,
-      "amount": "",
-      "bf": 0,
-      "heat": null,
-      "risk": null,
-      "headline": "数据暂缺",
-      "concepts": [],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        },
-        {
-          "level": "warn",
-          "text": "盘中三池响应不完整，保留最近有效数据"
-        },
-        {
-          "level": "warn",
-          "text": "三池请求均超时，本槽位跳过板块补抓并等待下一节点"
-        }
-      ],
-      "shift_score": null,
-      "shift_label": "数据暂缺",
-      "note": "本槽位三池请求均未成功，已记录数据暂缺；等待下一节点自动恢复。"
-    },
-    {
-      "time": "14:40:06",
-      "ts_bj": "2026-09-03 14:40:06",
-      "date": "2026-09-03",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid"
-      },
-      "pool_errors": {},
-      "zt": 41,
-      "dt": 13,
-      "zab": 34,
-      "zb": 45.3,
-      "fb": 54.7,
-      "jj": 19.5,
-      "lianban": 8,
-      "max_lb": 5,
-      "amount": "16079.8亿",
-      "bf": 0,
-      "heat": 45,
-      "risk": 59,
-      "headline": "走弱",
-      "concepts": [
-        {
-          "name": "一般零售",
-          "lead": "国芳集团",
-          "chg_pct": null
-        },
-        {
-          "name": "通用设备",
-          "lead": "金帝股份",
-          "chg_pct": null
-        },
-        {
-          "name": "汽车零部",
-          "lead": "新朋股份",
-          "chg_pct": null
-        },
-        {
-          "name": "包装印刷",
-          "lead": "金富科技",
-          "chg_pct": null
-        },
-        {
-          "name": "电网设备",
-          "lead": "太阳电缆",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        },
-        {
-          "level": "warn",
-          "text": "跌停偏多（13）→ 控制追高"
-        },
-        {
-          "level": "danger",
-          "text": "炸板率高（45.3%）→ 分歧偏强，谨慎接力"
-        }
-      ],
-      "shift_score": 43,
-      "shift_label": "走弱",
-      "note": "承接增强、分歧收敛，情绪明显回暖。"
-    },
-    {
-      "time": "14:50:05",
-      "ts_bj": "2026-09-03 14:50:05",
-      "date": "2026-09-03",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid"
-      },
-      "pool_errors": {},
-      "zt": 44,
-      "dt": 16,
-      "zab": 33,
-      "zb": 42.9,
-      "fb": 57.1,
-      "jj": 22.7,
-      "lianban": 10,
-      "max_lb": 5,
-      "amount": "16729.9亿",
-      "bf": 0,
-      "heat": 47,
-      "risk": 62,
-      "headline": "走弱",
-      "concepts": [
-        {
-          "name": "汽车零部",
-          "lead": "飞龙股份",
-          "chg_pct": null
-        },
-        {
-          "name": "一般零售",
-          "lead": "国芳集团",
-          "chg_pct": null
-        },
-        {
-          "name": "通用设备",
-          "lead": "金帝股份",
-          "chg_pct": null
-        },
-        {
-          "name": "包装印刷",
-          "lead": "金富科技",
-          "chg_pct": null
-        },
-        {
-          "name": "电网设备",
-          "lead": "太阳电缆",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        },
-        {
-          "level": "warn",
-          "text": "跌停偏多（16）→ 控制追高"
-        },
-        {
-          "level": "danger",
-          "text": "炸板率高（42.9%）→ 分歧偏强，谨慎接力"
-        }
-      ],
-      "shift_score": 43,
-      "shift_label": "走弱",
-      "note": "情绪整体平稳，维持当前节奏。"
-    },
-    {
-      "time": "15:00:05",
-      "ts_bj": "2026-09-03 15:00:05",
-      "date": "2026-09-03",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid"
-      },
-      "pool_errors": {},
-      "zt": 43,
-      "dt": 18,
-      "zab": 33,
-      "zb": 43.4,
-      "fb": 56.6,
-      "jj": 18.6,
-      "lianban": 8,
-      "max_lb": 5,
-      "amount": "17589.2亿",
-      "bf": 0,
-      "heat": 46,
-      "risk": 66,
-      "headline": "走弱",
-      "concepts": [
-        {
-          "name": "一般零售",
-          "lead": "国芳集团",
-          "chg_pct": null
-        },
-        {
-          "name": "通用设备",
-          "lead": "金帝股份",
-          "chg_pct": null
-        },
-        {
-          "name": "汽车零部",
-          "lead": "新朋股份",
-          "chg_pct": null
-        },
-        {
-          "name": "包装印刷",
-          "lead": "金富科技",
-          "chg_pct": null
-        },
-        {
-          "name": "电网设备",
-          "lead": "太阳电缆",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        },
-        {
-          "level": "warn",
-          "text": "跌停偏多（18）→ 控制追高"
-        },
-        {
-          "level": "danger",
-          "text": "炸板率高（43.4%）→ 分歧偏强，谨慎接力"
-        }
-      ],
-      "shift_score": 41,
-      "shift_label": "走弱",
-      "note": "情绪略有回落，注意午后分歧。"
     }
   ],
   "indices": [
     {
       "name": "上证指数",
       "code": "000001.SH",
-      "val": 3941.488,
-      "chg": 0.002587922116734107,
-      "cje": 812214903800.0,
-      "t": "2026-09-03 14:57:06"
+      "val": 3958.677,
+      "chg": 0.4208175971718526,
+      "cje": 16517917600.0,
+      "t": "2026-09-04 09:30:27"
     },
     {
       "name": "深证成指",
       "code": "399001.SZ",
-      "val": 13626.126,
-      "chg": 0.10710759034222725,
-      "cje": 929560481100.0,
-      "t": "2026-09-03 14:57:03"
+      "val": 13736.4,
+      "chg": 0.8167119531113207,
+      "cje": 30552263900.0,
+      "t": "2026-09-04 09:30:21"
     },
     {
       "name": "创业板指",
       "code": "399006.SZ",
-      "val": 3312.541,
-      "chg": 0.00899692444063522,
-      "cje": 433788913900.0,
-      "t": "2026-09-03 15:00:03"
+      "val": 3351.229,
+      "chg": 1.167925166813019,
+      "cje": 13753397500.0,
+      "t": "2026-09-04 09:30:24"
     }
   ],
   "asOf": {
-    "indices": "15:00:03"
+    "indices": "09:30:24"
   },
   "health": {
-    "status": "valid",
-    "last_valid_at": "2026-09-03 15:00:05",
+    "status": "degraded",
+    "last_valid_at": "2026-09-04 09:30:29",
     "rejected_reason": "",
     "source": {
-      "status": "valid",
+      "status": "partial",
       "pool_status": {
         "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid"
+        "zbgc": "failed",
+        "dtgc": "failed"
       },
-      "pool_errors": {}
+      "pool_errors": {
+        "zbgc": "empty_response",
+        "dtgc": "empty_response"
+      }
     },
     "indices_status": "valid",
     "coverage": {
-      "ok": false,
-      "status": "degraded",
-      "message": "intraday_coverage_incomplete",
-      "date": "2026-09-03",
+      "ok": true,
+      "status": "collecting",
+      "message": "intraday_coverage_collecting",
+      "date": "2026-09-04",
       "expected_count": 26,
-      "due_count": 26,
-      "observed_count": 17,
+      "due_count": 1,
+      "observed_count": 1,
       "observed_slots": [
-        "09:30",
-        "09:40",
-        "09:50",
-        "10:00",
-        "10:10",
-        "10:20",
-        "10:30",
-        "10:40",
-        "10:50",
-        "11:00",
-        "11:10",
-        "11:20",
-        "11:30",
-        "14:30",
-        "14:40",
-        "14:50",
-        "15:00"
+        "09:30"
       ],
-      "missing_slots": [
-        "13:00",
-        "13:10",
-        "13:20",
-        "13:30",
-        "13:40",
-        "13:50",
-        "14:00",
-        "14:10",
-        "14:20"
-      ],
+      "missing_slots": [],
       "duplicate_slots": [],
       "out_of_session": [],
       "monotonic": true,
-      "morning_coverage": 13,
-      "afternoon_coverage": 4
+      "morning_coverage": 1,
+      "afternoon_coverage": 0
     }
   },
   "live": {
     "market": {
-      "zt": 43,
-      "dt": 18,
-      "zab": 33,
-      "zab_rate": 43.4,
-      "lianban": 8,
-      "max_lianban": 5,
-      "amount": "17589.2亿"
+      "zt": 7,
+      "dt": null,
+      "zab": null,
+      "zab_rate": null,
+      "lianban": 4,
+      "max_lianban": 2,
+      "amount": ""
     },
     "alerts": [
       {
@@ -1308,37 +227,33 @@
       },
       {
         "level": "warn",
-        "text": "跌停偏多（18）→ 控制追高"
-      },
-      {
-        "level": "danger",
-        "text": "炸板率高（43.4%）→ 分歧偏强，谨慎接力"
+        "text": "盘中三池响应不完整，保留最近有效数据"
       }
     ],
     "concepts": [
       {
-        "name": "一般零售",
-        "lead": "国芳集团",
+        "name": "电网设备",
+        "lead": "华盛昌",
         "chg_pct": null
       },
       {
-        "name": "通用设备",
-        "lead": "金帝股份",
+        "name": "铁路公路",
+        "lead": "大众交通",
+        "chg_pct": null
+      },
+      {
+        "name": "IT服务Ⅱ",
+        "lead": "新炬网络",
+        "chg_pct": null
+      },
+      {
+        "name": "电力",
+        "lead": "恒盛能源",
         "chg_pct": null
       },
       {
         "name": "汽车零部",
-        "lead": "新朋股份",
-        "chg_pct": null
-      },
-      {
-        "name": "包装印刷",
-        "lead": "金富科技",
-        "chg_pct": null
-      },
-      {
-        "name": "电网设备",
-        "lead": "太阳电缆",
+        "lead": "双环传动",
         "chg_pct": null
       }
     ]
