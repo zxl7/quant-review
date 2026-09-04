@@ -1,11 +1,11 @@
 {
   "schema": "intraday_runtime_v1",
   "date": "2026-09-04",
-  "updated_at": "2026-09-04 09:40:04",
+  "updated_at": "2026-09-04 09:50:03",
   "source": "必盈(实时)+必盈(实时)",
   "latest": {
-    "time": "09:40:04",
-    "ts_bj": "2026-09-04 09:40:04",
+    "time": "09:50:03",
+    "ts_bj": "2026-09-04 09:50:03",
     "date": "2026-09-04",
     "source": "intraday_live",
     "provider": "必盈(实时)+必盈(实时)",
@@ -16,20 +16,30 @@
       "dtgc": "valid"
     },
     "pool_errors": {},
-    "zt": 15,
-    "dt": 6,
-    "zab": 4,
-    "zb": 21.1,
-    "fb": 78.9,
-    "jj": 46.7,
+    "zt": 22,
+    "dt": 2,
+    "zab": 14,
+    "zb": 38.9,
+    "fb": 61.1,
+    "jj": 31.8,
     "lianban": 7,
     "max_lb": 5,
-    "amount": "3349.2亿",
+    "amount": "5255.4亿",
     "bf": 0,
-    "heat": 58,
-    "risk": 22,
-    "headline": "修复",
+    "heat": 48,
+    "risk": 31,
+    "headline": "分歧",
     "concepts": [
+      {
+        "name": "汽车零部",
+        "lead": "双环传动",
+        "chg_pct": null
+      },
+      {
+        "name": "软件开发",
+        "lead": "四方精创",
+        "chg_pct": null
+      },
       {
         "name": "通信设备",
         "lead": "恒宝股份",
@@ -44,27 +54,21 @@
         "name": "房地产开",
         "lead": "信达地产",
         "chg_pct": null
-      },
-      {
-        "name": "电网设备",
-        "lead": "华盛昌",
-        "chg_pct": null
-      },
-      {
-        "name": "铁路公路",
-        "lead": "大众交通",
-        "chg_pct": null
       }
     ],
     "alerts": [
       {
         "level": "info",
         "text": "盘中模式：强制实时拉取"
+      },
+      {
+        "level": "danger",
+        "text": "炸板率高（38.9%）→ 分歧偏强，谨慎接力"
       }
     ],
-    "shift_score": 66,
-    "shift_label": "修复",
-    "note": "承接增强、分歧收敛，情绪明显回暖。"
+    "shift_score": 57,
+    "shift_label": "分歧",
+    "note": "炸板/跌停抬升，情绪明显走弱。"
   },
   "snapshots": [
     {
@@ -199,40 +203,107 @@
       "shift_score": 66,
       "shift_label": "修复",
       "note": "承接增强、分歧收敛，情绪明显回暖。"
+    },
+    {
+      "time": "09:50:03",
+      "ts_bj": "2026-09-04 09:50:03",
+      "date": "2026-09-04",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid"
+      },
+      "pool_errors": {},
+      "zt": 22,
+      "dt": 2,
+      "zab": 14,
+      "zb": 38.9,
+      "fb": 61.1,
+      "jj": 31.8,
+      "lianban": 7,
+      "max_lb": 5,
+      "amount": "5255.4亿",
+      "bf": 0,
+      "heat": 48,
+      "risk": 31,
+      "headline": "分歧",
+      "concepts": [
+        {
+          "name": "汽车零部",
+          "lead": "双环传动",
+          "chg_pct": null
+        },
+        {
+          "name": "软件开发",
+          "lead": "四方精创",
+          "chg_pct": null
+        },
+        {
+          "name": "通信设备",
+          "lead": "恒宝股份",
+          "chg_pct": null
+        },
+        {
+          "name": "出版",
+          "lead": "龙版传媒",
+          "chg_pct": null
+        },
+        {
+          "name": "房地产开",
+          "lead": "信达地产",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        },
+        {
+          "level": "danger",
+          "text": "炸板率高（38.9%）→ 分歧偏强，谨慎接力"
+        }
+      ],
+      "shift_score": 57,
+      "shift_label": "分歧",
+      "note": "炸板/跌停抬升，情绪明显走弱。"
     }
   ],
   "indices": [
     {
       "name": "上证指数",
       "code": "000001.SH",
-      "val": 3977.332,
-      "chg": 0.8940439685770506,
-      "cje": 151480000100.0,
-      "t": "2026-09-04 09:40:00"
+      "val": 3973.986,
+      "chg": 0.809165092204935,
+      "cje": 236160147000.0,
+      "t": "2026-09-04 09:50:03"
     },
     {
       "name": "深证成指",
       "code": "399001.SZ",
-      "val": 13759.44,
-      "chg": 0.9858113564047435,
-      "cje": 180668194900.0,
-      "t": "2026-09-04 09:39:51"
+      "val": 13717.849,
+      "chg": 0.6805590438015952,
+      "cje": 288604658300.0,
+      "t": "2026-09-04 09:49:57"
     },
     {
       "name": "创业板指",
       "code": "399006.SZ",
-      "val": 3354.818,
-      "chg": 1.276270995589188,
-      "cje": 85749552100.0,
-      "t": "2026-09-04 09:40:00"
+      "val": 3338.934,
+      "chg": 0.7967599495372293,
+      "cje": 136138523900.0,
+      "t": "2026-09-04 09:49:57"
     }
   ],
   "asOf": {
-    "indices": "09:40:00"
+    "indices": "09:49:57"
   },
   "health": {
     "status": "valid",
-    "last_valid_at": "2026-09-04 09:40:04",
+    "last_valid_at": "2026-09-04 09:50:03",
     "rejected_reason": "",
     "source": {
       "status": "valid",
@@ -250,37 +321,52 @@
       "message": "intraday_coverage_collecting",
       "date": "2026-09-04",
       "expected_count": 26,
-      "due_count": 2,
-      "observed_count": 2,
+      "due_count": 3,
+      "observed_count": 3,
       "observed_slots": [
         "09:30",
-        "09:40"
+        "09:40",
+        "09:50"
       ],
       "missing_slots": [],
       "duplicate_slots": [],
       "out_of_session": [],
       "monotonic": true,
-      "morning_coverage": 2,
+      "morning_coverage": 3,
       "afternoon_coverage": 0
     }
   },
   "live": {
     "market": {
-      "zt": 15,
-      "dt": 6,
-      "zab": 4,
-      "zab_rate": 21.1,
+      "zt": 22,
+      "dt": 2,
+      "zab": 14,
+      "zab_rate": 38.9,
       "lianban": 7,
       "max_lianban": 5,
-      "amount": "3349.2亿"
+      "amount": "5255.4亿"
     },
     "alerts": [
       {
         "level": "info",
         "text": "盘中模式：强制实时拉取"
+      },
+      {
+        "level": "danger",
+        "text": "炸板率高（38.9%）→ 分歧偏强，谨慎接力"
       }
     ],
     "concepts": [
+      {
+        "name": "汽车零部",
+        "lead": "双环传动",
+        "chg_pct": null
+      },
+      {
+        "name": "软件开发",
+        "lead": "四方精创",
+        "chg_pct": null
+      },
       {
         "name": "通信设备",
         "lead": "恒宝股份",
@@ -294,16 +380,6 @@
       {
         "name": "房地产开",
         "lead": "信达地产",
-        "chg_pct": null
-      },
-      {
-        "name": "电网设备",
-        "lead": "华盛昌",
-        "chg_pct": null
-      },
-      {
-        "name": "铁路公路",
-        "lead": "大众交通",
         "chg_pct": null
       }
     ]

@@ -2,7 +2,7 @@
   "schema": "intraday_snapshot_v1",
   "render_mode": "snapshot_stream",
   "date": "2026-09-04",
-  "count": 2,
+  "count": 3,
   "interval_min": null,
   "simulated": false,
   "snapshots": [
@@ -138,11 +138,78 @@
       "shift_score": 66,
       "shift_label": "修复",
       "note": "承接增强、分歧收敛，情绪明显回暖。"
+    },
+    {
+      "time": "09:50:03",
+      "ts_bj": "2026-09-04 09:50:03",
+      "date": "2026-09-04",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid"
+      },
+      "pool_errors": {},
+      "zt": 22,
+      "dt": 2,
+      "zab": 14,
+      "zb": 38.9,
+      "fb": 61.1,
+      "jj": 31.8,
+      "lianban": 7,
+      "max_lb": 5,
+      "amount": "5255.4亿",
+      "bf": 0,
+      "heat": 48,
+      "risk": 31,
+      "headline": "分歧",
+      "concepts": [
+        {
+          "name": "汽车零部",
+          "lead": "双环传动",
+          "chg_pct": null
+        },
+        {
+          "name": "软件开发",
+          "lead": "四方精创",
+          "chg_pct": null
+        },
+        {
+          "name": "通信设备",
+          "lead": "恒宝股份",
+          "chg_pct": null
+        },
+        {
+          "name": "出版",
+          "lead": "龙版传媒",
+          "chg_pct": null
+        },
+        {
+          "name": "房地产开",
+          "lead": "信达地产",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        },
+        {
+          "level": "danger",
+          "text": "炸板率高（38.9%）→ 分歧偏强，谨慎接力"
+        }
+      ],
+      "shift_score": 57,
+      "shift_label": "分歧",
+      "note": "炸板/跌停抬升，情绪明显走弱。"
     }
   ],
   "latest": {
-    "time": "09:40:04",
-    "ts_bj": "2026-09-04 09:40:04",
+    "time": "09:50:03",
+    "ts_bj": "2026-09-04 09:50:03",
     "date": "2026-09-04",
     "source": "intraday_live",
     "provider": "必盈(实时)+必盈(实时)",
@@ -153,20 +220,30 @@
       "dtgc": "valid"
     },
     "pool_errors": {},
-    "zt": 15,
-    "dt": 6,
-    "zab": 4,
-    "zb": 21.1,
-    "fb": 78.9,
-    "jj": 46.7,
+    "zt": 22,
+    "dt": 2,
+    "zab": 14,
+    "zb": 38.9,
+    "fb": 61.1,
+    "jj": 31.8,
     "lianban": 7,
     "max_lb": 5,
-    "amount": "3349.2亿",
+    "amount": "5255.4亿",
     "bf": 0,
-    "heat": 58,
-    "risk": 22,
-    "headline": "修复",
+    "heat": 48,
+    "risk": 31,
+    "headline": "分歧",
     "concepts": [
+      {
+        "name": "汽车零部",
+        "lead": "双环传动",
+        "chg_pct": null
+      },
+      {
+        "name": "软件开发",
+        "lead": "四方精创",
+        "chg_pct": null
+      },
       {
         "name": "通信设备",
         "lead": "恒宝股份",
@@ -181,33 +258,27 @@
         "name": "房地产开",
         "lead": "信达地产",
         "chg_pct": null
-      },
-      {
-        "name": "电网设备",
-        "lead": "华盛昌",
-        "chg_pct": null
-      },
-      {
-        "name": "铁路公路",
-        "lead": "大众交通",
-        "chg_pct": null
       }
     ],
     "alerts": [
       {
         "level": "info",
         "text": "盘中模式：强制实时拉取"
+      },
+      {
+        "level": "danger",
+        "text": "炸板率高（38.9%）→ 分歧偏强，谨慎接力"
       }
     ],
-    "shift_score": 66,
-    "shift_label": "修复",
-    "note": "承接增强、分歧收敛，情绪明显回暖。"
+    "shift_score": 57,
+    "shift_label": "分歧",
+    "note": "炸板/跌停抬升，情绪明显走弱。"
   },
-  "updated_at": "2026-09-04 09:40:04",
-  "snapshot_sig": "2026-09-04|2026-09-04 09:40:04|2",
+  "updated_at": "2026-09-04 09:50:03",
+  "snapshot_sig": "2026-09-04|2026-09-04 09:50:03|3",
   "health": {
     "status": "valid",
-    "last_valid_at": "2026-09-04 09:40:04",
+    "last_valid_at": "2026-09-04 09:50:03",
     "rejected_reason": "",
     "source": {
       "status": "valid",
