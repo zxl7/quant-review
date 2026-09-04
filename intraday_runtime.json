@@ -1,38 +1,50 @@
 {
   "schema": "intraday_runtime_v1",
   "date": "2026-09-04",
-  "updated_at": "2026-09-04 09:30:29",
-  "source": "必盈(实时)",
+  "updated_at": "2026-09-04 09:40:04",
+  "source": "必盈(实时)+必盈(实时)",
   "latest": {
-    "time": "09:30:29",
-    "ts_bj": "2026-09-04 09:30:29",
+    "time": "09:40:04",
+    "ts_bj": "2026-09-04 09:40:04",
     "date": "2026-09-04",
     "source": "intraday_live",
-    "provider": "必盈(实时)",
-    "data_quality": "partial",
+    "provider": "必盈(实时)+必盈(实时)",
+    "data_quality": "valid",
     "pool_status": {
       "ztgc": "valid",
-      "zbgc": "failed",
-      "dtgc": "failed"
+      "zbgc": "valid",
+      "dtgc": "valid"
     },
-    "pool_errors": {
-      "zbgc": "empty_response",
-      "dtgc": "empty_response"
-    },
-    "zt": 7,
-    "dt": null,
-    "zab": null,
-    "zb": null,
-    "fb": null,
-    "jj": 57.1,
-    "lianban": 4,
-    "max_lb": 2,
-    "amount": "",
+    "pool_errors": {},
+    "zt": 15,
+    "dt": 6,
+    "zab": 4,
+    "zb": 21.1,
+    "fb": 78.9,
+    "jj": 46.7,
+    "lianban": 7,
+    "max_lb": 5,
+    "amount": "3349.2亿",
     "bf": 0,
-    "heat": null,
-    "risk": null,
-    "headline": "数据部分可用",
+    "heat": 58,
+    "risk": 22,
+    "headline": "修复",
     "concepts": [
+      {
+        "name": "通信设备",
+        "lead": "恒宝股份",
+        "chg_pct": null
+      },
+      {
+        "name": "出版",
+        "lead": "龙版传媒",
+        "chg_pct": null
+      },
+      {
+        "name": "房地产开",
+        "lead": "信达地产",
+        "chg_pct": null
+      },
       {
         "name": "电网设备",
         "lead": "华盛昌",
@@ -42,36 +54,17 @@
         "name": "铁路公路",
         "lead": "大众交通",
         "chg_pct": null
-      },
-      {
-        "name": "IT服务Ⅱ",
-        "lead": "新炬网络",
-        "chg_pct": null
-      },
-      {
-        "name": "电力",
-        "lead": "恒盛能源",
-        "chg_pct": null
-      },
-      {
-        "name": "汽车零部",
-        "lead": "双环传动",
-        "chg_pct": null
       }
     ],
     "alerts": [
       {
         "level": "info",
         "text": "盘中模式：强制实时拉取"
-      },
-      {
-        "level": "warn",
-        "text": "盘中三池响应不完整，保留最近有效数据"
       }
     ],
-    "shift_score": null,
-    "shift_label": "数据部分可用",
-    "note": "本槽位仅部分三池成功；节点已保留，缺失指标不参与判断。"
+    "shift_score": 66,
+    "shift_label": "修复",
+    "note": "承接增强、分歧收敛，情绪明显回暖。"
   },
   "snapshots": [
     {
@@ -143,52 +136,112 @@
       "shift_score": null,
       "shift_label": "数据部分可用",
       "note": "本槽位仅部分三池成功；节点已保留，缺失指标不参与判断。"
+    },
+    {
+      "time": "09:40:04",
+      "ts_bj": "2026-09-04 09:40:04",
+      "date": "2026-09-04",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid"
+      },
+      "pool_errors": {},
+      "zt": 15,
+      "dt": 6,
+      "zab": 4,
+      "zb": 21.1,
+      "fb": 78.9,
+      "jj": 46.7,
+      "lianban": 7,
+      "max_lb": 5,
+      "amount": "3349.2亿",
+      "bf": 0,
+      "heat": 58,
+      "risk": 22,
+      "headline": "修复",
+      "concepts": [
+        {
+          "name": "通信设备",
+          "lead": "恒宝股份",
+          "chg_pct": null
+        },
+        {
+          "name": "出版",
+          "lead": "龙版传媒",
+          "chg_pct": null
+        },
+        {
+          "name": "房地产开",
+          "lead": "信达地产",
+          "chg_pct": null
+        },
+        {
+          "name": "电网设备",
+          "lead": "华盛昌",
+          "chg_pct": null
+        },
+        {
+          "name": "铁路公路",
+          "lead": "大众交通",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        }
+      ],
+      "shift_score": 66,
+      "shift_label": "修复",
+      "note": "承接增强、分歧收敛，情绪明显回暖。"
     }
   ],
   "indices": [
     {
       "name": "上证指数",
       "code": "000001.SH",
-      "val": 3958.677,
-      "chg": 0.4208175971718526,
-      "cje": 16517917600.0,
-      "t": "2026-09-04 09:30:27"
+      "val": 3977.332,
+      "chg": 0.8940439685770506,
+      "cje": 151480000100.0,
+      "t": "2026-09-04 09:40:00"
     },
     {
       "name": "深证成指",
       "code": "399001.SZ",
-      "val": 13736.4,
-      "chg": 0.8167119531113207,
-      "cje": 30552263900.0,
-      "t": "2026-09-04 09:30:21"
+      "val": 13759.44,
+      "chg": 0.9858113564047435,
+      "cje": 180668194900.0,
+      "t": "2026-09-04 09:39:51"
     },
     {
       "name": "创业板指",
       "code": "399006.SZ",
-      "val": 3351.229,
-      "chg": 1.167925166813019,
-      "cje": 13753397500.0,
-      "t": "2026-09-04 09:30:24"
+      "val": 3354.818,
+      "chg": 1.276270995589188,
+      "cje": 85749552100.0,
+      "t": "2026-09-04 09:40:00"
     }
   ],
   "asOf": {
-    "indices": "09:30:24"
+    "indices": "09:40:00"
   },
   "health": {
-    "status": "degraded",
-    "last_valid_at": "2026-09-04 09:30:29",
+    "status": "valid",
+    "last_valid_at": "2026-09-04 09:40:04",
     "rejected_reason": "",
     "source": {
-      "status": "partial",
+      "status": "valid",
       "pool_status": {
         "ztgc": "valid",
-        "zbgc": "failed",
-        "dtgc": "failed"
+        "zbgc": "valid",
+        "dtgc": "valid"
       },
-      "pool_errors": {
-        "zbgc": "empty_response",
-        "dtgc": "empty_response"
-      }
+      "pool_errors": {}
     },
     "indices_status": "valid",
     "coverage": {
@@ -197,40 +250,52 @@
       "message": "intraday_coverage_collecting",
       "date": "2026-09-04",
       "expected_count": 26,
-      "due_count": 1,
-      "observed_count": 1,
+      "due_count": 2,
+      "observed_count": 2,
       "observed_slots": [
-        "09:30"
+        "09:30",
+        "09:40"
       ],
       "missing_slots": [],
       "duplicate_slots": [],
       "out_of_session": [],
       "monotonic": true,
-      "morning_coverage": 1,
+      "morning_coverage": 2,
       "afternoon_coverage": 0
     }
   },
   "live": {
     "market": {
-      "zt": 7,
-      "dt": null,
-      "zab": null,
-      "zab_rate": null,
-      "lianban": 4,
-      "max_lianban": 2,
-      "amount": ""
+      "zt": 15,
+      "dt": 6,
+      "zab": 4,
+      "zab_rate": 21.1,
+      "lianban": 7,
+      "max_lianban": 5,
+      "amount": "3349.2亿"
     },
     "alerts": [
       {
         "level": "info",
         "text": "盘中模式：强制实时拉取"
-      },
-      {
-        "level": "warn",
-        "text": "盘中三池响应不完整，保留最近有效数据"
       }
     ],
     "concepts": [
+      {
+        "name": "通信设备",
+        "lead": "恒宝股份",
+        "chg_pct": null
+      },
+      {
+        "name": "出版",
+        "lead": "龙版传媒",
+        "chg_pct": null
+      },
+      {
+        "name": "房地产开",
+        "lead": "信达地产",
+        "chg_pct": null
+      },
       {
         "name": "电网设备",
         "lead": "华盛昌",
@@ -239,21 +304,6 @@
       {
         "name": "铁路公路",
         "lead": "大众交通",
-        "chg_pct": null
-      },
-      {
-        "name": "IT服务Ⅱ",
-        "lead": "新炬网络",
-        "chg_pct": null
-      },
-      {
-        "name": "电力",
-        "lead": "恒盛能源",
-        "chg_pct": null
-      },
-      {
-        "name": "汽车零部",
-        "lead": "双环传动",
         "chg_pct": null
       }
     ]
