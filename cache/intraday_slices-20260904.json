@@ -2,7 +2,7 @@
   "schema": "intraday_snapshot_v1",
   "render_mode": "snapshot_stream",
   "date": "2026-09-04",
-  "count": 10,
+  "count": 11,
   "interval_min": null,
   "simulated": false,
   "snapshots": [
@@ -674,11 +674,78 @@
       "shift_score": 55,
       "shift_label": "分歧",
       "note": "情绪整体平稳，维持当前节奏。"
+    },
+    {
+      "time": "11:10:04",
+      "ts_bj": "2026-09-04 11:10:04",
+      "date": "2026-09-04",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid"
+      },
+      "pool_errors": {},
+      "zt": 44,
+      "dt": 1,
+      "zab": 26,
+      "zb": 37.1,
+      "fb": 62.9,
+      "jj": 15.9,
+      "lianban": 7,
+      "max_lb": 5,
+      "amount": "11564.9亿",
+      "bf": 0,
+      "heat": 48,
+      "risk": 34,
+      "headline": "分歧",
+      "concepts": [
+        {
+          "name": "汽车零部",
+          "lead": "双环传动",
+          "chg_pct": null
+        },
+        {
+          "name": "出版",
+          "lead": "龙版传媒",
+          "chg_pct": null
+        },
+        {
+          "name": "种植业",
+          "lead": "亚盛集团",
+          "chg_pct": null
+        },
+        {
+          "name": "软件开发",
+          "lead": "四方精创",
+          "chg_pct": null
+        },
+        {
+          "name": "化学制药",
+          "lead": "昂利康",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        },
+        {
+          "level": "danger",
+          "text": "炸板率高（37.1%）→ 分歧偏强，谨慎接力"
+        }
+      ],
+      "shift_score": 56,
+      "shift_label": "分歧",
+      "note": "情绪整体平稳，维持当前节奏。"
     }
   ],
   "latest": {
-    "time": "11:00:04",
-    "ts_bj": "2026-09-04 11:00:04",
+    "time": "11:10:04",
+    "ts_bj": "2026-09-04 11:10:04",
     "date": "2026-09-04",
     "source": "intraday_live",
     "provider": "必盈(实时)+必盈(实时)",
@@ -689,18 +756,18 @@
       "dtgc": "valid"
     },
     "pool_errors": {},
-    "zt": 42,
+    "zt": 44,
     "dt": 1,
-    "zab": 27,
-    "zb": 39.1,
-    "fb": 60.9,
-    "jj": 16.7,
+    "zab": 26,
+    "zb": 37.1,
+    "fb": 62.9,
+    "jj": 15.9,
     "lianban": 7,
     "max_lb": 5,
-    "amount": "11143.0亿",
+    "amount": "11564.9亿",
     "bf": 0,
-    "heat": 47,
-    "risk": 35,
+    "heat": 48,
+    "risk": 34,
     "headline": "分歧",
     "concepts": [
       {
@@ -736,18 +803,18 @@
       },
       {
         "level": "danger",
-        "text": "炸板率高（39.1%）→ 分歧偏强，谨慎接力"
+        "text": "炸板率高（37.1%）→ 分歧偏强，谨慎接力"
       }
     ],
-    "shift_score": 55,
+    "shift_score": 56,
     "shift_label": "分歧",
     "note": "情绪整体平稳，维持当前节奏。"
   },
-  "updated_at": "2026-09-04 11:00:04",
-  "snapshot_sig": "2026-09-04|2026-09-04 11:00:04|10",
+  "updated_at": "2026-09-04 11:10:04",
+  "snapshot_sig": "2026-09-04|2026-09-04 11:10:04|11",
   "health": {
     "status": "valid",
-    "last_valid_at": "2026-09-04 11:00:04",
+    "last_valid_at": "2026-09-04 11:10:04",
     "rejected_reason": "",
     "source": {
       "status": "valid",
