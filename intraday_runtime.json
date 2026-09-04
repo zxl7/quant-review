@@ -1,39 +1,61 @@
 {
   "schema": "intraday_runtime_v1",
   "date": "2026-09-04",
-  "updated_at": "2026-09-04 14:40:28",
-  "source": "unknown",
+  "updated_at": "2026-09-04 14:50:04",
+  "source": "必盈(实时)+必盈(实时)",
   "latest": {
-    "time": "14:40:28",
-    "ts_bj": "2026-09-04 14:40:28",
+    "time": "14:50:04",
+    "ts_bj": "2026-09-04 14:50:04",
     "date": "2026-09-04",
     "source": "intraday_live",
-    "provider": "unknown",
-    "data_quality": "unavailable",
+    "provider": "必盈(实时)+必盈(实时)",
+    "data_quality": "valid",
     "pool_status": {
-      "ztgc": "failed",
-      "zbgc": "failed",
-      "dtgc": "failed"
+      "ztgc": "valid",
+      "zbgc": "valid",
+      "dtgc": "valid"
     },
-    "pool_errors": {
-      "ztgc": "HTTP Error 429: Too Many Requests",
-      "zbgc": "HTTP Error 429: Too Many Requests",
-      "dtgc": "HTTP Error 429: Too Many Requests"
-    },
-    "zt": null,
-    "dt": null,
-    "zab": null,
-    "zb": null,
-    "fb": null,
-    "jj": null,
-    "lianban": null,
-    "max_lb": null,
-    "amount": "",
+    "pool_errors": {},
+    "zt": 39,
+    "dt": 11,
+    "zab": 47,
+    "zb": 54.7,
+    "fb": 45.3,
+    "jj": 17.9,
+    "lianban": 7,
+    "max_lb": 5,
+    "amount": "19364.8亿",
     "bf": 0,
-    "heat": null,
-    "risk": null,
-    "headline": "数据暂缺",
-    "concepts": [],
+    "heat": 40,
+    "risk": 62,
+    "headline": "走弱",
+    "concepts": [
+      {
+        "name": "饲料",
+        "lead": "金新农",
+        "chg_pct": null
+      },
+      {
+        "name": "养殖业",
+        "lead": "天邦食品",
+        "chg_pct": null
+      },
+      {
+        "name": "出版",
+        "lead": "龙版传媒",
+        "chg_pct": null
+      },
+      {
+        "name": "一般零售",
+        "lead": "百大集团",
+        "chg_pct": null
+      },
+      {
+        "name": "非白酒",
+        "lead": "古越龙山",
+        "chg_pct": null
+      }
+    ],
     "alerts": [
       {
         "level": "info",
@@ -41,16 +63,16 @@
       },
       {
         "level": "warn",
-        "text": "盘中三池响应不完整，保留最近有效数据"
+        "text": "跌停偏多（11）→ 控制追高"
       },
       {
-        "level": "warn",
-        "text": "三池请求均超时，本槽位跳过板块补抓并等待下一节点"
+        "level": "danger",
+        "text": "炸板率高（54.7%）→ 分歧偏强，谨慎接力"
       }
     ],
-    "shift_score": null,
-    "shift_label": "数据暂缺",
-    "note": "本槽位三池请求均未成功，已记录数据暂缺；等待下一节点自动恢复。"
+    "shift_score": 39,
+    "shift_label": "走弱",
+    "note": "承接增强、分歧收敛，情绪明显回暖。"
   },
   "snapshots": [
     {
@@ -971,38 +993,130 @@
       "shift_score": null,
       "shift_label": "数据暂缺",
       "note": "本槽位三池请求均未成功，已记录数据暂缺；等待下一节点自动恢复。"
+    },
+    {
+      "time": "14:50:04",
+      "ts_bj": "2026-09-04 14:50:04",
+      "date": "2026-09-04",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid"
+      },
+      "pool_errors": {},
+      "zt": 39,
+      "dt": 11,
+      "zab": 47,
+      "zb": 54.7,
+      "fb": 45.3,
+      "jj": 17.9,
+      "lianban": 7,
+      "max_lb": 5,
+      "amount": "19364.8亿",
+      "bf": 0,
+      "heat": 40,
+      "risk": 62,
+      "headline": "走弱",
+      "concepts": [
+        {
+          "name": "饲料",
+          "lead": "金新农",
+          "chg_pct": null
+        },
+        {
+          "name": "养殖业",
+          "lead": "天邦食品",
+          "chg_pct": null
+        },
+        {
+          "name": "出版",
+          "lead": "龙版传媒",
+          "chg_pct": null
+        },
+        {
+          "name": "一般零售",
+          "lead": "百大集团",
+          "chg_pct": null
+        },
+        {
+          "name": "非白酒",
+          "lead": "古越龙山",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        },
+        {
+          "level": "warn",
+          "text": "跌停偏多（11）→ 控制追高"
+        },
+        {
+          "level": "danger",
+          "text": "炸板率高（54.7%）→ 分歧偏强，谨慎接力"
+        }
+      ],
+      "shift_score": 39,
+      "shift_label": "走弱",
+      "note": "承接增强、分歧收敛，情绪明显回暖。"
     }
   ],
-  "indices": [],
+  "indices": [
+    {
+      "name": "上证指数",
+      "code": "000001.SH",
+      "val": 3924.842,
+      "chg": -0.4374838917852695,
+      "cje": 894852632100.0,
+      "t": "2026-09-04 14:50:03"
+    },
+    {
+      "name": "深证成指",
+      "code": "399001.SZ",
+      "val": 13493.465,
+      "chg": -0.966281256050399,
+      "cje": 1041256447400.0,
+      "t": "2026-09-04 14:49:57"
+    },
+    {
+      "name": "创业板指",
+      "code": "399006.SZ",
+      "val": 3279.676,
+      "chg": -0.9921386633403249,
+      "cje": 479815226700.0,
+      "t": "2026-09-04 14:49:57"
+    }
+  ],
   "asOf": {
-    "indices": ""
+    "indices": "14:49:57"
   },
   "health": {
-    "status": "degraded",
-    "last_valid_at": "2026-09-04 14:40:28",
+    "status": "valid",
+    "last_valid_at": "2026-09-04 14:50:04",
     "rejected_reason": "",
     "source": {
-      "status": "partial",
+      "status": "valid",
       "pool_status": {
-        "ztgc": "failed",
-        "zbgc": "failed",
-        "dtgc": "failed"
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid"
       },
-      "pool_errors": {
-        "ztgc": "HTTP Error 429: Too Many Requests",
-        "zbgc": "HTTP Error 429: Too Many Requests",
-        "dtgc": "HTTP Error 429: Too Many Requests"
-      }
+      "pool_errors": {}
     },
-    "indices_status": "unavailable",
+    "indices_status": "valid",
     "coverage": {
       "ok": false,
       "status": "degraded",
       "message": "intraday_coverage_incomplete",
       "date": "2026-09-04",
       "expected_count": 26,
-      "due_count": 24,
-      "observed_count": 14,
+      "due_count": 25,
+      "observed_count": 15,
       "observed_slots": [
         "09:30",
         "09:40",
@@ -1017,7 +1131,8 @@
         "11:10",
         "11:20",
         "11:30",
-        "14:40"
+        "14:40",
+        "14:50"
       ],
       "missing_slots": [
         "13:00",
@@ -1035,18 +1150,18 @@
       "out_of_session": [],
       "monotonic": true,
       "morning_coverage": 13,
-      "afternoon_coverage": 1
+      "afternoon_coverage": 2
     }
   },
   "live": {
     "market": {
-      "zt": null,
-      "dt": null,
-      "zab": null,
-      "zab_rate": null,
-      "lianban": null,
-      "max_lianban": null,
-      "amount": ""
+      "zt": 39,
+      "dt": 11,
+      "zab": 47,
+      "zab_rate": 54.7,
+      "lianban": 7,
+      "max_lianban": 5,
+      "amount": "19364.8亿"
     },
     "alerts": [
       {
@@ -1055,13 +1170,39 @@
       },
       {
         "level": "warn",
-        "text": "盘中三池响应不完整，保留最近有效数据"
+        "text": "跌停偏多（11）→ 控制追高"
       },
       {
-        "level": "warn",
-        "text": "三池请求均超时，本槽位跳过板块补抓并等待下一节点"
+        "level": "danger",
+        "text": "炸板率高（54.7%）→ 分歧偏强，谨慎接力"
       }
     ],
-    "concepts": []
+    "concepts": [
+      {
+        "name": "饲料",
+        "lead": "金新农",
+        "chg_pct": null
+      },
+      {
+        "name": "养殖业",
+        "lead": "天邦食品",
+        "chg_pct": null
+      },
+      {
+        "name": "出版",
+        "lead": "龙版传媒",
+        "chg_pct": null
+      },
+      {
+        "name": "一般零售",
+        "lead": "百大集团",
+        "chg_pct": null
+      },
+      {
+        "name": "非白酒",
+        "lead": "古越龙山",
+        "chg_pct": null
+      }
+    ]
   }
 }
