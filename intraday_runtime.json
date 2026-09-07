@@ -1,11 +1,11 @@
 {
   "schema": "intraday_runtime_v1",
   "date": "2026-09-07",
-  "updated_at": "2026-09-07 11:10:04",
+  "updated_at": "2026-09-07 11:20:03",
   "source": "必盈(实时)+必盈(实时)",
   "latest": {
-    "time": "11:10:04",
-    "ts_bj": "2026-09-07 11:10:04",
+    "time": "11:20:03",
+    "ts_bj": "2026-09-07 11:20:03",
     "date": "2026-09-07",
     "source": "intraday_live",
     "provider": "必盈(实时)+必盈(实时)",
@@ -16,18 +16,18 @@
       "dtgc": "valid"
     },
     "pool_errors": {},
-    "zt": 60,
+    "zt": 64,
     "dt": 3,
-    "zab": 18,
-    "zb": 23.1,
-    "fb": 76.9,
-    "jj": 20.0,
+    "zab": 15,
+    "zb": 19.0,
+    "fb": 81.0,
+    "jj": 18.8,
     "lianban": 12,
     "max_lb": 6,
-    "amount": "11652.0亿",
+    "amount": "12008.5亿",
     "bf": 0,
-    "heat": 60,
-    "risk": 25,
+    "heat": 62,
+    "risk": 22,
     "headline": "修复",
     "concepts": [
       {
@@ -62,9 +62,9 @@
         "text": "盘中模式：强制实时拉取"
       }
     ],
-    "shift_score": 66,
+    "shift_score": 69,
     "shift_label": "修复",
-    "note": "情绪略有回落，注意午后分歧。"
+    "note": "情绪边际修复，但仍需确认持续性。"
   },
   "snapshots": [
     {
@@ -752,40 +752,103 @@
       "shift_score": 66,
       "shift_label": "修复",
       "note": "情绪略有回落，注意午后分歧。"
+    },
+    {
+      "time": "11:20:03",
+      "ts_bj": "2026-09-07 11:20:03",
+      "date": "2026-09-07",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid"
+      },
+      "pool_errors": {},
+      "zt": 64,
+      "dt": 3,
+      "zab": 15,
+      "zb": 19.0,
+      "fb": 81.0,
+      "jj": 18.8,
+      "lianban": 12,
+      "max_lb": 6,
+      "amount": "12008.5亿",
+      "bf": 0,
+      "heat": 62,
+      "risk": 22,
+      "headline": "修复",
+      "concepts": [
+        {
+          "name": "元件",
+          "lead": "景旺电子",
+          "chg_pct": null
+        },
+        {
+          "name": "汽车零部",
+          "lead": "斯菱智驱",
+          "chg_pct": null
+        },
+        {
+          "name": "一般零售",
+          "lead": "百大集团",
+          "chg_pct": null
+        },
+        {
+          "name": "通信设备",
+          "lead": "剑桥科技",
+          "chg_pct": null
+        },
+        {
+          "name": "小家电",
+          "lead": "爱仕达",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        }
+      ],
+      "shift_score": 69,
+      "shift_label": "修复",
+      "note": "情绪边际修复，但仍需确认持续性。"
     }
   ],
   "indices": [
     {
       "name": "上证指数",
       "code": "000001.SH",
-      "val": 3921.213,
-      "chg": -0.22653275374059678,
-      "cje": 543080952600.0,
-      "t": "2026-09-07 11:10:03"
+      "val": 3919.227,
+      "chg": -0.2770656133305003,
+      "cje": 559417387800.0,
+      "t": "2026-09-07 11:20:03"
     },
     {
       "name": "深证成指",
       "code": "399001.SZ",
-      "val": 13683.773,
-      "chg": 1.2340340500891886,
-      "cje": 621997866800.0,
-      "t": "2026-09-07 11:09:57"
+      "val": 13688.187,
+      "chg": 1.2666892999458736,
+      "cje": 641327208700.0,
+      "t": "2026-09-07 11:19:57"
     },
     {
       "name": "创业板指",
       "code": "399006.SZ",
-      "val": 3362.958,
-      "chg": 2.3249940819328336,
-      "cje": 299905916000.0,
-      "t": "2026-09-07 11:09:57"
+      "val": 3365.215,
+      "chg": 2.393668002821209,
+      "cje": 308930377600.0,
+      "t": "2026-09-07 11:19:57"
     }
   ],
   "asOf": {
-    "indices": "11:09:57"
+    "indices": "11:19:57"
   },
   "health": {
     "status": "valid",
-    "last_valid_at": "2026-09-07 11:10:04",
+    "last_valid_at": "2026-09-07 11:20:03",
     "rejected_reason": "",
     "source": {
       "status": "valid",
@@ -803,8 +866,8 @@
       "message": "intraday_coverage_collecting",
       "date": "2026-09-07",
       "expected_count": 26,
-      "due_count": 11,
-      "observed_count": 11,
+      "due_count": 12,
+      "observed_count": 12,
       "observed_slots": [
         "09:30",
         "09:40",
@@ -816,25 +879,26 @@
         "10:40",
         "10:50",
         "11:00",
-        "11:10"
+        "11:10",
+        "11:20"
       ],
       "missing_slots": [],
       "duplicate_slots": [],
       "out_of_session": [],
       "monotonic": true,
-      "morning_coverage": 11,
+      "morning_coverage": 12,
       "afternoon_coverage": 0
     }
   },
   "live": {
     "market": {
-      "zt": 60,
+      "zt": 64,
       "dt": 3,
-      "zab": 18,
-      "zab_rate": 23.1,
+      "zab": 15,
+      "zab_rate": 19.0,
       "lianban": 12,
       "max_lianban": 6,
-      "amount": "11652.0亿"
+      "amount": "12008.5亿"
     },
     "alerts": [
       {
