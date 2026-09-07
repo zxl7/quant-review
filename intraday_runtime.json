@@ -1,61 +1,38 @@
 {
   "schema": "intraday_runtime_v1",
-  "date": "2026-09-04",
-  "updated_at": "2026-09-04 15:00:04",
-  "source": "必盈(实时)+必盈(实时)",
+  "date": "2026-09-07",
+  "updated_at": "2026-09-07 09:30:27",
+  "source": "unknown",
   "latest": {
-    "time": "15:00:04",
-    "ts_bj": "2026-09-04 15:00:04",
-    "date": "2026-09-04",
+    "time": "09:30:27",
+    "ts_bj": "2026-09-07 09:30:27",
+    "date": "2026-09-07",
     "source": "intraday_live",
-    "provider": "必盈(实时)+必盈(实时)",
-    "data_quality": "valid",
+    "provider": "unknown",
+    "data_quality": "partial",
     "pool_status": {
-      "ztgc": "valid",
-      "zbgc": "valid",
+      "ztgc": "failed",
+      "zbgc": "failed",
       "dtgc": "valid"
     },
-    "pool_errors": {},
-    "zt": 40,
-    "dt": 10,
-    "zab": 47,
-    "zb": 54.0,
-    "fb": 46.0,
-    "jj": 17.5,
-    "lianban": 7,
-    "max_lb": 5,
-    "amount": "20267.2亿",
+    "pool_errors": {
+      "ztgc": "HTTP Error 429: Too Many Requests",
+      "zbgc": "HTTP Error 429: Too Many Requests"
+    },
+    "zt": null,
+    "dt": 2,
+    "zab": null,
+    "zb": null,
+    "fb": null,
+    "jj": null,
+    "lianban": null,
+    "max_lb": null,
+    "amount": "",
     "bf": 0,
-    "heat": 41,
-    "risk": 60,
-    "headline": "走弱",
-    "concepts": [
-      {
-        "name": "饲料",
-        "lead": "金新农",
-        "chg_pct": null
-      },
-      {
-        "name": "养殖业",
-        "lead": "天邦食品",
-        "chg_pct": null
-      },
-      {
-        "name": "出版",
-        "lead": "龙版传媒",
-        "chg_pct": null
-      },
-      {
-        "name": "种植业",
-        "lead": "亚盛集团",
-        "chg_pct": null
-      },
-      {
-        "name": "非白酒",
-        "lead": "古越龙山",
-        "chg_pct": null
-      }
-    ],
+    "heat": null,
+    "risk": null,
+    "headline": "数据部分可用",
+    "concepts": [],
     "alerts": [
       {
         "level": "info",
@@ -63,907 +40,36 @@
       },
       {
         "level": "warn",
-        "text": "跌停偏多（10）→ 控制追高"
+        "text": "盘中三池响应不完整，保留最近有效数据"
       },
       {
-        "level": "danger",
-        "text": "炸板率高（54.0%）→ 分歧偏强，谨慎接力"
+        "level": "warn",
+        "text": "板块数据获取失败或为空（稍后重试）"
       }
     ],
-    "shift_score": 41,
-    "shift_label": "走弱",
-    "note": "情绪边际修复，但仍需确认持续性。"
+    "shift_score": null,
+    "shift_label": "数据部分可用",
+    "note": "本槽位仅部分三池成功；节点已保留，缺失指标不参与判断。"
   },
   "snapshots": [
     {
-      "time": "09:30:29",
-      "ts_bj": "2026-09-04 09:30:29",
-      "date": "2026-09-04",
-      "source": "intraday_live",
-      "provider": "必盈(实时)",
-      "data_quality": "partial",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "failed",
-        "dtgc": "failed"
-      },
-      "pool_errors": {
-        "zbgc": "empty_response",
-        "dtgc": "empty_response"
-      },
-      "zt": 7,
-      "dt": null,
-      "zab": null,
-      "zb": null,
-      "fb": null,
-      "jj": 57.1,
-      "lianban": 4,
-      "max_lb": 2,
-      "amount": "",
-      "bf": 0,
-      "heat": null,
-      "risk": null,
-      "headline": "数据部分可用",
-      "concepts": [
-        {
-          "name": "电网设备",
-          "lead": "华盛昌",
-          "chg_pct": null
-        },
-        {
-          "name": "铁路公路",
-          "lead": "大众交通",
-          "chg_pct": null
-        },
-        {
-          "name": "IT服务Ⅱ",
-          "lead": "新炬网络",
-          "chg_pct": null
-        },
-        {
-          "name": "电力",
-          "lead": "恒盛能源",
-          "chg_pct": null
-        },
-        {
-          "name": "汽车零部",
-          "lead": "双环传动",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        },
-        {
-          "level": "warn",
-          "text": "盘中三池响应不完整，保留最近有效数据"
-        }
-      ],
-      "shift_score": null,
-      "shift_label": "数据部分可用",
-      "note": "本槽位仅部分三池成功；节点已保留，缺失指标不参与判断。"
-    },
-    {
-      "time": "09:40:04",
-      "ts_bj": "2026-09-04 09:40:04",
-      "date": "2026-09-04",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid"
-      },
-      "pool_errors": {},
-      "zt": 15,
-      "dt": 6,
-      "zab": 4,
-      "zb": 21.1,
-      "fb": 78.9,
-      "jj": 46.7,
-      "lianban": 7,
-      "max_lb": 5,
-      "amount": "3349.2亿",
-      "bf": 0,
-      "heat": 58,
-      "risk": 22,
-      "headline": "修复",
-      "concepts": [
-        {
-          "name": "通信设备",
-          "lead": "恒宝股份",
-          "chg_pct": null
-        },
-        {
-          "name": "出版",
-          "lead": "龙版传媒",
-          "chg_pct": null
-        },
-        {
-          "name": "房地产开",
-          "lead": "信达地产",
-          "chg_pct": null
-        },
-        {
-          "name": "电网设备",
-          "lead": "华盛昌",
-          "chg_pct": null
-        },
-        {
-          "name": "铁路公路",
-          "lead": "大众交通",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        }
-      ],
-      "shift_score": 66,
-      "shift_label": "修复",
-      "note": "承接增强、分歧收敛，情绪明显回暖。"
-    },
-    {
-      "time": "09:50:03",
-      "ts_bj": "2026-09-04 09:50:03",
-      "date": "2026-09-04",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid"
-      },
-      "pool_errors": {},
-      "zt": 22,
-      "dt": 2,
-      "zab": 14,
-      "zb": 38.9,
-      "fb": 61.1,
-      "jj": 31.8,
-      "lianban": 7,
-      "max_lb": 5,
-      "amount": "5255.4亿",
-      "bf": 0,
-      "heat": 48,
-      "risk": 31,
-      "headline": "分歧",
-      "concepts": [
-        {
-          "name": "汽车零部",
-          "lead": "双环传动",
-          "chg_pct": null
-        },
-        {
-          "name": "软件开发",
-          "lead": "四方精创",
-          "chg_pct": null
-        },
-        {
-          "name": "通信设备",
-          "lead": "恒宝股份",
-          "chg_pct": null
-        },
-        {
-          "name": "出版",
-          "lead": "龙版传媒",
-          "chg_pct": null
-        },
-        {
-          "name": "房地产开",
-          "lead": "信达地产",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        },
-        {
-          "level": "danger",
-          "text": "炸板率高（38.9%）→ 分歧偏强，谨慎接力"
-        }
-      ],
-      "shift_score": 57,
-      "shift_label": "分歧",
-      "note": "炸板/跌停抬升，情绪明显走弱。"
-    },
-    {
-      "time": "10:00:04",
-      "ts_bj": "2026-09-04 10:00:04",
-      "date": "2026-09-04",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid"
-      },
-      "pool_errors": {},
-      "zt": 34,
-      "dt": 2,
-      "zab": 17,
-      "zb": 33.3,
-      "fb": 66.7,
-      "jj": 23.5,
-      "lianban": 8,
-      "max_lb": 5,
-      "amount": "6742.0亿",
-      "bf": 0,
-      "heat": 50,
-      "risk": 29,
-      "headline": "分歧",
-      "concepts": [
-        {
-          "name": "出版",
-          "lead": "龙版传媒",
-          "chg_pct": null
-        },
-        {
-          "name": "汽车零部",
-          "lead": "双环传动",
-          "chg_pct": null
-        },
-        {
-          "name": "非白酒",
-          "lead": "会稽山",
-          "chg_pct": null
-        },
-        {
-          "name": "种植业",
-          "lead": "亚盛集团",
-          "chg_pct": null
-        },
-        {
-          "name": "广告营销",
-          "lead": "易点天下",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        },
-        {
-          "level": "warn",
-          "text": "炸板率偏高（33.3%）→ 注意回封质量"
-        }
-      ],
-      "shift_score": 59,
-      "shift_label": "分歧",
-      "note": "情绪边际修复，但仍需确认持续性。"
-    },
-    {
-      "time": "10:10:04",
-      "ts_bj": "2026-09-04 10:10:04",
-      "date": "2026-09-04",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid"
-      },
-      "pool_errors": {},
-      "zt": 38,
-      "dt": 2,
-      "zab": 17,
-      "zb": 30.9,
-      "fb": 69.1,
-      "jj": 18.4,
-      "lianban": 7,
-      "max_lb": 5,
-      "amount": "7850.8亿",
-      "bf": 0,
-      "heat": 50,
-      "risk": 28,
-      "headline": "分歧",
-      "concepts": [
-        {
-          "name": "汽车零部",
-          "lead": "双环传动",
-          "chg_pct": null
-        },
-        {
-          "name": "出版",
-          "lead": "龙版传媒",
-          "chg_pct": null
-        },
-        {
-          "name": "种植业",
-          "lead": "亚盛集团",
-          "chg_pct": null
-        },
-        {
-          "name": "广告营销",
-          "lead": "易点天下",
-          "chg_pct": null
-        },
-        {
-          "name": "软件开发",
-          "lead": "四方精创",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        },
-        {
-          "level": "warn",
-          "text": "炸板率偏高（30.9%）→ 注意回封质量"
-        }
-      ],
-      "shift_score": 59,
-      "shift_label": "分歧",
-      "note": "情绪整体平稳，维持当前节奏。"
-    },
-    {
-      "time": "10:20:04",
-      "ts_bj": "2026-09-04 10:20:04",
-      "date": "2026-09-04",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid"
-      },
-      "pool_errors": {},
-      "zt": 42,
-      "dt": 2,
-      "zab": 18,
-      "zb": 30.0,
-      "fb": 70.0,
-      "jj": 16.7,
-      "lianban": 7,
-      "max_lb": 5,
-      "amount": "8685.2亿",
-      "bf": 0,
-      "heat": 51,
-      "risk": 28,
-      "headline": "修复",
-      "concepts": [
-        {
-          "name": "汽车零部",
-          "lead": "双环传动",
-          "chg_pct": null
-        },
-        {
-          "name": "出版",
-          "lead": "龙版传媒",
-          "chg_pct": null
-        },
-        {
-          "name": "种植业",
-          "lead": "亚盛集团",
-          "chg_pct": null
-        },
-        {
-          "name": "电力",
-          "lead": "恒盛能源",
-          "chg_pct": null
-        },
-        {
-          "name": "广告营销",
-          "lead": "易点天下",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        },
-        {
-          "level": "warn",
-          "text": "炸板率偏高（30.0%）→ 注意回封质量"
-        }
-      ],
-      "shift_score": 60,
-      "shift_label": "修复",
-      "note": "情绪整体平稳，维持当前节奏。"
-    },
-    {
-      "time": "10:30:04",
-      "ts_bj": "2026-09-04 10:30:04",
-      "date": "2026-09-04",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid"
-      },
-      "pool_errors": {},
-      "zt": 39,
-      "dt": 2,
-      "zab": 24,
-      "zb": 38.1,
-      "fb": 61.9,
-      "jj": 17.9,
-      "lianban": 7,
-      "max_lb": 5,
-      "amount": "9408.6亿",
-      "bf": 0,
-      "heat": 47,
-      "risk": 35,
-      "headline": "分歧",
-      "concepts": [
-        {
-          "name": "汽车零部",
-          "lead": "双环传动",
-          "chg_pct": null
-        },
-        {
-          "name": "出版",
-          "lead": "龙版传媒",
-          "chg_pct": null
-        },
-        {
-          "name": "种植业",
-          "lead": "亚盛集团",
-          "chg_pct": null
-        },
-        {
-          "name": "广告营销",
-          "lead": "易点天下",
-          "chg_pct": null
-        },
-        {
-          "name": "软件开发",
-          "lead": "四方精创",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        },
-        {
-          "level": "danger",
-          "text": "炸板率高（38.1%）→ 分歧偏强，谨慎接力"
-        }
-      ],
-      "shift_score": 55,
-      "shift_label": "分歧",
-      "note": "炸板/跌停抬升，情绪明显走弱。"
-    },
-    {
-      "time": "10:40:04",
-      "ts_bj": "2026-09-04 10:40:04",
-      "date": "2026-09-04",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid"
-      },
-      "pool_errors": {},
-      "zt": 40,
-      "dt": 2,
-      "zab": 25,
-      "zb": 38.5,
-      "fb": 61.5,
-      "jj": 17.5,
-      "lianban": 7,
-      "max_lb": 5,
-      "amount": "10087.6亿",
-      "bf": 0,
-      "heat": 47,
-      "risk": 35,
-      "headline": "分歧",
-      "concepts": [
-        {
-          "name": "汽车零部",
-          "lead": "双环传动",
-          "chg_pct": null
-        },
-        {
-          "name": "出版",
-          "lead": "龙版传媒",
-          "chg_pct": null
-        },
-        {
-          "name": "种植业",
-          "lead": "亚盛集团",
-          "chg_pct": null
-        },
-        {
-          "name": "广告营销",
-          "lead": "易点天下",
-          "chg_pct": null
-        },
-        {
-          "name": "软件开发",
-          "lead": "四方精创",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        },
-        {
-          "level": "danger",
-          "text": "炸板率高（38.5%）→ 分歧偏强，谨慎接力"
-        }
-      ],
-      "shift_score": 55,
-      "shift_label": "分歧",
-      "note": "情绪整体平稳，维持当前节奏。"
-    },
-    {
-      "time": "10:50:04",
-      "ts_bj": "2026-09-04 10:50:04",
-      "date": "2026-09-04",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid"
-      },
-      "pool_errors": {},
-      "zt": 43,
-      "dt": 2,
-      "zab": 26,
-      "zb": 37.7,
-      "fb": 62.3,
-      "jj": 16.3,
-      "lianban": 7,
-      "max_lb": 5,
-      "amount": "10654.8亿",
-      "bf": 0,
-      "heat": 48,
-      "risk": 35,
-      "headline": "分歧",
-      "concepts": [
-        {
-          "name": "汽车零部",
-          "lead": "双环传动",
-          "chg_pct": null
-        },
-        {
-          "name": "出版",
-          "lead": "龙版传媒",
-          "chg_pct": null
-        },
-        {
-          "name": "种植业",
-          "lead": "亚盛集团",
-          "chg_pct": null
-        },
-        {
-          "name": "软件开发",
-          "lead": "四方精创",
-          "chg_pct": null
-        },
-        {
-          "name": "化学制药",
-          "lead": "昂利康",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        },
-        {
-          "level": "danger",
-          "text": "炸板率高（37.7%）→ 分歧偏强，谨慎接力"
-        }
-      ],
-      "shift_score": 55,
-      "shift_label": "分歧",
-      "note": "情绪整体平稳，维持当前节奏。"
-    },
-    {
-      "time": "11:00:04",
-      "ts_bj": "2026-09-04 11:00:04",
-      "date": "2026-09-04",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid"
-      },
-      "pool_errors": {},
-      "zt": 42,
-      "dt": 1,
-      "zab": 27,
-      "zb": 39.1,
-      "fb": 60.9,
-      "jj": 16.7,
-      "lianban": 7,
-      "max_lb": 5,
-      "amount": "11143.0亿",
-      "bf": 0,
-      "heat": 47,
-      "risk": 35,
-      "headline": "分歧",
-      "concepts": [
-        {
-          "name": "汽车零部",
-          "lead": "双环传动",
-          "chg_pct": null
-        },
-        {
-          "name": "出版",
-          "lead": "龙版传媒",
-          "chg_pct": null
-        },
-        {
-          "name": "种植业",
-          "lead": "亚盛集团",
-          "chg_pct": null
-        },
-        {
-          "name": "软件开发",
-          "lead": "四方精创",
-          "chg_pct": null
-        },
-        {
-          "name": "化学制药",
-          "lead": "昂利康",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        },
-        {
-          "level": "danger",
-          "text": "炸板率高（39.1%）→ 分歧偏强，谨慎接力"
-        }
-      ],
-      "shift_score": 55,
-      "shift_label": "分歧",
-      "note": "情绪整体平稳，维持当前节奏。"
-    },
-    {
-      "time": "11:10:04",
-      "ts_bj": "2026-09-04 11:10:04",
-      "date": "2026-09-04",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid"
-      },
-      "pool_errors": {},
-      "zt": 44,
-      "dt": 1,
-      "zab": 26,
-      "zb": 37.1,
-      "fb": 62.9,
-      "jj": 15.9,
-      "lianban": 7,
-      "max_lb": 5,
-      "amount": "11564.9亿",
-      "bf": 0,
-      "heat": 48,
-      "risk": 34,
-      "headline": "分歧",
-      "concepts": [
-        {
-          "name": "汽车零部",
-          "lead": "双环传动",
-          "chg_pct": null
-        },
-        {
-          "name": "出版",
-          "lead": "龙版传媒",
-          "chg_pct": null
-        },
-        {
-          "name": "种植业",
-          "lead": "亚盛集团",
-          "chg_pct": null
-        },
-        {
-          "name": "软件开发",
-          "lead": "四方精创",
-          "chg_pct": null
-        },
-        {
-          "name": "化学制药",
-          "lead": "昂利康",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        },
-        {
-          "level": "danger",
-          "text": "炸板率高（37.1%）→ 分歧偏强，谨慎接力"
-        }
-      ],
-      "shift_score": 56,
-      "shift_label": "分歧",
-      "note": "情绪整体平稳，维持当前节奏。"
-    },
-    {
-      "time": "11:20:04",
-      "ts_bj": "2026-09-04 11:20:04",
-      "date": "2026-09-04",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid"
-      },
-      "pool_errors": {},
-      "zt": 43,
-      "dt": 2,
-      "zab": 28,
-      "zb": 39.4,
-      "fb": 60.6,
-      "jj": 16.3,
-      "lianban": 7,
-      "max_lb": 5,
-      "amount": "11947.9亿",
-      "bf": 0,
-      "heat": 47,
-      "risk": 37,
-      "headline": "分歧",
-      "concepts": [
-        {
-          "name": "汽车零部",
-          "lead": "湖南天雁",
-          "chg_pct": null
-        },
-        {
-          "name": "出版",
-          "lead": "龙版传媒",
-          "chg_pct": null
-        },
-        {
-          "name": "种植业",
-          "lead": "亚盛集团",
-          "chg_pct": null
-        },
-        {
-          "name": "软件开发",
-          "lead": "四方精创",
-          "chg_pct": null
-        },
-        {
-          "name": "养殖业",
-          "lead": "天邦食品",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        },
-        {
-          "level": "danger",
-          "text": "炸板率高（39.4%）→ 分歧偏强，谨慎接力"
-        }
-      ],
-      "shift_score": 54,
-      "shift_label": "分歧",
-      "note": "情绪略有回落，注意午后分歧。"
-    },
-    {
-      "time": "11:30:04",
-      "ts_bj": "2026-09-04 11:30:04",
-      "date": "2026-09-04",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid"
-      },
-      "pool_errors": {},
-      "zt": 46,
-      "dt": 2,
-      "zab": 28,
-      "zb": 37.8,
-      "fb": 62.2,
-      "jj": 15.2,
-      "lianban": 7,
-      "max_lb": 5,
-      "amount": "12341.7亿",
-      "bf": 0,
-      "heat": 48,
-      "risk": 36,
-      "headline": "分歧",
-      "concepts": [
-        {
-          "name": "汽车零部",
-          "lead": "双环传动",
-          "chg_pct": null
-        },
-        {
-          "name": "饲料",
-          "lead": "播恩集团",
-          "chg_pct": null
-        },
-        {
-          "name": "出版",
-          "lead": "龙版传媒",
-          "chg_pct": null
-        },
-        {
-          "name": "种植业",
-          "lead": "亚盛集团",
-          "chg_pct": null
-        },
-        {
-          "name": "软件开发",
-          "lead": "四方精创",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        },
-        {
-          "level": "danger",
-          "text": "炸板率高（37.8%）→ 分歧偏强，谨慎接力"
-        }
-      ],
-      "shift_score": 55,
-      "shift_label": "分歧",
-      "note": "情绪整体平稳，维持当前节奏。"
-    },
-    {
-      "time": "14:40:28",
-      "ts_bj": "2026-09-04 14:40:28",
-      "date": "2026-09-04",
+      "time": "09:30:27",
+      "ts_bj": "2026-09-07 09:30:27",
+      "date": "2026-09-07",
       "source": "intraday_live",
       "provider": "unknown",
-      "data_quality": "unavailable",
+      "data_quality": "partial",
       "pool_status": {
         "ztgc": "failed",
         "zbgc": "failed",
-        "dtgc": "failed"
+        "dtgc": "valid"
       },
       "pool_errors": {
         "ztgc": "HTTP Error 429: Too Many Requests",
-        "zbgc": "HTTP Error 429: Too Many Requests",
-        "dtgc": "HTTP Error 429: Too Many Requests"
+        "zbgc": "HTTP Error 429: Too Many Requests"
       },
       "zt": null,
-      "dt": null,
+      "dt": 2,
       "zab": null,
       "zb": null,
       "fb": null,
@@ -974,7 +80,7 @@
       "bf": 0,
       "heat": null,
       "risk": null,
-      "headline": "数据暂缺",
+      "headline": "数据部分可用",
       "concepts": [],
       "alerts": [
         {
@@ -987,253 +93,63 @@
         },
         {
           "level": "warn",
-          "text": "三池请求均超时，本槽位跳过板块补抓并等待下一节点"
+          "text": "板块数据获取失败或为空（稍后重试）"
         }
       ],
       "shift_score": null,
-      "shift_label": "数据暂缺",
-      "note": "本槽位三池请求均未成功，已记录数据暂缺；等待下一节点自动恢复。"
-    },
-    {
-      "time": "14:50:04",
-      "ts_bj": "2026-09-04 14:50:04",
-      "date": "2026-09-04",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid"
-      },
-      "pool_errors": {},
-      "zt": 39,
-      "dt": 11,
-      "zab": 47,
-      "zb": 54.7,
-      "fb": 45.3,
-      "jj": 17.9,
-      "lianban": 7,
-      "max_lb": 5,
-      "amount": "19364.8亿",
-      "bf": 0,
-      "heat": 40,
-      "risk": 62,
-      "headline": "走弱",
-      "concepts": [
-        {
-          "name": "饲料",
-          "lead": "金新农",
-          "chg_pct": null
-        },
-        {
-          "name": "养殖业",
-          "lead": "天邦食品",
-          "chg_pct": null
-        },
-        {
-          "name": "出版",
-          "lead": "龙版传媒",
-          "chg_pct": null
-        },
-        {
-          "name": "一般零售",
-          "lead": "百大集团",
-          "chg_pct": null
-        },
-        {
-          "name": "非白酒",
-          "lead": "古越龙山",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        },
-        {
-          "level": "warn",
-          "text": "跌停偏多（11）→ 控制追高"
-        },
-        {
-          "level": "danger",
-          "text": "炸板率高（54.7%）→ 分歧偏强，谨慎接力"
-        }
-      ],
-      "shift_score": 39,
-      "shift_label": "走弱",
-      "note": "承接增强、分歧收敛，情绪明显回暖。"
-    },
-    {
-      "time": "15:00:04",
-      "ts_bj": "2026-09-04 15:00:04",
-      "date": "2026-09-04",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid"
-      },
-      "pool_errors": {},
-      "zt": 40,
-      "dt": 10,
-      "zab": 47,
-      "zb": 54.0,
-      "fb": 46.0,
-      "jj": 17.5,
-      "lianban": 7,
-      "max_lb": 5,
-      "amount": "20267.2亿",
-      "bf": 0,
-      "heat": 41,
-      "risk": 60,
-      "headline": "走弱",
-      "concepts": [
-        {
-          "name": "饲料",
-          "lead": "金新农",
-          "chg_pct": null
-        },
-        {
-          "name": "养殖业",
-          "lead": "天邦食品",
-          "chg_pct": null
-        },
-        {
-          "name": "出版",
-          "lead": "龙版传媒",
-          "chg_pct": null
-        },
-        {
-          "name": "种植业",
-          "lead": "亚盛集团",
-          "chg_pct": null
-        },
-        {
-          "name": "非白酒",
-          "lead": "古越龙山",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        },
-        {
-          "level": "warn",
-          "text": "跌停偏多（10）→ 控制追高"
-        },
-        {
-          "level": "danger",
-          "text": "炸板率高（54.0%）→ 分歧偏强，谨慎接力"
-        }
-      ],
-      "shift_score": 41,
-      "shift_label": "走弱",
-      "note": "情绪边际修复，但仍需确认持续性。"
+      "shift_label": "数据部分可用",
+      "note": "本槽位仅部分三池成功；节点已保留，缺失指标不参与判断。"
     }
   ],
-  "indices": [
-    {
-      "name": "上证指数",
-      "code": "000001.SH",
-      "val": 3930.509,
-      "chg": -0.29372758801934856,
-      "cje": 929536954600.0,
-      "t": "2026-09-04 14:57:03"
-    },
-    {
-      "name": "深证成指",
-      "code": "399001.SZ",
-      "val": 13521.039,
-      "chg": -0.7639050865012345,
-      "cje": 1082183985400.0,
-      "t": "2026-09-04 14:57:03"
-    },
-    {
-      "name": "创业板指",
-      "code": "399006.SZ",
-      "val": 3289.003,
-      "chg": -0.7105723370669227,
-      "cje": 498926522300.0,
-      "t": "2026-09-04 14:57:03"
-    }
-  ],
+  "indices": [],
   "asOf": {
-    "indices": "14:57:03"
+    "indices": ""
   },
   "health": {
-    "status": "valid",
-    "last_valid_at": "2026-09-04 15:00:04",
+    "status": "degraded",
+    "last_valid_at": "2026-09-07 09:30:27",
     "rejected_reason": "",
     "source": {
-      "status": "valid",
+      "status": "partial",
       "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
+        "ztgc": "failed",
+        "zbgc": "failed",
         "dtgc": "valid"
       },
-      "pool_errors": {}
+      "pool_errors": {
+        "ztgc": "HTTP Error 429: Too Many Requests",
+        "zbgc": "HTTP Error 429: Too Many Requests"
+      }
     },
-    "indices_status": "valid",
+    "indices_status": "unavailable",
     "coverage": {
-      "ok": false,
-      "status": "degraded",
-      "message": "intraday_coverage_incomplete",
-      "date": "2026-09-04",
+      "ok": true,
+      "status": "collecting",
+      "message": "intraday_coverage_collecting",
+      "date": "2026-09-07",
       "expected_count": 26,
-      "due_count": 26,
-      "observed_count": 16,
+      "due_count": 1,
+      "observed_count": 1,
       "observed_slots": [
-        "09:30",
-        "09:40",
-        "09:50",
-        "10:00",
-        "10:10",
-        "10:20",
-        "10:30",
-        "10:40",
-        "10:50",
-        "11:00",
-        "11:10",
-        "11:20",
-        "11:30",
-        "14:40",
-        "14:50",
-        "15:00"
+        "09:30"
       ],
-      "missing_slots": [
-        "13:00",
-        "13:10",
-        "13:20",
-        "13:30",
-        "13:40",
-        "13:50",
-        "14:00",
-        "14:10",
-        "14:20",
-        "14:30"
-      ],
+      "missing_slots": [],
       "duplicate_slots": [],
       "out_of_session": [],
       "monotonic": true,
-      "morning_coverage": 13,
-      "afternoon_coverage": 3
+      "morning_coverage": 1,
+      "afternoon_coverage": 0
     }
   },
   "live": {
     "market": {
-      "zt": 40,
-      "dt": 10,
-      "zab": 47,
-      "zab_rate": 54.0,
-      "lianban": 7,
-      "max_lianban": 5,
-      "amount": "20267.2亿"
+      "zt": null,
+      "dt": 2,
+      "zab": null,
+      "zab_rate": null,
+      "lianban": null,
+      "max_lianban": null,
+      "amount": ""
     },
     "alerts": [
       {
@@ -1242,39 +158,13 @@
       },
       {
         "level": "warn",
-        "text": "跌停偏多（10）→ 控制追高"
+        "text": "盘中三池响应不完整，保留最近有效数据"
       },
       {
-        "level": "danger",
-        "text": "炸板率高（54.0%）→ 分歧偏强，谨慎接力"
+        "level": "warn",
+        "text": "板块数据获取失败或为空（稍后重试）"
       }
     ],
-    "concepts": [
-      {
-        "name": "饲料",
-        "lead": "金新农",
-        "chg_pct": null
-      },
-      {
-        "name": "养殖业",
-        "lead": "天邦食品",
-        "chg_pct": null
-      },
-      {
-        "name": "出版",
-        "lead": "龙版传媒",
-        "chg_pct": null
-      },
-      {
-        "name": "种植业",
-        "lead": "亚盛集团",
-        "chg_pct": null
-      },
-      {
-        "name": "非白酒",
-        "lead": "古越龙山",
-        "chg_pct": null
-      }
-    ]
+    "concepts": []
   }
 }
