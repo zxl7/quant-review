@@ -2,7 +2,7 @@
   "schema": "intraday_snapshot_v1",
   "render_mode": "snapshot_stream",
   "date": "2026-09-07",
-  "count": 4,
+  "count": 5,
   "interval_min": null,
   "simulated": false,
   "snapshots": [
@@ -242,11 +242,82 @@
       "shift_score": 69,
       "shift_label": "修复",
       "note": "情绪整体平稳，维持当前节奏。"
+    },
+    {
+      "time": "10:10:03",
+      "ts_bj": "2026-09-07 10:10:03",
+      "date": "2026-09-07",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid"
+      },
+      "pool_errors": {},
+      "zt": 39,
+      "dt": 3,
+      "zab": 14,
+      "zb": 26.4,
+      "fb": 73.6,
+      "jj": 28.2,
+      "lianban": 11,
+      "max_lb": 6,
+      "amount": "7749.8亿",
+      "bf": 0,
+      "heat": 57,
+      "risk": 25,
+      "headline": "修复",
+      "concepts": [
+        {
+          "name": "一般零售",
+          "lead": "百大集团",
+          "chg_pct": null
+        },
+        {
+          "name": "元件",
+          "lead": "兴森科技",
+          "chg_pct": null
+        },
+        {
+          "name": "通信设备",
+          "lead": "剑桥科技",
+          "chg_pct": null
+        },
+        {
+          "name": "种植业",
+          "lead": "亚盛集团",
+          "chg_pct": null
+        },
+        {
+          "name": "专用设备",
+          "lead": "天沃科技",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        },
+        {
+          "level": "warn",
+          "text": "炸板率偏高（26.4%）→ 注意回封质量"
+        },
+        {
+          "level": "warn",
+          "text": "高度6板 + 分歧不低 → 高位兑现/炸板风险"
+        }
+      ],
+      "shift_score": 65,
+      "shift_label": "修复",
+      "note": "情绪略有回落，注意午后分歧。"
     }
   ],
   "latest": {
-    "time": "10:00:03",
-    "ts_bj": "2026-09-07 10:00:03",
+    "time": "10:10:03",
+    "ts_bj": "2026-09-07 10:10:03",
     "date": "2026-09-07",
     "source": "intraday_live",
     "provider": "必盈(实时)+必盈(实时)",
@@ -259,26 +330,26 @@
     "pool_errors": {},
     "zt": 39,
     "dt": 3,
-    "zab": 9,
-    "zb": 18.8,
-    "fb": 81.2,
+    "zab": 14,
+    "zb": 26.4,
+    "fb": 73.6,
     "jj": 28.2,
     "lianban": 11,
     "max_lb": 6,
-    "amount": "6709.5亿",
+    "amount": "7749.8亿",
     "bf": 0,
-    "heat": 60,
-    "risk": 19,
+    "heat": 57,
+    "risk": 25,
     "headline": "修复",
     "concepts": [
       {
-        "name": "元件",
-        "lead": "兴森科技",
+        "name": "一般零售",
+        "lead": "百大集团",
         "chg_pct": null
       },
       {
-        "name": "一般零售",
-        "lead": "百大集团",
+        "name": "元件",
+        "lead": "兴森科技",
         "chg_pct": null
       },
       {
@@ -287,13 +358,13 @@
         "chg_pct": null
       },
       {
-        "name": "汽车零部",
-        "lead": "光洋股份",
+        "name": "种植业",
+        "lead": "亚盛集团",
         "chg_pct": null
       },
       {
-        "name": "种植业",
-        "lead": "亚盛集团",
+        "name": "专用设备",
+        "lead": "天沃科技",
         "chg_pct": null
       }
     ],
@@ -301,17 +372,25 @@
       {
         "level": "info",
         "text": "盘中模式：强制实时拉取"
+      },
+      {
+        "level": "warn",
+        "text": "炸板率偏高（26.4%）→ 注意回封质量"
+      },
+      {
+        "level": "warn",
+        "text": "高度6板 + 分歧不低 → 高位兑现/炸板风险"
       }
     ],
-    "shift_score": 69,
+    "shift_score": 65,
     "shift_label": "修复",
-    "note": "情绪整体平稳，维持当前节奏。"
+    "note": "情绪略有回落，注意午后分歧。"
   },
-  "updated_at": "2026-09-07 10:00:03",
-  "snapshot_sig": "2026-09-07|2026-09-07 10:00:03|4",
+  "updated_at": "2026-09-07 10:10:03",
+  "snapshot_sig": "2026-09-07|2026-09-07 10:10:03|5",
   "health": {
     "status": "valid",
-    "last_valid_at": "2026-09-07 10:00:03",
+    "last_valid_at": "2026-09-07 10:10:03",
     "rejected_reason": "",
     "source": {
       "status": "valid",

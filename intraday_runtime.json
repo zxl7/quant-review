@@ -1,11 +1,11 @@
 {
   "schema": "intraday_runtime_v1",
   "date": "2026-09-07",
-  "updated_at": "2026-09-07 10:00:03",
+  "updated_at": "2026-09-07 10:10:03",
   "source": "必盈(实时)+必盈(实时)",
   "latest": {
-    "time": "10:00:03",
-    "ts_bj": "2026-09-07 10:00:03",
+    "time": "10:10:03",
+    "ts_bj": "2026-09-07 10:10:03",
     "date": "2026-09-07",
     "source": "intraday_live",
     "provider": "必盈(实时)+必盈(实时)",
@@ -18,26 +18,26 @@
     "pool_errors": {},
     "zt": 39,
     "dt": 3,
-    "zab": 9,
-    "zb": 18.8,
-    "fb": 81.2,
+    "zab": 14,
+    "zb": 26.4,
+    "fb": 73.6,
     "jj": 28.2,
     "lianban": 11,
     "max_lb": 6,
-    "amount": "6709.5亿",
+    "amount": "7749.8亿",
     "bf": 0,
-    "heat": 60,
-    "risk": 19,
+    "heat": 57,
+    "risk": 25,
     "headline": "修复",
     "concepts": [
       {
-        "name": "元件",
-        "lead": "兴森科技",
+        "name": "一般零售",
+        "lead": "百大集团",
         "chg_pct": null
       },
       {
-        "name": "一般零售",
-        "lead": "百大集团",
+        "name": "元件",
+        "lead": "兴森科技",
         "chg_pct": null
       },
       {
@@ -46,13 +46,13 @@
         "chg_pct": null
       },
       {
-        "name": "汽车零部",
-        "lead": "光洋股份",
+        "name": "种植业",
+        "lead": "亚盛集团",
         "chg_pct": null
       },
       {
-        "name": "种植业",
-        "lead": "亚盛集团",
+        "name": "专用设备",
+        "lead": "天沃科技",
         "chg_pct": null
       }
     ],
@@ -60,11 +60,19 @@
       {
         "level": "info",
         "text": "盘中模式：强制实时拉取"
+      },
+      {
+        "level": "warn",
+        "text": "炸板率偏高（26.4%）→ 注意回封质量"
+      },
+      {
+        "level": "warn",
+        "text": "高度6板 + 分歧不低 → 高位兑现/炸板风险"
       }
     ],
-    "shift_score": 69,
+    "shift_score": 65,
     "shift_label": "修复",
-    "note": "情绪整体平稳，维持当前节奏。"
+    "note": "情绪略有回落，注意午后分歧。"
   },
   "snapshots": [
     {
@@ -303,40 +311,111 @@
       "shift_score": 69,
       "shift_label": "修复",
       "note": "情绪整体平稳，维持当前节奏。"
+    },
+    {
+      "time": "10:10:03",
+      "ts_bj": "2026-09-07 10:10:03",
+      "date": "2026-09-07",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid"
+      },
+      "pool_errors": {},
+      "zt": 39,
+      "dt": 3,
+      "zab": 14,
+      "zb": 26.4,
+      "fb": 73.6,
+      "jj": 28.2,
+      "lianban": 11,
+      "max_lb": 6,
+      "amount": "7749.8亿",
+      "bf": 0,
+      "heat": 57,
+      "risk": 25,
+      "headline": "修复",
+      "concepts": [
+        {
+          "name": "一般零售",
+          "lead": "百大集团",
+          "chg_pct": null
+        },
+        {
+          "name": "元件",
+          "lead": "兴森科技",
+          "chg_pct": null
+        },
+        {
+          "name": "通信设备",
+          "lead": "剑桥科技",
+          "chg_pct": null
+        },
+        {
+          "name": "种植业",
+          "lead": "亚盛集团",
+          "chg_pct": null
+        },
+        {
+          "name": "专用设备",
+          "lead": "天沃科技",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        },
+        {
+          "level": "warn",
+          "text": "炸板率偏高（26.4%）→ 注意回封质量"
+        },
+        {
+          "level": "warn",
+          "text": "高度6板 + 分歧不低 → 高位兑现/炸板风险"
+        }
+      ],
+      "shift_score": 65,
+      "shift_label": "修复",
+      "note": "情绪略有回落，注意午后分歧。"
     }
   ],
   "indices": [
     {
       "name": "上证指数",
       "code": "000001.SH",
-      "val": 3930.59,
-      "chg": 0.012060712711791715,
-      "cje": 312884414000.0,
-      "t": "2026-09-07 10:00:03"
+      "val": 3930.132,
+      "chg": 0.00040711266537874196,
+      "cje": 360422901200.0,
+      "t": "2026-09-07 10:09:57"
     },
     {
       "name": "深证成指",
       "code": "399001.SZ",
-      "val": 13661.234,
-      "chg": 1.067288088032171,
-      "cje": 357371166400.0,
-      "t": "2026-09-07 09:59:54"
+      "val": 13680.724,
+      "chg": 1.2114772180065,
+      "cje": 413565443300.0,
+      "t": "2026-09-07 10:09:54"
     },
     {
       "name": "创业板指",
       "code": "399006.SZ",
-      "val": 3348.5,
-      "chg": 1.8850793507834722,
-      "cje": 168943122000.0,
-      "t": "2026-09-07 09:59:54"
+      "val": 3355.491,
+      "chg": 2.0977950711780746,
+      "cje": 196087920900.0,
+      "t": "2026-09-07 10:09:54"
     }
   ],
   "asOf": {
-    "indices": "09:59:54"
+    "indices": "10:09:54"
   },
   "health": {
     "status": "valid",
-    "last_valid_at": "2026-09-07 10:00:03",
+    "last_valid_at": "2026-09-07 10:10:03",
     "rejected_reason": "",
     "source": {
       "status": "valid",
@@ -354,19 +433,20 @@
       "message": "intraday_coverage_collecting",
       "date": "2026-09-07",
       "expected_count": 26,
-      "due_count": 4,
-      "observed_count": 4,
+      "due_count": 5,
+      "observed_count": 5,
       "observed_slots": [
         "09:30",
         "09:40",
         "09:50",
-        "10:00"
+        "10:00",
+        "10:10"
       ],
       "missing_slots": [],
       "duplicate_slots": [],
       "out_of_session": [],
       "monotonic": true,
-      "morning_coverage": 4,
+      "morning_coverage": 5,
       "afternoon_coverage": 0
     }
   },
@@ -374,27 +454,35 @@
     "market": {
       "zt": 39,
       "dt": 3,
-      "zab": 9,
-      "zab_rate": 18.8,
+      "zab": 14,
+      "zab_rate": 26.4,
       "lianban": 11,
       "max_lianban": 6,
-      "amount": "6709.5亿"
+      "amount": "7749.8亿"
     },
     "alerts": [
       {
         "level": "info",
         "text": "盘中模式：强制实时拉取"
+      },
+      {
+        "level": "warn",
+        "text": "炸板率偏高（26.4%）→ 注意回封质量"
+      },
+      {
+        "level": "warn",
+        "text": "高度6板 + 分歧不低 → 高位兑现/炸板风险"
       }
     ],
     "concepts": [
       {
-        "name": "元件",
-        "lead": "兴森科技",
+        "name": "一般零售",
+        "lead": "百大集团",
         "chg_pct": null
       },
       {
-        "name": "一般零售",
-        "lead": "百大集团",
+        "name": "元件",
+        "lead": "兴森科技",
         "chg_pct": null
       },
       {
@@ -403,13 +491,13 @@
         "chg_pct": null
       },
       {
-        "name": "汽车零部",
-        "lead": "光洋股份",
+        "name": "种植业",
+        "lead": "亚盛集团",
         "chg_pct": null
       },
       {
-        "name": "种植业",
-        "lead": "亚盛集团",
+        "name": "专用设备",
+        "lead": "天沃科技",
         "chg_pct": null
       }
     ]
