@@ -1,11 +1,11 @@
 {
   "schema": "intraday_runtime_v1",
   "date": "2026-09-08",
-  "updated_at": "2026-09-08 10:40:03",
+  "updated_at": "2026-09-08 10:50:03",
   "source": "必盈(实时)+必盈(实时)",
   "latest": {
-    "time": "10:40:03",
-    "ts_bj": "2026-09-08 10:40:03",
+    "time": "10:50:03",
+    "ts_bj": "2026-09-08 10:50:03",
     "date": "2026-09-08",
     "source": "intraday_live",
     "provider": "必盈(实时)+必盈(实时)",
@@ -16,17 +16,17 @@
       "dtgc": "valid"
     },
     "pool_errors": {},
-    "zt": 56,
+    "zt": 58,
     "dt": 1,
-    "zab": 13,
-    "zb": 18.8,
-    "fb": 81.2,
-    "jj": 39.3,
+    "zab": 14,
+    "zb": 19.4,
+    "fb": 80.6,
+    "jj": 37.9,
     "lianban": 22,
     "max_lb": 7,
-    "amount": "10221.0亿",
+    "amount": "10781.1亿",
     "bf": 0,
-    "heat": 68,
+    "heat": 67,
     "risk": 18,
     "headline": "走强",
     "concepts": [
@@ -62,7 +62,7 @@
         "text": "盘中模式：强制实时拉取"
       }
     ],
-    "shift_score": 74,
+    "shift_score": 73,
     "shift_label": "走强",
     "note": "情绪整体平稳，维持当前节奏。"
   },
@@ -192,40 +192,103 @@
       "shift_score": 74,
       "shift_label": "走强",
       "note": "情绪整体平稳，维持当前节奏。"
+    },
+    {
+      "time": "10:50:03",
+      "ts_bj": "2026-09-08 10:50:03",
+      "date": "2026-09-08",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid"
+      },
+      "pool_errors": {},
+      "zt": 58,
+      "dt": 1,
+      "zab": 14,
+      "zb": 19.4,
+      "fb": 80.6,
+      "jj": 37.9,
+      "lianban": 22,
+      "max_lb": 7,
+      "amount": "10781.1亿",
+      "bf": 0,
+      "heat": 67,
+      "risk": 18,
+      "headline": "走强",
+      "concepts": [
+        {
+          "name": "通信设备",
+          "lead": "XD剑桥科",
+          "chg_pct": null
+        },
+        {
+          "name": "出版",
+          "lead": "龙版传媒",
+          "chg_pct": null
+        },
+        {
+          "name": "种植业",
+          "lead": "亚盛集团",
+          "chg_pct": null
+        },
+        {
+          "name": "农化制品",
+          "lead": "金正大",
+          "chg_pct": null
+        },
+        {
+          "name": "元件",
+          "lead": "兴森科技",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        }
+      ],
+      "shift_score": 73,
+      "shift_label": "走强",
+      "note": "情绪整体平稳，维持当前节奏。"
     }
   ],
   "indices": [
     {
       "name": "上证指数",
       "code": "000001.SH",
-      "val": 3945.868,
-      "chg": 0.33485908786815033,
-      "cje": 479540393200.0,
-      "t": "2026-09-08 10:40:00"
+      "val": 3949.81,
+      "chg": 0.43509559211116533,
+      "cje": 506603239700.0,
+      "t": "2026-09-08 10:50:00"
     },
     {
       "name": "深证成指",
       "code": "399001.SZ",
-      "val": 13815.513,
-      "chg": 0.29472414167346916,
-      "cje": 541886394000.0,
-      "t": "2026-09-08 10:39:51"
+      "val": 13821.302,
+      "chg": 0.33674980934545734,
+      "cje": 571202323500.0,
+      "t": "2026-09-08 10:49:54"
     },
     {
       "name": "创业板指",
       "code": "399006.SZ",
-      "val": 3404.218,
-      "chg": 0.16291614305666838,
-      "cje": 249186002700.0,
-      "t": "2026-09-08 10:39:57"
+      "val": 3407.951,
+      "chg": 0.27275287089314887,
+      "cje": 262398465300.0,
+      "t": "2026-09-08 10:49:57"
     }
   ],
   "asOf": {
-    "indices": "10:39:57"
+    "indices": "10:49:57"
   },
   "health": {
     "status": "valid",
-    "last_valid_at": "2026-09-08 10:40:03",
+    "last_valid_at": "2026-09-08 10:50:03",
     "rejected_reason": "",
     "source": {
       "status": "valid",
@@ -243,11 +306,12 @@
       "message": "intraday_coverage_incomplete",
       "date": "2026-09-08",
       "expected_count": 26,
-      "due_count": 8,
-      "observed_count": 2,
+      "due_count": 9,
+      "observed_count": 3,
       "observed_slots": [
         "10:30",
-        "10:40"
+        "10:40",
+        "10:50"
       ],
       "missing_slots": [
         "09:30",
@@ -260,19 +324,19 @@
       "duplicate_slots": [],
       "out_of_session": [],
       "monotonic": true,
-      "morning_coverage": 2,
+      "morning_coverage": 3,
       "afternoon_coverage": 0
     }
   },
   "live": {
     "market": {
-      "zt": 56,
+      "zt": 58,
       "dt": 1,
-      "zab": 13,
-      "zab_rate": 18.8,
+      "zab": 14,
+      "zab_rate": 19.4,
       "lianban": 22,
       "max_lianban": 7,
-      "amount": "10221.0亿"
+      "amount": "10781.1亿"
     },
     "alerts": [
       {
