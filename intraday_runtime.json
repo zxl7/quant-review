@@ -1,39 +1,61 @@
 {
   "schema": "intraday_runtime_v1",
   "date": "2026-09-08",
-  "updated_at": "2026-09-08 14:40:33",
-  "source": "unknown",
+  "updated_at": "2026-09-08 14:50:06",
+  "source": "必盈(实时)+必盈(实时)",
   "latest": {
-    "time": "14:40:33",
-    "ts_bj": "2026-09-08 14:40:33",
+    "time": "14:50:06",
+    "ts_bj": "2026-09-08 14:50:06",
     "date": "2026-09-08",
     "source": "intraday_live",
-    "provider": "unknown",
-    "data_quality": "unavailable",
+    "provider": "必盈(实时)+必盈(实时)",
+    "data_quality": "valid",
     "pool_status": {
-      "ztgc": "failed",
-      "zbgc": "failed",
-      "dtgc": "failed"
+      "ztgc": "valid",
+      "zbgc": "valid",
+      "dtgc": "valid_empty"
     },
-    "pool_errors": {
-      "ztgc": "HTTP Error 429: Too Many Requests",
-      "zbgc": "HTTP Error 429: Too Many Requests",
-      "dtgc": "HTTP Error 429: Too Many Requests"
-    },
-    "zt": null,
-    "dt": null,
-    "zab": null,
-    "zb": null,
-    "fb": null,
-    "jj": null,
-    "lianban": null,
-    "max_lb": null,
-    "amount": "",
+    "pool_errors": {},
+    "zt": 72,
+    "dt": 0,
+    "zab": 38,
+    "zb": 34.5,
+    "fb": 65.5,
+    "jj": 25.0,
+    "lianban": 18,
+    "max_lb": 4,
+    "amount": "18658.4亿",
     "bf": 0,
-    "heat": null,
-    "risk": null,
-    "headline": "数据暂缺",
-    "concepts": [],
+    "heat": 54,
+    "risk": 34,
+    "headline": "分歧",
+    "concepts": [
+      {
+        "name": "农化制品",
+        "lead": "金正大",
+        "chg_pct": null
+      },
+      {
+        "name": "农产品加",
+        "lead": "中粮糖业",
+        "chg_pct": null
+      },
+      {
+        "name": "种植业",
+        "lead": "亚盛集团",
+        "chg_pct": null
+      },
+      {
+        "name": "一般零售",
+        "lead": "百大集团",
+        "chg_pct": null
+      },
+      {
+        "name": "出版",
+        "lead": "中国出版",
+        "chg_pct": null
+      }
+    ],
     "alerts": [
       {
         "level": "info",
@@ -41,16 +63,12 @@
       },
       {
         "level": "warn",
-        "text": "盘中三池响应不完整，保留最近有效数据"
-      },
-      {
-        "level": "warn",
-        "text": "三池请求均超时，本槽位跳过板块补抓并等待下一节点"
+        "text": "炸板率偏高（34.5%）→ 注意回封质量"
       }
     ],
-    "shift_score": null,
-    "shift_label": "数据暂缺",
-    "note": "本槽位三池请求均未成功，已记录数据暂缺；等待下一节点自动恢复。"
+    "shift_score": 59,
+    "shift_label": "分歧",
+    "note": "承接增强、分歧收敛，情绪明显回暖。"
   },
   "snapshots": [
     {
@@ -542,38 +560,126 @@
       "shift_score": null,
       "shift_label": "数据暂缺",
       "note": "本槽位三池请求均未成功，已记录数据暂缺；等待下一节点自动恢复。"
+    },
+    {
+      "time": "14:50:06",
+      "ts_bj": "2026-09-08 14:50:06",
+      "date": "2026-09-08",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid_empty"
+      },
+      "pool_errors": {},
+      "zt": 72,
+      "dt": 0,
+      "zab": 38,
+      "zb": 34.5,
+      "fb": 65.5,
+      "jj": 25.0,
+      "lianban": 18,
+      "max_lb": 4,
+      "amount": "18658.4亿",
+      "bf": 0,
+      "heat": 54,
+      "risk": 34,
+      "headline": "分歧",
+      "concepts": [
+        {
+          "name": "农化制品",
+          "lead": "金正大",
+          "chg_pct": null
+        },
+        {
+          "name": "农产品加",
+          "lead": "中粮糖业",
+          "chg_pct": null
+        },
+        {
+          "name": "种植业",
+          "lead": "亚盛集团",
+          "chg_pct": null
+        },
+        {
+          "name": "一般零售",
+          "lead": "百大集团",
+          "chg_pct": null
+        },
+        {
+          "name": "出版",
+          "lead": "中国出版",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        },
+        {
+          "level": "warn",
+          "text": "炸板率偏高（34.5%）→ 注意回封质量"
+        }
+      ],
+      "shift_score": 59,
+      "shift_label": "分歧",
+      "note": "承接增强、分歧收敛，情绪明显回暖。"
     }
   ],
-  "indices": [],
+  "indices": [
+    {
+      "name": "上证指数",
+      "code": "000001.SH",
+      "val": 3942.158,
+      "chg": 0.24052184008996955,
+      "cje": 871810931700.0,
+      "t": "2026-09-08 14:50:03"
+    },
+    {
+      "name": "深证成指",
+      "code": "399001.SZ",
+      "val": 13708.803,
+      "chg": -0.4799448853223485,
+      "cje": 992546504900.0,
+      "t": "2026-09-08 14:50:00"
+    },
+    {
+      "name": "创业板指",
+      "code": "399006.SZ",
+      "val": 3360.501,
+      "chg": -1.1233769806580798,
+      "cje": 454177330500.0,
+      "t": "2026-09-08 14:50:00"
+    }
+  ],
   "asOf": {
-    "indices": ""
+    "indices": "14:50:00"
   },
   "health": {
-    "status": "degraded",
-    "last_valid_at": "2026-09-08 14:40:33",
+    "status": "valid",
+    "last_valid_at": "2026-09-08 14:50:06",
     "rejected_reason": "",
     "source": {
-      "status": "partial",
+      "status": "valid",
       "pool_status": {
-        "ztgc": "failed",
-        "zbgc": "failed",
-        "dtgc": "failed"
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid_empty"
       },
-      "pool_errors": {
-        "ztgc": "HTTP Error 429: Too Many Requests",
-        "zbgc": "HTTP Error 429: Too Many Requests",
-        "dtgc": "HTTP Error 429: Too Many Requests"
-      }
+      "pool_errors": {}
     },
-    "indices_status": "unavailable",
+    "indices_status": "valid",
     "coverage": {
       "ok": false,
       "status": "degraded",
       "message": "intraday_coverage_incomplete",
       "date": "2026-09-08",
       "expected_count": 26,
-      "due_count": 24,
-      "observed_count": 8,
+      "due_count": 25,
+      "observed_count": 9,
       "observed_slots": [
         "10:30",
         "10:40",
@@ -582,7 +688,8 @@
         "11:10",
         "11:20",
         "11:30",
-        "14:40"
+        "14:40",
+        "14:50"
       ],
       "missing_slots": [
         "09:30",
@@ -606,18 +713,18 @@
       "out_of_session": [],
       "monotonic": true,
       "morning_coverage": 7,
-      "afternoon_coverage": 1
+      "afternoon_coverage": 2
     }
   },
   "live": {
     "market": {
-      "zt": null,
-      "dt": null,
-      "zab": null,
-      "zab_rate": null,
-      "lianban": null,
-      "max_lianban": null,
-      "amount": ""
+      "zt": 72,
+      "dt": 0,
+      "zab": 38,
+      "zab_rate": 34.5,
+      "lianban": 18,
+      "max_lianban": 4,
+      "amount": "18658.4亿"
     },
     "alerts": [
       {
@@ -626,13 +733,35 @@
       },
       {
         "level": "warn",
-        "text": "盘中三池响应不完整，保留最近有效数据"
-      },
-      {
-        "level": "warn",
-        "text": "三池请求均超时，本槽位跳过板块补抓并等待下一节点"
+        "text": "炸板率偏高（34.5%）→ 注意回封质量"
       }
     ],
-    "concepts": []
+    "concepts": [
+      {
+        "name": "农化制品",
+        "lead": "金正大",
+        "chg_pct": null
+      },
+      {
+        "name": "农产品加",
+        "lead": "中粮糖业",
+        "chg_pct": null
+      },
+      {
+        "name": "种植业",
+        "lead": "亚盛集团",
+        "chg_pct": null
+      },
+      {
+        "name": "一般零售",
+        "lead": "百大集团",
+        "chg_pct": null
+      },
+      {
+        "name": "出版",
+        "lead": "中国出版",
+        "chg_pct": null
+      }
+    ]
   }
 }
