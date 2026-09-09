@@ -1,34 +1,37 @@
 {
   "schema": "intraday_runtime_v1",
-  "date": "2026-09-08",
-  "updated_at": "2026-09-08 15:00:05",
-  "source": "必盈(实时)+必盈(实时)",
+  "date": "2026-09-09",
+  "updated_at": "2026-09-09 09:30:32",
+  "source": "必盈(实时)",
   "latest": {
-    "time": "15:00:05",
-    "ts_bj": "2026-09-08 15:00:05",
-    "date": "2026-09-08",
+    "time": "09:30:32",
+    "ts_bj": "2026-09-09 09:30:32",
+    "date": "2026-09-09",
     "source": "intraday_live",
-    "provider": "必盈(实时)+必盈(实时)",
-    "data_quality": "valid",
+    "provider": "必盈(实时)",
+    "data_quality": "partial",
     "pool_status": {
       "ztgc": "valid",
-      "zbgc": "valid",
-      "dtgc": "valid_empty"
+      "zbgc": "failed",
+      "dtgc": "failed"
     },
-    "pool_errors": {},
-    "zt": 72,
-    "dt": 0,
-    "zab": 38,
-    "zb": 34.5,
-    "fb": 65.5,
-    "jj": 26.4,
-    "lianban": 19,
-    "max_lb": 4,
-    "amount": "19602.9亿",
+    "pool_errors": {
+      "zbgc": "empty_response",
+      "dtgc": "empty_response"
+    },
+    "zt": 10,
+    "dt": null,
+    "zab": null,
+    "zb": null,
+    "fb": null,
+    "jj": 70.0,
+    "lianban": 7,
+    "max_lb": 3,
+    "amount": "",
     "bf": 0,
-    "heat": 54,
-    "risk": 34,
-    "headline": "分歧",
+    "heat": null,
+    "risk": null,
+    "headline": "数据部分可用",
     "concepts": [
       {
         "name": "农化制品",
@@ -36,23 +39,23 @@
         "chg_pct": null
       },
       {
-        "name": "农产品加",
-        "lead": "中粮糖业",
+        "name": "家居用品",
+        "lead": "瑞尔特",
         "chg_pct": null
       },
       {
-        "name": "种植业",
-        "lead": "亚盛集团",
+        "name": "医疗服务",
+        "lead": "澳洋健康",
         "chg_pct": null
       },
       {
-        "name": "一般零售",
-        "lead": "百大集团",
+        "name": "通信设备",
+        "lead": "华脉科技",
         "chg_pct": null
       },
       {
-        "name": "出版",
-        "lead": "中国出版",
+        "name": "综合Ⅱ",
+        "lead": "红棉股份",
         "chg_pct": null
       }
     ],
@@ -63,486 +66,70 @@
       },
       {
         "level": "warn",
-        "text": "炸板率偏高（34.5%）→ 注意回封质量"
+        "text": "盘中三池响应不完整，保留最近有效数据"
       }
     ],
-    "shift_score": 59,
-    "shift_label": "分歧",
-    "note": "情绪整体平稳，维持当前节奏。"
+    "shift_score": null,
+    "shift_label": "数据部分可用",
+    "note": "本槽位仅部分三池成功；节点已保留，缺失指标不参与判断。"
   },
   "snapshots": [
     {
-      "time": "10:30:54",
-      "ts_bj": "2026-09-08 10:30:54",
-      "date": "2026-09-08",
+      "time": "09:30:32",
+      "ts_bj": "2026-09-09 09:30:32",
+      "date": "2026-09-09",
       "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
+      "provider": "必盈(实时)",
+      "data_quality": "partial",
       "pool_status": {
         "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid"
-      },
-      "pool_errors": {},
-      "zt": 53,
-      "dt": 1,
-      "zab": 13,
-      "zb": 19.7,
-      "fb": 80.3,
-      "jj": 39.6,
-      "lianban": 21,
-      "max_lb": 7,
-      "amount": "9466.4亿",
-      "bf": 0,
-      "heat": 67,
-      "risk": 18,
-      "headline": "走强",
-      "concepts": [
-        {
-          "name": "通信设备",
-          "lead": "XD剑桥科",
-          "chg_pct": null
-        },
-        {
-          "name": "出版",
-          "lead": "龙版传媒",
-          "chg_pct": null
-        },
-        {
-          "name": "种植业",
-          "lead": "亚盛集团",
-          "chg_pct": null
-        },
-        {
-          "name": "农化制品",
-          "lead": "金正大",
-          "chg_pct": null
-        },
-        {
-          "name": "元件",
-          "lead": "兴森科技",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        }
-      ],
-      "shift_score": 73,
-      "shift_label": "走强",
-      "note": "盘中实时切片已接入，可逐点观察情绪变化。"
-    },
-    {
-      "time": "10:40:03",
-      "ts_bj": "2026-09-08 10:40:03",
-      "date": "2026-09-08",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid"
-      },
-      "pool_errors": {},
-      "zt": 56,
-      "dt": 1,
-      "zab": 13,
-      "zb": 18.8,
-      "fb": 81.2,
-      "jj": 39.3,
-      "lianban": 22,
-      "max_lb": 7,
-      "amount": "10221.0亿",
-      "bf": 0,
-      "heat": 68,
-      "risk": 18,
-      "headline": "走强",
-      "concepts": [
-        {
-          "name": "通信设备",
-          "lead": "XD剑桥科",
-          "chg_pct": null
-        },
-        {
-          "name": "出版",
-          "lead": "龙版传媒",
-          "chg_pct": null
-        },
-        {
-          "name": "种植业",
-          "lead": "亚盛集团",
-          "chg_pct": null
-        },
-        {
-          "name": "农化制品",
-          "lead": "金正大",
-          "chg_pct": null
-        },
-        {
-          "name": "元件",
-          "lead": "兴森科技",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        }
-      ],
-      "shift_score": 74,
-      "shift_label": "走强",
-      "note": "情绪整体平稳，维持当前节奏。"
-    },
-    {
-      "time": "10:50:03",
-      "ts_bj": "2026-09-08 10:50:03",
-      "date": "2026-09-08",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid"
-      },
-      "pool_errors": {},
-      "zt": 58,
-      "dt": 1,
-      "zab": 14,
-      "zb": 19.4,
-      "fb": 80.6,
-      "jj": 37.9,
-      "lianban": 22,
-      "max_lb": 7,
-      "amount": "10781.1亿",
-      "bf": 0,
-      "heat": 67,
-      "risk": 18,
-      "headline": "走强",
-      "concepts": [
-        {
-          "name": "通信设备",
-          "lead": "XD剑桥科",
-          "chg_pct": null
-        },
-        {
-          "name": "出版",
-          "lead": "龙版传媒",
-          "chg_pct": null
-        },
-        {
-          "name": "种植业",
-          "lead": "亚盛集团",
-          "chg_pct": null
-        },
-        {
-          "name": "农化制品",
-          "lead": "金正大",
-          "chg_pct": null
-        },
-        {
-          "name": "元件",
-          "lead": "兴森科技",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        }
-      ],
-      "shift_score": 73,
-      "shift_label": "走强",
-      "note": "情绪整体平稳，维持当前节奏。"
-    },
-    {
-      "time": "11:00:03",
-      "ts_bj": "2026-09-08 11:00:03",
-      "date": "2026-09-08",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid_empty"
-      },
-      "pool_errors": {},
-      "zt": 61,
-      "dt": 0,
-      "zab": 14,
-      "zb": 18.7,
-      "fb": 81.3,
-      "jj": 36.1,
-      "lianban": 22,
-      "max_lb": 7,
-      "amount": "11311.6亿",
-      "bf": 0,
-      "heat": 68,
-      "risk": 17,
-      "headline": "走强",
-      "concepts": [
-        {
-          "name": "通信设备",
-          "lead": "XD剑桥科",
-          "chg_pct": null
-        },
-        {
-          "name": "农化制品",
-          "lead": "金正大",
-          "chg_pct": null
-        },
-        {
-          "name": "出版",
-          "lead": "龙版传媒",
-          "chg_pct": null
-        },
-        {
-          "name": "种植业",
-          "lead": "亚盛集团",
-          "chg_pct": null
-        },
-        {
-          "name": "元件",
-          "lead": "兴森科技",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        }
-      ],
-      "shift_score": 74,
-      "shift_label": "走强",
-      "note": "情绪整体平稳，维持当前节奏。"
-    },
-    {
-      "time": "11:10:04",
-      "ts_bj": "2026-09-08 11:10:04",
-      "date": "2026-09-08",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid_empty"
-      },
-      "pool_errors": {},
-      "zt": 64,
-      "dt": 0,
-      "zab": 14,
-      "zb": 17.9,
-      "fb": 82.1,
-      "jj": 32.8,
-      "lianban": 21,
-      "max_lb": 7,
-      "amount": "11796.4亿",
-      "bf": 0,
-      "heat": 68,
-      "risk": 16,
-      "headline": "走强",
-      "concepts": [
-        {
-          "name": "农化制品",
-          "lead": "金正大",
-          "chg_pct": null
-        },
-        {
-          "name": "出版",
-          "lead": "龙版传媒",
-          "chg_pct": null
-        },
-        {
-          "name": "种植业",
-          "lead": "亚盛集团",
-          "chg_pct": null
-        },
-        {
-          "name": "通信设备",
-          "lead": "华脉科技",
-          "chg_pct": null
-        },
-        {
-          "name": "元件",
-          "lead": "兴森科技",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        }
-      ],
-      "shift_score": 75,
-      "shift_label": "走强",
-      "note": "情绪整体平稳，维持当前节奏。"
-    },
-    {
-      "time": "11:20:03",
-      "ts_bj": "2026-09-08 11:20:03",
-      "date": "2026-09-08",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid_empty"
-      },
-      "pool_errors": {},
-      "zt": 68,
-      "dt": 0,
-      "zab": 14,
-      "zb": 17.1,
-      "fb": 82.9,
-      "jj": 29.4,
-      "lianban": 20,
-      "max_lb": 7,
-      "amount": "12174.7亿",
-      "bf": 0,
-      "heat": 68,
-      "risk": 16,
-      "headline": "走强",
-      "concepts": [
-        {
-          "name": "农化制品",
-          "lead": "金正大",
-          "chg_pct": null
-        },
-        {
-          "name": "出版",
-          "lead": "龙版传媒",
-          "chg_pct": null
-        },
-        {
-          "name": "种植业",
-          "lead": "亚盛集团",
-          "chg_pct": null
-        },
-        {
-          "name": "综合Ⅱ",
-          "lead": "综艺股份",
-          "chg_pct": null
-        },
-        {
-          "name": "通信设备",
-          "lead": "华脉科技",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        }
-      ],
-      "shift_score": 75,
-      "shift_label": "走强",
-      "note": "情绪整体平稳，维持当前节奏。"
-    },
-    {
-      "time": "11:30:03",
-      "ts_bj": "2026-09-08 11:30:03",
-      "date": "2026-09-08",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid_empty"
-      },
-      "pool_errors": {},
-      "zt": 73,
-      "dt": 0,
-      "zab": 13,
-      "zb": 15.1,
-      "fb": 84.9,
-      "jj": 28.8,
-      "lianban": 21,
-      "max_lb": 7,
-      "amount": "12549.6亿",
-      "bf": 0,
-      "heat": 69,
-      "risk": 14,
-      "headline": "走强",
-      "concepts": [
-        {
-          "name": "农化制品",
-          "lead": "金正大",
-          "chg_pct": null
-        },
-        {
-          "name": "出版",
-          "lead": "龙版传媒",
-          "chg_pct": null
-        },
-        {
-          "name": "种植业",
-          "lead": "亚盛集团",
-          "chg_pct": null
-        },
-        {
-          "name": "综合Ⅱ",
-          "lead": "综艺股份",
-          "chg_pct": null
-        },
-        {
-          "name": "通信设备",
-          "lead": "华脉科技",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        }
-      ],
-      "shift_score": 76,
-      "shift_label": "走强",
-      "note": "情绪整体平稳，维持当前节奏。"
-    },
-    {
-      "time": "14:40:33",
-      "ts_bj": "2026-09-08 14:40:33",
-      "date": "2026-09-08",
-      "source": "intraday_live",
-      "provider": "unknown",
-      "data_quality": "unavailable",
-      "pool_status": {
-        "ztgc": "failed",
         "zbgc": "failed",
         "dtgc": "failed"
       },
       "pool_errors": {
-        "ztgc": "HTTP Error 429: Too Many Requests",
-        "zbgc": "HTTP Error 429: Too Many Requests",
-        "dtgc": "HTTP Error 429: Too Many Requests"
+        "zbgc": "empty_response",
+        "dtgc": "empty_response"
       },
-      "zt": null,
+      "zt": 10,
       "dt": null,
       "zab": null,
       "zb": null,
       "fb": null,
-      "jj": null,
-      "lianban": null,
-      "max_lb": null,
+      "jj": 70.0,
+      "lianban": 7,
+      "max_lb": 3,
       "amount": "",
       "bf": 0,
       "heat": null,
       "risk": null,
-      "headline": "数据暂缺",
-      "concepts": [],
+      "headline": "数据部分可用",
+      "concepts": [
+        {
+          "name": "农化制品",
+          "lead": "金正大",
+          "chg_pct": null
+        },
+        {
+          "name": "家居用品",
+          "lead": "瑞尔特",
+          "chg_pct": null
+        },
+        {
+          "name": "医疗服务",
+          "lead": "澳洋健康",
+          "chg_pct": null
+        },
+        {
+          "name": "通信设备",
+          "lead": "华脉科技",
+          "chg_pct": null
+        },
+        {
+          "name": "综合Ⅱ",
+          "lead": "红棉股份",
+          "chg_pct": null
+        }
+      ],
       "alerts": [
         {
           "level": "info",
@@ -551,248 +138,87 @@
         {
           "level": "warn",
           "text": "盘中三池响应不完整，保留最近有效数据"
-        },
-        {
-          "level": "warn",
-          "text": "三池请求均超时，本槽位跳过板块补抓并等待下一节点"
         }
       ],
       "shift_score": null,
-      "shift_label": "数据暂缺",
-      "note": "本槽位三池请求均未成功，已记录数据暂缺；等待下一节点自动恢复。"
-    },
-    {
-      "time": "14:50:06",
-      "ts_bj": "2026-09-08 14:50:06",
-      "date": "2026-09-08",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid_empty"
-      },
-      "pool_errors": {},
-      "zt": 72,
-      "dt": 0,
-      "zab": 38,
-      "zb": 34.5,
-      "fb": 65.5,
-      "jj": 25.0,
-      "lianban": 18,
-      "max_lb": 4,
-      "amount": "18658.4亿",
-      "bf": 0,
-      "heat": 54,
-      "risk": 34,
-      "headline": "分歧",
-      "concepts": [
-        {
-          "name": "农化制品",
-          "lead": "金正大",
-          "chg_pct": null
-        },
-        {
-          "name": "农产品加",
-          "lead": "中粮糖业",
-          "chg_pct": null
-        },
-        {
-          "name": "种植业",
-          "lead": "亚盛集团",
-          "chg_pct": null
-        },
-        {
-          "name": "一般零售",
-          "lead": "百大集团",
-          "chg_pct": null
-        },
-        {
-          "name": "出版",
-          "lead": "中国出版",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        },
-        {
-          "level": "warn",
-          "text": "炸板率偏高（34.5%）→ 注意回封质量"
-        }
-      ],
-      "shift_score": 59,
-      "shift_label": "分歧",
-      "note": "承接增强、分歧收敛，情绪明显回暖。"
-    },
-    {
-      "time": "15:00:05",
-      "ts_bj": "2026-09-08 15:00:05",
-      "date": "2026-09-08",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid_empty"
-      },
-      "pool_errors": {},
-      "zt": 72,
-      "dt": 0,
-      "zab": 38,
-      "zb": 34.5,
-      "fb": 65.5,
-      "jj": 26.4,
-      "lianban": 19,
-      "max_lb": 4,
-      "amount": "19602.9亿",
-      "bf": 0,
-      "heat": 54,
-      "risk": 34,
-      "headline": "分歧",
-      "concepts": [
-        {
-          "name": "农化制品",
-          "lead": "金正大",
-          "chg_pct": null
-        },
-        {
-          "name": "农产品加",
-          "lead": "中粮糖业",
-          "chg_pct": null
-        },
-        {
-          "name": "种植业",
-          "lead": "亚盛集团",
-          "chg_pct": null
-        },
-        {
-          "name": "一般零售",
-          "lead": "百大集团",
-          "chg_pct": null
-        },
-        {
-          "name": "出版",
-          "lead": "中国出版",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        },
-        {
-          "level": "warn",
-          "text": "炸板率偏高（34.5%）→ 注意回封质量"
-        }
-      ],
-      "shift_score": 59,
-      "shift_label": "分歧",
-      "note": "情绪整体平稳，维持当前节奏。"
+      "shift_label": "数据部分可用",
+      "note": "本槽位仅部分三池成功；节点已保留，缺失指标不参与判断。"
     }
   ],
   "indices": [
     {
       "name": "上证指数",
       "code": "000001.SH",
-      "val": 3940.588,
-      "chg": 0.20060014763398173,
-      "cje": 915518332400.0,
-      "t": "2026-09-08 15:00:06"
+      "val": 3943.001,
+      "chg": 0.06217404621841648,
+      "cje": 19178978800.0,
+      "t": "2026-09-09 09:30:32"
     },
     {
       "name": "深证成指",
       "code": "399001.SZ",
-      "val": 13706.966,
-      "chg": -0.4932807207884805,
-      "cje": 1033555646400.0,
-      "t": "2026-09-08 14:58:48"
+      "val": 13769.815,
+      "chg": 0.48606866362971335,
+      "cje": 33910387500.0,
+      "t": "2026-09-09 09:30:24"
     },
     {
       "name": "创业板指",
       "code": "399006.SZ",
-      "val": 3359.715,
-      "chg": -1.1465035994846207,
-      "cje": 477539800600.0,
-      "t": "2026-09-08 15:00:03"
+      "val": 3384.391,
+      "chg": 0.7344670604500658,
+      "cje": 15281248100.0,
+      "t": "2026-09-09 09:30:30"
     }
   ],
   "asOf": {
-    "indices": "15:00:03"
+    "indices": "09:30:30"
   },
   "health": {
-    "status": "valid",
-    "last_valid_at": "2026-09-08 15:00:05",
+    "status": "degraded",
+    "last_valid_at": "2026-09-09 09:30:32",
     "rejected_reason": "",
     "source": {
-      "status": "valid",
+      "status": "partial",
       "pool_status": {
         "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid_empty"
+        "zbgc": "failed",
+        "dtgc": "failed"
       },
-      "pool_errors": {}
+      "pool_errors": {
+        "zbgc": "empty_response",
+        "dtgc": "empty_response"
+      }
     },
     "indices_status": "valid",
     "coverage": {
-      "ok": false,
-      "status": "degraded",
-      "message": "intraday_coverage_incomplete",
-      "date": "2026-09-08",
+      "ok": true,
+      "status": "collecting",
+      "message": "intraday_coverage_collecting",
+      "date": "2026-09-09",
       "expected_count": 26,
-      "due_count": 26,
-      "observed_count": 10,
+      "due_count": 1,
+      "observed_count": 1,
       "observed_slots": [
-        "10:30",
-        "10:40",
-        "10:50",
-        "11:00",
-        "11:10",
-        "11:20",
-        "11:30",
-        "14:40",
-        "14:50",
-        "15:00"
+        "09:30"
       ],
-      "missing_slots": [
-        "09:30",
-        "09:40",
-        "09:50",
-        "10:00",
-        "10:10",
-        "10:20",
-        "13:00",
-        "13:10",
-        "13:20",
-        "13:30",
-        "13:40",
-        "13:50",
-        "14:00",
-        "14:10",
-        "14:20",
-        "14:30"
-      ],
+      "missing_slots": [],
       "duplicate_slots": [],
       "out_of_session": [],
       "monotonic": true,
-      "morning_coverage": 7,
-      "afternoon_coverage": 3
+      "morning_coverage": 1,
+      "afternoon_coverage": 0
     }
   },
   "live": {
     "market": {
-      "zt": 72,
-      "dt": 0,
-      "zab": 38,
-      "zab_rate": 34.5,
-      "lianban": 19,
-      "max_lianban": 4,
-      "amount": "19602.9亿"
+      "zt": 10,
+      "dt": null,
+      "zab": null,
+      "zab_rate": null,
+      "lianban": 7,
+      "max_lianban": 3,
+      "amount": ""
     },
     "alerts": [
       {
@@ -801,7 +227,7 @@
       },
       {
         "level": "warn",
-        "text": "炸板率偏高（34.5%）→ 注意回封质量"
+        "text": "盘中三池响应不完整，保留最近有效数据"
       }
     ],
     "concepts": [
@@ -811,23 +237,23 @@
         "chg_pct": null
       },
       {
-        "name": "农产品加",
-        "lead": "中粮糖业",
+        "name": "家居用品",
+        "lead": "瑞尔特",
         "chg_pct": null
       },
       {
-        "name": "种植业",
-        "lead": "亚盛集团",
+        "name": "医疗服务",
+        "lead": "澳洋健康",
         "chg_pct": null
       },
       {
-        "name": "一般零售",
-        "lead": "百大集团",
+        "name": "通信设备",
+        "lead": "华脉科技",
         "chg_pct": null
       },
       {
-        "name": "出版",
-        "lead": "中国出版",
+        "name": "综合Ⅱ",
+        "lead": "红棉股份",
         "chg_pct": null
       }
     ]
