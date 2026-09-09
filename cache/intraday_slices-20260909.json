@@ -2,7 +2,7 @@
   "schema": "intraday_snapshot_v1",
   "render_mode": "snapshot_stream",
   "date": "2026-09-09",
-  "count": 12,
+  "count": 13,
   "interval_min": null,
   "simulated": false,
   "snapshots": [
@@ -808,11 +808,78 @@
       "shift_score": 53,
       "shift_label": "分歧",
       "note": "情绪整体平稳，维持当前节奏。"
+    },
+    {
+      "time": "11:30:04",
+      "ts_bj": "2026-09-09 11:30:04",
+      "date": "2026-09-09",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid"
+      },
+      "pool_errors": {},
+      "zt": 42,
+      "dt": 4,
+      "zab": 26,
+      "zb": 38.2,
+      "fb": 61.8,
+      "jj": 33.3,
+      "lianban": 14,
+      "max_lb": 5,
+      "amount": "12085.2亿",
+      "bf": 0,
+      "heat": 51,
+      "risk": 39,
+      "headline": "分歧",
+      "concepts": [
+        {
+          "name": "农产品加",
+          "lead": "中粮科技",
+          "chg_pct": null
+        },
+        {
+          "name": "一般零售",
+          "lead": "百大集团",
+          "chg_pct": null
+        },
+        {
+          "name": "化学制品",
+          "lead": "华康股份",
+          "chg_pct": null
+        },
+        {
+          "name": "航运港口",
+          "lead": "招商轮船",
+          "chg_pct": null
+        },
+        {
+          "name": "农化制品",
+          "lead": "金正大",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        },
+        {
+          "level": "danger",
+          "text": "炸板率高（38.2%）→ 分歧偏强，谨慎接力"
+        }
+      ],
+      "shift_score": 55,
+      "shift_label": "分歧",
+      "note": "情绪边际修复，但仍需确认持续性。"
     }
   ],
   "latest": {
-    "time": "11:20:04",
-    "ts_bj": "2026-09-09 11:20:04",
+    "time": "11:30:04",
+    "ts_bj": "2026-09-09 11:30:04",
     "date": "2026-09-09",
     "source": "intraday_live",
     "provider": "必盈(实时)+必盈(实时)",
@@ -823,18 +890,18 @@
       "dtgc": "valid"
     },
     "pool_errors": {},
-    "zt": 40,
-    "dt": 5,
-    "zab": 28,
-    "zb": 41.2,
-    "fb": 58.8,
-    "jj": 35.0,
+    "zt": 42,
+    "dt": 4,
+    "zab": 26,
+    "zb": 38.2,
+    "fb": 61.8,
+    "jj": 33.3,
     "lianban": 14,
     "max_lb": 5,
-    "amount": "11749.7亿",
+    "amount": "12085.2亿",
     "bf": 0,
-    "heat": 50,
-    "risk": 43,
+    "heat": 51,
+    "risk": 39,
     "headline": "分歧",
     "concepts": [
       {
@@ -848,6 +915,11 @@
         "chg_pct": null
       },
       {
+        "name": "化学制品",
+        "lead": "华康股份",
+        "chg_pct": null
+      },
+      {
         "name": "航运港口",
         "lead": "招商轮船",
         "chg_pct": null
@@ -855,11 +927,6 @@
       {
         "name": "农化制品",
         "lead": "金正大",
-        "chg_pct": null
-      },
-      {
-        "name": "通信设备",
-        "lead": "华脉科技",
         "chg_pct": null
       }
     ],
@@ -870,18 +937,18 @@
       },
       {
         "level": "danger",
-        "text": "炸板率高（41.2%）→ 分歧偏强，谨慎接力"
+        "text": "炸板率高（38.2%）→ 分歧偏强，谨慎接力"
       }
     ],
-    "shift_score": 53,
+    "shift_score": 55,
     "shift_label": "分歧",
-    "note": "情绪整体平稳，维持当前节奏。"
+    "note": "情绪边际修复，但仍需确认持续性。"
   },
-  "updated_at": "2026-09-09 11:20:04",
-  "snapshot_sig": "2026-09-09|2026-09-09 11:20:04|12",
+  "updated_at": "2026-09-09 11:30:04",
+  "snapshot_sig": "2026-09-09|2026-09-09 11:30:04|13",
   "health": {
     "status": "valid",
-    "last_valid_at": "2026-09-09 11:20:04",
+    "last_valid_at": "2026-09-09 11:30:04",
     "rejected_reason": "",
     "source": {
       "status": "valid",
