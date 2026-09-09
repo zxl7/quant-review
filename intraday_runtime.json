@@ -1,38 +1,45 @@
 {
   "schema": "intraday_runtime_v1",
   "date": "2026-09-09",
-  "updated_at": "2026-09-09 09:30:32",
-  "source": "必盈(实时)",
+  "updated_at": "2026-09-09 09:40:04",
+  "source": "必盈(实时)+必盈(实时)",
   "latest": {
-    "time": "09:30:32",
-    "ts_bj": "2026-09-09 09:30:32",
+    "time": "09:40:04",
+    "ts_bj": "2026-09-09 09:40:04",
     "date": "2026-09-09",
     "source": "intraday_live",
-    "provider": "必盈(实时)",
-    "data_quality": "partial",
+    "provider": "必盈(实时)+必盈(实时)",
+    "data_quality": "valid",
     "pool_status": {
       "ztgc": "valid",
-      "zbgc": "failed",
-      "dtgc": "failed"
+      "zbgc": "valid",
+      "dtgc": "valid_empty"
     },
-    "pool_errors": {
-      "zbgc": "empty_response",
-      "dtgc": "empty_response"
-    },
-    "zt": 10,
-    "dt": null,
-    "zab": null,
-    "zb": null,
-    "fb": null,
-    "jj": 70.0,
-    "lianban": 7,
-    "max_lb": 3,
-    "amount": "",
+    "pool_errors": {},
+    "zt": 19,
+    "dt": 0,
+    "zab": 7,
+    "zb": 26.9,
+    "fb": 73.1,
+    "jj": 57.9,
+    "lianban": 11,
+    "max_lb": 5,
+    "amount": "3415.7亿",
     "bf": 0,
-    "heat": null,
-    "risk": null,
-    "headline": "数据部分可用",
+    "heat": 58,
+    "risk": 18,
+    "headline": "修复",
     "concepts": [
+      {
+        "name": "农产品加",
+        "lead": "中粮科技",
+        "chg_pct": null
+      },
+      {
+        "name": "种植业",
+        "lead": "亚盛集团",
+        "chg_pct": null
+      },
       {
         "name": "农化制品",
         "lead": "金正大",
@@ -47,16 +54,6 @@
         "name": "医疗服务",
         "lead": "澳洋健康",
         "chg_pct": null
-      },
-      {
-        "name": "通信设备",
-        "lead": "华脉科技",
-        "chg_pct": null
-      },
-      {
-        "name": "综合Ⅱ",
-        "lead": "红棉股份",
-        "chg_pct": null
       }
     ],
     "alerts": [
@@ -66,12 +63,12 @@
       },
       {
         "level": "warn",
-        "text": "盘中三池响应不完整，保留最近有效数据"
+        "text": "炸板率偏高（26.9%）→ 注意回封质量"
       }
     ],
-    "shift_score": null,
-    "shift_label": "数据部分可用",
-    "note": "本槽位仅部分三池成功；节点已保留，缺失指标不参与判断。"
+    "shift_score": 68,
+    "shift_label": "修复",
+    "note": "承接增强、分歧收敛，情绪明显回暖。"
   },
   "snapshots": [
     {
@@ -143,52 +140,116 @@
       "shift_score": null,
       "shift_label": "数据部分可用",
       "note": "本槽位仅部分三池成功；节点已保留，缺失指标不参与判断。"
+    },
+    {
+      "time": "09:40:04",
+      "ts_bj": "2026-09-09 09:40:04",
+      "date": "2026-09-09",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid_empty"
+      },
+      "pool_errors": {},
+      "zt": 19,
+      "dt": 0,
+      "zab": 7,
+      "zb": 26.9,
+      "fb": 73.1,
+      "jj": 57.9,
+      "lianban": 11,
+      "max_lb": 5,
+      "amount": "3415.7亿",
+      "bf": 0,
+      "heat": 58,
+      "risk": 18,
+      "headline": "修复",
+      "concepts": [
+        {
+          "name": "农产品加",
+          "lead": "中粮科技",
+          "chg_pct": null
+        },
+        {
+          "name": "种植业",
+          "lead": "亚盛集团",
+          "chg_pct": null
+        },
+        {
+          "name": "农化制品",
+          "lead": "金正大",
+          "chg_pct": null
+        },
+        {
+          "name": "家居用品",
+          "lead": "瑞尔特",
+          "chg_pct": null
+        },
+        {
+          "name": "医疗服务",
+          "lead": "澳洋健康",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        },
+        {
+          "level": "warn",
+          "text": "炸板率偏高（26.9%）→ 注意回封质量"
+        }
+      ],
+      "shift_score": 68,
+      "shift_label": "修复",
+      "note": "承接增强、分歧收敛，情绪明显回暖。"
     }
   ],
   "indices": [
     {
       "name": "上证指数",
       "code": "000001.SH",
-      "val": 3943.001,
-      "chg": 0.06217404621841648,
-      "cje": 19178978800.0,
-      "t": "2026-09-09 09:30:32"
+      "val": 3943.405,
+      "chg": 0.07242641955402353,
+      "cje": 161090806600.0,
+      "t": "2026-09-09 09:40:00"
     },
     {
       "name": "深证成指",
       "code": "399001.SZ",
-      "val": 13769.815,
-      "chg": 0.48606866362971335,
-      "cje": 33910387500.0,
-      "t": "2026-09-09 09:30:24"
+      "val": 13774.031,
+      "chg": 0.516835181951557,
+      "cje": 180479414500.0,
+      "t": "2026-09-09 09:39:57"
     },
     {
       "name": "创业板指",
       "code": "399006.SZ",
-      "val": 3384.391,
-      "chg": 0.7344670604500658,
-      "cje": 15281248100.0,
-      "t": "2026-09-09 09:30:30"
+      "val": 3388.161,
+      "chg": 0.8466789593760158,
+      "cje": 79751971900.0,
+      "t": "2026-09-09 09:39:57"
     }
   ],
   "asOf": {
-    "indices": "09:30:30"
+    "indices": "09:39:57"
   },
   "health": {
-    "status": "degraded",
-    "last_valid_at": "2026-09-09 09:30:32",
+    "status": "valid",
+    "last_valid_at": "2026-09-09 09:40:04",
     "rejected_reason": "",
     "source": {
-      "status": "partial",
+      "status": "valid",
       "pool_status": {
         "ztgc": "valid",
-        "zbgc": "failed",
-        "dtgc": "failed"
+        "zbgc": "valid",
+        "dtgc": "valid_empty"
       },
-      "pool_errors": {
-        "zbgc": "empty_response",
-        "dtgc": "empty_response"
-      }
+      "pool_errors": {}
     },
     "indices_status": "valid",
     "coverage": {
@@ -197,28 +258,29 @@
       "message": "intraday_coverage_collecting",
       "date": "2026-09-09",
       "expected_count": 26,
-      "due_count": 1,
-      "observed_count": 1,
+      "due_count": 2,
+      "observed_count": 2,
       "observed_slots": [
-        "09:30"
+        "09:30",
+        "09:40"
       ],
       "missing_slots": [],
       "duplicate_slots": [],
       "out_of_session": [],
       "monotonic": true,
-      "morning_coverage": 1,
+      "morning_coverage": 2,
       "afternoon_coverage": 0
     }
   },
   "live": {
     "market": {
-      "zt": 10,
-      "dt": null,
-      "zab": null,
-      "zab_rate": null,
-      "lianban": 7,
-      "max_lianban": 3,
-      "amount": ""
+      "zt": 19,
+      "dt": 0,
+      "zab": 7,
+      "zab_rate": 26.9,
+      "lianban": 11,
+      "max_lianban": 5,
+      "amount": "3415.7亿"
     },
     "alerts": [
       {
@@ -227,10 +289,20 @@
       },
       {
         "level": "warn",
-        "text": "盘中三池响应不完整，保留最近有效数据"
+        "text": "炸板率偏高（26.9%）→ 注意回封质量"
       }
     ],
     "concepts": [
+      {
+        "name": "农产品加",
+        "lead": "中粮科技",
+        "chg_pct": null
+      },
+      {
+        "name": "种植业",
+        "lead": "亚盛集团",
+        "chg_pct": null
+      },
       {
         "name": "农化制品",
         "lead": "金正大",
@@ -244,16 +316,6 @@
       {
         "name": "医疗服务",
         "lead": "澳洋健康",
-        "chg_pct": null
-      },
-      {
-        "name": "通信设备",
-        "lead": "华脉科技",
-        "chg_pct": null
-      },
-      {
-        "name": "综合Ⅱ",
-        "lead": "红棉股份",
         "chg_pct": null
       }
     ]
