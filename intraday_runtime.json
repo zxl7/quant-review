@@ -1,11 +1,11 @@
 {
   "schema": "intraday_runtime_v1",
   "date": "2026-09-09",
-  "updated_at": "2026-09-09 11:00:05",
+  "updated_at": "2026-09-09 11:10:03",
   "source": "必盈(实时)+必盈(实时)",
   "latest": {
-    "time": "11:00:05",
-    "ts_bj": "2026-09-09 11:00:05",
+    "time": "11:10:03",
+    "ts_bj": "2026-09-09 11:10:03",
     "date": "2026-09-09",
     "source": "intraday_live",
     "provider": "必盈(实时)+必盈(实时)",
@@ -16,19 +16,19 @@
       "dtgc": "valid"
     },
     "pool_errors": {},
-    "zt": 46,
-    "dt": 4,
-    "zab": 19,
-    "zb": 29.2,
-    "fb": 70.8,
-    "jj": 32.6,
-    "lianban": 15,
+    "zt": 41,
+    "dt": 5,
+    "zab": 27,
+    "zb": 39.7,
+    "fb": 60.3,
+    "jj": 34.1,
+    "lianban": 14,
     "max_lb": 5,
-    "amount": "10921.0亿",
+    "amount": "11387.8亿",
     "bf": 0,
-    "heat": 56,
-    "risk": 31,
-    "headline": "修复",
+    "heat": 51,
+    "risk": 41,
+    "headline": "分歧",
     "concepts": [
       {
         "name": "农产品加",
@@ -41,6 +41,11 @@
         "chg_pct": null
       },
       {
+        "name": "航运港口",
+        "lead": "招商轮船",
+        "chg_pct": null
+      },
+      {
         "name": "农化制品",
         "lead": "金正大",
         "chg_pct": null
@@ -48,11 +53,6 @@
       {
         "name": "通信设备",
         "lead": "华脉科技",
-        "chg_pct": null
-      },
-      {
-        "name": "化学原料",
-        "lead": "三孚股份",
         "chg_pct": null
       }
     ],
@@ -62,13 +62,13 @@
         "text": "盘中模式：强制实时拉取"
       },
       {
-        "level": "warn",
-        "text": "炸板率偏高（29.2%）→ 注意回封质量"
+        "level": "danger",
+        "text": "炸板率高（39.7%）→ 分歧偏强，谨慎接力"
       }
     ],
-    "shift_score": 61,
-    "shift_label": "修复",
-    "note": "情绪整体平稳，维持当前节奏。"
+    "shift_score": 54,
+    "shift_label": "分歧",
+    "note": "炸板/跌停抬升，情绪明显走弱。"
   },
   "snapshots": [
     {
@@ -739,40 +739,107 @@
       "shift_score": 61,
       "shift_label": "修复",
       "note": "情绪整体平稳，维持当前节奏。"
+    },
+    {
+      "time": "11:10:03",
+      "ts_bj": "2026-09-09 11:10:03",
+      "date": "2026-09-09",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid"
+      },
+      "pool_errors": {},
+      "zt": 41,
+      "dt": 5,
+      "zab": 27,
+      "zb": 39.7,
+      "fb": 60.3,
+      "jj": 34.1,
+      "lianban": 14,
+      "max_lb": 5,
+      "amount": "11387.8亿",
+      "bf": 0,
+      "heat": 51,
+      "risk": 41,
+      "headline": "分歧",
+      "concepts": [
+        {
+          "name": "农产品加",
+          "lead": "中粮科技",
+          "chg_pct": null
+        },
+        {
+          "name": "一般零售",
+          "lead": "百大集团",
+          "chg_pct": null
+        },
+        {
+          "name": "航运港口",
+          "lead": "招商轮船",
+          "chg_pct": null
+        },
+        {
+          "name": "农化制品",
+          "lead": "金正大",
+          "chg_pct": null
+        },
+        {
+          "name": "通信设备",
+          "lead": "华脉科技",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        },
+        {
+          "level": "danger",
+          "text": "炸板率高（39.7%）→ 分歧偏强，谨慎接力"
+        }
+      ],
+      "shift_score": 54,
+      "shift_label": "分歧",
+      "note": "炸板/跌停抬升，情绪明显走弱。"
     }
   ],
   "indices": [
     {
       "name": "上证指数",
       "code": "000001.SH",
-      "val": 3952.657,
-      "chg": 0.3072159198041143,
-      "cje": 517080563600.0,
-      "t": "2026-09-09 11:00:03"
+      "val": 3953.663,
+      "chg": 0.33274534449624127,
+      "cje": 539897299400.0,
+      "t": "2026-09-09 11:10:00"
     },
     {
       "name": "深证成指",
       "code": "399001.SZ",
-      "val": 13712.696,
-      "chg": 0.06923926134668155,
-      "cje": 574834938200.0,
-      "t": "2026-09-09 11:00:00"
+      "val": 13715.119,
+      "chg": 0.08692125230821905,
+      "cje": 598887620800.0,
+      "t": "2026-09-09 11:10:00"
     },
     {
       "name": "创业板指",
       "code": "399006.SZ",
-      "val": 3352.855,
-      "chg": -0.20418398584404113,
-      "cje": 259435957000.0,
-      "t": "2026-09-09 11:00:00"
+      "val": 3354.919,
+      "chg": -0.1427502035142944,
+      "cje": 269146850900.0,
+      "t": "2026-09-09 11:10:00"
     }
   ],
   "asOf": {
-    "indices": "11:00:00"
+    "indices": "11:10:00"
   },
   "health": {
     "status": "valid",
-    "last_valid_at": "2026-09-09 11:00:05",
+    "last_valid_at": "2026-09-09 11:10:03",
     "rejected_reason": "",
     "source": {
       "status": "valid",
@@ -790,8 +857,8 @@
       "message": "intraday_coverage_collecting",
       "date": "2026-09-09",
       "expected_count": 26,
-      "due_count": 10,
-      "observed_count": 10,
+      "due_count": 11,
+      "observed_count": 11,
       "observed_slots": [
         "09:30",
         "09:40",
@@ -802,25 +869,26 @@
         "10:30",
         "10:40",
         "10:50",
-        "11:00"
+        "11:00",
+        "11:10"
       ],
       "missing_slots": [],
       "duplicate_slots": [],
       "out_of_session": [],
       "monotonic": true,
-      "morning_coverage": 10,
+      "morning_coverage": 11,
       "afternoon_coverage": 0
     }
   },
   "live": {
     "market": {
-      "zt": 46,
-      "dt": 4,
-      "zab": 19,
-      "zab_rate": 29.2,
-      "lianban": 15,
+      "zt": 41,
+      "dt": 5,
+      "zab": 27,
+      "zab_rate": 39.7,
+      "lianban": 14,
       "max_lianban": 5,
-      "amount": "10921.0亿"
+      "amount": "11387.8亿"
     },
     "alerts": [
       {
@@ -828,8 +896,8 @@
         "text": "盘中模式：强制实时拉取"
       },
       {
-        "level": "warn",
-        "text": "炸板率偏高（29.2%）→ 注意回封质量"
+        "level": "danger",
+        "text": "炸板率高（39.7%）→ 分歧偏强，谨慎接力"
       }
     ],
     "concepts": [
@@ -844,6 +912,11 @@
         "chg_pct": null
       },
       {
+        "name": "航运港口",
+        "lead": "招商轮船",
+        "chg_pct": null
+      },
+      {
         "name": "农化制品",
         "lead": "金正大",
         "chg_pct": null
@@ -851,11 +924,6 @@
       {
         "name": "通信设备",
         "lead": "华脉科技",
-        "chg_pct": null
-      },
-      {
-        "name": "化学原料",
-        "lead": "三孚股份",
         "chg_pct": null
       }
     ]

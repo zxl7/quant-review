@@ -2,7 +2,7 @@
   "schema": "intraday_snapshot_v1",
   "render_mode": "snapshot_stream",
   "date": "2026-09-09",
-  "count": 10,
+  "count": 11,
   "interval_min": null,
   "simulated": false,
   "snapshots": [
@@ -674,11 +674,78 @@
       "shift_score": 61,
       "shift_label": "修复",
       "note": "情绪整体平稳，维持当前节奏。"
+    },
+    {
+      "time": "11:10:03",
+      "ts_bj": "2026-09-09 11:10:03",
+      "date": "2026-09-09",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid"
+      },
+      "pool_errors": {},
+      "zt": 41,
+      "dt": 5,
+      "zab": 27,
+      "zb": 39.7,
+      "fb": 60.3,
+      "jj": 34.1,
+      "lianban": 14,
+      "max_lb": 5,
+      "amount": "11387.8亿",
+      "bf": 0,
+      "heat": 51,
+      "risk": 41,
+      "headline": "分歧",
+      "concepts": [
+        {
+          "name": "农产品加",
+          "lead": "中粮科技",
+          "chg_pct": null
+        },
+        {
+          "name": "一般零售",
+          "lead": "百大集团",
+          "chg_pct": null
+        },
+        {
+          "name": "航运港口",
+          "lead": "招商轮船",
+          "chg_pct": null
+        },
+        {
+          "name": "农化制品",
+          "lead": "金正大",
+          "chg_pct": null
+        },
+        {
+          "name": "通信设备",
+          "lead": "华脉科技",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        },
+        {
+          "level": "danger",
+          "text": "炸板率高（39.7%）→ 分歧偏强，谨慎接力"
+        }
+      ],
+      "shift_score": 54,
+      "shift_label": "分歧",
+      "note": "炸板/跌停抬升，情绪明显走弱。"
     }
   ],
   "latest": {
-    "time": "11:00:05",
-    "ts_bj": "2026-09-09 11:00:05",
+    "time": "11:10:03",
+    "ts_bj": "2026-09-09 11:10:03",
     "date": "2026-09-09",
     "source": "intraday_live",
     "provider": "必盈(实时)+必盈(实时)",
@@ -689,19 +756,19 @@
       "dtgc": "valid"
     },
     "pool_errors": {},
-    "zt": 46,
-    "dt": 4,
-    "zab": 19,
-    "zb": 29.2,
-    "fb": 70.8,
-    "jj": 32.6,
-    "lianban": 15,
+    "zt": 41,
+    "dt": 5,
+    "zab": 27,
+    "zb": 39.7,
+    "fb": 60.3,
+    "jj": 34.1,
+    "lianban": 14,
     "max_lb": 5,
-    "amount": "10921.0亿",
+    "amount": "11387.8亿",
     "bf": 0,
-    "heat": 56,
-    "risk": 31,
-    "headline": "修复",
+    "heat": 51,
+    "risk": 41,
+    "headline": "分歧",
     "concepts": [
       {
         "name": "农产品加",
@@ -714,6 +781,11 @@
         "chg_pct": null
       },
       {
+        "name": "航运港口",
+        "lead": "招商轮船",
+        "chg_pct": null
+      },
+      {
         "name": "农化制品",
         "lead": "金正大",
         "chg_pct": null
@@ -721,11 +793,6 @@
       {
         "name": "通信设备",
         "lead": "华脉科技",
-        "chg_pct": null
-      },
-      {
-        "name": "化学原料",
-        "lead": "三孚股份",
         "chg_pct": null
       }
     ],
@@ -735,19 +802,19 @@
         "text": "盘中模式：强制实时拉取"
       },
       {
-        "level": "warn",
-        "text": "炸板率偏高（29.2%）→ 注意回封质量"
+        "level": "danger",
+        "text": "炸板率高（39.7%）→ 分歧偏强，谨慎接力"
       }
     ],
-    "shift_score": 61,
-    "shift_label": "修复",
-    "note": "情绪整体平稳，维持当前节奏。"
+    "shift_score": 54,
+    "shift_label": "分歧",
+    "note": "炸板/跌停抬升，情绪明显走弱。"
   },
-  "updated_at": "2026-09-09 11:00:05",
-  "snapshot_sig": "2026-09-09|2026-09-09 11:00:05|10",
+  "updated_at": "2026-09-09 11:10:03",
+  "snapshot_sig": "2026-09-09|2026-09-09 11:10:03|11",
   "health": {
     "status": "valid",
-    "last_valid_at": "2026-09-09 11:00:05",
+    "last_valid_at": "2026-09-09 11:10:03",
     "rejected_reason": "",
     "source": {
       "status": "valid",
