@@ -2,7 +2,7 @@
   "schema": "intraday_snapshot_v1",
   "render_mode": "snapshot_stream",
   "date": "2026-09-09",
-  "count": 3,
+  "count": 4,
   "interval_min": null,
   "simulated": false,
   "snapshots": [
@@ -205,11 +205,78 @@
       "shift_score": 63,
       "shift_label": "修复",
       "note": "炸板/跌停抬升，情绪明显走弱。"
+    },
+    {
+      "time": "10:00:03",
+      "ts_bj": "2026-09-09 10:00:03",
+      "date": "2026-09-09",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid"
+      },
+      "pool_errors": {},
+      "zt": 30,
+      "dt": 4,
+      "zab": 11,
+      "zb": 26.8,
+      "fb": 73.2,
+      "jj": 43.3,
+      "lianban": 13,
+      "max_lb": 5,
+      "amount": "6528.1亿",
+      "bf": 0,
+      "heat": 57,
+      "risk": 26,
+      "headline": "修复",
+      "concepts": [
+        {
+          "name": "通信设备",
+          "lead": "华脉科技",
+          "chg_pct": null
+        },
+        {
+          "name": "农产品加",
+          "lead": "中粮科技",
+          "chg_pct": null
+        },
+        {
+          "name": "农化制品",
+          "lead": "金正大",
+          "chg_pct": null
+        },
+        {
+          "name": "化学原料",
+          "lead": "三孚股份",
+          "chg_pct": null
+        },
+        {
+          "name": "家居用品",
+          "lead": "瑞尔特",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        },
+        {
+          "level": "warn",
+          "text": "炸板率偏高（26.8%）→ 注意回封质量"
+        }
+      ],
+      "shift_score": 64,
+      "shift_label": "修复",
+      "note": "情绪整体平稳，维持当前节奏。"
     }
   ],
   "latest": {
-    "time": "09:50:04",
-    "ts_bj": "2026-09-09 09:50:04",
+    "time": "10:00:03",
+    "ts_bj": "2026-09-09 10:00:03",
     "date": "2026-09-09",
     "source": "intraday_live",
     "provider": "必盈(实时)+必盈(实时)",
@@ -220,18 +287,18 @@
       "dtgc": "valid"
     },
     "pool_errors": {},
-    "zt": 27,
-    "dt": 3,
-    "zab": 8,
-    "zb": 22.9,
-    "fb": 77.1,
-    "jj": 37.0,
-    "lianban": 10,
-    "max_lb": 3,
-    "amount": "5173.6亿",
+    "zt": 30,
+    "dt": 4,
+    "zab": 11,
+    "zb": 26.8,
+    "fb": 73.2,
+    "jj": 43.3,
+    "lianban": 13,
+    "max_lb": 5,
+    "amount": "6528.1亿",
     "bf": 0,
-    "heat": 52,
-    "risk": 21,
+    "heat": 57,
+    "risk": 26,
     "headline": "修复",
     "concepts": [
       {
@@ -264,17 +331,21 @@
       {
         "level": "info",
         "text": "盘中模式：强制实时拉取"
+      },
+      {
+        "level": "warn",
+        "text": "炸板率偏高（26.8%）→ 注意回封质量"
       }
     ],
-    "shift_score": 63,
+    "shift_score": 64,
     "shift_label": "修复",
-    "note": "炸板/跌停抬升，情绪明显走弱。"
+    "note": "情绪整体平稳，维持当前节奏。"
   },
-  "updated_at": "2026-09-09 09:50:04",
-  "snapshot_sig": "2026-09-09|2026-09-09 09:50:04|3",
+  "updated_at": "2026-09-09 10:00:03",
+  "snapshot_sig": "2026-09-09|2026-09-09 10:00:03|4",
   "health": {
     "status": "valid",
-    "last_valid_at": "2026-09-09 09:50:04",
+    "last_valid_at": "2026-09-09 10:00:03",
     "rejected_reason": "",
     "source": {
       "status": "valid",
