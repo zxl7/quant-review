@@ -2,7 +2,7 @@
   "schema": "intraday_snapshot_v1",
   "render_mode": "snapshot_stream",
   "date": "2026-09-10",
-  "count": 14,
+  "count": 15,
   "interval_min": null,
   "simulated": false,
   "snapshots": [
@@ -928,39 +928,132 @@
       "shift_score": null,
       "shift_label": "数据暂缺",
       "note": "本槽位三池请求均未成功，已记录数据暂缺；等待下一节点自动恢复。"
+    },
+    {
+      "time": "14:50:05",
+      "ts_bj": "2026-09-10 14:50:05",
+      "date": "2026-09-10",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid"
+      },
+      "pool_errors": {},
+      "zt": 35,
+      "dt": 11,
+      "zab": 21,
+      "zb": 37.5,
+      "fb": 62.5,
+      "jj": 28.6,
+      "lianban": 10,
+      "max_lb": 4,
+      "amount": "15562.1亿",
+      "bf": 0,
+      "heat": 47,
+      "risk": 47,
+      "headline": "分歧",
+      "concepts": [
+        {
+          "name": "电力",
+          "lead": "闽东电力",
+          "chg_pct": null
+        },
+        {
+          "name": "一般零售",
+          "lead": "中百集团",
+          "chg_pct": null
+        },
+        {
+          "name": "元件",
+          "lead": "金安国纪",
+          "chg_pct": null
+        },
+        {
+          "name": "燃气Ⅱ",
+          "lead": "水发燃气",
+          "chg_pct": null
+        },
+        {
+          "name": "玻璃玻纤",
+          "lead": "九鼎新材",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        },
+        {
+          "level": "warn",
+          "text": "跌停偏多（11）→ 控制追高"
+        },
+        {
+          "level": "danger",
+          "text": "炸板率高（37.5%）→ 分歧偏强，谨慎接力"
+        }
+      ],
+      "shift_score": 50,
+      "shift_label": "分歧",
+      "note": "承接增强、分歧收敛，情绪明显回暖。"
     }
   ],
   "latest": {
-    "time": "14:40:34",
-    "ts_bj": "2026-09-10 14:40:34",
+    "time": "14:50:05",
+    "ts_bj": "2026-09-10 14:50:05",
     "date": "2026-09-10",
     "source": "intraday_live",
-    "provider": "unknown",
-    "data_quality": "unavailable",
+    "provider": "必盈(实时)+必盈(实时)",
+    "data_quality": "valid",
     "pool_status": {
-      "ztgc": "failed",
-      "zbgc": "failed",
-      "dtgc": "failed"
+      "ztgc": "valid",
+      "zbgc": "valid",
+      "dtgc": "valid"
     },
-    "pool_errors": {
-      "ztgc": "HTTP Error 429: Too Many Requests",
-      "zbgc": "HTTP Error 429: Too Many Requests",
-      "dtgc": "HTTP Error 429: Too Many Requests"
-    },
-    "zt": null,
-    "dt": null,
-    "zab": null,
-    "zb": null,
-    "fb": null,
-    "jj": null,
-    "lianban": null,
-    "max_lb": null,
-    "amount": "",
+    "pool_errors": {},
+    "zt": 35,
+    "dt": 11,
+    "zab": 21,
+    "zb": 37.5,
+    "fb": 62.5,
+    "jj": 28.6,
+    "lianban": 10,
+    "max_lb": 4,
+    "amount": "15562.1亿",
     "bf": 0,
-    "heat": null,
-    "risk": null,
-    "headline": "数据暂缺",
-    "concepts": [],
+    "heat": 47,
+    "risk": 47,
+    "headline": "分歧",
+    "concepts": [
+      {
+        "name": "电力",
+        "lead": "闽东电力",
+        "chg_pct": null
+      },
+      {
+        "name": "一般零售",
+        "lead": "中百集团",
+        "chg_pct": null
+      },
+      {
+        "name": "元件",
+        "lead": "金安国纪",
+        "chg_pct": null
+      },
+      {
+        "name": "燃气Ⅱ",
+        "lead": "水发燃气",
+        "chg_pct": null
+      },
+      {
+        "name": "玻璃玻纤",
+        "lead": "九鼎新材",
+        "chg_pct": null
+      }
+    ],
     "alerts": [
       {
         "level": "info",
@@ -968,35 +1061,31 @@
       },
       {
         "level": "warn",
-        "text": "盘中三池响应不完整，保留最近有效数据"
+        "text": "跌停偏多（11）→ 控制追高"
       },
       {
-        "level": "warn",
-        "text": "三池请求均超时，本槽位跳过板块补抓并等待下一节点"
+        "level": "danger",
+        "text": "炸板率高（37.5%）→ 分歧偏强，谨慎接力"
       }
     ],
-    "shift_score": null,
-    "shift_label": "数据暂缺",
-    "note": "本槽位三池请求均未成功，已记录数据暂缺；等待下一节点自动恢复。"
+    "shift_score": 50,
+    "shift_label": "分歧",
+    "note": "承接增强、分歧收敛，情绪明显回暖。"
   },
-  "updated_at": "2026-09-10 14:40:34",
-  "snapshot_sig": "2026-09-10|2026-09-10 14:40:34|14",
+  "updated_at": "2026-09-10 14:50:05",
+  "snapshot_sig": "2026-09-10|2026-09-10 14:50:05|15",
   "health": {
-    "status": "degraded",
-    "last_valid_at": "2026-09-10 14:40:34",
+    "status": "valid",
+    "last_valid_at": "2026-09-10 14:50:05",
     "rejected_reason": "",
     "source": {
-      "status": "partial",
+      "status": "valid",
       "pool_status": {
-        "ztgc": "failed",
-        "zbgc": "failed",
-        "dtgc": "failed"
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid"
       },
-      "pool_errors": {
-        "ztgc": "HTTP Error 429: Too Many Requests",
-        "zbgc": "HTTP Error 429: Too Many Requests",
-        "dtgc": "HTTP Error 429: Too Many Requests"
-      }
+      "pool_errors": {}
     }
   }
 }
