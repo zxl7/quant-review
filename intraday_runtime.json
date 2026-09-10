@@ -1,46 +1,43 @@
 {
   "schema": "intraday_runtime_v1",
   "date": "2026-09-10",
-  "updated_at": "2026-09-10 09:30:31",
-  "source": "必盈(实时)",
+  "updated_at": "2026-09-10 09:40:04",
+  "source": "必盈(实时)+必盈(实时)",
   "latest": {
-    "time": "09:30:31",
-    "ts_bj": "2026-09-10 09:30:31",
+    "time": "09:40:04",
+    "ts_bj": "2026-09-10 09:40:04",
     "date": "2026-09-10",
     "source": "intraday_live",
-    "provider": "必盈(实时)",
-    "data_quality": "partial",
+    "provider": "必盈(实时)+必盈(实时)",
+    "data_quality": "valid",
     "pool_status": {
       "ztgc": "valid",
-      "zbgc": "failed",
-      "dtgc": "failed"
+      "zbgc": "valid",
+      "dtgc": "valid_empty"
     },
-    "pool_errors": {
-      "zbgc": "empty_response",
-      "dtgc": "empty_response"
-    },
-    "zt": 9,
-    "dt": null,
-    "zab": null,
-    "zb": null,
-    "fb": null,
-    "jj": 66.7,
-    "lianban": 6,
-    "max_lb": 4,
-    "amount": "",
+    "pool_errors": {},
+    "zt": 11,
+    "dt": 0,
+    "zab": 7,
+    "zb": 38.9,
+    "fb": 61.1,
+    "jj": 81.8,
+    "lianban": 9,
+    "max_lb": 3,
+    "amount": "3121.2亿",
     "bf": 0,
-    "heat": null,
-    "risk": null,
-    "headline": "数据部分可用",
+    "heat": 54,
+    "risk": 25,
+    "headline": "修复",
     "concepts": [
       {
-        "name": "旅游及景",
-        "lead": "桂林旅游",
+        "name": "农产品加",
+        "lead": "中粮科技",
         "chg_pct": null
       },
       {
-        "name": "家居用品",
-        "lead": "瑞尔特",
+        "name": "焦炭Ⅱ",
+        "lead": "云煤能源",
         "chg_pct": null
       },
       {
@@ -49,8 +46,8 @@
         "chg_pct": null
       },
       {
-        "name": "炼化及贸",
-        "lead": "国创高新",
+        "name": "家居用品",
+        "lead": "瑞尔特",
         "chg_pct": null
       },
       {
@@ -65,13 +62,13 @@
         "text": "盘中模式：强制实时拉取"
       },
       {
-        "level": "warn",
-        "text": "盘中三池响应不完整，保留最近有效数据"
+        "level": "danger",
+        "text": "炸板率高（38.9%）→ 分歧偏强，谨慎接力"
       }
     ],
-    "shift_score": null,
-    "shift_label": "数据部分可用",
-    "note": "本槽位仅部分三池成功；节点已保留，缺失指标不参与判断。"
+    "shift_score": 63,
+    "shift_label": "修复",
+    "note": "承接增强、分歧收敛，情绪明显回暖。"
   },
   "snapshots": [
     {
@@ -143,52 +140,116 @@
       "shift_score": null,
       "shift_label": "数据部分可用",
       "note": "本槽位仅部分三池成功；节点已保留，缺失指标不参与判断。"
+    },
+    {
+      "time": "09:40:04",
+      "ts_bj": "2026-09-10 09:40:04",
+      "date": "2026-09-10",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid_empty"
+      },
+      "pool_errors": {},
+      "zt": 11,
+      "dt": 0,
+      "zab": 7,
+      "zb": 38.9,
+      "fb": 61.1,
+      "jj": 81.8,
+      "lianban": 9,
+      "max_lb": 3,
+      "amount": "3121.2亿",
+      "bf": 0,
+      "heat": 54,
+      "risk": 25,
+      "headline": "修复",
+      "concepts": [
+        {
+          "name": "农产品加",
+          "lead": "中粮科技",
+          "chg_pct": null
+        },
+        {
+          "name": "焦炭Ⅱ",
+          "lead": "云煤能源",
+          "chg_pct": null
+        },
+        {
+          "name": "综合Ⅱ",
+          "lead": "红棉股份",
+          "chg_pct": null
+        },
+        {
+          "name": "家居用品",
+          "lead": "瑞尔特",
+          "chg_pct": null
+        },
+        {
+          "name": "航运港口",
+          "lead": "南 京 港",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        },
+        {
+          "level": "danger",
+          "text": "炸板率高（38.9%）→ 分歧偏强，谨慎接力"
+        }
+      ],
+      "shift_score": 63,
+      "shift_label": "修复",
+      "note": "承接增强、分歧收敛，情绪明显回暖。"
     }
   ],
   "indices": [
     {
       "name": "上证指数",
       "code": "000001.SH",
-      "val": 3939.533,
-      "chg": -0.30302363123740284,
-      "cje": 17559677500.0,
-      "t": "2026-09-10 09:30:32"
+      "val": 3936.012,
+      "chg": -0.39212887640082356,
+      "cje": 149220210200.0,
+      "t": "2026-09-10 09:40:03"
     },
     {
       "name": "深证成指",
       "code": "399001.SZ",
-      "val": 13602.281,
-      "chg": -0.8820094726335157,
-      "cje": 30040317500.0,
-      "t": "2026-09-10 09:30:27"
+      "val": 13625.038,
+      "chg": -0.7161822771483439,
+      "cje": 162003234500.0,
+      "t": "2026-09-10 09:39:57"
     },
     {
       "name": "创业板指",
       "code": "399006.SZ",
-      "val": 3312.847,
-      "chg": -1.255510855688975,
-      "cje": 12438742700.0,
-      "t": "2026-09-10 09:30:30"
+      "val": 3329.301,
+      "chg": -0.765074133322845,
+      "cje": 70696869200.0,
+      "t": "2026-09-10 09:39:57"
     }
   ],
   "asOf": {
-    "indices": "09:30:30"
+    "indices": "09:39:57"
   },
   "health": {
-    "status": "degraded",
-    "last_valid_at": "2026-09-10 09:30:31",
+    "status": "valid",
+    "last_valid_at": "2026-09-10 09:40:04",
     "rejected_reason": "",
     "source": {
-      "status": "partial",
+      "status": "valid",
       "pool_status": {
         "ztgc": "valid",
-        "zbgc": "failed",
-        "dtgc": "failed"
+        "zbgc": "valid",
+        "dtgc": "valid_empty"
       },
-      "pool_errors": {
-        "zbgc": "empty_response",
-        "dtgc": "empty_response"
-      }
+      "pool_errors": {}
     },
     "indices_status": "valid",
     "coverage": {
@@ -197,28 +258,29 @@
       "message": "intraday_coverage_collecting",
       "date": "2026-09-10",
       "expected_count": 26,
-      "due_count": 1,
-      "observed_count": 1,
+      "due_count": 2,
+      "observed_count": 2,
       "observed_slots": [
-        "09:30"
+        "09:30",
+        "09:40"
       ],
       "missing_slots": [],
       "duplicate_slots": [],
       "out_of_session": [],
       "monotonic": true,
-      "morning_coverage": 1,
+      "morning_coverage": 2,
       "afternoon_coverage": 0
     }
   },
   "live": {
     "market": {
-      "zt": 9,
-      "dt": null,
-      "zab": null,
-      "zab_rate": null,
-      "lianban": 6,
-      "max_lianban": 4,
-      "amount": ""
+      "zt": 11,
+      "dt": 0,
+      "zab": 7,
+      "zab_rate": 38.9,
+      "lianban": 9,
+      "max_lianban": 3,
+      "amount": "3121.2亿"
     },
     "alerts": [
       {
@@ -226,19 +288,19 @@
         "text": "盘中模式：强制实时拉取"
       },
       {
-        "level": "warn",
-        "text": "盘中三池响应不完整，保留最近有效数据"
+        "level": "danger",
+        "text": "炸板率高（38.9%）→ 分歧偏强，谨慎接力"
       }
     ],
     "concepts": [
       {
-        "name": "旅游及景",
-        "lead": "桂林旅游",
+        "name": "农产品加",
+        "lead": "中粮科技",
         "chg_pct": null
       },
       {
-        "name": "家居用品",
-        "lead": "瑞尔特",
+        "name": "焦炭Ⅱ",
+        "lead": "云煤能源",
         "chg_pct": null
       },
       {
@@ -247,8 +309,8 @@
         "chg_pct": null
       },
       {
-        "name": "炼化及贸",
-        "lead": "国创高新",
+        "name": "家居用品",
+        "lead": "瑞尔特",
         "chg_pct": null
       },
       {
