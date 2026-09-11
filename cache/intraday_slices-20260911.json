@@ -2,7 +2,7 @@
   "schema": "intraday_snapshot_v1",
   "render_mode": "snapshot_stream",
   "date": "2026-09-11",
-  "count": 5,
+  "count": 6,
   "interval_min": null,
   "simulated": false,
   "snapshots": [
@@ -344,11 +344,82 @@
       "shift_score": 52,
       "shift_label": "分歧",
       "note": "情绪略有回落，注意午后分歧。"
+    },
+    {
+      "time": "10:30:04",
+      "ts_bj": "2026-09-11 10:30:04",
+      "date": "2026-09-11",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid"
+      },
+      "pool_errors": {},
+      "zt": 26,
+      "dt": 10,
+      "zab": 11,
+      "zb": 29.7,
+      "fb": 70.3,
+      "jj": 23.1,
+      "lianban": 6,
+      "max_lb": 4,
+      "amount": "9444.9亿",
+      "bf": 0,
+      "heat": 48,
+      "risk": 36,
+      "headline": "分歧",
+      "concepts": [
+        {
+          "name": "通信设备",
+          "lead": "鼎信通讯",
+          "chg_pct": null
+        },
+        {
+          "name": "电力",
+          "lead": "闽东电力",
+          "chg_pct": null
+        },
+        {
+          "name": "种植业",
+          "lead": "新农开发",
+          "chg_pct": null
+        },
+        {
+          "name": "元件",
+          "lead": "澳弘电子",
+          "chg_pct": null
+        },
+        {
+          "name": "家居用品",
+          "lead": "瑞尔特",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        },
+        {
+          "level": "warn",
+          "text": "跌停偏多（10）→ 控制追高"
+        },
+        {
+          "level": "warn",
+          "text": "炸板率偏高（29.7%）→ 注意回封质量"
+        }
+      ],
+      "shift_score": 55,
+      "shift_label": "分歧",
+      "note": "情绪边际修复，但仍需确认持续性。"
     }
   ],
   "latest": {
-    "time": "10:20:03",
-    "ts_bj": "2026-09-11 10:20:03",
+    "time": "10:30:04",
+    "ts_bj": "2026-09-11 10:30:04",
     "date": "2026-09-11",
     "source": "intraday_live",
     "provider": "必盈(实时)+必盈(实时)",
@@ -359,28 +430,28 @@
       "dtgc": "valid"
     },
     "pool_errors": {},
-    "zt": 24,
-    "dt": 11,
+    "zt": 26,
+    "dt": 10,
     "zab": 11,
-    "zb": 31.4,
-    "fb": 68.6,
-    "jj": 20.8,
-    "lianban": 5,
+    "zb": 29.7,
+    "fb": 70.3,
+    "jj": 23.1,
+    "lianban": 6,
     "max_lb": 4,
-    "amount": "8707.9亿",
+    "amount": "9444.9亿",
     "bf": 0,
-    "heat": 46,
-    "risk": 39,
+    "heat": 48,
+    "risk": 36,
     "headline": "分歧",
     "concepts": [
       {
-        "name": "电力",
-        "lead": "闽东电力",
+        "name": "通信设备",
+        "lead": "鼎信通讯",
         "chg_pct": null
       },
       {
-        "name": "通信设备",
-        "lead": "铭普光磁",
+        "name": "电力",
+        "lead": "闽东电力",
         "chg_pct": null
       },
       {
@@ -389,13 +460,13 @@
         "chg_pct": null
       },
       {
-        "name": "家居用品",
-        "lead": "瑞尔特",
+        "name": "元件",
+        "lead": "澳弘电子",
         "chg_pct": null
       },
       {
-        "name": "玻璃玻纤",
-        "lead": "凯盛新能",
+        "name": "家居用品",
+        "lead": "瑞尔特",
         "chg_pct": null
       }
     ],
@@ -406,22 +477,22 @@
       },
       {
         "level": "warn",
-        "text": "跌停偏多（11）→ 控制追高"
+        "text": "跌停偏多（10）→ 控制追高"
       },
       {
         "level": "warn",
-        "text": "炸板率偏高（31.4%）→ 注意回封质量"
+        "text": "炸板率偏高（29.7%）→ 注意回封质量"
       }
     ],
-    "shift_score": 52,
+    "shift_score": 55,
     "shift_label": "分歧",
-    "note": "情绪略有回落，注意午后分歧。"
+    "note": "情绪边际修复，但仍需确认持续性。"
   },
-  "updated_at": "2026-09-11 10:20:03",
-  "snapshot_sig": "2026-09-11|2026-09-11 10:20:03|5",
+  "updated_at": "2026-09-11 10:30:04",
+  "snapshot_sig": "2026-09-11|2026-09-11 10:30:04|6",
   "health": {
     "status": "valid",
-    "last_valid_at": "2026-09-11 10:20:03",
+    "last_valid_at": "2026-09-11 10:30:04",
     "rejected_reason": "",
     "source": {
       "status": "valid",
