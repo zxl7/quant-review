@@ -2,7 +2,7 @@
   "schema": "intraday_snapshot_v1",
   "render_mode": "snapshot_stream",
   "date": "2026-09-11",
-  "count": 11,
+  "count": 12,
   "interval_min": null,
   "simulated": false,
   "snapshots": [
@@ -770,11 +770,82 @@
       "shift_score": 51,
       "shift_label": "分歧",
       "note": "情绪整体平稳，维持当前节奏。"
+    },
+    {
+      "time": "11:30:05",
+      "ts_bj": "2026-09-11 11:30:05",
+      "date": "2026-09-11",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid"
+      },
+      "pool_errors": {},
+      "zt": 27,
+      "dt": 11,
+      "zab": 13,
+      "zb": 32.5,
+      "fb": 67.5,
+      "jj": 18.5,
+      "lianban": 5,
+      "max_lb": 4,
+      "amount": "12748.5亿",
+      "bf": 0,
+      "heat": 46,
+      "risk": 40,
+      "headline": "分歧",
+      "concepts": [
+        {
+          "name": "电力",
+          "lead": "闽东电力",
+          "chg_pct": null
+        },
+        {
+          "name": "通信设备",
+          "lead": "铭普光磁",
+          "chg_pct": null
+        },
+        {
+          "name": "地面兵装",
+          "lead": "内蒙一机",
+          "chg_pct": null
+        },
+        {
+          "name": "汽车零部",
+          "lead": "众泰汽车",
+          "chg_pct": null
+        },
+        {
+          "name": "元件",
+          "lead": "澳弘电子",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        },
+        {
+          "level": "warn",
+          "text": "跌停偏多（11）→ 控制追高"
+        },
+        {
+          "level": "warn",
+          "text": "炸板率偏高（32.5%）→ 注意回封质量"
+        }
+      ],
+      "shift_score": 52,
+      "shift_label": "分歧",
+      "note": "情绪整体平稳，维持当前节奏。"
     }
   ],
   "latest": {
-    "time": "11:20:03",
-    "ts_bj": "2026-09-11 11:20:03",
+    "time": "11:30:05",
+    "ts_bj": "2026-09-11 11:30:05",
     "date": "2026-09-11",
     "source": "intraday_live",
     "provider": "必盈(实时)+必盈(实时)",
@@ -785,18 +856,18 @@
       "dtgc": "valid"
     },
     "pool_errors": {},
-    "zt": 28,
-    "dt": 12,
+    "zt": 27,
+    "dt": 11,
     "zab": 13,
-    "zb": 31.7,
-    "fb": 68.3,
-    "jj": 17.9,
+    "zb": 32.5,
+    "fb": 67.5,
+    "jj": 18.5,
     "lianban": 5,
     "max_lb": 4,
-    "amount": "12380.9亿",
+    "amount": "12748.5亿",
     "bf": 0,
     "heat": 46,
-    "risk": 41,
+    "risk": 40,
     "headline": "分歧",
     "concepts": [
       {
@@ -832,22 +903,22 @@
       },
       {
         "level": "warn",
-        "text": "跌停偏多（12）→ 控制追高"
+        "text": "跌停偏多（11）→ 控制追高"
       },
       {
         "level": "warn",
-        "text": "炸板率偏高（31.7%）→ 注意回封质量"
+        "text": "炸板率偏高（32.5%）→ 注意回封质量"
       }
     ],
-    "shift_score": 51,
+    "shift_score": 52,
     "shift_label": "分歧",
     "note": "情绪整体平稳，维持当前节奏。"
   },
-  "updated_at": "2026-09-11 11:20:03",
-  "snapshot_sig": "2026-09-11|2026-09-11 11:20:03|11",
+  "updated_at": "2026-09-11 11:30:05",
+  "snapshot_sig": "2026-09-11|2026-09-11 11:30:05|12",
   "health": {
     "status": "valid",
-    "last_valid_at": "2026-09-11 11:20:03",
+    "last_valid_at": "2026-09-11 11:30:05",
     "rejected_reason": "",
     "source": {
       "status": "valid",
