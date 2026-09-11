@@ -1,56 +1,78 @@
 {
   "schema": "intraday_runtime_v1",
   "date": "2026-09-11",
-  "updated_at": "2026-09-11 14:40:32",
-  "source": "unknown",
+  "updated_at": "2026-09-11 14:50:05",
+  "source": "必盈(实时)+必盈(实时)",
   "latest": {
-    "time": "14:40:32",
-    "ts_bj": "2026-09-11 14:40:32",
+    "time": "14:50:05",
+    "ts_bj": "2026-09-11 14:50:05",
     "date": "2026-09-11",
     "source": "intraday_live",
-    "provider": "unknown",
-    "data_quality": "unavailable",
+    "provider": "必盈(实时)+必盈(实时)",
+    "data_quality": "valid",
     "pool_status": {
-      "ztgc": "failed",
-      "zbgc": "failed",
-      "dtgc": "failed"
+      "ztgc": "valid",
+      "zbgc": "valid",
+      "dtgc": "valid"
     },
-    "pool_errors": {
-      "ztgc": "HTTP Error 429: Too Many Requests",
-      "zbgc": "HTTP Error 429: Too Many Requests",
-      "dtgc": "HTTP Error 429: Too Many Requests"
-    },
-    "zt": null,
-    "dt": null,
-    "zab": null,
-    "zb": null,
-    "fb": null,
-    "jj": null,
-    "lianban": null,
-    "max_lb": null,
-    "amount": "",
+    "pool_errors": {},
+    "zt": 40,
+    "dt": 22,
+    "zab": 18,
+    "zb": 31.0,
+    "fb": 69.0,
+    "jj": 17.5,
+    "lianban": 7,
+    "max_lb": 4,
+    "amount": "18818.8亿",
     "bf": 0,
-    "heat": null,
-    "risk": null,
-    "headline": "数据暂缺",
-    "concepts": [],
+    "heat": 48,
+    "risk": 55,
+    "headline": "走弱",
+    "concepts": [
+      {
+        "name": "元件",
+        "lead": "超声电子",
+        "chg_pct": null
+      },
+      {
+        "name": "电力",
+        "lead": "闽东电力",
+        "chg_pct": null
+      },
+      {
+        "name": "通信设备",
+        "lead": "鼎信通讯",
+        "chg_pct": null
+      },
+      {
+        "name": "地面兵装",
+        "lead": "内蒙一机",
+        "chg_pct": null
+      },
+      {
+        "name": "玻璃玻纤",
+        "lead": "九鼎新材",
+        "chg_pct": null
+      }
+    ],
     "alerts": [
       {
         "level": "info",
         "text": "盘中模式：强制实时拉取"
       },
       {
-        "level": "warn",
-        "text": "盘中三池响应不完整，保留最近有效数据"
+        "level": "danger",
+        "text": "跌停偏多（22）→ 亏钱扩散风险上升"
       },
       {
         "level": "warn",
-        "text": "三池请求均超时，本槽位跳过板块补抓并等待下一节点"
+        "text": "炸板率偏高（31.0%）→ 注意回封质量"
       }
     ],
-    "shift_score": null,
-    "shift_label": "数据暂缺",
-    "note": "本槽位三池请求均未成功，已记录数据暂缺；等待下一节点自动恢复。"
+    "shift_score": 47,
+    "shift_label": "走弱",
+    "note": "承接增强、分歧收敛，情绪明显回暖。"
   },
   "snapshots": [
     {
@@ -937,38 +959,130 @@
       "shift_score": null,
       "shift_label": "数据暂缺",
       "note": "本槽位三池请求均未成功，已记录数据暂缺；等待下一节点自动恢复。"
+    },
+    {
+      "time": "14:50:05",
+      "ts_bj": "2026-09-11 14:50:05",
+      "date": "2026-09-11",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid"
+      },
+      "pool_errors": {},
+      "zt": 40,
+      "dt": 22,
+      "zab": 18,
+      "zb": 31.0,
+      "fb": 69.0,
+      "jj": 17.5,
+      "lianban": 7,
+      "max_lb": 4,
+      "amount": "18818.8亿",
+      "bf": 0,
+      "heat": 48,
+      "risk": 55,
+      "headline": "走弱",
+      "concepts": [
+        {
+          "name": "元件",
+          "lead": "超声电子",
+          "chg_pct": null
+        },
+        {
+          "name": "电力",
+          "lead": "闽东电力",
+          "chg_pct": null
+        },
+        {
+          "name": "通信设备",
+          "lead": "鼎信通讯",
+          "chg_pct": null
+        },
+        {
+          "name": "地面兵装",
+          "lead": "内蒙一机",
+          "chg_pct": null
+        },
+        {
+          "name": "玻璃玻纤",
+          "lead": "九鼎新材",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        },
+        {
+          "level": "danger",
+          "text": "跌停偏多（22）→ 亏钱扩散风险上升"
+        },
+        {
+          "level": "warn",
+          "text": "炸板率偏高（31.0%）→ 注意回封质量"
+        }
+      ],
+      "shift_score": 47,
+      "shift_label": "走弱",
+      "note": "承接增强、分歧收敛，情绪明显回暖。"
     }
   ],
-  "indices": [],
+  "indices": [
+    {
+      "name": "上证指数",
+      "code": "000001.SH",
+      "val": 3882.908,
+      "chg": -1.3088640617486178,
+      "cje": 913894698100.0,
+      "t": "2026-09-11 14:50:03"
+    },
+    {
+      "name": "深证成指",
+      "code": "399001.SZ",
+      "val": 13462.516,
+      "chg": -1.139357907777178,
+      "cje": 967357880800.0,
+      "t": "2026-09-11 14:50:00"
+    },
+    {
+      "name": "创业板指",
+      "code": "399006.SZ",
+      "val": 3320.036,
+      "chg": -0.5507392414739649,
+      "cje": 440537528200.0,
+      "t": "2026-09-11 14:50:00"
+    }
+  ],
   "asOf": {
-    "indices": ""
+    "indices": "14:50:00"
   },
   "health": {
-    "status": "degraded",
-    "last_valid_at": "2026-09-11 14:40:32",
+    "status": "valid",
+    "last_valid_at": "2026-09-11 14:50:05",
     "rejected_reason": "",
     "source": {
-      "status": "partial",
+      "status": "valid",
       "pool_status": {
-        "ztgc": "failed",
-        "zbgc": "failed",
-        "dtgc": "failed"
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid"
       },
-      "pool_errors": {
-        "ztgc": "HTTP Error 429: Too Many Requests",
-        "zbgc": "HTTP Error 429: Too Many Requests",
-        "dtgc": "HTTP Error 429: Too Many Requests"
-      }
+      "pool_errors": {}
     },
-    "indices_status": "unavailable",
+    "indices_status": "valid",
     "coverage": {
       "ok": false,
       "status": "degraded",
       "message": "intraday_coverage_incomplete",
       "date": "2026-09-11",
       "expected_count": 26,
-      "due_count": 24,
-      "observed_count": 13,
+      "due_count": 25,
+      "observed_count": 14,
       "observed_slots": [
         "09:40",
         "09:50",
@@ -982,7 +1096,8 @@
         "11:10",
         "11:20",
         "11:30",
-        "14:40"
+        "14:40",
+        "14:50"
       ],
       "missing_slots": [
         "09:30",
@@ -1001,18 +1116,18 @@
       "out_of_session": [],
       "monotonic": true,
       "morning_coverage": 12,
-      "afternoon_coverage": 1
+      "afternoon_coverage": 2
     }
   },
   "live": {
     "market": {
-      "zt": null,
-      "dt": null,
-      "zab": null,
-      "zab_rate": null,
-      "lianban": null,
-      "max_lianban": null,
-      "amount": ""
+      "zt": 40,
+      "dt": 22,
+      "zab": 18,
+      "zab_rate": 31.0,
+      "lianban": 7,
+      "max_lianban": 4,
+      "amount": "18818.8亿"
     },
     "alerts": [
       {
@@ -1020,14 +1135,40 @@
         "text": "盘中模式：强制实时拉取"
       },
       {
-        "level": "warn",
-        "text": "盘中三池响应不完整，保留最近有效数据"
+        "level": "danger",
+        "text": "跌停偏多（22）→ 亏钱扩散风险上升"
       },
       {
         "level": "warn",
-        "text": "三池请求均超时，本槽位跳过板块补抓并等待下一节点"
+        "text": "炸板率偏高（31.0%）→ 注意回封质量"
       }
     ],
-    "concepts": []
+    "concepts": [
+      {
+        "name": "元件",
+        "lead": "超声电子",
+        "chg_pct": null
+      },
+      {
+        "name": "电力",
+        "lead": "闽东电力",
+        "chg_pct": null
+      },
+      {
+        "name": "通信设备",
+        "lead": "鼎信通讯",
+        "chg_pct": null
+      },
+      {
+        "name": "地面兵装",
+        "lead": "内蒙一机",
+        "chg_pct": null
+      },
+      {
+        "name": "玻璃玻纤",
+        "lead": "九鼎新材",
+        "chg_pct": null
+      }
+    ]
   }
 }
