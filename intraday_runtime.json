@@ -1,11 +1,11 @@
 {
   "schema": "intraday_runtime_v1",
   "date": "2026-09-11",
-  "updated_at": "2026-09-11 10:10:05",
+  "updated_at": "2026-09-11 10:20:03",
   "source": "必盈(实时)+必盈(实时)",
   "latest": {
-    "time": "10:10:05",
-    "ts_bj": "2026-09-11 10:10:05",
+    "time": "10:20:03",
+    "ts_bj": "2026-09-11 10:20:03",
     "date": "2026-09-11",
     "source": "intraday_live",
     "provider": "必盈(实时)+必盈(实时)",
@@ -16,25 +16,20 @@
       "dtgc": "valid"
     },
     "pool_errors": {},
-    "zt": 21,
-    "dt": 7,
+    "zt": 24,
+    "dt": 11,
     "zab": 11,
-    "zb": 34.4,
-    "fb": 65.6,
-    "jj": 23.8,
+    "zb": 31.4,
+    "fb": 68.6,
+    "jj": 20.8,
     "lianban": 5,
     "max_lb": 4,
-    "amount": "7685.2亿",
+    "amount": "8707.9亿",
     "bf": 0,
-    "heat": 45,
-    "risk": 34,
+    "heat": 46,
+    "risk": 39,
     "headline": "分歧",
     "concepts": [
-      {
-        "name": "种植业",
-        "lead": "新农开发",
-        "chg_pct": null
-      },
       {
         "name": "电力",
         "lead": "闽东电力",
@@ -43,6 +38,11 @@
       {
         "name": "通信设备",
         "lead": "铭普光磁",
+        "chg_pct": null
+      },
+      {
+        "name": "种植业",
+        "lead": "新农开发",
         "chg_pct": null
       },
       {
@@ -63,12 +63,16 @@
       },
       {
         "level": "warn",
-        "text": "炸板率偏高（34.4%）→ 注意回封质量"
+        "text": "跌停偏多（11）→ 控制追高"
+      },
+      {
+        "level": "warn",
+        "text": "炸板率偏高（31.4%）→ 注意回封质量"
       }
     ],
-    "shift_score": 54,
+    "shift_score": 52,
     "shift_label": "分歧",
-    "note": "情绪整体平稳，维持当前节奏。"
+    "note": "情绪略有回落，注意午后分歧。"
   },
   "snapshots": [
     {
@@ -338,40 +342,111 @@
       "shift_score": 54,
       "shift_label": "分歧",
       "note": "情绪整体平稳，维持当前节奏。"
+    },
+    {
+      "time": "10:20:03",
+      "ts_bj": "2026-09-11 10:20:03",
+      "date": "2026-09-11",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid"
+      },
+      "pool_errors": {},
+      "zt": 24,
+      "dt": 11,
+      "zab": 11,
+      "zb": 31.4,
+      "fb": 68.6,
+      "jj": 20.8,
+      "lianban": 5,
+      "max_lb": 4,
+      "amount": "8707.9亿",
+      "bf": 0,
+      "heat": 46,
+      "risk": 39,
+      "headline": "分歧",
+      "concepts": [
+        {
+          "name": "电力",
+          "lead": "闽东电力",
+          "chg_pct": null
+        },
+        {
+          "name": "通信设备",
+          "lead": "铭普光磁",
+          "chg_pct": null
+        },
+        {
+          "name": "种植业",
+          "lead": "新农开发",
+          "chg_pct": null
+        },
+        {
+          "name": "家居用品",
+          "lead": "瑞尔特",
+          "chg_pct": null
+        },
+        {
+          "name": "玻璃玻纤",
+          "lead": "凯盛新能",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        },
+        {
+          "level": "warn",
+          "text": "跌停偏多（11）→ 控制追高"
+        },
+        {
+          "level": "warn",
+          "text": "炸板率偏高（31.4%）→ 注意回封质量"
+        }
+      ],
+      "shift_score": 52,
+      "shift_label": "分歧",
+      "note": "情绪略有回落，注意午后分歧。"
     }
   ],
   "indices": [
     {
       "name": "上证指数",
       "code": "000001.SH",
-      "val": 3872.181,
-      "chg": -1.581510185532547,
-      "cje": 370230679100.0,
-      "t": "2026-09-11 10:10:03"
+      "val": 3863.462,
+      "chg": -1.8031193542910187,
+      "cje": 418433682300.0,
+      "t": "2026-09-11 10:20:00"
     },
     {
       "name": "深证成指",
       "code": "399001.SZ",
-      "val": 13395.357,
-      "chg": -1.6325333188423576,
-      "cje": 397736358500.0,
-      "t": "2026-09-11 10:10:00"
+      "val": 13324.06,
+      "chg": -2.1560957197523556,
+      "cje": 451581700900.0,
+      "t": "2026-09-11 10:19:57"
     },
     {
       "name": "创业板指",
       "code": "399006.SZ",
-      "val": 3305.28,
-      "chg": -0.992744476282502,
-      "cje": 173527797000.0,
-      "t": "2026-09-11 10:10:00"
+      "val": 3283.337,
+      "chg": -1.6500310625798666,
+      "cje": 198306389600.0,
+      "t": "2026-09-11 10:19:57"
     }
   ],
   "asOf": {
-    "indices": "10:10:00"
+    "indices": "10:19:57"
   },
   "health": {
     "status": "valid",
-    "last_valid_at": "2026-09-11 10:10:05",
+    "last_valid_at": "2026-09-11 10:20:03",
     "rejected_reason": "",
     "source": {
       "status": "valid",
@@ -389,13 +464,14 @@
       "message": "intraday_coverage_incomplete",
       "date": "2026-09-11",
       "expected_count": 26,
-      "due_count": 5,
-      "observed_count": 4,
+      "due_count": 6,
+      "observed_count": 5,
       "observed_slots": [
         "09:40",
         "09:50",
         "10:00",
-        "10:10"
+        "10:10",
+        "10:20"
       ],
       "missing_slots": [
         "09:30"
@@ -403,19 +479,19 @@
       "duplicate_slots": [],
       "out_of_session": [],
       "monotonic": true,
-      "morning_coverage": 4,
+      "morning_coverage": 5,
       "afternoon_coverage": 0
     }
   },
   "live": {
     "market": {
-      "zt": 21,
-      "dt": 7,
+      "zt": 24,
+      "dt": 11,
       "zab": 11,
-      "zab_rate": 34.4,
+      "zab_rate": 31.4,
       "lianban": 5,
       "max_lianban": 4,
-      "amount": "7685.2亿"
+      "amount": "8707.9亿"
     },
     "alerts": [
       {
@@ -424,15 +500,14 @@
       },
       {
         "level": "warn",
-        "text": "炸板率偏高（34.4%）→ 注意回封质量"
+        "text": "跌停偏多（11）→ 控制追高"
+      },
+      {
+        "level": "warn",
+        "text": "炸板率偏高（31.4%）→ 注意回封质量"
       }
     ],
     "concepts": [
-      {
-        "name": "种植业",
-        "lead": "新农开发",
-        "chg_pct": null
-      },
       {
         "name": "电力",
         "lead": "闽东电力",
@@ -441,6 +516,11 @@
       {
         "name": "通信设备",
         "lead": "铭普光磁",
+        "chg_pct": null
+      },
+      {
+        "name": "种植业",
+        "lead": "新农开发",
         "chg_pct": null
       },
       {
