@@ -1,11 +1,11 @@
 {
   "schema": "intraday_runtime_v1",
   "date": "2026-09-11",
-  "updated_at": "2026-09-11 09:40:04",
+  "updated_at": "2026-09-11 09:50:04",
   "source": "必盈(实时)+必盈(实时)",
   "latest": {
-    "time": "09:40:04",
-    "ts_bj": "2026-09-11 09:40:04",
+    "time": "09:50:04",
+    "ts_bj": "2026-09-11 09:50:04",
     "date": "2026-09-11",
     "source": "intraday_live",
     "provider": "必盈(实时)+必盈(实时)",
@@ -16,23 +16,33 @@
       "dtgc": "valid"
     },
     "pool_errors": {},
-    "zt": 9,
-    "dt": 4,
-    "zab": 5,
-    "zb": 35.7,
-    "fb": 64.3,
-    "jj": 55.6,
-    "lianban": 5,
-    "max_lb": 4,
-    "amount": "3415.3亿",
+    "zt": 17,
+    "dt": 9,
+    "zab": 8,
+    "zb": 32.0,
+    "fb": 68.0,
+    "jj": 35.3,
+    "lianban": 6,
+    "max_lb": 5,
+    "amount": "5331.5亿",
     "bf": 0,
-    "heat": 50,
-    "risk": 28,
+    "heat": 51,
+    "risk": 35,
     "headline": "分歧",
     "concepts": [
       {
+        "name": "旅游及景",
+        "lead": "桂林旅游",
+        "chg_pct": null
+      },
+      {
         "name": "家居用品",
         "lead": "瑞尔特",
+        "chg_pct": null
+      },
+      {
+        "name": "种植业",
+        "lead": "新农开发",
         "chg_pct": null
       },
       {
@@ -41,18 +51,8 @@
         "chg_pct": null
       },
       {
-        "name": "一般零售",
-        "lead": "南宁百货",
-        "chg_pct": null
-      },
-      {
         "name": "玻璃玻纤",
         "lead": "凯盛新能",
-        "chg_pct": null
-      },
-      {
-        "name": "计算机设",
-        "lead": "中新赛克",
         "chg_pct": null
       }
     ],
@@ -62,13 +62,13 @@
         "text": "盘中模式：强制实时拉取"
       },
       {
-        "level": "danger",
-        "text": "炸板率高（35.7%）→ 分歧偏强，谨慎接力"
+        "level": "warn",
+        "text": "炸板率偏高（32.0%）→ 注意回封质量"
       }
     ],
-    "shift_score": 59,
+    "shift_score": 57,
     "shift_label": "分歧",
-    "note": "盘中实时切片已接入，可逐点观察情绪变化。"
+    "note": "情绪略有回落，注意午后分歧。"
   },
   "snapshots": [
     {
@@ -137,40 +137,107 @@
       "shift_score": 59,
       "shift_label": "分歧",
       "note": "盘中实时切片已接入，可逐点观察情绪变化。"
+    },
+    {
+      "time": "09:50:04",
+      "ts_bj": "2026-09-11 09:50:04",
+      "date": "2026-09-11",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid"
+      },
+      "pool_errors": {},
+      "zt": 17,
+      "dt": 9,
+      "zab": 8,
+      "zb": 32.0,
+      "fb": 68.0,
+      "jj": 35.3,
+      "lianban": 6,
+      "max_lb": 5,
+      "amount": "5331.5亿",
+      "bf": 0,
+      "heat": 51,
+      "risk": 35,
+      "headline": "分歧",
+      "concepts": [
+        {
+          "name": "旅游及景",
+          "lead": "桂林旅游",
+          "chg_pct": null
+        },
+        {
+          "name": "家居用品",
+          "lead": "瑞尔特",
+          "chg_pct": null
+        },
+        {
+          "name": "种植业",
+          "lead": "新农开发",
+          "chg_pct": null
+        },
+        {
+          "name": "电力",
+          "lead": "闽东电力",
+          "chg_pct": null
+        },
+        {
+          "name": "玻璃玻纤",
+          "lead": "凯盛新能",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        },
+        {
+          "level": "warn",
+          "text": "炸板率偏高（32.0%）→ 注意回封质量"
+        }
+      ],
+      "shift_score": 57,
+      "shift_label": "分歧",
+      "note": "情绪略有回落，注意午后分歧。"
     }
   ],
   "indices": [
     {
       "name": "上证指数",
       "code": "000001.SH",
-      "val": 3878.013,
-      "chg": -1.4332793480283184,
-      "cje": 165033002700.0,
-      "t": "2026-09-11 09:40:03"
+      "val": 3870.371,
+      "chg": -1.6275146121242225,
+      "cje": 259171221400.0,
+      "t": "2026-09-11 09:50:02"
     },
     {
       "name": "深证成指",
       "code": "399001.SZ",
-      "val": 13448.245,
-      "chg": -1.244155571400976,
-      "cje": 175906761300.0,
-      "t": "2026-09-11 09:40:00"
+      "val": 13375.994,
+      "chg": -1.7747235760596305,
+      "cje": 272598134300.0,
+      "t": "2026-09-11 09:49:57"
     },
     {
       "name": "创业板指",
       "code": "399006.SZ",
-      "val": 3311.052,
-      "chg": -0.8198484194029363,
-      "cje": 73908898100.0,
-      "t": "2026-09-11 09:40:00"
+      "val": 3293.608,
+      "chg": -1.3423707368331461,
+      "cje": 114979299000.0,
+      "t": "2026-09-11 09:50:00"
     }
   ],
   "asOf": {
-    "indices": "09:40:00"
+    "indices": "09:50:00"
   },
   "health": {
     "status": "valid",
-    "last_valid_at": "2026-09-11 09:40:04",
+    "last_valid_at": "2026-09-11 09:50:04",
     "rejected_reason": "",
     "source": {
       "status": "valid",
@@ -188,10 +255,11 @@
       "message": "intraday_coverage_incomplete",
       "date": "2026-09-11",
       "expected_count": 26,
-      "due_count": 2,
-      "observed_count": 1,
+      "due_count": 3,
+      "observed_count": 2,
       "observed_slots": [
-        "09:40"
+        "09:40",
+        "09:50"
       ],
       "missing_slots": [
         "09:30"
@@ -199,19 +267,19 @@
       "duplicate_slots": [],
       "out_of_session": [],
       "monotonic": true,
-      "morning_coverage": 1,
+      "morning_coverage": 2,
       "afternoon_coverage": 0
     }
   },
   "live": {
     "market": {
-      "zt": 9,
-      "dt": 4,
-      "zab": 5,
-      "zab_rate": 35.7,
-      "lianban": 5,
-      "max_lianban": 4,
-      "amount": "3415.3亿"
+      "zt": 17,
+      "dt": 9,
+      "zab": 8,
+      "zab_rate": 32.0,
+      "lianban": 6,
+      "max_lianban": 5,
+      "amount": "5331.5亿"
     },
     "alerts": [
       {
@@ -219,14 +287,24 @@
         "text": "盘中模式：强制实时拉取"
       },
       {
-        "level": "danger",
-        "text": "炸板率高（35.7%）→ 分歧偏强，谨慎接力"
+        "level": "warn",
+        "text": "炸板率偏高（32.0%）→ 注意回封质量"
       }
     ],
     "concepts": [
       {
+        "name": "旅游及景",
+        "lead": "桂林旅游",
+        "chg_pct": null
+      },
+      {
         "name": "家居用品",
         "lead": "瑞尔特",
+        "chg_pct": null
+      },
+      {
+        "name": "种植业",
+        "lead": "新农开发",
         "chg_pct": null
       },
       {
@@ -235,18 +313,8 @@
         "chg_pct": null
       },
       {
-        "name": "一般零售",
-        "lead": "南宁百货",
-        "chg_pct": null
-      },
-      {
         "name": "玻璃玻纤",
         "lead": "凯盛新能",
-        "chg_pct": null
-      },
-      {
-        "name": "计算机设",
-        "lead": "中新赛克",
         "chg_pct": null
       }
     ]

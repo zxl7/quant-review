@@ -2,7 +2,7 @@
   "schema": "intraday_snapshot_v1",
   "render_mode": "snapshot_stream",
   "date": "2026-09-11",
-  "count": 1,
+  "count": 2,
   "interval_min": null,
   "simulated": false,
   "snapshots": [
@@ -72,11 +72,78 @@
       "shift_score": 59,
       "shift_label": "分歧",
       "note": "盘中实时切片已接入，可逐点观察情绪变化。"
+    },
+    {
+      "time": "09:50:04",
+      "ts_bj": "2026-09-11 09:50:04",
+      "date": "2026-09-11",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid"
+      },
+      "pool_errors": {},
+      "zt": 17,
+      "dt": 9,
+      "zab": 8,
+      "zb": 32.0,
+      "fb": 68.0,
+      "jj": 35.3,
+      "lianban": 6,
+      "max_lb": 5,
+      "amount": "5331.5亿",
+      "bf": 0,
+      "heat": 51,
+      "risk": 35,
+      "headline": "分歧",
+      "concepts": [
+        {
+          "name": "旅游及景",
+          "lead": "桂林旅游",
+          "chg_pct": null
+        },
+        {
+          "name": "家居用品",
+          "lead": "瑞尔特",
+          "chg_pct": null
+        },
+        {
+          "name": "种植业",
+          "lead": "新农开发",
+          "chg_pct": null
+        },
+        {
+          "name": "电力",
+          "lead": "闽东电力",
+          "chg_pct": null
+        },
+        {
+          "name": "玻璃玻纤",
+          "lead": "凯盛新能",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        },
+        {
+          "level": "warn",
+          "text": "炸板率偏高（32.0%）→ 注意回封质量"
+        }
+      ],
+      "shift_score": 57,
+      "shift_label": "分歧",
+      "note": "情绪略有回落，注意午后分歧。"
     }
   ],
   "latest": {
-    "time": "09:40:04",
-    "ts_bj": "2026-09-11 09:40:04",
+    "time": "09:50:04",
+    "ts_bj": "2026-09-11 09:50:04",
     "date": "2026-09-11",
     "source": "intraday_live",
     "provider": "必盈(实时)+必盈(实时)",
@@ -87,23 +154,33 @@
       "dtgc": "valid"
     },
     "pool_errors": {},
-    "zt": 9,
-    "dt": 4,
-    "zab": 5,
-    "zb": 35.7,
-    "fb": 64.3,
-    "jj": 55.6,
-    "lianban": 5,
-    "max_lb": 4,
-    "amount": "3415.3亿",
+    "zt": 17,
+    "dt": 9,
+    "zab": 8,
+    "zb": 32.0,
+    "fb": 68.0,
+    "jj": 35.3,
+    "lianban": 6,
+    "max_lb": 5,
+    "amount": "5331.5亿",
     "bf": 0,
-    "heat": 50,
-    "risk": 28,
+    "heat": 51,
+    "risk": 35,
     "headline": "分歧",
     "concepts": [
       {
+        "name": "旅游及景",
+        "lead": "桂林旅游",
+        "chg_pct": null
+      },
+      {
         "name": "家居用品",
         "lead": "瑞尔特",
+        "chg_pct": null
+      },
+      {
+        "name": "种植业",
+        "lead": "新农开发",
         "chg_pct": null
       },
       {
@@ -112,18 +189,8 @@
         "chg_pct": null
       },
       {
-        "name": "一般零售",
-        "lead": "南宁百货",
-        "chg_pct": null
-      },
-      {
         "name": "玻璃玻纤",
         "lead": "凯盛新能",
-        "chg_pct": null
-      },
-      {
-        "name": "计算机设",
-        "lead": "中新赛克",
         "chg_pct": null
       }
     ],
@@ -133,19 +200,19 @@
         "text": "盘中模式：强制实时拉取"
       },
       {
-        "level": "danger",
-        "text": "炸板率高（35.7%）→ 分歧偏强，谨慎接力"
+        "level": "warn",
+        "text": "炸板率偏高（32.0%）→ 注意回封质量"
       }
     ],
-    "shift_score": 59,
+    "shift_score": 57,
     "shift_label": "分歧",
-    "note": "盘中实时切片已接入，可逐点观察情绪变化。"
+    "note": "情绪略有回落，注意午后分歧。"
   },
-  "updated_at": "2026-09-11 09:40:04",
-  "snapshot_sig": "2026-09-11|2026-09-11 09:40:04|1",
+  "updated_at": "2026-09-11 09:50:04",
+  "snapshot_sig": "2026-09-11|2026-09-11 09:50:04|2",
   "health": {
     "status": "valid",
-    "last_valid_at": "2026-09-11 09:40:04",
+    "last_valid_at": "2026-09-11 09:50:04",
     "rejected_reason": "",
     "source": {
       "status": "valid",
