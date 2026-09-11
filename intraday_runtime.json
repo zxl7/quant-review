@@ -1,11 +1,11 @@
 {
   "schema": "intraday_runtime_v1",
   "date": "2026-09-11",
-  "updated_at": "2026-09-11 14:50:05",
+  "updated_at": "2026-09-11 15:00:05",
   "source": "必盈(实时)+必盈(实时)",
   "latest": {
-    "time": "14:50:05",
-    "ts_bj": "2026-09-11 14:50:05",
+    "time": "15:00:05",
+    "ts_bj": "2026-09-11 15:00:05",
     "date": "2026-09-11",
     "source": "intraday_live",
     "provider": "必盈(实时)+必盈(实时)",
@@ -24,7 +24,7 @@
     "jj": 17.5,
     "lianban": 7,
     "max_lb": 4,
-    "amount": "18818.8亿",
+    "amount": "19669.8亿",
     "bf": 0,
     "heat": 48,
     "risk": 55,
@@ -72,7 +72,7 @@
     ],
     "shift_score": 47,
     "shift_label": "走弱",
-    "note": "承接增强、分歧收敛，情绪明显回暖。"
+    "note": "情绪整体平稳，维持当前节奏。"
   },
   "snapshots": [
     {
@@ -1030,40 +1030,111 @@
       "shift_score": 47,
       "shift_label": "走弱",
       "note": "承接增强、分歧收敛，情绪明显回暖。"
+    },
+    {
+      "time": "15:00:05",
+      "ts_bj": "2026-09-11 15:00:05",
+      "date": "2026-09-11",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid"
+      },
+      "pool_errors": {},
+      "zt": 40,
+      "dt": 22,
+      "zab": 18,
+      "zb": 31.0,
+      "fb": 69.0,
+      "jj": 17.5,
+      "lianban": 7,
+      "max_lb": 4,
+      "amount": "19669.8亿",
+      "bf": 0,
+      "heat": 48,
+      "risk": 55,
+      "headline": "走弱",
+      "concepts": [
+        {
+          "name": "元件",
+          "lead": "超声电子",
+          "chg_pct": null
+        },
+        {
+          "name": "电力",
+          "lead": "闽东电力",
+          "chg_pct": null
+        },
+        {
+          "name": "通信设备",
+          "lead": "鼎信通讯",
+          "chg_pct": null
+        },
+        {
+          "name": "地面兵装",
+          "lead": "内蒙一机",
+          "chg_pct": null
+        },
+        {
+          "name": "玻璃玻纤",
+          "lead": "九鼎新材",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        },
+        {
+          "level": "danger",
+          "text": "跌停偏多（22）→ 亏钱扩散风险上升"
+        },
+        {
+          "level": "warn",
+          "text": "炸板率偏高（31.0%）→ 注意回封质量"
+        }
+      ],
+      "shift_score": 47,
+      "shift_label": "走弱",
+      "note": "情绪整体平稳，维持当前节奏。"
     }
   ],
   "indices": [
     {
       "name": "上证指数",
       "code": "000001.SH",
-      "val": 3882.908,
-      "chg": -1.3088640617486178,
-      "cje": 913894698100.0,
-      "t": "2026-09-11 14:50:03"
+      "val": 3887.78,
+      "chg": -1.1850333621051574,
+      "cje": 953271295100.0,
+      "t": "2026-09-11 15:00:03"
     },
     {
       "name": "深证成指",
       "code": "399001.SZ",
-      "val": 13462.516,
-      "chg": -1.139357907777178,
-      "cje": 967357880800.0,
-      "t": "2026-09-11 14:50:00"
+      "val": 13468.319,
+      "chg": -1.096744156672915,
+      "cje": 1003439262500.0,
+      "t": "2026-09-11 14:58:54"
     },
     {
       "name": "创业板指",
       "code": "399006.SZ",
-      "val": 3320.036,
-      "chg": -0.5507392414739649,
-      "cje": 440537528200.0,
-      "t": "2026-09-11 14:50:00"
+      "val": 3322.039,
+      "chg": -0.4907408350412204,
+      "cje": 462614555100.0,
+      "t": "2026-09-11 15:00:03"
     }
   ],
   "asOf": {
-    "indices": "14:50:00"
+    "indices": "15:00:03"
   },
   "health": {
     "status": "valid",
-    "last_valid_at": "2026-09-11 14:50:05",
+    "last_valid_at": "2026-09-11 15:00:05",
     "rejected_reason": "",
     "source": {
       "status": "valid",
@@ -1081,8 +1152,8 @@
       "message": "intraday_coverage_incomplete",
       "date": "2026-09-11",
       "expected_count": 26,
-      "due_count": 25,
-      "observed_count": 14,
+      "due_count": 26,
+      "observed_count": 15,
       "observed_slots": [
         "09:40",
         "09:50",
@@ -1097,7 +1168,8 @@
         "11:20",
         "11:30",
         "14:40",
-        "14:50"
+        "14:50",
+        "15:00"
       ],
       "missing_slots": [
         "09:30",
@@ -1116,7 +1188,7 @@
       "out_of_session": [],
       "monotonic": true,
       "morning_coverage": 12,
-      "afternoon_coverage": 2
+      "afternoon_coverage": 3
     }
   },
   "live": {
@@ -1127,7 +1199,7 @@
       "zab_rate": 31.0,
       "lianban": 7,
       "max_lianban": 4,
-      "amount": "18818.8亿"
+      "amount": "19669.8亿"
     },
     "alerts": [
       {
