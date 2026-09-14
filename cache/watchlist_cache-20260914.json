@@ -1,6 +1,6 @@
 {
   "schema": "watchlist_v2",
-  "generated_at_bj": "2026-09-14 22:02:07",
+  "generated_at_bj": "2026-09-14 23:10:02",
   "data_date": "2026-09-14",
   "pools_date": "2026-09-14",
   "sector_resolution": {
@@ -16605,12 +16605,12 @@
         "prev_zt": 3,
         "pre_prev_zt": 3,
         "resilience": 62.5,
-        "strength": 66.0,
+        "strength": null,
         "strength_rank": null,
-        "strength_score": 66.0,
-        "strength_source": "sector_heatmap",
-        "tide_score": 88,
-        "confidence": "high",
+        "strength_score": null,
+        "strength_source": "",
+        "tide_score": 84,
+        "confidence": "medium",
         "warning_level": "none",
         "action_hint": "潮汐中性，按梯队和辨识度判断"
       },
@@ -20634,43 +20634,6 @@
         "action_hint": "通信有观察价值，等待情绪/量能/消息继续共振。"
       },
       {
-        "name": "创投",
-        "canonical_name": "创投",
-        "status": "observe_candidate",
-        "base_tide_status": "neutral",
-        "action": "watch",
-        "tide_zone": "neutral",
-        "tide_phase": "neutral",
-        "core_score": 68,
-        "ebb_score": 31,
-        "tide_score": 88,
-        "emotion_score": 68,
-        "strength_score": 66,
-        "volume_score": 42,
-        "news_score": 58,
-        "market_score": 52,
-        "structure_score": 59,
-        "confidence": "medium",
-        "confirms": {
-          "emotion": true,
-          "strength": true,
-          "volume": false,
-          "news": false,
-          "market": false
-        },
-        "reasons": [
-          "板块强度66",
-          "消息催化",
-          "中位承接活跃",
-          "低位连板承接"
-        ],
-        "cautions": [
-          "市场分歧",
-          "高位负反馈"
-        ],
-        "action_hint": "创投有观察价值，等待情绪/量能/消息继续共振。"
-      },
-      {
         "name": "电力物联网",
         "canonical_name": "电力物联网",
         "status": "observe_candidate",
@@ -20958,6 +20921,42 @@
           "高位负反馈"
         ],
         "action_hint": "充电桩有观察价值，等待情绪/量能/消息继续共振。"
+      },
+      {
+        "name": "创投",
+        "canonical_name": "创投",
+        "status": "observe_candidate",
+        "base_tide_status": "neutral",
+        "action": "watch",
+        "tide_zone": "neutral",
+        "tide_phase": "neutral",
+        "core_score": 66,
+        "ebb_score": 33,
+        "tide_score": 84,
+        "emotion_score": 68,
+        "strength_score": 62,
+        "volume_score": 42,
+        "news_score": 58,
+        "market_score": 52,
+        "structure_score": 59,
+        "confidence": "medium",
+        "confirms": {
+          "emotion": true,
+          "strength": true,
+          "volume": false,
+          "news": false,
+          "market": false
+        },
+        "reasons": [
+          "消息催化",
+          "中位承接活跃",
+          "低位连板承接"
+        ],
+        "cautions": [
+          "市场分歧",
+          "高位负反馈"
+        ],
+        "action_hint": "创投有观察价值，等待情绪/量能/消息继续共振。"
       },
       {
         "name": "无人驾驶",
@@ -31459,8 +31458,8 @@
         "新能源车",
         "人工智能",
         "通信",
-        "创投",
-        "电力物联网"
+        "电力物联网",
+        "算力概念"
       ],
       "avoid": [
         "碳中和",
@@ -31480,8 +31479,8 @@
         "新能源车",
         "人工智能",
         "通信",
-        "创投",
-        "电力物联网"
+        "电力物联网",
+        "算力概念"
       ],
       "ebbing": [
         "碳中和",
@@ -31517,7 +31516,7 @@
             "code": "000823",
             "name": "超声电子",
             "action": "buy",
-            "score": 65,
+            "score": 71,
             "main_line": "半导体",
             "primary_sector": "PCB",
             "primary_confidence": 0.55,
@@ -31541,12 +31540,12 @@
               "领头羊",
               "分歧高位",
               "观察池候选",
+              "龙头因子强",
               "接力链条强",
               "容量承接强"
             ],
             "cautions": [
               "断板风险高",
-              "辨识度一般",
               "风险控制弱",
               "断板风险偏高"
             ],
@@ -31556,12 +31555,12 @@
             "turnover": 19.25,
             "leaders_score": 91.25,
             "env_adjust": -8,
-            "relay_adjust": -1,
+            "relay_adjust": 5,
             "risk_penalty": 0,
             "zt_placement": "watch",
             "style_tag": "龙头博弈",
             "style_confidence": 88,
-            "relay_power_score": 86,
+            "relay_power_score": 91,
             "tide_status": "",
             "tide_adjust": 0
           }
@@ -31759,7 +31758,7 @@
         "summary": "半导体主线，买入 超声电子(PCB)，观察 中京电子 · 科翔股份 · 天通股份 · 双星新材",
         "diagnostics": {
           "member_count": 10,
-          "avg_score": 44.9,
+          "avg_score": 45.5,
           "env_gate": "领头羊",
           "relay_hits": 0,
           "line_penalty": 0,
