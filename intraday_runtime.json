@@ -1,11 +1,11 @@
 {
   "schema": "intraday_runtime_v1",
   "date": "2026-09-14",
-  "updated_at": "2026-09-14 10:10:04",
+  "updated_at": "2026-09-14 10:20:03",
   "source": "必盈(实时)+必盈(实时)",
   "latest": {
-    "time": "10:10:04",
-    "ts_bj": "2026-09-14 10:10:04",
+    "time": "10:20:03",
+    "ts_bj": "2026-09-14 10:20:03",
     "date": "2026-09-14",
     "source": "intraday_live",
     "provider": "必盈(实时)+必盈(实时)",
@@ -16,38 +16,38 @@
       "dtgc": "valid"
     },
     "pool_errors": {},
-    "zt": 32,
-    "dt": 11,
-    "zab": 20,
-    "zb": 38.5,
-    "fb": 61.5,
-    "jj": 28.1,
+    "zt": 31,
+    "dt": 13,
+    "zab": 22,
+    "zb": 41.5,
+    "fb": 58.5,
+    "jj": 29.0,
     "lianban": 9,
     "max_lb": 4,
-    "amount": "7100.3亿",
+    "amount": "7827.3亿",
     "bf": 0,
-    "heat": 46,
-    "risk": 47,
-    "headline": "分歧",
+    "heat": 45,
+    "risk": 52,
+    "headline": "走弱",
     "concepts": [
-      {
-        "name": "汽车零部",
-        "lead": "众泰汽车",
-        "chg_pct": null
-      },
       {
         "name": "电力",
         "lead": "闽东电力",
         "chg_pct": null
       },
       {
-        "name": "元件",
-        "lead": "超声电子",
+        "name": "汽车零部",
+        "lead": "众泰汽车",
         "chg_pct": null
       },
       {
         "name": "电网设备",
         "lead": "通达股份",
+        "chg_pct": null
+      },
+      {
+        "name": "通用设备",
+        "lead": "黄河旋风",
         "chg_pct": null
       },
       {
@@ -63,16 +63,16 @@
       },
       {
         "level": "warn",
-        "text": "跌停偏多（11）→ 控制追高"
+        "text": "跌停偏多（13）→ 控制追高"
       },
       {
         "level": "danger",
-        "text": "炸板率高（38.5%）→ 分歧偏强，谨慎接力"
+        "text": "炸板率高（41.5%）→ 分歧偏强，谨慎接力"
       }
     ],
-    "shift_score": 49,
-    "shift_label": "分歧",
-    "note": "炸板/跌停抬升，情绪明显走弱。"
+    "shift_score": 46,
+    "shift_label": "走弱",
+    "note": "情绪略有回落，注意午后分歧。"
   },
   "snapshots": [
     {
@@ -419,40 +419,111 @@
       "shift_score": 49,
       "shift_label": "分歧",
       "note": "炸板/跌停抬升，情绪明显走弱。"
+    },
+    {
+      "time": "10:20:03",
+      "ts_bj": "2026-09-14 10:20:03",
+      "date": "2026-09-14",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid"
+      },
+      "pool_errors": {},
+      "zt": 31,
+      "dt": 13,
+      "zab": 22,
+      "zb": 41.5,
+      "fb": 58.5,
+      "jj": 29.0,
+      "lianban": 9,
+      "max_lb": 4,
+      "amount": "7827.3亿",
+      "bf": 0,
+      "heat": 45,
+      "risk": 52,
+      "headline": "走弱",
+      "concepts": [
+        {
+          "name": "电力",
+          "lead": "闽东电力",
+          "chg_pct": null
+        },
+        {
+          "name": "汽车零部",
+          "lead": "众泰汽车",
+          "chg_pct": null
+        },
+        {
+          "name": "电网设备",
+          "lead": "通达股份",
+          "chg_pct": null
+        },
+        {
+          "name": "通用设备",
+          "lead": "黄河旋风",
+          "chg_pct": null
+        },
+        {
+          "name": "软件开发",
+          "lead": "天融信",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        },
+        {
+          "level": "warn",
+          "text": "跌停偏多（13）→ 控制追高"
+        },
+        {
+          "level": "danger",
+          "text": "炸板率高（41.5%）→ 分歧偏强，谨慎接力"
+        }
+      ],
+      "shift_score": 46,
+      "shift_label": "走弱",
+      "note": "情绪略有回落，注意午后分歧。"
     }
   ],
   "indices": [
     {
       "name": "上证指数",
       "code": "000001.SH",
-      "val": 3878.635,
-      "chg": -0.24371732185628597,
-      "cje": 337538625800.0,
-      "t": "2026-09-14 10:10:03"
+      "val": 3886.062,
+      "chg": -0.05269911275681117,
+      "cje": 371613465700.0,
+      "t": "2026-09-14 10:20:00"
     },
     {
       "name": "深证成指",
       "code": "399001.SZ",
-      "val": 13430.079,
-      "chg": -0.30567303407543844,
-      "cje": 372489808500.0,
-      "t": "2026-09-14 10:10:00"
+      "val": 13449.346,
+      "chg": -0.16265000363366283,
+      "cje": 410806492600.0,
+      "t": "2026-09-14 10:19:57"
     },
     {
       "name": "创业板指",
       "code": "399006.SZ",
-      "val": 3310.113,
-      "chg": -0.358996387459641,
-      "cje": 170127922700.0,
-      "t": "2026-09-14 10:10:00"
+      "val": 3314.191,
+      "chg": -0.23624045352870363,
+      "cje": 188809662200.0,
+      "t": "2026-09-14 10:19:57"
     }
   ],
   "asOf": {
-    "indices": "10:10:00"
+    "indices": "10:19:57"
   },
   "health": {
     "status": "valid",
-    "last_valid_at": "2026-09-14 10:10:04",
+    "last_valid_at": "2026-09-14 10:20:03",
     "rejected_reason": "",
     "source": {
       "status": "valid",
@@ -470,32 +541,33 @@
       "message": "intraday_coverage_collecting",
       "date": "2026-09-14",
       "expected_count": 26,
-      "due_count": 5,
-      "observed_count": 5,
+      "due_count": 6,
+      "observed_count": 6,
       "observed_slots": [
         "09:30",
         "09:40",
         "09:50",
         "10:00",
-        "10:10"
+        "10:10",
+        "10:20"
       ],
       "missing_slots": [],
       "duplicate_slots": [],
       "out_of_session": [],
       "monotonic": true,
-      "morning_coverage": 5,
+      "morning_coverage": 6,
       "afternoon_coverage": 0
     }
   },
   "live": {
     "market": {
-      "zt": 32,
-      "dt": 11,
-      "zab": 20,
-      "zab_rate": 38.5,
+      "zt": 31,
+      "dt": 13,
+      "zab": 22,
+      "zab_rate": 41.5,
       "lianban": 9,
       "max_lianban": 4,
-      "amount": "7100.3亿"
+      "amount": "7827.3亿"
     },
     "alerts": [
       {
@@ -504,32 +576,32 @@
       },
       {
         "level": "warn",
-        "text": "跌停偏多（11）→ 控制追高"
+        "text": "跌停偏多（13）→ 控制追高"
       },
       {
         "level": "danger",
-        "text": "炸板率高（38.5%）→ 分歧偏强，谨慎接力"
+        "text": "炸板率高（41.5%）→ 分歧偏强，谨慎接力"
       }
     ],
     "concepts": [
-      {
-        "name": "汽车零部",
-        "lead": "众泰汽车",
-        "chg_pct": null
-      },
       {
         "name": "电力",
         "lead": "闽东电力",
         "chg_pct": null
       },
       {
-        "name": "元件",
-        "lead": "超声电子",
+        "name": "汽车零部",
+        "lead": "众泰汽车",
         "chg_pct": null
       },
       {
         "name": "电网设备",
         "lead": "通达股份",
+        "chg_pct": null
+      },
+      {
+        "name": "通用设备",
+        "lead": "黄河旋风",
         "chg_pct": null
       },
       {
