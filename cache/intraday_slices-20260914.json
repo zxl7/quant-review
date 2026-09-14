@@ -2,7 +2,7 @@
   "schema": "intraday_snapshot_v1",
   "render_mode": "snapshot_stream",
   "date": "2026-09-14",
-  "count": 4,
+  "count": 5,
   "interval_min": null,
   "simulated": false,
   "snapshots": [
@@ -279,11 +279,82 @@
       "shift_score": 55,
       "shift_label": "分歧",
       "note": "情绪整体平稳，维持当前节奏。"
+    },
+    {
+      "time": "10:10:04",
+      "ts_bj": "2026-09-14 10:10:04",
+      "date": "2026-09-14",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid"
+      },
+      "pool_errors": {},
+      "zt": 32,
+      "dt": 11,
+      "zab": 20,
+      "zb": 38.5,
+      "fb": 61.5,
+      "jj": 28.1,
+      "lianban": 9,
+      "max_lb": 4,
+      "amount": "7100.3亿",
+      "bf": 0,
+      "heat": 46,
+      "risk": 47,
+      "headline": "分歧",
+      "concepts": [
+        {
+          "name": "汽车零部",
+          "lead": "众泰汽车",
+          "chg_pct": null
+        },
+        {
+          "name": "电力",
+          "lead": "闽东电力",
+          "chg_pct": null
+        },
+        {
+          "name": "元件",
+          "lead": "超声电子",
+          "chg_pct": null
+        },
+        {
+          "name": "电网设备",
+          "lead": "通达股份",
+          "chg_pct": null
+        },
+        {
+          "name": "软件开发",
+          "lead": "天融信",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        },
+        {
+          "level": "warn",
+          "text": "跌停偏多（11）→ 控制追高"
+        },
+        {
+          "level": "danger",
+          "text": "炸板率高（38.5%）→ 分歧偏强，谨慎接力"
+        }
+      ],
+      "shift_score": 49,
+      "shift_label": "分歧",
+      "note": "炸板/跌停抬升，情绪明显走弱。"
     }
   ],
   "latest": {
-    "time": "10:00:03",
-    "ts_bj": "2026-09-14 10:00:03",
+    "time": "10:10:04",
+    "ts_bj": "2026-09-14 10:10:04",
     "date": "2026-09-14",
     "source": "intraday_live",
     "provider": "必盈(实时)+必盈(实时)",
@@ -294,18 +365,18 @@
       "dtgc": "valid"
     },
     "pool_errors": {},
-    "zt": 30,
-    "dt": 12,
-    "zab": 13,
-    "zb": 30.2,
-    "fb": 69.8,
-    "jj": 33.3,
-    "lianban": 10,
+    "zt": 32,
+    "dt": 11,
+    "zab": 20,
+    "zb": 38.5,
+    "fb": 61.5,
+    "jj": 28.1,
+    "lianban": 9,
     "max_lb": 4,
-    "amount": "6071.3亿",
+    "amount": "7100.3亿",
     "bf": 0,
-    "heat": 51,
-    "risk": 40,
+    "heat": 46,
+    "risk": 47,
     "headline": "分歧",
     "concepts": [
       {
@@ -319,18 +390,18 @@
         "chg_pct": null
       },
       {
-        "name": "中药Ⅱ",
-        "lead": "三力制药",
+        "name": "元件",
+        "lead": "超声电子",
+        "chg_pct": null
+      },
+      {
+        "name": "电网设备",
+        "lead": "通达股份",
         "chg_pct": null
       },
       {
         "name": "软件开发",
         "lead": "天融信",
-        "chg_pct": null
-      },
-      {
-        "name": "航运港口",
-        "lead": "南 京 港",
         "chg_pct": null
       }
     ],
@@ -341,22 +412,22 @@
       },
       {
         "level": "warn",
-        "text": "跌停偏多（12）→ 控制追高"
+        "text": "跌停偏多（11）→ 控制追高"
       },
       {
-        "level": "warn",
-        "text": "炸板率偏高（30.2%）→ 注意回封质量"
+        "level": "danger",
+        "text": "炸板率高（38.5%）→ 分歧偏强，谨慎接力"
       }
     ],
-    "shift_score": 55,
+    "shift_score": 49,
     "shift_label": "分歧",
-    "note": "情绪整体平稳，维持当前节奏。"
+    "note": "炸板/跌停抬升，情绪明显走弱。"
   },
-  "updated_at": "2026-09-14 10:00:03",
-  "snapshot_sig": "2026-09-14|2026-09-14 10:00:03|4",
+  "updated_at": "2026-09-14 10:10:04",
+  "snapshot_sig": "2026-09-14|2026-09-14 10:10:04|5",
   "health": {
     "status": "valid",
-    "last_valid_at": "2026-09-14 10:00:03",
+    "last_valid_at": "2026-09-14 10:10:04",
     "rejected_reason": "",
     "source": {
       "status": "valid",
