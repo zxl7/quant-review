@@ -1,11 +1,11 @@
 {
   "schema": "intraday_runtime_v1",
   "date": "2026-09-14",
-  "updated_at": "2026-09-14 09:50:03",
+  "updated_at": "2026-09-14 10:00:03",
   "source": "必盈(实时)+必盈(实时)",
   "latest": {
-    "time": "09:50:03",
-    "ts_bj": "2026-09-14 09:50:03",
+    "time": "10:00:03",
+    "ts_bj": "2026-09-14 10:00:03",
     "date": "2026-09-14",
     "source": "intraday_live",
     "provider": "必盈(实时)+必盈(实时)",
@@ -16,18 +16,18 @@
       "dtgc": "valid"
     },
     "pool_errors": {},
-    "zt": 24,
-    "dt": 10,
-    "zab": 10,
-    "zb": 29.4,
-    "fb": 70.6,
-    "jj": 37.5,
-    "lianban": 9,
+    "zt": 30,
+    "dt": 12,
+    "zab": 13,
+    "zb": 30.2,
+    "fb": 69.8,
+    "jj": 33.3,
+    "lianban": 10,
     "max_lb": 4,
-    "amount": "4803.4亿",
+    "amount": "6071.3亿",
     "bf": 0,
     "heat": 51,
-    "risk": 36,
+    "risk": 40,
     "headline": "分歧",
     "concepts": [
       {
@@ -41,6 +41,11 @@
         "chg_pct": null
       },
       {
+        "name": "中药Ⅱ",
+        "lead": "三力制药",
+        "chg_pct": null
+      },
+      {
         "name": "软件开发",
         "lead": "天融信",
         "chg_pct": null
@@ -48,11 +53,6 @@
       {
         "name": "航运港口",
         "lead": "南 京 港",
-        "chg_pct": null
-      },
-      {
-        "name": "IT服务Ⅱ",
-        "lead": "启明信息",
         "chg_pct": null
       }
     ],
@@ -63,16 +63,16 @@
       },
       {
         "level": "warn",
-        "text": "跌停偏多（10）→ 控制追高"
+        "text": "跌停偏多（12）→ 控制追高"
       },
       {
         "level": "warn",
-        "text": "炸板率偏高（29.4%）→ 注意回封质量"
+        "text": "炸板率偏高（30.2%）→ 注意回封质量"
       }
     ],
-    "shift_score": 56,
+    "shift_score": 55,
     "shift_label": "分歧",
-    "note": "炸板/跌停抬升，情绪明显走弱。"
+    "note": "情绪整体平稳，维持当前节奏。"
   },
   "snapshots": [
     {
@@ -277,40 +277,111 @@
       "shift_score": 56,
       "shift_label": "分歧",
       "note": "炸板/跌停抬升，情绪明显走弱。"
+    },
+    {
+      "time": "10:00:03",
+      "ts_bj": "2026-09-14 10:00:03",
+      "date": "2026-09-14",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid"
+      },
+      "pool_errors": {},
+      "zt": 30,
+      "dt": 12,
+      "zab": 13,
+      "zb": 30.2,
+      "fb": 69.8,
+      "jj": 33.3,
+      "lianban": 10,
+      "max_lb": 4,
+      "amount": "6071.3亿",
+      "bf": 0,
+      "heat": 51,
+      "risk": 40,
+      "headline": "分歧",
+      "concepts": [
+        {
+          "name": "汽车零部",
+          "lead": "众泰汽车",
+          "chg_pct": null
+        },
+        {
+          "name": "电力",
+          "lead": "闽东电力",
+          "chg_pct": null
+        },
+        {
+          "name": "中药Ⅱ",
+          "lead": "三力制药",
+          "chg_pct": null
+        },
+        {
+          "name": "软件开发",
+          "lead": "天融信",
+          "chg_pct": null
+        },
+        {
+          "name": "航运港口",
+          "lead": "南 京 港",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        },
+        {
+          "level": "warn",
+          "text": "跌停偏多（12）→ 控制追高"
+        },
+        {
+          "level": "warn",
+          "text": "炸板率偏高（30.2%）→ 注意回封质量"
+        }
+      ],
+      "shift_score": 55,
+      "shift_label": "分歧",
+      "note": "情绪整体平稳，维持当前节奏。"
     }
   ],
   "indices": [
     {
       "name": "上证指数",
       "code": "000001.SH",
-      "val": 3879.464,
-      "chg": -0.22239591410841753,
-      "cje": 228209180700.0,
-      "t": "2026-09-14 09:50:03"
+      "val": 3876.558,
+      "chg": -0.2971365786624889,
+      "cje": 289093441200.0,
+      "t": "2026-09-14 10:00:03"
     },
     {
       "name": "深证成指",
       "code": "399001.SZ",
-      "val": 13391.86,
-      "chg": -0.5893807830998921,
-      "cje": 251737595700.0,
-      "t": "2026-09-14 09:49:57"
+      "val": 13439.203,
+      "chg": -0.23794364549648253,
+      "cje": 317357866100.0,
+      "t": "2026-09-14 09:59:57"
     },
     {
       "name": "创业板指",
       "code": "399006.SZ",
-      "val": 3294.374,
-      "chg": -0.8327716802843199,
-      "cje": 113384043900.0,
-      "t": "2026-09-14 09:49:57"
+      "val": 3316.207,
+      "chg": -0.1755548324387623,
+      "cje": 144176574900.0,
+      "t": "2026-09-14 09:59:57"
     }
   ],
   "asOf": {
-    "indices": "09:49:57"
+    "indices": "09:59:57"
   },
   "health": {
     "status": "valid",
-    "last_valid_at": "2026-09-14 09:50:03",
+    "last_valid_at": "2026-09-14 10:00:03",
     "rejected_reason": "",
     "source": {
       "status": "valid",
@@ -328,30 +399,31 @@
       "message": "intraday_coverage_collecting",
       "date": "2026-09-14",
       "expected_count": 26,
-      "due_count": 3,
-      "observed_count": 3,
+      "due_count": 4,
+      "observed_count": 4,
       "observed_slots": [
         "09:30",
         "09:40",
-        "09:50"
+        "09:50",
+        "10:00"
       ],
       "missing_slots": [],
       "duplicate_slots": [],
       "out_of_session": [],
       "monotonic": true,
-      "morning_coverage": 3,
+      "morning_coverage": 4,
       "afternoon_coverage": 0
     }
   },
   "live": {
     "market": {
-      "zt": 24,
-      "dt": 10,
-      "zab": 10,
-      "zab_rate": 29.4,
-      "lianban": 9,
+      "zt": 30,
+      "dt": 12,
+      "zab": 13,
+      "zab_rate": 30.2,
+      "lianban": 10,
       "max_lianban": 4,
-      "amount": "4803.4亿"
+      "amount": "6071.3亿"
     },
     "alerts": [
       {
@@ -360,11 +432,11 @@
       },
       {
         "level": "warn",
-        "text": "跌停偏多（10）→ 控制追高"
+        "text": "跌停偏多（12）→ 控制追高"
       },
       {
         "level": "warn",
-        "text": "炸板率偏高（29.4%）→ 注意回封质量"
+        "text": "炸板率偏高（30.2%）→ 注意回封质量"
       }
     ],
     "concepts": [
@@ -379,6 +451,11 @@
         "chg_pct": null
       },
       {
+        "name": "中药Ⅱ",
+        "lead": "三力制药",
+        "chg_pct": null
+      },
+      {
         "name": "软件开发",
         "lead": "天融信",
         "chg_pct": null
@@ -386,11 +463,6 @@
       {
         "name": "航运港口",
         "lead": "南 京 港",
-        "chg_pct": null
-      },
-      {
-        "name": "IT服务Ⅱ",
-        "lead": "启明信息",
         "chg_pct": null
       }
     ]
