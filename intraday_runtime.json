@@ -1,11 +1,11 @@
 {
   "schema": "intraday_runtime_v1",
   "date": "2026-09-14",
-  "updated_at": "2026-09-14 11:00:03",
+  "updated_at": "2026-09-14 11:10:03",
   "source": "必盈(实时)+必盈(实时)",
   "latest": {
-    "time": "11:00:03",
-    "ts_bj": "2026-09-14 11:00:03",
+    "time": "11:10:03",
+    "ts_bj": "2026-09-14 11:10:03",
     "date": "2026-09-14",
     "source": "intraday_live",
     "provider": "必盈(实时)+必盈(实时)",
@@ -16,18 +16,18 @@
       "dtgc": "valid"
     },
     "pool_errors": {},
-    "zt": 42,
-    "dt": 9,
-    "zab": 23,
-    "zb": 35.4,
-    "fb": 64.6,
-    "jj": 21.4,
+    "zt": 43,
+    "dt": 7,
+    "zab": 24,
+    "zb": 35.8,
+    "fb": 64.2,
+    "jj": 20.9,
     "lianban": 9,
     "max_lb": 4,
-    "amount": "10050.8亿",
+    "amount": "10403.7亿",
     "bf": 0,
     "heat": 48,
-    "risk": 43,
+    "risk": 41,
     "headline": "分歧",
     "concepts": [
       {
@@ -63,12 +63,12 @@
       },
       {
         "level": "danger",
-        "text": "炸板率高（35.4%）→ 分歧偏强，谨慎接力"
+        "text": "炸板率高（35.8%）→ 分歧偏强，谨慎接力"
       }
     ],
-    "shift_score": 52,
+    "shift_score": 53,
     "shift_label": "分歧",
-    "note": "情绪边际修复，但仍需确认持续性。"
+    "note": "情绪整体平稳，维持当前节奏。"
   },
   "snapshots": [
     {
@@ -762,40 +762,107 @@
       "shift_score": 52,
       "shift_label": "分歧",
       "note": "情绪边际修复，但仍需确认持续性。"
+    },
+    {
+      "time": "11:10:03",
+      "ts_bj": "2026-09-14 11:10:03",
+      "date": "2026-09-14",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid"
+      },
+      "pool_errors": {},
+      "zt": 43,
+      "dt": 7,
+      "zab": 24,
+      "zb": 35.8,
+      "fb": 64.2,
+      "jj": 20.9,
+      "lianban": 9,
+      "max_lb": 4,
+      "amount": "10403.7亿",
+      "bf": 0,
+      "heat": 48,
+      "risk": 41,
+      "headline": "分歧",
+      "concepts": [
+        {
+          "name": "元件",
+          "lead": "超声电子",
+          "chg_pct": null
+        },
+        {
+          "name": "电力",
+          "lead": "闽东电力",
+          "chg_pct": null
+        },
+        {
+          "name": "通用设备",
+          "lead": "黄河旋风",
+          "chg_pct": null
+        },
+        {
+          "name": "汽车零部",
+          "lead": "众泰汽车",
+          "chg_pct": null
+        },
+        {
+          "name": "电网设备",
+          "lead": "通达股份",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        },
+        {
+          "level": "danger",
+          "text": "炸板率高（35.8%）→ 分歧偏强，谨慎接力"
+        }
+      ],
+      "shift_score": 53,
+      "shift_label": "分歧",
+      "note": "情绪整体平稳，维持当前节奏。"
     }
   ],
   "indices": [
     {
       "name": "上证指数",
       "code": "000001.SH",
-      "val": 3890.098,
-      "chg": 0.051104508076031785,
-      "cje": 477266907500.0,
-      "t": "2026-09-14 11:00:03"
+      "val": 3891.101,
+      "chg": 0.07690109670223501,
+      "cje": 494602537500.0,
+      "t": "2026-09-14 11:10:03"
     },
     {
       "name": "深证成指",
       "code": "399001.SZ",
-      "val": 13424.482,
-      "chg": -0.3472207530447948,
-      "cje": 527683322700.0,
-      "t": "2026-09-14 10:59:57"
+      "val": 13429.861,
+      "chg": -0.3072912943461685,
+      "cje": 545692728800.0,
+      "t": "2026-09-14 11:09:57"
     },
     {
       "name": "创业板指",
       "code": "399006.SZ",
-      "val": 3300.702,
-      "chg": -0.642286258529776,
-      "cje": 248084844100.0,
-      "t": "2026-09-14 10:59:57"
+      "val": 3302.914,
+      "chg": -0.5757006465005378,
+      "cje": 256593725900.0,
+      "t": "2026-09-14 11:09:57"
     }
   ],
   "asOf": {
-    "indices": "10:59:57"
+    "indices": "11:09:57"
   },
   "health": {
     "status": "valid",
-    "last_valid_at": "2026-09-14 11:00:03",
+    "last_valid_at": "2026-09-14 11:10:03",
     "rejected_reason": "",
     "source": {
       "status": "valid",
@@ -813,8 +880,8 @@
       "message": "intraday_coverage_collecting",
       "date": "2026-09-14",
       "expected_count": 26,
-      "due_count": 10,
-      "observed_count": 10,
+      "due_count": 11,
+      "observed_count": 11,
       "observed_slots": [
         "09:30",
         "09:40",
@@ -825,25 +892,26 @@
         "10:30",
         "10:40",
         "10:50",
-        "11:00"
+        "11:00",
+        "11:10"
       ],
       "missing_slots": [],
       "duplicate_slots": [],
       "out_of_session": [],
       "monotonic": true,
-      "morning_coverage": 10,
+      "morning_coverage": 11,
       "afternoon_coverage": 0
     }
   },
   "live": {
     "market": {
-      "zt": 42,
-      "dt": 9,
-      "zab": 23,
-      "zab_rate": 35.4,
+      "zt": 43,
+      "dt": 7,
+      "zab": 24,
+      "zab_rate": 35.8,
       "lianban": 9,
       "max_lianban": 4,
-      "amount": "10050.8亿"
+      "amount": "10403.7亿"
     },
     "alerts": [
       {
@@ -852,7 +920,7 @@
       },
       {
         "level": "danger",
-        "text": "炸板率高（35.4%）→ 分歧偏强，谨慎接力"
+        "text": "炸板率高（35.8%）→ 分歧偏强，谨慎接力"
       }
     ],
     "concepts": [
