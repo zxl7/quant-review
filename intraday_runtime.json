@@ -1,11 +1,11 @@
 {
   "schema": "intraday_runtime_v1",
   "date": "2026-09-14",
-  "updated_at": "2026-09-14 09:40:04",
+  "updated_at": "2026-09-14 09:50:03",
   "source": "必盈(实时)+必盈(实时)",
   "latest": {
-    "time": "09:40:04",
-    "ts_bj": "2026-09-14 09:40:04",
+    "time": "09:50:03",
+    "ts_bj": "2026-09-14 09:50:03",
     "date": "2026-09-14",
     "source": "intraday_live",
     "provider": "必盈(实时)+必盈(实时)",
@@ -16,20 +16,25 @@
       "dtgc": "valid"
     },
     "pool_errors": {},
-    "zt": 19,
-    "dt": 5,
-    "zab": 6,
-    "zb": 24.0,
-    "fb": 76.0,
-    "jj": 36.8,
-    "lianban": 7,
+    "zt": 24,
+    "dt": 10,
+    "zab": 10,
+    "zb": 29.4,
+    "fb": 70.6,
+    "jj": 37.5,
+    "lianban": 9,
     "max_lb": 4,
-    "amount": "3179.3亿",
+    "amount": "4803.4亿",
     "bf": 0,
-    "heat": 52,
-    "risk": 23,
-    "headline": "修复",
+    "heat": 51,
+    "risk": 36,
+    "headline": "分歧",
     "concepts": [
+      {
+        "name": "汽车零部",
+        "lead": "众泰汽车",
+        "chg_pct": null
+      },
       {
         "name": "电力",
         "lead": "闽东电力",
@@ -46,11 +51,6 @@
         "chg_pct": null
       },
       {
-        "name": "一般零售",
-        "lead": "中央商场",
-        "chg_pct": null
-      },
-      {
         "name": "IT服务Ⅱ",
         "lead": "启明信息",
         "chg_pct": null
@@ -60,11 +60,19 @@
       {
         "level": "info",
         "text": "盘中模式：强制实时拉取"
+      },
+      {
+        "level": "warn",
+        "text": "跌停偏多（10）→ 控制追高"
+      },
+      {
+        "level": "warn",
+        "text": "炸板率偏高（29.4%）→ 注意回封质量"
       }
     ],
-    "shift_score": 62,
-    "shift_label": "修复",
-    "note": "承接增强、分歧收敛，情绪明显回暖。"
+    "shift_score": 56,
+    "shift_label": "分歧",
+    "note": "炸板/跌停抬升，情绪明显走弱。"
   },
   "snapshots": [
     {
@@ -198,40 +206,111 @@
       "shift_score": 62,
       "shift_label": "修复",
       "note": "承接增强、分歧收敛，情绪明显回暖。"
+    },
+    {
+      "time": "09:50:03",
+      "ts_bj": "2026-09-14 09:50:03",
+      "date": "2026-09-14",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid"
+      },
+      "pool_errors": {},
+      "zt": 24,
+      "dt": 10,
+      "zab": 10,
+      "zb": 29.4,
+      "fb": 70.6,
+      "jj": 37.5,
+      "lianban": 9,
+      "max_lb": 4,
+      "amount": "4803.4亿",
+      "bf": 0,
+      "heat": 51,
+      "risk": 36,
+      "headline": "分歧",
+      "concepts": [
+        {
+          "name": "汽车零部",
+          "lead": "众泰汽车",
+          "chg_pct": null
+        },
+        {
+          "name": "电力",
+          "lead": "闽东电力",
+          "chg_pct": null
+        },
+        {
+          "name": "软件开发",
+          "lead": "天融信",
+          "chg_pct": null
+        },
+        {
+          "name": "航运港口",
+          "lead": "南 京 港",
+          "chg_pct": null
+        },
+        {
+          "name": "IT服务Ⅱ",
+          "lead": "启明信息",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        },
+        {
+          "level": "warn",
+          "text": "跌停偏多（10）→ 控制追高"
+        },
+        {
+          "level": "warn",
+          "text": "炸板率偏高（29.4%）→ 注意回封质量"
+        }
+      ],
+      "shift_score": 56,
+      "shift_label": "分歧",
+      "note": "炸板/跌停抬升，情绪明显走弱。"
     }
   ],
   "indices": [
     {
       "name": "上证指数",
       "code": "000001.SH",
-      "val": 3880.978,
-      "chg": -0.18345669658093122,
-      "cje": 151421256500.0,
-      "t": "2026-09-14 09:40:03"
+      "val": 3879.464,
+      "chg": -0.22239591410841753,
+      "cje": 228209180700.0,
+      "t": "2026-09-14 09:50:03"
     },
     {
       "name": "深证成指",
       "code": "399001.SZ",
-      "val": 13378.529,
-      "chg": -0.6883396256191917,
-      "cje": 166019621800.0,
-      "t": "2026-09-14 09:39:57"
+      "val": 13391.86,
+      "chg": -0.5893807830998921,
+      "cje": 251737595700.0,
+      "t": "2026-09-14 09:49:57"
     },
     {
       "name": "创业板指",
       "code": "399006.SZ",
-      "val": 3290.282,
-      "chg": -0.9559490421394831,
-      "cje": 73549521100.0,
-      "t": "2026-09-14 09:40:00"
+      "val": 3294.374,
+      "chg": -0.8327716802843199,
+      "cje": 113384043900.0,
+      "t": "2026-09-14 09:49:57"
     }
   ],
   "asOf": {
-    "indices": "09:40:00"
+    "indices": "09:49:57"
   },
   "health": {
     "status": "valid",
-    "last_valid_at": "2026-09-14 09:40:04",
+    "last_valid_at": "2026-09-14 09:50:03",
     "rejected_reason": "",
     "source": {
       "status": "valid",
@@ -249,37 +328,51 @@
       "message": "intraday_coverage_collecting",
       "date": "2026-09-14",
       "expected_count": 26,
-      "due_count": 2,
-      "observed_count": 2,
+      "due_count": 3,
+      "observed_count": 3,
       "observed_slots": [
         "09:30",
-        "09:40"
+        "09:40",
+        "09:50"
       ],
       "missing_slots": [],
       "duplicate_slots": [],
       "out_of_session": [],
       "monotonic": true,
-      "morning_coverage": 2,
+      "morning_coverage": 3,
       "afternoon_coverage": 0
     }
   },
   "live": {
     "market": {
-      "zt": 19,
-      "dt": 5,
-      "zab": 6,
-      "zab_rate": 24.0,
-      "lianban": 7,
+      "zt": 24,
+      "dt": 10,
+      "zab": 10,
+      "zab_rate": 29.4,
+      "lianban": 9,
       "max_lianban": 4,
-      "amount": "3179.3亿"
+      "amount": "4803.4亿"
     },
     "alerts": [
       {
         "level": "info",
         "text": "盘中模式：强制实时拉取"
+      },
+      {
+        "level": "warn",
+        "text": "跌停偏多（10）→ 控制追高"
+      },
+      {
+        "level": "warn",
+        "text": "炸板率偏高（29.4%）→ 注意回封质量"
       }
     ],
     "concepts": [
+      {
+        "name": "汽车零部",
+        "lead": "众泰汽车",
+        "chg_pct": null
+      },
       {
         "name": "电力",
         "lead": "闽东电力",
@@ -293,11 +386,6 @@
       {
         "name": "航运港口",
         "lead": "南 京 港",
-        "chg_pct": null
-      },
-      {
-        "name": "一般零售",
-        "lead": "中央商场",
         "chg_pct": null
       },
       {
