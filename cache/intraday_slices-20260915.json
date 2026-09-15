@@ -2,7 +2,7 @@
   "schema": "intraday_snapshot_v1",
   "render_mode": "snapshot_stream",
   "date": "2026-09-15",
-  "count": 8,
+  "count": 9,
   "interval_min": null,
   "simulated": false,
   "snapshots": [
@@ -563,11 +563,82 @@
       "shift_score": 52,
       "shift_label": "分歧",
       "note": "情绪边际修复，但仍需确认持续性。"
+    },
+    {
+      "time": "10:50:05",
+      "ts_bj": "2026-09-15 10:50:05",
+      "date": "2026-09-15",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid"
+      },
+      "pool_errors": {},
+      "zt": 28,
+      "dt": 17,
+      "zab": 18,
+      "zb": 39.1,
+      "fb": 60.9,
+      "jj": 28.6,
+      "lianban": 8,
+      "max_lb": 5,
+      "amount": "9182.1亿",
+      "bf": 0,
+      "heat": 48,
+      "risk": 55,
+      "headline": "走弱",
+      "concepts": [
+        {
+          "name": "半导体",
+          "lead": "臻宝科技",
+          "chg_pct": null
+        },
+        {
+          "name": "元件",
+          "lead": "澳弘电子",
+          "chg_pct": null
+        },
+        {
+          "name": "IT服务Ⅱ",
+          "lead": "博汇科技",
+          "chg_pct": null
+        },
+        {
+          "name": "风电设备",
+          "lead": "大金重工",
+          "chg_pct": null
+        },
+        {
+          "name": "家居用品",
+          "lead": "德尔未来",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        },
+        {
+          "level": "warn",
+          "text": "跌停偏多（17）→ 控制追高"
+        },
+        {
+          "level": "danger",
+          "text": "炸板率高（39.1%）→ 分歧偏强，谨慎接力"
+        }
+      ],
+      "shift_score": 47,
+      "shift_label": "走弱",
+      "note": "炸板/跌停抬升，情绪明显走弱。"
     }
   ],
   "latest": {
-    "time": "10:40:04",
-    "ts_bj": "2026-09-15 10:40:04",
+    "time": "10:50:05",
+    "ts_bj": "2026-09-15 10:50:05",
     "date": "2026-09-15",
     "source": "intraday_live",
     "provider": "必盈(实时)+必盈(实时)",
@@ -578,28 +649,23 @@
       "dtgc": "valid"
     },
     "pool_errors": {},
-    "zt": 32,
+    "zt": 28,
     "dt": 17,
-    "zab": 14,
-    "zb": 30.4,
-    "fb": 69.6,
-    "jj": 28.1,
-    "lianban": 9,
+    "zab": 18,
+    "zb": 39.1,
+    "fb": 60.9,
+    "jj": 28.6,
+    "lianban": 8,
     "max_lb": 5,
-    "amount": "8699.7亿",
+    "amount": "9182.1亿",
     "bf": 0,
-    "heat": 52,
-    "risk": 49,
-    "headline": "分歧",
+    "heat": 48,
+    "risk": 55,
+    "headline": "走弱",
     "concepts": [
       {
         "name": "半导体",
         "lead": "臻宝科技",
-        "chg_pct": null
-      },
-      {
-        "name": "塑料",
-        "lead": "双星新材",
         "chg_pct": null
       },
       {
@@ -616,6 +682,11 @@
         "name": "风电设备",
         "lead": "大金重工",
         "chg_pct": null
+      },
+      {
+        "name": "家居用品",
+        "lead": "德尔未来",
+        "chg_pct": null
       }
     ],
     "alerts": [
@@ -628,19 +699,19 @@
         "text": "跌停偏多（17）→ 控制追高"
       },
       {
-        "level": "warn",
-        "text": "炸板率偏高（30.4%）→ 注意回封质量"
+        "level": "danger",
+        "text": "炸板率高（39.1%）→ 分歧偏强，谨慎接力"
       }
     ],
-    "shift_score": 52,
-    "shift_label": "分歧",
-    "note": "情绪边际修复，但仍需确认持续性。"
+    "shift_score": 47,
+    "shift_label": "走弱",
+    "note": "炸板/跌停抬升，情绪明显走弱。"
   },
-  "updated_at": "2026-09-15 10:40:04",
-  "snapshot_sig": "2026-09-15|2026-09-15 10:40:04|8",
+  "updated_at": "2026-09-15 10:50:05",
+  "snapshot_sig": "2026-09-15|2026-09-15 10:50:05|9",
   "health": {
     "status": "valid",
-    "last_valid_at": "2026-09-15 10:40:04",
+    "last_valid_at": "2026-09-15 10:50:05",
     "rejected_reason": "",
     "source": {
       "status": "valid",
