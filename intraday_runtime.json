@@ -1,58 +1,60 @@
 {
   "schema": "intraday_runtime_v1",
-  "date": "2026-09-14",
-  "updated_at": "2026-09-14 11:30:04",
-  "source": "必盈(实时)+必盈(实时)",
+  "date": "2026-09-15",
+  "updated_at": "2026-09-15 09:30:31",
+  "source": "必盈(实时)",
   "latest": {
-    "time": "11:30:04",
-    "ts_bj": "2026-09-14 11:30:04",
-    "date": "2026-09-14",
+    "time": "09:30:31",
+    "ts_bj": "2026-09-15 09:30:31",
+    "date": "2026-09-15",
     "source": "intraday_live",
-    "provider": "必盈(实时)+必盈(实时)",
-    "data_quality": "valid",
+    "provider": "必盈(实时)",
+    "data_quality": "partial",
     "pool_status": {
       "ztgc": "valid",
-      "zbgc": "valid",
+      "zbgc": "failed",
       "dtgc": "valid"
     },
-    "pool_errors": {},
-    "zt": 48,
-    "dt": 7,
-    "zab": 25,
-    "zb": 34.2,
-    "fb": 65.8,
-    "jj": 18.8,
-    "lianban": 9,
+    "pool_errors": {
+      "zbgc": "empty_response"
+    },
+    "zt": 9,
+    "dt": 2,
+    "zab": null,
+    "zb": null,
+    "fb": null,
+    "jj": 66.7,
+    "lianban": 6,
     "max_lb": 4,
-    "amount": "11043.1亿",
+    "amount": "",
     "bf": 0,
-    "heat": 48,
-    "risk": 41,
-    "headline": "分歧",
+    "heat": null,
+    "risk": null,
+    "headline": "数据部分可用",
     "concepts": [
       {
-        "name": "元件",
-        "lead": "超声电子",
+        "name": "IT服务Ⅱ",
+        "lead": "启明信息",
         "chg_pct": null
       },
       {
-        "name": "电力",
-        "lead": "闽东电力",
+        "name": "计算机设",
+        "lead": "中新赛克",
         "chg_pct": null
       },
       {
-        "name": "汽车零部",
-        "lead": "众泰汽车",
+        "name": "影视院线",
+        "lead": "中视传媒",
         "chg_pct": null
       },
       {
-        "name": "通用设备",
-        "lead": "黄河旋风",
+        "name": "中药Ⅱ",
+        "lead": "三力制药",
         "chg_pct": null
       },
       {
-        "name": "电网设备",
-        "lead": "通达股份",
+        "name": "一般零售",
+        "lead": "欧亚集团",
         "chg_pct": null
       }
     ],
@@ -63,18 +65,18 @@
       },
       {
         "level": "warn",
-        "text": "炸板率偏高（34.2%）→ 注意回封质量"
+        "text": "盘中三池响应不完整，保留最近有效数据"
       }
     ],
-    "shift_score": 53,
-    "shift_label": "分歧",
-    "note": "情绪整体平稳，维持当前节奏。"
+    "shift_score": null,
+    "shift_label": "数据部分可用",
+    "note": "本槽位仅部分三池成功；节点已保留，缺失指标不参与判断。"
   },
   "snapshots": [
     {
-      "time": "09:30:30",
-      "ts_bj": "2026-09-14 09:30:30",
-      "date": "2026-09-14",
+      "time": "09:30:31",
+      "ts_bj": "2026-09-15 09:30:31",
+      "date": "2026-09-15",
       "source": "intraday_live",
       "provider": "必盈(实时)",
       "data_quality": "partial",
@@ -86,14 +88,14 @@
       "pool_errors": {
         "zbgc": "empty_response"
       },
-      "zt": 12,
-      "dt": 6,
+      "zt": 9,
+      "dt": 2,
       "zab": null,
       "zb": null,
       "fb": null,
-      "jj": 50.0,
+      "jj": 66.7,
       "lianban": 6,
-      "max_lb": 5,
+      "max_lb": 4,
       "amount": "",
       "bf": 0,
       "heat": null,
@@ -101,13 +103,8 @@
       "headline": "数据部分可用",
       "concepts": [
         {
-          "name": "软件开发",
-          "lead": "天融信",
-          "chg_pct": null
-        },
-        {
-          "name": "家居用品",
-          "lead": "瑞尔特",
+          "name": "IT服务Ⅱ",
+          "lead": "启明信息",
           "chg_pct": null
         },
         {
@@ -116,13 +113,18 @@
           "chg_pct": null
         },
         {
-          "name": "电网设备",
-          "lead": "通达股份",
+          "name": "影视院线",
+          "lead": "中视传媒",
           "chg_pct": null
         },
         {
-          "name": "影视院线",
-          "lead": "中视传媒",
+          "name": "中药Ⅱ",
+          "lead": "三力制药",
+          "chg_pct": null
+        },
+        {
+          "name": "一般零售",
+          "lead": "欧亚集团",
           "chg_pct": null
         }
       ],
@@ -139,915 +141,81 @@
       "shift_score": null,
       "shift_label": "数据部分可用",
       "note": "本槽位仅部分三池成功；节点已保留，缺失指标不参与判断。"
-    },
-    {
-      "time": "09:40:04",
-      "ts_bj": "2026-09-14 09:40:04",
-      "date": "2026-09-14",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid"
-      },
-      "pool_errors": {},
-      "zt": 19,
-      "dt": 5,
-      "zab": 6,
-      "zb": 24.0,
-      "fb": 76.0,
-      "jj": 36.8,
-      "lianban": 7,
-      "max_lb": 4,
-      "amount": "3179.3亿",
-      "bf": 0,
-      "heat": 52,
-      "risk": 23,
-      "headline": "修复",
-      "concepts": [
-        {
-          "name": "电力",
-          "lead": "闽东电力",
-          "chg_pct": null
-        },
-        {
-          "name": "软件开发",
-          "lead": "天融信",
-          "chg_pct": null
-        },
-        {
-          "name": "航运港口",
-          "lead": "南 京 港",
-          "chg_pct": null
-        },
-        {
-          "name": "一般零售",
-          "lead": "中央商场",
-          "chg_pct": null
-        },
-        {
-          "name": "IT服务Ⅱ",
-          "lead": "启明信息",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        }
-      ],
-      "shift_score": 62,
-      "shift_label": "修复",
-      "note": "承接增强、分歧收敛，情绪明显回暖。"
-    },
-    {
-      "time": "09:50:03",
-      "ts_bj": "2026-09-14 09:50:03",
-      "date": "2026-09-14",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid"
-      },
-      "pool_errors": {},
-      "zt": 24,
-      "dt": 10,
-      "zab": 10,
-      "zb": 29.4,
-      "fb": 70.6,
-      "jj": 37.5,
-      "lianban": 9,
-      "max_lb": 4,
-      "amount": "4803.4亿",
-      "bf": 0,
-      "heat": 51,
-      "risk": 36,
-      "headline": "分歧",
-      "concepts": [
-        {
-          "name": "汽车零部",
-          "lead": "众泰汽车",
-          "chg_pct": null
-        },
-        {
-          "name": "电力",
-          "lead": "闽东电力",
-          "chg_pct": null
-        },
-        {
-          "name": "软件开发",
-          "lead": "天融信",
-          "chg_pct": null
-        },
-        {
-          "name": "航运港口",
-          "lead": "南 京 港",
-          "chg_pct": null
-        },
-        {
-          "name": "IT服务Ⅱ",
-          "lead": "启明信息",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        },
-        {
-          "level": "warn",
-          "text": "跌停偏多（10）→ 控制追高"
-        },
-        {
-          "level": "warn",
-          "text": "炸板率偏高（29.4%）→ 注意回封质量"
-        }
-      ],
-      "shift_score": 56,
-      "shift_label": "分歧",
-      "note": "炸板/跌停抬升，情绪明显走弱。"
-    },
-    {
-      "time": "10:00:03",
-      "ts_bj": "2026-09-14 10:00:03",
-      "date": "2026-09-14",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid"
-      },
-      "pool_errors": {},
-      "zt": 30,
-      "dt": 12,
-      "zab": 13,
-      "zb": 30.2,
-      "fb": 69.8,
-      "jj": 33.3,
-      "lianban": 10,
-      "max_lb": 4,
-      "amount": "6071.3亿",
-      "bf": 0,
-      "heat": 51,
-      "risk": 40,
-      "headline": "分歧",
-      "concepts": [
-        {
-          "name": "汽车零部",
-          "lead": "众泰汽车",
-          "chg_pct": null
-        },
-        {
-          "name": "电力",
-          "lead": "闽东电力",
-          "chg_pct": null
-        },
-        {
-          "name": "中药Ⅱ",
-          "lead": "三力制药",
-          "chg_pct": null
-        },
-        {
-          "name": "软件开发",
-          "lead": "天融信",
-          "chg_pct": null
-        },
-        {
-          "name": "航运港口",
-          "lead": "南 京 港",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        },
-        {
-          "level": "warn",
-          "text": "跌停偏多（12）→ 控制追高"
-        },
-        {
-          "level": "warn",
-          "text": "炸板率偏高（30.2%）→ 注意回封质量"
-        }
-      ],
-      "shift_score": 55,
-      "shift_label": "分歧",
-      "note": "情绪整体平稳，维持当前节奏。"
-    },
-    {
-      "time": "10:10:04",
-      "ts_bj": "2026-09-14 10:10:04",
-      "date": "2026-09-14",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid"
-      },
-      "pool_errors": {},
-      "zt": 32,
-      "dt": 11,
-      "zab": 20,
-      "zb": 38.5,
-      "fb": 61.5,
-      "jj": 28.1,
-      "lianban": 9,
-      "max_lb": 4,
-      "amount": "7100.3亿",
-      "bf": 0,
-      "heat": 46,
-      "risk": 47,
-      "headline": "分歧",
-      "concepts": [
-        {
-          "name": "汽车零部",
-          "lead": "众泰汽车",
-          "chg_pct": null
-        },
-        {
-          "name": "电力",
-          "lead": "闽东电力",
-          "chg_pct": null
-        },
-        {
-          "name": "元件",
-          "lead": "超声电子",
-          "chg_pct": null
-        },
-        {
-          "name": "电网设备",
-          "lead": "通达股份",
-          "chg_pct": null
-        },
-        {
-          "name": "软件开发",
-          "lead": "天融信",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        },
-        {
-          "level": "warn",
-          "text": "跌停偏多（11）→ 控制追高"
-        },
-        {
-          "level": "danger",
-          "text": "炸板率高（38.5%）→ 分歧偏强，谨慎接力"
-        }
-      ],
-      "shift_score": 49,
-      "shift_label": "分歧",
-      "note": "炸板/跌停抬升，情绪明显走弱。"
-    },
-    {
-      "time": "10:20:03",
-      "ts_bj": "2026-09-14 10:20:03",
-      "date": "2026-09-14",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid"
-      },
-      "pool_errors": {},
-      "zt": 31,
-      "dt": 13,
-      "zab": 22,
-      "zb": 41.5,
-      "fb": 58.5,
-      "jj": 29.0,
-      "lianban": 9,
-      "max_lb": 4,
-      "amount": "7827.3亿",
-      "bf": 0,
-      "heat": 45,
-      "risk": 52,
-      "headline": "走弱",
-      "concepts": [
-        {
-          "name": "电力",
-          "lead": "闽东电力",
-          "chg_pct": null
-        },
-        {
-          "name": "汽车零部",
-          "lead": "众泰汽车",
-          "chg_pct": null
-        },
-        {
-          "name": "电网设备",
-          "lead": "通达股份",
-          "chg_pct": null
-        },
-        {
-          "name": "通用设备",
-          "lead": "黄河旋风",
-          "chg_pct": null
-        },
-        {
-          "name": "软件开发",
-          "lead": "天融信",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        },
-        {
-          "level": "warn",
-          "text": "跌停偏多（13）→ 控制追高"
-        },
-        {
-          "level": "danger",
-          "text": "炸板率高（41.5%）→ 分歧偏强，谨慎接力"
-        }
-      ],
-      "shift_score": 46,
-      "shift_label": "走弱",
-      "note": "情绪略有回落，注意午后分歧。"
-    },
-    {
-      "time": "10:30:03",
-      "ts_bj": "2026-09-14 10:30:03",
-      "date": "2026-09-14",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid"
-      },
-      "pool_errors": {},
-      "zt": 35,
-      "dt": 10,
-      "zab": 21,
-      "zb": 37.5,
-      "fb": 62.5,
-      "jj": 25.7,
-      "lianban": 9,
-      "max_lb": 4,
-      "amount": "8535.7亿",
-      "bf": 0,
-      "heat": 47,
-      "risk": 45,
-      "headline": "分歧",
-      "concepts": [
-        {
-          "name": "电力",
-          "lead": "闽东电力",
-          "chg_pct": null
-        },
-        {
-          "name": "通用设备",
-          "lead": "黄河旋风",
-          "chg_pct": null
-        },
-        {
-          "name": "元件",
-          "lead": "超声电子",
-          "chg_pct": null
-        },
-        {
-          "name": "汽车零部",
-          "lead": "众泰汽车",
-          "chg_pct": null
-        },
-        {
-          "name": "电网设备",
-          "lead": "通达股份",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        },
-        {
-          "level": "warn",
-          "text": "跌停偏多（10）→ 控制追高"
-        },
-        {
-          "level": "danger",
-          "text": "炸板率高（37.5%）→ 分歧偏强，谨慎接力"
-        }
-      ],
-      "shift_score": 50,
-      "shift_label": "分歧",
-      "note": "情绪边际修复，但仍需确认持续性。"
-    },
-    {
-      "time": "10:40:04",
-      "ts_bj": "2026-09-14 10:40:04",
-      "date": "2026-09-14",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid"
-      },
-      "pool_errors": {},
-      "zt": 41,
-      "dt": 9,
-      "zab": 21,
-      "zb": 33.9,
-      "fb": 66.1,
-      "jj": 22.0,
-      "lianban": 9,
-      "max_lb": 4,
-      "amount": "9110.1亿",
-      "bf": 0,
-      "heat": 48,
-      "risk": 42,
-      "headline": "分歧",
-      "concepts": [
-        {
-          "name": "元件",
-          "lead": "超声电子",
-          "chg_pct": null
-        },
-        {
-          "name": "通用设备",
-          "lead": "黄河旋风",
-          "chg_pct": null
-        },
-        {
-          "name": "电力",
-          "lead": "闽东电力",
-          "chg_pct": null
-        },
-        {
-          "name": "汽车零部",
-          "lead": "众泰汽车",
-          "chg_pct": null
-        },
-        {
-          "name": "电网设备",
-          "lead": "通达股份",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        },
-        {
-          "level": "warn",
-          "text": "炸板率偏高（33.9%）→ 注意回封质量"
-        }
-      ],
-      "shift_score": 52,
-      "shift_label": "分歧",
-      "note": "情绪边际修复，但仍需确认持续性。"
-    },
-    {
-      "time": "10:50:04",
-      "ts_bj": "2026-09-14 10:50:04",
-      "date": "2026-09-14",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid"
-      },
-      "pool_errors": {},
-      "zt": 38,
-      "dt": 11,
-      "zab": 24,
-      "zb": 38.7,
-      "fb": 61.3,
-      "jj": 23.7,
-      "lianban": 9,
-      "max_lb": 4,
-      "amount": "9616.5亿",
-      "bf": 0,
-      "heat": 46,
-      "risk": 49,
-      "headline": "分歧",
-      "concepts": [
-        {
-          "name": "元件",
-          "lead": "超声电子",
-          "chg_pct": null
-        },
-        {
-          "name": "电力",
-          "lead": "闽东电力",
-          "chg_pct": null
-        },
-        {
-          "name": "汽车零部",
-          "lead": "众泰汽车",
-          "chg_pct": null
-        },
-        {
-          "name": "电网设备",
-          "lead": "通达股份",
-          "chg_pct": null
-        },
-        {
-          "name": "中药Ⅱ",
-          "lead": "三力制药",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        },
-        {
-          "level": "warn",
-          "text": "跌停偏多（11）→ 控制追高"
-        },
-        {
-          "level": "danger",
-          "text": "炸板率高（38.7%）→ 分歧偏强，谨慎接力"
-        }
-      ],
-      "shift_score": 48,
-      "shift_label": "分歧",
-      "note": "情绪略有回落，注意午后分歧。"
-    },
-    {
-      "time": "11:00:03",
-      "ts_bj": "2026-09-14 11:00:03",
-      "date": "2026-09-14",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid"
-      },
-      "pool_errors": {},
-      "zt": 42,
-      "dt": 9,
-      "zab": 23,
-      "zb": 35.4,
-      "fb": 64.6,
-      "jj": 21.4,
-      "lianban": 9,
-      "max_lb": 4,
-      "amount": "10050.8亿",
-      "bf": 0,
-      "heat": 48,
-      "risk": 43,
-      "headline": "分歧",
-      "concepts": [
-        {
-          "name": "元件",
-          "lead": "超声电子",
-          "chg_pct": null
-        },
-        {
-          "name": "电力",
-          "lead": "闽东电力",
-          "chg_pct": null
-        },
-        {
-          "name": "通用设备",
-          "lead": "黄河旋风",
-          "chg_pct": null
-        },
-        {
-          "name": "汽车零部",
-          "lead": "众泰汽车",
-          "chg_pct": null
-        },
-        {
-          "name": "电网设备",
-          "lead": "通达股份",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        },
-        {
-          "level": "danger",
-          "text": "炸板率高（35.4%）→ 分歧偏强，谨慎接力"
-        }
-      ],
-      "shift_score": 52,
-      "shift_label": "分歧",
-      "note": "情绪边际修复，但仍需确认持续性。"
-    },
-    {
-      "time": "11:10:03",
-      "ts_bj": "2026-09-14 11:10:03",
-      "date": "2026-09-14",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid"
-      },
-      "pool_errors": {},
-      "zt": 43,
-      "dt": 7,
-      "zab": 24,
-      "zb": 35.8,
-      "fb": 64.2,
-      "jj": 20.9,
-      "lianban": 9,
-      "max_lb": 4,
-      "amount": "10403.7亿",
-      "bf": 0,
-      "heat": 48,
-      "risk": 41,
-      "headline": "分歧",
-      "concepts": [
-        {
-          "name": "元件",
-          "lead": "超声电子",
-          "chg_pct": null
-        },
-        {
-          "name": "电力",
-          "lead": "闽东电力",
-          "chg_pct": null
-        },
-        {
-          "name": "通用设备",
-          "lead": "黄河旋风",
-          "chg_pct": null
-        },
-        {
-          "name": "汽车零部",
-          "lead": "众泰汽车",
-          "chg_pct": null
-        },
-        {
-          "name": "电网设备",
-          "lead": "通达股份",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        },
-        {
-          "level": "danger",
-          "text": "炸板率高（35.8%）→ 分歧偏强，谨慎接力"
-        }
-      ],
-      "shift_score": 53,
-      "shift_label": "分歧",
-      "note": "情绪整体平稳，维持当前节奏。"
-    },
-    {
-      "time": "11:20:03",
-      "ts_bj": "2026-09-14 11:20:03",
-      "date": "2026-09-14",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid"
-      },
-      "pool_errors": {},
-      "zt": 45,
-      "dt": 8,
-      "zab": 25,
-      "zb": 35.7,
-      "fb": 64.3,
-      "jj": 20.0,
-      "lianban": 9,
-      "max_lb": 4,
-      "amount": "10727.8亿",
-      "bf": 0,
-      "heat": 48,
-      "risk": 43,
-      "headline": "分歧",
-      "concepts": [
-        {
-          "name": "元件",
-          "lead": "超声电子",
-          "chg_pct": null
-        },
-        {
-          "name": "电力",
-          "lead": "闽东电力",
-          "chg_pct": null
-        },
-        {
-          "name": "通用设备",
-          "lead": "黄河旋风",
-          "chg_pct": null
-        },
-        {
-          "name": "汽车零部",
-          "lead": "众泰汽车",
-          "chg_pct": null
-        },
-        {
-          "name": "电网设备",
-          "lead": "通达股份",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        },
-        {
-          "level": "danger",
-          "text": "炸板率高（35.7%）→ 分歧偏强，谨慎接力"
-        }
-      ],
-      "shift_score": 52,
-      "shift_label": "分歧",
-      "note": "情绪整体平稳，维持当前节奏。"
-    },
-    {
-      "time": "11:30:04",
-      "ts_bj": "2026-09-14 11:30:04",
-      "date": "2026-09-14",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid"
-      },
-      "pool_errors": {},
-      "zt": 48,
-      "dt": 7,
-      "zab": 25,
-      "zb": 34.2,
-      "fb": 65.8,
-      "jj": 18.8,
-      "lianban": 9,
-      "max_lb": 4,
-      "amount": "11043.1亿",
-      "bf": 0,
-      "heat": 48,
-      "risk": 41,
-      "headline": "分歧",
-      "concepts": [
-        {
-          "name": "元件",
-          "lead": "超声电子",
-          "chg_pct": null
-        },
-        {
-          "name": "电力",
-          "lead": "闽东电力",
-          "chg_pct": null
-        },
-        {
-          "name": "汽车零部",
-          "lead": "众泰汽车",
-          "chg_pct": null
-        },
-        {
-          "name": "通用设备",
-          "lead": "黄河旋风",
-          "chg_pct": null
-        },
-        {
-          "name": "电网设备",
-          "lead": "通达股份",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        },
-        {
-          "level": "warn",
-          "text": "炸板率偏高（34.2%）→ 注意回封质量"
-        }
-      ],
-      "shift_score": 53,
-      "shift_label": "分歧",
-      "note": "情绪整体平稳，维持当前节奏。"
     }
   ],
   "indices": [
     {
       "name": "上证指数",
       "code": "000001.SH",
-      "val": 3894.596,
-      "chg": 0.1667905057237339,
-      "cje": 526317244500.0,
-      "t": "2026-09-14 11:30:00"
+      "val": 3881.498,
+      "chg": -0.09870453832400043,
+      "cje": 14403527200.0,
+      "t": "2026-09-15 09:30:27"
     },
     {
       "name": "深证成指",
       "code": "399001.SZ",
-      "val": 13436.947,
-      "chg": -0.25469041233494016,
-      "cje": 577962355300.0,
-      "t": "2026-09-14 11:30:00"
+      "val": 13375.375,
+      "chg": -0.06868357648897822,
+      "cje": 25875212800.0,
+      "t": "2026-09-15 09:30:27"
     },
     {
       "name": "创业板指",
       "code": "399006.SZ",
-      "val": 3306.356,
-      "chg": -0.47208958112773486,
-      "cje": 272779059700.0,
-      "t": "2026-09-14 11:30:00"
+      "val": 3283.374,
+      "chg": -0.06723312118428562,
+      "cje": 10552861000.0,
+      "t": "2026-09-15 09:30:27"
     }
   ],
   "asOf": {
-    "indices": "11:30:00"
+    "indices": "09:30:27"
   },
   "health": {
-    "status": "valid",
-    "last_valid_at": "2026-09-14 11:30:04",
+    "status": "degraded",
+    "last_valid_at": "2026-09-15 09:30:31",
     "rejected_reason": "",
     "source": {
-      "status": "valid",
+      "status": "partial",
       "pool_status": {
         "ztgc": "valid",
-        "zbgc": "valid",
+        "zbgc": "failed",
         "dtgc": "valid"
       },
-      "pool_errors": {}
+      "pool_errors": {
+        "zbgc": "empty_response"
+      }
     },
     "indices_status": "valid",
     "coverage": {
       "ok": true,
       "status": "collecting",
       "message": "intraday_coverage_collecting",
-      "date": "2026-09-14",
+      "date": "2026-09-15",
       "expected_count": 26,
-      "due_count": 13,
-      "observed_count": 13,
+      "due_count": 1,
+      "observed_count": 1,
       "observed_slots": [
-        "09:30",
-        "09:40",
-        "09:50",
-        "10:00",
-        "10:10",
-        "10:20",
-        "10:30",
-        "10:40",
-        "10:50",
-        "11:00",
-        "11:10",
-        "11:20",
-        "11:30"
+        "09:30"
       ],
       "missing_slots": [],
       "duplicate_slots": [],
       "out_of_session": [],
       "monotonic": true,
-      "morning_coverage": 13,
+      "morning_coverage": 1,
       "afternoon_coverage": 0
     }
   },
   "live": {
     "market": {
-      "zt": 48,
-      "dt": 7,
-      "zab": 25,
-      "zab_rate": 34.2,
-      "lianban": 9,
+      "zt": 9,
+      "dt": 2,
+      "zab": null,
+      "zab_rate": null,
+      "lianban": 6,
       "max_lianban": 4,
-      "amount": "11043.1亿"
+      "amount": ""
     },
     "alerts": [
       {
@@ -1056,33 +224,33 @@
       },
       {
         "level": "warn",
-        "text": "炸板率偏高（34.2%）→ 注意回封质量"
+        "text": "盘中三池响应不完整，保留最近有效数据"
       }
     ],
     "concepts": [
       {
-        "name": "元件",
-        "lead": "超声电子",
+        "name": "IT服务Ⅱ",
+        "lead": "启明信息",
         "chg_pct": null
       },
       {
-        "name": "电力",
-        "lead": "闽东电力",
+        "name": "计算机设",
+        "lead": "中新赛克",
         "chg_pct": null
       },
       {
-        "name": "汽车零部",
-        "lead": "众泰汽车",
+        "name": "影视院线",
+        "lead": "中视传媒",
         "chg_pct": null
       },
       {
-        "name": "通用设备",
-        "lead": "黄河旋风",
+        "name": "中药Ⅱ",
+        "lead": "三力制药",
         "chg_pct": null
       },
       {
-        "name": "电网设备",
-        "lead": "通达股份",
+        "name": "一般零售",
+        "lead": "欧亚集团",
         "chg_pct": null
       }
     ]
