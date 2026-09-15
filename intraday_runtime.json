@@ -1,11 +1,11 @@
 {
   "schema": "intraday_runtime_v1",
   "date": "2026-09-15",
-  "updated_at": "2026-09-15 09:40:04",
+  "updated_at": "2026-09-15 09:50:05",
   "source": "必盈(实时)+必盈(实时)",
   "latest": {
-    "time": "09:40:04",
-    "ts_bj": "2026-09-15 09:40:04",
+    "time": "09:50:05",
+    "ts_bj": "2026-09-15 09:50:05",
     "date": "2026-09-15",
     "source": "intraday_live",
     "provider": "必盈(实时)+必盈(实时)",
@@ -16,20 +16,30 @@
       "dtgc": "valid"
     },
     "pool_errors": {},
-    "zt": 12,
-    "dt": 8,
-    "zab": 6,
-    "zb": 33.3,
-    "fb": 66.7,
-    "jj": 50.0,
+    "zt": 16,
+    "dt": 9,
+    "zab": 9,
+    "zb": 36.0,
+    "fb": 64.0,
+    "jj": 37.5,
     "lianban": 6,
     "max_lb": 4,
-    "amount": "2758.8亿",
+    "amount": "4237.3亿",
     "bf": 0,
-    "heat": 51,
-    "risk": 33,
+    "heat": 47,
+    "risk": 37,
     "headline": "分歧",
     "concepts": [
+      {
+        "name": "IT服务Ⅱ",
+        "lead": "博汇科技",
+        "chg_pct": null
+      },
+      {
+        "name": "软件开发",
+        "lead": "天融信",
+        "chg_pct": null
+      },
       {
         "name": "计算机设",
         "lead": "中新赛克",
@@ -44,16 +54,6 @@
         "name": "中药Ⅱ",
         "lead": "三力制药",
         "chg_pct": null
-      },
-      {
-        "name": "汽车零部",
-        "lead": "山子高科",
-        "chg_pct": null
-      },
-      {
-        "name": "IT服务Ⅱ",
-        "lead": "启明信息",
-        "chg_pct": null
       }
     ],
     "alerts": [
@@ -62,13 +62,13 @@
         "text": "盘中模式：强制实时拉取"
       },
       {
-        "level": "warn",
-        "text": "炸板率偏高（33.3%）→ 注意回封质量"
+        "level": "danger",
+        "text": "炸板率高（36.0%）→ 分歧偏强，谨慎接力"
       }
     ],
-    "shift_score": 58,
+    "shift_score": 54,
     "shift_label": "分歧",
-    "note": "承接增强、分歧收敛，情绪明显回暖。"
+    "note": "情绪略有回落，注意午后分歧。"
   },
   "snapshots": [
     {
@@ -206,40 +206,107 @@
       "shift_score": 58,
       "shift_label": "分歧",
       "note": "承接增强、分歧收敛，情绪明显回暖。"
+    },
+    {
+      "time": "09:50:05",
+      "ts_bj": "2026-09-15 09:50:05",
+      "date": "2026-09-15",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid"
+      },
+      "pool_errors": {},
+      "zt": 16,
+      "dt": 9,
+      "zab": 9,
+      "zb": 36.0,
+      "fb": 64.0,
+      "jj": 37.5,
+      "lianban": 6,
+      "max_lb": 4,
+      "amount": "4237.3亿",
+      "bf": 0,
+      "heat": 47,
+      "risk": 37,
+      "headline": "分歧",
+      "concepts": [
+        {
+          "name": "IT服务Ⅱ",
+          "lead": "博汇科技",
+          "chg_pct": null
+        },
+        {
+          "name": "软件开发",
+          "lead": "天融信",
+          "chg_pct": null
+        },
+        {
+          "name": "计算机设",
+          "lead": "中新赛克",
+          "chg_pct": null
+        },
+        {
+          "name": "影视院线",
+          "lead": "中视传媒",
+          "chg_pct": null
+        },
+        {
+          "name": "中药Ⅱ",
+          "lead": "三力制药",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        },
+        {
+          "level": "danger",
+          "text": "炸板率高（36.0%）→ 分歧偏强，谨慎接力"
+        }
+      ],
+      "shift_score": 54,
+      "shift_label": "分歧",
+      "note": "情绪略有回落，注意午后分歧。"
     }
   ],
   "indices": [
     {
       "name": "上证指数",
       "code": "000001.SH",
-      "val": 3873.93,
-      "chg": -0.29348835736860257,
-      "cje": 128413633900.0,
-      "t": "2026-09-15 09:40:03"
+      "val": 3876.274,
+      "chg": -0.23315890812962997,
+      "cje": 197658107700.0,
+      "t": "2026-09-15 09:50:03"
     },
     {
       "name": "深证成指",
       "code": "399001.SZ",
-      "val": 13358.309,
-      "chg": -0.19618862558731828,
-      "cje": 146958671200.0,
-      "t": "2026-09-15 09:40:00"
+      "val": 13373.845,
+      "chg": -0.0801146514403749,
+      "cje": 225289704900.0,
+      "t": "2026-09-15 09:49:57"
     },
     {
       "name": "创业板指",
       "code": "399006.SZ",
-      "val": 3273.499,
-      "chg": -0.3677886085970218,
-      "cje": 62295872600.0,
-      "t": "2026-09-15 09:40:00"
+      "val": 3274.233,
+      "chg": -0.34544858553261043,
+      "cje": 98515616500.0,
+      "t": "2026-09-15 09:49:57"
     }
   ],
   "asOf": {
-    "indices": "09:40:00"
+    "indices": "09:49:57"
   },
   "health": {
     "status": "valid",
-    "last_valid_at": "2026-09-15 09:40:04",
+    "last_valid_at": "2026-09-15 09:50:05",
     "rejected_reason": "",
     "source": {
       "status": "valid",
@@ -257,29 +324,30 @@
       "message": "intraday_coverage_collecting",
       "date": "2026-09-15",
       "expected_count": 26,
-      "due_count": 2,
-      "observed_count": 2,
+      "due_count": 3,
+      "observed_count": 3,
       "observed_slots": [
         "09:30",
-        "09:40"
+        "09:40",
+        "09:50"
       ],
       "missing_slots": [],
       "duplicate_slots": [],
       "out_of_session": [],
       "monotonic": true,
-      "morning_coverage": 2,
+      "morning_coverage": 3,
       "afternoon_coverage": 0
     }
   },
   "live": {
     "market": {
-      "zt": 12,
-      "dt": 8,
-      "zab": 6,
-      "zab_rate": 33.3,
+      "zt": 16,
+      "dt": 9,
+      "zab": 9,
+      "zab_rate": 36.0,
       "lianban": 6,
       "max_lianban": 4,
-      "amount": "2758.8亿"
+      "amount": "4237.3亿"
     },
     "alerts": [
       {
@@ -287,11 +355,21 @@
         "text": "盘中模式：强制实时拉取"
       },
       {
-        "level": "warn",
-        "text": "炸板率偏高（33.3%）→ 注意回封质量"
+        "level": "danger",
+        "text": "炸板率高（36.0%）→ 分歧偏强，谨慎接力"
       }
     ],
     "concepts": [
+      {
+        "name": "IT服务Ⅱ",
+        "lead": "博汇科技",
+        "chg_pct": null
+      },
+      {
+        "name": "软件开发",
+        "lead": "天融信",
+        "chg_pct": null
+      },
       {
         "name": "计算机设",
         "lead": "中新赛克",
@@ -305,16 +383,6 @@
       {
         "name": "中药Ⅱ",
         "lead": "三力制药",
-        "chg_pct": null
-      },
-      {
-        "name": "汽车零部",
-        "lead": "山子高科",
-        "chg_pct": null
-      },
-      {
-        "name": "IT服务Ⅱ",
-        "lead": "启明信息",
         "chg_pct": null
       }
     ]
