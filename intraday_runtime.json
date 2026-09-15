@@ -1,11 +1,11 @@
 {
   "schema": "intraday_runtime_v1",
   "date": "2026-09-15",
-  "updated_at": "2026-09-15 11:30:04",
+  "updated_at": "2026-09-15 14:50:36",
   "source": "必盈(实时)+必盈(实时)",
   "latest": {
-    "time": "11:30:04",
-    "ts_bj": "2026-09-15 11:30:04",
+    "time": "14:50:36",
+    "ts_bj": "2026-09-15 14:50:36",
     "date": "2026-09-15",
     "source": "intraday_live",
     "provider": "必盈(实时)+必盈(实时)",
@@ -16,18 +16,18 @@
       "dtgc": "valid"
     },
     "pool_errors": {},
-    "zt": 28,
-    "dt": 18,
+    "zt": 32,
+    "dt": 27,
     "zab": 24,
-    "zb": 46.2,
-    "fb": 53.8,
-    "jj": 25.0,
+    "zb": 42.9,
+    "fb": 57.1,
+    "jj": 21.9,
     "lianban": 7,
     "max_lb": 5,
-    "amount": "10568.4亿",
+    "amount": "15365.7亿",
     "bf": 0,
-    "heat": 44,
-    "risk": 63,
+    "heat": 45,
+    "risk": 64,
     "headline": "走弱",
     "concepts": [
       {
@@ -41,6 +41,11 @@
         "chg_pct": null
       },
       {
+        "name": "塑料",
+        "lead": "双星新材",
+        "chg_pct": null
+      },
+      {
         "name": "元件",
         "lead": "澳弘电子",
         "chg_pct": null
@@ -48,11 +53,6 @@
       {
         "name": "IT服务Ⅱ",
         "lead": "博汇科技",
-        "chg_pct": null
-      },
-      {
-        "name": "自动化设",
-        "lead": "北自科技",
         "chg_pct": null
       }
     ],
@@ -62,12 +62,12 @@
         "text": "盘中模式：强制实时拉取"
       },
       {
-        "level": "warn",
-        "text": "跌停偏多（18）→ 控制追高"
+        "level": "danger",
+        "text": "跌停偏多（27）→ 亏钱扩散风险上升"
       },
       {
         "level": "danger",
-        "text": "炸板率高（46.2%）→ 分歧偏强，谨慎接力"
+        "text": "炸板率高（42.9%）→ 分歧偏强，谨慎接力"
       }
     ],
     "shift_score": 41,
@@ -987,40 +987,111 @@
       "shift_score": 41,
       "shift_label": "走弱",
       "note": "情绪整体平稳，维持当前节奏。"
+    },
+    {
+      "time": "14:50:36",
+      "ts_bj": "2026-09-15 14:50:36",
+      "date": "2026-09-15",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid"
+      },
+      "pool_errors": {},
+      "zt": 32,
+      "dt": 27,
+      "zab": 24,
+      "zb": 42.9,
+      "fb": 57.1,
+      "jj": 21.9,
+      "lianban": 7,
+      "max_lb": 5,
+      "amount": "15365.7亿",
+      "bf": 0,
+      "heat": 45,
+      "risk": 64,
+      "headline": "走弱",
+      "concepts": [
+        {
+          "name": "风电设备",
+          "lead": "大金重工",
+          "chg_pct": null
+        },
+        {
+          "name": "电力",
+          "lead": "闽东电力",
+          "chg_pct": null
+        },
+        {
+          "name": "塑料",
+          "lead": "双星新材",
+          "chg_pct": null
+        },
+        {
+          "name": "元件",
+          "lead": "澳弘电子",
+          "chg_pct": null
+        },
+        {
+          "name": "IT服务Ⅱ",
+          "lead": "博汇科技",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        },
+        {
+          "level": "danger",
+          "text": "跌停偏多（27）→ 亏钱扩散风险上升"
+        },
+        {
+          "level": "danger",
+          "text": "炸板率高（42.9%）→ 分歧偏强，谨慎接力"
+        }
+      ],
+      "shift_score": 41,
+      "shift_label": "走弱",
+      "note": "情绪整体平稳，维持当前节奏。"
     }
   ],
   "indices": [
     {
       "name": "上证指数",
       "code": "000001.SH",
-      "val": 3881.406,
-      "chg": -0.10107241773099332,
-      "cje": 505081179900.0,
-      "t": "2026-09-15 11:30:03"
+      "val": 3863.804,
+      "chg": -0.5541095190553808,
+      "cje": 729438407200.0,
+      "t": "2026-09-15 14:50:36"
     },
     {
       "name": "深证成指",
       "code": "399001.SZ",
-      "val": 13389.628,
-      "chg": 0.037804731538599604,
-      "cje": 551757664300.0,
-      "t": "2026-09-15 11:30:03"
+      "val": 13292.406,
+      "chg": -0.6885691043595763,
+      "cje": 806611907100.0,
+      "t": "2026-09-15 14:50:30"
     },
     {
       "name": "创业板指",
       "code": "399006.SZ",
-      "val": 3279.622,
-      "chg": -0.18142898840176128,
-      "cje": 250922930300.0,
-      "t": "2026-09-15 11:30:03"
+      "val": 3250.066,
+      "chg": -1.0809953667279226,
+      "cje": 371682330900.0,
+      "t": "2026-09-15 14:50:30"
     }
   ],
   "asOf": {
-    "indices": "11:30:03"
+    "indices": "14:50:30"
   },
   "health": {
     "status": "valid",
-    "last_valid_at": "2026-09-15 11:30:04",
+    "last_valid_at": "2026-09-15 14:50:36",
     "rejected_reason": "",
     "source": {
       "status": "valid",
@@ -1033,13 +1104,13 @@
     },
     "indices_status": "valid",
     "coverage": {
-      "ok": true,
-      "status": "collecting",
-      "message": "intraday_coverage_collecting",
+      "ok": false,
+      "status": "degraded",
+      "message": "intraday_coverage_incomplete",
       "date": "2026-09-15",
       "expected_count": 26,
-      "due_count": 13,
-      "observed_count": 13,
+      "due_count": 25,
+      "observed_count": 14,
       "observed_slots": [
         "09:30",
         "09:40",
@@ -1053,25 +1124,38 @@
         "11:00",
         "11:10",
         "11:20",
-        "11:30"
+        "11:30",
+        "14:50"
       ],
-      "missing_slots": [],
+      "missing_slots": [
+        "13:00",
+        "13:10",
+        "13:20",
+        "13:30",
+        "13:40",
+        "13:50",
+        "14:00",
+        "14:10",
+        "14:20",
+        "14:30",
+        "14:40"
+      ],
       "duplicate_slots": [],
       "out_of_session": [],
       "monotonic": true,
       "morning_coverage": 13,
-      "afternoon_coverage": 0
+      "afternoon_coverage": 1
     }
   },
   "live": {
     "market": {
-      "zt": 28,
-      "dt": 18,
+      "zt": 32,
+      "dt": 27,
       "zab": 24,
-      "zab_rate": 46.2,
+      "zab_rate": 42.9,
       "lianban": 7,
       "max_lianban": 5,
-      "amount": "10568.4亿"
+      "amount": "15365.7亿"
     },
     "alerts": [
       {
@@ -1079,12 +1163,12 @@
         "text": "盘中模式：强制实时拉取"
       },
       {
-        "level": "warn",
-        "text": "跌停偏多（18）→ 控制追高"
+        "level": "danger",
+        "text": "跌停偏多（27）→ 亏钱扩散风险上升"
       },
       {
         "level": "danger",
-        "text": "炸板率高（46.2%）→ 分歧偏强，谨慎接力"
+        "text": "炸板率高（42.9%）→ 分歧偏强，谨慎接力"
       }
     ],
     "concepts": [
@@ -1099,6 +1183,11 @@
         "chg_pct": null
       },
       {
+        "name": "塑料",
+        "lead": "双星新材",
+        "chg_pct": null
+      },
+      {
         "name": "元件",
         "lead": "澳弘电子",
         "chg_pct": null
@@ -1106,11 +1195,6 @@
       {
         "name": "IT服务Ⅱ",
         "lead": "博汇科技",
-        "chg_pct": null
-      },
-      {
-        "name": "自动化设",
-        "lead": "北自科技",
         "chg_pct": null
       }
     ]
