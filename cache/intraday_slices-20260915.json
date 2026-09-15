@@ -2,7 +2,7 @@
   "schema": "intraday_snapshot_v1",
   "render_mode": "snapshot_stream",
   "date": "2026-09-15",
-  "count": 6,
+  "count": 7,
   "interval_min": null,
   "simulated": false,
   "snapshots": [
@@ -421,11 +421,82 @@
       "shift_score": 48,
       "shift_label": "分歧",
       "note": "情绪略有回落，注意午后分歧。"
+    },
+    {
+      "time": "10:30:05",
+      "ts_bj": "2026-09-15 10:30:05",
+      "date": "2026-09-15",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid"
+      },
+      "pool_errors": {},
+      "zt": 29,
+      "dt": 17,
+      "zab": 14,
+      "zb": 32.6,
+      "fb": 67.4,
+      "jj": 27.6,
+      "lianban": 8,
+      "max_lb": 4,
+      "amount": "8105.5亿",
+      "bf": 0,
+      "heat": 48,
+      "risk": 50,
+      "headline": "分歧",
+      "concepts": [
+        {
+          "name": "半导体",
+          "lead": "臻宝科技",
+          "chg_pct": null
+        },
+        {
+          "name": "塑料",
+          "lead": "双星新材",
+          "chg_pct": null
+        },
+        {
+          "name": "元件",
+          "lead": "澳弘电子",
+          "chg_pct": null
+        },
+        {
+          "name": "IT服务Ⅱ",
+          "lead": "博汇科技",
+          "chg_pct": null
+        },
+        {
+          "name": "计算机设",
+          "lead": "中新赛克",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        },
+        {
+          "level": "warn",
+          "text": "跌停偏多（17）→ 控制追高"
+        },
+        {
+          "level": "warn",
+          "text": "炸板率偏高（32.6%）→ 注意回封质量"
+        }
+      ],
+      "shift_score": 49,
+      "shift_label": "分歧",
+      "note": "情绪整体平稳，维持当前节奏。"
     }
   ],
   "latest": {
-    "time": "10:20:05",
-    "ts_bj": "2026-09-15 10:20:05",
+    "time": "10:30:05",
+    "ts_bj": "2026-09-15 10:30:05",
     "date": "2026-09-15",
     "source": "intraday_live",
     "provider": "必盈(实时)+必盈(实时)",
@@ -436,20 +507,25 @@
       "dtgc": "valid"
     },
     "pool_errors": {},
-    "zt": 23,
+    "zt": 29,
     "dt": 17,
-    "zab": 13,
-    "zb": 36.1,
-    "fb": 63.9,
-    "jj": 34.8,
+    "zab": 14,
+    "zb": 32.6,
+    "fb": 67.4,
+    "jj": 27.6,
     "lianban": 8,
     "max_lb": 4,
-    "amount": "7328.0亿",
+    "amount": "8105.5亿",
     "bf": 0,
     "heat": 48,
-    "risk": 51,
+    "risk": 50,
     "headline": "分歧",
     "concepts": [
+      {
+        "name": "半导体",
+        "lead": "臻宝科技",
+        "chg_pct": null
+      },
       {
         "name": "塑料",
         "lead": "双星新材",
@@ -469,11 +545,6 @@
         "name": "计算机设",
         "lead": "中新赛克",
         "chg_pct": null
-      },
-      {
-        "name": "影视院线",
-        "lead": "中视传媒",
-        "chg_pct": null
       }
     ],
     "alerts": [
@@ -486,19 +557,19 @@
         "text": "跌停偏多（17）→ 控制追高"
       },
       {
-        "level": "danger",
-        "text": "炸板率高（36.1%）→ 分歧偏强，谨慎接力"
+        "level": "warn",
+        "text": "炸板率偏高（32.6%）→ 注意回封质量"
       }
     ],
-    "shift_score": 48,
+    "shift_score": 49,
     "shift_label": "分歧",
-    "note": "情绪略有回落，注意午后分歧。"
+    "note": "情绪整体平稳，维持当前节奏。"
   },
-  "updated_at": "2026-09-15 10:20:05",
-  "snapshot_sig": "2026-09-15|2026-09-15 10:20:05|6",
+  "updated_at": "2026-09-15 10:30:05",
+  "snapshot_sig": "2026-09-15|2026-09-15 10:30:05|7",
   "health": {
     "status": "valid",
-    "last_valid_at": "2026-09-15 10:20:05",
+    "last_valid_at": "2026-09-15 10:30:05",
     "rejected_reason": "",
     "source": {
       "status": "valid",
