@@ -1,11 +1,11 @@
 {
   "schema": "intraday_runtime_v1",
   "date": "2026-09-16",
-  "updated_at": "2026-09-16 10:00:05",
+  "updated_at": "2026-09-16 10:10:05",
   "source": "必盈(实时)+必盈(实时)",
   "latest": {
-    "time": "10:00:05",
-    "ts_bj": "2026-09-16 10:00:05",
+    "time": "10:10:05",
+    "ts_bj": "2026-09-16 10:10:05",
     "date": "2026-09-16",
     "source": "intraday_live",
     "provider": "必盈(实时)+必盈(实时)",
@@ -16,28 +16,28 @@
       "dtgc": "valid"
     },
     "pool_errors": {},
-    "zt": 29,
+    "zt": 31,
     "dt": 4,
-    "zab": 2,
-    "zb": 6.5,
-    "fb": 93.5,
-    "jj": 31.0,
-    "lianban": 9,
-    "max_lb": 6,
-    "amount": "5013.9亿",
+    "zab": 5,
+    "zb": 13.9,
+    "fb": 86.1,
+    "jj": 25.8,
+    "lianban": 8,
+    "max_lb": 4,
+    "amount": "6168.0亿",
     "bf": 0,
-    "heat": 64,
-    "risk": 10,
-    "headline": "走强",
+    "heat": 56,
+    "risk": 16,
+    "headline": "修复",
     "concepts": [
       {
-        "name": "电力",
-        "lead": "闽东电力",
+        "name": "非白酒",
+        "lead": "会稽山",
         "chg_pct": null
       },
       {
-        "name": "风电设备",
-        "lead": "吉鑫科技",
+        "name": "电力",
+        "lead": "露笑科技",
         "chg_pct": null
       },
       {
@@ -62,9 +62,9 @@
         "text": "盘中模式：强制实时拉取"
       }
     ],
-    "shift_score": 75,
-    "shift_label": "走强",
-    "note": "情绪整体平稳，维持当前节奏。"
+    "shift_score": 68,
+    "shift_label": "修复",
+    "note": "炸板/跌停抬升，情绪明显走弱。"
   },
   "snapshots": [
     {
@@ -319,40 +319,103 @@
       "shift_score": 75,
       "shift_label": "走强",
       "note": "情绪整体平稳，维持当前节奏。"
+    },
+    {
+      "time": "10:10:05",
+      "ts_bj": "2026-09-16 10:10:05",
+      "date": "2026-09-16",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid"
+      },
+      "pool_errors": {},
+      "zt": 31,
+      "dt": 4,
+      "zab": 5,
+      "zb": 13.9,
+      "fb": 86.1,
+      "jj": 25.8,
+      "lianban": 8,
+      "max_lb": 4,
+      "amount": "6168.0亿",
+      "bf": 0,
+      "heat": 56,
+      "risk": 16,
+      "headline": "修复",
+      "concepts": [
+        {
+          "name": "非白酒",
+          "lead": "会稽山",
+          "chg_pct": null
+        },
+        {
+          "name": "电力",
+          "lead": "露笑科技",
+          "chg_pct": null
+        },
+        {
+          "name": "通信设备",
+          "lead": "中瓷电子",
+          "chg_pct": null
+        },
+        {
+          "name": "橡胶",
+          "lead": "黑猫股份",
+          "chg_pct": null
+        },
+        {
+          "name": "电网设备",
+          "lead": "太阳电缆",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        }
+      ],
+      "shift_score": 68,
+      "shift_label": "修复",
+      "note": "炸板/跌停抬升，情绪明显走弱。"
     }
   ],
   "indices": [
     {
       "name": "上证指数",
       "code": "000001.SH",
-      "val": 3844.127,
-      "chg": -0.5214944366077099,
-      "cje": 236652531400.0,
-      "t": "2026-09-16 10:00:03"
+      "val": 3858.052,
+      "chg": -0.16114260900933555,
+      "cje": 293826699800.0,
+      "t": "2026-09-16 10:10:03"
     },
     {
       "name": "深证成指",
       "code": "399001.SZ",
-      "val": 13191.386,
-      "chg": -0.7268828190061158,
-      "cje": 264445716900.0,
-      "t": "2026-09-16 10:00:00"
+      "val": 13274.064,
+      "chg": -0.10468111993596507,
+      "cje": 322005689200.0,
+      "t": "2026-09-16 10:10:00"
     },
     {
       "name": "创业板指",
       "code": "399006.SZ",
-      "val": 3232.522,
-      "chg": -0.4740267457491286,
-      "cje": 119448411600.0,
-      "t": "2026-09-16 10:00:00"
+      "val": 3257.835,
+      "chg": 0.3053340632368156,
+      "cje": 146535500600.0,
+      "t": "2026-09-16 10:10:00"
     }
   ],
   "asOf": {
-    "indices": "10:00:00"
+    "indices": "10:10:00"
   },
   "health": {
     "status": "valid",
-    "last_valid_at": "2026-09-16 10:00:05",
+    "last_valid_at": "2026-09-16 10:10:05",
     "rejected_reason": "",
     "source": {
       "status": "valid",
@@ -370,31 +433,32 @@
       "message": "intraday_coverage_collecting",
       "date": "2026-09-16",
       "expected_count": 26,
-      "due_count": 4,
-      "observed_count": 4,
+      "due_count": 5,
+      "observed_count": 5,
       "observed_slots": [
         "09:30",
         "09:40",
         "09:50",
-        "10:00"
+        "10:00",
+        "10:10"
       ],
       "missing_slots": [],
       "duplicate_slots": [],
       "out_of_session": [],
       "monotonic": true,
-      "morning_coverage": 4,
+      "morning_coverage": 5,
       "afternoon_coverage": 0
     }
   },
   "live": {
     "market": {
-      "zt": 29,
+      "zt": 31,
       "dt": 4,
-      "zab": 2,
-      "zab_rate": 6.5,
-      "lianban": 9,
-      "max_lianban": 6,
-      "amount": "5013.9亿"
+      "zab": 5,
+      "zab_rate": 13.9,
+      "lianban": 8,
+      "max_lianban": 4,
+      "amount": "6168.0亿"
     },
     "alerts": [
       {
@@ -404,13 +468,13 @@
     ],
     "concepts": [
       {
-        "name": "电力",
-        "lead": "闽东电力",
+        "name": "非白酒",
+        "lead": "会稽山",
         "chg_pct": null
       },
       {
-        "name": "风电设备",
-        "lead": "吉鑫科技",
+        "name": "电力",
+        "lead": "露笑科技",
         "chg_pct": null
       },
       {
