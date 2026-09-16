@@ -1,36 +1,34 @@
 {
   "schema": "intraday_runtime_v1",
   "date": "2026-09-16",
-  "updated_at": "2026-09-16 09:30:32",
-  "source": "必盈(实时)",
+  "updated_at": "2026-09-16 09:40:05",
+  "source": "必盈(实时)+必盈(实时)",
   "latest": {
-    "time": "09:30:32",
-    "ts_bj": "2026-09-16 09:30:32",
+    "time": "09:40:05",
+    "ts_bj": "2026-09-16 09:40:05",
     "date": "2026-09-16",
     "source": "intraday_live",
-    "provider": "必盈(实时)",
-    "data_quality": "partial",
+    "provider": "必盈(实时)+必盈(实时)",
+    "data_quality": "valid",
     "pool_status": {
       "ztgc": "valid",
-      "zbgc": "failed",
+      "zbgc": "valid",
       "dtgc": "valid"
     },
-    "pool_errors": {
-      "zbgc": "empty_response"
-    },
-    "zt": 5,
-    "dt": 5,
-    "zab": null,
-    "zb": null,
-    "fb": null,
-    "jj": 60.0,
-    "lianban": 3,
-    "max_lb": 2,
-    "amount": "",
+    "pool_errors": {},
+    "zt": 13,
+    "dt": 6,
+    "zab": 3,
+    "zb": 18.8,
+    "fb": 81.2,
+    "jj": 53.8,
+    "lianban": 7,
+    "max_lb": 4,
+    "amount": "2565.3亿",
     "bf": 0,
-    "heat": null,
-    "risk": null,
-    "headline": "数据部分可用",
+    "heat": 58,
+    "risk": 21,
+    "headline": "修复",
     "concepts": [
       {
         "name": "风电设备",
@@ -38,18 +36,23 @@
         "chg_pct": null
       },
       {
-        "name": "家居用品",
-        "lead": "华瓷股份",
-        "chg_pct": null
-      },
-      {
-        "name": "专业工程",
-        "lead": "中岩大地",
+        "name": "电力",
+        "lead": "露笑科技",
         "chg_pct": null
       },
       {
         "name": "橡胶",
-        "lead": "龙星科技",
+        "lead": "黑猫股份",
+        "chg_pct": null
+      },
+      {
+        "name": "元件",
+        "lead": "澳弘电子",
+        "chg_pct": null
+      },
+      {
+        "name": "半导体",
+        "lead": "中晶科技",
         "chg_pct": null
       }
     ],
@@ -57,15 +60,11 @@
       {
         "level": "info",
         "text": "盘中模式：强制实时拉取"
-      },
-      {
-        "level": "warn",
-        "text": "盘中三池响应不完整，保留最近有效数据"
       }
     ],
-    "shift_score": null,
-    "shift_label": "数据部分可用",
-    "note": "本槽位仅部分三池成功；节点已保留，缺失指标不参与判断。"
+    "shift_score": 67,
+    "shift_label": "修复",
+    "note": "承接增强、分歧收敛，情绪明显回暖。"
   },
   "snapshots": [
     {
@@ -131,51 +130,112 @@
       "shift_score": null,
       "shift_label": "数据部分可用",
       "note": "本槽位仅部分三池成功；节点已保留，缺失指标不参与判断。"
+    },
+    {
+      "time": "09:40:05",
+      "ts_bj": "2026-09-16 09:40:05",
+      "date": "2026-09-16",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid"
+      },
+      "pool_errors": {},
+      "zt": 13,
+      "dt": 6,
+      "zab": 3,
+      "zb": 18.8,
+      "fb": 81.2,
+      "jj": 53.8,
+      "lianban": 7,
+      "max_lb": 4,
+      "amount": "2565.3亿",
+      "bf": 0,
+      "heat": 58,
+      "risk": 21,
+      "headline": "修复",
+      "concepts": [
+        {
+          "name": "风电设备",
+          "lead": "吉鑫科技",
+          "chg_pct": null
+        },
+        {
+          "name": "电力",
+          "lead": "露笑科技",
+          "chg_pct": null
+        },
+        {
+          "name": "橡胶",
+          "lead": "黑猫股份",
+          "chg_pct": null
+        },
+        {
+          "name": "元件",
+          "lead": "澳弘电子",
+          "chg_pct": null
+        },
+        {
+          "name": "半导体",
+          "lead": "中晶科技",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        }
+      ],
+      "shift_score": 67,
+      "shift_label": "修复",
+      "note": "承接增强、分歧收敛，情绪明显回暖。"
     }
   ],
   "indices": [
     {
       "name": "上证指数",
       "code": "000001.SH",
-      "val": 3861.802,
-      "chg": -0.06409992653221627,
-      "cje": 14519131700.0,
-      "t": "2026-09-16 09:30:32"
+      "val": 3855.514,
+      "chg": -0.22682109650985016,
+      "cje": 120662314200.0,
+      "t": "2026-09-16 09:40:03"
     },
     {
       "name": "深证成指",
       "code": "399001.SZ",
-      "val": 13281.709,
-      "chg": -0.04714789478064465,
-      "cje": 23160372000.0,
-      "t": "2026-09-16 09:30:27"
+      "val": 13245.269,
+      "chg": -0.32138082148565256,
+      "cje": 134574071000.0,
+      "t": "2026-09-16 09:39:57"
     },
     {
       "name": "创业板指",
       "code": "399006.SZ",
-      "val": 3249.59,
-      "chg": 0.05147913217020951,
-      "cje": 9677980500.0,
-      "t": "2026-09-16 09:30:30"
+      "val": 3240.174,
+      "chg": -0.23842966478833955,
+      "cje": 59049403100.0,
+      "t": "2026-09-16 09:39:57"
     }
   ],
   "asOf": {
-    "indices": "09:30:30"
+    "indices": "09:39:57"
   },
   "health": {
-    "status": "degraded",
-    "last_valid_at": "2026-09-16 09:30:32",
+    "status": "valid",
+    "last_valid_at": "2026-09-16 09:40:05",
     "rejected_reason": "",
     "source": {
-      "status": "partial",
+      "status": "valid",
       "pool_status": {
         "ztgc": "valid",
-        "zbgc": "failed",
+        "zbgc": "valid",
         "dtgc": "valid"
       },
-      "pool_errors": {
-        "zbgc": "empty_response"
-      }
+      "pool_errors": {}
     },
     "indices_status": "valid",
     "coverage": {
@@ -184,37 +244,34 @@
       "message": "intraday_coverage_collecting",
       "date": "2026-09-16",
       "expected_count": 26,
-      "due_count": 1,
-      "observed_count": 1,
+      "due_count": 2,
+      "observed_count": 2,
       "observed_slots": [
-        "09:30"
+        "09:30",
+        "09:40"
       ],
       "missing_slots": [],
       "duplicate_slots": [],
       "out_of_session": [],
       "monotonic": true,
-      "morning_coverage": 1,
+      "morning_coverage": 2,
       "afternoon_coverage": 0
     }
   },
   "live": {
     "market": {
-      "zt": 5,
-      "dt": 5,
-      "zab": null,
-      "zab_rate": null,
-      "lianban": 3,
-      "max_lianban": 2,
-      "amount": ""
+      "zt": 13,
+      "dt": 6,
+      "zab": 3,
+      "zab_rate": 18.8,
+      "lianban": 7,
+      "max_lianban": 4,
+      "amount": "2565.3亿"
     },
     "alerts": [
       {
         "level": "info",
         "text": "盘中模式：强制实时拉取"
-      },
-      {
-        "level": "warn",
-        "text": "盘中三池响应不完整，保留最近有效数据"
       }
     ],
     "concepts": [
@@ -224,18 +281,23 @@
         "chg_pct": null
       },
       {
-        "name": "家居用品",
-        "lead": "华瓷股份",
-        "chg_pct": null
-      },
-      {
-        "name": "专业工程",
-        "lead": "中岩大地",
+        "name": "电力",
+        "lead": "露笑科技",
         "chg_pct": null
       },
       {
         "name": "橡胶",
-        "lead": "龙星科技",
+        "lead": "黑猫股份",
+        "chg_pct": null
+      },
+      {
+        "name": "元件",
+        "lead": "澳弘电子",
+        "chg_pct": null
+      },
+      {
+        "name": "半导体",
+        "lead": "中晶科技",
         "chg_pct": null
       }
     ]

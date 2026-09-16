@@ -2,7 +2,7 @@
   "schema": "intraday_snapshot_v1",
   "render_mode": "snapshot_stream",
   "date": "2026-09-16",
-  "count": 1,
+  "count": 2,
   "interval_min": null,
   "simulated": false,
   "snapshots": [
@@ -69,36 +69,97 @@
       "shift_score": null,
       "shift_label": "数据部分可用",
       "note": "本槽位仅部分三池成功；节点已保留，缺失指标不参与判断。"
+    },
+    {
+      "time": "09:40:05",
+      "ts_bj": "2026-09-16 09:40:05",
+      "date": "2026-09-16",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid"
+      },
+      "pool_errors": {},
+      "zt": 13,
+      "dt": 6,
+      "zab": 3,
+      "zb": 18.8,
+      "fb": 81.2,
+      "jj": 53.8,
+      "lianban": 7,
+      "max_lb": 4,
+      "amount": "2565.3亿",
+      "bf": 0,
+      "heat": 58,
+      "risk": 21,
+      "headline": "修复",
+      "concepts": [
+        {
+          "name": "风电设备",
+          "lead": "吉鑫科技",
+          "chg_pct": null
+        },
+        {
+          "name": "电力",
+          "lead": "露笑科技",
+          "chg_pct": null
+        },
+        {
+          "name": "橡胶",
+          "lead": "黑猫股份",
+          "chg_pct": null
+        },
+        {
+          "name": "元件",
+          "lead": "澳弘电子",
+          "chg_pct": null
+        },
+        {
+          "name": "半导体",
+          "lead": "中晶科技",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        }
+      ],
+      "shift_score": 67,
+      "shift_label": "修复",
+      "note": "承接增强、分歧收敛，情绪明显回暖。"
     }
   ],
   "latest": {
-    "time": "09:30:32",
-    "ts_bj": "2026-09-16 09:30:32",
+    "time": "09:40:05",
+    "ts_bj": "2026-09-16 09:40:05",
     "date": "2026-09-16",
     "source": "intraday_live",
-    "provider": "必盈(实时)",
-    "data_quality": "partial",
+    "provider": "必盈(实时)+必盈(实时)",
+    "data_quality": "valid",
     "pool_status": {
       "ztgc": "valid",
-      "zbgc": "failed",
+      "zbgc": "valid",
       "dtgc": "valid"
     },
-    "pool_errors": {
-      "zbgc": "empty_response"
-    },
-    "zt": 5,
-    "dt": 5,
-    "zab": null,
-    "zb": null,
-    "fb": null,
-    "jj": 60.0,
-    "lianban": 3,
-    "max_lb": 2,
-    "amount": "",
+    "pool_errors": {},
+    "zt": 13,
+    "dt": 6,
+    "zab": 3,
+    "zb": 18.8,
+    "fb": 81.2,
+    "jj": 53.8,
+    "lianban": 7,
+    "max_lb": 4,
+    "amount": "2565.3亿",
     "bf": 0,
-    "heat": null,
-    "risk": null,
-    "headline": "数据部分可用",
+    "heat": 58,
+    "risk": 21,
+    "headline": "修复",
     "concepts": [
       {
         "name": "风电设备",
@@ -106,18 +167,23 @@
         "chg_pct": null
       },
       {
-        "name": "家居用品",
-        "lead": "华瓷股份",
-        "chg_pct": null
-      },
-      {
-        "name": "专业工程",
-        "lead": "中岩大地",
+        "name": "电力",
+        "lead": "露笑科技",
         "chg_pct": null
       },
       {
         "name": "橡胶",
-        "lead": "龙星科技",
+        "lead": "黑猫股份",
+        "chg_pct": null
+      },
+      {
+        "name": "元件",
+        "lead": "澳弘电子",
+        "chg_pct": null
+      },
+      {
+        "name": "半导体",
+        "lead": "中晶科技",
         "chg_pct": null
       }
     ],
@@ -125,32 +191,26 @@
       {
         "level": "info",
         "text": "盘中模式：强制实时拉取"
-      },
-      {
-        "level": "warn",
-        "text": "盘中三池响应不完整，保留最近有效数据"
       }
     ],
-    "shift_score": null,
-    "shift_label": "数据部分可用",
-    "note": "本槽位仅部分三池成功；节点已保留，缺失指标不参与判断。"
+    "shift_score": 67,
+    "shift_label": "修复",
+    "note": "承接增强、分歧收敛，情绪明显回暖。"
   },
-  "updated_at": "2026-09-16 09:30:32",
-  "snapshot_sig": "2026-09-16|2026-09-16 09:30:32|1",
+  "updated_at": "2026-09-16 09:40:05",
+  "snapshot_sig": "2026-09-16|2026-09-16 09:40:05|2",
   "health": {
-    "status": "degraded",
-    "last_valid_at": "2026-09-16 09:30:32",
+    "status": "valid",
+    "last_valid_at": "2026-09-16 09:40:05",
     "rejected_reason": "",
     "source": {
-      "status": "partial",
+      "status": "valid",
       "pool_status": {
         "ztgc": "valid",
-        "zbgc": "failed",
+        "zbgc": "valid",
         "dtgc": "valid"
       },
-      "pool_errors": {
-        "zbgc": "empty_response"
-      }
+      "pool_errors": {}
     }
   }
 }
