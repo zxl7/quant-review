@@ -1,11 +1,11 @@
 {
   "schema": "intraday_runtime_v1",
   "date": "2026-09-16",
-  "updated_at": "2026-09-16 09:50:05",
+  "updated_at": "2026-09-16 10:00:05",
   "source": "必盈(实时)+必盈(实时)",
   "latest": {
-    "time": "09:50:05",
-    "ts_bj": "2026-09-16 09:50:05",
+    "time": "10:00:05",
+    "ts_bj": "2026-09-16 10:00:05",
     "date": "2026-09-16",
     "source": "intraday_live",
     "provider": "必盈(实时)+必盈(实时)",
@@ -16,18 +16,18 @@
       "dtgc": "valid"
     },
     "pool_errors": {},
-    "zt": 25,
-    "dt": 2,
+    "zt": 29,
+    "dt": 4,
     "zab": 2,
-    "zb": 7.4,
-    "fb": 92.6,
-    "jj": 36.0,
+    "zb": 6.5,
+    "fb": 93.5,
+    "jj": 31.0,
     "lianban": 9,
     "max_lb": 6,
-    "amount": "3907.8亿",
+    "amount": "5013.9亿",
     "bf": 0,
     "heat": 64,
-    "risk": 8,
+    "risk": 10,
     "headline": "走强",
     "concepts": [
       {
@@ -37,7 +37,7 @@
       },
       {
         "name": "风电设备",
-        "lead": "锡华科技",
+        "lead": "吉鑫科技",
         "chg_pct": null
       },
       {
@@ -62,9 +62,9 @@
         "text": "盘中模式：强制实时拉取"
       }
     ],
-    "shift_score": 76,
+    "shift_score": 75,
     "shift_label": "走强",
-    "note": "承接增强、分歧收敛，情绪明显回暖。"
+    "note": "情绪整体平稳，维持当前节奏。"
   },
   "snapshots": [
     {
@@ -256,40 +256,103 @@
       "shift_score": 76,
       "shift_label": "走强",
       "note": "承接增强、分歧收敛，情绪明显回暖。"
+    },
+    {
+      "time": "10:00:05",
+      "ts_bj": "2026-09-16 10:00:05",
+      "date": "2026-09-16",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid"
+      },
+      "pool_errors": {},
+      "zt": 29,
+      "dt": 4,
+      "zab": 2,
+      "zb": 6.5,
+      "fb": 93.5,
+      "jj": 31.0,
+      "lianban": 9,
+      "max_lb": 6,
+      "amount": "5013.9亿",
+      "bf": 0,
+      "heat": 64,
+      "risk": 10,
+      "headline": "走强",
+      "concepts": [
+        {
+          "name": "电力",
+          "lead": "闽东电力",
+          "chg_pct": null
+        },
+        {
+          "name": "风电设备",
+          "lead": "吉鑫科技",
+          "chg_pct": null
+        },
+        {
+          "name": "通信设备",
+          "lead": "中瓷电子",
+          "chg_pct": null
+        },
+        {
+          "name": "橡胶",
+          "lead": "黑猫股份",
+          "chg_pct": null
+        },
+        {
+          "name": "电网设备",
+          "lead": "太阳电缆",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        }
+      ],
+      "shift_score": 75,
+      "shift_label": "走强",
+      "note": "情绪整体平稳，维持当前节奏。"
     }
   ],
   "indices": [
     {
       "name": "上证指数",
       "code": "000001.SH",
-      "val": 3856.076,
-      "chg": -0.21227763316261516,
-      "cje": 183586186900.0,
-      "t": "2026-09-16 09:50:00"
+      "val": 3844.127,
+      "chg": -0.5214944366077099,
+      "cje": 236652531400.0,
+      "t": "2026-09-16 10:00:03"
     },
     {
       "name": "深证成指",
       "code": "399001.SZ",
-      "val": 13240.637,
-      "chg": -0.3562394086562747,
-      "cje": 204707797400.0,
-      "t": "2026-09-16 09:49:57"
+      "val": 13191.386,
+      "chg": -0.7268828190061158,
+      "cje": 264445716900.0,
+      "t": "2026-09-16 10:00:00"
     },
     {
       "name": "创业板指",
       "code": "399006.SZ",
-      "val": 3240.436,
-      "chg": -0.23036295867075374,
-      "cje": 91772999400.0,
-      "t": "2026-09-16 09:50:03"
+      "val": 3232.522,
+      "chg": -0.4740267457491286,
+      "cje": 119448411600.0,
+      "t": "2026-09-16 10:00:00"
     }
   ],
   "asOf": {
-    "indices": "09:50:03"
+    "indices": "10:00:00"
   },
   "health": {
     "status": "valid",
-    "last_valid_at": "2026-09-16 09:50:05",
+    "last_valid_at": "2026-09-16 10:00:05",
     "rejected_reason": "",
     "source": {
       "status": "valid",
@@ -307,30 +370,31 @@
       "message": "intraday_coverage_collecting",
       "date": "2026-09-16",
       "expected_count": 26,
-      "due_count": 3,
-      "observed_count": 3,
+      "due_count": 4,
+      "observed_count": 4,
       "observed_slots": [
         "09:30",
         "09:40",
-        "09:50"
+        "09:50",
+        "10:00"
       ],
       "missing_slots": [],
       "duplicate_slots": [],
       "out_of_session": [],
       "monotonic": true,
-      "morning_coverage": 3,
+      "morning_coverage": 4,
       "afternoon_coverage": 0
     }
   },
   "live": {
     "market": {
-      "zt": 25,
-      "dt": 2,
+      "zt": 29,
+      "dt": 4,
       "zab": 2,
-      "zab_rate": 7.4,
+      "zab_rate": 6.5,
       "lianban": 9,
       "max_lianban": 6,
-      "amount": "3907.8亿"
+      "amount": "5013.9亿"
     },
     "alerts": [
       {
@@ -346,7 +410,7 @@
       },
       {
         "name": "风电设备",
-        "lead": "锡华科技",
+        "lead": "吉鑫科技",
         "chg_pct": null
       },
       {
