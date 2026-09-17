@@ -1,11 +1,11 @@
 {
   "schema": "intraday_runtime_v1",
   "date": "2026-09-17",
-  "updated_at": "2026-09-17 10:20:04",
+  "updated_at": "2026-09-17 10:30:05",
   "source": "必盈(实时)+必盈(实时)",
   "latest": {
-    "time": "10:20:04",
-    "ts_bj": "2026-09-17 10:20:04",
+    "time": "10:30:05",
+    "ts_bj": "2026-09-17 10:30:05",
     "date": "2026-09-17",
     "source": "intraday_live",
     "provider": "必盈(实时)+必盈(实时)",
@@ -16,19 +16,19 @@
       "dtgc": "valid_empty"
     },
     "pool_errors": {},
-    "zt": 22,
+    "zt": 24,
     "dt": 0,
-    "zab": 15,
-    "zb": 40.5,
-    "fb": 59.5,
-    "jj": 22.7,
-    "lianban": 5,
-    "max_lb": 3,
-    "amount": "8860.3亿",
+    "zab": 12,
+    "zb": 33.3,
+    "fb": 66.7,
+    "jj": 25.0,
+    "lianban": 6,
+    "max_lb": 5,
+    "amount": "9662.4亿",
     "bf": 0,
-    "heat": 40,
-    "risk": 29,
-    "headline": "分歧",
+    "heat": 49,
+    "risk": 24,
+    "headline": "修复",
     "concepts": [
       {
         "name": "玻璃玻纤",
@@ -41,6 +41,11 @@
         "chg_pct": null
       },
       {
+        "name": "元件",
+        "lead": "澳弘电子",
+        "chg_pct": null
+      },
+      {
         "name": "半导体",
         "lead": "中晶科技",
         "chg_pct": null
@@ -48,11 +53,6 @@
       {
         "name": "家居用品",
         "lead": "华瓷股份",
-        "chg_pct": null
-      },
-      {
-        "name": "照明设备",
-        "lead": "联域股份",
         "chg_pct": null
       }
     ],
@@ -62,13 +62,13 @@
         "text": "盘中模式：强制实时拉取"
       },
       {
-        "level": "danger",
-        "text": "炸板率高（40.5%）→ 分歧偏强，谨慎接力"
+        "level": "warn",
+        "text": "炸板率偏高（33.3%）→ 注意回封质量"
       }
     ],
-    "shift_score": 53,
-    "shift_label": "分歧",
-    "note": "情绪略有回落，注意午后分歧。"
+    "shift_score": 60,
+    "shift_label": "修复",
+    "note": "承接增强、分歧收敛，情绪明显回暖。"
   },
   "snapshots": [
     {
@@ -474,40 +474,107 @@
       "shift_score": 53,
       "shift_label": "分歧",
       "note": "情绪略有回落，注意午后分歧。"
+    },
+    {
+      "time": "10:30:05",
+      "ts_bj": "2026-09-17 10:30:05",
+      "date": "2026-09-17",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid_empty"
+      },
+      "pool_errors": {},
+      "zt": 24,
+      "dt": 0,
+      "zab": 12,
+      "zb": 33.3,
+      "fb": 66.7,
+      "jj": 25.0,
+      "lianban": 6,
+      "max_lb": 5,
+      "amount": "9662.4亿",
+      "bf": 0,
+      "heat": 49,
+      "risk": 24,
+      "headline": "修复",
+      "concepts": [
+        {
+          "name": "玻璃玻纤",
+          "lead": "中材科技",
+          "chg_pct": null
+        },
+        {
+          "name": "医疗服务",
+          "lead": "百花医药",
+          "chg_pct": null
+        },
+        {
+          "name": "元件",
+          "lead": "澳弘电子",
+          "chg_pct": null
+        },
+        {
+          "name": "半导体",
+          "lead": "中晶科技",
+          "chg_pct": null
+        },
+        {
+          "name": "家居用品",
+          "lead": "华瓷股份",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        },
+        {
+          "level": "warn",
+          "text": "炸板率偏高（33.3%）→ 注意回封质量"
+        }
+      ],
+      "shift_score": 60,
+      "shift_label": "修复",
+      "note": "承接增强、分歧收敛，情绪明显回暖。"
     }
   ],
   "indices": [
     {
       "name": "上证指数",
       "code": "000001.SH",
-      "val": 3870.057,
-      "chg": -0.5536024890527144,
-      "cje": 416831073200.0,
-      "t": "2026-09-17 10:20:03"
+      "val": 3879.085,
+      "chg": -0.32161570520719046,
+      "cje": 456158294000.0,
+      "t": "2026-09-17 10:30:03"
     },
     {
       "name": "深证成指",
       "code": "399001.SZ",
-      "val": 13385.062,
-      "chg": -0.5178917204141357,
-      "cje": 468958609500.0,
-      "t": "2026-09-17 10:20:00"
+      "val": 13419.156,
+      "chg": -0.26449408955637077,
+      "cje": 509708129600.0,
+      "t": "2026-09-17 10:30:00"
     },
     {
       "name": "创业板指",
       "code": "399006.SZ",
-      "val": 3300.032,
-      "chg": -0.34552588967933934,
-      "cje": 220030770000.0,
-      "t": "2026-09-17 10:20:00"
+      "val": 3308.204,
+      "chg": -0.09874756679351798,
+      "cje": 238533141600.0,
+      "t": "2026-09-17 10:30:00"
     }
   ],
   "asOf": {
-    "indices": "10:20:00"
+    "indices": "10:30:00"
   },
   "health": {
     "status": "valid",
-    "last_valid_at": "2026-09-17 10:20:04",
+    "last_valid_at": "2026-09-17 10:30:05",
     "rejected_reason": "",
     "source": {
       "status": "valid",
@@ -525,33 +592,34 @@
       "message": "intraday_coverage_collecting",
       "date": "2026-09-17",
       "expected_count": 26,
-      "due_count": 6,
-      "observed_count": 6,
+      "due_count": 7,
+      "observed_count": 7,
       "observed_slots": [
         "09:30",
         "09:40",
         "09:50",
         "10:00",
         "10:10",
-        "10:20"
+        "10:20",
+        "10:30"
       ],
       "missing_slots": [],
       "duplicate_slots": [],
       "out_of_session": [],
       "monotonic": true,
-      "morning_coverage": 6,
+      "morning_coverage": 7,
       "afternoon_coverage": 0
     }
   },
   "live": {
     "market": {
-      "zt": 22,
+      "zt": 24,
       "dt": 0,
-      "zab": 15,
-      "zab_rate": 40.5,
-      "lianban": 5,
-      "max_lianban": 3,
-      "amount": "8860.3亿"
+      "zab": 12,
+      "zab_rate": 33.3,
+      "lianban": 6,
+      "max_lianban": 5,
+      "amount": "9662.4亿"
     },
     "alerts": [
       {
@@ -559,8 +627,8 @@
         "text": "盘中模式：强制实时拉取"
       },
       {
-        "level": "danger",
-        "text": "炸板率高（40.5%）→ 分歧偏强，谨慎接力"
+        "level": "warn",
+        "text": "炸板率偏高（33.3%）→ 注意回封质量"
       }
     ],
     "concepts": [
@@ -575,6 +643,11 @@
         "chg_pct": null
       },
       {
+        "name": "元件",
+        "lead": "澳弘电子",
+        "chg_pct": null
+      },
+      {
         "name": "半导体",
         "lead": "中晶科技",
         "chg_pct": null
@@ -582,11 +655,6 @@
       {
         "name": "家居用品",
         "lead": "华瓷股份",
-        "chg_pct": null
-      },
-      {
-        "name": "照明设备",
-        "lead": "联域股份",
         "chg_pct": null
       }
     ]
