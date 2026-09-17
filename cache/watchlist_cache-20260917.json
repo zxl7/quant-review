@@ -1,6 +1,6 @@
 {
   "schema": "watchlist_v2",
-  "generated_at_bj": "2026-09-17 21:36:28",
+  "generated_at_bj": "2026-09-17 22:31:50",
   "data_date": "2026-09-17",
   "pools_date": "2026-09-17",
   "sector_resolution": {
@@ -18021,12 +18021,12 @@
         "prev_zt": 6,
         "pre_prev_zt": null,
         "resilience": -2.81,
-        "strength": 56.0,
+        "strength": null,
         "strength_rank": null,
-        "strength_score": 56.0,
-        "strength_source": "sector_heatmap",
-        "tide_score": 50,
-        "confidence": "high",
+        "strength_score": null,
+        "strength_source": "",
+        "tide_score": 48,
+        "confidence": "medium",
         "warning_level": "none",
         "action_hint": "潮汐中性，按梯队和辨识度判断"
       },
@@ -18174,12 +18174,12 @@
         "prev_zt": 3,
         "pre_prev_zt": null,
         "resilience": 13.86,
-        "strength": 56.0,
+        "strength": null,
         "strength_rank": null,
-        "strength_score": 56.0,
-        "strength_source": "sector_heatmap",
-        "tide_score": 59,
-        "confidence": "high",
+        "strength_score": null,
+        "strength_source": "",
+        "tide_score": 58,
+        "confidence": "medium",
         "warning_level": "none",
         "action_hint": "潮汐中性，按梯队和辨识度判断"
       },
@@ -20566,40 +20566,6 @@
         "action_hint": "新能源车有观察价值，等待情绪/量能/消息继续共振。"
       },
       {
-        "name": "苹果三星",
-        "canonical_name": "苹果三星",
-        "status": "observe_candidate",
-        "base_tide_status": "neutral",
-        "action": "watch",
-        "tide_zone": "neutral",
-        "tide_phase": "neutral",
-        "core_score": 55,
-        "ebb_score": 39,
-        "tide_score": 59,
-        "emotion_score": 66,
-        "strength_score": 56,
-        "volume_score": 45,
-        "news_score": 50,
-        "market_score": 58,
-        "structure_score": 57,
-        "confidence": "low",
-        "confirms": {
-          "emotion": true,
-          "strength": false,
-          "volume": false,
-          "news": false,
-          "market": false
-        },
-        "reasons": [
-          "低位连板承接"
-        ],
-        "cautions": [
-          "市场退潮",
-          "高位负反馈"
-        ],
-        "action_hint": "苹果三星有观察价值，等待情绪/量能/消息继续共振。"
-      },
-      {
         "name": "低价",
         "canonical_name": "低价",
         "status": "observe_candidate",
@@ -21834,6 +21800,40 @@
         "action_hint": "MSCI中国核心潮汐偏弱，降低权重，避免追高。"
       },
       {
+        "name": "苹果三星",
+        "canonical_name": "苹果三星",
+        "status": "avoid_weak",
+        "base_tide_status": "neutral",
+        "action": "avoid",
+        "tide_zone": "ebbing",
+        "tide_phase": "ebbing",
+        "core_score": 53,
+        "ebb_score": 54,
+        "tide_score": 58,
+        "emotion_score": 66,
+        "strength_score": 50,
+        "volume_score": 45,
+        "news_score": 50,
+        "market_score": 58,
+        "structure_score": 57,
+        "confidence": "low",
+        "confirms": {
+          "emotion": true,
+          "strength": false,
+          "volume": false,
+          "news": false,
+          "market": false
+        },
+        "reasons": [
+          "低位连板承接"
+        ],
+        "cautions": [
+          "市场退潮",
+          "高位负反馈"
+        ],
+        "action_hint": "苹果三星核心潮汐偏弱，降低权重，避免追高。"
+      },
+      {
         "name": "铁路基建",
         "canonical_name": "铁路基建",
         "status": "avoid_weak",
@@ -21939,40 +21939,6 @@
         "action_hint": "汽车电子核心潮汐偏弱，降低权重，避免追高。"
       },
       {
-        "name": "苹果产业链",
-        "canonical_name": "苹果产业链",
-        "status": "avoid_weak",
-        "base_tide_status": "neutral",
-        "action": "avoid",
-        "tide_zone": "ebbing",
-        "tide_phase": "ebbing",
-        "core_score": 52,
-        "ebb_score": 55,
-        "tide_score": 50,
-        "emotion_score": 66,
-        "strength_score": 56,
-        "volume_score": 45,
-        "news_score": 50,
-        "market_score": 58,
-        "structure_score": 57,
-        "confidence": "low",
-        "confirms": {
-          "emotion": true,
-          "strength": false,
-          "volume": false,
-          "news": false,
-          "market": false
-        },
-        "reasons": [
-          "低位连板承接"
-        ],
-        "cautions": [
-          "市场退潮",
-          "高位负反馈"
-        ],
-        "action_hint": "苹果产业链核心潮汐偏弱，降低权重，避免追高。"
-      },
-      {
         "name": "整车",
         "canonical_name": "整车",
         "status": "avoid_weak",
@@ -22040,6 +22006,40 @@
           "高位负反馈"
         ],
         "action_hint": "储能核心潮汐偏弱，降低权重，避免追高。"
+      },
+      {
+        "name": "苹果产业链",
+        "canonical_name": "苹果产业链",
+        "status": "avoid_weak",
+        "base_tide_status": "neutral",
+        "action": "avoid",
+        "tide_zone": "ebbing",
+        "tide_phase": "ebbing",
+        "core_score": 51,
+        "ebb_score": 56,
+        "tide_score": 48,
+        "emotion_score": 66,
+        "strength_score": 53,
+        "volume_score": 45,
+        "news_score": 50,
+        "market_score": 58,
+        "structure_score": 57,
+        "confidence": "low",
+        "confirms": {
+          "emotion": true,
+          "strength": false,
+          "volume": false,
+          "news": false,
+          "market": false
+        },
+        "reasons": [
+          "低位连板承接"
+        ],
+        "cautions": [
+          "市场退潮",
+          "高位负反馈"
+        ],
+        "action_hint": "苹果产业链核心潮汐偏弱，降低权重，避免追高。"
       },
       {
         "name": "中俄贸易概念",
