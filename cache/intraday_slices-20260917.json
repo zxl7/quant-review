@@ -2,7 +2,7 @@
   "schema": "intraday_snapshot_v1",
   "render_mode": "snapshot_stream",
   "date": "2026-09-17",
-  "count": 14,
+  "count": 15,
   "interval_min": null,
   "simulated": false,
   "snapshots": [
@@ -927,39 +927,128 @@
       "shift_score": null,
       "shift_label": "数据暂缺",
       "note": "本槽位三池请求均未成功，已记录数据暂缺；等待下一节点自动恢复。"
+    },
+    {
+      "time": "14:50:05",
+      "ts_bj": "2026-09-17 14:50:05",
+      "date": "2026-09-17",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid"
+      },
+      "pool_errors": {},
+      "zt": 45,
+      "dt": 1,
+      "zab": 21,
+      "zb": 31.8,
+      "fb": 68.2,
+      "jj": 20.0,
+      "lianban": 9,
+      "max_lb": 5,
+      "amount": "17359.9亿",
+      "bf": 0,
+      "heat": 51,
+      "risk": 28,
+      "headline": "修复",
+      "concepts": [
+        {
+          "name": "汽车零部",
+          "lead": "山子高科",
+          "chg_pct": null
+        },
+        {
+          "name": "半导体",
+          "lead": "中晶科技",
+          "chg_pct": null
+        },
+        {
+          "name": "消费电子",
+          "lead": "共达电声",
+          "chg_pct": null
+        },
+        {
+          "name": "种植业",
+          "lead": "万向德农",
+          "chg_pct": null
+        },
+        {
+          "name": "医疗服务",
+          "lead": "百花医药",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        },
+        {
+          "level": "warn",
+          "text": "炸板率偏高（31.8%）→ 注意回封质量"
+        }
+      ],
+      "shift_score": 60,
+      "shift_label": "修复",
+      "note": "承接增强、分歧收敛，情绪明显回暖。"
     }
   ],
   "latest": {
-    "time": "14:40:31",
-    "ts_bj": "2026-09-17 14:40:31",
+    "time": "14:50:05",
+    "ts_bj": "2026-09-17 14:50:05",
     "date": "2026-09-17",
     "source": "intraday_live",
-    "provider": "unknown",
-    "data_quality": "unavailable",
+    "provider": "必盈(实时)+必盈(实时)",
+    "data_quality": "valid",
     "pool_status": {
-      "ztgc": "failed",
-      "zbgc": "failed",
-      "dtgc": "failed"
+      "ztgc": "valid",
+      "zbgc": "valid",
+      "dtgc": "valid"
     },
-    "pool_errors": {
-      "ztgc": "HTTP Error 429: Too Many Requests",
-      "zbgc": "HTTP Error 429: Too Many Requests",
-      "dtgc": "HTTP Error 429: Too Many Requests"
-    },
-    "zt": null,
-    "dt": null,
-    "zab": null,
-    "zb": null,
-    "fb": null,
-    "jj": null,
-    "lianban": null,
-    "max_lb": null,
-    "amount": "",
+    "pool_errors": {},
+    "zt": 45,
+    "dt": 1,
+    "zab": 21,
+    "zb": 31.8,
+    "fb": 68.2,
+    "jj": 20.0,
+    "lianban": 9,
+    "max_lb": 5,
+    "amount": "17359.9亿",
     "bf": 0,
-    "heat": null,
-    "risk": null,
-    "headline": "数据暂缺",
-    "concepts": [],
+    "heat": 51,
+    "risk": 28,
+    "headline": "修复",
+    "concepts": [
+      {
+        "name": "汽车零部",
+        "lead": "山子高科",
+        "chg_pct": null
+      },
+      {
+        "name": "半导体",
+        "lead": "中晶科技",
+        "chg_pct": null
+      },
+      {
+        "name": "消费电子",
+        "lead": "共达电声",
+        "chg_pct": null
+      },
+      {
+        "name": "种植业",
+        "lead": "万向德农",
+        "chg_pct": null
+      },
+      {
+        "name": "医疗服务",
+        "lead": "百花医药",
+        "chg_pct": null
+      }
+    ],
     "alerts": [
       {
         "level": "info",
@@ -967,35 +1056,27 @@
       },
       {
         "level": "warn",
-        "text": "盘中三池响应不完整，保留最近有效数据"
-      },
-      {
-        "level": "warn",
-        "text": "三池请求均超时，本槽位跳过板块补抓并等待下一节点"
+        "text": "炸板率偏高（31.8%）→ 注意回封质量"
       }
     ],
-    "shift_score": null,
-    "shift_label": "数据暂缺",
-    "note": "本槽位三池请求均未成功，已记录数据暂缺；等待下一节点自动恢复。"
+    "shift_score": 60,
+    "shift_label": "修复",
+    "note": "承接增强、分歧收敛，情绪明显回暖。"
   },
-  "updated_at": "2026-09-17 14:40:31",
-  "snapshot_sig": "2026-09-17|2026-09-17 14:40:31|14",
+  "updated_at": "2026-09-17 14:50:05",
+  "snapshot_sig": "2026-09-17|2026-09-17 14:50:05|15",
   "health": {
-    "status": "degraded",
-    "last_valid_at": "2026-09-17 14:40:31",
+    "status": "valid",
+    "last_valid_at": "2026-09-17 14:50:05",
     "rejected_reason": "",
     "source": {
-      "status": "partial",
+      "status": "valid",
       "pool_status": {
-        "ztgc": "failed",
-        "zbgc": "failed",
-        "dtgc": "failed"
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid"
       },
-      "pool_errors": {
-        "ztgc": "HTTP Error 429: Too Many Requests",
-        "zbgc": "HTTP Error 429: Too Many Requests",
-        "dtgc": "HTTP Error 429: Too Many Requests"
-      }
+      "pool_errors": {}
     }
   }
 }
