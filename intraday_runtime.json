@@ -1,58 +1,60 @@
 {
   "schema": "intraday_runtime_v1",
-  "date": "2026-09-16",
-  "updated_at": "2026-09-16 15:00:05",
-  "source": "必盈(实时)+必盈(实时)",
+  "date": "2026-09-17",
+  "updated_at": "2026-09-17 09:30:32",
+  "source": "必盈(实时)",
   "latest": {
-    "time": "15:00:05",
-    "ts_bj": "2026-09-16 15:00:05",
-    "date": "2026-09-16",
+    "time": "09:30:32",
+    "ts_bj": "2026-09-17 09:30:32",
+    "date": "2026-09-17",
     "source": "intraday_live",
-    "provider": "必盈(实时)+必盈(实时)",
-    "data_quality": "valid",
+    "provider": "必盈(实时)",
+    "data_quality": "partial",
     "pool_status": {
       "ztgc": "valid",
-      "zbgc": "valid",
+      "zbgc": "failed",
       "dtgc": "valid"
     },
-    "pool_errors": {},
-    "zt": 88,
-    "dt": 4,
-    "zab": 11,
-    "zb": 11.1,
-    "fb": 88.9,
-    "jj": 13.6,
-    "lianban": 12,
-    "max_lb": 6,
-    "amount": "18391.2亿",
+    "pool_errors": {
+      "zbgc": "empty_response"
+    },
+    "zt": 5,
+    "dt": 1,
+    "zab": null,
+    "zb": null,
+    "fb": null,
+    "jj": 60.0,
+    "lianban": 3,
+    "max_lb": 3,
+    "amount": "",
     "bf": 0,
-    "heat": 68,
-    "risk": 17,
-    "headline": "走强",
+    "heat": null,
+    "risk": null,
+    "headline": "数据部分可用",
     "concepts": [
-      {
-        "name": "通信设备",
-        "lead": "通鼎互联",
-        "chg_pct": null
-      },
       {
         "name": "半导体",
         "lead": "中晶科技",
         "chg_pct": null
       },
       {
-        "name": "化学制品",
-        "lead": "中化国际",
+        "name": "房地产服",
+        "lead": "世联行",
         "chg_pct": null
       },
       {
-        "name": "元件",
-        "lead": "澳弘电子",
+        "name": "出版",
+        "lead": "内蒙新华",
         "chg_pct": null
       },
       {
-        "name": "包装印刷",
-        "lead": "英联股份",
+        "name": "玻璃玻纤",
+        "lead": "中材科技",
+        "chg_pct": null
+      },
+      {
+        "name": "工程咨询",
+        "lead": "经纬股份",
         "chg_pct": null
       }
     ],
@@ -60,17 +62,21 @@
       {
         "level": "info",
         "text": "盘中模式：强制实时拉取"
+      },
+      {
+        "level": "warn",
+        "text": "盘中三池响应不完整，保留最近有效数据"
       }
     ],
-    "shift_score": 74,
-    "shift_label": "走强",
-    "note": "情绪整体平稳，维持当前节奏。"
+    "shift_score": null,
+    "shift_label": "数据部分可用",
+    "note": "本槽位仅部分三池成功；节点已保留，缺失指标不参与判断。"
   },
   "snapshots": [
     {
       "time": "09:30:32",
-      "ts_bj": "2026-09-16 09:30:32",
-      "date": "2026-09-16",
+      "ts_bj": "2026-09-17 09:30:32",
+      "date": "2026-09-17",
       "source": "intraday_live",
       "provider": "必盈(实时)",
       "data_quality": "partial",
@@ -83,13 +89,13 @@
         "zbgc": "empty_response"
       },
       "zt": 5,
-      "dt": 5,
+      "dt": 1,
       "zab": null,
       "zb": null,
       "fb": null,
       "jj": 60.0,
       "lianban": 3,
-      "max_lb": 2,
+      "max_lb": 3,
       "amount": "",
       "bf": 0,
       "heat": null,
@@ -97,23 +103,28 @@
       "headline": "数据部分可用",
       "concepts": [
         {
-          "name": "风电设备",
-          "lead": "吉鑫科技",
+          "name": "半导体",
+          "lead": "中晶科技",
           "chg_pct": null
         },
         {
-          "name": "家居用品",
-          "lead": "华瓷股份",
+          "name": "房地产服",
+          "lead": "世联行",
           "chg_pct": null
         },
         {
-          "name": "专业工程",
-          "lead": "中岩大地",
+          "name": "出版",
+          "lead": "内蒙新华",
           "chg_pct": null
         },
         {
-          "name": "橡胶",
-          "lead": "龙星科技",
+          "name": "玻璃玻纤",
+          "lead": "中材科技",
+          "chg_pct": null
+        },
+        {
+          "name": "工程咨询",
+          "lead": "经纬股份",
           "chg_pct": null
         }
       ],
@@ -130,1018 +141,116 @@
       "shift_score": null,
       "shift_label": "数据部分可用",
       "note": "本槽位仅部分三池成功；节点已保留，缺失指标不参与判断。"
-    },
-    {
-      "time": "09:40:05",
-      "ts_bj": "2026-09-16 09:40:05",
-      "date": "2026-09-16",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid"
-      },
-      "pool_errors": {},
-      "zt": 13,
-      "dt": 6,
-      "zab": 3,
-      "zb": 18.8,
-      "fb": 81.2,
-      "jj": 53.8,
-      "lianban": 7,
-      "max_lb": 4,
-      "amount": "2565.3亿",
-      "bf": 0,
-      "heat": 58,
-      "risk": 21,
-      "headline": "修复",
-      "concepts": [
-        {
-          "name": "风电设备",
-          "lead": "吉鑫科技",
-          "chg_pct": null
-        },
-        {
-          "name": "电力",
-          "lead": "露笑科技",
-          "chg_pct": null
-        },
-        {
-          "name": "橡胶",
-          "lead": "黑猫股份",
-          "chg_pct": null
-        },
-        {
-          "name": "元件",
-          "lead": "澳弘电子",
-          "chg_pct": null
-        },
-        {
-          "name": "半导体",
-          "lead": "中晶科技",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        }
-      ],
-      "shift_score": 67,
-      "shift_label": "修复",
-      "note": "承接增强、分歧收敛，情绪明显回暖。"
-    },
-    {
-      "time": "09:50:05",
-      "ts_bj": "2026-09-16 09:50:05",
-      "date": "2026-09-16",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid"
-      },
-      "pool_errors": {},
-      "zt": 25,
-      "dt": 2,
-      "zab": 2,
-      "zb": 7.4,
-      "fb": 92.6,
-      "jj": 36.0,
-      "lianban": 9,
-      "max_lb": 6,
-      "amount": "3907.8亿",
-      "bf": 0,
-      "heat": 64,
-      "risk": 8,
-      "headline": "走强",
-      "concepts": [
-        {
-          "name": "电力",
-          "lead": "闽东电力",
-          "chg_pct": null
-        },
-        {
-          "name": "风电设备",
-          "lead": "锡华科技",
-          "chg_pct": null
-        },
-        {
-          "name": "通信设备",
-          "lead": "中瓷电子",
-          "chg_pct": null
-        },
-        {
-          "name": "橡胶",
-          "lead": "黑猫股份",
-          "chg_pct": null
-        },
-        {
-          "name": "电网设备",
-          "lead": "太阳电缆",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        }
-      ],
-      "shift_score": 76,
-      "shift_label": "走强",
-      "note": "承接增强、分歧收敛，情绪明显回暖。"
-    },
-    {
-      "time": "10:00:05",
-      "ts_bj": "2026-09-16 10:00:05",
-      "date": "2026-09-16",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid"
-      },
-      "pool_errors": {},
-      "zt": 29,
-      "dt": 4,
-      "zab": 2,
-      "zb": 6.5,
-      "fb": 93.5,
-      "jj": 31.0,
-      "lianban": 9,
-      "max_lb": 6,
-      "amount": "5013.9亿",
-      "bf": 0,
-      "heat": 64,
-      "risk": 10,
-      "headline": "走强",
-      "concepts": [
-        {
-          "name": "电力",
-          "lead": "闽东电力",
-          "chg_pct": null
-        },
-        {
-          "name": "风电设备",
-          "lead": "吉鑫科技",
-          "chg_pct": null
-        },
-        {
-          "name": "通信设备",
-          "lead": "中瓷电子",
-          "chg_pct": null
-        },
-        {
-          "name": "橡胶",
-          "lead": "黑猫股份",
-          "chg_pct": null
-        },
-        {
-          "name": "电网设备",
-          "lead": "太阳电缆",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        }
-      ],
-      "shift_score": 75,
-      "shift_label": "走强",
-      "note": "情绪整体平稳，维持当前节奏。"
-    },
-    {
-      "time": "10:10:05",
-      "ts_bj": "2026-09-16 10:10:05",
-      "date": "2026-09-16",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid"
-      },
-      "pool_errors": {},
-      "zt": 31,
-      "dt": 4,
-      "zab": 5,
-      "zb": 13.9,
-      "fb": 86.1,
-      "jj": 25.8,
-      "lianban": 8,
-      "max_lb": 4,
-      "amount": "6168.0亿",
-      "bf": 0,
-      "heat": 56,
-      "risk": 16,
-      "headline": "修复",
-      "concepts": [
-        {
-          "name": "非白酒",
-          "lead": "会稽山",
-          "chg_pct": null
-        },
-        {
-          "name": "电力",
-          "lead": "露笑科技",
-          "chg_pct": null
-        },
-        {
-          "name": "通信设备",
-          "lead": "中瓷电子",
-          "chg_pct": null
-        },
-        {
-          "name": "橡胶",
-          "lead": "黑猫股份",
-          "chg_pct": null
-        },
-        {
-          "name": "电网设备",
-          "lead": "太阳电缆",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        }
-      ],
-      "shift_score": 68,
-      "shift_label": "修复",
-      "note": "炸板/跌停抬升，情绪明显走弱。"
-    },
-    {
-      "time": "10:20:05",
-      "ts_bj": "2026-09-16 10:20:05",
-      "date": "2026-09-16",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid"
-      },
-      "pool_errors": {},
-      "zt": 33,
-      "dt": 4,
-      "zab": 7,
-      "zb": 17.5,
-      "fb": 82.5,
-      "jj": 24.2,
-      "lianban": 8,
-      "max_lb": 4,
-      "amount": "6991.8亿",
-      "bf": 0,
-      "heat": 54,
-      "risk": 19,
-      "headline": "修复",
-      "concepts": [
-        {
-          "name": "非白酒",
-          "lead": "会稽山",
-          "chg_pct": null
-        },
-        {
-          "name": "通信设备",
-          "lead": "永鼎股份",
-          "chg_pct": null
-        },
-        {
-          "name": "半导体",
-          "lead": "中晶科技",
-          "chg_pct": null
-        },
-        {
-          "name": "电力",
-          "lead": "露笑科技",
-          "chg_pct": null
-        },
-        {
-          "name": "化学制品",
-          "lead": "新亚强",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        }
-      ],
-      "shift_score": 65,
-      "shift_label": "修复",
-      "note": "情绪略有回落，注意午后分歧。"
-    },
-    {
-      "time": "10:30:05",
-      "ts_bj": "2026-09-16 10:30:05",
-      "date": "2026-09-16",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid"
-      },
-      "pool_errors": {},
-      "zt": 37,
-      "dt": 4,
-      "zab": 6,
-      "zb": 14.0,
-      "fb": 86.0,
-      "jj": 24.3,
-      "lianban": 9,
-      "max_lb": 6,
-      "amount": "7702.1亿",
-      "bf": 0,
-      "heat": 61,
-      "risk": 16,
-      "headline": "修复",
-      "concepts": [
-        {
-          "name": "电力",
-          "lead": "闽东电力",
-          "chg_pct": null
-        },
-        {
-          "name": "非白酒",
-          "lead": "会稽山",
-          "chg_pct": null
-        },
-        {
-          "name": "半导体",
-          "lead": "中晶科技",
-          "chg_pct": null
-        },
-        {
-          "name": "通信设备",
-          "lead": "永鼎股份",
-          "chg_pct": null
-        },
-        {
-          "name": "化学制品",
-          "lead": "新亚强",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        }
-      ],
-      "shift_score": 71,
-      "shift_label": "修复",
-      "note": "承接增强、分歧收敛，情绪明显回暖。"
-    },
-    {
-      "time": "10:40:05",
-      "ts_bj": "2026-09-16 10:40:05",
-      "date": "2026-09-16",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid"
-      },
-      "pool_errors": {},
-      "zt": 43,
-      "dt": 4,
-      "zab": 6,
-      "zb": 12.2,
-      "fb": 87.8,
-      "jj": 23.3,
-      "lianban": 10,
-      "max_lb": 6,
-      "amount": "8606.1亿",
-      "bf": 0,
-      "heat": 62,
-      "risk": 15,
-      "headline": "走强",
-      "concepts": [
-        {
-          "name": "通信设备",
-          "lead": "永鼎股份",
-          "chg_pct": null
-        },
-        {
-          "name": "电力",
-          "lead": "闽东电力",
-          "chg_pct": null
-        },
-        {
-          "name": "非白酒",
-          "lead": "会稽山",
-          "chg_pct": null
-        },
-        {
-          "name": "半导体",
-          "lead": "中晶科技",
-          "chg_pct": null
-        },
-        {
-          "name": "元件",
-          "lead": "澳弘电子",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        }
-      ],
-      "shift_score": 72,
-      "shift_label": "走强",
-      "note": "情绪整体平稳，维持当前节奏。"
-    },
-    {
-      "time": "10:50:05",
-      "ts_bj": "2026-09-16 10:50:05",
-      "date": "2026-09-16",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid"
-      },
-      "pool_errors": {},
-      "zt": 47,
-      "dt": 4,
-      "zab": 6,
-      "zb": 11.3,
-      "fb": 88.7,
-      "jj": 23.4,
-      "lianban": 11,
-      "max_lb": 6,
-      "amount": "9210.2亿",
-      "bf": 0,
-      "heat": 63,
-      "risk": 15,
-      "headline": "走强",
-      "concepts": [
-        {
-          "name": "通信设备",
-          "lead": "光迅科技",
-          "chg_pct": null
-        },
-        {
-          "name": "电力",
-          "lead": "闽东电力",
-          "chg_pct": null
-        },
-        {
-          "name": "非白酒",
-          "lead": "会稽山",
-          "chg_pct": null
-        },
-        {
-          "name": "半导体",
-          "lead": "中晶科技",
-          "chg_pct": null
-        },
-        {
-          "name": "元件",
-          "lead": "澳弘电子",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        }
-      ],
-      "shift_score": 72,
-      "shift_label": "走强",
-      "note": "情绪整体平稳，维持当前节奏。"
-    },
-    {
-      "time": "11:00:04",
-      "ts_bj": "2026-09-16 11:00:04",
-      "date": "2026-09-16",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid"
-      },
-      "pool_errors": {},
-      "zt": 50,
-      "dt": 4,
-      "zab": 5,
-      "zb": 9.1,
-      "fb": 90.9,
-      "jj": 22.0,
-      "lianban": 11,
-      "max_lb": 6,
-      "amount": "9802.7亿",
-      "bf": 0,
-      "heat": 64,
-      "risk": 13,
-      "headline": "走强",
-      "concepts": [
-        {
-          "name": "通信设备",
-          "lead": "光迅科技",
-          "chg_pct": null
-        },
-        {
-          "name": "电力",
-          "lead": "闽东电力",
-          "chg_pct": null
-        },
-        {
-          "name": "非白酒",
-          "lead": "会稽山",
-          "chg_pct": null
-        },
-        {
-          "name": "半导体",
-          "lead": "中晶科技",
-          "chg_pct": null
-        },
-        {
-          "name": "元件",
-          "lead": "澳弘电子",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        }
-      ],
-      "shift_score": 74,
-      "shift_label": "走强",
-      "note": "情绪边际修复，但仍需确认持续性。"
-    },
-    {
-      "time": "11:10:05",
-      "ts_bj": "2026-09-16 11:10:05",
-      "date": "2026-09-16",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid"
-      },
-      "pool_errors": {},
-      "zt": 56,
-      "dt": 4,
-      "zab": 5,
-      "zb": 8.2,
-      "fb": 91.8,
-      "jj": 19.6,
-      "lianban": 11,
-      "max_lb": 6,
-      "amount": "10402.5亿",
-      "bf": 0,
-      "heat": 65,
-      "risk": 13,
-      "headline": "走强",
-      "concepts": [
-        {
-          "name": "半导体",
-          "lead": "中晶科技",
-          "chg_pct": null
-        },
-        {
-          "name": "通信设备",
-          "lead": "光迅科技",
-          "chg_pct": null
-        },
-        {
-          "name": "电力",
-          "lead": "闽东电力",
-          "chg_pct": null
-        },
-        {
-          "name": "非白酒",
-          "lead": "会稽山",
-          "chg_pct": null
-        },
-        {
-          "name": "其他电子",
-          "lead": "远 望 谷",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        }
-      ],
-      "shift_score": 74,
-      "shift_label": "走强",
-      "note": "情绪整体平稳，维持当前节奏。"
-    },
-    {
-      "time": "11:20:04",
-      "ts_bj": "2026-09-16 11:20:04",
-      "date": "2026-09-16",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid"
-      },
-      "pool_errors": {},
-      "zt": 59,
-      "dt": 4,
-      "zab": 4,
-      "zb": 6.3,
-      "fb": 93.7,
-      "jj": 18.6,
-      "lianban": 11,
-      "max_lb": 6,
-      "amount": "10947.5亿",
-      "bf": 0,
-      "heat": 66,
-      "risk": 11,
-      "headline": "走强",
-      "concepts": [
-        {
-          "name": "半导体",
-          "lead": "中晶科技",
-          "chg_pct": null
-        },
-        {
-          "name": "通信设备",
-          "lead": "光迅科技",
-          "chg_pct": null
-        },
-        {
-          "name": "其他电子",
-          "lead": "远 望 谷",
-          "chg_pct": null
-        },
-        {
-          "name": "电力",
-          "lead": "闽东电力",
-          "chg_pct": null
-        },
-        {
-          "name": "非白酒",
-          "lead": "会稽山",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        }
-      ],
-      "shift_score": 76,
-      "shift_label": "走强",
-      "note": "情绪边际修复，但仍需确认持续性。"
-    },
-    {
-      "time": "11:30:05",
-      "ts_bj": "2026-09-16 11:30:05",
-      "date": "2026-09-16",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid"
-      },
-      "pool_errors": {},
-      "zt": 64,
-      "dt": 4,
-      "zab": 5,
-      "zb": 7.2,
-      "fb": 92.8,
-      "jj": 18.8,
-      "lianban": 12,
-      "max_lb": 6,
-      "amount": "11650.9亿",
-      "bf": 0,
-      "heat": 67,
-      "risk": 12,
-      "headline": "走强",
-      "concepts": [
-        {
-          "name": "通信设备",
-          "lead": "通鼎互联",
-          "chg_pct": null
-        },
-        {
-          "name": "半导体",
-          "lead": "中晶科技",
-          "chg_pct": null
-        },
-        {
-          "name": "其他电子",
-          "lead": "远 望 谷",
-          "chg_pct": null
-        },
-        {
-          "name": "电力",
-          "lead": "闽东电力",
-          "chg_pct": null
-        },
-        {
-          "name": "非白酒",
-          "lead": "会稽山",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        }
-      ],
-      "shift_score": 76,
-      "shift_label": "走强",
-      "note": "情绪整体平稳，维持当前节奏。"
-    },
-    {
-      "time": "14:50:37",
-      "ts_bj": "2026-09-16 14:50:37",
-      "date": "2026-09-16",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid"
-      },
-      "pool_errors": {},
-      "zt": 87,
-      "dt": 4,
-      "zab": 11,
-      "zb": 11.2,
-      "fb": 88.8,
-      "jj": 13.8,
-      "lianban": 12,
-      "max_lb": 6,
-      "amount": "17472.7亿",
-      "bf": 0,
-      "heat": 67,
-      "risk": 17,
-      "headline": "走强",
-      "concepts": [
-        {
-          "name": "通信设备",
-          "lead": "通鼎互联",
-          "chg_pct": null
-        },
-        {
-          "name": "半导体",
-          "lead": "中晶科技",
-          "chg_pct": null
-        },
-        {
-          "name": "化学制品",
-          "lead": "中化国际",
-          "chg_pct": null
-        },
-        {
-          "name": "包装印刷",
-          "lead": "英联股份",
-          "chg_pct": null
-        },
-        {
-          "name": "塑料",
-          "lead": "东材科技",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        }
-      ],
-      "shift_score": 74,
-      "shift_label": "走强",
-      "note": "情绪略有回落，注意午后分歧。"
-    },
-    {
-      "time": "15:00:05",
-      "ts_bj": "2026-09-16 15:00:05",
-      "date": "2026-09-16",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid"
-      },
-      "pool_errors": {},
-      "zt": 88,
-      "dt": 4,
-      "zab": 11,
-      "zb": 11.1,
-      "fb": 88.9,
-      "jj": 13.6,
-      "lianban": 12,
-      "max_lb": 6,
-      "amount": "18391.2亿",
-      "bf": 0,
-      "heat": 68,
-      "risk": 17,
-      "headline": "走强",
-      "concepts": [
-        {
-          "name": "通信设备",
-          "lead": "通鼎互联",
-          "chg_pct": null
-        },
-        {
-          "name": "半导体",
-          "lead": "中晶科技",
-          "chg_pct": null
-        },
-        {
-          "name": "化学制品",
-          "lead": "中化国际",
-          "chg_pct": null
-        },
-        {
-          "name": "元件",
-          "lead": "澳弘电子",
-          "chg_pct": null
-        },
-        {
-          "name": "包装印刷",
-          "lead": "英联股份",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        }
-      ],
-      "shift_score": 74,
-      "shift_label": "走强",
-      "note": "情绪整体平稳，维持当前节奏。"
     }
   ],
   "indices": [
     {
       "name": "上证指数",
       "code": "000001.SH",
-      "val": 3891.601,
-      "chg": 0.7070400455039638,
-      "cje": 871141346900.0,
-      "t": "2026-09-16 15:00:06"
+      "val": 3882.085,
+      "chg": -0.2445266099993313,
+      "cje": 19107597100.0,
+      "t": "2026-09-17 09:30:32"
     },
     {
       "name": "深证成指",
       "code": "399001.SZ",
-      "val": 13456.925,
-      "chg": 1.271457936326479,
-      "cje": 957491961600.0,
-      "t": "2026-09-16 14:58:27"
+      "val": 13450.223,
+      "chg": -0.033594101351474615,
+      "cje": 33026254100.0,
+      "t": "2026-09-17 09:30:27"
     },
     {
       "name": "创业板指",
       "code": "399006.SZ",
-      "val": 3311.474,
-      "chg": 1.9568228015608782,
-      "cje": 464974514600.0,
-      "t": "2026-09-16 15:00:03"
+      "val": 3311.06,
+      "chg": -0.012501985520653784,
+      "cje": 14008114400.0,
+      "t": "2026-09-17 09:30:30"
     }
   ],
   "asOf": {
-    "indices": "15:00:03"
+    "indices": "09:30:30"
   },
   "health": {
-    "status": "valid",
-    "last_valid_at": "2026-09-16 15:00:05",
+    "status": "degraded",
+    "last_valid_at": "2026-09-17 09:30:32",
     "rejected_reason": "",
     "source": {
-      "status": "valid",
+      "status": "partial",
       "pool_status": {
         "ztgc": "valid",
-        "zbgc": "valid",
+        "zbgc": "failed",
         "dtgc": "valid"
       },
-      "pool_errors": {}
+      "pool_errors": {
+        "zbgc": "empty_response"
+      }
     },
     "indices_status": "valid",
     "coverage": {
-      "ok": false,
-      "status": "degraded",
-      "message": "intraday_coverage_incomplete",
-      "date": "2026-09-16",
+      "ok": true,
+      "status": "collecting",
+      "message": "intraday_coverage_collecting",
+      "date": "2026-09-17",
       "expected_count": 26,
-      "due_count": 26,
-      "observed_count": 15,
+      "due_count": 1,
+      "observed_count": 1,
       "observed_slots": [
-        "09:30",
-        "09:40",
-        "09:50",
-        "10:00",
-        "10:10",
-        "10:20",
-        "10:30",
-        "10:40",
-        "10:50",
-        "11:00",
-        "11:10",
-        "11:20",
-        "11:30",
-        "14:50",
-        "15:00"
+        "09:30"
       ],
-      "missing_slots": [
-        "13:00",
-        "13:10",
-        "13:20",
-        "13:30",
-        "13:40",
-        "13:50",
-        "14:00",
-        "14:10",
-        "14:20",
-        "14:30",
-        "14:40"
-      ],
+      "missing_slots": [],
       "duplicate_slots": [],
       "out_of_session": [],
       "monotonic": true,
-      "morning_coverage": 13,
-      "afternoon_coverage": 2
+      "morning_coverage": 1,
+      "afternoon_coverage": 0
     }
   },
   "live": {
     "market": {
-      "zt": 88,
-      "dt": 4,
-      "zab": 11,
-      "zab_rate": 11.1,
-      "lianban": 12,
-      "max_lianban": 6,
-      "amount": "18391.2亿"
+      "zt": 5,
+      "dt": 1,
+      "zab": null,
+      "zab_rate": null,
+      "lianban": 3,
+      "max_lianban": 3,
+      "amount": ""
     },
     "alerts": [
       {
         "level": "info",
         "text": "盘中模式：强制实时拉取"
+      },
+      {
+        "level": "warn",
+        "text": "盘中三池响应不完整，保留最近有效数据"
       }
     ],
     "concepts": [
-      {
-        "name": "通信设备",
-        "lead": "通鼎互联",
-        "chg_pct": null
-      },
       {
         "name": "半导体",
         "lead": "中晶科技",
         "chg_pct": null
       },
       {
-        "name": "化学制品",
-        "lead": "中化国际",
+        "name": "房地产服",
+        "lead": "世联行",
         "chg_pct": null
       },
       {
-        "name": "元件",
-        "lead": "澳弘电子",
+        "name": "出版",
+        "lead": "内蒙新华",
         "chg_pct": null
       },
       {
-        "name": "包装印刷",
-        "lead": "英联股份",
+        "name": "玻璃玻纤",
+        "lead": "中材科技",
+        "chg_pct": null
+      },
+      {
+        "name": "工程咨询",
+        "lead": "经纬股份",
         "chg_pct": null
       }
     ]
