@@ -1,11 +1,11 @@
 {
   "schema": "intraday_runtime_v1",
   "date": "2026-09-17",
-  "updated_at": "2026-09-17 09:50:04",
+  "updated_at": "2026-09-17 10:00:04",
   "source": "必盈(实时)+必盈(实时)",
   "latest": {
-    "time": "09:50:04",
-    "ts_bj": "2026-09-17 09:50:04",
+    "time": "10:00:04",
+    "ts_bj": "2026-09-17 10:00:04",
     "date": "2026-09-17",
     "source": "intraday_live",
     "provider": "必盈(实时)+必盈(实时)",
@@ -16,20 +16,25 @@
       "dtgc": "valid_empty"
     },
     "pool_errors": {},
-    "zt": 13,
+    "zt": 19,
     "dt": 0,
-    "zab": 8,
-    "zb": 38.1,
-    "fb": 61.9,
-    "jj": 46.2,
-    "lianban": 6,
+    "zab": 9,
+    "zb": 32.1,
+    "fb": 67.9,
+    "jj": 36.8,
+    "lianban": 7,
     "max_lb": 3,
-    "amount": "5284.4亿",
+    "amount": "6812.6亿",
     "bf": 0,
-    "heat": 46,
-    "risk": 25,
-    "headline": "分歧",
+    "heat": 47,
+    "risk": 22,
+    "headline": "修复",
     "concepts": [
+      {
+        "name": "光学光电",
+        "lead": "实益达",
+        "chg_pct": null
+      },
       {
         "name": "玻璃玻纤",
         "lead": "中材科技",
@@ -46,11 +51,6 @@
         "chg_pct": null
       },
       {
-        "name": "光学光电",
-        "lead": "实益达",
-        "chg_pct": null
-      },
-      {
         "name": "专业工程",
         "lead": "中岩大地",
         "chg_pct": null
@@ -62,13 +62,13 @@
         "text": "盘中模式：强制实时拉取"
       },
       {
-        "level": "danger",
-        "text": "炸板率高（38.1%）→ 分歧偏强，谨慎接力"
+        "level": "warn",
+        "text": "炸板率偏高（32.1%）→ 注意回封质量"
       }
     ],
-    "shift_score": 58,
-    "shift_label": "分歧",
-    "note": "情绪整体平稳，维持当前节奏。"
+    "shift_score": 60,
+    "shift_label": "修复",
+    "note": "情绪边际修复，但仍需确认持续性。"
   },
   "snapshots": [
     {
@@ -273,40 +273,107 @@
       "shift_score": 58,
       "shift_label": "分歧",
       "note": "情绪整体平稳，维持当前节奏。"
+    },
+    {
+      "time": "10:00:04",
+      "ts_bj": "2026-09-17 10:00:04",
+      "date": "2026-09-17",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid_empty"
+      },
+      "pool_errors": {},
+      "zt": 19,
+      "dt": 0,
+      "zab": 9,
+      "zb": 32.1,
+      "fb": 67.9,
+      "jj": 36.8,
+      "lianban": 7,
+      "max_lb": 3,
+      "amount": "6812.6亿",
+      "bf": 0,
+      "heat": 47,
+      "risk": 22,
+      "headline": "修复",
+      "concepts": [
+        {
+          "name": "光学光电",
+          "lead": "实益达",
+          "chg_pct": null
+        },
+        {
+          "name": "玻璃玻纤",
+          "lead": "中材科技",
+          "chg_pct": null
+        },
+        {
+          "name": "家居用品",
+          "lead": "华瓷股份",
+          "chg_pct": null
+        },
+        {
+          "name": "半导体",
+          "lead": "中晶科技",
+          "chg_pct": null
+        },
+        {
+          "name": "专业工程",
+          "lead": "中岩大地",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        },
+        {
+          "level": "warn",
+          "text": "炸板率偏高（32.1%）→ 注意回封质量"
+        }
+      ],
+      "shift_score": 60,
+      "shift_label": "修复",
+      "note": "情绪边际修复，但仍需确认持续性。"
     }
   ],
   "indices": [
     {
       "name": "上证指数",
       "code": "000001.SH",
-      "val": 3883.435,
-      "chg": -0.20983651715579696,
-      "cje": 246339211700.0,
-      "t": "2026-09-17 09:50:03"
+      "val": 3874.633,
+      "chg": -0.4360159224956593,
+      "cje": 316568164700.0,
+      "t": "2026-09-17 10:00:02"
     },
     {
       "name": "深证成指",
       "code": "399001.SZ",
-      "val": 13499.941,
-      "chg": 0.3359261488681004,
-      "cje": 281433479200.0,
-      "t": "2026-09-17 09:50:00"
+      "val": 13445.679,
+      "chg": -0.06736657846233336,
+      "cje": 363629368800.0,
+      "t": "2026-09-17 10:00:00"
     },
     {
       "name": "创业板指",
       "code": "399006.SZ",
-      "val": 3333.802,
-      "chg": 0.6742616732005136,
-      "cje": 131121169700.0,
-      "t": "2026-09-17 09:50:00"
+      "val": 3319.07,
+      "chg": 0.22938425607448537,
+      "cje": 170800705100.0,
+      "t": "2026-09-17 10:00:00"
     }
   ],
   "asOf": {
-    "indices": "09:50:00"
+    "indices": "10:00:00"
   },
   "health": {
     "status": "valid",
-    "last_valid_at": "2026-09-17 09:50:04",
+    "last_valid_at": "2026-09-17 10:00:04",
     "rejected_reason": "",
     "source": {
       "status": "valid",
@@ -324,30 +391,31 @@
       "message": "intraday_coverage_collecting",
       "date": "2026-09-17",
       "expected_count": 26,
-      "due_count": 3,
-      "observed_count": 3,
+      "due_count": 4,
+      "observed_count": 4,
       "observed_slots": [
         "09:30",
         "09:40",
-        "09:50"
+        "09:50",
+        "10:00"
       ],
       "missing_slots": [],
       "duplicate_slots": [],
       "out_of_session": [],
       "monotonic": true,
-      "morning_coverage": 3,
+      "morning_coverage": 4,
       "afternoon_coverage": 0
     }
   },
   "live": {
     "market": {
-      "zt": 13,
+      "zt": 19,
       "dt": 0,
-      "zab": 8,
-      "zab_rate": 38.1,
-      "lianban": 6,
+      "zab": 9,
+      "zab_rate": 32.1,
+      "lianban": 7,
       "max_lianban": 3,
-      "amount": "5284.4亿"
+      "amount": "6812.6亿"
     },
     "alerts": [
       {
@@ -355,11 +423,16 @@
         "text": "盘中模式：强制实时拉取"
       },
       {
-        "level": "danger",
-        "text": "炸板率高（38.1%）→ 分歧偏强，谨慎接力"
+        "level": "warn",
+        "text": "炸板率偏高（32.1%）→ 注意回封质量"
       }
     ],
     "concepts": [
+      {
+        "name": "光学光电",
+        "lead": "实益达",
+        "chg_pct": null
+      },
       {
         "name": "玻璃玻纤",
         "lead": "中材科技",
@@ -373,11 +446,6 @@
       {
         "name": "半导体",
         "lead": "中晶科技",
-        "chg_pct": null
-      },
-      {
-        "name": "光学光电",
-        "lead": "实益达",
         "chg_pct": null
       },
       {
