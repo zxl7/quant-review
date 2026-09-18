@@ -2,7 +2,7 @@
   "schema": "intraday_snapshot_v1",
   "render_mode": "snapshot_stream",
   "date": "2026-09-18",
-  "count": 1,
+  "count": 2,
   "interval_min": null,
   "simulated": false,
   "snapshots": [
@@ -75,41 +75,115 @@
       "shift_score": null,
       "shift_label": "数据部分可用",
       "note": "本槽位仅部分三池成功；节点已保留，缺失指标不参与判断。"
+    },
+    {
+      "time": "09:40:04",
+      "ts_bj": "2026-09-18 09:40:04",
+      "date": "2026-09-18",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid_empty"
+      },
+      "pool_errors": {},
+      "zt": 17,
+      "dt": 0,
+      "zab": 6,
+      "zb": 26.1,
+      "fb": 73.9,
+      "jj": 58.8,
+      "lianban": 10,
+      "max_lb": 4,
+      "amount": "3603.1亿",
+      "bf": 0,
+      "heat": 57,
+      "risk": 17,
+      "headline": "修复",
+      "concepts": [
+        {
+          "name": "医疗服务",
+          "lead": "南华生物",
+          "chg_pct": null
+        },
+        {
+          "name": "家居用品",
+          "lead": "华瓷股份",
+          "chg_pct": null
+        },
+        {
+          "name": "房地产服",
+          "lead": "世联行",
+          "chg_pct": null
+        },
+        {
+          "name": "出版",
+          "lead": "内蒙新华",
+          "chg_pct": null
+        },
+        {
+          "name": "消费电子",
+          "lead": "科森科技",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        },
+        {
+          "level": "warn",
+          "text": "炸板率偏高（26.1%）→ 注意回封质量"
+        }
+      ],
+      "shift_score": 68,
+      "shift_label": "修复",
+      "note": "承接增强、分歧收敛，情绪明显回暖。"
     }
   ],
   "latest": {
-    "time": "09:30:46",
-    "ts_bj": "2026-09-18 09:30:46",
+    "time": "09:40:04",
+    "ts_bj": "2026-09-18 09:40:04",
     "date": "2026-09-18",
     "source": "intraday_live",
-    "provider": "必盈(实时)",
-    "data_quality": "partial",
+    "provider": "必盈(实时)+必盈(实时)",
+    "data_quality": "valid",
     "pool_status": {
       "ztgc": "valid",
-      "zbgc": "failed",
-      "dtgc": "failed"
+      "zbgc": "valid",
+      "dtgc": "valid_empty"
     },
-    "pool_errors": {
-      "zbgc": "empty_response",
-      "dtgc": "HTTP Error 429: Too Many Requests"
-    },
-    "zt": 9,
-    "dt": null,
-    "zab": null,
-    "zb": null,
-    "fb": null,
-    "jj": 66.7,
-    "lianban": 6,
+    "pool_errors": {},
+    "zt": 17,
+    "dt": 0,
+    "zab": 6,
+    "zb": 26.1,
+    "fb": 73.9,
+    "jj": 58.8,
+    "lianban": 10,
     "max_lb": 4,
-    "amount": "",
+    "amount": "3603.1亿",
     "bf": 0,
-    "heat": null,
-    "risk": null,
-    "headline": "数据部分可用",
+    "heat": 57,
+    "risk": 17,
+    "headline": "修复",
     "concepts": [
       {
-        "name": "半导体",
-        "lead": "中晶科技",
+        "name": "医疗服务",
+        "lead": "南华生物",
+        "chg_pct": null
+      },
+      {
+        "name": "家居用品",
+        "lead": "华瓷股份",
+        "chg_pct": null
+      },
+      {
+        "name": "房地产服",
+        "lead": "世联行",
         "chg_pct": null
       },
       {
@@ -118,18 +192,8 @@
         "chg_pct": null
       },
       {
-        "name": "工程咨询",
-        "lead": "经纬股份",
-        "chg_pct": null
-      },
-      {
-        "name": "医疗服务",
-        "lead": "南华生物",
-        "chg_pct": null
-      },
-      {
-        "name": "化学制品",
-        "lead": "华软科技",
+        "name": "消费电子",
+        "lead": "科森科技",
         "chg_pct": null
       }
     ],
@@ -140,30 +204,27 @@
       },
       {
         "level": "warn",
-        "text": "盘中三池响应不完整，保留最近有效数据"
+        "text": "炸板率偏高（26.1%）→ 注意回封质量"
       }
     ],
-    "shift_score": null,
-    "shift_label": "数据部分可用",
-    "note": "本槽位仅部分三池成功；节点已保留，缺失指标不参与判断。"
+    "shift_score": 68,
+    "shift_label": "修复",
+    "note": "承接增强、分歧收敛，情绪明显回暖。"
   },
-  "updated_at": "2026-09-18 09:30:46",
-  "snapshot_sig": "2026-09-18|2026-09-18 09:30:46|1",
+  "updated_at": "2026-09-18 09:40:04",
+  "snapshot_sig": "2026-09-18|2026-09-18 09:40:04|2",
   "health": {
-    "status": "degraded",
-    "last_valid_at": "2026-09-18 09:30:46",
+    "status": "valid",
+    "last_valid_at": "2026-09-18 09:40:04",
     "rejected_reason": "",
     "source": {
-      "status": "partial",
+      "status": "valid",
       "pool_status": {
         "ztgc": "valid",
-        "zbgc": "failed",
-        "dtgc": "failed"
+        "zbgc": "valid",
+        "dtgc": "valid_empty"
       },
-      "pool_errors": {
-        "zbgc": "empty_response",
-        "dtgc": "HTTP Error 429: Too Many Requests"
-      }
+      "pool_errors": {}
     }
   }
 }
