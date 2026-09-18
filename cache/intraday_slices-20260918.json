@@ -2,7 +2,7 @@
   "schema": "intraday_snapshot_v1",
   "render_mode": "snapshot_stream",
   "date": "2026-09-18",
-  "count": 5,
+  "count": 6,
   "interval_min": null,
   "simulated": false,
   "snapshots": [
@@ -343,11 +343,74 @@
       "shift_score": 62,
       "shift_label": "修复",
       "note": "情绪整体平稳，维持当前节奏。"
+    },
+    {
+      "time": "10:20:04",
+      "ts_bj": "2026-09-18 10:20:04",
+      "date": "2026-09-18",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid_empty"
+      },
+      "pool_errors": {},
+      "zt": 49,
+      "dt": 0,
+      "zab": 15,
+      "zb": 23.4,
+      "fb": 76.6,
+      "jj": 18.4,
+      "lianban": 9,
+      "max_lb": 4,
+      "amount": "8823.6亿",
+      "bf": 0,
+      "heat": 53,
+      "risk": 20,
+      "headline": "修复",
+      "concepts": [
+        {
+          "name": "医疗服务",
+          "lead": "南华生物",
+          "chg_pct": null
+        },
+        {
+          "name": "家居用品",
+          "lead": "华瓷股份",
+          "chg_pct": null
+        },
+        {
+          "name": "服装家纺",
+          "lead": "龙头股份",
+          "chg_pct": null
+        },
+        {
+          "name": "半导体",
+          "lead": "华天科技",
+          "chg_pct": null
+        },
+        {
+          "name": "电网设备",
+          "lead": "太阳电缆",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        }
+      ],
+      "shift_score": 64,
+      "shift_label": "修复",
+      "note": "情绪边际修复，但仍需确认持续性。"
     }
   ],
   "latest": {
-    "time": "10:10:04",
-    "ts_bj": "2026-09-18 10:10:04",
+    "time": "10:20:04",
+    "ts_bj": "2026-09-18 10:20:04",
     "date": "2026-09-18",
     "source": "intraday_live",
     "provider": "必盈(实时)+必盈(实时)",
@@ -358,18 +421,18 @@
       "dtgc": "valid_empty"
     },
     "pool_errors": {},
-    "zt": 42,
+    "zt": 49,
     "dt": 0,
-    "zab": 16,
-    "zb": 27.6,
-    "fb": 72.4,
-    "jj": 21.4,
+    "zab": 15,
+    "zb": 23.4,
+    "fb": 76.6,
+    "jj": 18.4,
     "lianban": 9,
     "max_lb": 4,
-    "amount": "7988.4亿",
+    "amount": "8823.6亿",
     "bf": 0,
-    "heat": 51,
-    "risk": 22,
+    "heat": 53,
+    "risk": 20,
     "headline": "修复",
     "concepts": [
       {
@@ -383,18 +446,18 @@
         "chg_pct": null
       },
       {
-        "name": "电网设备",
-        "lead": "太阳电缆",
-        "chg_pct": null
-      },
-      {
         "name": "服装家纺",
         "lead": "龙头股份",
         "chg_pct": null
       },
       {
-        "name": "包装印刷",
-        "lead": "新宏泽",
+        "name": "半导体",
+        "lead": "华天科技",
+        "chg_pct": null
+      },
+      {
+        "name": "电网设备",
+        "lead": "太阳电缆",
         "chg_pct": null
       }
     ],
@@ -402,21 +465,17 @@
       {
         "level": "info",
         "text": "盘中模式：强制实时拉取"
-      },
-      {
-        "level": "warn",
-        "text": "炸板率偏高（27.6%）→ 注意回封质量"
       }
     ],
-    "shift_score": 62,
+    "shift_score": 64,
     "shift_label": "修复",
-    "note": "情绪整体平稳，维持当前节奏。"
+    "note": "情绪边际修复，但仍需确认持续性。"
   },
-  "updated_at": "2026-09-18 10:10:04",
-  "snapshot_sig": "2026-09-18|2026-09-18 10:10:04|5",
+  "updated_at": "2026-09-18 10:20:04",
+  "snapshot_sig": "2026-09-18|2026-09-18 10:20:04|6",
   "health": {
     "status": "valid",
-    "last_valid_at": "2026-09-18 10:10:04",
+    "last_valid_at": "2026-09-18 10:20:04",
     "rejected_reason": "",
     "source": {
       "status": "valid",
