@@ -1,58 +1,61 @@
 {
   "schema": "intraday_runtime_v1",
-  "date": "2026-09-17",
-  "updated_at": "2026-09-17 15:00:05",
-  "source": "必盈(实时)+必盈(实时)",
+  "date": "2026-09-18",
+  "updated_at": "2026-09-18 09:30:46",
+  "source": "必盈(实时)",
   "latest": {
-    "time": "15:00:05",
-    "ts_bj": "2026-09-17 15:00:05",
-    "date": "2026-09-17",
+    "time": "09:30:46",
+    "ts_bj": "2026-09-18 09:30:46",
+    "date": "2026-09-18",
     "source": "intraday_live",
-    "provider": "必盈(实时)+必盈(实时)",
-    "data_quality": "valid",
+    "provider": "必盈(实时)",
+    "data_quality": "partial",
     "pool_status": {
       "ztgc": "valid",
-      "zbgc": "valid",
-      "dtgc": "valid"
+      "zbgc": "failed",
+      "dtgc": "failed"
     },
-    "pool_errors": {},
-    "zt": 46,
-    "dt": 1,
-    "zab": 20,
-    "zb": 30.3,
-    "fb": 69.7,
-    "jj": 19.6,
-    "lianban": 9,
-    "max_lb": 5,
-    "amount": "18231.3亿",
+    "pool_errors": {
+      "zbgc": "empty_response",
+      "dtgc": "HTTP Error 429: Too Many Requests"
+    },
+    "zt": 9,
+    "dt": null,
+    "zab": null,
+    "zb": null,
+    "fb": null,
+    "jj": 66.7,
+    "lianban": 6,
+    "max_lb": 4,
+    "amount": "",
     "bf": 0,
-    "heat": 52,
-    "risk": 27,
-    "headline": "修复",
+    "heat": null,
+    "risk": null,
+    "headline": "数据部分可用",
     "concepts": [
-      {
-        "name": "汽车零部",
-        "lead": "山子高科",
-        "chg_pct": null
-      },
       {
         "name": "半导体",
         "lead": "中晶科技",
         "chg_pct": null
       },
       {
-        "name": "消费电子",
-        "lead": "共达电声",
-        "chg_pct": null
-      },
-      {
-        "name": "种植业",
-        "lead": "万向德农",
-        "chg_pct": null
-      },
-      {
         "name": "出版",
         "lead": "内蒙新华",
+        "chg_pct": null
+      },
+      {
+        "name": "工程咨询",
+        "lead": "经纬股份",
+        "chg_pct": null
+      },
+      {
+        "name": "医疗服务",
+        "lead": "南华生物",
+        "chg_pct": null
+      },
+      {
+        "name": "化学制品",
+        "lead": "华软科技",
         "chg_pct": null
       }
     ],
@@ -63,37 +66,38 @@
       },
       {
         "level": "warn",
-        "text": "炸板率偏高（30.3%）→ 注意回封质量"
+        "text": "盘中三池响应不完整，保留最近有效数据"
       }
     ],
-    "shift_score": 61,
-    "shift_label": "修复",
-    "note": "情绪整体平稳，维持当前节奏。"
+    "shift_score": null,
+    "shift_label": "数据部分可用",
+    "note": "本槽位仅部分三池成功；节点已保留，缺失指标不参与判断。"
   },
   "snapshots": [
     {
-      "time": "09:30:32",
-      "ts_bj": "2026-09-17 09:30:32",
-      "date": "2026-09-17",
+      "time": "09:30:46",
+      "ts_bj": "2026-09-18 09:30:46",
+      "date": "2026-09-18",
       "source": "intraday_live",
       "provider": "必盈(实时)",
       "data_quality": "partial",
       "pool_status": {
         "ztgc": "valid",
         "zbgc": "failed",
-        "dtgc": "valid"
+        "dtgc": "failed"
       },
       "pool_errors": {
-        "zbgc": "empty_response"
+        "zbgc": "empty_response",
+        "dtgc": "HTTP Error 429: Too Many Requests"
       },
-      "zt": 5,
-      "dt": 1,
+      "zt": 9,
+      "dt": null,
       "zab": null,
       "zb": null,
       "fb": null,
-      "jj": 60.0,
-      "lianban": 3,
-      "max_lb": 3,
+      "jj": 66.7,
+      "lianban": 6,
+      "max_lb": 4,
       "amount": "",
       "bf": 0,
       "heat": null,
@@ -106,23 +110,23 @@
           "chg_pct": null
         },
         {
-          "name": "房地产服",
-          "lead": "世联行",
-          "chg_pct": null
-        },
-        {
           "name": "出版",
           "lead": "内蒙新华",
           "chg_pct": null
         },
         {
-          "name": "玻璃玻纤",
-          "lead": "中材科技",
+          "name": "工程咨询",
+          "lead": "经纬股份",
           "chg_pct": null
         },
         {
-          "name": "工程咨询",
-          "lead": "经纬股份",
+          "name": "医疗服务",
+          "lead": "南华生物",
+          "chg_pct": null
+        },
+        {
+          "name": "化学制品",
+          "lead": "华软科技",
           "chg_pct": null
         }
       ],
@@ -139,1092 +143,82 @@
       "shift_score": null,
       "shift_label": "数据部分可用",
       "note": "本槽位仅部分三池成功；节点已保留，缺失指标不参与判断。"
-    },
-    {
-      "time": "09:40:04",
-      "ts_bj": "2026-09-17 09:40:04",
-      "date": "2026-09-17",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid"
-      },
-      "pool_errors": {},
-      "zt": 10,
-      "dt": 4,
-      "zab": 6,
-      "zb": 37.5,
-      "fb": 62.5,
-      "jj": 60.0,
-      "lianban": 6,
-      "max_lb": 3,
-      "amount": "3413.3亿",
-      "bf": 0,
-      "heat": 49,
-      "risk": 29,
-      "headline": "分歧",
-      "concepts": [
-        {
-          "name": "电子化学",
-          "lead": "西陇科学",
-          "chg_pct": null
-        },
-        {
-          "name": "家居用品",
-          "lead": "华瓷股份",
-          "chg_pct": null
-        },
-        {
-          "name": "半导体",
-          "lead": "中晶科技",
-          "chg_pct": null
-        },
-        {
-          "name": "光学光电",
-          "lead": "实益达",
-          "chg_pct": null
-        },
-        {
-          "name": "房地产服",
-          "lead": "世联行",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        },
-        {
-          "level": "danger",
-          "text": "炸板率高（37.5%）→ 分歧偏强，谨慎接力"
-        }
-      ],
-      "shift_score": 58,
-      "shift_label": "分歧",
-      "note": "承接增强、分歧收敛，情绪明显回暖。"
-    },
-    {
-      "time": "09:50:04",
-      "ts_bj": "2026-09-17 09:50:04",
-      "date": "2026-09-17",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid_empty"
-      },
-      "pool_errors": {},
-      "zt": 13,
-      "dt": 0,
-      "zab": 8,
-      "zb": 38.1,
-      "fb": 61.9,
-      "jj": 46.2,
-      "lianban": 6,
-      "max_lb": 3,
-      "amount": "5284.4亿",
-      "bf": 0,
-      "heat": 46,
-      "risk": 25,
-      "headline": "分歧",
-      "concepts": [
-        {
-          "name": "玻璃玻纤",
-          "lead": "中材科技",
-          "chg_pct": null
-        },
-        {
-          "name": "家居用品",
-          "lead": "华瓷股份",
-          "chg_pct": null
-        },
-        {
-          "name": "半导体",
-          "lead": "中晶科技",
-          "chg_pct": null
-        },
-        {
-          "name": "光学光电",
-          "lead": "实益达",
-          "chg_pct": null
-        },
-        {
-          "name": "专业工程",
-          "lead": "中岩大地",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        },
-        {
-          "level": "danger",
-          "text": "炸板率高（38.1%）→ 分歧偏强，谨慎接力"
-        }
-      ],
-      "shift_score": 58,
-      "shift_label": "分歧",
-      "note": "情绪整体平稳，维持当前节奏。"
-    },
-    {
-      "time": "10:00:04",
-      "ts_bj": "2026-09-17 10:00:04",
-      "date": "2026-09-17",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid_empty"
-      },
-      "pool_errors": {},
-      "zt": 19,
-      "dt": 0,
-      "zab": 9,
-      "zb": 32.1,
-      "fb": 67.9,
-      "jj": 36.8,
-      "lianban": 7,
-      "max_lb": 3,
-      "amount": "6812.6亿",
-      "bf": 0,
-      "heat": 47,
-      "risk": 22,
-      "headline": "修复",
-      "concepts": [
-        {
-          "name": "光学光电",
-          "lead": "实益达",
-          "chg_pct": null
-        },
-        {
-          "name": "玻璃玻纤",
-          "lead": "中材科技",
-          "chg_pct": null
-        },
-        {
-          "name": "家居用品",
-          "lead": "华瓷股份",
-          "chg_pct": null
-        },
-        {
-          "name": "半导体",
-          "lead": "中晶科技",
-          "chg_pct": null
-        },
-        {
-          "name": "专业工程",
-          "lead": "中岩大地",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        },
-        {
-          "level": "warn",
-          "text": "炸板率偏高（32.1%）→ 注意回封质量"
-        }
-      ],
-      "shift_score": 60,
-      "shift_label": "修复",
-      "note": "情绪边际修复，但仍需确认持续性。"
-    },
-    {
-      "time": "10:10:05",
-      "ts_bj": "2026-09-17 10:10:05",
-      "date": "2026-09-17",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid_empty"
-      },
-      "pool_errors": {},
-      "zt": 19,
-      "dt": 0,
-      "zab": 12,
-      "zb": 38.7,
-      "fb": 61.3,
-      "jj": 26.3,
-      "lianban": 5,
-      "max_lb": 3,
-      "amount": "7899.9亿",
-      "bf": 0,
-      "heat": 42,
-      "risk": 27,
-      "headline": "分歧",
-      "concepts": [
-        {
-          "name": "玻璃玻纤",
-          "lead": "中材科技",
-          "chg_pct": null
-        },
-        {
-          "name": "医疗服务",
-          "lead": "百花医药",
-          "chg_pct": null
-        },
-        {
-          "name": "半导体",
-          "lead": "中晶科技",
-          "chg_pct": null
-        },
-        {
-          "name": "家居用品",
-          "lead": "华瓷股份",
-          "chg_pct": null
-        },
-        {
-          "name": "照明设备",
-          "lead": "联域股份",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        },
-        {
-          "level": "danger",
-          "text": "炸板率高（38.7%）→ 分歧偏强，谨慎接力"
-        }
-      ],
-      "shift_score": 55,
-      "shift_label": "分歧",
-      "note": "炸板/跌停抬升，情绪明显走弱。"
-    },
-    {
-      "time": "10:20:04",
-      "ts_bj": "2026-09-17 10:20:04",
-      "date": "2026-09-17",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid_empty"
-      },
-      "pool_errors": {},
-      "zt": 22,
-      "dt": 0,
-      "zab": 15,
-      "zb": 40.5,
-      "fb": 59.5,
-      "jj": 22.7,
-      "lianban": 5,
-      "max_lb": 3,
-      "amount": "8860.3亿",
-      "bf": 0,
-      "heat": 40,
-      "risk": 29,
-      "headline": "分歧",
-      "concepts": [
-        {
-          "name": "玻璃玻纤",
-          "lead": "中材科技",
-          "chg_pct": null
-        },
-        {
-          "name": "医疗服务",
-          "lead": "百花医药",
-          "chg_pct": null
-        },
-        {
-          "name": "半导体",
-          "lead": "中晶科技",
-          "chg_pct": null
-        },
-        {
-          "name": "家居用品",
-          "lead": "华瓷股份",
-          "chg_pct": null
-        },
-        {
-          "name": "照明设备",
-          "lead": "联域股份",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        },
-        {
-          "level": "danger",
-          "text": "炸板率高（40.5%）→ 分歧偏强，谨慎接力"
-        }
-      ],
-      "shift_score": 53,
-      "shift_label": "分歧",
-      "note": "情绪略有回落，注意午后分歧。"
-    },
-    {
-      "time": "10:30:05",
-      "ts_bj": "2026-09-17 10:30:05",
-      "date": "2026-09-17",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid_empty"
-      },
-      "pool_errors": {},
-      "zt": 24,
-      "dt": 0,
-      "zab": 12,
-      "zb": 33.3,
-      "fb": 66.7,
-      "jj": 25.0,
-      "lianban": 6,
-      "max_lb": 5,
-      "amount": "9662.4亿",
-      "bf": 0,
-      "heat": 49,
-      "risk": 24,
-      "headline": "修复",
-      "concepts": [
-        {
-          "name": "玻璃玻纤",
-          "lead": "中材科技",
-          "chg_pct": null
-        },
-        {
-          "name": "医疗服务",
-          "lead": "百花医药",
-          "chg_pct": null
-        },
-        {
-          "name": "元件",
-          "lead": "澳弘电子",
-          "chg_pct": null
-        },
-        {
-          "name": "半导体",
-          "lead": "中晶科技",
-          "chg_pct": null
-        },
-        {
-          "name": "家居用品",
-          "lead": "华瓷股份",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        },
-        {
-          "level": "warn",
-          "text": "炸板率偏高（33.3%）→ 注意回封质量"
-        }
-      ],
-      "shift_score": 60,
-      "shift_label": "修复",
-      "note": "承接增强、分歧收敛，情绪明显回暖。"
-    },
-    {
-      "time": "10:40:04",
-      "ts_bj": "2026-09-17 10:40:04",
-      "date": "2026-09-17",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid_empty"
-      },
-      "pool_errors": {},
-      "zt": 28,
-      "dt": 0,
-      "zab": 12,
-      "zb": 30.0,
-      "fb": 70.0,
-      "jj": 25.0,
-      "lianban": 7,
-      "max_lb": 5,
-      "amount": "10307.2亿",
-      "bf": 0,
-      "heat": 51,
-      "risk": 22,
-      "headline": "修复",
-      "concepts": [
-        {
-          "name": "玻璃玻纤",
-          "lead": "中材科技",
-          "chg_pct": null
-        },
-        {
-          "name": "消费电子",
-          "lead": "共达电声",
-          "chg_pct": null
-        },
-        {
-          "name": "汽车零部",
-          "lead": "山子高科",
-          "chg_pct": null
-        },
-        {
-          "name": "医疗服务",
-          "lead": "百花医药",
-          "chg_pct": null
-        },
-        {
-          "name": "元件",
-          "lead": "澳弘电子",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        },
-        {
-          "level": "warn",
-          "text": "炸板率偏高（30.0%）→ 注意回封质量"
-        }
-      ],
-      "shift_score": 62,
-      "shift_label": "修复",
-      "note": "情绪边际修复，但仍需确认持续性。"
-    },
-    {
-      "time": "10:50:04",
-      "ts_bj": "2026-09-17 10:50:04",
-      "date": "2026-09-17",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid_empty"
-      },
-      "pool_errors": {},
-      "zt": 33,
-      "dt": 0,
-      "zab": 11,
-      "zb": 25.0,
-      "fb": 75.0,
-      "jj": 24.2,
-      "lianban": 8,
-      "max_lb": 5,
-      "amount": "10842.5亿",
-      "bf": 0,
-      "heat": 53,
-      "risk": 19,
-      "headline": "修复",
-      "concepts": [
-        {
-          "name": "汽车零部",
-          "lead": "山子高科",
-          "chg_pct": null
-        },
-        {
-          "name": "玻璃玻纤",
-          "lead": "中材科技",
-          "chg_pct": null
-        },
-        {
-          "name": "消费电子",
-          "lead": "共达电声",
-          "chg_pct": null
-        },
-        {
-          "name": "医疗服务",
-          "lead": "百花医药",
-          "chg_pct": null
-        },
-        {
-          "name": "元件",
-          "lead": "澳弘电子",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        },
-        {
-          "level": "warn",
-          "text": "炸板率偏高（25.0%）→ 注意回封质量"
-        }
-      ],
-      "shift_score": 65,
-      "shift_label": "修复",
-      "note": "情绪边际修复，但仍需确认持续性。"
-    },
-    {
-      "time": "11:00:04",
-      "ts_bj": "2026-09-17 11:00:04",
-      "date": "2026-09-17",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid"
-      },
-      "pool_errors": {},
-      "zt": 33,
-      "dt": 1,
-      "zab": 12,
-      "zb": 26.7,
-      "fb": 73.3,
-      "jj": 24.2,
-      "lianban": 8,
-      "max_lb": 5,
-      "amount": "11260.5亿",
-      "bf": 0,
-      "heat": 53,
-      "risk": 22,
-      "headline": "修复",
-      "concepts": [
-        {
-          "name": "汽车零部",
-          "lead": "山子高科",
-          "chg_pct": null
-        },
-        {
-          "name": "玻璃玻纤",
-          "lead": "中材科技",
-          "chg_pct": null
-        },
-        {
-          "name": "消费电子",
-          "lead": "共达电声",
-          "chg_pct": null
-        },
-        {
-          "name": "医疗服务",
-          "lead": "百花医药",
-          "chg_pct": null
-        },
-        {
-          "name": "元件",
-          "lead": "澳弘电子",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        },
-        {
-          "level": "warn",
-          "text": "炸板率偏高（26.7%）→ 注意回封质量"
-        }
-      ],
-      "shift_score": 64,
-      "shift_label": "修复",
-      "note": "情绪整体平稳，维持当前节奏。"
-    },
-    {
-      "time": "11:10:04",
-      "ts_bj": "2026-09-17 11:10:04",
-      "date": "2026-09-17",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid_empty"
-      },
-      "pool_errors": {},
-      "zt": 35,
-      "dt": 0,
-      "zab": 13,
-      "zb": 27.1,
-      "fb": 72.9,
-      "jj": 22.9,
-      "lianban": 8,
-      "max_lb": 5,
-      "amount": "11708.7亿",
-      "bf": 0,
-      "heat": 53,
-      "risk": 21,
-      "headline": "修复",
-      "concepts": [
-        {
-          "name": "汽车零部",
-          "lead": "山子高科",
-          "chg_pct": null
-        },
-        {
-          "name": "玻璃玻纤",
-          "lead": "中材科技",
-          "chg_pct": null
-        },
-        {
-          "name": "消费电子",
-          "lead": "共达电声",
-          "chg_pct": null
-        },
-        {
-          "name": "医疗服务",
-          "lead": "百花医药",
-          "chg_pct": null
-        },
-        {
-          "name": "元件",
-          "lead": "澳弘电子",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        },
-        {
-          "level": "warn",
-          "text": "炸板率偏高（27.1%）→ 注意回封质量"
-        }
-      ],
-      "shift_score": 64,
-      "shift_label": "修复",
-      "note": "情绪整体平稳，维持当前节奏。"
-    },
-    {
-      "time": "11:20:05",
-      "ts_bj": "2026-09-17 11:20:05",
-      "date": "2026-09-17",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid"
-      },
-      "pool_errors": {},
-      "zt": 33,
-      "dt": 1,
-      "zab": 17,
-      "zb": 34.0,
-      "fb": 66.0,
-      "jj": 21.2,
-      "lianban": 7,
-      "max_lb": 5,
-      "amount": "12114.1亿",
-      "bf": 0,
-      "heat": 49,
-      "risk": 28,
-      "headline": "分歧",
-      "concepts": [
-        {
-          "name": "汽车零部",
-          "lead": "山子高科",
-          "chg_pct": null
-        },
-        {
-          "name": "消费电子",
-          "lead": "共达电声",
-          "chg_pct": null
-        },
-        {
-          "name": "医疗服务",
-          "lead": "百花医药",
-          "chg_pct": null
-        },
-        {
-          "name": "玻璃玻纤",
-          "lead": "北玻股份",
-          "chg_pct": null
-        },
-        {
-          "name": "元件",
-          "lead": "澳弘电子",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        },
-        {
-          "level": "warn",
-          "text": "炸板率偏高（34.0%）→ 注意回封质量"
-        }
-      ],
-      "shift_score": 59,
-      "shift_label": "分歧",
-      "note": "炸板/跌停抬升，情绪明显走弱。"
-    },
-    {
-      "time": "11:30:05",
-      "ts_bj": "2026-09-17 11:30:05",
-      "date": "2026-09-17",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid"
-      },
-      "pool_errors": {},
-      "zt": 32,
-      "dt": 1,
-      "zab": 19,
-      "zb": 37.3,
-      "fb": 62.7,
-      "jj": 21.9,
-      "lianban": 7,
-      "max_lb": 5,
-      "amount": "12445.4亿",
-      "bf": 0,
-      "heat": 48,
-      "risk": 31,
-      "headline": "分歧",
-      "concepts": [
-        {
-          "name": "汽车零部",
-          "lead": "山子高科",
-          "chg_pct": null
-        },
-        {
-          "name": "消费电子",
-          "lead": "共达电声",
-          "chg_pct": null
-        },
-        {
-          "name": "医疗服务",
-          "lead": "百花医药",
-          "chg_pct": null
-        },
-        {
-          "name": "元件",
-          "lead": "澳弘电子",
-          "chg_pct": null
-        },
-        {
-          "name": "半导体",
-          "lead": "中晶科技",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        },
-        {
-          "level": "danger",
-          "text": "炸板率高（37.3%）→ 分歧偏强，谨慎接力"
-        }
-      ],
-      "shift_score": 57,
-      "shift_label": "分歧",
-      "note": "情绪略有回落，注意午后分歧。"
-    },
-    {
-      "time": "14:40:31",
-      "ts_bj": "2026-09-17 14:40:31",
-      "date": "2026-09-17",
-      "source": "intraday_live",
-      "provider": "unknown",
-      "data_quality": "unavailable",
-      "pool_status": {
-        "ztgc": "failed",
-        "zbgc": "failed",
-        "dtgc": "failed"
-      },
-      "pool_errors": {
-        "ztgc": "HTTP Error 429: Too Many Requests",
-        "zbgc": "HTTP Error 429: Too Many Requests",
-        "dtgc": "HTTP Error 429: Too Many Requests"
-      },
-      "zt": null,
-      "dt": null,
-      "zab": null,
-      "zb": null,
-      "fb": null,
-      "jj": null,
-      "lianban": null,
-      "max_lb": null,
-      "amount": "",
-      "bf": 0,
-      "heat": null,
-      "risk": null,
-      "headline": "数据暂缺",
-      "concepts": [],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        },
-        {
-          "level": "warn",
-          "text": "盘中三池响应不完整，保留最近有效数据"
-        },
-        {
-          "level": "warn",
-          "text": "三池请求均超时，本槽位跳过板块补抓并等待下一节点"
-        }
-      ],
-      "shift_score": null,
-      "shift_label": "数据暂缺",
-      "note": "本槽位三池请求均未成功，已记录数据暂缺；等待下一节点自动恢复。"
-    },
-    {
-      "time": "14:50:05",
-      "ts_bj": "2026-09-17 14:50:05",
-      "date": "2026-09-17",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid"
-      },
-      "pool_errors": {},
-      "zt": 45,
-      "dt": 1,
-      "zab": 21,
-      "zb": 31.8,
-      "fb": 68.2,
-      "jj": 20.0,
-      "lianban": 9,
-      "max_lb": 5,
-      "amount": "17359.9亿",
-      "bf": 0,
-      "heat": 51,
-      "risk": 28,
-      "headline": "修复",
-      "concepts": [
-        {
-          "name": "汽车零部",
-          "lead": "山子高科",
-          "chg_pct": null
-        },
-        {
-          "name": "半导体",
-          "lead": "中晶科技",
-          "chg_pct": null
-        },
-        {
-          "name": "消费电子",
-          "lead": "共达电声",
-          "chg_pct": null
-        },
-        {
-          "name": "种植业",
-          "lead": "万向德农",
-          "chg_pct": null
-        },
-        {
-          "name": "医疗服务",
-          "lead": "百花医药",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        },
-        {
-          "level": "warn",
-          "text": "炸板率偏高（31.8%）→ 注意回封质量"
-        }
-      ],
-      "shift_score": 60,
-      "shift_label": "修复",
-      "note": "承接增强、分歧收敛，情绪明显回暖。"
-    },
-    {
-      "time": "15:00:05",
-      "ts_bj": "2026-09-17 15:00:05",
-      "date": "2026-09-17",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid"
-      },
-      "pool_errors": {},
-      "zt": 46,
-      "dt": 1,
-      "zab": 20,
-      "zb": 30.3,
-      "fb": 69.7,
-      "jj": 19.6,
-      "lianban": 9,
-      "max_lb": 5,
-      "amount": "18231.3亿",
-      "bf": 0,
-      "heat": 52,
-      "risk": 27,
-      "headline": "修复",
-      "concepts": [
-        {
-          "name": "汽车零部",
-          "lead": "山子高科",
-          "chg_pct": null
-        },
-        {
-          "name": "半导体",
-          "lead": "中晶科技",
-          "chg_pct": null
-        },
-        {
-          "name": "消费电子",
-          "lead": "共达电声",
-          "chg_pct": null
-        },
-        {
-          "name": "种植业",
-          "lead": "万向德农",
-          "chg_pct": null
-        },
-        {
-          "name": "出版",
-          "lead": "内蒙新华",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        },
-        {
-          "level": "warn",
-          "text": "炸板率偏高（30.3%）→ 注意回封质量"
-        }
-      ],
-      "shift_score": 61,
-      "shift_label": "修复",
-      "note": "情绪整体平稳，维持当前节奏。"
     }
   ],
   "indices": [
     {
       "name": "上证指数",
       "code": "000001.SH",
-      "val": 3875.604,
-      "chg": -0.4110647520133821,
-      "cje": 868773066900.0,
-      "t": "2026-09-17 15:00:06"
+      "val": 3892.018,
+      "chg": 0.4235210821332679,
+      "cje": 29001041600.0,
+      "t": "2026-09-18 09:30:42"
     },
     {
       "name": "深证成指",
       "code": "399001.SZ",
-      "val": 13410.374,
-      "chg": -0.32976475284589674,
-      "cje": 949256039200.0,
-      "t": "2026-09-17 15:00:00"
+      "val": 13576.647,
+      "chg": 1.2434015207263271,
+      "cje": 43686397400.0,
+      "t": "2026-09-18 09:30:42"
     },
     {
       "name": "创业板指",
       "code": "399006.SZ",
-      "val": 3298.31,
-      "chg": -0.39752690191740037,
-      "cje": 446647193600.0,
-      "t": "2026-09-17 15:00:03"
+      "val": 3357.274,
+      "chg": 1.7877033996198035,
+      "cje": 20113314400.0,
+      "t": "2026-09-18 09:30:42"
     }
   ],
   "asOf": {
-    "indices": "15:00:03"
+    "indices": "09:30:42"
   },
   "health": {
-    "status": "valid",
-    "last_valid_at": "2026-09-17 15:00:05",
+    "status": "degraded",
+    "last_valid_at": "2026-09-18 09:30:46",
     "rejected_reason": "",
     "source": {
-      "status": "valid",
+      "status": "partial",
       "pool_status": {
         "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid"
+        "zbgc": "failed",
+        "dtgc": "failed"
       },
-      "pool_errors": {}
+      "pool_errors": {
+        "zbgc": "empty_response",
+        "dtgc": "HTTP Error 429: Too Many Requests"
+      }
     },
     "indices_status": "valid",
     "coverage": {
-      "ok": false,
-      "status": "degraded",
-      "message": "intraday_coverage_incomplete",
-      "date": "2026-09-17",
+      "ok": true,
+      "status": "collecting",
+      "message": "intraday_coverage_collecting",
+      "date": "2026-09-18",
       "expected_count": 26,
-      "due_count": 26,
-      "observed_count": 16,
+      "due_count": 1,
+      "observed_count": 1,
       "observed_slots": [
-        "09:30",
-        "09:40",
-        "09:50",
-        "10:00",
-        "10:10",
-        "10:20",
-        "10:30",
-        "10:40",
-        "10:50",
-        "11:00",
-        "11:10",
-        "11:20",
-        "11:30",
-        "14:40",
-        "14:50",
-        "15:00"
+        "09:30"
       ],
-      "missing_slots": [
-        "13:00",
-        "13:10",
-        "13:20",
-        "13:30",
-        "13:40",
-        "13:50",
-        "14:00",
-        "14:10",
-        "14:20",
-        "14:30"
-      ],
+      "missing_slots": [],
       "duplicate_slots": [],
       "out_of_session": [],
       "monotonic": true,
-      "morning_coverage": 13,
-      "afternoon_coverage": 3
+      "morning_coverage": 1,
+      "afternoon_coverage": 0
     }
   },
   "live": {
     "market": {
-      "zt": 46,
-      "dt": 1,
-      "zab": 20,
-      "zab_rate": 30.3,
-      "lianban": 9,
-      "max_lianban": 5,
-      "amount": "18231.3亿"
+      "zt": 9,
+      "dt": null,
+      "zab": null,
+      "zab_rate": null,
+      "lianban": 6,
+      "max_lianban": 4,
+      "amount": ""
     },
     "alerts": [
       {
@@ -1233,33 +227,33 @@
       },
       {
         "level": "warn",
-        "text": "炸板率偏高（30.3%）→ 注意回封质量"
+        "text": "盘中三池响应不完整，保留最近有效数据"
       }
     ],
     "concepts": [
-      {
-        "name": "汽车零部",
-        "lead": "山子高科",
-        "chg_pct": null
-      },
       {
         "name": "半导体",
         "lead": "中晶科技",
         "chg_pct": null
       },
       {
-        "name": "消费电子",
-        "lead": "共达电声",
-        "chg_pct": null
-      },
-      {
-        "name": "种植业",
-        "lead": "万向德农",
-        "chg_pct": null
-      },
-      {
         "name": "出版",
         "lead": "内蒙新华",
+        "chg_pct": null
+      },
+      {
+        "name": "工程咨询",
+        "lead": "经纬股份",
+        "chg_pct": null
+      },
+      {
+        "name": "医疗服务",
+        "lead": "南华生物",
+        "chg_pct": null
+      },
+      {
+        "name": "化学制品",
+        "lead": "华软科技",
         "chg_pct": null
       }
     ]
