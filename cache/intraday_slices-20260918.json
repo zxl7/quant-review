@@ -2,7 +2,7 @@
   "schema": "intraday_snapshot_v1",
   "render_mode": "snapshot_stream",
   "date": "2026-09-18",
-  "count": 4,
+  "count": 5,
   "interval_min": null,
   "simulated": false,
   "snapshots": [
@@ -276,11 +276,78 @@
       "shift_score": 62,
       "shift_label": "修复",
       "note": "情绪略有回落，注意午后分歧。"
+    },
+    {
+      "time": "10:10:04",
+      "ts_bj": "2026-09-18 10:10:04",
+      "date": "2026-09-18",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid_empty"
+      },
+      "pool_errors": {},
+      "zt": 42,
+      "dt": 0,
+      "zab": 16,
+      "zb": 27.6,
+      "fb": 72.4,
+      "jj": 21.4,
+      "lianban": 9,
+      "max_lb": 4,
+      "amount": "7988.4亿",
+      "bf": 0,
+      "heat": 51,
+      "risk": 22,
+      "headline": "修复",
+      "concepts": [
+        {
+          "name": "医疗服务",
+          "lead": "南华生物",
+          "chg_pct": null
+        },
+        {
+          "name": "家居用品",
+          "lead": "华瓷股份",
+          "chg_pct": null
+        },
+        {
+          "name": "电网设备",
+          "lead": "太阳电缆",
+          "chg_pct": null
+        },
+        {
+          "name": "服装家纺",
+          "lead": "龙头股份",
+          "chg_pct": null
+        },
+        {
+          "name": "包装印刷",
+          "lead": "新宏泽",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        },
+        {
+          "level": "warn",
+          "text": "炸板率偏高（27.6%）→ 注意回封质量"
+        }
+      ],
+      "shift_score": 62,
+      "shift_label": "修复",
+      "note": "情绪整体平稳，维持当前节奏。"
     }
   ],
   "latest": {
-    "time": "10:00:05",
-    "ts_bj": "2026-09-18 10:00:05",
+    "time": "10:10:04",
+    "ts_bj": "2026-09-18 10:10:04",
     "date": "2026-09-18",
     "source": "intraday_live",
     "provider": "必盈(实时)+必盈(实时)",
@@ -291,28 +358,23 @@
       "dtgc": "valid_empty"
     },
     "pool_errors": {},
-    "zt": 36,
+    "zt": 42,
     "dt": 0,
-    "zab": 14,
-    "zb": 28.0,
-    "fb": 72.0,
-    "jj": 22.2,
-    "lianban": 8,
+    "zab": 16,
+    "zb": 27.6,
+    "fb": 72.4,
+    "jj": 21.4,
+    "lianban": 9,
     "max_lb": 4,
-    "amount": "6889.5亿",
+    "amount": "7988.4亿",
     "bf": 0,
-    "heat": 50,
+    "heat": 51,
     "risk": 22,
     "headline": "修复",
     "concepts": [
       {
-        "name": "服装家纺",
-        "lead": "龙头股份",
-        "chg_pct": null
-      },
-      {
-        "name": "电网设备",
-        "lead": "太阳电缆",
+        "name": "医疗服务",
+        "lead": "南华生物",
         "chg_pct": null
       },
       {
@@ -321,8 +383,13 @@
         "chg_pct": null
       },
       {
-        "name": "医疗服务",
-        "lead": "南华生物",
+        "name": "电网设备",
+        "lead": "太阳电缆",
+        "chg_pct": null
+      },
+      {
+        "name": "服装家纺",
+        "lead": "龙头股份",
         "chg_pct": null
       },
       {
@@ -338,18 +405,18 @@
       },
       {
         "level": "warn",
-        "text": "炸板率偏高（28.0%）→ 注意回封质量"
+        "text": "炸板率偏高（27.6%）→ 注意回封质量"
       }
     ],
     "shift_score": 62,
     "shift_label": "修复",
-    "note": "情绪略有回落，注意午后分歧。"
+    "note": "情绪整体平稳，维持当前节奏。"
   },
-  "updated_at": "2026-09-18 10:00:05",
-  "snapshot_sig": "2026-09-18|2026-09-18 10:00:05|4",
+  "updated_at": "2026-09-18 10:10:04",
+  "snapshot_sig": "2026-09-18|2026-09-18 10:10:04|5",
   "health": {
     "status": "valid",
-    "last_valid_at": "2026-09-18 10:00:05",
+    "last_valid_at": "2026-09-18 10:10:04",
     "rejected_reason": "",
     "source": {
       "status": "valid",
