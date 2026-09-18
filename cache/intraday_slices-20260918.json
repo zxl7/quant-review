@@ -2,7 +2,7 @@
   "schema": "intraday_snapshot_v1",
   "render_mode": "snapshot_stream",
   "date": "2026-09-18",
-  "count": 2,
+  "count": 3,
   "interval_min": null,
   "simulated": false,
   "snapshots": [
@@ -142,11 +142,78 @@
       "shift_score": 68,
       "shift_label": "修复",
       "note": "承接增强、分歧收敛，情绪明显回暖。"
+    },
+    {
+      "time": "09:50:05",
+      "ts_bj": "2026-09-18 09:50:05",
+      "date": "2026-09-18",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid_empty"
+      },
+      "pool_errors": {},
+      "zt": 29,
+      "dt": 0,
+      "zab": 10,
+      "zb": 25.6,
+      "fb": 74.4,
+      "jj": 31.0,
+      "lianban": 9,
+      "max_lb": 4,
+      "amount": "5396.6亿",
+      "bf": 0,
+      "heat": 52,
+      "risk": 19,
+      "headline": "修复",
+      "concepts": [
+        {
+          "name": "半导体",
+          "lead": "中晶科技",
+          "chg_pct": null
+        },
+        {
+          "name": "家居用品",
+          "lead": "华瓷股份",
+          "chg_pct": null
+        },
+        {
+          "name": "医疗服务",
+          "lead": "南华生物",
+          "chg_pct": null
+        },
+        {
+          "name": "包装印刷",
+          "lead": "新宏泽",
+          "chg_pct": null
+        },
+        {
+          "name": "电网设备",
+          "lead": "太阳电缆",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        },
+        {
+          "level": "warn",
+          "text": "炸板率偏高（25.6%）→ 注意回封质量"
+        }
+      ],
+      "shift_score": 64,
+      "shift_label": "修复",
+      "note": "情绪略有回落，注意午后分歧。"
     }
   ],
   "latest": {
-    "time": "09:40:04",
-    "ts_bj": "2026-09-18 09:40:04",
+    "time": "09:50:05",
+    "ts_bj": "2026-09-18 09:50:05",
     "date": "2026-09-18",
     "source": "intraday_live",
     "provider": "必盈(实时)+必盈(实时)",
@@ -157,23 +224,23 @@
       "dtgc": "valid_empty"
     },
     "pool_errors": {},
-    "zt": 17,
+    "zt": 29,
     "dt": 0,
-    "zab": 6,
-    "zb": 26.1,
-    "fb": 73.9,
-    "jj": 58.8,
-    "lianban": 10,
+    "zab": 10,
+    "zb": 25.6,
+    "fb": 74.4,
+    "jj": 31.0,
+    "lianban": 9,
     "max_lb": 4,
-    "amount": "3603.1亿",
+    "amount": "5396.6亿",
     "bf": 0,
-    "heat": 57,
-    "risk": 17,
+    "heat": 52,
+    "risk": 19,
     "headline": "修复",
     "concepts": [
       {
-        "name": "医疗服务",
-        "lead": "南华生物",
+        "name": "半导体",
+        "lead": "中晶科技",
         "chg_pct": null
       },
       {
@@ -182,18 +249,18 @@
         "chg_pct": null
       },
       {
-        "name": "房地产服",
-        "lead": "世联行",
+        "name": "医疗服务",
+        "lead": "南华生物",
         "chg_pct": null
       },
       {
-        "name": "出版",
-        "lead": "内蒙新华",
+        "name": "包装印刷",
+        "lead": "新宏泽",
         "chg_pct": null
       },
       {
-        "name": "消费电子",
-        "lead": "科森科技",
+        "name": "电网设备",
+        "lead": "太阳电缆",
         "chg_pct": null
       }
     ],
@@ -204,18 +271,18 @@
       },
       {
         "level": "warn",
-        "text": "炸板率偏高（26.1%）→ 注意回封质量"
+        "text": "炸板率偏高（25.6%）→ 注意回封质量"
       }
     ],
-    "shift_score": 68,
+    "shift_score": 64,
     "shift_label": "修复",
-    "note": "承接增强、分歧收敛，情绪明显回暖。"
+    "note": "情绪略有回落，注意午后分歧。"
   },
-  "updated_at": "2026-09-18 09:40:04",
-  "snapshot_sig": "2026-09-18|2026-09-18 09:40:04|2",
+  "updated_at": "2026-09-18 09:50:05",
+  "snapshot_sig": "2026-09-18|2026-09-18 09:50:05|3",
   "health": {
     "status": "valid",
-    "last_valid_at": "2026-09-18 09:40:04",
+    "last_valid_at": "2026-09-18 09:50:05",
     "rejected_reason": "",
     "source": {
       "status": "valid",
