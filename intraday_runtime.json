@@ -1,11 +1,11 @@
 {
   "schema": "intraday_runtime_v1",
   "date": "2026-09-18",
-  "updated_at": "2026-09-18 10:20:04",
+  "updated_at": "2026-09-18 10:30:05",
   "source": "必盈(实时)+必盈(实时)",
   "latest": {
-    "time": "10:20:04",
-    "ts_bj": "2026-09-18 10:20:04",
+    "time": "10:30:05",
+    "ts_bj": "2026-09-18 10:30:05",
     "date": "2026-09-18",
     "source": "intraday_live",
     "provider": "必盈(实时)+必盈(实时)",
@@ -16,25 +16,20 @@
       "dtgc": "valid_empty"
     },
     "pool_errors": {},
-    "zt": 49,
+    "zt": 47,
     "dt": 0,
-    "zab": 15,
-    "zb": 23.4,
-    "fb": 76.6,
-    "jj": 18.4,
+    "zab": 18,
+    "zb": 27.7,
+    "fb": 72.3,
+    "jj": 19.1,
     "lianban": 9,
     "max_lb": 4,
-    "amount": "8823.6亿",
+    "amount": "9542.3亿",
     "bf": 0,
-    "heat": 53,
-    "risk": 20,
+    "heat": 51,
+    "risk": 23,
     "headline": "修复",
     "concepts": [
-      {
-        "name": "医疗服务",
-        "lead": "南华生物",
-        "chg_pct": null
-      },
       {
         "name": "家居用品",
         "lead": "华瓷股份",
@@ -43,6 +38,11 @@
       {
         "name": "服装家纺",
         "lead": "龙头股份",
+        "chg_pct": null
+      },
+      {
+        "name": "医疗服务",
+        "lead": "南华生物",
         "chg_pct": null
       },
       {
@@ -60,11 +60,15 @@
       {
         "level": "info",
         "text": "盘中模式：强制实时拉取"
+      },
+      {
+        "level": "warn",
+        "text": "炸板率偏高（27.7%）→ 注意回封质量"
       }
     ],
-    "shift_score": 64,
+    "shift_score": 62,
     "shift_label": "修复",
-    "note": "情绪边际修复，但仍需确认持续性。"
+    "note": "情绪略有回落，注意午后分歧。"
   },
   "snapshots": [
     {
@@ -467,40 +471,107 @@
       "shift_score": 64,
       "shift_label": "修复",
       "note": "情绪边际修复，但仍需确认持续性。"
+    },
+    {
+      "time": "10:30:05",
+      "ts_bj": "2026-09-18 10:30:05",
+      "date": "2026-09-18",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid_empty"
+      },
+      "pool_errors": {},
+      "zt": 47,
+      "dt": 0,
+      "zab": 18,
+      "zb": 27.7,
+      "fb": 72.3,
+      "jj": 19.1,
+      "lianban": 9,
+      "max_lb": 4,
+      "amount": "9542.3亿",
+      "bf": 0,
+      "heat": 51,
+      "risk": 23,
+      "headline": "修复",
+      "concepts": [
+        {
+          "name": "家居用品",
+          "lead": "华瓷股份",
+          "chg_pct": null
+        },
+        {
+          "name": "服装家纺",
+          "lead": "龙头股份",
+          "chg_pct": null
+        },
+        {
+          "name": "医疗服务",
+          "lead": "南华生物",
+          "chg_pct": null
+        },
+        {
+          "name": "半导体",
+          "lead": "华天科技",
+          "chg_pct": null
+        },
+        {
+          "name": "电网设备",
+          "lead": "太阳电缆",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        },
+        {
+          "level": "warn",
+          "text": "炸板率偏高（27.7%）→ 注意回封质量"
+        }
+      ],
+      "shift_score": 62,
+      "shift_label": "修复",
+      "note": "情绪略有回落，注意午后分歧。"
     }
   ],
   "indices": [
     {
       "name": "上证指数",
       "code": "000001.SH",
-      "val": 3905.808,
-      "chg": 0.7793365885678769,
-      "cje": 421758122200.0,
-      "t": "2026-09-18 10:20:00"
+      "val": 3904.298,
+      "chg": 0.7403749196254303,
+      "cje": 456256086400.0,
+      "t": "2026-09-18 10:30:03"
     },
     {
       "name": "深证成指",
       "code": "399001.SZ",
-      "val": 13497.266,
-      "chg": 0.6514436937225832,
-      "cje": 460138985000.0,
-      "t": "2026-09-18 10:19:57"
+      "val": 13478.048,
+      "chg": 0.5081317485548837,
+      "cje": 497781535500.0,
+      "t": "2026-09-18 10:30:00"
     },
     {
       "name": "创业板指",
       "code": "399006.SZ",
-      "val": 3324.955,
-      "chg": 0.8078379533761224,
-      "cje": 218906398100.0,
-      "t": "2026-09-18 10:19:57"
+      "val": 3315.63,
+      "chg": 0.5251174086122943,
+      "cje": 237380252500.0,
+      "t": "2026-09-18 10:30:00"
     }
   ],
   "asOf": {
-    "indices": "10:19:57"
+    "indices": "10:30:00"
   },
   "health": {
     "status": "valid",
-    "last_valid_at": "2026-09-18 10:20:04",
+    "last_valid_at": "2026-09-18 10:30:05",
     "rejected_reason": "",
     "source": {
       "status": "valid",
@@ -518,46 +589,46 @@
       "message": "intraday_coverage_collecting",
       "date": "2026-09-18",
       "expected_count": 26,
-      "due_count": 6,
-      "observed_count": 6,
+      "due_count": 7,
+      "observed_count": 7,
       "observed_slots": [
         "09:30",
         "09:40",
         "09:50",
         "10:00",
         "10:10",
-        "10:20"
+        "10:20",
+        "10:30"
       ],
       "missing_slots": [],
       "duplicate_slots": [],
       "out_of_session": [],
       "monotonic": true,
-      "morning_coverage": 6,
+      "morning_coverage": 7,
       "afternoon_coverage": 0
     }
   },
   "live": {
     "market": {
-      "zt": 49,
+      "zt": 47,
       "dt": 0,
-      "zab": 15,
-      "zab_rate": 23.4,
+      "zab": 18,
+      "zab_rate": 27.7,
       "lianban": 9,
       "max_lianban": 4,
-      "amount": "8823.6亿"
+      "amount": "9542.3亿"
     },
     "alerts": [
       {
         "level": "info",
         "text": "盘中模式：强制实时拉取"
+      },
+      {
+        "level": "warn",
+        "text": "炸板率偏高（27.7%）→ 注意回封质量"
       }
     ],
     "concepts": [
-      {
-        "name": "医疗服务",
-        "lead": "南华生物",
-        "chg_pct": null
-      },
       {
         "name": "家居用品",
         "lead": "华瓷股份",
@@ -566,6 +637,11 @@
       {
         "name": "服装家纺",
         "lead": "龙头股份",
+        "chg_pct": null
+      },
+      {
+        "name": "医疗服务",
+        "lead": "南华生物",
         "chg_pct": null
       },
       {
