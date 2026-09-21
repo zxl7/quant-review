@@ -4,13 +4,13 @@
   "meta": {
     "asOf": {
       "indices": "收盘",
-      "pools": "23:05:34",
-      "themes": "23:05:34",
+      "pools": "23:55:41",
+      "themes": "23:55:41",
       "quotes": "15:00:03",
       "plate_rotate": "2026-09-21"
     },
     "version": "1.0",
-    "generatedAt": "2026-09-21 23:05:34"
+    "generatedAt": "2026-09-21 23:55:41"
   },
   "indices": [
     {
@@ -303,16 +303,6 @@
         "riskClass": "green-text"
       },
       {
-        "name": "5G",
-        "zt": 5,
-        "zb": 2,
-        "dt": 0,
-        "net": 3.6,
-        "risk": 1.4,
-        "netClass": "red-text",
-        "riskClass": "orange-text"
-      },
-      {
         "name": "破净股",
         "zt": 5,
         "zb": 2,
@@ -323,7 +313,17 @@
         "riskClass": "orange-text"
       },
       {
-        "name": "锂电池",
+        "name": "5G",
+        "zt": 5,
+        "zb": 2,
+        "dt": 0,
+        "net": 3.6,
+        "risk": 1.4,
+        "netClass": "red-text",
+        "riskClass": "orange-text"
+      },
+      {
+        "name": "机器人概念",
         "zt": 4,
         "zb": 1,
         "dt": 0,
@@ -333,7 +333,7 @@
         "riskClass": "green-text"
       },
       {
-        "name": "机器人概念",
+        "name": "锂电池",
         "zt": 4,
         "zb": 1,
         "dt": 0,
@@ -19864,7 +19864,7 @@
     }
   ],
   "moodSignals": {
-    "updatedAt": "2026-09-21 23:05:34",
+    "updatedAt": "2026-09-21 23:55:41",
     "headline": "分歧/扩散偏大，优先防守",
     "pos": [
       {
@@ -25651,7 +25651,7 @@
         "2026-09-17",
         "2026-09-18"
       ],
-      "generated_at_bj": "2026-09-21 23:15:18",
+      "generated_at_bj": "2026-09-22 00:13:20",
       "generated_from": [
         "ztAnalysis.relay/watch.close_push",
         "ztAnalysis.relay/watch.close_push",
@@ -25738,9 +25738,9 @@
       "active_trade_date": "2026-09-22",
       "latest_closed_trade_date": "2026-09-21",
       "latest_closed_recommendation_date": "2026-09-18",
-      "default_display_trade_date": "2026-09-21",
-      "default_display_recommendation_date": "2026-09-18",
-      "has_pending_next_trade_day": true
+      "default_display_trade_date": "2026-09-22",
+      "default_display_recommendation_date": "2026-09-21",
+      "has_pending_next_trade_day": false
     },
     "summary": {
       "total_samples": 697,
@@ -25762,7 +25762,7 @@
       "realtime_candidate_count": 12,
       "realtime_buy_count": 0,
       "realtime_pending_count": 0,
-      "realtime_unavailable_count": 0
+      "realtime_unavailable_count": 12
     },
     "assumptions": [
       "若次日高开超过 5% ，统一提示谨慎接力，先观察承接，不直接按开盘价买入；历史胜率回测同步排除这类样本的直接入场。",
@@ -26700,10 +26700,10 @@
     "lifecycle": {
       "stage": "post_close_wait_auction",
       "stage_label": "盘后待验证",
-      "stage_note": "收盘后样本已经更新到推荐日 2026-09-21；2026-09-22 这批待验证推荐已准备好，明日 09:25-09:30 再补真实竞价结果。 已生成下一交易日 2026-09-22 的待验证池，页面默认仍展示最近已闭环日 2026-09-21（对应推荐日 2026-09-18）。",
-      "quote_state": "waiting_trade_day",
-      "quote_state_label": "等待明日竞价",
-      "quote_state_note": "盘后样本已经推到推荐日 2026-09-21，已生成 2026-09-22 的待验证池；等待明日 09:25-09:30 竞价快照。 已生成下一交易日 2026-09-22 的待验证池，页面默认仍展示最近已闭环日 2026-09-21（对应推荐日 2026-09-18）。",
+      "stage_note": "收盘后样本已经更新到推荐日 2026-09-21；2026-09-22 这批待验证推荐已准备好，明日 09:25-09:30 再补真实竞价结果。 页面默认停留在 2026-09-22 这批待验证结果（对应推荐日 2026-09-21），不会自动回退到历史闭环。",
+      "quote_state": "waiting_window",
+      "quote_state_label": "等待开盘窗口",
+      "quote_state_note": "今天要验证 2026-09-22，需等 09:25-09:30 才能落地真实竞价结果。",
       "snapshot_quality": "missing",
       "has_current_plan": true,
       "has_historical_records": true,
@@ -26713,10 +26713,10 @@
       "latest_historical_recommendation_date": "2026-09-18",
       "latest_closed_trade_date": "2026-09-21",
       "latest_closed_recommendation_date": "2026-09-18",
-      "default_display_trade_date": "2026-09-21",
-      "default_display_recommendation_date": "2026-09-18",
-      "has_pending_next_trade_day": true,
-      "default_display_note": "已生成下一交易日 2026-09-22 的待验证池，页面默认仍展示最近已闭环日 2026-09-21（对应推荐日 2026-09-18）。",
+      "default_display_trade_date": "2026-09-22",
+      "default_display_recommendation_date": "2026-09-21",
+      "has_pending_next_trade_day": false,
+      "default_display_note": "页面默认停留在 2026-09-22 这批待验证结果（对应推荐日 2026-09-21），不会自动回退到历史闭环。",
       "realtime_reference_date": "2026-09-21",
       "quote_time": "",
       "forced_query": false
@@ -26727,7 +26727,7 @@
       "entry_window": "09:25-09:30",
       "quote_time": "",
       "source_module": "ztAnalysis.relay/watch",
-      "quote_source": "guard.future_trade_date",
+      "quote_source": "biying hsrl/ssjy_more 实时行情（失败时回退 raw.quotes）",
       "candidate_count": 12,
       "quoted_count": 0,
       "buy_count": 0,
@@ -26735,24 +26735,587 @@
       "direct_expected_count": 0,
       "pending_count": 0,
       "rejected_count": 0,
-      "unavailable_count": 0,
+      "unavailable_count": 12,
       "buy_list": [],
       "pending_list": [],
       "rejected_list": [],
-      "unavailable_list": [],
+      "unavailable_list": [
+        {
+          "date10": "2026-09-21",
+          "code": "002453",
+          "name": "华软科技",
+          "bucket": "relay",
+          "bucket_label": "接力候选",
+          "placement_label": "接力候选",
+          "score": 93,
+          "daily_rank": 1,
+          "relay_rank": 1,
+          "watch_rank": 0,
+          "relay_selection_mode": "strict",
+          "watch_group": "",
+          "main_line": "区块链",
+          "score_label": "推荐因子",
+          "reason_text": "区块链龙头带动 · 梯队带动瑞康医药 · 近7日新高 · 高度修复 · 温和放量 · 封板稳 · 早封 预期 高开（+4%~+7%%）+ 竞价量能≥0.20亿 超预期 高开≥+7%% + 竞价量能≥0.20亿 低预期 低于+4%% 或 竞价量能",
+          "factor_hint": "环境95(进攻窗口) / 板块57 / 龙头92 / 接力92 / 容量50 / 风险62 / 潮汐+4 / 梯队71 / 强候选",
+          "hit_rules": [],
+          "block_reasons": [],
+          "leader_factor_score": 92.0,
+          "relay_factor_score": 92.0,
+          "leader_philosophy_score": 88.0,
+          "break_risk": 64.0,
+          "environment_score": 95.0,
+          "capacity_factor_score": 50.0,
+          "step_context_score": 100.0,
+          "tide_relay_gate": 3.0,
+          "theme_ladder_profile": {
+            "label": "梯队完整",
+            "score": 71.0,
+            "gap_count": 0,
+            "front_count": 2,
+            "leader_boards": 3,
+            "has_carry": true
+          },
+          "expected_text": "高开（+4%~+7%%）+ 竞价量能≥0.20亿",
+          "super_text": "高开≥+7%% + 竞价量能≥0.20亿",
+          "low_text": "低于+4%% 或 竞价量能",
+          "quote_time": "",
+          "auction_amount_need_yi": 0.0,
+          "decision_status": "unavailable",
+          "decision_label": "报价缺失",
+          "signal_status": "unavailable",
+          "signal_label": "无法判断",
+          "note": "未拿到 9:25 实时报价，当前不生成买入信号。"
+        },
+        {
+          "date10": "2026-09-21",
+          "code": "001376",
+          "name": "百通能源",
+          "bucket": "relay",
+          "bucket_label": "接力候选",
+          "placement_label": "接力候选",
+          "score": 86,
+          "daily_rank": 2,
+          "relay_rank": 2,
+          "watch_rank": 0,
+          "relay_selection_mode": "strict",
+          "watch_group": "",
+          "main_line": "节能环保",
+          "score_label": "推荐因子",
+          "reason_text": "节能环保龙头带动 · 梯队带动诚邦股份、华金资本 · 近7日新高 · 高度修复 · 温和放量 · 封板稳 · 早封 预期 高开（+4%~+7%%）+ 竞价量能≥0.18亿 超预期 高开≥+7%% + 竞价量能≥0.18亿 低预期 低于+4%% 或 竞价量能",
+          "factor_hint": "环境95(进攻窗口) / 板块47 / 龙头87 / 接力89 / 容量51 / 风险56 / 潮汐+4 / 梯队46 / 强候选",
+          "hit_rules": [],
+          "block_reasons": [],
+          "leader_factor_score": 87.0,
+          "relay_factor_score": 89.0,
+          "leader_philosophy_score": 83.0,
+          "break_risk": 64.0,
+          "environment_score": 95.0,
+          "capacity_factor_score": 51.0,
+          "step_context_score": 100.0,
+          "tide_relay_gate": 3.0,
+          "theme_ladder_profile": {
+            "label": "中位承接",
+            "score": 46.0,
+            "gap_count": 0,
+            "front_count": 3,
+            "leader_boards": 2,
+            "has_carry": true
+          },
+          "expected_text": "高开（+4%~+7%%）+ 竞价量能≥0.18亿",
+          "super_text": "高开≥+7%% + 竞价量能≥0.18亿",
+          "low_text": "低于+4%% 或 竞价量能",
+          "quote_time": "",
+          "auction_amount_need_yi": 0.0,
+          "decision_status": "unavailable",
+          "decision_label": "报价缺失",
+          "signal_status": "unavailable",
+          "signal_label": "无法判断",
+          "note": "未拿到 9:25 实时报价，当前不生成买入信号。"
+        },
+        {
+          "date10": "2026-09-21",
+          "code": "002589",
+          "name": "瑞康医药",
+          "bucket": "relay",
+          "bucket_label": "接力候选",
+          "placement_label": "接力候选",
+          "score": 78,
+          "daily_rank": 3,
+          "relay_rank": 3,
+          "watch_rank": 0,
+          "relay_selection_mode": "strict",
+          "watch_group": "",
+          "main_line": "区块链",
+          "score_label": "推荐因子",
+          "reason_text": "梯队跟随 · 近7日新高 · 高度修复 · 早封 · 晋级生态强(66%/33%) 预期 高开（+2%~+5%%）+ 竞价量能≥0.41亿 超预期 高开≥+5%% + 竞价量能≥0.41亿 低预期 低于+2%% 或 竞价量能",
+          "factor_hint": "环境95(进攻窗口) / 板块55 / 龙头63 / 接力88 / 容量53 / 风险55 / 潮汐+4 / 梯队71 / 重点候选",
+          "hit_rules": [],
+          "block_reasons": [],
+          "leader_factor_score": 63.0,
+          "relay_factor_score": 88.0,
+          "leader_philosophy_score": 36.0,
+          "break_risk": 64.0,
+          "environment_score": 95.0,
+          "capacity_factor_score": 53.0,
+          "step_context_score": 100.0,
+          "tide_relay_gate": 3.0,
+          "theme_ladder_profile": {
+            "label": "梯队完整",
+            "score": 71.0,
+            "gap_count": 0,
+            "front_count": 2,
+            "leader_boards": 3,
+            "has_carry": true
+          },
+          "expected_text": "高开（+2%~+5%%）+ 竞价量能≥0.41亿",
+          "super_text": "高开≥+5%% + 竞价量能≥0.41亿",
+          "low_text": "低于+2%% 或 竞价量能",
+          "quote_time": "",
+          "auction_amount_need_yi": 0.0,
+          "decision_status": "unavailable",
+          "decision_label": "报价缺失",
+          "signal_status": "unavailable",
+          "signal_label": "无法判断",
+          "note": "未拿到 9:25 实时报价，当前不生成买入信号。"
+        },
+        {
+          "date10": "2026-09-21",
+          "code": "603316",
+          "name": "诚邦股份",
+          "bucket": "relay",
+          "bucket_label": "接力候选",
+          "placement_label": "接力候选",
+          "score": 73,
+          "daily_rank": 4,
+          "relay_rank": 4,
+          "watch_rank": 0,
+          "relay_selection_mode": "strict",
+          "watch_group": "",
+          "main_line": "节能环保",
+          "score_label": "推荐因子",
+          "reason_text": "梯队跟随 · 近7日新高 · 题材联动 · 高度修复 · 温和放量 · 早封 · 晋级生态强(66%/33%) 预期 高开（+2%~+5%%）+ 竞价量能≥0.25亿 超预期 高开≥+5%% + 竞价量能≥0.25亿 低预期 低于+2%% 或 竞价量能",
+          "factor_hint": "环境95(进攻窗口) / 板块48 / 龙头62 / 接力84 / 容量54 / 风险48 / 潮汐+4 / 梯队46 / 重点候选",
+          "hit_rules": [],
+          "block_reasons": [],
+          "leader_factor_score": 62.0,
+          "relay_factor_score": 84.0,
+          "leader_philosophy_score": 31.0,
+          "break_risk": 64.0,
+          "environment_score": 95.0,
+          "capacity_factor_score": 54.0,
+          "step_context_score": 100.0,
+          "tide_relay_gate": 3.0,
+          "theme_ladder_profile": {
+            "label": "中位承接",
+            "score": 46.0,
+            "gap_count": 0,
+            "front_count": 3,
+            "leader_boards": 2,
+            "has_carry": true
+          },
+          "expected_text": "高开（+2%~+5%%）+ 竞价量能≥0.25亿",
+          "super_text": "高开≥+5%% + 竞价量能≥0.25亿",
+          "low_text": "低于+2%% 或 竞价量能",
+          "quote_time": "",
+          "auction_amount_need_yi": 0.0,
+          "decision_status": "unavailable",
+          "decision_label": "报价缺失",
+          "signal_status": "unavailable",
+          "signal_label": "无法判断",
+          "note": "未拿到 9:25 实时报价，当前不生成买入信号。"
+        },
+        {
+          "date10": "2026-09-21",
+          "code": "001216",
+          "name": "华瓷股份",
+          "bucket": "watch",
+          "bucket_label": "观察池",
+          "placement_label": "观察池",
+          "score": 74,
+          "daily_rank": 5,
+          "relay_rank": 0,
+          "watch_rank": 1,
+          "relay_selection_mode": "",
+          "watch_group": "高标/题材核心",
+          "main_line": "",
+          "score_label": "观察因子",
+          "reason_text": "市场唯一高度核心 · 突破新高(5板) · 近7日新高 · 一年新高 · 加速确认 · 早封 · 晋级生态强(66%/33%) · 断板风险高 · 一字板(参与难度大) 预期 高开（+2%~+5%%）+ 竞价量能≥0.15亿 超预期 高开≥+5%% + 竞价量能≥0.15亿 低预期 低于+2%% 或 竞价量能",
+          "factor_hint": "环境95(进攻窗口) / 板块38 / 龙头88 / 接力89 / 容量38 / 风险14 / 潮汐+0 / 梯队0 / 重点候选",
+          "hit_rules": [],
+          "block_reasons": [],
+          "leader_factor_score": 88.0,
+          "relay_factor_score": 89.0,
+          "leader_philosophy_score": 89.0,
+          "break_risk": 77.0,
+          "environment_score": 95.0,
+          "capacity_factor_score": 38.0,
+          "step_context_score": 97.0,
+          "tide_relay_gate": 0.0,
+          "theme_ladder_profile": {
+            "label": "",
+            "score": 0.0,
+            "gap_count": 0,
+            "front_count": 0,
+            "leader_boards": 0,
+            "has_carry": false
+          },
+          "expected_text": "高开（+2%~+5%%）+ 竞价量能≥0.15亿",
+          "super_text": "高开≥+5%% + 竞价量能≥0.15亿",
+          "low_text": "低于+2%% 或 竞价量能",
+          "quote_time": "",
+          "auction_amount_need_yi": 0.0,
+          "decision_status": "unavailable",
+          "decision_label": "报价缺失",
+          "signal_status": "unavailable",
+          "signal_label": "无法判断",
+          "note": "未拿到 9:25 实时报价，当前不生成买入信号。"
+        },
+        {
+          "date10": "2026-09-21",
+          "code": "603230",
+          "name": "内蒙新华",
+          "bucket": "watch",
+          "bucket_label": "观察池",
+          "placement_label": "观察池",
+          "score": 70,
+          "daily_rank": 6,
+          "relay_rank": 0,
+          "watch_rank": 2,
+          "relay_selection_mode": "",
+          "watch_group": "高位分歧",
+          "main_line": "",
+          "score_label": "观察因子",
+          "reason_text": "核心梯队 · 近7日新高 · 高度修复 · 温和放量 · 早封 · 晋级生态强(66%/33%) · 断板风险高 · 分歧偏大 预期 高开（+1%~+3%%）+ 竞价量能≥0.33亿 超预期 高开≥+3%% + 竞价量能≥0.33亿 低预期 低于+1%% 或 竞价量能",
+          "factor_hint": "环境95(进攻窗口) / 板块38 / 龙头74 / 接力78 / 容量57 / 风险37 / 潮汐+0 / 梯队0 / 重点候选",
+          "hit_rules": [],
+          "block_reasons": [],
+          "leader_factor_score": 74.0,
+          "relay_factor_score": 78.0,
+          "leader_philosophy_score": 26.0,
+          "break_risk": 73.0,
+          "environment_score": 95.0,
+          "capacity_factor_score": 57.0,
+          "step_context_score": 97.0,
+          "tide_relay_gate": 0.0,
+          "theme_ladder_profile": {
+            "label": "",
+            "score": 0.0,
+            "gap_count": 0,
+            "front_count": 0,
+            "leader_boards": 0,
+            "has_carry": false
+          },
+          "expected_text": "高开（+1%~+3%%）+ 竞价量能≥0.33亿",
+          "super_text": "高开≥+3%% + 竞价量能≥0.33亿",
+          "low_text": "低于+1%% 或 竞价量能",
+          "quote_time": "",
+          "auction_amount_need_yi": 0.0,
+          "decision_status": "unavailable",
+          "decision_label": "报价缺失",
+          "signal_status": "unavailable",
+          "signal_label": "无法判断",
+          "note": "未拿到 9:25 实时报价，当前不生成买入信号。"
+        },
+        {
+          "date10": "2026-09-21",
+          "code": "600127",
+          "name": "金健米业",
+          "bucket": "watch",
+          "bucket_label": "观察池",
+          "placement_label": "观察池",
+          "score": 71,
+          "daily_rank": 7,
+          "relay_rank": 0,
+          "watch_rank": 3,
+          "relay_selection_mode": "",
+          "watch_group": "高位分歧",
+          "main_line": "",
+          "score_label": "观察因子",
+          "reason_text": "近7日新高 · 高度修复 · 换手承接 · 早封 · 容量够 预期 高开（+2%~+5%%）+ 竞价量能≥1.65亿 超预期 高开≥+5%% + 竞价量能≥1.65亿 低预期 低于+2%% 或 竞价量能",
+          "factor_hint": "环境95(进攻窗口) / 板块32 / 龙头73 / 接力85 / 容量75 / 风险45 / 潮汐+0 / 梯队0 / 重点候选",
+          "hit_rules": [],
+          "block_reasons": [],
+          "leader_factor_score": 73.0,
+          "relay_factor_score": 85.0,
+          "leader_philosophy_score": 46.0,
+          "break_risk": 64.0,
+          "environment_score": 95.0,
+          "capacity_factor_score": 75.0,
+          "step_context_score": 100.0,
+          "tide_relay_gate": 0.0,
+          "theme_ladder_profile": {
+            "label": "",
+            "score": 0.0,
+            "gap_count": 0,
+            "front_count": 0,
+            "leader_boards": 0,
+            "has_carry": false
+          },
+          "expected_text": "高开（+2%~+5%%）+ 竞价量能≥1.65亿",
+          "super_text": "高开≥+5%% + 竞价量能≥1.65亿",
+          "low_text": "低于+2%% 或 竞价量能",
+          "quote_time": "",
+          "auction_amount_need_yi": 0.0,
+          "decision_status": "unavailable",
+          "decision_label": "报价缺失",
+          "signal_status": "unavailable",
+          "signal_label": "无法判断",
+          "note": "未拿到 9:25 实时报价，当前不生成买入信号。"
+        },
+        {
+          "date10": "2026-09-21",
+          "code": "600448",
+          "name": "华纺股份",
+          "bucket": "watch",
+          "bucket_label": "观察池",
+          "placement_label": "观察池",
+          "score": 64,
+          "daily_rank": 8,
+          "relay_rank": 0,
+          "watch_rank": 4,
+          "relay_selection_mode": "",
+          "watch_group": "高位分歧",
+          "main_line": "",
+          "score_label": "观察因子",
+          "reason_text": "近7日新高 · 高度修复 · 反复回封 · 早封 · 晋级生态强(66%/33%) · 断板风险高 · 分歧偏大 预期 高开（+1%~+3%%）+ 竞价量能≥0.56亿 超预期 高开≥+3%% + 竞价量能≥0.56亿 低预期 低于+1%% 或 竞价量能",
+          "factor_hint": "环境95(进攻窗口) / 板块35 / 龙头68 / 接力78 / 容量43 / 风险38 / 潮汐+0 / 梯队0 / 条件触发",
+          "hit_rules": [],
+          "block_reasons": [],
+          "leader_factor_score": 68.0,
+          "relay_factor_score": 78.0,
+          "leader_philosophy_score": 26.0,
+          "break_risk": 72.0,
+          "environment_score": 95.0,
+          "capacity_factor_score": 43.0,
+          "step_context_score": 100.0,
+          "tide_relay_gate": 0.0,
+          "theme_ladder_profile": {
+            "label": "",
+            "score": 0.0,
+            "gap_count": 0,
+            "front_count": 0,
+            "leader_boards": 0,
+            "has_carry": false
+          },
+          "expected_text": "高开（+1%~+3%%）+ 竞价量能≥0.56亿",
+          "super_text": "高开≥+3%% + 竞价量能≥0.56亿",
+          "low_text": "低于+1%% 或 竞价量能",
+          "quote_time": "",
+          "auction_amount_need_yi": 0.0,
+          "decision_status": "unavailable",
+          "decision_label": "报价缺失",
+          "signal_status": "unavailable",
+          "signal_label": "无法判断",
+          "note": "未拿到 9:25 实时报价，当前不生成买入信号。"
+        },
+        {
+          "date10": "2026-09-21",
+          "code": "600630",
+          "name": "龙头股份",
+          "bucket": "watch",
+          "bucket_label": "观察池",
+          "placement_label": "观察池",
+          "score": 70,
+          "daily_rank": 9,
+          "relay_rank": 0,
+          "watch_rank": 5,
+          "relay_selection_mode": "",
+          "watch_group": "高位分歧",
+          "main_line": "",
+          "score_label": "观察因子",
+          "reason_text": "近7日新高 · 高度修复 · 温和放量 · 封板稳 · 早封 预期 高开（+1%~+3%%）+ 竞价量能≥0.19亿 超预期 高开≥+3%% + 竞价量能≥0.19亿 低预期 低于+1%% 或 竞价量能",
+          "factor_hint": "环境95(进攻窗口) / 板块41 / 龙头72 / 接力85 / 容量50 / 风险47 / 潮汐+0 / 梯队0 / 重点候选",
+          "hit_rules": [],
+          "block_reasons": [],
+          "leader_factor_score": 72.0,
+          "relay_factor_score": 85.0,
+          "leader_philosophy_score": 46.0,
+          "break_risk": 64.0,
+          "environment_score": 95.0,
+          "capacity_factor_score": 50.0,
+          "step_context_score": 100.0,
+          "tide_relay_gate": 0.0,
+          "theme_ladder_profile": {
+            "label": "",
+            "score": 0.0,
+            "gap_count": 0,
+            "front_count": 0,
+            "leader_boards": 0,
+            "has_carry": false
+          },
+          "expected_text": "高开（+1%~+3%%）+ 竞价量能≥0.19亿",
+          "super_text": "高开≥+3%% + 竞价量能≥0.19亿",
+          "low_text": "低于+1%% 或 竞价量能",
+          "quote_time": "",
+          "auction_amount_need_yi": 0.0,
+          "decision_status": "unavailable",
+          "decision_label": "报价缺失",
+          "signal_status": "unavailable",
+          "signal_label": "无法判断",
+          "note": "未拿到 9:25 实时报价，当前不生成买入信号。"
+        },
+        {
+          "date10": "2026-09-21",
+          "code": "000504",
+          "name": "南华生物",
+          "bucket": "watch",
+          "bucket_label": "观察池",
+          "placement_label": "观察池",
+          "score": 67,
+          "daily_rank": 10,
+          "relay_rank": 0,
+          "watch_rank": 6,
+          "relay_selection_mode": "",
+          "watch_group": "高位分歧",
+          "main_line": "",
+          "score_label": "观察因子",
+          "reason_text": "近7日新高 · 历史新高 · 高度修复 · 加速确认 · 早封 · 晋级生态强(66%/33%) · 断板风险高 · 一字板(参与难度大) 预期 高开（+1%~+3%%）+ 竞价量能≥0.15亿 超预期 高开≥+3%% + 竞价量能≥0.15亿 低预期 低于+1%% 或 竞价量能",
+          "factor_hint": "环境95(进攻窗口) / 板块44 / 龙头69 / 接力89 / 容量39 / 风险18 / 潮汐+0 / 梯队0 / 条件触发",
+          "hit_rules": [],
+          "block_reasons": [],
+          "leader_factor_score": 69.0,
+          "relay_factor_score": 89.0,
+          "leader_philosophy_score": 25.0,
+          "break_risk": 76.0,
+          "environment_score": 95.0,
+          "capacity_factor_score": 39.0,
+          "step_context_score": 100.0,
+          "tide_relay_gate": 0.0,
+          "theme_ladder_profile": {
+            "label": "",
+            "score": 0.0,
+            "gap_count": 0,
+            "front_count": 0,
+            "leader_boards": 0,
+            "has_carry": false
+          },
+          "expected_text": "高开（+1%~+3%%）+ 竞价量能≥0.15亿",
+          "super_text": "高开≥+3%% + 竞价量能≥0.15亿",
+          "low_text": "低于+1%% 或 竞价量能",
+          "quote_time": "",
+          "auction_amount_need_yi": 0.0,
+          "decision_status": "unavailable",
+          "decision_label": "报价缺失",
+          "signal_status": "unavailable",
+          "signal_label": "无法判断",
+          "note": "未拿到 9:25 实时报价，当前不生成买入信号。"
+        },
+        {
+          "date10": "2026-09-21",
+          "code": "002080",
+          "name": "中材科技",
+          "bucket": "watch",
+          "bucket_label": "观察池",
+          "placement_label": "观察池",
+          "score": 70,
+          "daily_rank": 11,
+          "relay_rank": 0,
+          "watch_rank": 7,
+          "relay_selection_mode": "",
+          "watch_group": "容量核心",
+          "main_line": "节能环保",
+          "score_label": "观察因子",
+          "reason_text": "梯队跟随 · 近7日新高 · 题材联动 · 高度修复 · 温和放量 · 早封 · 容量够 · 断板风险高 · 分歧偏大 预期 平开（-1%~+1%%）+ 竞价量能≥5.13亿 超预期 高开≥+1%% + 竞价量能≥5.13亿 低预期 低于-1%% 或 竞价量能",
+          "factor_hint": "环境95(进攻窗口) / 板块48 / 龙头53 / 接力71 / 容量69 / 风险34 / 潮汐+4 / 梯队46 / 重点候选",
+          "hit_rules": [],
+          "block_reasons": [],
+          "leader_factor_score": 53.0,
+          "relay_factor_score": 71.0,
+          "leader_philosophy_score": 29.0,
+          "break_risk": 77.0,
+          "environment_score": 95.0,
+          "capacity_factor_score": 69.0,
+          "step_context_score": 70.0,
+          "tide_relay_gate": 3.0,
+          "theme_ladder_profile": {
+            "label": "中位承接",
+            "score": 46.0,
+            "gap_count": 0,
+            "front_count": 3,
+            "leader_boards": 2,
+            "has_carry": true
+          },
+          "expected_text": "平开（-1%~+1%%）+ 竞价量能≥5.13亿",
+          "super_text": "高开≥+1%% + 竞价量能≥5.13亿",
+          "low_text": "低于-1%% 或 竞价量能",
+          "quote_time": "",
+          "auction_amount_need_yi": 0.0,
+          "decision_status": "unavailable",
+          "decision_label": "报价缺失",
+          "signal_status": "unavailable",
+          "signal_label": "无法判断",
+          "note": "未拿到 9:25 实时报价，当前不生成买入信号。"
+        },
+        {
+          "date10": "2026-09-21",
+          "code": "001389",
+          "name": "广合科技",
+          "bucket": "watch",
+          "bucket_label": "观察池",
+          "placement_label": "观察池",
+          "score": 64,
+          "daily_rank": 12,
+          "relay_rank": 0,
+          "watch_rank": 8,
+          "relay_selection_mode": "",
+          "watch_group": "容量核心",
+          "main_line": "华为概念",
+          "score_label": "观察因子",
+          "reason_text": "梯队跟随 · 近7日新高 · 题材联动 · 高度修复 · 温和放量 · 封板稳 · 早封 · 梯队断层 · 断板风险高 预期 高开（+0%~+2%%）+ 竞价量能≥1.16亿 超预期 高开≥+2%% + 竞价量能≥1.16亿 低预期 低于+0%% 或 竞价量能",
+          "factor_hint": "环境95(进攻窗口) / 板块37 / 龙头52 / 接力64 / 容量79 / 风险28 / 潮汐+4 / 梯队11 / 条件触发",
+          "hit_rules": [],
+          "block_reasons": [],
+          "leader_factor_score": 52.0,
+          "relay_factor_score": 64.0,
+          "leader_philosophy_score": 25.0,
+          "break_risk": 69.0,
+          "environment_score": 95.0,
+          "capacity_factor_score": 79.0,
+          "step_context_score": 70.0,
+          "tide_relay_gate": 3.0,
+          "theme_ladder_profile": {
+            "label": "梯队断层",
+            "score": 11.0,
+            "gap_count": 2,
+            "front_count": 1,
+            "leader_boards": 4,
+            "has_carry": false
+          },
+          "expected_text": "高开（+0%~+2%%）+ 竞价量能≥1.16亿",
+          "super_text": "高开≥+2%% + 竞价量能≥1.16亿",
+          "low_text": "低于+0%% 或 竞价量能",
+          "quote_time": "",
+          "auction_amount_need_yi": 0.0,
+          "decision_status": "unavailable",
+          "decision_label": "报价缺失",
+          "signal_status": "unavailable",
+          "signal_label": "无法判断",
+          "note": "未拿到 9:25 实时报价，当前不生成买入信号。"
+        }
+      ],
       "diagnostics": {
-        "requested": 0,
+        "requested": 12,
         "received": 0,
         "remote_received": 0,
         "fallback_used": 0,
-        "missing": [],
-        "source": "future_trade_day_guard",
+        "missing": [
+          "002453",
+          "001376",
+          "002589",
+          "603316",
+          "001216",
+          "603230",
+          "600127",
+          "600448",
+          "600630",
+          "000504",
+          "002080",
+          "001389"
+        ],
+        "source": "unavailable",
         "as_of": "",
-        "error": "普通模式禁止用 2026-09-21 的实时行情去匹配未来交易日 2026-09-22。",
-        "request_window": "09:25-09:30",
-        "future_trade_day_guard": true,
-        "current_session_date": "2026-09-21",
-        "forced_query": false
+        "error": "窗口外无 preserved 快照且无可用缓存数据",
+        "request_window": "09:25-09:30"
       }
     },
     "currentPoolRecords": [
@@ -26823,26 +27386,39 @@
         "daily_rank": 1,
         "performance": {
           "open_check": {
-            "status": "missing",
-            "label": "无后续价格",
-            "note": "推荐日后没有可用交易日价格"
+            "status": "unavailable",
+            "label": "无法判断",
+            "gap_pct": null,
+            "note": "未拿到 9:25 实时报价，当前不生成买入信号。",
+            "can_enter": false,
+            "prev_close": null,
+            "open_price": null,
+            "close_price": null,
+            "close_pct": null,
+            "gap_trap": false
           },
           "next_day": {
-            "status": "missing",
+            "status": "pending",
             "label": "隔日收益",
-            "note": "推荐日后没有可用交易日价格"
+            "note": "已拿到 9:25 开盘判断，待收盘后补齐收益表现。"
           },
           "hold_2d": {
-            "status": "missing",
+            "status": "pending",
             "label": "2日收益",
-            "note": "推荐日后没有可用交易日价格"
+            "note": "已拿到 9:25 开盘判断，待收盘后补齐收益表现。"
           },
           "hold_3d": {
-            "status": "missing",
+            "status": "pending",
             "label": "3日收益",
-            "note": "推荐日后没有可用交易日价格"
+            "note": "已拿到 9:25 开盘判断，待收盘后补齐收益表现。"
           }
-        }
+        },
+        "auction_amount_need_yi": 0.0,
+        "signal_status": "unavailable",
+        "signal_label": "无法判断",
+        "decision_status": "unavailable",
+        "decision_label": "报价缺失",
+        "note": "未拿到 9:25 实时报价，当前不生成买入信号。"
       },
       {
         "date": "20260921",
@@ -26911,26 +27487,39 @@
         "daily_rank": 2,
         "performance": {
           "open_check": {
-            "status": "missing",
-            "label": "无后续价格",
-            "note": "推荐日后没有可用交易日价格"
+            "status": "unavailable",
+            "label": "无法判断",
+            "gap_pct": null,
+            "note": "未拿到 9:25 实时报价，当前不生成买入信号。",
+            "can_enter": false,
+            "prev_close": null,
+            "open_price": null,
+            "close_price": null,
+            "close_pct": null,
+            "gap_trap": false
           },
           "next_day": {
-            "status": "missing",
+            "status": "pending",
             "label": "隔日收益",
-            "note": "推荐日后没有可用交易日价格"
+            "note": "已拿到 9:25 开盘判断，待收盘后补齐收益表现。"
           },
           "hold_2d": {
-            "status": "missing",
+            "status": "pending",
             "label": "2日收益",
-            "note": "推荐日后没有可用交易日价格"
+            "note": "已拿到 9:25 开盘判断，待收盘后补齐收益表现。"
           },
           "hold_3d": {
-            "status": "missing",
+            "status": "pending",
             "label": "3日收益",
-            "note": "推荐日后没有可用交易日价格"
+            "note": "已拿到 9:25 开盘判断，待收盘后补齐收益表现。"
           }
-        }
+        },
+        "auction_amount_need_yi": 0.0,
+        "signal_status": "unavailable",
+        "signal_label": "无法判断",
+        "decision_status": "unavailable",
+        "decision_label": "报价缺失",
+        "note": "未拿到 9:25 实时报价，当前不生成买入信号。"
       },
       {
         "date": "20260921",
@@ -26999,26 +27588,39 @@
         "daily_rank": 3,
         "performance": {
           "open_check": {
-            "status": "missing",
-            "label": "无后续价格",
-            "note": "推荐日后没有可用交易日价格"
+            "status": "unavailable",
+            "label": "无法判断",
+            "gap_pct": null,
+            "note": "未拿到 9:25 实时报价，当前不生成买入信号。",
+            "can_enter": false,
+            "prev_close": null,
+            "open_price": null,
+            "close_price": null,
+            "close_pct": null,
+            "gap_trap": false
           },
           "next_day": {
-            "status": "missing",
+            "status": "pending",
             "label": "隔日收益",
-            "note": "推荐日后没有可用交易日价格"
+            "note": "已拿到 9:25 开盘判断，待收盘后补齐收益表现。"
           },
           "hold_2d": {
-            "status": "missing",
+            "status": "pending",
             "label": "2日收益",
-            "note": "推荐日后没有可用交易日价格"
+            "note": "已拿到 9:25 开盘判断，待收盘后补齐收益表现。"
           },
           "hold_3d": {
-            "status": "missing",
+            "status": "pending",
             "label": "3日收益",
-            "note": "推荐日后没有可用交易日价格"
+            "note": "已拿到 9:25 开盘判断，待收盘后补齐收益表现。"
           }
-        }
+        },
+        "auction_amount_need_yi": 0.0,
+        "signal_status": "unavailable",
+        "signal_label": "无法判断",
+        "decision_status": "unavailable",
+        "decision_label": "报价缺失",
+        "note": "未拿到 9:25 实时报价，当前不生成买入信号。"
       },
       {
         "date": "20260921",
@@ -27087,26 +27689,39 @@
         "daily_rank": 4,
         "performance": {
           "open_check": {
-            "status": "missing",
-            "label": "无后续价格",
-            "note": "推荐日后没有可用交易日价格"
+            "status": "unavailable",
+            "label": "无法判断",
+            "gap_pct": null,
+            "note": "未拿到 9:25 实时报价，当前不生成买入信号。",
+            "can_enter": false,
+            "prev_close": null,
+            "open_price": null,
+            "close_price": null,
+            "close_pct": null,
+            "gap_trap": false
           },
           "next_day": {
-            "status": "missing",
+            "status": "pending",
             "label": "隔日收益",
-            "note": "推荐日后没有可用交易日价格"
+            "note": "已拿到 9:25 开盘判断，待收盘后补齐收益表现。"
           },
           "hold_2d": {
-            "status": "missing",
+            "status": "pending",
             "label": "2日收益",
-            "note": "推荐日后没有可用交易日价格"
+            "note": "已拿到 9:25 开盘判断，待收盘后补齐收益表现。"
           },
           "hold_3d": {
-            "status": "missing",
+            "status": "pending",
             "label": "3日收益",
-            "note": "推荐日后没有可用交易日价格"
+            "note": "已拿到 9:25 开盘判断，待收盘后补齐收益表现。"
           }
-        }
+        },
+        "auction_amount_need_yi": 0.0,
+        "signal_status": "unavailable",
+        "signal_label": "无法判断",
+        "decision_status": "unavailable",
+        "decision_label": "报价缺失",
+        "note": "未拿到 9:25 实时报价，当前不生成买入信号。"
       },
       {
         "date": "20260921",
@@ -27175,26 +27790,39 @@
         "daily_rank": 5,
         "performance": {
           "open_check": {
-            "status": "missing",
-            "label": "无后续价格",
-            "note": "推荐日后没有可用交易日价格"
+            "status": "unavailable",
+            "label": "无法判断",
+            "gap_pct": null,
+            "note": "未拿到 9:25 实时报价，当前不生成买入信号。",
+            "can_enter": false,
+            "prev_close": null,
+            "open_price": null,
+            "close_price": null,
+            "close_pct": null,
+            "gap_trap": false
           },
           "next_day": {
-            "status": "missing",
+            "status": "pending",
             "label": "隔日收益",
-            "note": "推荐日后没有可用交易日价格"
+            "note": "已拿到 9:25 开盘判断，待收盘后补齐收益表现。"
           },
           "hold_2d": {
-            "status": "missing",
+            "status": "pending",
             "label": "2日收益",
-            "note": "推荐日后没有可用交易日价格"
+            "note": "已拿到 9:25 开盘判断，待收盘后补齐收益表现。"
           },
           "hold_3d": {
-            "status": "missing",
+            "status": "pending",
             "label": "3日收益",
-            "note": "推荐日后没有可用交易日价格"
+            "note": "已拿到 9:25 开盘判断，待收盘后补齐收益表现。"
           }
-        }
+        },
+        "auction_amount_need_yi": 0.0,
+        "signal_status": "unavailable",
+        "signal_label": "无法判断",
+        "decision_status": "unavailable",
+        "decision_label": "报价缺失",
+        "note": "未拿到 9:25 实时报价，当前不生成买入信号。"
       },
       {
         "date": "20260921",
@@ -27263,26 +27891,39 @@
         "daily_rank": 6,
         "performance": {
           "open_check": {
-            "status": "missing",
-            "label": "无后续价格",
-            "note": "推荐日后没有可用交易日价格"
+            "status": "unavailable",
+            "label": "无法判断",
+            "gap_pct": null,
+            "note": "未拿到 9:25 实时报价，当前不生成买入信号。",
+            "can_enter": false,
+            "prev_close": null,
+            "open_price": null,
+            "close_price": null,
+            "close_pct": null,
+            "gap_trap": false
           },
           "next_day": {
-            "status": "missing",
+            "status": "pending",
             "label": "隔日收益",
-            "note": "推荐日后没有可用交易日价格"
+            "note": "已拿到 9:25 开盘判断，待收盘后补齐收益表现。"
           },
           "hold_2d": {
-            "status": "missing",
+            "status": "pending",
             "label": "2日收益",
-            "note": "推荐日后没有可用交易日价格"
+            "note": "已拿到 9:25 开盘判断，待收盘后补齐收益表现。"
           },
           "hold_3d": {
-            "status": "missing",
+            "status": "pending",
             "label": "3日收益",
-            "note": "推荐日后没有可用交易日价格"
+            "note": "已拿到 9:25 开盘判断，待收盘后补齐收益表现。"
           }
-        }
+        },
+        "auction_amount_need_yi": 0.0,
+        "signal_status": "unavailable",
+        "signal_label": "无法判断",
+        "decision_status": "unavailable",
+        "decision_label": "报价缺失",
+        "note": "未拿到 9:25 实时报价，当前不生成买入信号。"
       },
       {
         "date": "20260921",
@@ -27351,26 +27992,39 @@
         "daily_rank": 7,
         "performance": {
           "open_check": {
-            "status": "missing",
-            "label": "无后续价格",
-            "note": "推荐日后没有可用交易日价格"
+            "status": "unavailable",
+            "label": "无法判断",
+            "gap_pct": null,
+            "note": "未拿到 9:25 实时报价，当前不生成买入信号。",
+            "can_enter": false,
+            "prev_close": null,
+            "open_price": null,
+            "close_price": null,
+            "close_pct": null,
+            "gap_trap": false
           },
           "next_day": {
-            "status": "missing",
+            "status": "pending",
             "label": "隔日收益",
-            "note": "推荐日后没有可用交易日价格"
+            "note": "已拿到 9:25 开盘判断，待收盘后补齐收益表现。"
           },
           "hold_2d": {
-            "status": "missing",
+            "status": "pending",
             "label": "2日收益",
-            "note": "推荐日后没有可用交易日价格"
+            "note": "已拿到 9:25 开盘判断，待收盘后补齐收益表现。"
           },
           "hold_3d": {
-            "status": "missing",
+            "status": "pending",
             "label": "3日收益",
-            "note": "推荐日后没有可用交易日价格"
+            "note": "已拿到 9:25 开盘判断，待收盘后补齐收益表现。"
           }
-        }
+        },
+        "auction_amount_need_yi": 0.0,
+        "signal_status": "unavailable",
+        "signal_label": "无法判断",
+        "decision_status": "unavailable",
+        "decision_label": "报价缺失",
+        "note": "未拿到 9:25 实时报价，当前不生成买入信号。"
       },
       {
         "date": "20260921",
@@ -27439,26 +28093,39 @@
         "daily_rank": 8,
         "performance": {
           "open_check": {
-            "status": "missing",
-            "label": "无后续价格",
-            "note": "推荐日后没有可用交易日价格"
+            "status": "unavailable",
+            "label": "无法判断",
+            "gap_pct": null,
+            "note": "未拿到 9:25 实时报价，当前不生成买入信号。",
+            "can_enter": false,
+            "prev_close": null,
+            "open_price": null,
+            "close_price": null,
+            "close_pct": null,
+            "gap_trap": false
           },
           "next_day": {
-            "status": "missing",
+            "status": "pending",
             "label": "隔日收益",
-            "note": "推荐日后没有可用交易日价格"
+            "note": "已拿到 9:25 开盘判断，待收盘后补齐收益表现。"
           },
           "hold_2d": {
-            "status": "missing",
+            "status": "pending",
             "label": "2日收益",
-            "note": "推荐日后没有可用交易日价格"
+            "note": "已拿到 9:25 开盘判断，待收盘后补齐收益表现。"
           },
           "hold_3d": {
-            "status": "missing",
+            "status": "pending",
             "label": "3日收益",
-            "note": "推荐日后没有可用交易日价格"
+            "note": "已拿到 9:25 开盘判断，待收盘后补齐收益表现。"
           }
-        }
+        },
+        "auction_amount_need_yi": 0.0,
+        "signal_status": "unavailable",
+        "signal_label": "无法判断",
+        "decision_status": "unavailable",
+        "decision_label": "报价缺失",
+        "note": "未拿到 9:25 实时报价，当前不生成买入信号。"
       },
       {
         "date": "20260921",
@@ -27527,26 +28194,39 @@
         "daily_rank": 9,
         "performance": {
           "open_check": {
-            "status": "missing",
-            "label": "无后续价格",
-            "note": "推荐日后没有可用交易日价格"
+            "status": "unavailable",
+            "label": "无法判断",
+            "gap_pct": null,
+            "note": "未拿到 9:25 实时报价，当前不生成买入信号。",
+            "can_enter": false,
+            "prev_close": null,
+            "open_price": null,
+            "close_price": null,
+            "close_pct": null,
+            "gap_trap": false
           },
           "next_day": {
-            "status": "missing",
+            "status": "pending",
             "label": "隔日收益",
-            "note": "推荐日后没有可用交易日价格"
+            "note": "已拿到 9:25 开盘判断，待收盘后补齐收益表现。"
           },
           "hold_2d": {
-            "status": "missing",
+            "status": "pending",
             "label": "2日收益",
-            "note": "推荐日后没有可用交易日价格"
+            "note": "已拿到 9:25 开盘判断，待收盘后补齐收益表现。"
           },
           "hold_3d": {
-            "status": "missing",
+            "status": "pending",
             "label": "3日收益",
-            "note": "推荐日后没有可用交易日价格"
+            "note": "已拿到 9:25 开盘判断，待收盘后补齐收益表现。"
           }
-        }
+        },
+        "auction_amount_need_yi": 0.0,
+        "signal_status": "unavailable",
+        "signal_label": "无法判断",
+        "decision_status": "unavailable",
+        "decision_label": "报价缺失",
+        "note": "未拿到 9:25 实时报价，当前不生成买入信号。"
       },
       {
         "date": "20260921",
@@ -27615,26 +28295,39 @@
         "daily_rank": 10,
         "performance": {
           "open_check": {
-            "status": "missing",
-            "label": "无后续价格",
-            "note": "推荐日后没有可用交易日价格"
+            "status": "unavailable",
+            "label": "无法判断",
+            "gap_pct": null,
+            "note": "未拿到 9:25 实时报价，当前不生成买入信号。",
+            "can_enter": false,
+            "prev_close": null,
+            "open_price": null,
+            "close_price": null,
+            "close_pct": null,
+            "gap_trap": false
           },
           "next_day": {
-            "status": "missing",
+            "status": "pending",
             "label": "隔日收益",
-            "note": "推荐日后没有可用交易日价格"
+            "note": "已拿到 9:25 开盘判断，待收盘后补齐收益表现。"
           },
           "hold_2d": {
-            "status": "missing",
+            "status": "pending",
             "label": "2日收益",
-            "note": "推荐日后没有可用交易日价格"
+            "note": "已拿到 9:25 开盘判断，待收盘后补齐收益表现。"
           },
           "hold_3d": {
-            "status": "missing",
+            "status": "pending",
             "label": "3日收益",
-            "note": "推荐日后没有可用交易日价格"
+            "note": "已拿到 9:25 开盘判断，待收盘后补齐收益表现。"
           }
-        }
+        },
+        "auction_amount_need_yi": 0.0,
+        "signal_status": "unavailable",
+        "signal_label": "无法判断",
+        "decision_status": "unavailable",
+        "decision_label": "报价缺失",
+        "note": "未拿到 9:25 实时报价，当前不生成买入信号。"
       },
       {
         "date": "20260921",
@@ -27703,26 +28396,39 @@
         "daily_rank": 11,
         "performance": {
           "open_check": {
-            "status": "missing",
-            "label": "无后续价格",
-            "note": "推荐日后没有可用交易日价格"
+            "status": "unavailable",
+            "label": "无法判断",
+            "gap_pct": null,
+            "note": "未拿到 9:25 实时报价，当前不生成买入信号。",
+            "can_enter": false,
+            "prev_close": null,
+            "open_price": null,
+            "close_price": null,
+            "close_pct": null,
+            "gap_trap": false
           },
           "next_day": {
-            "status": "missing",
+            "status": "pending",
             "label": "隔日收益",
-            "note": "推荐日后没有可用交易日价格"
+            "note": "已拿到 9:25 开盘判断，待收盘后补齐收益表现。"
           },
           "hold_2d": {
-            "status": "missing",
+            "status": "pending",
             "label": "2日收益",
-            "note": "推荐日后没有可用交易日价格"
+            "note": "已拿到 9:25 开盘判断，待收盘后补齐收益表现。"
           },
           "hold_3d": {
-            "status": "missing",
+            "status": "pending",
             "label": "3日收益",
-            "note": "推荐日后没有可用交易日价格"
+            "note": "已拿到 9:25 开盘判断，待收盘后补齐收益表现。"
           }
-        }
+        },
+        "auction_amount_need_yi": 0.0,
+        "signal_status": "unavailable",
+        "signal_label": "无法判断",
+        "decision_status": "unavailable",
+        "decision_label": "报价缺失",
+        "note": "未拿到 9:25 实时报价，当前不生成买入信号。"
       },
       {
         "date": "20260921",
@@ -27791,26 +28497,39 @@
         "daily_rank": 12,
         "performance": {
           "open_check": {
-            "status": "missing",
-            "label": "无后续价格",
-            "note": "推荐日后没有可用交易日价格"
+            "status": "unavailable",
+            "label": "无法判断",
+            "gap_pct": null,
+            "note": "未拿到 9:25 实时报价，当前不生成买入信号。",
+            "can_enter": false,
+            "prev_close": null,
+            "open_price": null,
+            "close_price": null,
+            "close_pct": null,
+            "gap_trap": false
           },
           "next_day": {
-            "status": "missing",
+            "status": "pending",
             "label": "隔日收益",
-            "note": "推荐日后没有可用交易日价格"
+            "note": "已拿到 9:25 开盘判断，待收盘后补齐收益表现。"
           },
           "hold_2d": {
-            "status": "missing",
+            "status": "pending",
             "label": "2日收益",
-            "note": "推荐日后没有可用交易日价格"
+            "note": "已拿到 9:25 开盘判断，待收盘后补齐收益表现。"
           },
           "hold_3d": {
-            "status": "missing",
+            "status": "pending",
             "label": "3日收益",
-            "note": "推荐日后没有可用交易日价格"
+            "note": "已拿到 9:25 开盘判断，待收盘后补齐收益表现。"
           }
-        }
+        },
+        "auction_amount_need_yi": 0.0,
+        "signal_status": "unavailable",
+        "signal_label": "无法判断",
+        "decision_status": "unavailable",
+        "decision_label": "报价缺失",
+        "note": "未拿到 9:25 实时报价，当前不生成买入信号。"
       }
     ],
     "displayRecords": [
@@ -224226,8 +224945,8 @@
     "diagnostics": {
       "price_history": {
         "source": "cache+api",
-        "fetched": 3,
-        "cached": 398,
+        "fetched": 401,
+        "cached": 0,
         "missing": [
           "000003",
           "920305"
@@ -224235,18 +224954,28 @@
         "history_fetch_disabled": false
       },
       "realtime_buy": {
-        "requested": 0,
+        "requested": 12,
         "received": 0,
         "remote_received": 0,
         "fallback_used": 0,
-        "missing": [],
-        "source": "future_trade_day_guard",
+        "missing": [
+          "002453",
+          "001376",
+          "002589",
+          "603316",
+          "001216",
+          "603230",
+          "600127",
+          "600448",
+          "600630",
+          "000504",
+          "002080",
+          "001389"
+        ],
+        "source": "unavailable",
         "as_of": "",
-        "error": "普通模式禁止用 2026-09-21 的实时行情去匹配未来交易日 2026-09-22。",
-        "request_window": "09:25-09:30",
-        "future_trade_day_guard": true,
-        "current_session_date": "2026-09-21",
-        "forced_query": false
+        "error": "窗口外无 preserved 快照且无可用缓存数据",
+        "request_window": "09:25-09:30"
       },
       "filtered_non_backtest_codes": [
         "000003",
@@ -225857,8 +226586,8 @@
   "plateRotateMeta": {
     "asOf": "2026-09-21",
     "requestedDate": "2026-09-21",
-    "source": "https://www.duanxianxia.com/web/platerotat",
-    "refreshedAt": "2026-09-21T23:15:10+08:00",
+    "source": null,
+    "refreshedAt": null,
     "stale": false
   },
   "conceptFundFlowTop": [
@@ -226619,832 +227348,5 @@
       "barPct": 25.628657282935315,
       "sourceNote": ""
     }
-  ],
-  "intradaySnapshots": {
-    "date": "2026-09-21",
-    "count": 12,
-    "snapshots": [
-      {
-        "time": "09:40:04",
-        "ts_bj": "2026-09-21 09:40:04",
-        "date": "2026-09-21",
-        "source": "intraday_live",
-        "provider": "必盈(实时)+必盈(实时)",
-        "data_quality": "valid",
-        "pool_status": {
-          "ztgc": "valid",
-          "zbgc": "valid",
-          "dtgc": "valid_empty"
-        },
-        "pool_errors": {},
-        "zt": 28,
-        "dt": 0,
-        "zab": 5,
-        "zb": 15.2,
-        "fb": 84.8,
-        "jj": 42.9,
-        "lianban": 12,
-        "max_lb": 5,
-        "amount": "3938.6亿",
-        "bf": 0,
-        "heat": 61,
-        "risk": 11,
-        "headline": "走强",
-        "concepts": [
-          {
-            "name": "出版",
-            "lead": "内蒙新华",
-            "chg_pct": null
-          },
-          {
-            "name": "医疗服务",
-            "lead": "南华生物",
-            "chg_pct": null
-          },
-          {
-            "name": "半导体",
-            "lead": "博通集成",
-            "chg_pct": null
-          },
-          {
-            "name": "化学制药",
-            "lead": "哈药股份",
-            "chg_pct": null
-          },
-          {
-            "name": "家居用品",
-            "lead": "华瓷股份",
-            "chg_pct": null
-          }
-        ],
-        "alerts": [
-          {
-            "level": "info",
-            "text": "盘中模式：强制实时拉取"
-          }
-        ],
-        "shift_score": 73,
-        "shift_label": "走强",
-        "note": "盘中实时切片已接入，可逐点观察情绪变化。"
-      },
-      {
-        "time": "09:50:05",
-        "ts_bj": "2026-09-21 09:50:05",
-        "date": "2026-09-21",
-        "source": "intraday_live",
-        "provider": "必盈(实时)+必盈(实时)",
-        "data_quality": "valid",
-        "pool_status": {
-          "ztgc": "valid",
-          "zbgc": "valid",
-          "dtgc": "valid_empty"
-        },
-        "pool_errors": {},
-        "zt": 33,
-        "dt": 0,
-        "zab": 9,
-        "zb": 21.4,
-        "fb": 78.6,
-        "jj": 30.3,
-        "lianban": 10,
-        "max_lb": 5,
-        "amount": "5863.4亿",
-        "bf": 0,
-        "heat": 56,
-        "risk": 16,
-        "headline": "修复",
-        "concepts": [
-          {
-            "name": "医疗服务",
-            "lead": "南华生物",
-            "chg_pct": null
-          },
-          {
-            "name": "出版",
-            "lead": "内蒙新华",
-            "chg_pct": null
-          },
-          {
-            "name": "服装家纺",
-            "lead": "龙头股份",
-            "chg_pct": null
-          },
-          {
-            "name": "半导体",
-            "lead": "博通集成",
-            "chg_pct": null
-          },
-          {
-            "name": "化学制药",
-            "lead": "哈药股份",
-            "chg_pct": null
-          }
-        ],
-        "alerts": [
-          {
-            "level": "info",
-            "text": "盘中模式：强制实时拉取"
-          }
-        ],
-        "shift_score": 68,
-        "shift_label": "修复",
-        "note": "炸板/跌停抬升，情绪明显走弱。"
-      },
-      {
-        "time": "10:00:05",
-        "ts_bj": "2026-09-21 10:00:05",
-        "date": "2026-09-21",
-        "source": "intraday_live",
-        "provider": "必盈(实时)+必盈(实时)",
-        "data_quality": "valid",
-        "pool_status": {
-          "ztgc": "valid",
-          "zbgc": "valid",
-          "dtgc": "valid"
-        },
-        "pool_errors": {},
-        "zt": 43,
-        "dt": 1,
-        "zab": 9,
-        "zb": 17.3,
-        "fb": 82.7,
-        "jj": 27.9,
-        "lianban": 12,
-        "max_lb": 5,
-        "amount": "7370.7亿",
-        "bf": 0,
-        "heat": 59,
-        "risk": 15,
-        "headline": "修复",
-        "concepts": [
-          {
-            "name": "医疗服务",
-            "lead": "南华生物",
-            "chg_pct": null
-          },
-          {
-            "name": "化学制药",
-            "lead": "哈药股份",
-            "chg_pct": null
-          },
-          {
-            "name": "专用设备",
-            "lead": "康力电梯",
-            "chg_pct": null
-          },
-          {
-            "name": "家居用品",
-            "lead": "华瓷股份",
-            "chg_pct": null
-          },
-          {
-            "name": "出版",
-            "lead": "内蒙新华",
-            "chg_pct": null
-          }
-        ],
-        "alerts": [
-          {
-            "level": "info",
-            "text": "盘中模式：强制实时拉取"
-          }
-        ],
-        "shift_score": 70,
-        "shift_label": "修复",
-        "note": "情绪边际修复，但仍需确认持续性。"
-      },
-      {
-        "time": "10:10:04",
-        "ts_bj": "2026-09-21 10:10:04",
-        "date": "2026-09-21",
-        "source": "intraday_live",
-        "provider": "必盈(实时)+必盈(实时)",
-        "data_quality": "valid",
-        "pool_status": {
-          "ztgc": "valid",
-          "zbgc": "valid",
-          "dtgc": "valid"
-        },
-        "pool_errors": {},
-        "zt": 52,
-        "dt": 1,
-        "zab": 9,
-        "zb": 14.8,
-        "fb": 85.2,
-        "jj": 25.0,
-        "lianban": 13,
-        "max_lb": 5,
-        "amount": "8547.0亿",
-        "bf": 0,
-        "heat": 61,
-        "risk": 14,
-        "headline": "走强",
-        "concepts": [
-          {
-            "name": "医疗服务",
-            "lead": "南华生物",
-            "chg_pct": null
-          },
-          {
-            "name": "化学制药",
-            "lead": "哈药股份",
-            "chg_pct": null
-          },
-          {
-            "name": "出版",
-            "lead": "内蒙新华",
-            "chg_pct": null
-          },
-          {
-            "name": "服装家纺",
-            "lead": "龙头股份",
-            "chg_pct": null
-          },
-          {
-            "name": "专用设备",
-            "lead": "康力电梯",
-            "chg_pct": null
-          }
-        ],
-        "alerts": [
-          {
-            "level": "info",
-            "text": "盘中模式：强制实时拉取"
-          }
-        ],
-        "shift_score": 72,
-        "shift_label": "走强",
-        "note": "情绪边际修复，但仍需确认持续性。"
-      },
-      {
-        "time": "10:20:05",
-        "ts_bj": "2026-09-21 10:20:05",
-        "date": "2026-09-21",
-        "source": "intraday_live",
-        "provider": "必盈(实时)+必盈(实时)",
-        "data_quality": "valid",
-        "pool_status": {
-          "ztgc": "valid",
-          "zbgc": "valid",
-          "dtgc": "valid"
-        },
-        "pool_errors": {},
-        "zt": 55,
-        "dt": 1,
-        "zab": 12,
-        "zb": 17.9,
-        "fb": 82.1,
-        "jj": 23.6,
-        "lianban": 13,
-        "max_lb": 5,
-        "amount": "9480.1亿",
-        "bf": 0,
-        "heat": 60,
-        "risk": 17,
-        "headline": "修复",
-        "concepts": [
-          {
-            "name": "医疗服务",
-            "lead": "南华生物",
-            "chg_pct": null
-          },
-          {
-            "name": "出版",
-            "lead": "内蒙新华",
-            "chg_pct": null
-          },
-          {
-            "name": "服装家纺",
-            "lead": "龙头股份",
-            "chg_pct": null
-          },
-          {
-            "name": "化学制药",
-            "lead": "哈药股份",
-            "chg_pct": null
-          },
-          {
-            "name": "专用设备",
-            "lead": "康力电梯",
-            "chg_pct": null
-          }
-        ],
-        "alerts": [
-          {
-            "level": "info",
-            "text": "盘中模式：强制实时拉取"
-          }
-        ],
-        "shift_score": 70,
-        "shift_label": "修复",
-        "note": "情绪略有回落，注意午后分歧。"
-      },
-      {
-        "time": "10:30:05",
-        "ts_bj": "2026-09-21 10:30:05",
-        "date": "2026-09-21",
-        "source": "intraday_live",
-        "provider": "必盈(实时)+必盈(实时)",
-        "data_quality": "valid",
-        "pool_status": {
-          "ztgc": "valid",
-          "zbgc": "valid",
-          "dtgc": "valid"
-        },
-        "pool_errors": {},
-        "zt": 62,
-        "dt": 1,
-        "zab": 11,
-        "zb": 15.1,
-        "fb": 84.9,
-        "jj": 22.6,
-        "lianban": 14,
-        "max_lb": 5,
-        "amount": "10203.9亿",
-        "bf": 0,
-        "heat": 62,
-        "risk": 15,
-        "headline": "走强",
-        "concepts": [
-          {
-            "name": "化学制药",
-            "lead": "哈药股份",
-            "chg_pct": null
-          },
-          {
-            "name": "医疗服务",
-            "lead": "南华生物",
-            "chg_pct": null
-          },
-          {
-            "name": "出版",
-            "lead": "内蒙新华",
-            "chg_pct": null
-          },
-          {
-            "name": "服装家纺",
-            "lead": "龙头股份",
-            "chg_pct": null
-          },
-          {
-            "name": "专用设备",
-            "lead": "康力电梯",
-            "chg_pct": null
-          }
-        ],
-        "alerts": [
-          {
-            "level": "info",
-            "text": "盘中模式：强制实时拉取"
-          }
-        ],
-        "shift_score": 72,
-        "shift_label": "走强",
-        "note": "情绪边际修复，但仍需确认持续性。"
-      },
-      {
-        "time": "10:40:04",
-        "ts_bj": "2026-09-21 10:40:04",
-        "date": "2026-09-21",
-        "source": "intraday_live",
-        "provider": "必盈(实时)+必盈(实时)",
-        "data_quality": "valid",
-        "pool_status": {
-          "ztgc": "valid",
-          "zbgc": "valid",
-          "dtgc": "valid"
-        },
-        "pool_errors": {},
-        "zt": 66,
-        "dt": 1,
-        "zab": 13,
-        "zb": 16.5,
-        "fb": 83.5,
-        "jj": 22.7,
-        "lianban": 15,
-        "max_lb": 5,
-        "amount": "10905.2亿",
-        "bf": 0,
-        "heat": 62,
-        "risk": 16,
-        "headline": "修复",
-        "concepts": [
-          {
-            "name": "化学制药",
-            "lead": "哈药股份",
-            "chg_pct": null
-          },
-          {
-            "name": "医疗服务",
-            "lead": "南华生物",
-            "chg_pct": null
-          },
-          {
-            "name": "出版",
-            "lead": "内蒙新华",
-            "chg_pct": null
-          },
-          {
-            "name": "服装家纺",
-            "lead": "龙头股份",
-            "chg_pct": null
-          },
-          {
-            "name": "汽车零部",
-            "lead": "美湖股份",
-            "chg_pct": null
-          }
-        ],
-        "alerts": [
-          {
-            "level": "info",
-            "text": "盘中模式：强制实时拉取"
-          }
-        ],
-        "shift_score": 71,
-        "shift_label": "修复",
-        "note": "情绪整体平稳，维持当前节奏。"
-      },
-      {
-        "time": "10:50:04",
-        "ts_bj": "2026-09-21 10:50:04",
-        "date": "2026-09-21",
-        "source": "intraday_live",
-        "provider": "必盈(实时)+必盈(实时)",
-        "data_quality": "valid",
-        "pool_status": {
-          "ztgc": "valid",
-          "zbgc": "valid",
-          "dtgc": "valid"
-        },
-        "pool_errors": {},
-        "zt": 68,
-        "dt": 1,
-        "zab": 15,
-        "zb": 18.1,
-        "fb": 81.9,
-        "jj": 22.1,
-        "lianban": 15,
-        "max_lb": 5,
-        "amount": "11477.6亿",
-        "bf": 0,
-        "heat": 61,
-        "risk": 18,
-        "headline": "修复",
-        "concepts": [
-          {
-            "name": "化学制药",
-            "lead": "哈药股份",
-            "chg_pct": null
-          },
-          {
-            "name": "医疗服务",
-            "lead": "南华生物",
-            "chg_pct": null
-          },
-          {
-            "name": "医疗器械",
-            "lead": "透景生命",
-            "chg_pct": null
-          },
-          {
-            "name": "家居用品",
-            "lead": "华瓷股份",
-            "chg_pct": null
-          },
-          {
-            "name": "出版",
-            "lead": "内蒙新华",
-            "chg_pct": null
-          }
-        ],
-        "alerts": [
-          {
-            "level": "info",
-            "text": "盘中模式：强制实时拉取"
-          }
-        ],
-        "shift_score": 70,
-        "shift_label": "修复",
-        "note": "情绪整体平稳，维持当前节奏。"
-      },
-      {
-        "time": "11:00:05",
-        "ts_bj": "2026-09-21 11:00:05",
-        "date": "2026-09-21",
-        "source": "intraday_live",
-        "provider": "必盈(实时)+必盈(实时)",
-        "data_quality": "valid",
-        "pool_status": {
-          "ztgc": "valid",
-          "zbgc": "valid",
-          "dtgc": "valid"
-        },
-        "pool_errors": {},
-        "zt": 74,
-        "dt": 1,
-        "zab": 13,
-        "zb": 14.9,
-        "fb": 85.1,
-        "jj": 20.3,
-        "lianban": 15,
-        "max_lb": 5,
-        "amount": "11943.3亿",
-        "bf": 0,
-        "heat": 63,
-        "risk": 16,
-        "headline": "走强",
-        "concepts": [
-          {
-            "name": "化学制药",
-            "lead": "哈药股份",
-            "chg_pct": null
-          },
-          {
-            "name": "医疗服务",
-            "lead": "南华生物",
-            "chg_pct": null
-          },
-          {
-            "name": "医疗器械",
-            "lead": "透景生命",
-            "chg_pct": null
-          },
-          {
-            "name": "家居用品",
-            "lead": "华瓷股份",
-            "chg_pct": null
-          },
-          {
-            "name": "出版",
-            "lead": "内蒙新华",
-            "chg_pct": null
-          }
-        ],
-        "alerts": [
-          {
-            "level": "info",
-            "text": "盘中模式：强制实时拉取"
-          }
-        ],
-        "shift_score": 72,
-        "shift_label": "走强",
-        "note": "情绪边际修复，但仍需确认持续性。"
-      },
-      {
-        "time": "11:10:05",
-        "ts_bj": "2026-09-21 11:10:05",
-        "date": "2026-09-21",
-        "source": "intraday_live",
-        "provider": "必盈(实时)+必盈(实时)",
-        "data_quality": "valid",
-        "pool_status": {
-          "ztgc": "valid",
-          "zbgc": "valid",
-          "dtgc": "valid"
-        },
-        "pool_errors": {},
-        "zt": 75,
-        "dt": 1,
-        "zab": 14,
-        "zb": 15.7,
-        "fb": 84.3,
-        "jj": 20.0,
-        "lianban": 15,
-        "max_lb": 5,
-        "amount": "12409.2亿",
-        "bf": 0,
-        "heat": 63,
-        "risk": 16,
-        "headline": "走强",
-        "concepts": [
-          {
-            "name": "化学制药",
-            "lead": "哈药股份",
-            "chg_pct": null
-          },
-          {
-            "name": "医疗服务",
-            "lead": "南华生物",
-            "chg_pct": null
-          },
-          {
-            "name": "医疗器械",
-            "lead": "透景生命",
-            "chg_pct": null
-          },
-          {
-            "name": "出版",
-            "lead": "内蒙新华",
-            "chg_pct": null
-          },
-          {
-            "name": "服装家纺",
-            "lead": "龙头股份",
-            "chg_pct": null
-          }
-        ],
-        "alerts": [
-          {
-            "level": "info",
-            "text": "盘中模式：强制实时拉取"
-          }
-        ],
-        "shift_score": 72,
-        "shift_label": "走强",
-        "note": "情绪整体平稳，维持当前节奏。"
-      },
-      {
-        "time": "11:20:04",
-        "ts_bj": "2026-09-21 11:20:04",
-        "date": "2026-09-21",
-        "source": "intraday_live",
-        "provider": "必盈(实时)+必盈(实时)",
-        "data_quality": "valid",
-        "pool_status": {
-          "ztgc": "valid",
-          "zbgc": "valid",
-          "dtgc": "valid"
-        },
-        "pool_errors": {},
-        "zt": 79,
-        "dt": 1,
-        "zab": 16,
-        "zb": 16.8,
-        "fb": 83.2,
-        "jj": 19.0,
-        "lianban": 15,
-        "max_lb": 5,
-        "amount": "12880.7亿",
-        "bf": 0,
-        "heat": 63,
-        "risk": 18,
-        "headline": "修复",
-        "concepts": [
-          {
-            "name": "化学制药",
-            "lead": "哈药股份",
-            "chg_pct": null
-          },
-          {
-            "name": "医疗服务",
-            "lead": "南华生物",
-            "chg_pct": null
-          },
-          {
-            "name": "医疗器械",
-            "lead": "透景生命",
-            "chg_pct": null
-          },
-          {
-            "name": "出版",
-            "lead": "内蒙新华",
-            "chg_pct": null
-          },
-          {
-            "name": "服装家纺",
-            "lead": "龙头股份",
-            "chg_pct": null
-          }
-        ],
-        "alerts": [
-          {
-            "level": "info",
-            "text": "盘中模式：强制实时拉取"
-          }
-        ],
-        "shift_score": 71,
-        "shift_label": "修复",
-        "note": "情绪整体平稳，维持当前节奏。"
-      },
-      {
-        "time": "11:30:05",
-        "ts_bj": "2026-09-21 11:30:05",
-        "date": "2026-09-21",
-        "source": "intraday_live",
-        "provider": "必盈(实时)+必盈(实时)",
-        "data_quality": "valid",
-        "pool_status": {
-          "ztgc": "valid",
-          "zbgc": "valid",
-          "dtgc": "valid"
-        },
-        "pool_errors": {},
-        "zt": 81,
-        "dt": 1,
-        "zab": 18,
-        "zb": 18.2,
-        "fb": 81.8,
-        "jj": 21.0,
-        "lianban": 17,
-        "max_lb": 5,
-        "amount": "13278.4亿",
-        "bf": 0,
-        "heat": 63,
-        "risk": 20,
-        "headline": "修复",
-        "concepts": [
-          {
-            "name": "化学制药",
-            "lead": "哈药股份",
-            "chg_pct": null
-          },
-          {
-            "name": "医疗服务",
-            "lead": "南华生物",
-            "chg_pct": null
-          },
-          {
-            "name": "医疗器械",
-            "lead": "透景生命",
-            "chg_pct": null
-          },
-          {
-            "name": "出版",
-            "lead": "内蒙新华",
-            "chg_pct": null
-          },
-          {
-            "name": "服装家纺",
-            "lead": "龙头股份",
-            "chg_pct": null
-          }
-        ],
-        "alerts": [
-          {
-            "level": "info",
-            "text": "盘中模式：强制实时拉取"
-          }
-        ],
-        "shift_score": 70,
-        "shift_label": "修复",
-        "note": "情绪整体平稳，维持当前节奏。"
-      }
-    ],
-    "simulated": false,
-    "interval_min": null,
-    "latest": {
-      "time": "11:30:05",
-      "ts_bj": "2026-09-21 11:30:05",
-      "date": "2026-09-21",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid"
-      },
-      "pool_errors": {},
-      "zt": 81,
-      "dt": 1,
-      "zab": 18,
-      "zb": 18.2,
-      "fb": 81.8,
-      "jj": 21.0,
-      "lianban": 17,
-      "max_lb": 5,
-      "amount": "13278.4亿",
-      "bf": 0,
-      "heat": 63,
-      "risk": 20,
-      "headline": "修复",
-      "concepts": [
-        {
-          "name": "化学制药",
-          "lead": "哈药股份",
-          "chg_pct": null
-        },
-        {
-          "name": "医疗服务",
-          "lead": "南华生物",
-          "chg_pct": null
-        },
-        {
-          "name": "医疗器械",
-          "lead": "透景生命",
-          "chg_pct": null
-        },
-        {
-          "name": "出版",
-          "lead": "内蒙新华",
-          "chg_pct": null
-        },
-        {
-          "name": "服装家纺",
-          "lead": "龙头股份",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        }
-      ],
-      "shift_score": 70,
-      "shift_label": "修复",
-      "note": "情绪整体平稳，维持当前节奏。"
-    }
-  }
+  ]
 }
