@@ -1,11 +1,11 @@
 {
   "schema": "intraday_runtime_v1",
   "date": "2026-09-21",
-  "updated_at": "2026-09-21 11:00:05",
+  "updated_at": "2026-09-21 11:10:05",
   "source": "必盈(实时)+必盈(实时)",
   "latest": {
-    "time": "11:00:05",
-    "ts_bj": "2026-09-21 11:00:05",
+    "time": "11:10:05",
+    "ts_bj": "2026-09-21 11:10:05",
     "date": "2026-09-21",
     "source": "intraday_live",
     "provider": "必盈(实时)+必盈(实时)",
@@ -16,15 +16,15 @@
       "dtgc": "valid"
     },
     "pool_errors": {},
-    "zt": 74,
+    "zt": 75,
     "dt": 1,
-    "zab": 13,
-    "zb": 14.9,
-    "fb": 85.1,
-    "jj": 20.3,
+    "zab": 14,
+    "zb": 15.7,
+    "fb": 84.3,
+    "jj": 20.0,
     "lianban": 15,
     "max_lb": 5,
-    "amount": "11943.3亿",
+    "amount": "12409.2亿",
     "bf": 0,
     "heat": 63,
     "risk": 16,
@@ -46,13 +46,13 @@
         "chg_pct": null
       },
       {
-        "name": "家居用品",
-        "lead": "华瓷股份",
+        "name": "出版",
+        "lead": "内蒙新华",
         "chg_pct": null
       },
       {
-        "name": "出版",
-        "lead": "内蒙新华",
+        "name": "服装家纺",
+        "lead": "龙头股份",
         "chg_pct": null
       }
     ],
@@ -64,7 +64,7 @@
     ],
     "shift_score": 72,
     "shift_label": "走强",
-    "note": "情绪边际修复，但仍需确认持续性。"
+    "note": "情绪整体平稳，维持当前节奏。"
   },
   "snapshots": [
     {
@@ -633,40 +633,103 @@
       "shift_score": 72,
       "shift_label": "走强",
       "note": "情绪边际修复，但仍需确认持续性。"
+    },
+    {
+      "time": "11:10:05",
+      "ts_bj": "2026-09-21 11:10:05",
+      "date": "2026-09-21",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid"
+      },
+      "pool_errors": {},
+      "zt": 75,
+      "dt": 1,
+      "zab": 14,
+      "zb": 15.7,
+      "fb": 84.3,
+      "jj": 20.0,
+      "lianban": 15,
+      "max_lb": 5,
+      "amount": "12409.2亿",
+      "bf": 0,
+      "heat": 63,
+      "risk": 16,
+      "headline": "走强",
+      "concepts": [
+        {
+          "name": "化学制药",
+          "lead": "哈药股份",
+          "chg_pct": null
+        },
+        {
+          "name": "医疗服务",
+          "lead": "南华生物",
+          "chg_pct": null
+        },
+        {
+          "name": "医疗器械",
+          "lead": "透景生命",
+          "chg_pct": null
+        },
+        {
+          "name": "出版",
+          "lead": "内蒙新华",
+          "chg_pct": null
+        },
+        {
+          "name": "服装家纺",
+          "lead": "龙头股份",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        }
+      ],
+      "shift_score": 72,
+      "shift_label": "走强",
+      "note": "情绪整体平稳，维持当前节奏。"
     }
   ],
   "indices": [
     {
       "name": "上证指数",
       "code": "000001.SH",
-      "val": 3930.782,
-      "chg": 0.48342596164341967,
-      "cje": 557673085100.0,
-      "t": "2026-09-21 11:00:00"
+      "val": 3932.548,
+      "chg": 0.528570599592872,
+      "cje": 579947813300.0,
+      "t": "2026-09-21 11:10:06"
     },
     {
       "name": "深证成指",
       "code": "399001.SZ",
-      "val": 13711.187,
-      "chg": 0.5154655424179986,
-      "cje": 636001746400.0,
-      "t": "2026-09-21 11:00:00"
+      "val": 13708.339,
+      "chg": 0.4945871133027948,
+      "cje": 660729839500.0,
+      "t": "2026-09-21 11:09:57"
     },
     {
       "name": "创业板指",
       "code": "399006.SZ",
-      "val": 3403.675,
-      "chg": 0.9191217893447295,
-      "cje": 311587875900.0,
-      "t": "2026-09-21 11:00:00"
+      "val": 3401.045,
+      "chg": 0.8411421672286381,
+      "cje": 323597368000.0,
+      "t": "2026-09-21 11:10:03"
     }
   ],
   "asOf": {
-    "indices": "11:00:00"
+    "indices": "11:10:03"
   },
   "health": {
     "status": "valid",
-    "last_valid_at": "2026-09-21 11:00:05",
+    "last_valid_at": "2026-09-21 11:10:05",
     "rejected_reason": "",
     "source": {
       "status": "valid",
@@ -684,8 +747,8 @@
       "message": "intraday_coverage_incomplete",
       "date": "2026-09-21",
       "expected_count": 26,
-      "due_count": 10,
-      "observed_count": 9,
+      "due_count": 11,
+      "observed_count": 10,
       "observed_slots": [
         "09:40",
         "09:50",
@@ -695,7 +758,8 @@
         "10:30",
         "10:40",
         "10:50",
-        "11:00"
+        "11:00",
+        "11:10"
       ],
       "missing_slots": [
         "09:30"
@@ -703,19 +767,19 @@
       "duplicate_slots": [],
       "out_of_session": [],
       "monotonic": true,
-      "morning_coverage": 9,
+      "morning_coverage": 10,
       "afternoon_coverage": 0
     }
   },
   "live": {
     "market": {
-      "zt": 74,
+      "zt": 75,
       "dt": 1,
-      "zab": 13,
-      "zab_rate": 14.9,
+      "zab": 14,
+      "zab_rate": 15.7,
       "lianban": 15,
       "max_lianban": 5,
-      "amount": "11943.3亿"
+      "amount": "12409.2亿"
     },
     "alerts": [
       {
@@ -740,13 +804,13 @@
         "chg_pct": null
       },
       {
-        "name": "家居用品",
-        "lead": "华瓷股份",
+        "name": "出版",
+        "lead": "内蒙新华",
         "chg_pct": null
       },
       {
-        "name": "出版",
-        "lead": "内蒙新华",
+        "name": "服装家纺",
+        "lead": "龙头股份",
         "chg_pct": null
       }
     ]
