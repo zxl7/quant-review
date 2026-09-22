@@ -1,11 +1,11 @@
 {
   "schema": "intraday_runtime_v1",
   "date": "2026-09-22",
-  "updated_at": "2026-09-22 09:40:04",
+  "updated_at": "2026-09-22 09:50:04",
   "source": "必盈(实时)+必盈(实时)",
   "latest": {
-    "time": "09:40:04",
-    "ts_bj": "2026-09-22 09:40:04",
+    "time": "09:50:04",
+    "ts_bj": "2026-09-22 09:50:04",
     "date": "2026-09-22",
     "source": "intraday_live",
     "provider": "必盈(实时)+必盈(实时)",
@@ -16,28 +16,23 @@
       "dtgc": "valid_empty"
     },
     "pool_errors": {},
-    "zt": 21,
+    "zt": 26,
     "dt": 0,
     "zab": 7,
-    "zb": 25.0,
-    "fb": 75.0,
-    "jj": 61.9,
-    "lianban": 13,
+    "zb": 21.2,
+    "fb": 78.8,
+    "jj": 57.7,
+    "lianban": 15,
     "max_lb": 6,
-    "amount": "4162.3亿",
+    "amount": "6161.0亿",
     "bf": 0,
-    "heat": 63,
-    "risk": 17,
-    "headline": "修复",
+    "heat": 64,
+    "risk": 15,
+    "headline": "走强",
     "concepts": [
       {
         "name": "出版",
-        "lead": "新华文轩",
-        "chg_pct": null
-      },
-      {
-        "name": "房地产服",
-        "lead": "我爱我家",
+        "lead": "内蒙新华",
         "chg_pct": null
       },
       {
@@ -46,13 +41,18 @@
         "chg_pct": null
       },
       {
-        "name": "医疗服务",
-        "lead": "南华生物",
+        "name": "化学制药",
+        "lead": "哈药股份",
         "chg_pct": null
       },
       {
-        "name": "元件",
-        "lead": "广合科技",
+        "name": "房地产服",
+        "lead": "我爱我家",
+        "chg_pct": null
+      },
+      {
+        "name": "家电零部",
+        "lead": "禾盛新材",
         "chg_pct": null
       }
     ],
@@ -60,19 +60,11 @@
       {
         "level": "info",
         "text": "盘中模式：强制实时拉取"
-      },
-      {
-        "level": "warn",
-        "text": "炸板率偏高（25.0%）→ 注意回封质量"
-      },
-      {
-        "level": "warn",
-        "text": "高度6板 + 分歧不低 → 高位兑现/炸板风险"
       }
     ],
-    "shift_score": 71,
-    "shift_label": "修复",
-    "note": "承接增强、分歧收敛，情绪明显回暖。"
+    "shift_score": 73,
+    "shift_label": "走强",
+    "note": "情绪边际修复，但仍需确认持续性。"
   },
   "snapshots": [
     {
@@ -215,40 +207,103 @@
       "shift_score": 71,
       "shift_label": "修复",
       "note": "承接增强、分歧收敛，情绪明显回暖。"
+    },
+    {
+      "time": "09:50:04",
+      "ts_bj": "2026-09-22 09:50:04",
+      "date": "2026-09-22",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid_empty"
+      },
+      "pool_errors": {},
+      "zt": 26,
+      "dt": 0,
+      "zab": 7,
+      "zb": 21.2,
+      "fb": 78.8,
+      "jj": 57.7,
+      "lianban": 15,
+      "max_lb": 6,
+      "amount": "6161.0亿",
+      "bf": 0,
+      "heat": 64,
+      "risk": 15,
+      "headline": "走强",
+      "concepts": [
+        {
+          "name": "出版",
+          "lead": "内蒙新华",
+          "chg_pct": null
+        },
+        {
+          "name": "家居用品",
+          "lead": "华瓷股份",
+          "chg_pct": null
+        },
+        {
+          "name": "化学制药",
+          "lead": "哈药股份",
+          "chg_pct": null
+        },
+        {
+          "name": "房地产服",
+          "lead": "我爱我家",
+          "chg_pct": null
+        },
+        {
+          "name": "家电零部",
+          "lead": "禾盛新材",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        }
+      ],
+      "shift_score": 73,
+      "shift_label": "走强",
+      "note": "情绪边际修复，但仍需确认持续性。"
     }
   ],
   "indices": [
     {
       "name": "上证指数",
       "code": "000001.SH",
-      "val": 3960.554,
-      "chg": 0.26955065017986335,
-      "cje": 193604995800.0,
-      "t": "2026-09-22 09:40:03"
+      "val": 3962.217,
+      "chg": 0.31165290727097994,
+      "cje": 287377674300.0,
+      "t": "2026-09-22 09:50:03"
     },
     {
       "name": "深证成指",
       "code": "399001.SZ",
-      "val": 13885.352,
-      "chg": 1.1313311998088884,
-      "cje": 222009603500.0,
-      "t": "2026-09-22 09:40:00"
+      "val": 13885.348,
+      "chg": 1.1313020665665419,
+      "cje": 327564886800.0,
+      "t": "2026-09-22 09:49:57"
     },
     {
       "name": "创业板指",
       "code": "399006.SZ",
-      "val": 3463.059,
-      "chg": 1.8669604275809744,
-      "cje": 104500848500.0,
-      "t": "2026-09-22 09:40:00"
+      "val": 3460.239,
+      "chg": 1.784009248174041,
+      "cje": 155855008700.0,
+      "t": "2026-09-22 09:49:57"
     }
   ],
   "asOf": {
-    "indices": "09:40:00"
+    "indices": "09:49:57"
   },
   "health": {
     "status": "valid",
-    "last_valid_at": "2026-09-22 09:40:04",
+    "last_valid_at": "2026-09-22 09:50:04",
     "rejected_reason": "",
     "source": {
       "status": "valid",
@@ -266,53 +321,41 @@
       "message": "intraday_coverage_collecting",
       "date": "2026-09-22",
       "expected_count": 26,
-      "due_count": 2,
-      "observed_count": 2,
+      "due_count": 3,
+      "observed_count": 3,
       "observed_slots": [
         "09:30",
-        "09:40"
+        "09:40",
+        "09:50"
       ],
       "missing_slots": [],
       "duplicate_slots": [],
       "out_of_session": [],
       "monotonic": true,
-      "morning_coverage": 2,
+      "morning_coverage": 3,
       "afternoon_coverage": 0
     }
   },
   "live": {
     "market": {
-      "zt": 21,
+      "zt": 26,
       "dt": 0,
       "zab": 7,
-      "zab_rate": 25.0,
-      "lianban": 13,
+      "zab_rate": 21.2,
+      "lianban": 15,
       "max_lianban": 6,
-      "amount": "4162.3亿"
+      "amount": "6161.0亿"
     },
     "alerts": [
       {
         "level": "info",
         "text": "盘中模式：强制实时拉取"
-      },
-      {
-        "level": "warn",
-        "text": "炸板率偏高（25.0%）→ 注意回封质量"
-      },
-      {
-        "level": "warn",
-        "text": "高度6板 + 分歧不低 → 高位兑现/炸板风险"
       }
     ],
     "concepts": [
       {
         "name": "出版",
-        "lead": "新华文轩",
-        "chg_pct": null
-      },
-      {
-        "name": "房地产服",
-        "lead": "我爱我家",
+        "lead": "内蒙新华",
         "chg_pct": null
       },
       {
@@ -321,13 +364,18 @@
         "chg_pct": null
       },
       {
-        "name": "医疗服务",
-        "lead": "南华生物",
+        "name": "化学制药",
+        "lead": "哈药股份",
         "chg_pct": null
       },
       {
-        "name": "元件",
-        "lead": "广合科技",
+        "name": "房地产服",
+        "lead": "我爱我家",
+        "chg_pct": null
+      },
+      {
+        "name": "家电零部",
+        "lead": "禾盛新材",
         "chg_pct": null
       }
     ]
