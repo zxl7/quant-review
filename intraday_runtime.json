@@ -1,38 +1,46 @@
 {
   "schema": "intraday_runtime_v1",
-  "date": "2026-09-21",
-  "updated_at": "2026-09-21 11:30:05",
-  "source": "必盈(实时)+必盈(实时)",
+  "date": "2026-09-22",
+  "updated_at": "2026-09-22 09:30:35",
+  "source": "必盈(实时)",
   "latest": {
-    "time": "11:30:05",
-    "ts_bj": "2026-09-21 11:30:05",
-    "date": "2026-09-21",
+    "time": "09:30:35",
+    "ts_bj": "2026-09-22 09:30:35",
+    "date": "2026-09-22",
     "source": "intraday_live",
-    "provider": "必盈(实时)+必盈(实时)",
-    "data_quality": "valid",
+    "provider": "必盈(实时)",
+    "data_quality": "partial",
     "pool_status": {
       "ztgc": "valid",
-      "zbgc": "valid",
-      "dtgc": "valid"
+      "zbgc": "failed",
+      "dtgc": "failed"
     },
-    "pool_errors": {},
-    "zt": 81,
-    "dt": 1,
-    "zab": 18,
-    "zb": 18.2,
-    "fb": 81.8,
-    "jj": 21.0,
-    "lianban": 17,
-    "max_lb": 5,
-    "amount": "13278.4亿",
+    "pool_errors": {
+      "zbgc": "empty_response",
+      "dtgc": "empty_response"
+    },
+    "zt": 13,
+    "dt": null,
+    "zab": null,
+    "zb": null,
+    "fb": null,
+    "jj": 76.9,
+    "lianban": 10,
+    "max_lb": 6,
+    "amount": "",
     "bf": 0,
-    "heat": 63,
-    "risk": 20,
-    "headline": "修复",
+    "heat": null,
+    "risk": null,
+    "headline": "数据部分可用",
     "concepts": [
       {
-        "name": "化学制药",
-        "lead": "哈药股份",
+        "name": "出版",
+        "lead": "新华文轩",
+        "chg_pct": null
+      },
+      {
+        "name": "家居用品",
+        "lead": "华瓷股份",
         "chg_pct": null
       },
       {
@@ -41,18 +49,13 @@
         "chg_pct": null
       },
       {
-        "name": "医疗器械",
-        "lead": "透景生命",
-        "chg_pct": null
-      },
-      {
-        "name": "出版",
-        "lead": "内蒙新华",
+        "name": "包装印刷",
+        "lead": "美盈森",
         "chg_pct": null
       },
       {
         "name": "服装家纺",
-        "lead": "龙头股份",
+        "lead": "泰慕士",
         "chg_pct": null
       }
     ],
@@ -60,179 +63,50 @@
       {
         "level": "info",
         "text": "盘中模式：强制实时拉取"
+      },
+      {
+        "level": "warn",
+        "text": "盘中三池响应不完整，保留最近有效数据"
       }
     ],
-    "shift_score": 70,
-    "shift_label": "修复",
-    "note": "情绪整体平稳，维持当前节奏。"
+    "shift_score": null,
+    "shift_label": "数据部分可用",
+    "note": "本槽位仅部分三池成功；节点已保留，缺失指标不参与判断。"
   },
   "snapshots": [
     {
-      "time": "09:40:04",
-      "ts_bj": "2026-09-21 09:40:04",
-      "date": "2026-09-21",
+      "time": "09:30:35",
+      "ts_bj": "2026-09-22 09:30:35",
+      "date": "2026-09-22",
       "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
+      "provider": "必盈(实时)",
+      "data_quality": "partial",
       "pool_status": {
         "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid_empty"
+        "zbgc": "failed",
+        "dtgc": "failed"
       },
-      "pool_errors": {},
-      "zt": 28,
-      "dt": 0,
-      "zab": 5,
-      "zb": 15.2,
-      "fb": 84.8,
-      "jj": 42.9,
-      "lianban": 12,
-      "max_lb": 5,
-      "amount": "3938.6亿",
-      "bf": 0,
-      "heat": 61,
-      "risk": 11,
-      "headline": "走强",
-      "concepts": [
-        {
-          "name": "出版",
-          "lead": "内蒙新华",
-          "chg_pct": null
-        },
-        {
-          "name": "医疗服务",
-          "lead": "南华生物",
-          "chg_pct": null
-        },
-        {
-          "name": "半导体",
-          "lead": "博通集成",
-          "chg_pct": null
-        },
-        {
-          "name": "化学制药",
-          "lead": "哈药股份",
-          "chg_pct": null
-        },
-        {
-          "name": "家居用品",
-          "lead": "华瓷股份",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        }
-      ],
-      "shift_score": 73,
-      "shift_label": "走强",
-      "note": "盘中实时切片已接入，可逐点观察情绪变化。"
-    },
-    {
-      "time": "09:50:05",
-      "ts_bj": "2026-09-21 09:50:05",
-      "date": "2026-09-21",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid_empty"
+      "pool_errors": {
+        "zbgc": "empty_response",
+        "dtgc": "empty_response"
       },
-      "pool_errors": {},
-      "zt": 33,
-      "dt": 0,
-      "zab": 9,
-      "zb": 21.4,
-      "fb": 78.6,
-      "jj": 30.3,
+      "zt": 13,
+      "dt": null,
+      "zab": null,
+      "zb": null,
+      "fb": null,
+      "jj": 76.9,
       "lianban": 10,
-      "max_lb": 5,
-      "amount": "5863.4亿",
+      "max_lb": 6,
+      "amount": "",
       "bf": 0,
-      "heat": 56,
-      "risk": 16,
-      "headline": "修复",
+      "heat": null,
+      "risk": null,
+      "headline": "数据部分可用",
       "concepts": [
-        {
-          "name": "医疗服务",
-          "lead": "南华生物",
-          "chg_pct": null
-        },
         {
           "name": "出版",
-          "lead": "内蒙新华",
-          "chg_pct": null
-        },
-        {
-          "name": "服装家纺",
-          "lead": "龙头股份",
-          "chg_pct": null
-        },
-        {
-          "name": "半导体",
-          "lead": "博通集成",
-          "chg_pct": null
-        },
-        {
-          "name": "化学制药",
-          "lead": "哈药股份",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        }
-      ],
-      "shift_score": 68,
-      "shift_label": "修复",
-      "note": "炸板/跌停抬升，情绪明显走弱。"
-    },
-    {
-      "time": "10:00:05",
-      "ts_bj": "2026-09-21 10:00:05",
-      "date": "2026-09-21",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid"
-      },
-      "pool_errors": {},
-      "zt": 43,
-      "dt": 1,
-      "zab": 9,
-      "zb": 17.3,
-      "fb": 82.7,
-      "jj": 27.9,
-      "lianban": 12,
-      "max_lb": 5,
-      "amount": "7370.7亿",
-      "bf": 0,
-      "heat": 59,
-      "risk": 15,
-      "headline": "修复",
-      "concepts": [
-        {
-          "name": "医疗服务",
-          "lead": "南华生物",
-          "chg_pct": null
-        },
-        {
-          "name": "化学制药",
-          "lead": "哈药股份",
-          "chg_pct": null
-        },
-        {
-          "name": "专用设备",
-          "lead": "康力电梯",
+          "lead": "新华文轩",
           "chg_pct": null
         },
         {
@@ -241,71 +115,18 @@
           "chg_pct": null
         },
         {
-          "name": "出版",
-          "lead": "内蒙新华",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        }
-      ],
-      "shift_score": 70,
-      "shift_label": "修复",
-      "note": "情绪边际修复，但仍需确认持续性。"
-    },
-    {
-      "time": "10:10:04",
-      "ts_bj": "2026-09-21 10:10:04",
-      "date": "2026-09-21",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid"
-      },
-      "pool_errors": {},
-      "zt": 52,
-      "dt": 1,
-      "zab": 9,
-      "zb": 14.8,
-      "fb": 85.2,
-      "jj": 25.0,
-      "lianban": 13,
-      "max_lb": 5,
-      "amount": "8547.0亿",
-      "bf": 0,
-      "heat": 61,
-      "risk": 14,
-      "headline": "走强",
-      "concepts": [
-        {
           "name": "医疗服务",
           "lead": "南华生物",
           "chg_pct": null
         },
         {
-          "name": "化学制药",
-          "lead": "哈药股份",
-          "chg_pct": null
-        },
-        {
-          "name": "出版",
-          "lead": "内蒙新华",
+          "name": "包装印刷",
+          "lead": "美盈森",
           "chg_pct": null
         },
         {
           "name": "服装家纺",
-          "lead": "龙头股份",
-          "chg_pct": null
-        },
-        {
-          "name": "专用设备",
-          "lead": "康力电梯",
+          "lead": "泰慕士",
           "chg_pct": null
         }
       ],
@@ -313,612 +134,111 @@
         {
           "level": "info",
           "text": "盘中模式：强制实时拉取"
+        },
+        {
+          "level": "warn",
+          "text": "盘中三池响应不完整，保留最近有效数据"
         }
       ],
-      "shift_score": 72,
-      "shift_label": "走强",
-      "note": "情绪边际修复，但仍需确认持续性。"
-    },
-    {
-      "time": "10:20:05",
-      "ts_bj": "2026-09-21 10:20:05",
-      "date": "2026-09-21",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid"
-      },
-      "pool_errors": {},
-      "zt": 55,
-      "dt": 1,
-      "zab": 12,
-      "zb": 17.9,
-      "fb": 82.1,
-      "jj": 23.6,
-      "lianban": 13,
-      "max_lb": 5,
-      "amount": "9480.1亿",
-      "bf": 0,
-      "heat": 60,
-      "risk": 17,
-      "headline": "修复",
-      "concepts": [
-        {
-          "name": "医疗服务",
-          "lead": "南华生物",
-          "chg_pct": null
-        },
-        {
-          "name": "出版",
-          "lead": "内蒙新华",
-          "chg_pct": null
-        },
-        {
-          "name": "服装家纺",
-          "lead": "龙头股份",
-          "chg_pct": null
-        },
-        {
-          "name": "化学制药",
-          "lead": "哈药股份",
-          "chg_pct": null
-        },
-        {
-          "name": "专用设备",
-          "lead": "康力电梯",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        }
-      ],
-      "shift_score": 70,
-      "shift_label": "修复",
-      "note": "情绪略有回落，注意午后分歧。"
-    },
-    {
-      "time": "10:30:05",
-      "ts_bj": "2026-09-21 10:30:05",
-      "date": "2026-09-21",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid"
-      },
-      "pool_errors": {},
-      "zt": 62,
-      "dt": 1,
-      "zab": 11,
-      "zb": 15.1,
-      "fb": 84.9,
-      "jj": 22.6,
-      "lianban": 14,
-      "max_lb": 5,
-      "amount": "10203.9亿",
-      "bf": 0,
-      "heat": 62,
-      "risk": 15,
-      "headline": "走强",
-      "concepts": [
-        {
-          "name": "化学制药",
-          "lead": "哈药股份",
-          "chg_pct": null
-        },
-        {
-          "name": "医疗服务",
-          "lead": "南华生物",
-          "chg_pct": null
-        },
-        {
-          "name": "出版",
-          "lead": "内蒙新华",
-          "chg_pct": null
-        },
-        {
-          "name": "服装家纺",
-          "lead": "龙头股份",
-          "chg_pct": null
-        },
-        {
-          "name": "专用设备",
-          "lead": "康力电梯",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        }
-      ],
-      "shift_score": 72,
-      "shift_label": "走强",
-      "note": "情绪边际修复，但仍需确认持续性。"
-    },
-    {
-      "time": "10:40:04",
-      "ts_bj": "2026-09-21 10:40:04",
-      "date": "2026-09-21",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid"
-      },
-      "pool_errors": {},
-      "zt": 66,
-      "dt": 1,
-      "zab": 13,
-      "zb": 16.5,
-      "fb": 83.5,
-      "jj": 22.7,
-      "lianban": 15,
-      "max_lb": 5,
-      "amount": "10905.2亿",
-      "bf": 0,
-      "heat": 62,
-      "risk": 16,
-      "headline": "修复",
-      "concepts": [
-        {
-          "name": "化学制药",
-          "lead": "哈药股份",
-          "chg_pct": null
-        },
-        {
-          "name": "医疗服务",
-          "lead": "南华生物",
-          "chg_pct": null
-        },
-        {
-          "name": "出版",
-          "lead": "内蒙新华",
-          "chg_pct": null
-        },
-        {
-          "name": "服装家纺",
-          "lead": "龙头股份",
-          "chg_pct": null
-        },
-        {
-          "name": "汽车零部",
-          "lead": "美湖股份",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        }
-      ],
-      "shift_score": 71,
-      "shift_label": "修复",
-      "note": "情绪整体平稳，维持当前节奏。"
-    },
-    {
-      "time": "10:50:04",
-      "ts_bj": "2026-09-21 10:50:04",
-      "date": "2026-09-21",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid"
-      },
-      "pool_errors": {},
-      "zt": 68,
-      "dt": 1,
-      "zab": 15,
-      "zb": 18.1,
-      "fb": 81.9,
-      "jj": 22.1,
-      "lianban": 15,
-      "max_lb": 5,
-      "amount": "11477.6亿",
-      "bf": 0,
-      "heat": 61,
-      "risk": 18,
-      "headline": "修复",
-      "concepts": [
-        {
-          "name": "化学制药",
-          "lead": "哈药股份",
-          "chg_pct": null
-        },
-        {
-          "name": "医疗服务",
-          "lead": "南华生物",
-          "chg_pct": null
-        },
-        {
-          "name": "医疗器械",
-          "lead": "透景生命",
-          "chg_pct": null
-        },
-        {
-          "name": "家居用品",
-          "lead": "华瓷股份",
-          "chg_pct": null
-        },
-        {
-          "name": "出版",
-          "lead": "内蒙新华",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        }
-      ],
-      "shift_score": 70,
-      "shift_label": "修复",
-      "note": "情绪整体平稳，维持当前节奏。"
-    },
-    {
-      "time": "11:00:05",
-      "ts_bj": "2026-09-21 11:00:05",
-      "date": "2026-09-21",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid"
-      },
-      "pool_errors": {},
-      "zt": 74,
-      "dt": 1,
-      "zab": 13,
-      "zb": 14.9,
-      "fb": 85.1,
-      "jj": 20.3,
-      "lianban": 15,
-      "max_lb": 5,
-      "amount": "11943.3亿",
-      "bf": 0,
-      "heat": 63,
-      "risk": 16,
-      "headline": "走强",
-      "concepts": [
-        {
-          "name": "化学制药",
-          "lead": "哈药股份",
-          "chg_pct": null
-        },
-        {
-          "name": "医疗服务",
-          "lead": "南华生物",
-          "chg_pct": null
-        },
-        {
-          "name": "医疗器械",
-          "lead": "透景生命",
-          "chg_pct": null
-        },
-        {
-          "name": "家居用品",
-          "lead": "华瓷股份",
-          "chg_pct": null
-        },
-        {
-          "name": "出版",
-          "lead": "内蒙新华",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        }
-      ],
-      "shift_score": 72,
-      "shift_label": "走强",
-      "note": "情绪边际修复，但仍需确认持续性。"
-    },
-    {
-      "time": "11:10:05",
-      "ts_bj": "2026-09-21 11:10:05",
-      "date": "2026-09-21",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid"
-      },
-      "pool_errors": {},
-      "zt": 75,
-      "dt": 1,
-      "zab": 14,
-      "zb": 15.7,
-      "fb": 84.3,
-      "jj": 20.0,
-      "lianban": 15,
-      "max_lb": 5,
-      "amount": "12409.2亿",
-      "bf": 0,
-      "heat": 63,
-      "risk": 16,
-      "headline": "走强",
-      "concepts": [
-        {
-          "name": "化学制药",
-          "lead": "哈药股份",
-          "chg_pct": null
-        },
-        {
-          "name": "医疗服务",
-          "lead": "南华生物",
-          "chg_pct": null
-        },
-        {
-          "name": "医疗器械",
-          "lead": "透景生命",
-          "chg_pct": null
-        },
-        {
-          "name": "出版",
-          "lead": "内蒙新华",
-          "chg_pct": null
-        },
-        {
-          "name": "服装家纺",
-          "lead": "龙头股份",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        }
-      ],
-      "shift_score": 72,
-      "shift_label": "走强",
-      "note": "情绪整体平稳，维持当前节奏。"
-    },
-    {
-      "time": "11:20:04",
-      "ts_bj": "2026-09-21 11:20:04",
-      "date": "2026-09-21",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid"
-      },
-      "pool_errors": {},
-      "zt": 79,
-      "dt": 1,
-      "zab": 16,
-      "zb": 16.8,
-      "fb": 83.2,
-      "jj": 19.0,
-      "lianban": 15,
-      "max_lb": 5,
-      "amount": "12880.7亿",
-      "bf": 0,
-      "heat": 63,
-      "risk": 18,
-      "headline": "修复",
-      "concepts": [
-        {
-          "name": "化学制药",
-          "lead": "哈药股份",
-          "chg_pct": null
-        },
-        {
-          "name": "医疗服务",
-          "lead": "南华生物",
-          "chg_pct": null
-        },
-        {
-          "name": "医疗器械",
-          "lead": "透景生命",
-          "chg_pct": null
-        },
-        {
-          "name": "出版",
-          "lead": "内蒙新华",
-          "chg_pct": null
-        },
-        {
-          "name": "服装家纺",
-          "lead": "龙头股份",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        }
-      ],
-      "shift_score": 71,
-      "shift_label": "修复",
-      "note": "情绪整体平稳，维持当前节奏。"
-    },
-    {
-      "time": "11:30:05",
-      "ts_bj": "2026-09-21 11:30:05",
-      "date": "2026-09-21",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid"
-      },
-      "pool_errors": {},
-      "zt": 81,
-      "dt": 1,
-      "zab": 18,
-      "zb": 18.2,
-      "fb": 81.8,
-      "jj": 21.0,
-      "lianban": 17,
-      "max_lb": 5,
-      "amount": "13278.4亿",
-      "bf": 0,
-      "heat": 63,
-      "risk": 20,
-      "headline": "修复",
-      "concepts": [
-        {
-          "name": "化学制药",
-          "lead": "哈药股份",
-          "chg_pct": null
-        },
-        {
-          "name": "医疗服务",
-          "lead": "南华生物",
-          "chg_pct": null
-        },
-        {
-          "name": "医疗器械",
-          "lead": "透景生命",
-          "chg_pct": null
-        },
-        {
-          "name": "出版",
-          "lead": "内蒙新华",
-          "chg_pct": null
-        },
-        {
-          "name": "服装家纺",
-          "lead": "龙头股份",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        }
-      ],
-      "shift_score": 70,
-      "shift_label": "修复",
-      "note": "情绪整体平稳，维持当前节奏。"
+      "shift_score": null,
+      "shift_label": "数据部分可用",
+      "note": "本槽位仅部分三池成功；节点已保留，缺失指标不参与判断。"
     }
   ],
   "indices": [
     {
       "name": "上证指数",
       "code": "000001.SH",
-      "val": 3933.368,
-      "chg": 0.5495324360133512,
-      "cje": 620460449200.0,
-      "t": "2026-09-21 11:30:03"
+      "val": 3959.86,
+      "chg": 0.25198061625248325,
+      "cje": 41685535600.0,
+      "t": "2026-09-22 09:30:33"
     },
     {
       "name": "深证成指",
       "code": "399001.SZ",
-      "val": 13718.737,
-      "chg": 0.5708139061187621,
-      "cje": 707322194300.0,
-      "t": "2026-09-21 11:29:57"
+      "val": 13868.005,
+      "chg": 1.0049876110886857,
+      "cje": 45105639000.0,
+      "t": "2026-09-22 09:30:30"
     },
     {
       "name": "创业板指",
       "code": "399006.SZ",
-      "val": 3403.952,
-      "chg": 0.9273348522063873,
-      "cje": 345222433000.0,
-      "t": "2026-09-21 11:30:00"
+      "val": 3447.91,
+      "chg": 1.4213478684194183,
+      "cje": 20525696900.0,
+      "t": "2026-09-22 09:30:33"
     }
   ],
   "asOf": {
-    "indices": "11:30:00"
+    "indices": "09:30:33"
   },
   "health": {
-    "status": "valid",
-    "last_valid_at": "2026-09-21 11:30:05",
+    "status": "degraded",
+    "last_valid_at": "2026-09-22 09:30:35",
     "rejected_reason": "",
     "source": {
-      "status": "valid",
+      "status": "partial",
       "pool_status": {
         "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid"
+        "zbgc": "failed",
+        "dtgc": "failed"
       },
-      "pool_errors": {}
+      "pool_errors": {
+        "zbgc": "empty_response",
+        "dtgc": "empty_response"
+      }
     },
     "indices_status": "valid",
     "coverage": {
-      "ok": false,
-      "status": "degraded",
-      "message": "intraday_coverage_incomplete",
-      "date": "2026-09-21",
+      "ok": true,
+      "status": "collecting",
+      "message": "intraday_coverage_collecting",
+      "date": "2026-09-22",
       "expected_count": 26,
-      "due_count": 13,
-      "observed_count": 12,
+      "due_count": 1,
+      "observed_count": 1,
       "observed_slots": [
-        "09:40",
-        "09:50",
-        "10:00",
-        "10:10",
-        "10:20",
-        "10:30",
-        "10:40",
-        "10:50",
-        "11:00",
-        "11:10",
-        "11:20",
-        "11:30"
-      ],
-      "missing_slots": [
         "09:30"
       ],
+      "missing_slots": [],
       "duplicate_slots": [],
       "out_of_session": [],
       "monotonic": true,
-      "morning_coverage": 12,
+      "morning_coverage": 1,
       "afternoon_coverage": 0
     }
   },
   "live": {
     "market": {
-      "zt": 81,
-      "dt": 1,
-      "zab": 18,
-      "zab_rate": 18.2,
-      "lianban": 17,
-      "max_lianban": 5,
-      "amount": "13278.4亿"
+      "zt": 13,
+      "dt": null,
+      "zab": null,
+      "zab_rate": null,
+      "lianban": 10,
+      "max_lianban": 6,
+      "amount": ""
     },
     "alerts": [
       {
         "level": "info",
         "text": "盘中模式：强制实时拉取"
+      },
+      {
+        "level": "warn",
+        "text": "盘中三池响应不完整，保留最近有效数据"
       }
     ],
     "concepts": [
       {
-        "name": "化学制药",
-        "lead": "哈药股份",
+        "name": "出版",
+        "lead": "新华文轩",
+        "chg_pct": null
+      },
+      {
+        "name": "家居用品",
+        "lead": "华瓷股份",
         "chg_pct": null
       },
       {
@@ -927,18 +247,13 @@
         "chg_pct": null
       },
       {
-        "name": "医疗器械",
-        "lead": "透景生命",
-        "chg_pct": null
-      },
-      {
-        "name": "出版",
-        "lead": "内蒙新华",
+        "name": "包装印刷",
+        "lead": "美盈森",
         "chg_pct": null
       },
       {
         "name": "服装家纺",
-        "lead": "龙头股份",
+        "lead": "泰慕士",
         "chg_pct": null
       }
     ]
