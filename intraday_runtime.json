@@ -1,11 +1,11 @@
 {
   "schema": "intraday_runtime_v1",
   "date": "2026-09-22",
-  "updated_at": "2026-09-22 10:50:05",
+  "updated_at": "2026-09-22 11:00:05",
   "source": "必盈(实时)+必盈(实时)",
   "latest": {
-    "time": "10:50:05",
-    "ts_bj": "2026-09-22 10:50:05",
+    "time": "11:00:05",
+    "ts_bj": "2026-09-22 11:00:05",
     "date": "2026-09-22",
     "source": "intraday_live",
     "provider": "必盈(实时)+必盈(实时)",
@@ -13,18 +13,18 @@
     "pool_status": {
       "ztgc": "valid",
       "zbgc": "valid",
-      "dtgc": "valid"
+      "dtgc": "valid_empty"
     },
     "pool_errors": {},
-    "zt": 49,
-    "dt": 1,
-    "zab": 12,
-    "zb": 19.7,
-    "fb": 80.3,
-    "jj": 40.8,
-    "lianban": 20,
+    "zt": 51,
+    "dt": 0,
+    "zab": 14,
+    "zb": 21.5,
+    "fb": 78.5,
+    "jj": 41.2,
+    "lianban": 21,
     "max_lb": 6,
-    "amount": "12289.3亿",
+    "amount": "12932.4亿",
     "bf": 0,
     "heat": 64,
     "risk": 18,
@@ -46,13 +46,13 @@
         "chg_pct": null
       },
       {
-        "name": "IT服务Ⅱ",
-        "lead": "南威软件",
+        "name": "化学制药",
+        "lead": "哈药股份",
         "chg_pct": null
       },
       {
-        "name": "广告营销",
-        "lead": "华媒控股",
+        "name": "IT服务Ⅱ",
+        "lead": "南威软件",
         "chg_pct": null
       }
     ],
@@ -648,47 +648,110 @@
       "shift_score": 72,
       "shift_label": "走强",
       "note": "情绪整体平稳，维持当前节奏。"
+    },
+    {
+      "time": "11:00:05",
+      "ts_bj": "2026-09-22 11:00:05",
+      "date": "2026-09-22",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid_empty"
+      },
+      "pool_errors": {},
+      "zt": 51,
+      "dt": 0,
+      "zab": 14,
+      "zb": 21.5,
+      "fb": 78.5,
+      "jj": 41.2,
+      "lianban": 21,
+      "max_lb": 6,
+      "amount": "12932.4亿",
+      "bf": 0,
+      "heat": 64,
+      "risk": 18,
+      "headline": "走强",
+      "concepts": [
+        {
+          "name": "家居用品",
+          "lead": "华瓷股份",
+          "chg_pct": null
+        },
+        {
+          "name": "出版",
+          "lead": "内蒙新华",
+          "chg_pct": null
+        },
+        {
+          "name": "半导体",
+          "lead": "博通集成",
+          "chg_pct": null
+        },
+        {
+          "name": "化学制药",
+          "lead": "哈药股份",
+          "chg_pct": null
+        },
+        {
+          "name": "IT服务Ⅱ",
+          "lead": "南威软件",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        }
+      ],
+      "shift_score": 72,
+      "shift_label": "走强",
+      "note": "情绪整体平稳，维持当前节奏。"
     }
   ],
   "indices": [
     {
       "name": "上证指数",
       "code": "000001.SH",
-      "val": 3964.049,
-      "chg": 0.35803374611097993,
-      "cje": 587342960500.0,
-      "t": "2026-09-22 10:50:03"
+      "val": 3960.087,
+      "chg": 0.25772758700394305,
+      "cje": 616996406800.0,
+      "t": "2026-09-22 11:00:01"
     },
     {
       "name": "深证成指",
       "code": "399001.SZ",
-      "val": 13865.557,
-      "chg": 0.9871580667763067,
-      "cje": 641237151500.0,
-      "t": "2026-09-22 10:49:57"
+      "val": 13830.262,
+      "chg": 0.7300936196742626,
+      "cje": 675569523100.0,
+      "t": "2026-09-22 10:59:57"
     },
     {
       "name": "创业板指",
       "code": "399006.SZ",
-      "val": 3448.122,
-      "chg": 1.4275839145308609,
-      "cje": 311132089100.0,
-      "t": "2026-09-22 10:50:00"
+      "val": 3437.848,
+      "chg": 1.1253710006206574,
+      "cje": 327385638800.0,
+      "t": "2026-09-22 10:59:57"
     }
   ],
   "asOf": {
-    "indices": "10:50:00"
+    "indices": "10:59:57"
   },
   "health": {
     "status": "valid",
-    "last_valid_at": "2026-09-22 10:50:05",
+    "last_valid_at": "2026-09-22 11:00:05",
     "rejected_reason": "",
     "source": {
       "status": "valid",
       "pool_status": {
         "ztgc": "valid",
         "zbgc": "valid",
-        "dtgc": "valid"
+        "dtgc": "valid_empty"
       },
       "pool_errors": {}
     },
@@ -699,8 +762,8 @@
       "message": "intraday_coverage_collecting",
       "date": "2026-09-22",
       "expected_count": 26,
-      "due_count": 9,
-      "observed_count": 9,
+      "due_count": 10,
+      "observed_count": 10,
       "observed_slots": [
         "09:30",
         "09:40",
@@ -710,25 +773,26 @@
         "10:20",
         "10:30",
         "10:40",
-        "10:50"
+        "10:50",
+        "11:00"
       ],
       "missing_slots": [],
       "duplicate_slots": [],
       "out_of_session": [],
       "monotonic": true,
-      "morning_coverage": 9,
+      "morning_coverage": 10,
       "afternoon_coverage": 0
     }
   },
   "live": {
     "market": {
-      "zt": 49,
-      "dt": 1,
-      "zab": 12,
-      "zab_rate": 19.7,
-      "lianban": 20,
+      "zt": 51,
+      "dt": 0,
+      "zab": 14,
+      "zab_rate": 21.5,
+      "lianban": 21,
       "max_lianban": 6,
-      "amount": "12289.3亿"
+      "amount": "12932.4亿"
     },
     "alerts": [
       {
@@ -753,13 +817,13 @@
         "chg_pct": null
       },
       {
-        "name": "IT服务Ⅱ",
-        "lead": "南威软件",
+        "name": "化学制药",
+        "lead": "哈药股份",
         "chg_pct": null
       },
       {
-        "name": "广告营销",
-        "lead": "华媒控股",
+        "name": "IT服务Ⅱ",
+        "lead": "南威软件",
         "chg_pct": null
       }
     ]
