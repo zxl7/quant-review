@@ -1,11 +1,11 @@
 {
   "schema": "intraday_runtime_v1",
   "date": "2026-09-23",
-  "updated_at": "2026-09-23 10:30:03",
+  "updated_at": "2026-09-23 10:40:03",
   "source": "必盈(实时)+必盈(实时)",
   "latest": {
-    "time": "10:30:03",
-    "ts_bj": "2026-09-23 10:30:03",
+    "time": "10:40:03",
+    "ts_bj": "2026-09-23 10:40:03",
     "date": "2026-09-23",
     "source": "intraday_live",
     "provider": "必盈(实时)+必盈(实时)",
@@ -16,23 +16,28 @@
       "dtgc": "valid"
     },
     "pool_errors": {},
-    "zt": 32,
-    "dt": 5,
-    "zab": 16,
-    "zb": 33.3,
-    "fb": 66.7,
-    "jj": 28.1,
+    "zt": 34,
+    "dt": 6,
+    "zab": 19,
+    "zb": 35.8,
+    "fb": 64.2,
+    "jj": 26.5,
     "lianban": 9,
     "max_lb": 4,
-    "amount": "8704.9亿",
+    "amount": "9315.5亿",
     "bf": 0,
-    "heat": 49,
-    "risk": 33,
+    "heat": 47,
+    "risk": 37,
     "headline": "分歧",
     "concepts": [
       {
         "name": "出版",
         "lead": "新华文轩",
+        "chg_pct": null
+      },
+      {
+        "name": "家居用品",
+        "lead": "大亚圣象",
         "chg_pct": null
       },
       {
@@ -49,11 +54,6 @@
         "name": "消费电子",
         "lead": "胜利精密",
         "chg_pct": null
-      },
-      {
-        "name": "一般零售",
-        "lead": "汇通能源",
-        "chg_pct": null
       }
     ],
     "alerts": [
@@ -62,11 +62,11 @@
         "text": "盘中模式：强制实时拉取"
       },
       {
-        "level": "warn",
-        "text": "炸板率偏高（33.3%）→ 注意回封质量"
+        "level": "danger",
+        "text": "炸板率高（35.8%）→ 分歧偏强，谨慎接力"
       }
     ],
-    "shift_score": 57,
+    "shift_score": 54,
     "shift_label": "分歧",
     "note": "情绪略有回落，注意午后分歧。"
   },
@@ -519,40 +519,107 @@
       "shift_score": 57,
       "shift_label": "分歧",
       "note": "情绪略有回落，注意午后分歧。"
+    },
+    {
+      "time": "10:40:03",
+      "ts_bj": "2026-09-23 10:40:03",
+      "date": "2026-09-23",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid"
+      },
+      "pool_errors": {},
+      "zt": 34,
+      "dt": 6,
+      "zab": 19,
+      "zb": 35.8,
+      "fb": 64.2,
+      "jj": 26.5,
+      "lianban": 9,
+      "max_lb": 4,
+      "amount": "9315.5亿",
+      "bf": 0,
+      "heat": 47,
+      "risk": 37,
+      "headline": "分歧",
+      "concepts": [
+        {
+          "name": "出版",
+          "lead": "新华文轩",
+          "chg_pct": null
+        },
+        {
+          "name": "家居用品",
+          "lead": "大亚圣象",
+          "chg_pct": null
+        },
+        {
+          "name": "房地产服",
+          "lead": "我爱我家",
+          "chg_pct": null
+        },
+        {
+          "name": "非白酒",
+          "lead": "古越龙山",
+          "chg_pct": null
+        },
+        {
+          "name": "消费电子",
+          "lead": "胜利精密",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        },
+        {
+          "level": "danger",
+          "text": "炸板率高（35.8%）→ 分歧偏强，谨慎接力"
+        }
+      ],
+      "shift_score": 54,
+      "shift_label": "分歧",
+      "note": "情绪略有回落，注意午后分歧。"
     }
   ],
   "indices": [
     {
       "name": "上证指数",
       "code": "000001.SH",
-      "val": 3941.956,
-      "chg": -0.25738032776266423,
-      "cje": 410302234700.0,
-      "t": "2026-09-23 10:30:01"
+      "val": 3943.212,
+      "chg": -0.22559998056743527,
+      "cje": 439338321800.0,
+      "t": "2026-09-23 10:40:01"
     },
     {
       "name": "深证成指",
       "code": "399001.SZ",
-      "val": 13664.654,
-      "chg": -0.43050233773823326,
-      "cje": 459915279400.0,
-      "t": "2026-09-23 10:29:54"
+      "val": 13672.06,
+      "chg": -0.3765374367837989,
+      "cje": 492092672200.0,
+      "t": "2026-09-23 10:39:57"
     },
     {
       "name": "创业板指",
       "code": "399006.SZ",
-      "val": 3387.428,
-      "chg": -0.3677134529240294,
-      "cje": 213226922100.0,
-      "t": "2026-09-23 10:29:57"
+      "val": 3390.875,
+      "chg": -0.2663290126561381,
+      "cje": 230195922000.0,
+      "t": "2026-09-23 10:39:57"
     }
   ],
   "asOf": {
-    "indices": "10:29:57"
+    "indices": "10:39:57"
   },
   "health": {
     "status": "valid",
-    "last_valid_at": "2026-09-23 10:30:03",
+    "last_valid_at": "2026-09-23 10:40:03",
     "rejected_reason": "",
     "source": {
       "status": "valid",
@@ -570,8 +637,8 @@
       "message": "intraday_coverage_collecting",
       "date": "2026-09-23",
       "expected_count": 26,
-      "due_count": 7,
-      "observed_count": 7,
+      "due_count": 8,
+      "observed_count": 8,
       "observed_slots": [
         "09:30",
         "09:40",
@@ -579,25 +646,26 @@
         "10:00",
         "10:10",
         "10:20",
-        "10:30"
+        "10:30",
+        "10:40"
       ],
       "missing_slots": [],
       "duplicate_slots": [],
       "out_of_session": [],
       "monotonic": true,
-      "morning_coverage": 7,
+      "morning_coverage": 8,
       "afternoon_coverage": 0
     }
   },
   "live": {
     "market": {
-      "zt": 32,
-      "dt": 5,
-      "zab": 16,
-      "zab_rate": 33.3,
+      "zt": 34,
+      "dt": 6,
+      "zab": 19,
+      "zab_rate": 35.8,
       "lianban": 9,
       "max_lianban": 4,
-      "amount": "8704.9亿"
+      "amount": "9315.5亿"
     },
     "alerts": [
       {
@@ -605,14 +673,19 @@
         "text": "盘中模式：强制实时拉取"
       },
       {
-        "level": "warn",
-        "text": "炸板率偏高（33.3%）→ 注意回封质量"
+        "level": "danger",
+        "text": "炸板率高（35.8%）→ 分歧偏强，谨慎接力"
       }
     ],
     "concepts": [
       {
         "name": "出版",
         "lead": "新华文轩",
+        "chg_pct": null
+      },
+      {
+        "name": "家居用品",
+        "lead": "大亚圣象",
         "chg_pct": null
       },
       {
@@ -628,11 +701,6 @@
       {
         "name": "消费电子",
         "lead": "胜利精密",
-        "chg_pct": null
-      },
-      {
-        "name": "一般零售",
-        "lead": "汇通能源",
         "chg_pct": null
       }
     ]
