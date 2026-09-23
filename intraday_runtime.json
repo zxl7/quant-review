@@ -1,11 +1,11 @@
 {
   "schema": "intraday_runtime_v1",
   "date": "2026-09-23",
-  "updated_at": "2026-09-23 10:10:04",
+  "updated_at": "2026-09-23 10:20:03",
   "source": "必盈(实时)+必盈(实时)",
   "latest": {
-    "time": "10:10:04",
-    "ts_bj": "2026-09-23 10:10:04",
+    "time": "10:20:03",
+    "ts_bj": "2026-09-23 10:20:03",
     "date": "2026-09-23",
     "source": "intraday_live",
     "provider": "必盈(实时)+必盈(实时)",
@@ -16,19 +16,19 @@
       "dtgc": "valid"
     },
     "pool_errors": {},
-    "zt": 31,
-    "dt": 4,
-    "zab": 9,
-    "zb": 22.5,
-    "fb": 77.5,
-    "jj": 29.0,
-    "lianban": 9,
+    "zt": 34,
+    "dt": 5,
+    "zab": 13,
+    "zb": 27.7,
+    "fb": 72.3,
+    "jj": 23.5,
+    "lianban": 8,
     "max_lb": 4,
-    "amount": "7172.1亿",
+    "amount": "8006.9亿",
     "bf": 0,
-    "heat": 53,
-    "risk": 22,
-    "headline": "修复",
+    "heat": 50,
+    "risk": 29,
+    "headline": "分歧",
     "concepts": [
       {
         "name": "房地产服",
@@ -36,23 +36,23 @@
         "chg_pct": null
       },
       {
-        "name": "房地产开",
-        "lead": "华丽家族",
-        "chg_pct": null
-      },
-      {
-        "name": "专用设备",
-        "lead": "通用电梯",
+        "name": "非白酒",
+        "lead": "会稽山",
         "chg_pct": null
       },
       {
         "name": "水泥",
-        "lead": "福建水泥",
+        "lead": "天山股份",
         "chg_pct": null
       },
       {
         "name": "出版",
         "lead": "新华文轩",
+        "chg_pct": null
+      },
+      {
+        "name": "消费电子",
+        "lead": "胜利精密",
         "chg_pct": null
       }
     ],
@@ -60,11 +60,15 @@
       {
         "level": "info",
         "text": "盘中模式：强制实时拉取"
+      },
+      {
+        "level": "warn",
+        "text": "炸板率偏高（27.7%）→ 注意回封质量"
       }
     ],
-    "shift_score": 64,
-    "shift_label": "修复",
-    "note": "情绪边际修复，但仍需确认持续性。"
+    "shift_score": 59,
+    "shift_label": "分歧",
+    "note": "炸板/跌停抬升，情绪明显走弱。"
   },
   "snapshots": [
     {
@@ -381,40 +385,107 @@
       "shift_score": 64,
       "shift_label": "修复",
       "note": "情绪边际修复，但仍需确认持续性。"
+    },
+    {
+      "time": "10:20:03",
+      "ts_bj": "2026-09-23 10:20:03",
+      "date": "2026-09-23",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid"
+      },
+      "pool_errors": {},
+      "zt": 34,
+      "dt": 5,
+      "zab": 13,
+      "zb": 27.7,
+      "fb": 72.3,
+      "jj": 23.5,
+      "lianban": 8,
+      "max_lb": 4,
+      "amount": "8006.9亿",
+      "bf": 0,
+      "heat": 50,
+      "risk": 29,
+      "headline": "分歧",
+      "concepts": [
+        {
+          "name": "房地产服",
+          "lead": "我爱我家",
+          "chg_pct": null
+        },
+        {
+          "name": "非白酒",
+          "lead": "会稽山",
+          "chg_pct": null
+        },
+        {
+          "name": "水泥",
+          "lead": "天山股份",
+          "chg_pct": null
+        },
+        {
+          "name": "出版",
+          "lead": "新华文轩",
+          "chg_pct": null
+        },
+        {
+          "name": "消费电子",
+          "lead": "胜利精密",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        },
+        {
+          "level": "warn",
+          "text": "炸板率偏高（27.7%）→ 注意回封质量"
+        }
+      ],
+      "shift_score": 59,
+      "shift_label": "分歧",
+      "note": "炸板/跌停抬升，情绪明显走弱。"
     }
   ],
   "indices": [
     {
       "name": "上证指数",
       "code": "000001.SH",
-      "val": 3940.045,
-      "chg": -0.30573402480891515,
-      "cje": 339103258000.0,
-      "t": "2026-09-23 10:10:03"
+      "val": 3943.328,
+      "chg": -0.22266485296023258,
+      "cje": 378177310600.0,
+      "t": "2026-09-23 10:20:00"
     },
     {
       "name": "深证成指",
       "code": "399001.SZ",
-      "val": 13646.017,
-      "chg": -0.5663035609475172,
-      "cje": 377895188400.0,
-      "t": "2026-09-23 10:09:57"
+      "val": 13660.134,
+      "chg": -0.4634379780723,
+      "cje": 422338674100.0,
+      "t": "2026-09-23 10:19:57"
     },
     {
       "name": "创业板指",
       "code": "399006.SZ",
-      "val": 3378.021,
-      "chg": -0.6443956199098114,
-      "cje": 174843762600.0,
-      "t": "2026-09-23 10:09:57"
+      "val": 3383.568,
+      "chg": -0.48124520210709126,
+      "cje": 194977742600.0,
+      "t": "2026-09-23 10:19:57"
     }
   ],
   "asOf": {
-    "indices": "10:09:57"
+    "indices": "10:19:57"
   },
   "health": {
     "status": "valid",
-    "last_valid_at": "2026-09-23 10:10:04",
+    "last_valid_at": "2026-09-23 10:20:03",
     "rejected_reason": "",
     "source": {
       "status": "valid",
@@ -432,37 +503,42 @@
       "message": "intraday_coverage_collecting",
       "date": "2026-09-23",
       "expected_count": 26,
-      "due_count": 5,
-      "observed_count": 5,
+      "due_count": 6,
+      "observed_count": 6,
       "observed_slots": [
         "09:30",
         "09:40",
         "09:50",
         "10:00",
-        "10:10"
+        "10:10",
+        "10:20"
       ],
       "missing_slots": [],
       "duplicate_slots": [],
       "out_of_session": [],
       "monotonic": true,
-      "morning_coverage": 5,
+      "morning_coverage": 6,
       "afternoon_coverage": 0
     }
   },
   "live": {
     "market": {
-      "zt": 31,
-      "dt": 4,
-      "zab": 9,
-      "zab_rate": 22.5,
-      "lianban": 9,
+      "zt": 34,
+      "dt": 5,
+      "zab": 13,
+      "zab_rate": 27.7,
+      "lianban": 8,
       "max_lianban": 4,
-      "amount": "7172.1亿"
+      "amount": "8006.9亿"
     },
     "alerts": [
       {
         "level": "info",
         "text": "盘中模式：强制实时拉取"
+      },
+      {
+        "level": "warn",
+        "text": "炸板率偏高（27.7%）→ 注意回封质量"
       }
     ],
     "concepts": [
@@ -472,23 +548,23 @@
         "chg_pct": null
       },
       {
-        "name": "房地产开",
-        "lead": "华丽家族",
-        "chg_pct": null
-      },
-      {
-        "name": "专用设备",
-        "lead": "通用电梯",
+        "name": "非白酒",
+        "lead": "会稽山",
         "chg_pct": null
       },
       {
         "name": "水泥",
-        "lead": "福建水泥",
+        "lead": "天山股份",
         "chg_pct": null
       },
       {
         "name": "出版",
         "lead": "新华文轩",
+        "chg_pct": null
+      },
+      {
+        "name": "消费电子",
+        "lead": "胜利精密",
         "chg_pct": null
       }
     ]
