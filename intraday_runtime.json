@@ -1,11 +1,11 @@
 {
   "schema": "intraday_runtime_v1",
   "date": "2026-09-23",
-  "updated_at": "2026-09-23 11:20:03",
+  "updated_at": "2026-09-23 11:30:03",
   "source": "必盈(实时)+必盈(实时)",
   "latest": {
-    "time": "11:20:03",
-    "ts_bj": "2026-09-23 11:20:03",
+    "time": "11:30:03",
+    "ts_bj": "2026-09-23 11:30:03",
     "date": "2026-09-23",
     "source": "intraday_live",
     "provider": "必盈(实时)+必盈(实时)",
@@ -17,17 +17,17 @@
     },
     "pool_errors": {},
     "zt": 36,
-    "dt": 7,
-    "zab": 21,
-    "zb": 36.8,
-    "fb": 63.2,
+    "dt": 8,
+    "zab": 22,
+    "zb": 37.9,
+    "fb": 62.1,
     "jj": 25.0,
     "lianban": 9,
     "max_lb": 4,
-    "amount": "11262.4亿",
+    "amount": "11590.5亿",
     "bf": 0,
-    "heat": 47,
-    "risk": 40,
+    "heat": 46,
+    "risk": 43,
     "headline": "分歧",
     "concepts": [
       {
@@ -63,10 +63,10 @@
       },
       {
         "level": "danger",
-        "text": "炸板率高（36.8%）→ 分歧偏强，谨慎接力"
+        "text": "炸板率高（37.9%）→ 分歧偏强，谨慎接力"
       }
     ],
-    "shift_score": 52,
+    "shift_score": 51,
     "shift_label": "分歧",
     "note": "情绪整体平稳，维持当前节奏。"
   },
@@ -854,40 +854,107 @@
       "shift_score": 52,
       "shift_label": "分歧",
       "note": "情绪整体平稳，维持当前节奏。"
+    },
+    {
+      "time": "11:30:03",
+      "ts_bj": "2026-09-23 11:30:03",
+      "date": "2026-09-23",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid"
+      },
+      "pool_errors": {},
+      "zt": 36,
+      "dt": 8,
+      "zab": 22,
+      "zb": 37.9,
+      "fb": 62.1,
+      "jj": 25.0,
+      "lianban": 9,
+      "max_lb": 4,
+      "amount": "11590.5亿",
+      "bf": 0,
+      "heat": 46,
+      "risk": 43,
+      "headline": "分歧",
+      "concepts": [
+        {
+          "name": "通用设备",
+          "lead": "优利德",
+          "chg_pct": null
+        },
+        {
+          "name": "出版",
+          "lead": "新华文轩",
+          "chg_pct": null
+        },
+        {
+          "name": "房地产服",
+          "lead": "我爱我家",
+          "chg_pct": null
+        },
+        {
+          "name": "消费电子",
+          "lead": "胜利精密",
+          "chg_pct": null
+        },
+        {
+          "name": "化学制品",
+          "lead": "集泰股份",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        },
+        {
+          "level": "danger",
+          "text": "炸板率高（37.9%）→ 分歧偏强，谨慎接力"
+        }
+      ],
+      "shift_score": 51,
+      "shift_label": "分歧",
+      "note": "情绪整体平稳，维持当前节奏。"
     }
   ],
   "indices": [
     {
       "name": "上证指数",
       "code": "000001.SH",
-      "val": 3939.347,
-      "chg": -0.32339539610052986,
-      "cje": 534190264100.0,
-      "t": "2026-09-23 11:20:01"
+      "val": 3938.08,
+      "chg": -0.35545407436196974,
+      "cje": 549794763500.0,
+      "t": "2026-09-23 11:30:03"
     },
     {
       "name": "深证成指",
       "code": "399001.SZ",
-      "val": 13660.351,
-      "chg": -0.4618567758704173,
-      "cje": 591875926200.0,
-      "t": "2026-09-23 11:19:57"
+      "val": 13644.541,
+      "chg": -0.5770586505787333,
+      "cje": 609203655400.0,
+      "t": "2026-09-23 11:29:57"
     },
     {
       "name": "创业板指",
       "code": "399006.SZ",
-      "val": 3389.124,
-      "chg": -0.3178300729720918,
-      "cje": 279716759600.0,
-      "t": "2026-09-23 11:19:57"
+      "val": 3385.543,
+      "chg": -0.42315577085409745,
+      "cje": 287983558500.0,
+      "t": "2026-09-23 11:29:57"
     }
   ],
   "asOf": {
-    "indices": "11:19:57"
+    "indices": "11:29:57"
   },
   "health": {
     "status": "valid",
-    "last_valid_at": "2026-09-23 11:20:03",
+    "last_valid_at": "2026-09-23 11:30:03",
     "rejected_reason": "",
     "source": {
       "status": "valid",
@@ -905,8 +972,8 @@
       "message": "intraday_coverage_collecting",
       "date": "2026-09-23",
       "expected_count": 26,
-      "due_count": 12,
-      "observed_count": 12,
+      "due_count": 13,
+      "observed_count": 13,
       "observed_slots": [
         "09:30",
         "09:40",
@@ -919,25 +986,26 @@
         "10:50",
         "11:00",
         "11:10",
-        "11:20"
+        "11:20",
+        "11:30"
       ],
       "missing_slots": [],
       "duplicate_slots": [],
       "out_of_session": [],
       "monotonic": true,
-      "morning_coverage": 12,
+      "morning_coverage": 13,
       "afternoon_coverage": 0
     }
   },
   "live": {
     "market": {
       "zt": 36,
-      "dt": 7,
-      "zab": 21,
-      "zab_rate": 36.8,
+      "dt": 8,
+      "zab": 22,
+      "zab_rate": 37.9,
       "lianban": 9,
       "max_lianban": 4,
-      "amount": "11262.4亿"
+      "amount": "11590.5亿"
     },
     "alerts": [
       {
@@ -946,7 +1014,7 @@
       },
       {
         "level": "danger",
-        "text": "炸板率高（36.8%）→ 分歧偏强，谨慎接力"
+        "text": "炸板率高（37.9%）→ 分歧偏强，谨慎接力"
       }
     ],
     "concepts": [
