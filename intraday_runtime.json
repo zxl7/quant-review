@@ -1,39 +1,61 @@
 {
   "schema": "intraday_runtime_v1",
   "date": "2026-09-23",
-  "updated_at": "2026-09-23 14:50:13",
-  "source": "unknown",
+  "updated_at": "2026-09-23 15:00:06",
+  "source": "必盈(实时)+必盈(实时)",
   "latest": {
-    "time": "14:50:13",
-    "ts_bj": "2026-09-23 14:50:13",
+    "time": "15:00:06",
+    "ts_bj": "2026-09-23 15:00:06",
     "date": "2026-09-23",
     "source": "intraday_live",
-    "provider": "unknown",
-    "data_quality": "unavailable",
+    "provider": "必盈(实时)+必盈(实时)",
+    "data_quality": "valid",
     "pool_status": {
-      "ztgc": "failed",
-      "zbgc": "failed",
-      "dtgc": "failed"
+      "ztgc": "valid",
+      "zbgc": "valid",
+      "dtgc": "valid"
     },
-    "pool_errors": {
-      "ztgc": "HTTP Error 429: Too Many Requests",
-      "zbgc": "HTTP Error 429: Too Many Requests",
-      "dtgc": "HTTP Error 429: Too Many Requests"
-    },
-    "zt": null,
-    "dt": null,
-    "zab": null,
-    "zb": null,
-    "fb": null,
-    "jj": null,
-    "lianban": null,
-    "max_lb": null,
-    "amount": "",
+    "pool_errors": {},
+    "zt": 50,
+    "dt": 15,
+    "zab": 28,
+    "zb": 35.9,
+    "fb": 64.1,
+    "jj": 22.0,
+    "lianban": 11,
+    "max_lb": 4,
+    "amount": "17649.8亿",
     "bf": 0,
-    "heat": null,
-    "risk": null,
-    "headline": "数据暂缺",
-    "concepts": [],
+    "heat": 49,
+    "risk": 55,
+    "headline": "走弱",
+    "concepts": [
+      {
+        "name": "通用设备",
+        "lead": "优利德",
+        "chg_pct": null
+      },
+      {
+        "name": "半导体",
+        "lead": "康强电子",
+        "chg_pct": null
+      },
+      {
+        "name": "出版",
+        "lead": "新华文轩",
+        "chg_pct": null
+      },
+      {
+        "name": "房地产服",
+        "lead": "我爱我家",
+        "chg_pct": null
+      },
+      {
+        "name": "元件",
+        "lead": "澳弘电子",
+        "chg_pct": null
+      }
+    ],
     "alerts": [
       {
         "level": "info",
@@ -41,16 +63,16 @@
       },
       {
         "level": "warn",
-        "text": "盘中三池响应不完整，保留最近有效数据"
+        "text": "跌停偏多（15）→ 控制追高"
       },
       {
-        "level": "warn",
-        "text": "三池请求均超时，本槽位跳过板块补抓并等待下一节点"
+        "level": "danger",
+        "text": "炸板率高（35.9%）→ 分歧偏强，谨慎接力"
       }
     ],
-    "shift_score": null,
-    "shift_label": "数据暂缺",
-    "note": "本槽位三池请求均未成功，已记录数据暂缺；等待下一节点自动恢复。"
+    "shift_score": 47,
+    "shift_label": "走弱",
+    "note": "承接增强、分歧收敛，情绪明显回暖。"
   },
   "snapshots": [
     {
@@ -1001,38 +1023,130 @@
       "shift_score": null,
       "shift_label": "数据暂缺",
       "note": "本槽位三池请求均未成功，已记录数据暂缺；等待下一节点自动恢复。"
+    },
+    {
+      "time": "15:00:06",
+      "ts_bj": "2026-09-23 15:00:06",
+      "date": "2026-09-23",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid"
+      },
+      "pool_errors": {},
+      "zt": 50,
+      "dt": 15,
+      "zab": 28,
+      "zb": 35.9,
+      "fb": 64.1,
+      "jj": 22.0,
+      "lianban": 11,
+      "max_lb": 4,
+      "amount": "17649.8亿",
+      "bf": 0,
+      "heat": 49,
+      "risk": 55,
+      "headline": "走弱",
+      "concepts": [
+        {
+          "name": "通用设备",
+          "lead": "优利德",
+          "chg_pct": null
+        },
+        {
+          "name": "半导体",
+          "lead": "康强电子",
+          "chg_pct": null
+        },
+        {
+          "name": "出版",
+          "lead": "新华文轩",
+          "chg_pct": null
+        },
+        {
+          "name": "房地产服",
+          "lead": "我爱我家",
+          "chg_pct": null
+        },
+        {
+          "name": "元件",
+          "lead": "澳弘电子",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        },
+        {
+          "level": "warn",
+          "text": "跌停偏多（15）→ 控制追高"
+        },
+        {
+          "level": "danger",
+          "text": "炸板率高（35.9%）→ 分歧偏强，谨慎接力"
+        }
+      ],
+      "shift_score": 47,
+      "shift_label": "走弱",
+      "note": "承接增强、分歧收敛，情绪明显回暖。"
     }
   ],
-  "indices": [],
+  "indices": [
+    {
+      "name": "上证指数",
+      "code": "000001.SH",
+      "val": 3936.52,
+      "chg": -0.3949264801140088,
+      "cje": 834061569400.0,
+      "t": "2026-09-23 15:00:03"
+    },
+    {
+      "name": "深证成指",
+      "code": "399001.SZ",
+      "val": 13636.845,
+      "chg": -0.63313667889974,
+      "cje": 923423034600.0,
+      "t": "2026-09-23 15:00:00"
+    },
+    {
+      "name": "创业板指",
+      "code": "399006.SZ",
+      "val": 3379.514,
+      "chg": -0.6004829511195735,
+      "cje": 438869372000.0,
+      "t": "2026-09-23 15:00:00"
+    }
+  ],
   "asOf": {
-    "indices": ""
+    "indices": "15:00:00"
   },
   "health": {
-    "status": "degraded",
-    "last_valid_at": "2026-09-23 14:50:13",
+    "status": "valid",
+    "last_valid_at": "2026-09-23 15:00:06",
     "rejected_reason": "",
     "source": {
-      "status": "partial",
+      "status": "valid",
       "pool_status": {
-        "ztgc": "failed",
-        "zbgc": "failed",
-        "dtgc": "failed"
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid"
       },
-      "pool_errors": {
-        "ztgc": "HTTP Error 429: Too Many Requests",
-        "zbgc": "HTTP Error 429: Too Many Requests",
-        "dtgc": "HTTP Error 429: Too Many Requests"
-      }
+      "pool_errors": {}
     },
-    "indices_status": "unavailable",
+    "indices_status": "valid",
     "coverage": {
       "ok": false,
       "status": "degraded",
       "message": "intraday_coverage_incomplete",
       "date": "2026-09-23",
       "expected_count": 26,
-      "due_count": 25,
-      "observed_count": 15,
+      "due_count": 26,
+      "observed_count": 16,
       "observed_slots": [
         "09:30",
         "09:40",
@@ -1048,7 +1162,8 @@
         "11:20",
         "11:30",
         "14:40",
-        "14:50"
+        "14:50",
+        "15:00"
       ],
       "missing_slots": [
         "13:00",
@@ -1066,18 +1181,18 @@
       "out_of_session": [],
       "monotonic": true,
       "morning_coverage": 13,
-      "afternoon_coverage": 2
+      "afternoon_coverage": 3
     }
   },
   "live": {
     "market": {
-      "zt": null,
-      "dt": null,
-      "zab": null,
-      "zab_rate": null,
-      "lianban": null,
-      "max_lianban": null,
-      "amount": ""
+      "zt": 50,
+      "dt": 15,
+      "zab": 28,
+      "zab_rate": 35.9,
+      "lianban": 11,
+      "max_lianban": 4,
+      "amount": "17649.8亿"
     },
     "alerts": [
       {
@@ -1086,13 +1201,39 @@
       },
       {
         "level": "warn",
-        "text": "盘中三池响应不完整，保留最近有效数据"
+        "text": "跌停偏多（15）→ 控制追高"
       },
       {
-        "level": "warn",
-        "text": "三池请求均超时，本槽位跳过板块补抓并等待下一节点"
+        "level": "danger",
+        "text": "炸板率高（35.9%）→ 分歧偏强，谨慎接力"
       }
     ],
-    "concepts": []
+    "concepts": [
+      {
+        "name": "通用设备",
+        "lead": "优利德",
+        "chg_pct": null
+      },
+      {
+        "name": "半导体",
+        "lead": "康强电子",
+        "chg_pct": null
+      },
+      {
+        "name": "出版",
+        "lead": "新华文轩",
+        "chg_pct": null
+      },
+      {
+        "name": "房地产服",
+        "lead": "我爱我家",
+        "chg_pct": null
+      },
+      {
+        "name": "元件",
+        "lead": "澳弘电子",
+        "chg_pct": null
+      }
+    ]
   }
 }

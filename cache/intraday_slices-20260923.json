@@ -2,7 +2,7 @@
   "schema": "intraday_snapshot_v1",
   "render_mode": "snapshot_stream",
   "date": "2026-09-23",
-  "count": 15,
+  "count": 16,
   "interval_min": null,
   "simulated": false,
   "snapshots": [
@@ -954,39 +954,132 @@
       "shift_score": null,
       "shift_label": "数据暂缺",
       "note": "本槽位三池请求均未成功，已记录数据暂缺；等待下一节点自动恢复。"
+    },
+    {
+      "time": "15:00:06",
+      "ts_bj": "2026-09-23 15:00:06",
+      "date": "2026-09-23",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid"
+      },
+      "pool_errors": {},
+      "zt": 50,
+      "dt": 15,
+      "zab": 28,
+      "zb": 35.9,
+      "fb": 64.1,
+      "jj": 22.0,
+      "lianban": 11,
+      "max_lb": 4,
+      "amount": "17649.8亿",
+      "bf": 0,
+      "heat": 49,
+      "risk": 55,
+      "headline": "走弱",
+      "concepts": [
+        {
+          "name": "通用设备",
+          "lead": "优利德",
+          "chg_pct": null
+        },
+        {
+          "name": "半导体",
+          "lead": "康强电子",
+          "chg_pct": null
+        },
+        {
+          "name": "出版",
+          "lead": "新华文轩",
+          "chg_pct": null
+        },
+        {
+          "name": "房地产服",
+          "lead": "我爱我家",
+          "chg_pct": null
+        },
+        {
+          "name": "元件",
+          "lead": "澳弘电子",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        },
+        {
+          "level": "warn",
+          "text": "跌停偏多（15）→ 控制追高"
+        },
+        {
+          "level": "danger",
+          "text": "炸板率高（35.9%）→ 分歧偏强，谨慎接力"
+        }
+      ],
+      "shift_score": 47,
+      "shift_label": "走弱",
+      "note": "承接增强、分歧收敛，情绪明显回暖。"
     }
   ],
   "latest": {
-    "time": "14:50:13",
-    "ts_bj": "2026-09-23 14:50:13",
+    "time": "15:00:06",
+    "ts_bj": "2026-09-23 15:00:06",
     "date": "2026-09-23",
     "source": "intraday_live",
-    "provider": "unknown",
-    "data_quality": "unavailable",
+    "provider": "必盈(实时)+必盈(实时)",
+    "data_quality": "valid",
     "pool_status": {
-      "ztgc": "failed",
-      "zbgc": "failed",
-      "dtgc": "failed"
+      "ztgc": "valid",
+      "zbgc": "valid",
+      "dtgc": "valid"
     },
-    "pool_errors": {
-      "ztgc": "HTTP Error 429: Too Many Requests",
-      "zbgc": "HTTP Error 429: Too Many Requests",
-      "dtgc": "HTTP Error 429: Too Many Requests"
-    },
-    "zt": null,
-    "dt": null,
-    "zab": null,
-    "zb": null,
-    "fb": null,
-    "jj": null,
-    "lianban": null,
-    "max_lb": null,
-    "amount": "",
+    "pool_errors": {},
+    "zt": 50,
+    "dt": 15,
+    "zab": 28,
+    "zb": 35.9,
+    "fb": 64.1,
+    "jj": 22.0,
+    "lianban": 11,
+    "max_lb": 4,
+    "amount": "17649.8亿",
     "bf": 0,
-    "heat": null,
-    "risk": null,
-    "headline": "数据暂缺",
-    "concepts": [],
+    "heat": 49,
+    "risk": 55,
+    "headline": "走弱",
+    "concepts": [
+      {
+        "name": "通用设备",
+        "lead": "优利德",
+        "chg_pct": null
+      },
+      {
+        "name": "半导体",
+        "lead": "康强电子",
+        "chg_pct": null
+      },
+      {
+        "name": "出版",
+        "lead": "新华文轩",
+        "chg_pct": null
+      },
+      {
+        "name": "房地产服",
+        "lead": "我爱我家",
+        "chg_pct": null
+      },
+      {
+        "name": "元件",
+        "lead": "澳弘电子",
+        "chg_pct": null
+      }
+    ],
     "alerts": [
       {
         "level": "info",
@@ -994,35 +1087,31 @@
       },
       {
         "level": "warn",
-        "text": "盘中三池响应不完整，保留最近有效数据"
+        "text": "跌停偏多（15）→ 控制追高"
       },
       {
-        "level": "warn",
-        "text": "三池请求均超时，本槽位跳过板块补抓并等待下一节点"
+        "level": "danger",
+        "text": "炸板率高（35.9%）→ 分歧偏强，谨慎接力"
       }
     ],
-    "shift_score": null,
-    "shift_label": "数据暂缺",
-    "note": "本槽位三池请求均未成功，已记录数据暂缺；等待下一节点自动恢复。"
+    "shift_score": 47,
+    "shift_label": "走弱",
+    "note": "承接增强、分歧收敛，情绪明显回暖。"
   },
-  "updated_at": "2026-09-23 14:50:13",
-  "snapshot_sig": "2026-09-23|2026-09-23 14:50:13|15",
+  "updated_at": "2026-09-23 15:00:06",
+  "snapshot_sig": "2026-09-23|2026-09-23 15:00:06|16",
   "health": {
-    "status": "degraded",
-    "last_valid_at": "2026-09-23 14:50:13",
+    "status": "valid",
+    "last_valid_at": "2026-09-23 15:00:06",
     "rejected_reason": "",
     "source": {
-      "status": "partial",
+      "status": "valid",
       "pool_status": {
-        "ztgc": "failed",
-        "zbgc": "failed",
-        "dtgc": "failed"
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid"
       },
-      "pool_errors": {
-        "ztgc": "HTTP Error 429: Too Many Requests",
-        "zbgc": "HTTP Error 429: Too Many Requests",
-        "dtgc": "HTTP Error 429: Too Many Requests"
-      }
+      "pool_errors": {}
     }
   }
 }
