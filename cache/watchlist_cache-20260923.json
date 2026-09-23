@@ -1,6 +1,6 @@
 {
   "schema": "watchlist_v2",
-  "generated_at_bj": "2026-09-23 21:47:09",
+  "generated_at_bj": "2026-09-23 22:24:27",
   "data_date": "2026-09-23",
   "pools_date": "2026-09-23",
   "sector_resolution": {
@@ -14858,12 +14858,12 @@
         "prev_zt": 1,
         "pre_prev_zt": 4,
         "resilience": 219.05,
-        "strength": null,
+        "strength": 58.0,
         "strength_rank": null,
-        "strength_score": null,
-        "strength_source": "",
-        "tide_score": 67,
-        "confidence": "medium",
+        "strength_score": 58.0,
+        "strength_source": "sector_heatmap",
+        "tide_score": 69,
+        "confidence": "high",
         "warning_level": "risk",
         "action_hint": "缩量反弹：降低追高权重，等待放量确认"
       },
@@ -17527,12 +17527,12 @@
         "prev_zt": null,
         "pre_prev_zt": null,
         "resilience": null,
-        "strength": 58.0,
+        "strength": null,
         "strength_rank": null,
-        "strength_score": 58.0,
-        "strength_source": "sector_heatmap",
-        "tide_score": 52,
-        "confidence": "medium",
+        "strength_score": null,
+        "strength_source": "",
+        "tide_score": 50,
+        "confidence": "low",
         "warning_level": "none",
         "action_hint": "潮汐中性，按梯队和辨识度判断"
       },
@@ -21503,41 +21503,6 @@
         "action_hint": "汽车电子核心潮汐中性，按梯队和个股辨识度处理。"
       },
       {
-        "name": "智能手机",
-        "canonical_name": "智能手机",
-        "status": "neutral_wait",
-        "base_tide_status": "neutral",
-        "action": "watch",
-        "tide_zone": "neutral",
-        "tide_phase": "neutral",
-        "core_score": 54,
-        "ebb_score": 40,
-        "tide_score": 52,
-        "emotion_score": 70,
-        "strength_score": 58,
-        "volume_score": 34,
-        "news_score": 56,
-        "market_score": 54,
-        "structure_score": 78,
-        "confidence": "low",
-        "confirms": {
-          "emotion": true,
-          "strength": false,
-          "volume": false,
-          "news": false,
-          "market": false
-        },
-        "reasons": [
-          "消息催化",
-          "低位新启动",
-          "低位连板承接"
-        ],
-        "cautions": [
-          "市场退潮"
-        ],
-        "action_hint": "智能手机核心潮汐中性，按梯队和个股辨识度处理。"
-      },
-      {
         "name": "智慧停车",
         "canonical_name": "智慧停车",
         "status": "neutral_wait",
@@ -21944,6 +21909,41 @@
           "市场退潮"
         ],
         "action_hint": "智能手表核心潮汐中性，按梯队和个股辨识度处理。"
+      },
+      {
+        "name": "智能手机",
+        "canonical_name": "智能手机",
+        "status": "neutral_wait",
+        "base_tide_status": "neutral",
+        "action": "watch",
+        "tide_zone": "neutral",
+        "tide_phase": "neutral",
+        "core_score": 52,
+        "ebb_score": 41,
+        "tide_score": 50,
+        "emotion_score": 70,
+        "strength_score": 53,
+        "volume_score": 34,
+        "news_score": 56,
+        "market_score": 54,
+        "structure_score": 78,
+        "confidence": "low",
+        "confirms": {
+          "emotion": true,
+          "strength": false,
+          "volume": false,
+          "news": false,
+          "market": false
+        },
+        "reasons": [
+          "消息催化",
+          "低位新启动",
+          "低位连板承接"
+        ],
+        "cautions": [
+          "市场退潮"
+        ],
+        "action_hint": "智能手机核心潮汐中性，按梯队和个股辨识度处理。"
       },
       {
         "name": "苹果产业链",
@@ -25013,6 +25013,41 @@
         "action_hint": "光伏玻璃属于反抽/回光类信号，不开新仓，只看兑现和辨识度。"
       },
       {
+        "name": "消费电子",
+        "canonical_name": "消费电子",
+        "status": "shrinking_rebound",
+        "base_tide_status": "volume_rebound",
+        "action": "no_new_position",
+        "tide_zone": "ebbing",
+        "tide_phase": "ebbing",
+        "core_score": 56,
+        "ebb_score": 59,
+        "tide_score": 69,
+        "emotion_score": 70,
+        "strength_score": 58,
+        "volume_score": 16,
+        "news_score": 50,
+        "market_score": 54,
+        "structure_score": 62,
+        "confidence": "low",
+        "confirms": {
+          "emotion": true,
+          "strength": false,
+          "volume": false,
+          "news": false,
+          "market": false
+        },
+        "reasons": [
+          "低位连板承接"
+        ],
+        "cautions": [
+          "缩量反弹",
+          "市场退潮",
+          "不开新仓"
+        ],
+        "action_hint": "消费电子属于反抽/回光类信号，不开新仓，只看兑现和辨识度。"
+      },
+      {
         "name": "一带一路",
         "canonical_name": "一带一路",
         "status": "afterglow_risk",
@@ -25047,41 +25082,6 @@
           "不开新仓"
         ],
         "action_hint": "一带一路属于反抽/回光类信号，不开新仓，只看兑现和辨识度。"
-      },
-      {
-        "name": "消费电子",
-        "canonical_name": "消费电子",
-        "status": "shrinking_rebound",
-        "base_tide_status": "volume_rebound",
-        "action": "no_new_position",
-        "tide_zone": "ebbing",
-        "tide_phase": "ebbing",
-        "core_score": 54,
-        "ebb_score": 60,
-        "tide_score": 67,
-        "emotion_score": 70,
-        "strength_score": 53,
-        "volume_score": 16,
-        "news_score": 50,
-        "market_score": 54,
-        "structure_score": 62,
-        "confidence": "low",
-        "confirms": {
-          "emotion": true,
-          "strength": false,
-          "volume": false,
-          "news": false,
-          "market": false
-        },
-        "reasons": [
-          "低位连板承接"
-        ],
-        "cautions": [
-          "缩量反弹",
-          "市场退潮",
-          "不开新仓"
-        ],
-        "action_hint": "消费电子属于反抽/回光类信号，不开新仓，只看兑现和辨识度。"
       },
       {
         "name": "储能",
@@ -32247,8 +32247,8 @@
       "avoid": [
         "航天军工",
         "光伏玻璃",
-        "一带一路",
         "消费电子",
+        "一带一路",
         "储能",
         "证金汇金",
         "功率半导体",
@@ -32268,8 +32268,8 @@
       "ebbing": [
         "航天军工",
         "光伏玻璃",
-        "一带一路",
         "消费电子",
+        "一带一路",
         "储能",
         "证金汇金",
         "功率半导体",
