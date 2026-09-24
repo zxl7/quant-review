@@ -2,7 +2,7 @@
   "schema": "intraday_snapshot_v1",
   "render_mode": "snapshot_stream",
   "date": "2026-09-24",
-  "count": 2,
+  "count": 3,
   "interval_min": null,
   "simulated": false,
   "snapshots": [
@@ -144,37 +144,97 @@
       "shift_score": null,
       "shift_label": "数据部分可用",
       "note": "本槽位仅部分三池成功；节点已保留，缺失指标不参与判断。"
+    },
+    {
+      "time": "09:50:04",
+      "ts_bj": "2026-09-24 09:50:04",
+      "date": "2026-09-24",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid"
+      },
+      "pool_errors": {},
+      "zt": 27,
+      "dt": 2,
+      "zab": 5,
+      "zb": 15.6,
+      "fb": 84.4,
+      "jj": 37.0,
+      "lianban": 10,
+      "max_lb": 5,
+      "amount": "4387.0亿",
+      "bf": 0,
+      "heat": 59,
+      "risk": 14,
+      "headline": "修复",
+      "concepts": [
+        {
+          "name": "出版",
+          "lead": "新华文轩",
+          "chg_pct": null
+        },
+        {
+          "name": "汽车零部",
+          "lead": "雪龙集团",
+          "chg_pct": null
+        },
+        {
+          "name": "服装家纺",
+          "lead": "泰慕士",
+          "chg_pct": null
+        },
+        {
+          "name": "电视广播",
+          "lead": "天威视讯",
+          "chg_pct": null
+        },
+        {
+          "name": "通用设备",
+          "lead": "东方中科",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        }
+      ],
+      "shift_score": 70,
+      "shift_label": "修复",
+      "note": "承接增强、分歧收敛，情绪明显回暖。"
     }
   ],
   "latest": {
-    "time": "09:40:05",
-    "ts_bj": "2026-09-24 09:40:05",
+    "time": "09:50:04",
+    "ts_bj": "2026-09-24 09:50:04",
     "date": "2026-09-24",
     "source": "intraday_live",
-    "provider": "必盈(实时)",
-    "data_quality": "partial",
+    "provider": "必盈(实时)+必盈(实时)",
+    "data_quality": "valid",
     "pool_status": {
       "ztgc": "valid",
-      "zbgc": "failed",
-      "dtgc": "failed"
+      "zbgc": "valid",
+      "dtgc": "valid"
     },
-    "pool_errors": {
-      "zbgc": "HTTP Error 429: Too Many Requests",
-      "dtgc": "HTTP Error 429: Too Many Requests"
-    },
-    "zt": 17,
-    "dt": null,
-    "zab": null,
-    "zb": null,
-    "fb": null,
-    "jj": 52.9,
-    "lianban": 9,
+    "pool_errors": {},
+    "zt": 27,
+    "dt": 2,
+    "zab": 5,
+    "zb": 15.6,
+    "fb": 84.4,
+    "jj": 37.0,
+    "lianban": 10,
     "max_lb": 5,
-    "amount": "",
+    "amount": "4387.0亿",
     "bf": 0,
-    "heat": null,
-    "risk": null,
-    "headline": "数据部分可用",
+    "heat": 59,
+    "risk": 14,
+    "headline": "修复",
     "concepts": [
       {
         "name": "出版",
@@ -182,8 +242,8 @@
         "chg_pct": null
       },
       {
-        "name": "其他家电",
-        "lead": "奥佳华",
+        "name": "汽车零部",
+        "lead": "雪龙集团",
         "chg_pct": null
       },
       {
@@ -197,8 +257,8 @@
         "chg_pct": null
       },
       {
-        "name": "光伏设备",
-        "lead": "金辰股份",
+        "name": "通用设备",
+        "lead": "东方中科",
         "chg_pct": null
       }
     ],
@@ -206,33 +266,26 @@
       {
         "level": "info",
         "text": "盘中模式：强制实时拉取"
-      },
-      {
-        "level": "warn",
-        "text": "盘中三池响应不完整，保留最近有效数据"
       }
     ],
-    "shift_score": null,
-    "shift_label": "数据部分可用",
-    "note": "本槽位仅部分三池成功；节点已保留，缺失指标不参与判断。"
+    "shift_score": 70,
+    "shift_label": "修复",
+    "note": "承接增强、分歧收敛，情绪明显回暖。"
   },
-  "updated_at": "2026-09-24 09:40:05",
-  "snapshot_sig": "2026-09-24|2026-09-24 09:40:05|2",
+  "updated_at": "2026-09-24 09:50:04",
+  "snapshot_sig": "2026-09-24|2026-09-24 09:50:04|3",
   "health": {
-    "status": "degraded",
-    "last_valid_at": "2026-09-24 09:40:05",
+    "status": "valid",
+    "last_valid_at": "2026-09-24 09:50:04",
     "rejected_reason": "",
     "source": {
-      "status": "partial",
+      "status": "valid",
       "pool_status": {
         "ztgc": "valid",
-        "zbgc": "failed",
-        "dtgc": "failed"
+        "zbgc": "valid",
+        "dtgc": "valid"
       },
-      "pool_errors": {
-        "zbgc": "HTTP Error 429: Too Many Requests",
-        "dtgc": "HTTP Error 429: Too Many Requests"
-      }
+      "pool_errors": {}
     }
   }
 }
