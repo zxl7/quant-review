@@ -1,6 +1,6 @@
 {
   "schema": "watchlist_v2",
-  "generated_at_bj": "2026-09-24 21:43:41",
+  "generated_at_bj": "2026-09-24 22:25:53",
   "data_date": "2026-09-24",
   "pools_date": "2026-09-24",
   "sector_resolution": {
@@ -17726,12 +17726,12 @@
         "prev_zt": 4,
         "pre_prev_zt": 2,
         "resilience": -26.96,
-        "strength": 56.0,
+        "strength": null,
         "strength_rank": null,
-        "strength_score": 56.0,
-        "strength_source": "sector_heatmap",
-        "tide_score": 37,
-        "confidence": "high",
+        "strength_score": null,
+        "strength_source": "",
+        "tide_score": 35,
+        "confidence": "medium",
         "warning_level": "watch",
         "action_hint": "弱于市场：降低主线权重"
       },
@@ -20038,12 +20038,12 @@
         "prev_zt": 1,
         "pre_prev_zt": 2,
         "resilience": 198.04,
-        "strength": null,
+        "strength": 56.0,
         "strength_rank": null,
-        "strength_score": null,
-        "strength_source": "",
-        "tide_score": 85,
-        "confidence": "medium",
+        "strength_score": 56.0,
+        "strength_source": "sector_heatmap",
+        "tide_score": 86,
+        "confidence": "high",
         "warning_level": "none",
         "action_hint": "潮汐中性，按梯队和辨识度判断"
       },
@@ -21619,12 +21619,12 @@
         "prev_zt": null,
         "pre_prev_zt": 1,
         "resilience": null,
-        "strength": 56.0,
+        "strength": null,
         "strength_rank": null,
-        "strength_score": 56.0,
-        "strength_source": "sector_heatmap",
-        "tide_score": 52,
-        "confidence": "medium",
+        "strength_score": null,
+        "strength_source": "",
+        "tide_score": 50,
+        "confidence": "low",
         "warning_level": "none",
         "action_hint": "潮汐中性，按梯队和辨识度判断"
       },
@@ -23030,16 +23030,16 @@
         "action": "watch",
         "tide_zone": "neutral",
         "tide_phase": "neutral",
-        "core_score": 65,
-        "ebb_score": 34,
-        "tide_score": 85,
+        "core_score": 66,
+        "ebb_score": 33,
+        "tide_score": 86,
         "emotion_score": 73,
-        "strength_score": 53,
+        "strength_score": 56,
         "volume_score": 45,
         "news_score": 50,
         "market_score": 58,
         "structure_score": 78,
-        "confidence": "low",
+        "confidence": "medium",
         "confirms": {
           "emotion": true,
           "strength": false,
@@ -23311,38 +23311,6 @@
         ],
         "cautions": [],
         "action_hint": "电力物联网核心潮汐中性，按梯队和个股辨识度处理。"
-      },
-      {
-        "name": "TOPCon电池",
-        "canonical_name": "光伏",
-        "status": "neutral_wait",
-        "base_tide_status": "neutral",
-        "action": "watch",
-        "tide_zone": "neutral",
-        "tide_phase": "neutral",
-        "core_score": 54,
-        "ebb_score": 40,
-        "tide_score": 52,
-        "emotion_score": 73,
-        "strength_score": 56,
-        "volume_score": 45,
-        "news_score": 58,
-        "market_score": 58,
-        "structure_score": 64,
-        "confidence": "medium",
-        "confirms": {
-          "emotion": true,
-          "strength": false,
-          "volume": false,
-          "news": false,
-          "market": true
-        },
-        "reasons": [
-          "消息催化",
-          "低位连板承接"
-        ],
-        "cautions": [],
-        "action_hint": "TOPCon电池核心潮汐中性，按梯队和个股辨识度处理。"
       },
       {
         "name": "福建自贸区",
@@ -25960,6 +25928,38 @@
         "action_hint": "仪器仪表核心潮汐偏弱，降低权重，避免追高。"
       },
       {
+        "name": "TOPCon电池",
+        "canonical_name": "光伏",
+        "status": "avoid_weak",
+        "base_tide_status": "neutral",
+        "action": "avoid",
+        "tide_zone": "ebbing",
+        "tide_phase": "ebbing",
+        "core_score": 51,
+        "ebb_score": 57,
+        "tide_score": 50,
+        "emotion_score": 73,
+        "strength_score": 44,
+        "volume_score": 45,
+        "news_score": 58,
+        "market_score": 58,
+        "structure_score": 64,
+        "confidence": "medium",
+        "confirms": {
+          "emotion": true,
+          "strength": false,
+          "volume": false,
+          "news": false,
+          "market": true
+        },
+        "reasons": [
+          "消息催化",
+          "低位连板承接"
+        ],
+        "cautions": [],
+        "action_hint": "TOPCon电池核心潮汐偏弱，降低权重，避免追高。"
+      },
+      {
         "name": "养老产业",
         "canonical_name": "养老产业",
         "status": "avoid_weak",
@@ -28235,40 +28235,6 @@
         "action_hint": "黑龙江自贸区核心潮汐偏弱，降低权重，避免追高。"
       },
       {
-        "name": "光伏玻璃",
-        "canonical_name": "光伏玻璃",
-        "status": "avoid_weak",
-        "base_tide_status": "weak",
-        "action": "avoid",
-        "tide_zone": "ebbing",
-        "tide_phase": "ebbing",
-        "core_score": 49,
-        "ebb_score": 63,
-        "tide_score": 37,
-        "emotion_score": 73,
-        "strength_score": 56,
-        "volume_score": 45,
-        "news_score": 58,
-        "market_score": 58,
-        "structure_score": 62,
-        "confidence": "medium",
-        "confirms": {
-          "emotion": true,
-          "strength": false,
-          "volume": false,
-          "news": false,
-          "market": true
-        },
-        "reasons": [
-          "消息催化",
-          "低位连板承接"
-        ],
-        "cautions": [
-          "潮汐偏弱"
-        ],
-        "action_hint": "光伏玻璃核心潮汐偏弱，降低权重，避免追高。"
-      },
-      {
         "name": "低价",
         "canonical_name": "低价",
         "status": "avoid_weak",
@@ -28300,6 +28266,40 @@
           "潮汐偏弱"
         ],
         "action_hint": "低价核心潮汐偏弱，降低权重，避免追高。"
+      },
+      {
+        "name": "光伏玻璃",
+        "canonical_name": "光伏玻璃",
+        "status": "avoid_weak",
+        "base_tide_status": "weak",
+        "action": "avoid",
+        "tide_zone": "ebbing",
+        "tide_phase": "ebbing",
+        "core_score": 48,
+        "ebb_score": 64,
+        "tide_score": 35,
+        "emotion_score": 73,
+        "strength_score": 53,
+        "volume_score": 45,
+        "news_score": 58,
+        "market_score": 58,
+        "structure_score": 62,
+        "confidence": "medium",
+        "confirms": {
+          "emotion": true,
+          "strength": false,
+          "volume": false,
+          "news": false,
+          "market": true
+        },
+        "reasons": [
+          "消息催化",
+          "低位连板承接"
+        ],
+        "cautions": [
+          "潮汐偏弱"
+        ],
+        "action_hint": "光伏玻璃核心潮汐偏弱，降低权重，避免追高。"
       },
       {
         "name": "基础建设",
@@ -32919,8 +32919,8 @@
         "新材料",
         "减速器",
         "仪器仪表",
-        "养老产业",
-        "阿里云"
+        "TOPCon电池",
+        "养老产业"
       ],
       "rising": [],
       "neutral": [
@@ -32940,8 +32940,8 @@
         "新材料",
         "减速器",
         "仪器仪表",
-        "养老产业",
-        "阿里云"
+        "TOPCon电池",
+        "养老产业"
       ],
       "action_hint": "中性方向：海峡两岸, 太阳能（光伏）, 储能，等待情绪/量能/消息继续共振。"
     }
