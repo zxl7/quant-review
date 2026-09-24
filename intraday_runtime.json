@@ -1,11 +1,11 @@
 {
   "schema": "intraday_runtime_v1",
   "date": "2026-09-24",
-  "updated_at": "2026-09-24 09:30:35",
+  "updated_at": "2026-09-24 09:40:05",
   "source": "必盈(实时)",
   "latest": {
-    "time": "09:30:35",
-    "ts_bj": "2026-09-24 09:30:35",
+    "time": "09:40:05",
+    "ts_bj": "2026-09-24 09:40:05",
     "date": "2026-09-24",
     "source": "intraday_live",
     "provider": "必盈(实时)",
@@ -13,18 +13,19 @@
     "pool_status": {
       "ztgc": "valid",
       "zbgc": "failed",
-      "dtgc": "valid"
+      "dtgc": "failed"
     },
     "pool_errors": {
-      "zbgc": "empty_response"
+      "zbgc": "HTTP Error 429: Too Many Requests",
+      "dtgc": "HTTP Error 429: Too Many Requests"
     },
-    "zt": 9,
-    "dt": 2,
+    "zt": 17,
+    "dt": null,
     "zab": null,
     "zb": null,
     "fb": null,
-    "jj": 77.8,
-    "lianban": 7,
+    "jj": 52.9,
+    "lianban": 9,
     "max_lb": 5,
     "amount": "",
     "bf": 0,
@@ -38,8 +39,8 @@
         "chg_pct": null
       },
       {
-        "name": "家居用品",
-        "lead": "大亚圣象",
+        "name": "其他家电",
+        "lead": "奥佳华",
         "chg_pct": null
       },
       {
@@ -48,13 +49,13 @@
         "chg_pct": null
       },
       {
-        "name": "通用设备",
-        "lead": "东方中科",
+        "name": "电视广播",
+        "lead": "天威视讯",
         "chg_pct": null
       },
       {
-        "name": "汽车零部",
-        "lead": "雪龙集团",
+        "name": "光伏设备",
+        "lead": "金辰股份",
         "chg_pct": null
       }
     ],
@@ -141,79 +142,126 @@
       "shift_score": null,
       "shift_label": "数据部分可用",
       "note": "本槽位仅部分三池成功；节点已保留，缺失指标不参与判断。"
-    }
-  ],
-  "indices": [
-    {
-      "name": "上证指数",
-      "code": "000001.SH",
-      "val": 3924.229,
-      "chg": -0.3122300915529495,
-      "cje": 26756674500.0,
-      "t": "2026-09-24 09:30:33"
     },
     {
-      "name": "深证成指",
-      "code": "399001.SZ",
-      "val": 13566.222,
-      "chg": -0.5122588803786249,
-      "cje": 27780616900.0,
-      "t": "2026-09-24 09:30:30"
-    },
-    {
-      "name": "创业板指",
-      "code": "399006.SZ",
-      "val": 3368.017,
-      "chg": -0.3430277458049983,
-      "cje": 12401344300.0,
-      "t": "2026-09-24 09:30:30"
+      "time": "09:40:05",
+      "ts_bj": "2026-09-24 09:40:05",
+      "date": "2026-09-24",
+      "source": "intraday_live",
+      "provider": "必盈(实时)",
+      "data_quality": "partial",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "failed",
+        "dtgc": "failed"
+      },
+      "pool_errors": {
+        "zbgc": "HTTP Error 429: Too Many Requests",
+        "dtgc": "HTTP Error 429: Too Many Requests"
+      },
+      "zt": 17,
+      "dt": null,
+      "zab": null,
+      "zb": null,
+      "fb": null,
+      "jj": 52.9,
+      "lianban": 9,
+      "max_lb": 5,
+      "amount": "",
+      "bf": 0,
+      "heat": null,
+      "risk": null,
+      "headline": "数据部分可用",
+      "concepts": [
+        {
+          "name": "出版",
+          "lead": "新华文轩",
+          "chg_pct": null
+        },
+        {
+          "name": "其他家电",
+          "lead": "奥佳华",
+          "chg_pct": null
+        },
+        {
+          "name": "服装家纺",
+          "lead": "泰慕士",
+          "chg_pct": null
+        },
+        {
+          "name": "电视广播",
+          "lead": "天威视讯",
+          "chg_pct": null
+        },
+        {
+          "name": "光伏设备",
+          "lead": "金辰股份",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        },
+        {
+          "level": "warn",
+          "text": "盘中三池响应不完整，保留最近有效数据"
+        }
+      ],
+      "shift_score": null,
+      "shift_label": "数据部分可用",
+      "note": "本槽位仅部分三池成功；节点已保留，缺失指标不参与判断。"
     }
   ],
+  "indices": [],
   "asOf": {
-    "indices": "09:30:30"
+    "indices": ""
   },
   "health": {
     "status": "degraded",
-    "last_valid_at": "2026-09-24 09:30:35",
+    "last_valid_at": "2026-09-24 09:40:05",
     "rejected_reason": "",
     "source": {
       "status": "partial",
       "pool_status": {
         "ztgc": "valid",
         "zbgc": "failed",
-        "dtgc": "valid"
+        "dtgc": "failed"
       },
       "pool_errors": {
-        "zbgc": "empty_response"
+        "zbgc": "HTTP Error 429: Too Many Requests",
+        "dtgc": "HTTP Error 429: Too Many Requests"
       }
     },
-    "indices_status": "valid",
+    "indices_status": "unavailable",
     "coverage": {
       "ok": true,
       "status": "collecting",
       "message": "intraday_coverage_collecting",
       "date": "2026-09-24",
       "expected_count": 26,
-      "due_count": 1,
-      "observed_count": 1,
+      "due_count": 2,
+      "observed_count": 2,
       "observed_slots": [
-        "09:30"
+        "09:30",
+        "09:40"
       ],
       "missing_slots": [],
       "duplicate_slots": [],
       "out_of_session": [],
       "monotonic": true,
-      "morning_coverage": 1,
+      "morning_coverage": 2,
       "afternoon_coverage": 0
     }
   },
   "live": {
     "market": {
-      "zt": 9,
-      "dt": 2,
+      "zt": 17,
+      "dt": null,
       "zab": null,
       "zab_rate": null,
-      "lianban": 7,
+      "lianban": 9,
       "max_lianban": 5,
       "amount": ""
     },
@@ -234,8 +282,8 @@
         "chg_pct": null
       },
       {
-        "name": "家居用品",
-        "lead": "大亚圣象",
+        "name": "其他家电",
+        "lead": "奥佳华",
         "chg_pct": null
       },
       {
@@ -244,13 +292,13 @@
         "chg_pct": null
       },
       {
-        "name": "通用设备",
-        "lead": "东方中科",
+        "name": "电视广播",
+        "lead": "天威视讯",
         "chg_pct": null
       },
       {
-        "name": "汽车零部",
-        "lead": "雪龙集团",
+        "name": "光伏设备",
+        "lead": "金辰股份",
         "chg_pct": null
       }
     ]
