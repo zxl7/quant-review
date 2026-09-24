@@ -1,11 +1,11 @@
 {
   "schema": "intraday_runtime_v1",
   "date": "2026-09-24",
-  "updated_at": "2026-09-24 11:20:05",
+  "updated_at": "2026-09-24 11:30:05",
   "source": "必盈(实时)+必盈(实时)",
   "latest": {
-    "time": "11:20:05",
-    "ts_bj": "2026-09-24 11:20:05",
+    "time": "11:30:05",
+    "ts_bj": "2026-09-24 11:30:05",
     "date": "2026-09-24",
     "source": "intraday_live",
     "provider": "必盈(实时)+必盈(实时)",
@@ -16,18 +16,18 @@
       "dtgc": "valid"
     },
     "pool_errors": {},
-    "zt": 39,
+    "zt": 38,
     "dt": 4,
-    "zab": 9,
-    "zb": 18.8,
-    "fb": 81.2,
-    "jj": 30.8,
+    "zab": 10,
+    "zb": 20.8,
+    "fb": 79.2,
+    "jj": 31.6,
     "lianban": 12,
     "max_lb": 5,
-    "amount": "10206.3亿",
+    "amount": "10676.7亿",
     "bf": 0,
-    "heat": 59,
-    "risk": 20,
+    "heat": 58,
+    "risk": 22,
     "headline": "修复",
     "concepts": [
       {
@@ -62,9 +62,9 @@
         "text": "盘中模式：强制实时拉取"
       }
     ],
-    "shift_score": 68,
+    "shift_score": 66,
     "shift_label": "修复",
-    "note": "情绪边际修复，但仍需确认持续性。"
+    "note": "情绪略有回落，注意午后分歧。"
   },
   "snapshots": [
     {
@@ -835,40 +835,103 @@
       "shift_score": 68,
       "shift_label": "修复",
       "note": "情绪边际修复，但仍需确认持续性。"
+    },
+    {
+      "time": "11:30:05",
+      "ts_bj": "2026-09-24 11:30:05",
+      "date": "2026-09-24",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid"
+      },
+      "pool_errors": {},
+      "zt": 38,
+      "dt": 4,
+      "zab": 10,
+      "zb": 20.8,
+      "fb": 79.2,
+      "jj": 31.6,
+      "lianban": 12,
+      "max_lb": 5,
+      "amount": "10676.7亿",
+      "bf": 0,
+      "heat": 58,
+      "risk": 22,
+      "headline": "修复",
+      "concepts": [
+        {
+          "name": "通用设备",
+          "lead": "东方中科",
+          "chg_pct": null
+        },
+        {
+          "name": "汽车零部",
+          "lead": "雪龙集团",
+          "chg_pct": null
+        },
+        {
+          "name": "出版",
+          "lead": "新华文轩",
+          "chg_pct": null
+        },
+        {
+          "name": "服装家纺",
+          "lead": "泰慕士",
+          "chg_pct": null
+        },
+        {
+          "name": "化学制品",
+          "lead": "集泰股份",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        }
+      ],
+      "shift_score": 66,
+      "shift_label": "修复",
+      "note": "情绪略有回落，注意午后分歧。"
     }
   ],
   "indices": [
     {
       "name": "上证指数",
       "code": "000001.SH",
-      "val": 3902.552,
-      "chg": -0.8628941298405659,
-      "cje": 486757452800.0,
-      "t": "2026-09-24 11:20:03"
+      "val": 3899.997,
+      "chg": -0.927799172873506,
+      "cje": 508312238700.0,
+      "t": "2026-09-24 11:30:03"
     },
     {
       "name": "深证成指",
       "code": "399001.SZ",
-      "val": 13415.805,
-      "chg": -1.6153403098281824,
-      "cje": 533734051600.0,
-      "t": "2026-09-24 11:20:03"
+      "val": 13399.338,
+      "chg": -1.7361008747825861,
+      "cje": 559350272600.0,
+      "t": "2026-09-24 11:30:00"
     },
     {
       "name": "创业板指",
       "code": "399006.SZ",
-      "val": 3320.743,
-      "chg": -1.7418281991117373,
-      "cje": 253188352500.0,
-      "t": "2026-09-24 11:20:03"
+      "val": 3317.345,
+      "chg": -1.8423723447380118,
+      "cje": 265574741800.0,
+      "t": "2026-09-24 11:30:00"
     }
   ],
   "asOf": {
-    "indices": "11:20:03"
+    "indices": "11:30:00"
   },
   "health": {
     "status": "valid",
-    "last_valid_at": "2026-09-24 11:20:05",
+    "last_valid_at": "2026-09-24 11:30:05",
     "rejected_reason": "",
     "source": {
       "status": "valid",
@@ -886,8 +949,8 @@
       "message": "intraday_coverage_collecting",
       "date": "2026-09-24",
       "expected_count": 26,
-      "due_count": 12,
-      "observed_count": 12,
+      "due_count": 13,
+      "observed_count": 13,
       "observed_slots": [
         "09:30",
         "09:40",
@@ -900,25 +963,26 @@
         "10:50",
         "11:00",
         "11:10",
-        "11:20"
+        "11:20",
+        "11:30"
       ],
       "missing_slots": [],
       "duplicate_slots": [],
       "out_of_session": [],
       "monotonic": true,
-      "morning_coverage": 12,
+      "morning_coverage": 13,
       "afternoon_coverage": 0
     }
   },
   "live": {
     "market": {
-      "zt": 39,
+      "zt": 38,
       "dt": 4,
-      "zab": 9,
-      "zab_rate": 18.8,
+      "zab": 10,
+      "zab_rate": 20.8,
       "lianban": 12,
       "max_lianban": 5,
-      "amount": "10206.3亿"
+      "amount": "10676.7亿"
     },
     "alerts": [
       {
