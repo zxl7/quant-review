@@ -2,7 +2,7 @@
   "schema": "intraday_snapshot_v1",
   "render_mode": "snapshot_stream",
   "date": "2026-09-24",
-  "count": 14,
+  "count": 15,
   "interval_min": null,
   "simulated": false,
   "snapshots": [
@@ -886,39 +886,128 @@
       "shift_score": null,
       "shift_label": "数据暂缺",
       "note": "本槽位三池请求均未成功，已记录数据暂缺；等待下一节点自动恢复。"
+    },
+    {
+      "time": "15:00:05",
+      "ts_bj": "2026-09-24 15:00:05",
+      "date": "2026-09-24",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid"
+      },
+      "pool_errors": {},
+      "zt": 53,
+      "dt": 12,
+      "zab": 9,
+      "zb": 14.5,
+      "fb": 85.5,
+      "jj": 24.5,
+      "lianban": 13,
+      "max_lb": 5,
+      "amount": "16533.6亿",
+      "bf": 0,
+      "heat": 61,
+      "risk": 30,
+      "headline": "修复",
+      "concepts": [
+        {
+          "name": "通用设备",
+          "lead": "东方中科",
+          "chg_pct": null
+        },
+        {
+          "name": "汽车零部",
+          "lead": "雪龙集团",
+          "chg_pct": null
+        },
+        {
+          "name": "出版",
+          "lead": "新华文轩",
+          "chg_pct": null
+        },
+        {
+          "name": "医疗服务",
+          "lead": "合富中国",
+          "chg_pct": null
+        },
+        {
+          "name": "服装家纺",
+          "lead": "泰慕士",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        },
+        {
+          "level": "warn",
+          "text": "跌停偏多（12）→ 控制追高"
+        }
+      ],
+      "shift_score": 65,
+      "shift_label": "修复",
+      "note": "承接增强、分歧收敛，情绪明显回暖。"
     }
   ],
   "latest": {
-    "time": "14:50:42",
-    "ts_bj": "2026-09-24 14:50:42",
+    "time": "15:00:05",
+    "ts_bj": "2026-09-24 15:00:05",
     "date": "2026-09-24",
     "source": "intraday_live",
-    "provider": "unknown",
-    "data_quality": "unavailable",
+    "provider": "必盈(实时)+必盈(实时)",
+    "data_quality": "valid",
     "pool_status": {
-      "ztgc": "failed",
-      "zbgc": "failed",
-      "dtgc": "failed"
+      "ztgc": "valid",
+      "zbgc": "valid",
+      "dtgc": "valid"
     },
-    "pool_errors": {
-      "ztgc": "HTTP Error 429: Too Many Requests",
-      "zbgc": "HTTP Error 429: Too Many Requests",
-      "dtgc": "HTTP Error 429: Too Many Requests"
-    },
-    "zt": null,
-    "dt": null,
-    "zab": null,
-    "zb": null,
-    "fb": null,
-    "jj": null,
-    "lianban": null,
-    "max_lb": null,
-    "amount": "",
+    "pool_errors": {},
+    "zt": 53,
+    "dt": 12,
+    "zab": 9,
+    "zb": 14.5,
+    "fb": 85.5,
+    "jj": 24.5,
+    "lianban": 13,
+    "max_lb": 5,
+    "amount": "16533.6亿",
     "bf": 0,
-    "heat": null,
-    "risk": null,
-    "headline": "数据暂缺",
-    "concepts": [],
+    "heat": 61,
+    "risk": 30,
+    "headline": "修复",
+    "concepts": [
+      {
+        "name": "通用设备",
+        "lead": "东方中科",
+        "chg_pct": null
+      },
+      {
+        "name": "汽车零部",
+        "lead": "雪龙集团",
+        "chg_pct": null
+      },
+      {
+        "name": "出版",
+        "lead": "新华文轩",
+        "chg_pct": null
+      },
+      {
+        "name": "医疗服务",
+        "lead": "合富中国",
+        "chg_pct": null
+      },
+      {
+        "name": "服装家纺",
+        "lead": "泰慕士",
+        "chg_pct": null
+      }
+    ],
     "alerts": [
       {
         "level": "info",
@@ -926,35 +1015,27 @@
       },
       {
         "level": "warn",
-        "text": "盘中三池响应不完整，保留最近有效数据"
-      },
-      {
-        "level": "warn",
-        "text": "三池请求均超时，本槽位跳过板块补抓并等待下一节点"
+        "text": "跌停偏多（12）→ 控制追高"
       }
     ],
-    "shift_score": null,
-    "shift_label": "数据暂缺",
-    "note": "本槽位三池请求均未成功，已记录数据暂缺；等待下一节点自动恢复。"
+    "shift_score": 65,
+    "shift_label": "修复",
+    "note": "承接增强、分歧收敛，情绪明显回暖。"
   },
-  "updated_at": "2026-09-24 14:50:42",
-  "snapshot_sig": "2026-09-24|2026-09-24 14:50:42|14",
+  "updated_at": "2026-09-24 15:00:05",
+  "snapshot_sig": "2026-09-24|2026-09-24 15:00:05|15",
   "health": {
-    "status": "degraded",
-    "last_valid_at": "2026-09-24 14:50:42",
+    "status": "valid",
+    "last_valid_at": "2026-09-24 15:00:05",
     "rejected_reason": "",
     "source": {
-      "status": "partial",
+      "status": "valid",
       "pool_status": {
-        "ztgc": "failed",
-        "zbgc": "failed",
-        "dtgc": "failed"
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid"
       },
-      "pool_errors": {
-        "ztgc": "HTTP Error 429: Too Many Requests",
-        "zbgc": "HTTP Error 429: Too Many Requests",
-        "dtgc": "HTTP Error 429: Too Many Requests"
-      }
+      "pool_errors": {}
     }
   }
 }
