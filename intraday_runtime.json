@@ -1,11 +1,11 @@
 {
   "schema": "intraday_runtime_v1",
   "date": "2026-09-24",
-  "updated_at": "2026-09-24 15:00:05",
+  "updated_at": "2026-09-25 09:30:38",
   "source": "必盈(实时)+必盈(实时)",
   "latest": {
-    "time": "15:00:05",
-    "ts_bj": "2026-09-24 15:00:05",
+    "time": "09:30:38",
+    "ts_bj": "2026-09-25 09:30:38",
     "date": "2026-09-24",
     "source": "intraday_live",
     "provider": "必盈(实时)+必盈(实时)",
@@ -16,18 +16,18 @@
       "dtgc": "valid"
     },
     "pool_errors": {},
-    "zt": 53,
-    "dt": 12,
-    "zab": 9,
-    "zb": 14.5,
-    "fb": 85.5,
-    "jj": 24.5,
+    "zt": 52,
+    "dt": 13,
+    "zab": 10,
+    "zb": 16.1,
+    "fb": 83.9,
+    "jj": 25.0,
     "lianban": 13,
     "max_lb": 5,
     "amount": "16533.6亿",
     "bf": 0,
-    "heat": 61,
-    "risk": 30,
+    "heat": 60,
+    "risk": 33,
     "headline": "修复",
     "concepts": [
       {
@@ -63,12 +63,12 @@
       },
       {
         "level": "warn",
-        "text": "跌停偏多（12）→ 控制追高"
+        "text": "跌停偏多（13）→ 控制追高"
       }
     ],
-    "shift_score": 65,
+    "shift_score": 63,
     "shift_label": "修复",
-    "note": "承接增强、分歧收敛，情绪明显回暖。"
+    "note": "情绪略有回落，注意午后分歧。"
   },
   "snapshots": [
     {
@@ -1018,6 +1018,73 @@
       "shift_score": 65,
       "shift_label": "修复",
       "note": "承接增强、分歧收敛，情绪明显回暖。"
+    },
+    {
+      "time": "09:30:38",
+      "ts_bj": "2026-09-25 09:30:38",
+      "date": "2026-09-24",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid"
+      },
+      "pool_errors": {},
+      "zt": 52,
+      "dt": 13,
+      "zab": 10,
+      "zb": 16.1,
+      "fb": 83.9,
+      "jj": 25.0,
+      "lianban": 13,
+      "max_lb": 5,
+      "amount": "16533.6亿",
+      "bf": 0,
+      "heat": 60,
+      "risk": 33,
+      "headline": "修复",
+      "concepts": [
+        {
+          "name": "通用设备",
+          "lead": "东方中科",
+          "chg_pct": null
+        },
+        {
+          "name": "汽车零部",
+          "lead": "雪龙集团",
+          "chg_pct": null
+        },
+        {
+          "name": "出版",
+          "lead": "新华文轩",
+          "chg_pct": null
+        },
+        {
+          "name": "医疗服务",
+          "lead": "合富中国",
+          "chg_pct": null
+        },
+        {
+          "name": "服装家纺",
+          "lead": "泰慕士",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        },
+        {
+          "level": "warn",
+          "text": "跌停偏多（13）→ 控制追高"
+        }
+      ],
+      "shift_score": 63,
+      "shift_label": "修复",
+      "note": "情绪略有回落，注意午后分歧。"
     }
   ],
   "indices": [
@@ -1032,26 +1099,26 @@
     {
       "name": "深证成指",
       "code": "399001.SZ",
-      "val": 13317.061,
-      "chg": -2.3394783571869793,
-      "cje": 868630261700.0,
-      "t": "2026-09-24 15:00:00"
+      "val": 13316.969,
+      "chg": -2.3401530381838747,
+      "cje": 869744361000.0,
+      "t": "2026-09-24 15:00:03"
     },
     {
       "name": "创业板指",
       "code": "399006.SZ",
-      "val": 3288.998,
-      "chg": -2.6811377644166066,
-      "cje": 413103490700.0,
-      "t": "2026-09-24 15:00:00"
+      "val": 3288.948,
+      "chg": -2.6826172250644382,
+      "cje": 414217590000.0,
+      "t": "2026-09-24 15:00:03"
     }
   ],
   "asOf": {
-    "indices": "15:00:00"
+    "indices": "15:00:03"
   },
   "health": {
     "status": "valid",
-    "last_valid_at": "2026-09-24 15:00:05",
+    "last_valid_at": "2026-09-25 09:30:38",
     "rejected_reason": "",
     "source": {
       "status": "valid",
@@ -1062,58 +1129,14 @@
       },
       "pool_errors": {}
     },
-    "indices_status": "valid",
-    "coverage": {
-      "ok": false,
-      "status": "degraded",
-      "message": "intraday_coverage_incomplete",
-      "date": "2026-09-24",
-      "expected_count": 26,
-      "due_count": 26,
-      "observed_count": 15,
-      "observed_slots": [
-        "09:30",
-        "09:40",
-        "09:50",
-        "10:00",
-        "10:10",
-        "10:20",
-        "10:30",
-        "10:40",
-        "10:50",
-        "11:00",
-        "11:10",
-        "11:20",
-        "11:30",
-        "14:50",
-        "15:00"
-      ],
-      "missing_slots": [
-        "13:00",
-        "13:10",
-        "13:20",
-        "13:30",
-        "13:40",
-        "13:50",
-        "14:00",
-        "14:10",
-        "14:20",
-        "14:30",
-        "14:40"
-      ],
-      "duplicate_slots": [],
-      "out_of_session": [],
-      "monotonic": true,
-      "morning_coverage": 13,
-      "afternoon_coverage": 2
-    }
+    "indices_status": "valid"
   },
   "live": {
     "market": {
-      "zt": 53,
-      "dt": 12,
-      "zab": 9,
-      "zab_rate": 14.5,
+      "zt": 52,
+      "dt": 13,
+      "zab": 10,
+      "zab_rate": 16.1,
       "lianban": 13,
       "max_lianban": 5,
       "amount": "16533.6亿"
@@ -1125,7 +1148,7 @@
       },
       {
         "level": "warn",
-        "text": "跌停偏多（12）→ 控制追高"
+        "text": "跌停偏多（13）→ 控制追高"
       }
     ],
     "concepts": [
