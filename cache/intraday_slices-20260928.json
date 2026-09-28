@@ -2,7 +2,7 @@
   "schema": "intraday_snapshot_v1",
   "render_mode": "snapshot_stream",
   "date": "2026-09-28",
-  "count": 6,
+  "count": 7,
   "interval_min": null,
   "simulated": false,
   "snapshots": [
@@ -430,11 +430,82 @@
       "shift_score": 45,
       "shift_label": "走弱",
       "note": "情绪边际修复，但仍需确认持续性。"
+    },
+    {
+      "time": "10:30:04",
+      "ts_bj": "2026-09-28 10:30:04",
+      "date": "2026-09-28",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid"
+      },
+      "pool_errors": {},
+      "zt": 20,
+      "dt": 24,
+      "zab": 13,
+      "zb": 39.4,
+      "fb": 60.6,
+      "jj": 25.0,
+      "lianban": 5,
+      "max_lb": 5,
+      "amount": "8469.4亿",
+      "bf": 0,
+      "heat": 45,
+      "risk": 58,
+      "headline": "走弱",
+      "concepts": [
+        {
+          "name": "汽车零部",
+          "lead": "雪龙集团",
+          "chg_pct": null
+        },
+        {
+          "name": "电力",
+          "lead": "浙江新能",
+          "chg_pct": null
+        },
+        {
+          "name": "光学光电",
+          "lead": "五方光电",
+          "chg_pct": null
+        },
+        {
+          "name": "出版",
+          "lead": "新华传媒",
+          "chg_pct": null
+        },
+        {
+          "name": "水泥",
+          "lead": "福建水泥",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        },
+        {
+          "level": "danger",
+          "text": "跌停偏多（24）→ 亏钱扩散风险上升"
+        },
+        {
+          "level": "danger",
+          "text": "炸板率高（39.4%）→ 分歧偏强，谨慎接力"
+        }
+      ],
+      "shift_score": 44,
+      "shift_label": "走弱",
+      "note": "情绪整体平稳，维持当前节奏。"
     }
   ],
   "latest": {
-    "time": "10:20:04",
-    "ts_bj": "2026-09-28 10:20:04",
+    "time": "10:30:04",
+    "ts_bj": "2026-09-28 10:30:04",
     "date": "2026-09-28",
     "source": "intraday_live",
     "provider": "必盈(实时)+必盈(实时)",
@@ -446,17 +517,17 @@
     },
     "pool_errors": {},
     "zt": 20,
-    "dt": 22,
-    "zab": 12,
-    "zb": 37.5,
-    "fb": 62.5,
+    "dt": 24,
+    "zab": 13,
+    "zb": 39.4,
+    "fb": 60.6,
     "jj": 25.0,
     "lianban": 5,
     "max_lb": 5,
-    "amount": "7823.3亿",
+    "amount": "8469.4亿",
     "bf": 0,
-    "heat": 46,
-    "risk": 56,
+    "heat": 45,
+    "risk": 58,
     "headline": "走弱",
     "concepts": [
       {
@@ -492,22 +563,22 @@
       },
       {
         "level": "danger",
-        "text": "跌停偏多（22）→ 亏钱扩散风险上升"
+        "text": "跌停偏多（24）→ 亏钱扩散风险上升"
       },
       {
         "level": "danger",
-        "text": "炸板率高（37.5%）→ 分歧偏强，谨慎接力"
+        "text": "炸板率高（39.4%）→ 分歧偏强，谨慎接力"
       }
     ],
-    "shift_score": 45,
+    "shift_score": 44,
     "shift_label": "走弱",
-    "note": "情绪边际修复，但仍需确认持续性。"
+    "note": "情绪整体平稳，维持当前节奏。"
   },
-  "updated_at": "2026-09-28 10:20:04",
-  "snapshot_sig": "2026-09-28|2026-09-28 10:20:04|6",
+  "updated_at": "2026-09-28 10:30:04",
+  "snapshot_sig": "2026-09-28|2026-09-28 10:30:04|7",
   "health": {
     "status": "valid",
-    "last_valid_at": "2026-09-28 10:20:04",
+    "last_valid_at": "2026-09-28 10:30:04",
     "rejected_reason": "",
     "source": {
       "status": "valid",
