@@ -1,41 +1,38 @@
 {
   "schema": "intraday_runtime_v1",
   "date": "2026-09-28",
-  "updated_at": "2026-09-28 09:30:38",
-  "source": "必盈(实时)",
+  "updated_at": "2026-09-28 09:40:05",
+  "source": "必盈(实时)+必盈(实时)",
   "latest": {
-    "time": "09:30:38",
-    "ts_bj": "2026-09-28 09:30:38",
+    "time": "09:40:05",
+    "ts_bj": "2026-09-28 09:40:05",
     "date": "2026-09-28",
     "source": "intraday_live",
-    "provider": "必盈(实时)",
-    "data_quality": "partial",
+    "provider": "必盈(实时)+必盈(实时)",
+    "data_quality": "valid",
     "pool_status": {
       "ztgc": "valid",
-      "zbgc": "failed",
-      "dtgc": "failed"
+      "zbgc": "valid",
+      "dtgc": "valid"
     },
-    "pool_errors": {
-      "zbgc": "HTTP Error 504: Gateway Time-out",
-      "dtgc": "empty_response"
-    },
-    "zt": 10,
-    "dt": null,
-    "zab": null,
-    "zb": null,
-    "fb": null,
-    "jj": 60.0,
-    "lianban": 6,
+    "pool_errors": {},
+    "zt": 15,
+    "dt": 15,
+    "zab": 6,
+    "zb": 28.6,
+    "fb": 71.4,
+    "jj": 46.7,
+    "lianban": 7,
     "max_lb": 5,
-    "amount": "",
+    "amount": "3118.7亿",
     "bf": 0,
-    "heat": null,
-    "risk": null,
-    "headline": "数据部分可用",
+    "heat": 54,
+    "risk": 41,
+    "headline": "分歧",
     "concepts": [
       {
-        "name": "汽车零部",
-        "lead": "雪龙集团",
+        "name": "非白酒",
+        "lead": "会稽山",
         "chg_pct": null
       },
       {
@@ -44,18 +41,18 @@
         "chg_pct": null
       },
       {
+        "name": "水泥",
+        "lead": "福建水泥",
+        "chg_pct": null
+      },
+      {
+        "name": "纺织制造",
+        "lead": "华茂股份",
+        "chg_pct": null
+      },
+      {
         "name": "光伏设备",
         "lead": "金辰股份",
-        "chg_pct": null
-      },
-      {
-        "name": "中药Ⅱ",
-        "lead": "华神科技",
-        "chg_pct": null
-      },
-      {
-        "name": "农化制品",
-        "lead": "中农立华",
         "chg_pct": null
       }
     ],
@@ -66,12 +63,16 @@
       },
       {
         "level": "warn",
-        "text": "盘中三池响应不完整，保留最近有效数据"
+        "text": "跌停偏多（15）→ 控制追高"
+      },
+      {
+        "level": "warn",
+        "text": "炸板率偏高（28.6%）→ 注意回封质量"
       }
     ],
-    "shift_score": null,
-    "shift_label": "数据部分可用",
-    "note": "本槽位仅部分三池成功；节点已保留，缺失指标不参与判断。"
+    "shift_score": 56,
+    "shift_label": "分歧",
+    "note": "承接增强、分歧收敛，情绪明显回暖。"
   },
   "snapshots": [
     {
@@ -143,52 +144,120 @@
       "shift_score": null,
       "shift_label": "数据部分可用",
       "note": "本槽位仅部分三池成功；节点已保留，缺失指标不参与判断。"
+    },
+    {
+      "time": "09:40:05",
+      "ts_bj": "2026-09-28 09:40:05",
+      "date": "2026-09-28",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid"
+      },
+      "pool_errors": {},
+      "zt": 15,
+      "dt": 15,
+      "zab": 6,
+      "zb": 28.6,
+      "fb": 71.4,
+      "jj": 46.7,
+      "lianban": 7,
+      "max_lb": 5,
+      "amount": "3118.7亿",
+      "bf": 0,
+      "heat": 54,
+      "risk": 41,
+      "headline": "分歧",
+      "concepts": [
+        {
+          "name": "非白酒",
+          "lead": "会稽山",
+          "chg_pct": null
+        },
+        {
+          "name": "出版",
+          "lead": "新华传媒",
+          "chg_pct": null
+        },
+        {
+          "name": "水泥",
+          "lead": "福建水泥",
+          "chg_pct": null
+        },
+        {
+          "name": "纺织制造",
+          "lead": "华茂股份",
+          "chg_pct": null
+        },
+        {
+          "name": "光伏设备",
+          "lead": "金辰股份",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        },
+        {
+          "level": "warn",
+          "text": "跌停偏多（15）→ 控制追高"
+        },
+        {
+          "level": "warn",
+          "text": "炸板率偏高（28.6%）→ 注意回封质量"
+        }
+      ],
+      "shift_score": 56,
+      "shift_label": "分歧",
+      "note": "承接增强、分歧收敛，情绪明显回暖。"
     }
   ],
   "indices": [
     {
       "name": "上证指数",
       "code": "000001.SH",
-      "val": 3871.257,
-      "chg": -0.4402097123373352,
-      "cje": 29613643300.0,
-      "t": "2026-09-28 09:30:39"
+      "val": 3856.935,
+      "chg": -0.8085384790660531,
+      "cje": 147191551000.0,
+      "t": "2026-09-28 09:40:06"
     },
     {
       "name": "深证成指",
       "code": "399001.SZ",
-      "val": 13244.772,
-      "chg": -0.5421428855169543,
-      "cje": 32406225500.0,
-      "t": "2026-09-28 09:30:39"
+      "val": 13104.57,
+      "chg": -1.594950022035791,
+      "cje": 163455257000.0,
+      "t": "2026-09-28 09:39:57"
     },
     {
       "name": "创业板指",
       "code": "399006.SZ",
-      "val": 3262.254,
-      "chg": -0.8116273045362822,
-      "cje": 13714282700.0,
-      "t": "2026-09-28 09:30:39"
+      "val": 3217.941,
+      "chg": -2.1589578187310976,
+      "cje": 76242274100.0,
+      "t": "2026-09-28 09:39:57"
     }
   ],
   "asOf": {
-    "indices": "09:30:39"
+    "indices": "09:39:57"
   },
   "health": {
-    "status": "degraded",
-    "last_valid_at": "2026-09-28 09:30:38",
+    "status": "valid",
+    "last_valid_at": "2026-09-28 09:40:05",
     "rejected_reason": "",
     "source": {
-      "status": "partial",
+      "status": "valid",
       "pool_status": {
         "ztgc": "valid",
-        "zbgc": "failed",
-        "dtgc": "failed"
+        "zbgc": "valid",
+        "dtgc": "valid"
       },
-      "pool_errors": {
-        "zbgc": "HTTP Error 504: Gateway Time-out",
-        "dtgc": "empty_response"
-      }
+      "pool_errors": {}
     },
     "indices_status": "valid",
     "coverage": {
@@ -197,28 +266,29 @@
       "message": "intraday_coverage_collecting",
       "date": "2026-09-28",
       "expected_count": 26,
-      "due_count": 1,
-      "observed_count": 1,
+      "due_count": 2,
+      "observed_count": 2,
       "observed_slots": [
-        "09:30"
+        "09:30",
+        "09:40"
       ],
       "missing_slots": [],
       "duplicate_slots": [],
       "out_of_session": [],
       "monotonic": true,
-      "morning_coverage": 1,
+      "morning_coverage": 2,
       "afternoon_coverage": 0
     }
   },
   "live": {
     "market": {
-      "zt": 10,
-      "dt": null,
-      "zab": null,
-      "zab_rate": null,
-      "lianban": 6,
+      "zt": 15,
+      "dt": 15,
+      "zab": 6,
+      "zab_rate": 28.6,
+      "lianban": 7,
       "max_lianban": 5,
-      "amount": ""
+      "amount": "3118.7亿"
     },
     "alerts": [
       {
@@ -227,13 +297,17 @@
       },
       {
         "level": "warn",
-        "text": "盘中三池响应不完整，保留最近有效数据"
+        "text": "跌停偏多（15）→ 控制追高"
+      },
+      {
+        "level": "warn",
+        "text": "炸板率偏高（28.6%）→ 注意回封质量"
       }
     ],
     "concepts": [
       {
-        "name": "汽车零部",
-        "lead": "雪龙集团",
+        "name": "非白酒",
+        "lead": "会稽山",
         "chg_pct": null
       },
       {
@@ -242,18 +316,18 @@
         "chg_pct": null
       },
       {
+        "name": "水泥",
+        "lead": "福建水泥",
+        "chg_pct": null
+      },
+      {
+        "name": "纺织制造",
+        "lead": "华茂股份",
+        "chg_pct": null
+      },
+      {
         "name": "光伏设备",
         "lead": "金辰股份",
-        "chg_pct": null
-      },
-      {
-        "name": "中药Ⅱ",
-        "lead": "华神科技",
-        "chg_pct": null
-      },
-      {
-        "name": "农化制品",
-        "lead": "中农立华",
         "chg_pct": null
       }
     ]
