@@ -1,11 +1,11 @@
 {
   "schema": "intraday_runtime_v1",
   "date": "2026-09-28",
-  "updated_at": "2026-09-28 10:30:04",
+  "updated_at": "2026-09-28 10:40:04",
   "source": "必盈(实时)+必盈(实时)",
   "latest": {
-    "time": "10:30:04",
-    "ts_bj": "2026-09-28 10:30:04",
+    "time": "10:40:04",
+    "ts_bj": "2026-09-28 10:40:04",
     "date": "2026-09-28",
     "source": "intraday_live",
     "provider": "必盈(实时)+必盈(实时)",
@@ -17,14 +17,14 @@
     },
     "pool_errors": {},
     "zt": 20,
-    "dt": 24,
+    "dt": 31,
     "zab": 13,
     "zb": 39.4,
     "fb": 60.6,
     "jj": 25.0,
     "lianban": 5,
     "max_lb": 5,
-    "amount": "8469.4亿",
+    "amount": "9229.2亿",
     "bf": 0,
     "heat": 45,
     "risk": 58,
@@ -63,7 +63,7 @@
       },
       {
         "level": "danger",
-        "text": "跌停偏多（24）→ 亏钱扩散风险上升"
+        "text": "跌停偏多（31）→ 亏钱扩散风险上升"
       },
       {
         "level": "danger",
@@ -570,40 +570,111 @@
       "shift_score": 44,
       "shift_label": "走弱",
       "note": "情绪整体平稳，维持当前节奏。"
+    },
+    {
+      "time": "10:40:04",
+      "ts_bj": "2026-09-28 10:40:04",
+      "date": "2026-09-28",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid"
+      },
+      "pool_errors": {},
+      "zt": 20,
+      "dt": 31,
+      "zab": 13,
+      "zb": 39.4,
+      "fb": 60.6,
+      "jj": 25.0,
+      "lianban": 5,
+      "max_lb": 5,
+      "amount": "9229.2亿",
+      "bf": 0,
+      "heat": 45,
+      "risk": 58,
+      "headline": "走弱",
+      "concepts": [
+        {
+          "name": "汽车零部",
+          "lead": "雪龙集团",
+          "chg_pct": null
+        },
+        {
+          "name": "电力",
+          "lead": "浙江新能",
+          "chg_pct": null
+        },
+        {
+          "name": "光学光电",
+          "lead": "五方光电",
+          "chg_pct": null
+        },
+        {
+          "name": "出版",
+          "lead": "新华传媒",
+          "chg_pct": null
+        },
+        {
+          "name": "水泥",
+          "lead": "福建水泥",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        },
+        {
+          "level": "danger",
+          "text": "跌停偏多（31）→ 亏钱扩散风险上升"
+        },
+        {
+          "level": "danger",
+          "text": "炸板率高（39.4%）→ 分歧偏强，谨慎接力"
+        }
+      ],
+      "shift_score": 44,
+      "shift_label": "走弱",
+      "note": "情绪整体平稳，维持当前节奏。"
     }
   ],
   "indices": [
     {
       "name": "上证指数",
       "code": "000001.SH",
-      "val": 3828.249,
-      "chg": -1.5462761555344213,
-      "cje": 398937660500.0,
-      "t": "2026-09-28 10:30:03"
+      "val": 3817.196,
+      "chg": -1.8305337912453867,
+      "cje": 434462794200.0,
+      "t": "2026-09-28 10:40:03"
     },
     {
       "name": "深证成指",
       "code": "399001.SZ",
-      "val": 12940.292,
-      "chg": -2.828549048961514,
-      "cje": 447394905200.0,
-      "t": "2026-09-28 10:29:57"
+      "val": 12866.188,
+      "chg": -3.385012009865001,
+      "cje": 487756993800.0,
+      "t": "2026-09-28 10:39:54"
     },
     {
       "name": "创业板指",
       "code": "399006.SZ",
-      "val": 3174.927,
-      "chg": -3.466792421163233,
-      "cje": 212966251800.0,
-      "t": "2026-09-28 10:29:57"
+      "val": 3151.699,
+      "chg": -4.173036484614527,
+      "cje": 232696033100.0,
+      "t": "2026-09-28 10:39:54"
     }
   ],
   "asOf": {
-    "indices": "10:29:57"
+    "indices": "10:39:54"
   },
   "health": {
     "status": "valid",
-    "last_valid_at": "2026-09-28 10:30:04",
+    "last_valid_at": "2026-09-28 10:40:04",
     "rejected_reason": "",
     "source": {
       "status": "valid",
@@ -621,8 +692,8 @@
       "message": "intraday_coverage_collecting",
       "date": "2026-09-28",
       "expected_count": 26,
-      "due_count": 7,
-      "observed_count": 7,
+      "due_count": 8,
+      "observed_count": 8,
       "observed_slots": [
         "09:30",
         "09:40",
@@ -630,25 +701,26 @@
         "10:00",
         "10:10",
         "10:20",
-        "10:30"
+        "10:30",
+        "10:40"
       ],
       "missing_slots": [],
       "duplicate_slots": [],
       "out_of_session": [],
       "monotonic": true,
-      "morning_coverage": 7,
+      "morning_coverage": 8,
       "afternoon_coverage": 0
     }
   },
   "live": {
     "market": {
       "zt": 20,
-      "dt": 24,
+      "dt": 31,
       "zab": 13,
       "zab_rate": 39.4,
       "lianban": 5,
       "max_lianban": 5,
-      "amount": "8469.4亿"
+      "amount": "9229.2亿"
     },
     "alerts": [
       {
@@ -657,7 +729,7 @@
       },
       {
         "level": "danger",
-        "text": "跌停偏多（24）→ 亏钱扩散风险上升"
+        "text": "跌停偏多（31）→ 亏钱扩散风险上升"
       },
       {
         "level": "danger",
