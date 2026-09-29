@@ -1,11 +1,11 @@
 {
   "schema": "intraday_runtime_v1",
   "date": "2026-09-29",
-  "updated_at": "2026-09-29 10:40:05",
+  "updated_at": "2026-09-29 10:50:05",
   "source": "必盈(实时)+必盈(实时)",
   "latest": {
-    "time": "10:40:05",
-    "ts_bj": "2026-09-29 10:40:05",
+    "time": "10:50:05",
+    "ts_bj": "2026-09-29 10:50:05",
     "date": "2026-09-29",
     "source": "intraday_live",
     "provider": "必盈(实时)+必盈(实时)",
@@ -16,23 +16,28 @@
       "dtgc": "valid"
     },
     "pool_errors": {},
-    "zt": 33,
-    "dt": 9,
-    "zab": 10,
-    "zb": 23.3,
-    "fb": 76.7,
-    "jj": 30.3,
+    "zt": 36,
+    "dt": 8,
+    "zab": 9,
+    "zb": 20.0,
+    "fb": 80.0,
+    "jj": 27.8,
     "lianban": 10,
     "max_lb": 6,
-    "amount": "6990.4亿",
+    "amount": "7415.0亿",
     "bf": 0,
-    "heat": 58,
-    "risk": 31,
+    "heat": 59,
+    "risk": 27,
     "headline": "修复",
     "concepts": [
       {
         "name": "电池",
         "lead": "时代万恒",
+        "chg_pct": null
+      },
+      {
+        "name": "元件",
+        "lead": "超声电子",
         "chg_pct": null
       },
       {
@@ -43,11 +48,6 @@
       {
         "name": "房地产开",
         "lead": "深物业A",
-        "chg_pct": null
-      },
-      {
-        "name": "元件",
-        "lead": "超声电子",
         "chg_pct": null
       },
       {
@@ -62,9 +62,9 @@
         "text": "盘中模式：强制实时拉取"
       }
     ],
-    "shift_score": 63,
+    "shift_score": 65,
     "shift_label": "修复",
-    "note": "情绪整体平稳，维持当前节奏。"
+    "note": "情绪边际修复，但仍需确认持续性。"
   },
   "snapshots": [
     {
@@ -456,40 +456,103 @@
       "shift_score": 63,
       "shift_label": "修复",
       "note": "情绪整体平稳，维持当前节奏。"
+    },
+    {
+      "time": "10:50:05",
+      "ts_bj": "2026-09-29 10:50:05",
+      "date": "2026-09-29",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid"
+      },
+      "pool_errors": {},
+      "zt": 36,
+      "dt": 8,
+      "zab": 9,
+      "zb": 20.0,
+      "fb": 80.0,
+      "jj": 27.8,
+      "lianban": 10,
+      "max_lb": 6,
+      "amount": "7415.0亿",
+      "bf": 0,
+      "heat": 59,
+      "risk": 27,
+      "headline": "修复",
+      "concepts": [
+        {
+          "name": "电池",
+          "lead": "时代万恒",
+          "chg_pct": null
+        },
+        {
+          "name": "元件",
+          "lead": "超声电子",
+          "chg_pct": null
+        },
+        {
+          "name": "汽车零部",
+          "lead": "雪龙集团",
+          "chg_pct": null
+        },
+        {
+          "name": "房地产开",
+          "lead": "深物业A",
+          "chg_pct": null
+        },
+        {
+          "name": "电力",
+          "lead": "浙江新能",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        }
+      ],
+      "shift_score": 65,
+      "shift_label": "修复",
+      "note": "情绪边际修复，但仍需确认持续性。"
     }
   ],
   "indices": [
     {
       "name": "上证指数",
       "code": "000001.SH",
-      "val": 3816.473,
-      "chg": -0.1869432142987011,
-      "cje": 328149821200.0,
-      "t": "2026-09-29 10:40:03"
+      "val": 3817.547,
+      "chg": -0.1588546563584641,
+      "cje": 348087904400.0,
+      "t": "2026-09-29 10:50:03"
     },
     {
       "name": "深证成指",
       "code": "399001.SZ",
-      "val": 12883.813,
-      "chg": 0.19488670479944276,
-      "cje": 370492656000.0,
-      "t": "2026-09-29 10:40:00"
+      "val": 12891.885,
+      "chg": 0.2576610655792176,
+      "cje": 393081257500.0,
+      "t": "2026-09-29 10:49:57"
     },
     {
       "name": "创业板指",
       "code": "399006.SZ",
-      "val": 3148.081,
-      "chg": 0.2629445908609656,
-      "cje": 176915754300.0,
-      "t": "2026-09-29 10:40:03"
+      "val": 3149.802,
+      "chg": 0.3177565628657749,
+      "cje": 188160134000.0,
+      "t": "2026-09-29 10:50:03"
     }
   ],
   "asOf": {
-    "indices": "10:40:03"
+    "indices": "10:50:03"
   },
   "health": {
     "status": "valid",
-    "last_valid_at": "2026-09-29 10:40:05",
+    "last_valid_at": "2026-09-29 10:50:05",
     "rejected_reason": "",
     "source": {
       "status": "valid",
@@ -507,15 +570,16 @@
       "message": "intraday_coverage_incomplete",
       "date": "2026-09-29",
       "expected_count": 26,
-      "due_count": 8,
-      "observed_count": 6,
+      "due_count": 9,
+      "observed_count": 7,
       "observed_slots": [
         "09:50",
         "10:00",
         "10:10",
         "10:20",
         "10:30",
-        "10:40"
+        "10:40",
+        "10:50"
       ],
       "missing_slots": [
         "09:30",
@@ -524,19 +588,19 @@
       "duplicate_slots": [],
       "out_of_session": [],
       "monotonic": true,
-      "morning_coverage": 6,
+      "morning_coverage": 7,
       "afternoon_coverage": 0
     }
   },
   "live": {
     "market": {
-      "zt": 33,
-      "dt": 9,
-      "zab": 10,
-      "zab_rate": 23.3,
+      "zt": 36,
+      "dt": 8,
+      "zab": 9,
+      "zab_rate": 20.0,
       "lianban": 10,
       "max_lianban": 6,
-      "amount": "6990.4亿"
+      "amount": "7415.0亿"
     },
     "alerts": [
       {
@@ -551,6 +615,11 @@
         "chg_pct": null
       },
       {
+        "name": "元件",
+        "lead": "超声电子",
+        "chg_pct": null
+      },
+      {
         "name": "汽车零部",
         "lead": "雪龙集团",
         "chg_pct": null
@@ -558,11 +627,6 @@
       {
         "name": "房地产开",
         "lead": "深物业A",
-        "chg_pct": null
-      },
-      {
-        "name": "元件",
-        "lead": "超声电子",
         "chg_pct": null
       },
       {
