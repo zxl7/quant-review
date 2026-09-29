@@ -1,11 +1,11 @@
 {
   "schema": "intraday_runtime_v1",
   "date": "2026-09-29",
-  "updated_at": "2026-09-29 10:00:04",
+  "updated_at": "2026-09-29 10:10:05",
   "source": "必盈(实时)+必盈(实时)",
   "latest": {
-    "time": "10:00:04",
-    "ts_bj": "2026-09-29 10:00:04",
+    "time": "10:10:05",
+    "ts_bj": "2026-09-29 10:10:05",
     "date": "2026-09-29",
     "source": "intraday_live",
     "provider": "必盈(实时)+必盈(实时)",
@@ -16,18 +16,18 @@
       "dtgc": "valid"
     },
     "pool_errors": {},
-    "zt": 29,
-    "dt": 7,
-    "zab": 6,
-    "zb": 17.1,
-    "fb": 82.9,
-    "jj": 34.5,
-    "lianban": 10,
+    "zt": 28,
+    "dt": 10,
+    "zab": 7,
+    "zb": 20.0,
+    "fb": 80.0,
+    "jj": 32.1,
+    "lianban": 9,
     "max_lb": 6,
-    "amount": "4551.8亿",
+    "amount": "5376.7亿",
     "bf": 0,
-    "heat": 61,
-    "risk": 23,
+    "heat": 59,
+    "risk": 29,
     "headline": "修复",
     "concepts": [
       {
@@ -60,11 +60,15 @@
       {
         "level": "info",
         "text": "盘中模式：强制实时拉取"
+      },
+      {
+        "level": "warn",
+        "text": "跌停偏多（10）→ 控制追高"
       }
     ],
-    "shift_score": 68,
+    "shift_score": 64,
     "shift_label": "修复",
-    "note": "情绪边际修复，但仍需确认持续性。"
+    "note": "情绪略有回落，注意午后分歧。"
   },
   "snapshots": [
     {
@@ -192,40 +196,107 @@
       "shift_score": 68,
       "shift_label": "修复",
       "note": "情绪边际修复，但仍需确认持续性。"
+    },
+    {
+      "time": "10:10:05",
+      "ts_bj": "2026-09-29 10:10:05",
+      "date": "2026-09-29",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid"
+      },
+      "pool_errors": {},
+      "zt": 28,
+      "dt": 10,
+      "zab": 7,
+      "zb": 20.0,
+      "fb": 80.0,
+      "jj": 32.1,
+      "lianban": 9,
+      "max_lb": 6,
+      "amount": "5376.7亿",
+      "bf": 0,
+      "heat": 59,
+      "risk": 29,
+      "headline": "修复",
+      "concepts": [
+        {
+          "name": "电池",
+          "lead": "时代万恒",
+          "chg_pct": null
+        },
+        {
+          "name": "房地产开",
+          "lead": "深物业A",
+          "chg_pct": null
+        },
+        {
+          "name": "汽车零部",
+          "lead": "雪龙集团",
+          "chg_pct": null
+        },
+        {
+          "name": "电力",
+          "lead": "浙江新能",
+          "chg_pct": null
+        },
+        {
+          "name": "医疗服务",
+          "lead": "百花医药",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        },
+        {
+          "level": "warn",
+          "text": "跌停偏多（10）→ 控制追高"
+        }
+      ],
+      "shift_score": 64,
+      "shift_label": "修复",
+      "note": "情绪略有回落，注意午后分歧。"
     }
   ],
   "indices": [
     {
       "name": "上证指数",
       "code": "000001.SH",
-      "val": 3820.348,
-      "chg": -0.08559948802457508,
-      "cje": 214510729200.0,
-      "t": "2026-09-29 10:00:03"
+      "val": 3813.479,
+      "chg": -0.2652459540315392,
+      "cje": 253118646400.0,
+      "t": "2026-09-29 10:10:03"
     },
     {
       "name": "深证成指",
       "code": "399001.SZ",
-      "val": 12867.498,
-      "chg": 0.06800814977936805,
-      "cje": 241129584000.0,
-      "t": "2026-09-29 10:00:03"
+      "val": 12843.192,
+      "chg": -0.12101484490760117,
+      "cje": 284277494200.0,
+      "t": "2026-09-29 10:10:00"
     },
     {
       "name": "创业板指",
       "code": "399006.SZ",
-      "val": 3139.442,
-      "chg": -0.012198132061494218,
-      "cje": 113469815200.0,
-      "t": "2026-09-29 10:00:00"
+      "val": 3130.457,
+      "chg": -0.2983605774207142,
+      "cje": 134441715300.0,
+      "t": "2026-09-29 10:10:03"
     }
   ],
   "asOf": {
-    "indices": "10:00:00"
+    "indices": "10:10:03"
   },
   "health": {
     "status": "valid",
-    "last_valid_at": "2026-09-29 10:00:04",
+    "last_valid_at": "2026-09-29 10:10:05",
     "rejected_reason": "",
     "source": {
       "status": "valid",
@@ -243,11 +314,12 @@
       "message": "intraday_coverage_incomplete",
       "date": "2026-09-29",
       "expected_count": 26,
-      "due_count": 4,
-      "observed_count": 2,
+      "due_count": 5,
+      "observed_count": 3,
       "observed_slots": [
         "09:50",
-        "10:00"
+        "10:00",
+        "10:10"
       ],
       "missing_slots": [
         "09:30",
@@ -256,24 +328,28 @@
       "duplicate_slots": [],
       "out_of_session": [],
       "monotonic": true,
-      "morning_coverage": 2,
+      "morning_coverage": 3,
       "afternoon_coverage": 0
     }
   },
   "live": {
     "market": {
-      "zt": 29,
-      "dt": 7,
-      "zab": 6,
-      "zab_rate": 17.1,
-      "lianban": 10,
+      "zt": 28,
+      "dt": 10,
+      "zab": 7,
+      "zab_rate": 20.0,
+      "lianban": 9,
       "max_lianban": 6,
-      "amount": "4551.8亿"
+      "amount": "5376.7亿"
     },
     "alerts": [
       {
         "level": "info",
         "text": "盘中模式：强制实时拉取"
+      },
+      {
+        "level": "warn",
+        "text": "跌停偏多（10）→ 控制追高"
       }
     ],
     "concepts": [
