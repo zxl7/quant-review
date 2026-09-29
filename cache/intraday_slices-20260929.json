@@ -2,7 +2,7 @@
   "schema": "intraday_snapshot_v1",
   "render_mode": "snapshot_stream",
   "date": "2026-09-29",
-  "count": 9,
+  "count": 10,
   "interval_min": null,
   "simulated": false,
   "snapshots": [
@@ -588,11 +588,78 @@
       "shift_score": 64,
       "shift_label": "修复",
       "note": "情绪整体平稳，维持当前节奏。"
+    },
+    {
+      "time": "11:20:04",
+      "ts_bj": "2026-09-29 11:20:04",
+      "date": "2026-09-29",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid"
+      },
+      "pool_errors": {},
+      "zt": 40,
+      "dt": 11,
+      "zab": 10,
+      "zb": 20.0,
+      "fb": 80.0,
+      "jj": 25.0,
+      "lianban": 10,
+      "max_lb": 6,
+      "amount": "8370.1亿",
+      "bf": 0,
+      "heat": 59,
+      "risk": 32,
+      "headline": "修复",
+      "concepts": [
+        {
+          "name": "电池",
+          "lead": "时代万恒",
+          "chg_pct": null
+        },
+        {
+          "name": "元件",
+          "lead": "超声电子",
+          "chg_pct": null
+        },
+        {
+          "name": "汽车零部",
+          "lead": "雪龙集团",
+          "chg_pct": null
+        },
+        {
+          "name": "房地产开",
+          "lead": "深物业A",
+          "chg_pct": null
+        },
+        {
+          "name": "出版",
+          "lead": "新华传媒",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        },
+        {
+          "level": "warn",
+          "text": "跌停偏多（11）→ 控制追高"
+        }
+      ],
+      "shift_score": 63,
+      "shift_label": "修复",
+      "note": "情绪整体平稳，维持当前节奏。"
     }
   ],
   "latest": {
-    "time": "11:10:05",
-    "ts_bj": "2026-09-29 11:10:05",
+    "time": "11:20:04",
+    "ts_bj": "2026-09-29 11:20:04",
     "date": "2026-09-29",
     "source": "intraday_live",
     "provider": "必盈(实时)+必盈(实时)",
@@ -603,18 +670,18 @@
       "dtgc": "valid"
     },
     "pool_errors": {},
-    "zt": 38,
-    "dt": 10,
-    "zab": 9,
-    "zb": 19.1,
-    "fb": 80.9,
-    "jj": 26.3,
+    "zt": 40,
+    "dt": 11,
+    "zab": 10,
+    "zb": 20.0,
+    "fb": 80.0,
+    "jj": 25.0,
     "lianban": 10,
     "max_lb": 6,
-    "amount": "8083.5亿",
+    "amount": "8370.1亿",
     "bf": 0,
     "heat": 59,
-    "risk": 30,
+    "risk": 32,
     "headline": "修复",
     "concepts": [
       {
@@ -638,8 +705,8 @@
         "chg_pct": null
       },
       {
-        "name": "电力",
-        "lead": "浙江新能",
+        "name": "出版",
+        "lead": "新华传媒",
         "chg_pct": null
       }
     ],
@@ -650,18 +717,18 @@
       },
       {
         "level": "warn",
-        "text": "跌停偏多（10）→ 控制追高"
+        "text": "跌停偏多（11）→ 控制追高"
       }
     ],
-    "shift_score": 64,
+    "shift_score": 63,
     "shift_label": "修复",
     "note": "情绪整体平稳，维持当前节奏。"
   },
-  "updated_at": "2026-09-29 11:10:05",
-  "snapshot_sig": "2026-09-29|2026-09-29 11:10:05|9",
+  "updated_at": "2026-09-29 11:20:04",
+  "snapshot_sig": "2026-09-29|2026-09-29 11:20:04|10",
   "health": {
     "status": "valid",
-    "last_valid_at": "2026-09-29 11:10:05",
+    "last_valid_at": "2026-09-29 11:20:04",
     "rejected_reason": "",
     "source": {
       "status": "valid",
