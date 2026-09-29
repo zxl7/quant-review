@@ -1,11 +1,11 @@
 {
   "schema": "intraday_runtime_v1",
   "date": "2026-09-29",
-  "updated_at": "2026-09-29 11:00:05",
+  "updated_at": "2026-09-29 11:10:05",
   "source": "必盈(实时)+必盈(实时)",
   "latest": {
-    "time": "11:00:05",
-    "ts_bj": "2026-09-29 11:00:05",
+    "time": "11:10:05",
+    "ts_bj": "2026-09-29 11:10:05",
     "date": "2026-09-29",
     "source": "intraday_live",
     "provider": "必盈(实时)+必盈(实时)",
@@ -17,17 +17,17 @@
     },
     "pool_errors": {},
     "zt": 38,
-    "dt": 9,
+    "dt": 10,
     "zab": 9,
     "zb": 19.1,
     "fb": 80.9,
     "jj": 26.3,
     "lianban": 10,
     "max_lb": 6,
-    "amount": "7764.8亿",
+    "amount": "8083.5亿",
     "bf": 0,
     "heat": 59,
-    "risk": 28,
+    "risk": 30,
     "headline": "修复",
     "concepts": [
       {
@@ -60,6 +60,10 @@
       {
         "level": "info",
         "text": "盘中模式：强制实时拉取"
+      },
+      {
+        "level": "warn",
+        "text": "跌停偏多（10）→ 控制追高"
       }
     ],
     "shift_score": 64,
@@ -582,40 +586,107 @@
       "shift_score": 64,
       "shift_label": "修复",
       "note": "情绪整体平稳，维持当前节奏。"
+    },
+    {
+      "time": "11:10:05",
+      "ts_bj": "2026-09-29 11:10:05",
+      "date": "2026-09-29",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid"
+      },
+      "pool_errors": {},
+      "zt": 38,
+      "dt": 10,
+      "zab": 9,
+      "zb": 19.1,
+      "fb": 80.9,
+      "jj": 26.3,
+      "lianban": 10,
+      "max_lb": 6,
+      "amount": "8083.5亿",
+      "bf": 0,
+      "heat": 59,
+      "risk": 30,
+      "headline": "修复",
+      "concepts": [
+        {
+          "name": "电池",
+          "lead": "时代万恒",
+          "chg_pct": null
+        },
+        {
+          "name": "元件",
+          "lead": "超声电子",
+          "chg_pct": null
+        },
+        {
+          "name": "汽车零部",
+          "lead": "雪龙集团",
+          "chg_pct": null
+        },
+        {
+          "name": "房地产开",
+          "lead": "深物业A",
+          "chg_pct": null
+        },
+        {
+          "name": "电力",
+          "lead": "浙江新能",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        },
+        {
+          "level": "warn",
+          "text": "跌停偏多（10）→ 控制追高"
+        }
+      ],
+      "shift_score": 64,
+      "shift_label": "修复",
+      "note": "情绪整体平稳，维持当前节奏。"
     }
   ],
   "indices": [
     {
       "name": "上证指数",
       "code": "000001.SH",
-      "val": 3819.022,
-      "chg": -0.12027865732508948,
-      "cje": 364591262900.0,
-      "t": "2026-09-29 11:00:03"
+      "val": 3817.579,
+      "chg": -0.15801775332858348,
+      "cje": 379710011400.0,
+      "t": "2026-09-29 11:10:03"
     },
     {
       "name": "深证成指",
       "code": "399001.SZ",
-      "val": 12869.304,
-      "chg": 0.0820530575554214,
-      "cje": 411651613500.0,
-      "t": "2026-09-29 11:00:00"
+      "val": 12859.167,
+      "chg": 0.0032195967991519112,
+      "cje": 428568578100.0,
+      "t": "2026-09-29 11:10:00"
     },
     {
       "name": "创业板指",
       "code": "399006.SZ",
-      "val": 3138.639,
-      "chg": -0.03777280580923123,
-      "cje": 197144781100.0,
-      "t": "2026-09-29 11:00:00"
+      "val": 3136.738,
+      "chg": -0.09831758139386715,
+      "cje": 205704624800.0,
+      "t": "2026-09-29 11:10:03"
     }
   ],
   "asOf": {
-    "indices": "11:00:00"
+    "indices": "11:10:03"
   },
   "health": {
     "status": "valid",
-    "last_valid_at": "2026-09-29 11:00:05",
+    "last_valid_at": "2026-09-29 11:10:05",
     "rejected_reason": "",
     "source": {
       "status": "valid",
@@ -633,8 +704,8 @@
       "message": "intraday_coverage_incomplete",
       "date": "2026-09-29",
       "expected_count": 26,
-      "due_count": 10,
-      "observed_count": 8,
+      "due_count": 11,
+      "observed_count": 9,
       "observed_slots": [
         "09:50",
         "10:00",
@@ -643,7 +714,8 @@
         "10:30",
         "10:40",
         "10:50",
-        "11:00"
+        "11:00",
+        "11:10"
       ],
       "missing_slots": [
         "09:30",
@@ -652,24 +724,28 @@
       "duplicate_slots": [],
       "out_of_session": [],
       "monotonic": true,
-      "morning_coverage": 8,
+      "morning_coverage": 9,
       "afternoon_coverage": 0
     }
   },
   "live": {
     "market": {
       "zt": 38,
-      "dt": 9,
+      "dt": 10,
       "zab": 9,
       "zab_rate": 19.1,
       "lianban": 10,
       "max_lianban": 6,
-      "amount": "7764.8亿"
+      "amount": "8083.5亿"
     },
     "alerts": [
       {
         "level": "info",
         "text": "盘中模式：强制实时拉取"
+      },
+      {
+        "level": "warn",
+        "text": "跌停偏多（10）→ 控制追高"
       }
     ],
     "concepts": [
