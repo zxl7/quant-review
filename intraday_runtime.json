@@ -1,11 +1,11 @@
 {
   "schema": "intraday_runtime_v1",
   "date": "2026-09-30",
-  "updated_at": "2026-09-30 10:00:05",
+  "updated_at": "2026-09-30 10:10:04",
   "source": "必盈(实时)+必盈(实时)",
   "latest": {
-    "time": "10:00:05",
-    "ts_bj": "2026-09-30 10:00:05",
+    "time": "10:10:04",
+    "ts_bj": "2026-09-30 10:10:04",
     "date": "2026-09-30",
     "source": "intraday_live",
     "provider": "必盈(实时)+必盈(实时)",
@@ -16,23 +16,28 @@
       "dtgc": "valid"
     },
     "pool_errors": {},
-    "zt": 30,
-    "dt": 4,
+    "zt": 36,
+    "dt": 5,
     "zab": 4,
-    "zb": 11.8,
-    "fb": 88.2,
-    "jj": 30.0,
-    "lianban": 9,
+    "zb": 10.0,
+    "fb": 90.0,
+    "jj": 27.8,
+    "lianban": 10,
     "max_lb": 7,
-    "amount": "4564.6亿",
+    "amount": "5359.4亿",
     "bf": 0,
-    "heat": 64,
-    "risk": 14,
+    "heat": 65,
+    "risk": 15,
     "headline": "走强",
     "concepts": [
       {
         "name": "化学制品",
         "lead": "亚邦股份",
+        "chg_pct": null
+      },
+      {
+        "name": "生物制品",
+        "lead": "康希诺",
         "chg_pct": null
       },
       {
@@ -46,13 +51,8 @@
         "chg_pct": null
       },
       {
-        "name": "电池",
-        "lead": "时代万恒",
-        "chg_pct": null
-      },
-      {
-        "name": "光学光电",
-        "lead": "水晶光电",
+        "name": "汽车零部",
+        "lead": "襄阳轴承",
         "chg_pct": null
       }
     ],
@@ -64,7 +64,7 @@
     ],
     "shift_score": 73,
     "shift_label": "走强",
-    "note": "情绪略有回落，注意午后分歧。"
+    "note": "情绪整体平稳，维持当前节奏。"
   },
   "snapshots": [
     {
@@ -192,40 +192,103 @@
       "shift_score": 73,
       "shift_label": "走强",
       "note": "情绪略有回落，注意午后分歧。"
+    },
+    {
+      "time": "10:10:04",
+      "ts_bj": "2026-09-30 10:10:04",
+      "date": "2026-09-30",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid"
+      },
+      "pool_errors": {},
+      "zt": 36,
+      "dt": 5,
+      "zab": 4,
+      "zb": 10.0,
+      "fb": 90.0,
+      "jj": 27.8,
+      "lianban": 10,
+      "max_lb": 7,
+      "amount": "5359.4亿",
+      "bf": 0,
+      "heat": 65,
+      "risk": 15,
+      "headline": "走强",
+      "concepts": [
+        {
+          "name": "化学制品",
+          "lead": "亚邦股份",
+          "chg_pct": null
+        },
+        {
+          "name": "生物制品",
+          "lead": "康希诺",
+          "chg_pct": null
+        },
+        {
+          "name": "电力",
+          "lead": "大连热电",
+          "chg_pct": null
+        },
+        {
+          "name": "出版",
+          "lead": "新华传媒",
+          "chg_pct": null
+        },
+        {
+          "name": "汽车零部",
+          "lead": "襄阳轴承",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        }
+      ],
+      "shift_score": 73,
+      "shift_label": "走强",
+      "note": "情绪整体平稳，维持当前节奏。"
     }
   ],
   "indices": [
     {
       "name": "上证指数",
       "code": "000001.SH",
-      "val": 3845.047,
-      "chg": 0.38105173516121216,
-      "cje": 209531146700.0,
-      "t": "2026-09-30 10:00:03"
+      "val": 3844.876,
+      "chg": 0.3765875088860341,
+      "cje": 247328774700.0,
+      "t": "2026-09-30 10:10:03"
     },
     {
       "name": "深证成指",
       "code": "399001.SZ",
-      "val": 12942.416,
-      "chg": 0.31366583663689784,
-      "cje": 246320750000.0,
-      "t": "2026-09-30 10:00:00"
+      "val": 12940.369,
+      "chg": 0.29780001421491253,
+      "cje": 288239586200.0,
+      "t": "2026-09-30 10:10:00"
     },
     {
       "name": "创业板指",
       "code": "399006.SZ",
-      "val": 3159.444,
-      "chg": 0.5371730017822987,
-      "cje": 121964455000.0,
-      "t": "2026-09-30 10:00:00"
+      "val": 3155.341,
+      "chg": 0.40661078234548653,
+      "cje": 142884554000.0,
+      "t": "2026-09-30 10:10:00"
     }
   ],
   "asOf": {
-    "indices": "10:00:00"
+    "indices": "10:10:00"
   },
   "health": {
     "status": "valid",
-    "last_valid_at": "2026-09-30 10:00:05",
+    "last_valid_at": "2026-09-30 10:10:04",
     "rejected_reason": "",
     "source": {
       "status": "valid",
@@ -243,11 +306,12 @@
       "message": "intraday_coverage_incomplete",
       "date": "2026-09-30",
       "expected_count": 26,
-      "due_count": 4,
-      "observed_count": 2,
+      "due_count": 5,
+      "observed_count": 3,
       "observed_slots": [
         "09:50",
-        "10:00"
+        "10:00",
+        "10:10"
       ],
       "missing_slots": [
         "09:30",
@@ -256,19 +320,19 @@
       "duplicate_slots": [],
       "out_of_session": [],
       "monotonic": true,
-      "morning_coverage": 2,
+      "morning_coverage": 3,
       "afternoon_coverage": 0
     }
   },
   "live": {
     "market": {
-      "zt": 30,
-      "dt": 4,
+      "zt": 36,
+      "dt": 5,
       "zab": 4,
-      "zab_rate": 11.8,
-      "lianban": 9,
+      "zab_rate": 10.0,
+      "lianban": 10,
       "max_lianban": 7,
-      "amount": "4564.6亿"
+      "amount": "5359.4亿"
     },
     "alerts": [
       {
@@ -283,6 +347,11 @@
         "chg_pct": null
       },
       {
+        "name": "生物制品",
+        "lead": "康希诺",
+        "chg_pct": null
+      },
+      {
         "name": "电力",
         "lead": "大连热电",
         "chg_pct": null
@@ -293,13 +362,8 @@
         "chg_pct": null
       },
       {
-        "name": "电池",
-        "lead": "时代万恒",
-        "chg_pct": null
-      },
-      {
-        "name": "光学光电",
-        "lead": "水晶光电",
+        "name": "汽车零部",
+        "lead": "襄阳轴承",
         "chg_pct": null
       }
     ]
