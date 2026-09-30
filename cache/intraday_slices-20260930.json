@@ -2,7 +2,7 @@
   "schema": "intraday_snapshot_v1",
   "render_mode": "snapshot_stream",
   "date": "2026-09-30",
-  "count": 7,
+  "count": 8,
   "interval_min": null,
   "simulated": false,
   "snapshots": [
@@ -446,11 +446,74 @@
       "shift_score": 66,
       "shift_label": "修复",
       "note": "情绪整体平稳，维持当前节奏。"
+    },
+    {
+      "time": "11:00:04",
+      "ts_bj": "2026-09-30 11:00:04",
+      "date": "2026-09-30",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid"
+      },
+      "pool_errors": {},
+      "zt": 42,
+      "dt": 3,
+      "zab": 10,
+      "zb": 19.2,
+      "fb": 80.8,
+      "jj": 26.2,
+      "lianban": 11,
+      "max_lb": 7,
+      "amount": "8175.5亿",
+      "bf": 0,
+      "heat": 62,
+      "risk": 20,
+      "headline": "修复",
+      "concepts": [
+        {
+          "name": "汽车零部",
+          "lead": "襄阳轴承",
+          "chg_pct": null
+        },
+        {
+          "name": "化学制品",
+          "lead": "亚邦股份",
+          "chg_pct": null
+        },
+        {
+          "name": "医疗服务",
+          "lead": "昭衍新药",
+          "chg_pct": null
+        },
+        {
+          "name": "电池",
+          "lead": "时代万恒",
+          "chg_pct": null
+        },
+        {
+          "name": "生物制品",
+          "lead": "康希诺",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        }
+      ],
+      "shift_score": 70,
+      "shift_label": "修复",
+      "note": "情绪边际修复，但仍需确认持续性。"
     }
   ],
   "latest": {
-    "time": "10:50:04",
-    "ts_bj": "2026-09-30 10:50:04",
+    "time": "11:00:04",
+    "ts_bj": "2026-09-30 11:00:04",
     "date": "2026-09-30",
     "source": "intraday_live",
     "provider": "必盈(实时)+必盈(实时)",
@@ -461,28 +524,33 @@
       "dtgc": "valid"
     },
     "pool_errors": {},
-    "zt": 38,
-    "dt": 4,
-    "zab": 12,
-    "zb": 24.0,
-    "fb": 76.0,
-    "jj": 28.9,
+    "zt": 42,
+    "dt": 3,
+    "zab": 10,
+    "zb": 19.2,
+    "fb": 80.8,
+    "jj": 26.2,
     "lianban": 11,
     "max_lb": 7,
-    "amount": "7814.6亿",
+    "amount": "8175.5亿",
     "bf": 0,
-    "heat": 60,
-    "risk": 25,
+    "heat": 62,
+    "risk": 20,
     "headline": "修复",
     "concepts": [
+      {
+        "name": "汽车零部",
+        "lead": "襄阳轴承",
+        "chg_pct": null
+      },
       {
         "name": "化学制品",
         "lead": "亚邦股份",
         "chg_pct": null
       },
       {
-        "name": "汽车零部",
-        "lead": "襄阳轴承",
+        "name": "医疗服务",
+        "lead": "昭衍新药",
         "chg_pct": null
       },
       {
@@ -494,11 +562,6 @@
         "name": "生物制品",
         "lead": "康希诺",
         "chg_pct": null
-      },
-      {
-        "name": "出版",
-        "lead": "新华传媒",
-        "chg_pct": null
       }
     ],
     "alerts": [
@@ -507,15 +570,15 @@
         "text": "盘中模式：强制实时拉取"
       }
     ],
-    "shift_score": 66,
+    "shift_score": 70,
     "shift_label": "修复",
-    "note": "情绪整体平稳，维持当前节奏。"
+    "note": "情绪边际修复，但仍需确认持续性。"
   },
-  "updated_at": "2026-09-30 10:50:04",
-  "snapshot_sig": "2026-09-30|2026-09-30 10:50:04|7",
+  "updated_at": "2026-09-30 11:00:04",
+  "snapshot_sig": "2026-09-30|2026-09-30 11:00:04|8",
   "health": {
     "status": "valid",
-    "last_valid_at": "2026-09-30 10:50:04",
+    "last_valid_at": "2026-09-30 11:00:04",
     "rejected_reason": "",
     "source": {
       "status": "valid",
