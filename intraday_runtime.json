@@ -1,11 +1,11 @@
 {
   "schema": "intraday_runtime_v1",
   "date": "2026-09-30",
-  "updated_at": "2026-09-30 09:50:04",
+  "updated_at": "2026-09-30 10:00:05",
   "source": "必盈(实时)+必盈(实时)",
   "latest": {
-    "time": "09:50:04",
-    "ts_bj": "2026-09-30 09:50:04",
+    "time": "10:00:05",
+    "ts_bj": "2026-09-30 10:00:05",
     "date": "2026-09-30",
     "source": "intraday_live",
     "provider": "必盈(实时)+必盈(实时)",
@@ -16,20 +16,25 @@
       "dtgc": "valid"
     },
     "pool_errors": {},
-    "zt": 27,
+    "zt": 30,
     "dt": 4,
-    "zab": 2,
-    "zb": 6.9,
-    "fb": 93.1,
-    "jj": 37.0,
-    "lianban": 10,
+    "zab": 4,
+    "zb": 11.8,
+    "fb": 88.2,
+    "jj": 30.0,
+    "lianban": 9,
     "max_lb": 7,
-    "amount": "3612.1亿",
+    "amount": "4564.6亿",
     "bf": 0,
-    "heat": 67,
-    "risk": 11,
+    "heat": 64,
+    "risk": 14,
     "headline": "走强",
     "concepts": [
+      {
+        "name": "化学制品",
+        "lead": "亚邦股份",
+        "chg_pct": null
+      },
       {
         "name": "电力",
         "lead": "大连热电",
@@ -46,13 +51,8 @@
         "chg_pct": null
       },
       {
-        "name": "化学制品",
-        "lead": "亚邦股份",
-        "chg_pct": null
-      },
-      {
-        "name": "化学原料",
-        "lead": "善水科技",
+        "name": "光学光电",
+        "lead": "水晶光电",
         "chg_pct": null
       }
     ],
@@ -62,9 +62,9 @@
         "text": "盘中模式：强制实时拉取"
       }
     ],
-    "shift_score": 76,
+    "shift_score": 73,
     "shift_label": "走强",
-    "note": "盘中实时切片已接入，可逐点观察情绪变化。"
+    "note": "情绪略有回落，注意午后分歧。"
   },
   "snapshots": [
     {
@@ -129,40 +129,103 @@
       "shift_score": 76,
       "shift_label": "走强",
       "note": "盘中实时切片已接入，可逐点观察情绪变化。"
+    },
+    {
+      "time": "10:00:05",
+      "ts_bj": "2026-09-30 10:00:05",
+      "date": "2026-09-30",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid"
+      },
+      "pool_errors": {},
+      "zt": 30,
+      "dt": 4,
+      "zab": 4,
+      "zb": 11.8,
+      "fb": 88.2,
+      "jj": 30.0,
+      "lianban": 9,
+      "max_lb": 7,
+      "amount": "4564.6亿",
+      "bf": 0,
+      "heat": 64,
+      "risk": 14,
+      "headline": "走强",
+      "concepts": [
+        {
+          "name": "化学制品",
+          "lead": "亚邦股份",
+          "chg_pct": null
+        },
+        {
+          "name": "电力",
+          "lead": "大连热电",
+          "chg_pct": null
+        },
+        {
+          "name": "出版",
+          "lead": "新华传媒",
+          "chg_pct": null
+        },
+        {
+          "name": "电池",
+          "lead": "时代万恒",
+          "chg_pct": null
+        },
+        {
+          "name": "光学光电",
+          "lead": "水晶光电",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        }
+      ],
+      "shift_score": 73,
+      "shift_label": "走强",
+      "note": "情绪略有回落，注意午后分歧。"
     }
   ],
   "indices": [
     {
       "name": "上证指数",
       "code": "000001.SH",
-      "val": 3842.349,
-      "chg": 0.31061616504166584,
-      "cje": 164696963700.0,
-      "t": "2026-09-30 09:50:00"
+      "val": 3845.047,
+      "chg": 0.38105173516121216,
+      "cje": 209531146700.0,
+      "t": "2026-09-30 10:00:03"
     },
     {
       "name": "深证成指",
       "code": "399001.SZ",
-      "val": 12917.956,
-      "chg": 0.12408204746151891,
-      "cje": 195691531300.0,
-      "t": "2026-09-30 09:49:57"
+      "val": 12942.416,
+      "chg": 0.31366583663689784,
+      "cje": 246320750000.0,
+      "t": "2026-09-30 10:00:00"
     },
     {
       "name": "创业板指",
       "code": "399006.SZ",
-      "val": 3153.756,
-      "chg": 0.35617424376216983,
-      "cje": 96498065400.0,
-      "t": "2026-09-30 09:49:57"
+      "val": 3159.444,
+      "chg": 0.5371730017822987,
+      "cje": 121964455000.0,
+      "t": "2026-09-30 10:00:00"
     }
   ],
   "asOf": {
-    "indices": "09:49:57"
+    "indices": "10:00:00"
   },
   "health": {
     "status": "valid",
-    "last_valid_at": "2026-09-30 09:50:04",
+    "last_valid_at": "2026-09-30 10:00:05",
     "rejected_reason": "",
     "source": {
       "status": "valid",
@@ -180,10 +243,11 @@
       "message": "intraday_coverage_incomplete",
       "date": "2026-09-30",
       "expected_count": 26,
-      "due_count": 3,
-      "observed_count": 1,
+      "due_count": 4,
+      "observed_count": 2,
       "observed_slots": [
-        "09:50"
+        "09:50",
+        "10:00"
       ],
       "missing_slots": [
         "09:30",
@@ -192,19 +256,19 @@
       "duplicate_slots": [],
       "out_of_session": [],
       "monotonic": true,
-      "morning_coverage": 1,
+      "morning_coverage": 2,
       "afternoon_coverage": 0
     }
   },
   "live": {
     "market": {
-      "zt": 27,
+      "zt": 30,
       "dt": 4,
-      "zab": 2,
-      "zab_rate": 6.9,
-      "lianban": 10,
+      "zab": 4,
+      "zab_rate": 11.8,
+      "lianban": 9,
       "max_lianban": 7,
-      "amount": "3612.1亿"
+      "amount": "4564.6亿"
     },
     "alerts": [
       {
@@ -213,6 +277,11 @@
       }
     ],
     "concepts": [
+      {
+        "name": "化学制品",
+        "lead": "亚邦股份",
+        "chg_pct": null
+      },
       {
         "name": "电力",
         "lead": "大连热电",
@@ -229,13 +298,8 @@
         "chg_pct": null
       },
       {
-        "name": "化学制品",
-        "lead": "亚邦股份",
-        "chg_pct": null
-      },
-      {
-        "name": "化学原料",
-        "lead": "善水科技",
+        "name": "光学光电",
+        "lead": "水晶光电",
         "chg_pct": null
       }
     ]
