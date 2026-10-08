@@ -2,7 +2,7 @@
   "schema": "intraday_snapshot_v1",
   "render_mode": "snapshot_stream",
   "date": "2026-10-08",
-  "count": 1,
+  "count": 2,
   "interval_min": null,
   "simulated": false,
   "snapshots": [
@@ -68,11 +68,74 @@
       "shift_score": 71,
       "shift_label": "修复",
       "note": "盘中实时切片已接入，可逐点观察情绪变化。"
+    },
+    {
+      "time": "10:10:05",
+      "ts_bj": "2026-10-08 10:10:05",
+      "date": "2026-10-08",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid"
+      },
+      "pool_errors": {},
+      "zt": 48,
+      "dt": 4,
+      "zab": 11,
+      "zb": 18.6,
+      "fb": 81.4,
+      "jj": 20.8,
+      "lianban": 10,
+      "max_lb": 8,
+      "amount": "6833.1亿",
+      "bf": 0,
+      "heat": 64,
+      "risk": 21,
+      "headline": "修复",
+      "concepts": [
+        {
+          "name": "电池",
+          "lead": "时代万恒",
+          "chg_pct": null
+        },
+        {
+          "name": "化学制品",
+          "lead": "百合花",
+          "chg_pct": null
+        },
+        {
+          "name": "塑料",
+          "lead": "兴业股份",
+          "chg_pct": null
+        },
+        {
+          "name": "航运港口",
+          "lead": "招商轮船",
+          "chg_pct": null
+        },
+        {
+          "name": "化学制药",
+          "lead": "华北制药",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        }
+      ],
+      "shift_score": 70,
+      "shift_label": "修复",
+      "note": "情绪整体平稳，维持当前节奏。"
     }
   ],
   "latest": {
-    "time": "10:00:42",
-    "ts_bj": "2026-10-08 10:00:42",
+    "time": "10:10:05",
+    "ts_bj": "2026-10-08 10:10:05",
     "date": "2026-10-08",
     "source": "intraday_live",
     "provider": "必盈(实时)+必盈(实时)",
@@ -83,18 +146,18 @@
       "dtgc": "valid"
     },
     "pool_errors": {},
-    "zt": 45,
-    "dt": 2,
+    "zt": 48,
+    "dt": 4,
     "zab": 11,
-    "zb": 19.6,
-    "fb": 80.4,
-    "jj": 22.2,
+    "zb": 18.6,
+    "fb": 81.4,
+    "jj": 20.8,
     "lianban": 10,
     "max_lb": 8,
-    "amount": "5915.6亿",
+    "amount": "6833.1亿",
     "bf": 0,
     "heat": 64,
-    "risk": 19,
+    "risk": 21,
     "headline": "修复",
     "concepts": [
       {
@@ -108,18 +171,18 @@
         "chg_pct": null
       },
       {
+        "name": "塑料",
+        "lead": "兴业股份",
+        "chg_pct": null
+      },
+      {
         "name": "航运港口",
         "lead": "招商轮船",
         "chg_pct": null
       },
       {
-        "name": "房地产开",
-        "lead": "深物业A",
-        "chg_pct": null
-      },
-      {
-        "name": "塑料",
-        "lead": "兴业股份",
+        "name": "化学制药",
+        "lead": "华北制药",
         "chg_pct": null
       }
     ],
@@ -129,15 +192,15 @@
         "text": "盘中模式：强制实时拉取"
       }
     ],
-    "shift_score": 71,
+    "shift_score": 70,
     "shift_label": "修复",
-    "note": "盘中实时切片已接入，可逐点观察情绪变化。"
+    "note": "情绪整体平稳，维持当前节奏。"
   },
-  "updated_at": "2026-10-08 10:00:42",
-  "snapshot_sig": "2026-10-08|2026-10-08 10:00:42|1",
+  "updated_at": "2026-10-08 10:10:05",
+  "snapshot_sig": "2026-10-08|2026-10-08 10:10:05|2",
   "health": {
     "status": "valid",
-    "last_valid_at": "2026-10-08 10:00:42",
+    "last_valid_at": "2026-10-08 10:10:05",
     "rejected_reason": "",
     "source": {
       "status": "valid",
