@@ -2,7 +2,7 @@
   "schema": "intraday_snapshot_v1",
   "render_mode": "snapshot_stream",
   "date": "2026-10-08",
-  "count": 3,
+  "count": 4,
   "interval_min": null,
   "simulated": false,
   "snapshots": [
@@ -194,11 +194,82 @@
       "shift_score": 68,
       "shift_label": "修复",
       "note": "情绪略有回落，注意午后分歧。"
+    },
+    {
+      "time": "10:30:05",
+      "ts_bj": "2026-10-08 10:30:05",
+      "date": "2026-10-08",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid"
+      },
+      "pool_errors": {},
+      "zt": 46,
+      "dt": 6,
+      "zab": 19,
+      "zb": 29.2,
+      "fb": 70.8,
+      "jj": 19.6,
+      "lianban": 9,
+      "max_lb": 8,
+      "amount": "8185.1亿",
+      "bf": 0,
+      "heat": 59,
+      "risk": 34,
+      "headline": "修复",
+      "concepts": [
+        {
+          "name": "电池",
+          "lead": "时代万恒",
+          "chg_pct": null
+        },
+        {
+          "name": "航运港口",
+          "lead": "招商轮船",
+          "chg_pct": null
+        },
+        {
+          "name": "化学制品",
+          "lead": "百合花",
+          "chg_pct": null
+        },
+        {
+          "name": "化学制药",
+          "lead": "华北制药",
+          "chg_pct": null
+        },
+        {
+          "name": "房地产开",
+          "lead": "深物业A",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        },
+        {
+          "level": "warn",
+          "text": "炸板率偏高（29.2%）→ 注意回封质量"
+        },
+        {
+          "level": "warn",
+          "text": "高度8板 + 分歧不低 → 高位兑现/炸板风险"
+        }
+      ],
+      "shift_score": 62,
+      "shift_label": "修复",
+      "note": "炸板/跌停抬升，情绪明显走弱。"
     }
   ],
   "latest": {
-    "time": "10:20:05",
-    "ts_bj": "2026-10-08 10:20:05",
+    "time": "10:30:05",
+    "ts_bj": "2026-10-08 10:30:05",
     "date": "2026-10-08",
     "source": "intraday_live",
     "provider": "必盈(实时)+必盈(实时)",
@@ -209,28 +280,23 @@
       "dtgc": "valid"
     },
     "pool_errors": {},
-    "zt": 48,
-    "dt": 5,
-    "zab": 14,
-    "zb": 22.6,
-    "fb": 77.4,
-    "jj": 22.9,
-    "lianban": 11,
+    "zt": 46,
+    "dt": 6,
+    "zab": 19,
+    "zb": 29.2,
+    "fb": 70.8,
+    "jj": 19.6,
+    "lianban": 9,
     "max_lb": 8,
-    "amount": "7577.8亿",
+    "amount": "8185.1亿",
     "bf": 0,
-    "heat": 63,
-    "risk": 26,
+    "heat": 59,
+    "risk": 34,
     "headline": "修复",
     "concepts": [
       {
         "name": "电池",
         "lead": "时代万恒",
-        "chg_pct": null
-      },
-      {
-        "name": "环境治理",
-        "lead": "上海洗霸",
         "chg_pct": null
       },
       {
@@ -247,23 +313,36 @@
         "name": "化学制药",
         "lead": "华北制药",
         "chg_pct": null
+      },
+      {
+        "name": "房地产开",
+        "lead": "深物业A",
+        "chg_pct": null
       }
     ],
     "alerts": [
       {
         "level": "info",
         "text": "盘中模式：强制实时拉取"
+      },
+      {
+        "level": "warn",
+        "text": "炸板率偏高（29.2%）→ 注意回封质量"
+      },
+      {
+        "level": "warn",
+        "text": "高度8板 + 分歧不低 → 高位兑现/炸板风险"
       }
     ],
-    "shift_score": 68,
+    "shift_score": 62,
     "shift_label": "修复",
-    "note": "情绪略有回落，注意午后分歧。"
+    "note": "炸板/跌停抬升，情绪明显走弱。"
   },
-  "updated_at": "2026-10-08 10:20:05",
-  "snapshot_sig": "2026-10-08|2026-10-08 10:20:05|3",
+  "updated_at": "2026-10-08 10:30:05",
+  "snapshot_sig": "2026-10-08|2026-10-08 10:30:05|4",
   "health": {
     "status": "valid",
-    "last_valid_at": "2026-10-08 10:20:05",
+    "last_valid_at": "2026-10-08 10:30:05",
     "rejected_reason": "",
     "source": {
       "status": "valid",
