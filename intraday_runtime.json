@@ -1,11 +1,11 @@
 {
   "schema": "intraday_runtime_v1",
   "date": "2026-10-09",
-  "updated_at": "2026-10-09 11:00:04",
+  "updated_at": "2026-10-09 11:10:04",
   "source": "必盈(实时)+必盈(实时)",
   "latest": {
-    "time": "11:00:04",
-    "ts_bj": "2026-10-09 11:00:04",
+    "time": "11:10:04",
+    "ts_bj": "2026-10-09 11:10:04",
     "date": "2026-10-09",
     "source": "intraday_live",
     "provider": "必盈(实时)+必盈(实时)",
@@ -17,18 +17,18 @@
     },
     "pool_errors": {},
     "zt": 29,
-    "dt": 11,
-    "zab": 10,
-    "zb": 25.6,
-    "fb": 74.4,
+    "dt": 17,
+    "zab": 12,
+    "zb": 29.3,
+    "fb": 70.7,
     "jj": 37.9,
     "lianban": 11,
     "max_lb": 9,
-    "amount": "10283.0亿",
+    "amount": "10836.1亿",
     "bf": 0,
-    "heat": 63,
-    "risk": 35,
-    "headline": "修复",
+    "heat": 61,
+    "risk": 47,
+    "headline": "分歧",
     "concepts": [
       {
         "name": "电池",
@@ -36,13 +36,13 @@
         "chg_pct": null
       },
       {
-        "name": "化学制药",
-        "lead": "华北制药",
+        "name": "化学制品",
+        "lead": "东岳硅材",
         "chg_pct": null
       },
       {
-        "name": "化学制品",
-        "lead": "东岳硅材",
+        "name": "化学制药",
+        "lead": "华北制药",
         "chg_pct": null
       },
       {
@@ -63,20 +63,20 @@
       },
       {
         "level": "warn",
-        "text": "跌停偏多（11）→ 控制追高"
+        "text": "跌停偏多（17）→ 控制追高"
       },
       {
         "level": "warn",
-        "text": "炸板率偏高（25.6%）→ 注意回封质量"
+        "text": "炸板率偏高（29.3%）→ 注意回封质量"
       },
       {
         "level": "warn",
         "text": "高度9板 + 分歧不低 → 高位兑现/炸板风险"
       }
     ],
-    "shift_score": 64,
-    "shift_label": "修复",
-    "note": "情绪整体平稳，维持当前节奏。"
+    "shift_score": 58,
+    "shift_label": "分歧",
+    "note": "炸板/跌停抬升，情绪明显走弱。"
   },
   "snapshots": [
     {
@@ -508,40 +508,115 @@
       "shift_score": 64,
       "shift_label": "修复",
       "note": "情绪整体平稳，维持当前节奏。"
+    },
+    {
+      "time": "11:10:04",
+      "ts_bj": "2026-10-09 11:10:04",
+      "date": "2026-10-09",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid"
+      },
+      "pool_errors": {},
+      "zt": 29,
+      "dt": 17,
+      "zab": 12,
+      "zb": 29.3,
+      "fb": 70.7,
+      "jj": 37.9,
+      "lianban": 11,
+      "max_lb": 9,
+      "amount": "10836.1亿",
+      "bf": 0,
+      "heat": 61,
+      "risk": 47,
+      "headline": "分歧",
+      "concepts": [
+        {
+          "name": "电池",
+          "lead": "时代万恒",
+          "chg_pct": null
+        },
+        {
+          "name": "化学制品",
+          "lead": "东岳硅材",
+          "chg_pct": null
+        },
+        {
+          "name": "化学制药",
+          "lead": "华北制药",
+          "chg_pct": null
+        },
+        {
+          "name": "一般零售",
+          "lead": "国芳集团",
+          "chg_pct": null
+        },
+        {
+          "name": "出版",
+          "lead": "新华传媒",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        },
+        {
+          "level": "warn",
+          "text": "跌停偏多（17）→ 控制追高"
+        },
+        {
+          "level": "warn",
+          "text": "炸板率偏高（29.3%）→ 注意回封质量"
+        },
+        {
+          "level": "warn",
+          "text": "高度9板 + 分歧不低 → 高位兑现/炸板风险"
+        }
+      ],
+      "shift_score": 58,
+      "shift_label": "分歧",
+      "note": "炸板/跌停抬升，情绪明显走弱。"
     }
   ],
   "indices": [
     {
       "name": "上证指数",
       "code": "000001.SH",
-      "val": 3774.426,
-      "chg": -0.9831832071321855,
-      "cje": 479376498500.0,
-      "t": "2026-10-09 11:00:00"
+      "val": 3759.607,
+      "chg": -1.371939062473767,
+      "cje": 504655544500.0,
+      "t": "2026-10-09 11:10:03"
     },
     {
       "name": "深证成指",
       "code": "399001.SZ",
-      "val": 12395.008,
-      "chg": -1.789801469737064,
-      "cje": 548730163100.0,
-      "t": "2026-10-09 10:59:57"
+      "val": 12309.751,
+      "chg": -2.4653239781609866,
+      "cje": 578781064600.0,
+      "t": "2026-10-09 11:10:00"
     },
     {
       "name": "创业板指",
       "code": "399006.SZ",
-      "val": 2967.05,
-      "chg": -2.2922246404516535,
-      "cje": 268298196200.0,
-      "t": "2026-10-09 10:59:57"
+      "val": 2938.691,
+      "chg": -3.2261134530505204,
+      "cje": 283973742800.0,
+      "t": "2026-10-09 11:10:00"
     }
   ],
   "asOf": {
-    "indices": "10:59:57"
+    "indices": "11:10:00"
   },
   "health": {
     "status": "valid",
-    "last_valid_at": "2026-10-09 11:00:04",
+    "last_valid_at": "2026-10-09 11:10:04",
     "rejected_reason": "",
     "source": {
       "status": "valid",
@@ -559,15 +634,16 @@
       "message": "intraday_coverage_incomplete",
       "date": "2026-10-09",
       "expected_count": 26,
-      "due_count": 10,
-      "observed_count": 6,
+      "due_count": 11,
+      "observed_count": 7,
       "observed_slots": [
         "10:10",
         "10:20",
         "10:30",
         "10:40",
         "10:50",
-        "11:00"
+        "11:00",
+        "11:10"
       ],
       "missing_slots": [
         "09:30",
@@ -578,19 +654,19 @@
       "duplicate_slots": [],
       "out_of_session": [],
       "monotonic": true,
-      "morning_coverage": 6,
+      "morning_coverage": 7,
       "afternoon_coverage": 0
     }
   },
   "live": {
     "market": {
       "zt": 29,
-      "dt": 11,
-      "zab": 10,
-      "zab_rate": 25.6,
+      "dt": 17,
+      "zab": 12,
+      "zab_rate": 29.3,
       "lianban": 11,
       "max_lianban": 9,
-      "amount": "10283.0亿"
+      "amount": "10836.1亿"
     },
     "alerts": [
       {
@@ -599,11 +675,11 @@
       },
       {
         "level": "warn",
-        "text": "跌停偏多（11）→ 控制追高"
+        "text": "跌停偏多（17）→ 控制追高"
       },
       {
         "level": "warn",
-        "text": "炸板率偏高（25.6%）→ 注意回封质量"
+        "text": "炸板率偏高（29.3%）→ 注意回封质量"
       },
       {
         "level": "warn",
@@ -617,13 +693,13 @@
         "chg_pct": null
       },
       {
-        "name": "化学制药",
-        "lead": "华北制药",
+        "name": "化学制品",
+        "lead": "东岳硅材",
         "chg_pct": null
       },
       {
-        "name": "化学制品",
-        "lead": "东岳硅材",
+        "name": "化学制药",
+        "lead": "华北制药",
         "chg_pct": null
       },
       {
