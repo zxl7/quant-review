@@ -2,7 +2,7 @@
   "schema": "intraday_snapshot_v1",
   "render_mode": "snapshot_stream",
   "date": "2026-10-09",
-  "count": 4,
+  "count": 5,
   "interval_min": null,
   "simulated": false,
   "snapshots": [
@@ -293,11 +293,78 @@
       "shift_score": 61,
       "shift_label": "修复",
       "note": "情绪略有回落，注意午后分歧。"
+    },
+    {
+      "time": "10:50:04",
+      "ts_bj": "2026-10-09 10:50:04",
+      "date": "2026-10-09",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid"
+      },
+      "pool_errors": {},
+      "zt": 28,
+      "dt": 11,
+      "zab": 9,
+      "zb": 24.3,
+      "fb": 75.7,
+      "jj": 42.9,
+      "lianban": 12,
+      "max_lb": 9,
+      "amount": "9675.3亿",
+      "bf": 0,
+      "heat": 65,
+      "risk": 34,
+      "headline": "修复",
+      "concepts": [
+        {
+          "name": "电池",
+          "lead": "时代万恒",
+          "chg_pct": null
+        },
+        {
+          "name": "化学制药",
+          "lead": "华北制药",
+          "chg_pct": null
+        },
+        {
+          "name": "化学制品",
+          "lead": "东岳硅材",
+          "chg_pct": null
+        },
+        {
+          "name": "一般零售",
+          "lead": "国芳集团",
+          "chg_pct": null
+        },
+        {
+          "name": "出版",
+          "lead": "新华传媒",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        },
+        {
+          "level": "warn",
+          "text": "跌停偏多（11）→ 控制追高"
+        }
+      ],
+      "shift_score": 65,
+      "shift_label": "修复",
+      "note": "情绪边际修复，但仍需确认持续性。"
     }
   ],
   "latest": {
-    "time": "10:40:04",
-    "ts_bj": "2026-10-09 10:40:04",
+    "time": "10:50:04",
+    "ts_bj": "2026-10-09 10:50:04",
     "date": "2026-10-09",
     "source": "intraday_live",
     "provider": "必盈(实时)+必盈(实时)",
@@ -308,18 +375,18 @@
       "dtgc": "valid"
     },
     "pool_errors": {},
-    "zt": 24,
-    "dt": 14,
+    "zt": 28,
+    "dt": 11,
     "zab": 9,
-    "zb": 27.3,
-    "fb": 72.7,
-    "jj": 41.7,
-    "lianban": 10,
+    "zb": 24.3,
+    "fb": 75.7,
+    "jj": 42.9,
+    "lianban": 12,
     "max_lb": 9,
-    "amount": "9049.8亿",
+    "amount": "9675.3亿",
     "bf": 0,
-    "heat": 62,
-    "risk": 40,
+    "heat": 65,
+    "risk": 34,
     "headline": "修复",
     "concepts": [
       {
@@ -328,23 +395,23 @@
         "chg_pct": null
       },
       {
-        "name": "化学制品",
-        "lead": "东岳硅材",
-        "chg_pct": null
-      },
-      {
         "name": "化学制药",
         "lead": "华北制药",
         "chg_pct": null
       },
       {
-        "name": "出版",
-        "lead": "新华传媒",
+        "name": "化学制品",
+        "lead": "东岳硅材",
         "chg_pct": null
       },
       {
-        "name": "小家电",
-        "lead": "九阳股份",
+        "name": "一般零售",
+        "lead": "国芳集团",
+        "chg_pct": null
+      },
+      {
+        "name": "出版",
+        "lead": "新华传媒",
         "chg_pct": null
       }
     ],
@@ -355,26 +422,18 @@
       },
       {
         "level": "warn",
-        "text": "跌停偏多（14）→ 控制追高"
-      },
-      {
-        "level": "warn",
-        "text": "炸板率偏高（27.3%）→ 注意回封质量"
-      },
-      {
-        "level": "warn",
-        "text": "高度9板 + 分歧不低 → 高位兑现/炸板风险"
+        "text": "跌停偏多（11）→ 控制追高"
       }
     ],
-    "shift_score": 61,
+    "shift_score": 65,
     "shift_label": "修复",
-    "note": "情绪略有回落，注意午后分歧。"
+    "note": "情绪边际修复，但仍需确认持续性。"
   },
-  "updated_at": "2026-10-09 10:40:04",
-  "snapshot_sig": "2026-10-09|2026-10-09 10:40:04|4",
+  "updated_at": "2026-10-09 10:50:04",
+  "snapshot_sig": "2026-10-09|2026-10-09 10:50:04|5",
   "health": {
     "status": "valid",
-    "last_valid_at": "2026-10-09 10:40:04",
+    "last_valid_at": "2026-10-09 10:50:04",
     "rejected_reason": "",
     "source": {
       "status": "valid",
