@@ -2,7 +2,7 @@
   "schema": "intraday_snapshot_v1",
   "render_mode": "snapshot_stream",
   "date": "2026-10-12",
-  "count": 12,
+  "count": 13,
   "interval_min": null,
   "simulated": false,
   "snapshots": [
@@ -855,11 +855,82 @@
       "shift_score": 58,
       "shift_label": "分歧",
       "note": "情绪整体平稳，维持当前节奏。"
+    },
+    {
+      "time": "11:30:04",
+      "ts_bj": "2026-10-12 11:30:04",
+      "date": "2026-10-12",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid"
+      },
+      "pool_errors": {},
+      "zt": 36,
+      "dt": 8,
+      "zab": 23,
+      "zb": 39.0,
+      "fb": 61.0,
+      "jj": 47.2,
+      "lianban": 17,
+      "max_lb": 10,
+      "amount": "10134.0亿",
+      "bf": 0,
+      "heat": 61,
+      "risk": 44,
+      "headline": "分歧",
+      "concepts": [
+        {
+          "name": "出版",
+          "lead": "新华传媒",
+          "chg_pct": null
+        },
+        {
+          "name": "电网设备",
+          "lead": "远程股份",
+          "chg_pct": null
+        },
+        {
+          "name": "影视院线",
+          "lead": "博纳影业",
+          "chg_pct": null
+        },
+        {
+          "name": "化学制品",
+          "lead": "新亚强",
+          "chg_pct": null
+        },
+        {
+          "name": "化学制药",
+          "lead": "华北制药",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        },
+        {
+          "level": "danger",
+          "text": "炸板率高（39.0%）→ 分歧偏强，谨慎接力"
+        },
+        {
+          "level": "warn",
+          "text": "高度10板 + 分歧不低 → 高位兑现/炸板风险"
+        }
+      ],
+      "shift_score": 59,
+      "shift_label": "分歧",
+      "note": "情绪整体平稳，维持当前节奏。"
     }
   ],
   "latest": {
-    "time": "11:20:04",
-    "ts_bj": "2026-10-12 11:20:04",
+    "time": "11:30:04",
+    "ts_bj": "2026-10-12 11:30:04",
     "date": "2026-10-12",
     "source": "intraday_live",
     "provider": "必盈(实时)+必盈(实时)",
@@ -870,18 +941,18 @@
       "dtgc": "valid"
     },
     "pool_errors": {},
-    "zt": 35,
-    "dt": 9,
+    "zt": 36,
+    "dt": 8,
     "zab": 23,
-    "zb": 39.7,
-    "fb": 60.3,
-    "jj": 48.6,
+    "zb": 39.0,
+    "fb": 61.0,
+    "jj": 47.2,
     "lianban": 17,
     "max_lb": 10,
-    "amount": "9881.0亿",
+    "amount": "10134.0亿",
     "bf": 0,
     "heat": 61,
-    "risk": 46,
+    "risk": 44,
     "headline": "分歧",
     "concepts": [
       {
@@ -900,13 +971,13 @@
         "chg_pct": null
       },
       {
-        "name": "化学制药",
-        "lead": "华北制药",
+        "name": "化学制品",
+        "lead": "新亚强",
         "chg_pct": null
       },
       {
-        "name": "电视广播",
-        "lead": "吉视传媒",
+        "name": "化学制药",
+        "lead": "华北制药",
         "chg_pct": null
       }
     ],
@@ -917,22 +988,22 @@
       },
       {
         "level": "danger",
-        "text": "炸板率高（39.7%）→ 分歧偏强，谨慎接力"
+        "text": "炸板率高（39.0%）→ 分歧偏强，谨慎接力"
       },
       {
         "level": "warn",
         "text": "高度10板 + 分歧不低 → 高位兑现/炸板风险"
       }
     ],
-    "shift_score": 58,
+    "shift_score": 59,
     "shift_label": "分歧",
     "note": "情绪整体平稳，维持当前节奏。"
   },
-  "updated_at": "2026-10-12 11:20:04",
-  "snapshot_sig": "2026-10-12|2026-10-12 11:20:04|12",
+  "updated_at": "2026-10-12 11:30:04",
+  "snapshot_sig": "2026-10-12|2026-10-12 11:30:04|13",
   "health": {
     "status": "valid",
-    "last_valid_at": "2026-10-12 11:20:04",
+    "last_valid_at": "2026-10-12 11:30:04",
     "rejected_reason": "",
     "source": {
       "status": "valid",
