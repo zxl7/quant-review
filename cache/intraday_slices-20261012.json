@@ -2,7 +2,7 @@
   "schema": "intraday_snapshot_v1",
   "render_mode": "snapshot_stream",
   "date": "2026-10-12",
-  "count": 8,
+  "count": 9,
   "interval_min": null,
   "simulated": false,
   "snapshots": [
@@ -571,11 +571,82 @@
       "shift_score": 64,
       "shift_label": "修复",
       "note": "情绪边际修复，但仍需确认持续性。"
+    },
+    {
+      "time": "10:50:05",
+      "ts_bj": "2026-10-12 10:50:05",
+      "date": "2026-10-12",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid"
+      },
+      "pool_errors": {},
+      "zt": 40,
+      "dt": 6,
+      "zab": 17,
+      "zb": 29.8,
+      "fb": 70.2,
+      "jj": 37.5,
+      "lianban": 15,
+      "max_lb": 10,
+      "amount": "8812.3亿",
+      "bf": 0,
+      "heat": 63,
+      "risk": 33,
+      "headline": "修复",
+      "concepts": [
+        {
+          "name": "出版",
+          "lead": "新华传媒",
+          "chg_pct": null
+        },
+        {
+          "name": "电网设备",
+          "lead": "远程股份",
+          "chg_pct": null
+        },
+        {
+          "name": "影视院线",
+          "lead": "博纳影业",
+          "chg_pct": null
+        },
+        {
+          "name": "化学制品",
+          "lead": "新亚强",
+          "chg_pct": null
+        },
+        {
+          "name": "化学制药",
+          "lead": "华北制药",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        },
+        {
+          "level": "warn",
+          "text": "炸板率偏高（29.8%）→ 注意回封质量"
+        },
+        {
+          "level": "warn",
+          "text": "高度10板 + 分歧不低 → 高位兑现/炸板风险"
+        }
+      ],
+      "shift_score": 65,
+      "shift_label": "修复",
+      "note": "情绪整体平稳，维持当前节奏。"
     }
   ],
   "latest": {
-    "time": "10:40:04",
-    "ts_bj": "2026-10-12 10:40:04",
+    "time": "10:50:05",
+    "ts_bj": "2026-10-12 10:50:05",
     "date": "2026-10-12",
     "source": "intraday_live",
     "provider": "必盈(实时)+必盈(实时)",
@@ -586,18 +657,18 @@
       "dtgc": "valid"
     },
     "pool_errors": {},
-    "zt": 39,
+    "zt": 40,
     "dt": 6,
-    "zab": 18,
-    "zb": 31.6,
-    "fb": 68.4,
-    "jj": 35.9,
-    "lianban": 14,
+    "zab": 17,
+    "zb": 29.8,
+    "fb": 70.2,
+    "jj": 37.5,
+    "lianban": 15,
     "max_lb": 10,
-    "amount": "8362.8亿",
+    "amount": "8812.3亿",
     "bf": 0,
-    "heat": 62,
-    "risk": 34,
+    "heat": 63,
+    "risk": 33,
     "headline": "修复",
     "concepts": [
       {
@@ -633,22 +704,22 @@
       },
       {
         "level": "warn",
-        "text": "炸板率偏高（31.6%）→ 注意回封质量"
+        "text": "炸板率偏高（29.8%）→ 注意回封质量"
       },
       {
         "level": "warn",
         "text": "高度10板 + 分歧不低 → 高位兑现/炸板风险"
       }
     ],
-    "shift_score": 64,
+    "shift_score": 65,
     "shift_label": "修复",
-    "note": "情绪边际修复，但仍需确认持续性。"
+    "note": "情绪整体平稳，维持当前节奏。"
   },
-  "updated_at": "2026-10-12 10:40:04",
-  "snapshot_sig": "2026-10-12|2026-10-12 10:40:04|8",
+  "updated_at": "2026-10-12 10:50:05",
+  "snapshot_sig": "2026-10-12|2026-10-12 10:50:05|9",
   "health": {
     "status": "valid",
-    "last_valid_at": "2026-10-12 10:40:04",
+    "last_valid_at": "2026-10-12 10:50:05",
     "rejected_reason": "",
     "source": {
       "status": "valid",
