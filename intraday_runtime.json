@@ -1,11 +1,11 @@
 {
   "schema": "intraday_runtime_v1",
   "date": "2026-10-12",
-  "updated_at": "2026-10-12 10:10:04",
+  "updated_at": "2026-10-12 10:20:04",
   "source": "必盈(实时)+必盈(实时)",
   "latest": {
-    "time": "10:10:04",
-    "ts_bj": "2026-10-12 10:10:04",
+    "time": "10:20:04",
+    "ts_bj": "2026-10-12 10:20:04",
     "date": "2026-10-12",
     "source": "intraday_live",
     "provider": "必盈(实时)+必盈(实时)",
@@ -16,28 +16,28 @@
       "dtgc": "valid"
     },
     "pool_errors": {},
-    "zt": 28,
+    "zt": 30,
     "dt": 5,
-    "zab": 15,
-    "zb": 34.9,
-    "fb": 65.1,
-    "jj": 39.3,
-    "lianban": 11,
+    "zab": 18,
+    "zb": 37.5,
+    "fb": 62.5,
+    "jj": 40.0,
+    "lianban": 12,
     "max_lb": 10,
-    "amount": "6314.9亿",
+    "amount": "7051.4亿",
     "bf": 0,
     "heat": 59,
-    "risk": 33,
+    "risk": 36,
     "headline": "修复",
     "concepts": [
       {
-        "name": "电网设备",
-        "lead": "远程股份",
+        "name": "出版",
+        "lead": "新华传媒",
         "chg_pct": null
       },
       {
-        "name": "出版",
-        "lead": "新华传媒",
+        "name": "电网设备",
+        "lead": "远程股份",
         "chg_pct": null
       },
       {
@@ -62,15 +62,15 @@
         "text": "盘中模式：强制实时拉取"
       },
       {
-        "level": "warn",
-        "text": "炸板率偏高（34.9%）→ 注意回封质量"
+        "level": "danger",
+        "text": "炸板率高（37.5%）→ 分歧偏强，谨慎接力"
       },
       {
         "level": "warn",
         "text": "高度10板 + 分歧不低 → 高位兑现/炸板风险"
       }
     ],
-    "shift_score": 62,
+    "shift_score": 61,
     "shift_label": "修复",
     "note": "情绪整体平稳，维持当前节奏。"
   },
@@ -427,40 +427,111 @@
       "shift_score": 62,
       "shift_label": "修复",
       "note": "情绪整体平稳，维持当前节奏。"
+    },
+    {
+      "time": "10:20:04",
+      "ts_bj": "2026-10-12 10:20:04",
+      "date": "2026-10-12",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid"
+      },
+      "pool_errors": {},
+      "zt": 30,
+      "dt": 5,
+      "zab": 18,
+      "zb": 37.5,
+      "fb": 62.5,
+      "jj": 40.0,
+      "lianban": 12,
+      "max_lb": 10,
+      "amount": "7051.4亿",
+      "bf": 0,
+      "heat": 59,
+      "risk": 36,
+      "headline": "修复",
+      "concepts": [
+        {
+          "name": "出版",
+          "lead": "新华传媒",
+          "chg_pct": null
+        },
+        {
+          "name": "电网设备",
+          "lead": "远程股份",
+          "chg_pct": null
+        },
+        {
+          "name": "电池",
+          "lead": "时代万恒",
+          "chg_pct": null
+        },
+        {
+          "name": "化学制药",
+          "lead": "华北制药",
+          "chg_pct": null
+        },
+        {
+          "name": "影视院线",
+          "lead": "博纳影业",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        },
+        {
+          "level": "danger",
+          "text": "炸板率高（37.5%）→ 分歧偏强，谨慎接力"
+        },
+        {
+          "level": "warn",
+          "text": "高度10板 + 分歧不低 → 高位兑现/炸板风险"
+        }
+      ],
+      "shift_score": 61,
+      "shift_label": "修复",
+      "note": "情绪整体平稳，维持当前节奏。"
     }
   ],
   "indices": [
     {
       "name": "上证指数",
       "code": "000001.SH",
-      "val": 3802.239,
-      "chg": -0.30290070955645276,
-      "cje": 283853698600.0,
-      "t": "2026-10-12 10:10:03"
+      "val": 3814.554,
+      "chg": 0.02000634014816019,
+      "cje": 318183308800.0,
+      "t": "2026-10-12 10:20:03"
     },
     {
       "name": "深证成指",
       "code": "399001.SZ",
-      "val": 12493.733,
-      "chg": -1.1717027671090752,
-      "cje": 347638059400.0,
-      "t": "2026-10-12 10:10:00"
+      "val": 12567.013,
+      "chg": -0.5920411382567289,
+      "cje": 386460386400.0,
+      "t": "2026-10-12 10:19:57"
     },
     {
       "name": "创业板指",
       "code": "399006.SZ",
-      "val": 3000.232,
-      "chg": -1.4163080962168169,
-      "cje": 166964452200.0,
-      "t": "2026-10-12 10:10:00"
+      "val": 3023.914,
+      "chg": -0.638148609995279,
+      "cje": 185752036300.0,
+      "t": "2026-10-12 10:19:57"
     }
   ],
   "asOf": {
-    "indices": "10:10:00"
+    "indices": "10:19:57"
   },
   "health": {
     "status": "valid",
-    "last_valid_at": "2026-10-12 10:10:04",
+    "last_valid_at": "2026-10-12 10:20:04",
     "rejected_reason": "",
     "source": {
       "status": "valid",
@@ -478,32 +549,33 @@
       "message": "intraday_coverage_collecting",
       "date": "2026-10-12",
       "expected_count": 26,
-      "due_count": 5,
-      "observed_count": 5,
+      "due_count": 6,
+      "observed_count": 6,
       "observed_slots": [
         "09:30",
         "09:40",
         "09:50",
         "10:00",
-        "10:10"
+        "10:10",
+        "10:20"
       ],
       "missing_slots": [],
       "duplicate_slots": [],
       "out_of_session": [],
       "monotonic": true,
-      "morning_coverage": 5,
+      "morning_coverage": 6,
       "afternoon_coverage": 0
     }
   },
   "live": {
     "market": {
-      "zt": 28,
+      "zt": 30,
       "dt": 5,
-      "zab": 15,
-      "zab_rate": 34.9,
-      "lianban": 11,
+      "zab": 18,
+      "zab_rate": 37.5,
+      "lianban": 12,
       "max_lianban": 10,
-      "amount": "6314.9亿"
+      "amount": "7051.4亿"
     },
     "alerts": [
       {
@@ -511,8 +583,8 @@
         "text": "盘中模式：强制实时拉取"
       },
       {
-        "level": "warn",
-        "text": "炸板率偏高（34.9%）→ 注意回封质量"
+        "level": "danger",
+        "text": "炸板率高（37.5%）→ 分歧偏强，谨慎接力"
       },
       {
         "level": "warn",
@@ -521,13 +593,13 @@
     ],
     "concepts": [
       {
-        "name": "电网设备",
-        "lead": "远程股份",
+        "name": "出版",
+        "lead": "新华传媒",
         "chg_pct": null
       },
       {
-        "name": "出版",
-        "lead": "新华传媒",
+        "name": "电网设备",
+        "lead": "远程股份",
         "chg_pct": null
       },
       {
