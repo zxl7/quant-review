@@ -1,40 +1,43 @@
 {
   "schema": "intraday_runtime_v1",
   "date": "2026-10-12",
-  "updated_at": "2026-10-12 09:30:40",
-  "source": "必盈(实时)",
+  "updated_at": "2026-10-12 09:40:04",
+  "source": "必盈(实时)+必盈(实时)",
   "latest": {
-    "time": "09:30:40",
-    "ts_bj": "2026-10-12 09:30:40",
+    "time": "09:40:04",
+    "ts_bj": "2026-10-12 09:40:04",
     "date": "2026-10-12",
     "source": "intraday_live",
-    "provider": "必盈(实时)",
-    "data_quality": "partial",
+    "provider": "必盈(实时)+必盈(实时)",
+    "data_quality": "valid",
     "pool_status": {
       "ztgc": "valid",
-      "zbgc": "failed",
+      "zbgc": "valid",
       "dtgc": "valid"
     },
-    "pool_errors": {
-      "zbgc": "empty_response"
-    },
-    "zt": 13,
+    "pool_errors": {},
+    "zt": 16,
     "dt": 1,
-    "zab": null,
-    "zb": null,
-    "fb": null,
-    "jj": 76.9,
-    "lianban": 10,
+    "zab": 9,
+    "zb": 36.0,
+    "fb": 64.0,
+    "jj": 68.8,
+    "lianban": 11,
     "max_lb": 10,
-    "amount": "",
+    "amount": "2806.6亿",
     "bf": 0,
-    "heat": null,
-    "risk": null,
-    "headline": "数据部分可用",
+    "heat": 64,
+    "risk": 25,
+    "headline": "修复",
     "concepts": [
       {
         "name": "出版",
         "lead": "新华传媒",
+        "chg_pct": null
+      },
+      {
+        "name": "化学制药",
+        "lead": "华北制药",
         "chg_pct": null
       },
       {
@@ -48,13 +51,8 @@
         "chg_pct": null
       },
       {
-        "name": "化学纤维",
-        "lead": "吉林化纤",
-        "chg_pct": null
-      },
-      {
-        "name": "饲料",
-        "lead": "百洋股份",
+        "name": "农产品加",
+        "lead": "金健米业",
         "chg_pct": null
       }
     ],
@@ -64,13 +62,17 @@
         "text": "盘中模式：强制实时拉取"
       },
       {
+        "level": "danger",
+        "text": "炸板率高（36.0%）→ 分歧偏强，谨慎接力"
+      },
+      {
         "level": "warn",
-        "text": "盘中三池响应不完整，保留最近有效数据"
+        "text": "高度10板 + 分歧不低 → 高位兑现/炸板风险"
       }
     ],
-    "shift_score": null,
-    "shift_label": "数据部分可用",
-    "note": "本槽位仅部分三池成功；节点已保留，缺失指标不参与判断。"
+    "shift_score": 69,
+    "shift_label": "修复",
+    "note": "承接增强、分歧收敛，情绪明显回暖。"
   },
   "snapshots": [
     {
@@ -141,51 +143,120 @@
       "shift_score": null,
       "shift_label": "数据部分可用",
       "note": "本槽位仅部分三池成功；节点已保留，缺失指标不参与判断。"
+    },
+    {
+      "time": "09:40:04",
+      "ts_bj": "2026-10-12 09:40:04",
+      "date": "2026-10-12",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid"
+      },
+      "pool_errors": {},
+      "zt": 16,
+      "dt": 1,
+      "zab": 9,
+      "zb": 36.0,
+      "fb": 64.0,
+      "jj": 68.8,
+      "lianban": 11,
+      "max_lb": 10,
+      "amount": "2806.6亿",
+      "bf": 0,
+      "heat": 64,
+      "risk": 25,
+      "headline": "修复",
+      "concepts": [
+        {
+          "name": "出版",
+          "lead": "新华传媒",
+          "chg_pct": null
+        },
+        {
+          "name": "化学制药",
+          "lead": "华北制药",
+          "chg_pct": null
+        },
+        {
+          "name": "影视院线",
+          "lead": "博纳影业",
+          "chg_pct": null
+        },
+        {
+          "name": "文娱用品",
+          "lead": "三柏硕",
+          "chg_pct": null
+        },
+        {
+          "name": "农产品加",
+          "lead": "金健米业",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        },
+        {
+          "level": "danger",
+          "text": "炸板率高（36.0%）→ 分歧偏强，谨慎接力"
+        },
+        {
+          "level": "warn",
+          "text": "高度10板 + 分歧不低 → 高位兑现/炸板风险"
+        }
+      ],
+      "shift_score": 69,
+      "shift_label": "修复",
+      "note": "承接增强、分歧收敛，情绪明显回暖。"
     }
   ],
   "indices": [
     {
       "name": "上证指数",
       "code": "000001.SH",
-      "val": 3807.728,
-      "chg": -0.15897567538441676,
-      "cje": 28889144200.0,
-      "t": "2026-10-12 09:30:39"
+      "val": 3820.08,
+      "chg": 0.16490153760391588,
+      "cje": 124930433800.0,
+      "t": "2026-10-12 09:39:57"
     },
     {
       "name": "深证成指",
       "code": "399001.SZ",
-      "val": 12577.01,
-      "chg": -0.5129625724319951,
-      "cje": 32052941500.0,
-      "t": "2026-10-12 09:30:33"
+      "val": 12642.195,
+      "chg": 0.0026657473925077654,
+      "cje": 153114718200.0,
+      "t": "2026-10-12 09:39:57"
     },
     {
       "name": "创业板指",
       "code": "399006.SZ",
-      "val": 3019.713,
-      "chg": -0.7761879648477688,
-      "cje": 14716350800.0,
-      "t": "2026-10-12 09:30:36"
+      "val": 3043.277,
+      "chg": -0.001905803994630651,
+      "cje": 73124953400.0,
+      "t": "2026-10-12 09:39:57"
     }
   ],
   "asOf": {
-    "indices": "09:30:36"
+    "indices": "09:39:57"
   },
   "health": {
-    "status": "degraded",
-    "last_valid_at": "2026-10-12 09:30:40",
+    "status": "valid",
+    "last_valid_at": "2026-10-12 09:40:04",
     "rejected_reason": "",
     "source": {
-      "status": "partial",
+      "status": "valid",
       "pool_status": {
         "ztgc": "valid",
-        "zbgc": "failed",
+        "zbgc": "valid",
         "dtgc": "valid"
       },
-      "pool_errors": {
-        "zbgc": "empty_response"
-      }
+      "pool_errors": {}
     },
     "indices_status": "valid",
     "coverage": {
@@ -194,28 +265,29 @@
       "message": "intraday_coverage_collecting",
       "date": "2026-10-12",
       "expected_count": 26,
-      "due_count": 1,
-      "observed_count": 1,
+      "due_count": 2,
+      "observed_count": 2,
       "observed_slots": [
-        "09:30"
+        "09:30",
+        "09:40"
       ],
       "missing_slots": [],
       "duplicate_slots": [],
       "out_of_session": [],
       "monotonic": true,
-      "morning_coverage": 1,
+      "morning_coverage": 2,
       "afternoon_coverage": 0
     }
   },
   "live": {
     "market": {
-      "zt": 13,
+      "zt": 16,
       "dt": 1,
-      "zab": null,
-      "zab_rate": null,
-      "lianban": 10,
+      "zab": 9,
+      "zab_rate": 36.0,
+      "lianban": 11,
       "max_lianban": 10,
-      "amount": ""
+      "amount": "2806.6亿"
     },
     "alerts": [
       {
@@ -223,14 +295,23 @@
         "text": "盘中模式：强制实时拉取"
       },
       {
+        "level": "danger",
+        "text": "炸板率高（36.0%）→ 分歧偏强，谨慎接力"
+      },
+      {
         "level": "warn",
-        "text": "盘中三池响应不完整，保留最近有效数据"
+        "text": "高度10板 + 分歧不低 → 高位兑现/炸板风险"
       }
     ],
     "concepts": [
       {
         "name": "出版",
         "lead": "新华传媒",
+        "chg_pct": null
+      },
+      {
+        "name": "化学制药",
+        "lead": "华北制药",
         "chg_pct": null
       },
       {
@@ -244,13 +325,8 @@
         "chg_pct": null
       },
       {
-        "name": "化学纤维",
-        "lead": "吉林化纤",
-        "chg_pct": null
-      },
-      {
-        "name": "饲料",
-        "lead": "百洋股份",
+        "name": "农产品加",
+        "lead": "金健米业",
         "chg_pct": null
       }
     ]
