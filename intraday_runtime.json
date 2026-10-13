@@ -1,11 +1,11 @@
 {
   "schema": "intraday_runtime_v1",
   "date": "2026-10-13",
-  "updated_at": "2026-10-13 11:01:03",
+  "updated_at": "2026-10-13 11:10:05",
   "source": "必盈(实时)+必盈(实时)",
   "latest": {
-    "time": "11:01:03",
-    "ts_bj": "2026-10-13 11:01:03",
+    "time": "11:10:05",
+    "ts_bj": "2026-10-13 11:10:05",
     "date": "2026-10-13",
     "source": "intraday_live",
     "provider": "必盈(实时)+必盈(实时)",
@@ -17,18 +17,18 @@
     },
     "pool_errors": {},
     "zt": 36,
-    "dt": 11,
+    "dt": 12,
     "zab": 8,
     "zb": 18.2,
     "fb": 81.8,
     "jj": 22.2,
     "lianban": 8,
     "max_lb": 3,
-    "amount": "9028.8亿",
+    "amount": "9300.2亿",
     "bf": 0,
     "heat": 52,
-    "risk": 30,
-    "headline": "修复",
+    "risk": 32,
+    "headline": "分歧",
     "concepts": [
       {
         "name": "化学制品",
@@ -63,12 +63,12 @@
       },
       {
         "level": "warn",
-        "text": "跌停偏多（11）→ 控制追高"
+        "text": "跌停偏多（12）→ 控制追高"
       }
     ],
-    "shift_score": 60,
-    "shift_label": "修复",
-    "note": "盘中实时切片已接入，可逐点观察情绪变化。"
+    "shift_score": 59,
+    "shift_label": "分歧",
+    "note": "情绪整体平稳，维持当前节奏。"
   },
   "snapshots": [
     {
@@ -137,40 +137,107 @@
       "shift_score": 60,
       "shift_label": "修复",
       "note": "盘中实时切片已接入，可逐点观察情绪变化。"
+    },
+    {
+      "time": "11:10:05",
+      "ts_bj": "2026-10-13 11:10:05",
+      "date": "2026-10-13",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid"
+      },
+      "pool_errors": {},
+      "zt": 36,
+      "dt": 12,
+      "zab": 8,
+      "zb": 18.2,
+      "fb": 81.8,
+      "jj": 22.2,
+      "lianban": 8,
+      "max_lb": 3,
+      "amount": "9300.2亿",
+      "bf": 0,
+      "heat": 52,
+      "risk": 32,
+      "headline": "分歧",
+      "concepts": [
+        {
+          "name": "化学制品",
+          "lead": "醋化股份",
+          "chg_pct": null
+        },
+        {
+          "name": "元件",
+          "lead": "澳弘电子",
+          "chg_pct": null
+        },
+        {
+          "name": "互联网电",
+          "lead": "丽人丽妆",
+          "chg_pct": null
+        },
+        {
+          "name": "一般零售",
+          "lead": "东百集团",
+          "chg_pct": null
+        },
+        {
+          "name": "白酒Ⅱ",
+          "lead": "金种子酒",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        },
+        {
+          "level": "warn",
+          "text": "跌停偏多（12）→ 控制追高"
+        }
+      ],
+      "shift_score": 59,
+      "shift_label": "分歧",
+      "note": "情绪整体平稳，维持当前节奏。"
     }
   ],
   "indices": [
     {
       "name": "上证指数",
       "code": "000001.SH",
-      "val": 3762.76,
-      "chg": -0.9080801276294734,
-      "cje": 419905228700.0,
-      "t": "2026-10-13 11:01:00"
+      "val": 3757.483,
+      "chg": -1.0470494111252329,
+      "cje": 433289701600.0,
+      "t": "2026-10-13 11:10:06"
     },
     {
       "name": "深证成指",
       "code": "399001.SZ",
-      "val": 12153.846,
-      "chg": -1.8653649061609052,
-      "cje": 482543369600.0,
-      "t": "2026-10-13 11:00:57"
+      "val": 12111.571,
+      "chg": -2.20670884770764,
+      "cje": 496660193300.0,
+      "t": "2026-10-13 11:10:03"
     },
     {
       "name": "创业板指",
       "code": "399006.SZ",
-      "val": 2894.101,
-      "chg": -2.3524676229087813,
-      "cje": 246046421400.0,
-      "t": "2026-10-13 11:00:57"
+      "val": 2879.459,
+      "chg": -2.8464915595528018,
+      "cje": 253105500300.0,
+      "t": "2026-10-13 11:10:03"
     }
   ],
   "asOf": {
-    "indices": "11:00:57"
+    "indices": "11:10:03"
   },
   "health": {
     "status": "valid",
-    "last_valid_at": "2026-10-13 11:01:03",
+    "last_valid_at": "2026-10-13 11:10:05",
     "rejected_reason": "",
     "source": {
       "status": "valid",
@@ -188,10 +255,11 @@
       "message": "intraday_coverage_incomplete",
       "date": "2026-10-13",
       "expected_count": 26,
-      "due_count": 10,
-      "observed_count": 1,
+      "due_count": 11,
+      "observed_count": 2,
       "observed_slots": [
-        "11:00"
+        "11:00",
+        "11:10"
       ],
       "missing_slots": [
         "09:30",
@@ -207,19 +275,19 @@
       "duplicate_slots": [],
       "out_of_session": [],
       "monotonic": true,
-      "morning_coverage": 1,
+      "morning_coverage": 2,
       "afternoon_coverage": 0
     }
   },
   "live": {
     "market": {
       "zt": 36,
-      "dt": 11,
+      "dt": 12,
       "zab": 8,
       "zab_rate": 18.2,
       "lianban": 8,
       "max_lianban": 3,
-      "amount": "9028.8亿"
+      "amount": "9300.2亿"
     },
     "alerts": [
       {
@@ -228,7 +296,7 @@
       },
       {
         "level": "warn",
-        "text": "跌停偏多（11）→ 控制追高"
+        "text": "跌停偏多（12）→ 控制追高"
       }
     ],
     "concepts": [
