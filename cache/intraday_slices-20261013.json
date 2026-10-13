@@ -2,7 +2,7 @@
   "schema": "intraday_snapshot_v1",
   "render_mode": "snapshot_stream",
   "date": "2026-10-13",
-  "count": 2,
+  "count": 3,
   "interval_min": null,
   "simulated": false,
   "snapshots": [
@@ -139,11 +139,78 @@
       "shift_score": 59,
       "shift_label": "分歧",
       "note": "情绪整体平稳，维持当前节奏。"
+    },
+    {
+      "time": "11:20:06",
+      "ts_bj": "2026-10-13 11:20:06",
+      "date": "2026-10-13",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid"
+      },
+      "pool_errors": {},
+      "zt": 36,
+      "dt": 12,
+      "zab": 10,
+      "zb": 21.7,
+      "fb": 78.3,
+      "jj": 22.2,
+      "lianban": 8,
+      "max_lb": 3,
+      "amount": "9575.0亿",
+      "bf": 0,
+      "heat": 50,
+      "risk": 34,
+      "headline": "分歧",
+      "concepts": [
+        {
+          "name": "化学制品",
+          "lead": "醋化股份",
+          "chg_pct": null
+        },
+        {
+          "name": "元件",
+          "lead": "澳弘电子",
+          "chg_pct": null
+        },
+        {
+          "name": "互联网电",
+          "lead": "丽人丽妆",
+          "chg_pct": null
+        },
+        {
+          "name": "一般零售",
+          "lead": "东百集团",
+          "chg_pct": null
+        },
+        {
+          "name": "白酒Ⅱ",
+          "lead": "金种子酒",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        },
+        {
+          "level": "warn",
+          "text": "跌停偏多（12）→ 控制追高"
+        }
+      ],
+      "shift_score": 57,
+      "shift_label": "分歧",
+      "note": "情绪略有回落，注意午后分歧。"
     }
   ],
   "latest": {
-    "time": "11:10:05",
-    "ts_bj": "2026-10-13 11:10:05",
+    "time": "11:20:06",
+    "ts_bj": "2026-10-13 11:20:06",
     "date": "2026-10-13",
     "source": "intraday_live",
     "provider": "必盈(实时)+必盈(实时)",
@@ -156,16 +223,16 @@
     "pool_errors": {},
     "zt": 36,
     "dt": 12,
-    "zab": 8,
-    "zb": 18.2,
-    "fb": 81.8,
+    "zab": 10,
+    "zb": 21.7,
+    "fb": 78.3,
     "jj": 22.2,
     "lianban": 8,
     "max_lb": 3,
-    "amount": "9300.2亿",
+    "amount": "9575.0亿",
     "bf": 0,
-    "heat": 52,
-    "risk": 32,
+    "heat": 50,
+    "risk": 34,
     "headline": "分歧",
     "concepts": [
       {
@@ -204,15 +271,15 @@
         "text": "跌停偏多（12）→ 控制追高"
       }
     ],
-    "shift_score": 59,
+    "shift_score": 57,
     "shift_label": "分歧",
-    "note": "情绪整体平稳，维持当前节奏。"
+    "note": "情绪略有回落，注意午后分歧。"
   },
-  "updated_at": "2026-10-13 11:10:05",
-  "snapshot_sig": "2026-10-13|2026-10-13 11:10:05|2",
+  "updated_at": "2026-10-13 11:20:06",
+  "snapshot_sig": "2026-10-13|2026-10-13 11:20:06|3",
   "health": {
     "status": "valid",
-    "last_valid_at": "2026-10-13 11:10:05",
+    "last_valid_at": "2026-10-13 11:20:06",
     "rejected_reason": "",
     "source": {
       "status": "valid",
