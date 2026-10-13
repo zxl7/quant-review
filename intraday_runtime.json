@@ -1,12 +1,12 @@
 {
   "schema": "intraday_runtime_v1",
-  "date": "2026-10-12",
-  "updated_at": "2026-10-12 11:30:04",
+  "date": "2026-10-13",
+  "updated_at": "2026-10-13 11:01:03",
   "source": "必盈(实时)+必盈(实时)",
   "latest": {
-    "time": "11:30:04",
-    "ts_bj": "2026-10-12 11:30:04",
-    "date": "2026-10-12",
+    "time": "11:01:03",
+    "ts_bj": "2026-10-13 11:01:03",
+    "date": "2026-10-13",
     "source": "intraday_live",
     "provider": "必盈(实时)+必盈(实时)",
     "data_quality": "valid",
@@ -17,42 +17,42 @@
     },
     "pool_errors": {},
     "zt": 36,
-    "dt": 8,
-    "zab": 23,
-    "zb": 39.0,
-    "fb": 61.0,
-    "jj": 47.2,
-    "lianban": 17,
-    "max_lb": 10,
-    "amount": "10134.0亿",
+    "dt": 11,
+    "zab": 8,
+    "zb": 18.2,
+    "fb": 81.8,
+    "jj": 22.2,
+    "lianban": 8,
+    "max_lb": 3,
+    "amount": "9028.8亿",
     "bf": 0,
-    "heat": 61,
-    "risk": 44,
-    "headline": "分歧",
+    "heat": 52,
+    "risk": 30,
+    "headline": "修复",
     "concepts": [
       {
-        "name": "出版",
-        "lead": "新华传媒",
-        "chg_pct": null
-      },
-      {
-        "name": "电网设备",
-        "lead": "远程股份",
-        "chg_pct": null
-      },
-      {
-        "name": "影视院线",
-        "lead": "博纳影业",
-        "chg_pct": null
-      },
-      {
         "name": "化学制品",
-        "lead": "新亚强",
+        "lead": "醋化股份",
         "chg_pct": null
       },
       {
-        "name": "化学制药",
-        "lead": "华北制药",
+        "name": "元件",
+        "lead": "澳弘电子",
+        "chg_pct": null
+      },
+      {
+        "name": "互联网电",
+        "lead": "丽人丽妆",
+        "chg_pct": null
+      },
+      {
+        "name": "一般零售",
+        "lead": "东百集团",
+        "chg_pct": null
+      },
+      {
+        "name": "白酒Ⅱ",
+        "lead": "金种子酒",
         "chg_pct": null
       }
     ],
@@ -62,873 +62,19 @@
         "text": "盘中模式：强制实时拉取"
       },
       {
-        "level": "danger",
-        "text": "炸板率高（39.0%）→ 分歧偏强，谨慎接力"
-      },
-      {
         "level": "warn",
-        "text": "高度10板 + 分歧不低 → 高位兑现/炸板风险"
+        "text": "跌停偏多（11）→ 控制追高"
       }
     ],
-    "shift_score": 59,
-    "shift_label": "分歧",
-    "note": "情绪整体平稳，维持当前节奏。"
+    "shift_score": 60,
+    "shift_label": "修复",
+    "note": "盘中实时切片已接入，可逐点观察情绪变化。"
   },
   "snapshots": [
     {
-      "time": "09:30:40",
-      "ts_bj": "2026-10-12 09:30:40",
-      "date": "2026-10-12",
-      "source": "intraday_live",
-      "provider": "必盈(实时)",
-      "data_quality": "partial",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "failed",
-        "dtgc": "valid"
-      },
-      "pool_errors": {
-        "zbgc": "empty_response"
-      },
-      "zt": 13,
-      "dt": 1,
-      "zab": null,
-      "zb": null,
-      "fb": null,
-      "jj": 76.9,
-      "lianban": 10,
-      "max_lb": 10,
-      "amount": "",
-      "bf": 0,
-      "heat": null,
-      "risk": null,
-      "headline": "数据部分可用",
-      "concepts": [
-        {
-          "name": "出版",
-          "lead": "新华传媒",
-          "chg_pct": null
-        },
-        {
-          "name": "影视院线",
-          "lead": "博纳影业",
-          "chg_pct": null
-        },
-        {
-          "name": "文娱用品",
-          "lead": "三柏硕",
-          "chg_pct": null
-        },
-        {
-          "name": "化学纤维",
-          "lead": "吉林化纤",
-          "chg_pct": null
-        },
-        {
-          "name": "饲料",
-          "lead": "百洋股份",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        },
-        {
-          "level": "warn",
-          "text": "盘中三池响应不完整，保留最近有效数据"
-        }
-      ],
-      "shift_score": null,
-      "shift_label": "数据部分可用",
-      "note": "本槽位仅部分三池成功；节点已保留，缺失指标不参与判断。"
-    },
-    {
-      "time": "09:40:04",
-      "ts_bj": "2026-10-12 09:40:04",
-      "date": "2026-10-12",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid"
-      },
-      "pool_errors": {},
-      "zt": 16,
-      "dt": 1,
-      "zab": 9,
-      "zb": 36.0,
-      "fb": 64.0,
-      "jj": 68.8,
-      "lianban": 11,
-      "max_lb": 10,
-      "amount": "2806.6亿",
-      "bf": 0,
-      "heat": 64,
-      "risk": 25,
-      "headline": "修复",
-      "concepts": [
-        {
-          "name": "出版",
-          "lead": "新华传媒",
-          "chg_pct": null
-        },
-        {
-          "name": "化学制药",
-          "lead": "华北制药",
-          "chg_pct": null
-        },
-        {
-          "name": "影视院线",
-          "lead": "博纳影业",
-          "chg_pct": null
-        },
-        {
-          "name": "文娱用品",
-          "lead": "三柏硕",
-          "chg_pct": null
-        },
-        {
-          "name": "农产品加",
-          "lead": "金健米业",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        },
-        {
-          "level": "danger",
-          "text": "炸板率高（36.0%）→ 分歧偏强，谨慎接力"
-        },
-        {
-          "level": "warn",
-          "text": "高度10板 + 分歧不低 → 高位兑现/炸板风险"
-        }
-      ],
-      "shift_score": 69,
-      "shift_label": "修复",
-      "note": "承接增强、分歧收敛，情绪明显回暖。"
-    },
-    {
-      "time": "09:50:03",
-      "ts_bj": "2026-10-12 09:50:03",
-      "date": "2026-10-12",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid"
-      },
-      "pool_errors": {},
-      "zt": 22,
-      "dt": 2,
-      "zab": 14,
-      "zb": 38.9,
-      "fb": 61.1,
-      "jj": 50.0,
-      "lianban": 11,
-      "max_lb": 10,
-      "amount": "4324.7亿",
-      "bf": 0,
-      "heat": 59,
-      "risk": 31,
-      "headline": "修复",
-      "concepts": [
-        {
-          "name": "电网设备",
-          "lead": "远程股份",
-          "chg_pct": null
-        },
-        {
-          "name": "出版",
-          "lead": "新华传媒",
-          "chg_pct": null
-        },
-        {
-          "name": "电池",
-          "lead": "时代万恒",
-          "chg_pct": null
-        },
-        {
-          "name": "化学制药",
-          "lead": "华北制药",
-          "chg_pct": null
-        },
-        {
-          "name": "农产品加",
-          "lead": "金健米业",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        },
-        {
-          "level": "danger",
-          "text": "炸板率高（38.9%）→ 分歧偏强，谨慎接力"
-        },
-        {
-          "level": "warn",
-          "text": "高度10板 + 分歧不低 → 高位兑现/炸板风险"
-        }
-      ],
-      "shift_score": 63,
-      "shift_label": "修复",
-      "note": "炸板/跌停抬升，情绪明显走弱。"
-    },
-    {
-      "time": "10:00:05",
-      "ts_bj": "2026-10-12 10:00:05",
-      "date": "2026-10-12",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid"
-      },
-      "pool_errors": {},
-      "zt": 27,
-      "dt": 3,
-      "zab": 15,
-      "zb": 35.7,
-      "fb": 64.3,
-      "jj": 40.7,
-      "lianban": 11,
-      "max_lb": 10,
-      "amount": "5378.4亿",
-      "bf": 0,
-      "heat": 59,
-      "risk": 31,
-      "headline": "修复",
-      "concepts": [
-        {
-          "name": "电网设备",
-          "lead": "远程股份",
-          "chg_pct": null
-        },
-        {
-          "name": "出版",
-          "lead": "新华传媒",
-          "chg_pct": null
-        },
-        {
-          "name": "电池",
-          "lead": "时代万恒",
-          "chg_pct": null
-        },
-        {
-          "name": "化学制药",
-          "lead": "华北制药",
-          "chg_pct": null
-        },
-        {
-          "name": "影视院线",
-          "lead": "博纳影业",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        },
-        {
-          "level": "danger",
-          "text": "炸板率高（35.7%）→ 分歧偏强，谨慎接力"
-        },
-        {
-          "level": "warn",
-          "text": "高度10板 + 分歧不低 → 高位兑现/炸板风险"
-        }
-      ],
-      "shift_score": 63,
-      "shift_label": "修复",
-      "note": "情绪整体平稳，维持当前节奏。"
-    },
-    {
-      "time": "10:10:04",
-      "ts_bj": "2026-10-12 10:10:04",
-      "date": "2026-10-12",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid"
-      },
-      "pool_errors": {},
-      "zt": 28,
-      "dt": 5,
-      "zab": 15,
-      "zb": 34.9,
-      "fb": 65.1,
-      "jj": 39.3,
-      "lianban": 11,
-      "max_lb": 10,
-      "amount": "6314.9亿",
-      "bf": 0,
-      "heat": 59,
-      "risk": 33,
-      "headline": "修复",
-      "concepts": [
-        {
-          "name": "电网设备",
-          "lead": "远程股份",
-          "chg_pct": null
-        },
-        {
-          "name": "出版",
-          "lead": "新华传媒",
-          "chg_pct": null
-        },
-        {
-          "name": "电池",
-          "lead": "时代万恒",
-          "chg_pct": null
-        },
-        {
-          "name": "化学制药",
-          "lead": "华北制药",
-          "chg_pct": null
-        },
-        {
-          "name": "影视院线",
-          "lead": "博纳影业",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        },
-        {
-          "level": "warn",
-          "text": "炸板率偏高（34.9%）→ 注意回封质量"
-        },
-        {
-          "level": "warn",
-          "text": "高度10板 + 分歧不低 → 高位兑现/炸板风险"
-        }
-      ],
-      "shift_score": 62,
-      "shift_label": "修复",
-      "note": "情绪整体平稳，维持当前节奏。"
-    },
-    {
-      "time": "10:20:04",
-      "ts_bj": "2026-10-12 10:20:04",
-      "date": "2026-10-12",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid"
-      },
-      "pool_errors": {},
-      "zt": 30,
-      "dt": 5,
-      "zab": 18,
-      "zb": 37.5,
-      "fb": 62.5,
-      "jj": 40.0,
-      "lianban": 12,
-      "max_lb": 10,
-      "amount": "7051.4亿",
-      "bf": 0,
-      "heat": 59,
-      "risk": 36,
-      "headline": "修复",
-      "concepts": [
-        {
-          "name": "出版",
-          "lead": "新华传媒",
-          "chg_pct": null
-        },
-        {
-          "name": "电网设备",
-          "lead": "远程股份",
-          "chg_pct": null
-        },
-        {
-          "name": "电池",
-          "lead": "时代万恒",
-          "chg_pct": null
-        },
-        {
-          "name": "化学制药",
-          "lead": "华北制药",
-          "chg_pct": null
-        },
-        {
-          "name": "影视院线",
-          "lead": "博纳影业",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        },
-        {
-          "level": "danger",
-          "text": "炸板率高（37.5%）→ 分歧偏强，谨慎接力"
-        },
-        {
-          "level": "warn",
-          "text": "高度10板 + 分歧不低 → 高位兑现/炸板风险"
-        }
-      ],
-      "shift_score": 61,
-      "shift_label": "修复",
-      "note": "情绪整体平稳，维持当前节奏。"
-    },
-    {
-      "time": "10:30:04",
-      "ts_bj": "2026-10-12 10:30:04",
-      "date": "2026-10-12",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid"
-      },
-      "pool_errors": {},
-      "zt": 35,
-      "dt": 6,
-      "zab": 18,
-      "zb": 34.0,
-      "fb": 66.0,
-      "jj": 40.0,
-      "lianban": 14,
-      "max_lb": 10,
-      "amount": "7832.0亿",
-      "bf": 0,
-      "heat": 61,
-      "risk": 36,
-      "headline": "修复",
-      "concepts": [
-        {
-          "name": "出版",
-          "lead": "新华传媒",
-          "chg_pct": null
-        },
-        {
-          "name": "电网设备",
-          "lead": "远程股份",
-          "chg_pct": null
-        },
-        {
-          "name": "影视院线",
-          "lead": "博纳影业",
-          "chg_pct": null
-        },
-        {
-          "name": "电池",
-          "lead": "时代万恒",
-          "chg_pct": null
-        },
-        {
-          "name": "化学制药",
-          "lead": "华北制药",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        },
-        {
-          "level": "warn",
-          "text": "炸板率偏高（34.0%）→ 注意回封质量"
-        },
-        {
-          "level": "warn",
-          "text": "高度10板 + 分歧不低 → 高位兑现/炸板风险"
-        }
-      ],
-      "shift_score": 62,
-      "shift_label": "修复",
-      "note": "情绪整体平稳，维持当前节奏。"
-    },
-    {
-      "time": "10:40:04",
-      "ts_bj": "2026-10-12 10:40:04",
-      "date": "2026-10-12",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid"
-      },
-      "pool_errors": {},
-      "zt": 39,
-      "dt": 6,
-      "zab": 18,
-      "zb": 31.6,
-      "fb": 68.4,
-      "jj": 35.9,
-      "lianban": 14,
-      "max_lb": 10,
-      "amount": "8362.8亿",
-      "bf": 0,
-      "heat": 62,
-      "risk": 34,
-      "headline": "修复",
-      "concepts": [
-        {
-          "name": "出版",
-          "lead": "新华传媒",
-          "chg_pct": null
-        },
-        {
-          "name": "电网设备",
-          "lead": "远程股份",
-          "chg_pct": null
-        },
-        {
-          "name": "影视院线",
-          "lead": "博纳影业",
-          "chg_pct": null
-        },
-        {
-          "name": "化学制品",
-          "lead": "新亚强",
-          "chg_pct": null
-        },
-        {
-          "name": "化学制药",
-          "lead": "华北制药",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        },
-        {
-          "level": "warn",
-          "text": "炸板率偏高（31.6%）→ 注意回封质量"
-        },
-        {
-          "level": "warn",
-          "text": "高度10板 + 分歧不低 → 高位兑现/炸板风险"
-        }
-      ],
-      "shift_score": 64,
-      "shift_label": "修复",
-      "note": "情绪边际修复，但仍需确认持续性。"
-    },
-    {
-      "time": "10:50:05",
-      "ts_bj": "2026-10-12 10:50:05",
-      "date": "2026-10-12",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid"
-      },
-      "pool_errors": {},
-      "zt": 40,
-      "dt": 6,
-      "zab": 17,
-      "zb": 29.8,
-      "fb": 70.2,
-      "jj": 37.5,
-      "lianban": 15,
-      "max_lb": 10,
-      "amount": "8812.3亿",
-      "bf": 0,
-      "heat": 63,
-      "risk": 33,
-      "headline": "修复",
-      "concepts": [
-        {
-          "name": "出版",
-          "lead": "新华传媒",
-          "chg_pct": null
-        },
-        {
-          "name": "电网设备",
-          "lead": "远程股份",
-          "chg_pct": null
-        },
-        {
-          "name": "影视院线",
-          "lead": "博纳影业",
-          "chg_pct": null
-        },
-        {
-          "name": "化学制品",
-          "lead": "新亚强",
-          "chg_pct": null
-        },
-        {
-          "name": "化学制药",
-          "lead": "华北制药",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        },
-        {
-          "level": "warn",
-          "text": "炸板率偏高（29.8%）→ 注意回封质量"
-        },
-        {
-          "level": "warn",
-          "text": "高度10板 + 分歧不低 → 高位兑现/炸板风险"
-        }
-      ],
-      "shift_score": 65,
-      "shift_label": "修复",
-      "note": "情绪整体平稳，维持当前节奏。"
-    },
-    {
-      "time": "11:00:04",
-      "ts_bj": "2026-10-12 11:00:04",
-      "date": "2026-10-12",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid"
-      },
-      "pool_errors": {},
-      "zt": 37,
-      "dt": 7,
-      "zab": 20,
-      "zb": 35.1,
-      "fb": 64.9,
-      "jj": 43.2,
-      "lianban": 16,
-      "max_lb": 10,
-      "amount": "9222.1亿",
-      "bf": 0,
-      "heat": 62,
-      "risk": 39,
-      "headline": "修复",
-      "concepts": [
-        {
-          "name": "出版",
-          "lead": "新华传媒",
-          "chg_pct": null
-        },
-        {
-          "name": "电网设备",
-          "lead": "远程股份",
-          "chg_pct": null
-        },
-        {
-          "name": "影视院线",
-          "lead": "博纳影业",
-          "chg_pct": null
-        },
-        {
-          "name": "化学制品",
-          "lead": "新亚强",
-          "chg_pct": null
-        },
-        {
-          "name": "电视广播",
-          "lead": "吉视传媒",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        },
-        {
-          "level": "danger",
-          "text": "炸板率高（35.1%）→ 分歧偏强，谨慎接力"
-        },
-        {
-          "level": "warn",
-          "text": "高度10板 + 分歧不低 → 高位兑现/炸板风险"
-        }
-      ],
-      "shift_score": 62,
-      "shift_label": "修复",
-      "note": "情绪略有回落，注意午后分歧。"
-    },
-    {
-      "time": "11:10:04",
-      "ts_bj": "2026-10-12 11:10:04",
-      "date": "2026-10-12",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid"
-      },
-      "pool_errors": {},
-      "zt": 35,
-      "dt": 7,
-      "zab": 22,
-      "zb": 38.6,
-      "fb": 61.4,
-      "jj": 45.7,
-      "lianban": 16,
-      "max_lb": 10,
-      "amount": "9556.9亿",
-      "bf": 0,
-      "heat": 60,
-      "risk": 42,
-      "headline": "分歧",
-      "concepts": [
-        {
-          "name": "出版",
-          "lead": "新华传媒",
-          "chg_pct": null
-        },
-        {
-          "name": "电网设备",
-          "lead": "远程股份",
-          "chg_pct": null
-        },
-        {
-          "name": "影视院线",
-          "lead": "博纳影业",
-          "chg_pct": null
-        },
-        {
-          "name": "化学制品",
-          "lead": "新亚强",
-          "chg_pct": null
-        },
-        {
-          "name": "化学制药",
-          "lead": "华北制药",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        },
-        {
-          "level": "danger",
-          "text": "炸板率高（38.6%）→ 分歧偏强，谨慎接力"
-        },
-        {
-          "level": "warn",
-          "text": "高度10板 + 分歧不低 → 高位兑现/炸板风险"
-        }
-      ],
-      "shift_score": 59,
-      "shift_label": "分歧",
-      "note": "情绪略有回落，注意午后分歧。"
-    },
-    {
-      "time": "11:20:04",
-      "ts_bj": "2026-10-12 11:20:04",
-      "date": "2026-10-12",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid"
-      },
-      "pool_errors": {},
-      "zt": 35,
-      "dt": 9,
-      "zab": 23,
-      "zb": 39.7,
-      "fb": 60.3,
-      "jj": 48.6,
-      "lianban": 17,
-      "max_lb": 10,
-      "amount": "9881.0亿",
-      "bf": 0,
-      "heat": 61,
-      "risk": 46,
-      "headline": "分歧",
-      "concepts": [
-        {
-          "name": "出版",
-          "lead": "新华传媒",
-          "chg_pct": null
-        },
-        {
-          "name": "电网设备",
-          "lead": "远程股份",
-          "chg_pct": null
-        },
-        {
-          "name": "影视院线",
-          "lead": "博纳影业",
-          "chg_pct": null
-        },
-        {
-          "name": "化学制药",
-          "lead": "华北制药",
-          "chg_pct": null
-        },
-        {
-          "name": "电视广播",
-          "lead": "吉视传媒",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        },
-        {
-          "level": "danger",
-          "text": "炸板率高（39.7%）→ 分歧偏强，谨慎接力"
-        },
-        {
-          "level": "warn",
-          "text": "高度10板 + 分歧不低 → 高位兑现/炸板风险"
-        }
-      ],
-      "shift_score": 58,
-      "shift_label": "分歧",
-      "note": "情绪整体平稳，维持当前节奏。"
-    },
-    {
-      "time": "11:30:04",
-      "ts_bj": "2026-10-12 11:30:04",
-      "date": "2026-10-12",
+      "time": "11:01:03",
+      "ts_bj": "2026-10-13 11:01:03",
+      "date": "2026-10-13",
       "source": "intraday_live",
       "provider": "必盈(实时)+必盈(实时)",
       "data_quality": "valid",
@@ -939,42 +85,42 @@
       },
       "pool_errors": {},
       "zt": 36,
-      "dt": 8,
-      "zab": 23,
-      "zb": 39.0,
-      "fb": 61.0,
-      "jj": 47.2,
-      "lianban": 17,
-      "max_lb": 10,
-      "amount": "10134.0亿",
+      "dt": 11,
+      "zab": 8,
+      "zb": 18.2,
+      "fb": 81.8,
+      "jj": 22.2,
+      "lianban": 8,
+      "max_lb": 3,
+      "amount": "9028.8亿",
       "bf": 0,
-      "heat": 61,
-      "risk": 44,
-      "headline": "分歧",
+      "heat": 52,
+      "risk": 30,
+      "headline": "修复",
       "concepts": [
         {
-          "name": "出版",
-          "lead": "新华传媒",
-          "chg_pct": null
-        },
-        {
-          "name": "电网设备",
-          "lead": "远程股份",
-          "chg_pct": null
-        },
-        {
-          "name": "影视院线",
-          "lead": "博纳影业",
-          "chg_pct": null
-        },
-        {
           "name": "化学制品",
-          "lead": "新亚强",
+          "lead": "醋化股份",
           "chg_pct": null
         },
         {
-          "name": "化学制药",
-          "lead": "华北制药",
+          "name": "元件",
+          "lead": "澳弘电子",
+          "chg_pct": null
+        },
+        {
+          "name": "互联网电",
+          "lead": "丽人丽妆",
+          "chg_pct": null
+        },
+        {
+          "name": "一般零售",
+          "lead": "东百集团",
+          "chg_pct": null
+        },
+        {
+          "name": "白酒Ⅱ",
+          "lead": "金种子酒",
           "chg_pct": null
         }
       ],
@@ -984,51 +130,47 @@
           "text": "盘中模式：强制实时拉取"
         },
         {
-          "level": "danger",
-          "text": "炸板率高（39.0%）→ 分歧偏强，谨慎接力"
-        },
-        {
           "level": "warn",
-          "text": "高度10板 + 分歧不低 → 高位兑现/炸板风险"
+          "text": "跌停偏多（11）→ 控制追高"
         }
       ],
-      "shift_score": 59,
-      "shift_label": "分歧",
-      "note": "情绪整体平稳，维持当前节奏。"
+      "shift_score": 60,
+      "shift_label": "修复",
+      "note": "盘中实时切片已接入，可逐点观察情绪变化。"
     }
   ],
   "indices": [
     {
       "name": "上证指数",
       "code": "000001.SH",
-      "val": 3809.079,
-      "chg": -0.12355160521381453,
-      "cje": 464895806600.0,
-      "t": "2026-10-12 11:30:03"
+      "val": 3762.76,
+      "chg": -0.9080801276294734,
+      "cje": 419905228700.0,
+      "t": "2026-10-13 11:01:00"
     },
     {
       "name": "深证成指",
       "code": "399001.SZ",
-      "val": 12512.073,
-      "chg": -1.0266291553029614,
-      "cje": 548498133200.0,
-      "t": "2026-10-12 11:30:00"
+      "val": 12153.846,
+      "chg": -1.8653649061609052,
+      "cje": 482543369600.0,
+      "t": "2026-10-13 11:00:57"
     },
     {
       "name": "创业板指",
       "code": "399006.SZ",
-      "val": 3004.79,
-      "chg": -1.2665381891904792,
-      "cje": 262947795800.0,
-      "t": "2026-10-12 11:30:00"
+      "val": 2894.101,
+      "chg": -2.3524676229087813,
+      "cje": 246046421400.0,
+      "t": "2026-10-13 11:00:57"
     }
   ],
   "asOf": {
-    "indices": "11:30:00"
+    "indices": "11:00:57"
   },
   "health": {
     "status": "valid",
-    "last_valid_at": "2026-10-12 11:30:04",
+    "last_valid_at": "2026-10-13 11:01:03",
     "rejected_reason": "",
     "source": {
       "status": "valid",
@@ -1041,14 +183,17 @@
     },
     "indices_status": "valid",
     "coverage": {
-      "ok": true,
-      "status": "collecting",
-      "message": "intraday_coverage_collecting",
-      "date": "2026-10-12",
+      "ok": false,
+      "status": "degraded",
+      "message": "intraday_coverage_incomplete",
+      "date": "2026-10-13",
       "expected_count": 26,
-      "due_count": 13,
-      "observed_count": 13,
+      "due_count": 10,
+      "observed_count": 1,
       "observed_slots": [
+        "11:00"
+      ],
+      "missing_slots": [
         "09:30",
         "09:40",
         "09:50",
@@ -1057,29 +202,24 @@
         "10:20",
         "10:30",
         "10:40",
-        "10:50",
-        "11:00",
-        "11:10",
-        "11:20",
-        "11:30"
+        "10:50"
       ],
-      "missing_slots": [],
       "duplicate_slots": [],
       "out_of_session": [],
       "monotonic": true,
-      "morning_coverage": 13,
+      "morning_coverage": 1,
       "afternoon_coverage": 0
     }
   },
   "live": {
     "market": {
       "zt": 36,
-      "dt": 8,
-      "zab": 23,
-      "zab_rate": 39.0,
-      "lianban": 17,
-      "max_lianban": 10,
-      "amount": "10134.0亿"
+      "dt": 11,
+      "zab": 8,
+      "zab_rate": 18.2,
+      "lianban": 8,
+      "max_lianban": 3,
+      "amount": "9028.8亿"
     },
     "alerts": [
       {
@@ -1087,38 +227,34 @@
         "text": "盘中模式：强制实时拉取"
       },
       {
-        "level": "danger",
-        "text": "炸板率高（39.0%）→ 分歧偏强，谨慎接力"
-      },
-      {
         "level": "warn",
-        "text": "高度10板 + 分歧不低 → 高位兑现/炸板风险"
+        "text": "跌停偏多（11）→ 控制追高"
       }
     ],
     "concepts": [
       {
-        "name": "出版",
-        "lead": "新华传媒",
-        "chg_pct": null
-      },
-      {
-        "name": "电网设备",
-        "lead": "远程股份",
-        "chg_pct": null
-      },
-      {
-        "name": "影视院线",
-        "lead": "博纳影业",
-        "chg_pct": null
-      },
-      {
         "name": "化学制品",
-        "lead": "新亚强",
+        "lead": "醋化股份",
         "chg_pct": null
       },
       {
-        "name": "化学制药",
-        "lead": "华北制药",
+        "name": "元件",
+        "lead": "澳弘电子",
+        "chg_pct": null
+      },
+      {
+        "name": "互联网电",
+        "lead": "丽人丽妆",
+        "chg_pct": null
+      },
+      {
+        "name": "一般零售",
+        "lead": "东百集团",
+        "chg_pct": null
+      },
+      {
+        "name": "白酒Ⅱ",
+        "lead": "金种子酒",
         "chg_pct": null
       }
     ]
