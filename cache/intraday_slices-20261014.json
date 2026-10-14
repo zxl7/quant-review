@@ -2,7 +2,7 @@
   "schema": "intraday_snapshot_v1",
   "render_mode": "snapshot_stream",
   "date": "2026-10-14",
-  "count": 7,
+  "count": 8,
   "interval_min": null,
   "simulated": false,
   "snapshots": [
@@ -446,11 +446,78 @@
       "shift_score": 66,
       "shift_label": "修复",
       "note": "情绪整体平稳，维持当前节奏。"
+    },
+    {
+      "time": "10:40:04",
+      "ts_bj": "2026-10-14 10:40:04",
+      "date": "2026-10-14",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid"
+      },
+      "pool_errors": {},
+      "zt": 36,
+      "dt": 4,
+      "zab": 12,
+      "zb": 25.0,
+      "fb": 75.0,
+      "jj": 44.4,
+      "lianban": 16,
+      "max_lb": 4,
+      "amount": "6930.2亿",
+      "bf": 0,
+      "heat": 57,
+      "risk": 25,
+      "headline": "修复",
+      "concepts": [
+        {
+          "name": "元件",
+          "lead": "澳弘电子",
+          "chg_pct": null
+        },
+        {
+          "name": "游戏Ⅱ",
+          "lead": "富春股份",
+          "chg_pct": null
+        },
+        {
+          "name": "化学制品",
+          "lead": "醋化股份",
+          "chg_pct": null
+        },
+        {
+          "name": "通用设备",
+          "lead": "哈空调",
+          "chg_pct": null
+        },
+        {
+          "name": "塑料",
+          "lead": "双星新材",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        },
+        {
+          "level": "warn",
+          "text": "炸板率偏高（25.0%）→ 注意回封质量"
+        }
+      ],
+      "shift_score": 65,
+      "shift_label": "修复",
+      "note": "情绪整体平稳，维持当前节奏。"
     }
   ],
   "latest": {
-    "time": "10:30:05",
-    "ts_bj": "2026-10-14 10:30:05",
+    "time": "10:40:04",
+    "ts_bj": "2026-10-14 10:40:04",
     "date": "2026-10-14",
     "source": "intraday_live",
     "provider": "必盈(实时)+必盈(实时)",
@@ -461,18 +528,18 @@
       "dtgc": "valid"
     },
     "pool_errors": {},
-    "zt": 35,
+    "zt": 36,
     "dt": 4,
-    "zab": 10,
-    "zb": 22.2,
-    "fb": 77.8,
-    "jj": 45.7,
+    "zab": 12,
+    "zb": 25.0,
+    "fb": 75.0,
+    "jj": 44.4,
     "lianban": 16,
     "max_lb": 4,
-    "amount": "6463.6亿",
+    "amount": "6930.2亿",
     "bf": 0,
-    "heat": 58,
-    "risk": 23,
+    "heat": 57,
+    "risk": 25,
     "headline": "修复",
     "concepts": [
       {
@@ -505,17 +572,21 @@
       {
         "level": "info",
         "text": "盘中模式：强制实时拉取"
+      },
+      {
+        "level": "warn",
+        "text": "炸板率偏高（25.0%）→ 注意回封质量"
       }
     ],
-    "shift_score": 66,
+    "shift_score": 65,
     "shift_label": "修复",
     "note": "情绪整体平稳，维持当前节奏。"
   },
-  "updated_at": "2026-10-14 10:30:05",
-  "snapshot_sig": "2026-10-14|2026-10-14 10:30:05|7",
+  "updated_at": "2026-10-14 10:40:04",
+  "snapshot_sig": "2026-10-14|2026-10-14 10:40:04|8",
   "health": {
     "status": "valid",
-    "last_valid_at": "2026-10-14 10:30:05",
+    "last_valid_at": "2026-10-14 10:40:04",
     "rejected_reason": "",
     "source": {
       "status": "valid",
