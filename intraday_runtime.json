@@ -1,11 +1,11 @@
 {
   "schema": "intraday_runtime_v1",
   "date": "2026-10-14",
-  "updated_at": "2026-10-14 11:00:06",
+  "updated_at": "2026-10-14 11:10:05",
   "source": "必盈(实时)+必盈(实时)",
   "latest": {
-    "time": "11:00:06",
-    "ts_bj": "2026-10-14 11:00:06",
+    "time": "11:10:05",
+    "ts_bj": "2026-10-14 11:10:05",
     "date": "2026-10-14",
     "source": "intraday_live",
     "provider": "必盈(实时)+必盈(实时)",
@@ -16,18 +16,18 @@
       "dtgc": "valid"
     },
     "pool_errors": {},
-    "zt": 37,
+    "zt": 39,
     "dt": 4,
     "zab": 12,
-    "zb": 24.5,
-    "fb": 75.5,
-    "jj": 43.2,
+    "zb": 23.5,
+    "fb": 76.5,
+    "jj": 41.0,
     "lianban": 16,
     "max_lb": 4,
-    "amount": "7619.1亿",
+    "amount": "7938.1亿",
     "bf": 0,
     "heat": 57,
-    "risk": 25,
+    "risk": 24,
     "headline": "修复",
     "concepts": [
       {
@@ -41,6 +41,11 @@
         "chg_pct": null
       },
       {
+        "name": "出版",
+        "lead": "新经典",
+        "chg_pct": null
+      },
+      {
         "name": "化学制品",
         "lead": "醋化股份",
         "chg_pct": null
@@ -48,11 +53,6 @@
       {
         "name": "通用设备",
         "lead": "哈空调",
-        "chg_pct": null
-      },
-      {
-        "name": "塑料",
-        "lead": "双星新材",
         "chg_pct": null
       }
     ],
@@ -700,40 +700,103 @@
       "shift_score": 65,
       "shift_label": "修复",
       "note": "情绪整体平稳，维持当前节奏。"
+    },
+    {
+      "time": "11:10:05",
+      "ts_bj": "2026-10-14 11:10:05",
+      "date": "2026-10-14",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid"
+      },
+      "pool_errors": {},
+      "zt": 39,
+      "dt": 4,
+      "zab": 12,
+      "zb": 23.5,
+      "fb": 76.5,
+      "jj": 41.0,
+      "lianban": 16,
+      "max_lb": 4,
+      "amount": "7938.1亿",
+      "bf": 0,
+      "heat": 57,
+      "risk": 24,
+      "headline": "修复",
+      "concepts": [
+        {
+          "name": "元件",
+          "lead": "澳弘电子",
+          "chg_pct": null
+        },
+        {
+          "name": "游戏Ⅱ",
+          "lead": "富春股份",
+          "chg_pct": null
+        },
+        {
+          "name": "出版",
+          "lead": "新经典",
+          "chg_pct": null
+        },
+        {
+          "name": "化学制品",
+          "lead": "醋化股份",
+          "chg_pct": null
+        },
+        {
+          "name": "通用设备",
+          "lead": "哈空调",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        }
+      ],
+      "shift_score": 65,
+      "shift_label": "修复",
+      "note": "情绪整体平稳，维持当前节奏。"
     }
   ],
   "indices": [
     {
       "name": "上证指数",
       "code": "000001.SH",
-      "val": 3811.104,
-      "chg": 0.26941242833207873,
-      "cje": 352698826200.0,
-      "t": "2026-10-14 11:00:06"
+      "val": 3809.311,
+      "chg": 0.22223894356651844,
+      "cje": 367736062000.0,
+      "t": "2026-10-14 11:10:03"
     },
     {
       "name": "深证成指",
       "code": "399001.SZ",
-      "val": 12320.827,
-      "chg": -0.2660903426577028,
-      "cje": 408896319900.0,
-      "t": "2026-10-14 11:00:00"
+      "val": 12316.483,
+      "chg": -0.30125389974290573,
+      "cje": 425996455300.0,
+      "t": "2026-10-14 11:10:03"
     },
     {
       "name": "创业板指",
       "code": "399006.SZ",
-      "val": 2935.15,
-      "chg": -0.7840532459871892,
-      "cje": 198159547300.0,
-      "t": "2026-10-14 11:00:03"
+      "val": 2931.532,
+      "chg": -0.9063513552340802,
+      "cje": 206462279300.0,
+      "t": "2026-10-14 11:10:03"
     }
   ],
   "asOf": {
-    "indices": "11:00:03"
+    "indices": "11:10:03"
   },
   "health": {
     "status": "valid",
-    "last_valid_at": "2026-10-14 11:00:06",
+    "last_valid_at": "2026-10-14 11:10:05",
     "rejected_reason": "",
     "source": {
       "status": "valid",
@@ -751,8 +814,8 @@
       "message": "intraday_coverage_collecting",
       "date": "2026-10-14",
       "expected_count": 26,
-      "due_count": 10,
-      "observed_count": 10,
+      "due_count": 11,
+      "observed_count": 11,
       "observed_slots": [
         "09:30",
         "09:40",
@@ -763,25 +826,26 @@
         "10:30",
         "10:40",
         "10:50",
-        "11:00"
+        "11:00",
+        "11:10"
       ],
       "missing_slots": [],
       "duplicate_slots": [],
       "out_of_session": [],
       "monotonic": true,
-      "morning_coverage": 10,
+      "morning_coverage": 11,
       "afternoon_coverage": 0
     }
   },
   "live": {
     "market": {
-      "zt": 37,
+      "zt": 39,
       "dt": 4,
       "zab": 12,
-      "zab_rate": 24.5,
+      "zab_rate": 23.5,
       "lianban": 16,
       "max_lianban": 4,
-      "amount": "7619.1亿"
+      "amount": "7938.1亿"
     },
     "alerts": [
       {
@@ -801,6 +865,11 @@
         "chg_pct": null
       },
       {
+        "name": "出版",
+        "lead": "新经典",
+        "chg_pct": null
+      },
+      {
         "name": "化学制品",
         "lead": "醋化股份",
         "chg_pct": null
@@ -808,11 +877,6 @@
       {
         "name": "通用设备",
         "lead": "哈空调",
-        "chg_pct": null
-      },
-      {
-        "name": "塑料",
-        "lead": "双星新材",
         "chg_pct": null
       }
     ]
