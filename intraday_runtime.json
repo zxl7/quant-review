@@ -1,11 +1,11 @@
 {
   "schema": "intraday_runtime_v1",
   "date": "2026-10-15",
-  "updated_at": "2026-10-15 10:10:04",
+  "updated_at": "2026-10-15 10:20:04",
   "source": "必盈(实时)+必盈(实时)",
   "latest": {
-    "time": "10:10:04",
-    "ts_bj": "2026-10-15 10:10:04",
+    "time": "10:20:04",
+    "ts_bj": "2026-10-15 10:20:04",
     "date": "2026-10-15",
     "source": "intraday_live",
     "provider": "必盈(实时)+必盈(实时)",
@@ -18,26 +18,21 @@
     "pool_errors": {},
     "zt": 25,
     "dt": 9,
-    "zab": 3,
-    "zb": 10.7,
-    "fb": 89.3,
+    "zab": 6,
+    "zb": 19.4,
+    "fb": 80.6,
     "jj": 24.0,
     "lianban": 6,
     "max_lb": 5,
-    "amount": "6455.8亿",
+    "amount": "7078.2亿",
     "bf": 0,
-    "heat": 58,
-    "risk": 21,
+    "heat": 54,
+    "risk": 27,
     "headline": "修复",
     "concepts": [
       {
         "name": "元件",
         "lead": "天津普林",
-        "chg_pct": null
-      },
-      {
-        "name": "影视院线",
-        "lead": "慈文传媒",
         "chg_pct": null
       },
       {
@@ -54,6 +49,11 @@
         "name": "饲料",
         "lead": "百洋股份",
         "chg_pct": null
+      },
+      {
+        "name": "影视院线",
+        "lead": "慈文传媒",
+        "chg_pct": null
       }
     ],
     "alerts": [
@@ -62,9 +62,9 @@
         "text": "盘中模式：强制实时拉取"
       }
     ],
-    "shift_score": 67,
+    "shift_score": 62,
     "shift_label": "修复",
-    "note": "承接增强、分歧收敛，情绪明显回暖。"
+    "note": "炸板/跌停抬升，情绪明显走弱。"
   },
   "snapshots": [
     {
@@ -377,40 +377,103 @@
       "shift_score": 67,
       "shift_label": "修复",
       "note": "承接增强、分歧收敛，情绪明显回暖。"
+    },
+    {
+      "time": "10:20:04",
+      "ts_bj": "2026-10-15 10:20:04",
+      "date": "2026-10-15",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid"
+      },
+      "pool_errors": {},
+      "zt": 25,
+      "dt": 9,
+      "zab": 6,
+      "zb": 19.4,
+      "fb": 80.6,
+      "jj": 24.0,
+      "lianban": 6,
+      "max_lb": 5,
+      "amount": "7078.2亿",
+      "bf": 0,
+      "heat": 54,
+      "risk": 27,
+      "headline": "修复",
+      "concepts": [
+        {
+          "name": "元件",
+          "lead": "天津普林",
+          "chg_pct": null
+        },
+        {
+          "name": "医疗服务",
+          "lead": "百花医药",
+          "chg_pct": null
+        },
+        {
+          "name": "电力",
+          "lead": "湖南发展",
+          "chg_pct": null
+        },
+        {
+          "name": "饲料",
+          "lead": "百洋股份",
+          "chg_pct": null
+        },
+        {
+          "name": "影视院线",
+          "lead": "慈文传媒",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        }
+      ],
+      "shift_score": 62,
+      "shift_label": "修复",
+      "note": "炸板/跌停抬升，情绪明显走弱。"
     }
   ],
   "indices": [
     {
       "name": "上证指数",
       "code": "000001.SH",
-      "val": 3704.283,
-      "chg": -1.6708310914102062,
-      "cje": 295793147500.0,
-      "t": "2026-10-15 10:10:03"
+      "val": 3709.069,
+      "chg": -1.5437880435662599,
+      "cje": 325049914100.0,
+      "t": "2026-10-15 10:20:06"
     },
     {
       "name": "深证成指",
       "code": "399001.SZ",
-      "val": 11852.541,
-      "chg": -2.130779579625809,
-      "cje": 349064609900.0,
-      "t": "2026-10-15 10:10:00"
+      "val": 11874.366,
+      "chg": -1.9505654183185641,
+      "cje": 382502955700.0,
+      "t": "2026-10-15 10:20:03"
     },
     {
       "name": "创业板指",
       "code": "399006.SZ",
-      "val": 2789.101,
-      "chg": -2.7090484982539476,
-      "cje": 170843293300.0,
-      "t": "2026-10-15 10:10:00"
+      "val": 2793.169,
+      "chg": -2.5671462900839748,
+      "cje": 186911925600.0,
+      "t": "2026-10-15 10:20:03"
     }
   ],
   "asOf": {
-    "indices": "10:10:00"
+    "indices": "10:20:03"
   },
   "health": {
     "status": "valid",
-    "last_valid_at": "2026-10-15 10:10:04",
+    "last_valid_at": "2026-10-15 10:20:04",
     "rejected_reason": "",
     "source": {
       "status": "valid",
@@ -428,20 +491,21 @@
       "message": "intraday_coverage_collecting",
       "date": "2026-10-15",
       "expected_count": 26,
-      "due_count": 5,
-      "observed_count": 5,
+      "due_count": 6,
+      "observed_count": 6,
       "observed_slots": [
         "09:30",
         "09:40",
         "09:50",
         "10:00",
-        "10:10"
+        "10:10",
+        "10:20"
       ],
       "missing_slots": [],
       "duplicate_slots": [],
       "out_of_session": [],
       "monotonic": true,
-      "morning_coverage": 5,
+      "morning_coverage": 6,
       "afternoon_coverage": 0
     }
   },
@@ -449,11 +513,11 @@
     "market": {
       "zt": 25,
       "dt": 9,
-      "zab": 3,
-      "zab_rate": 10.7,
+      "zab": 6,
+      "zab_rate": 19.4,
       "lianban": 6,
       "max_lianban": 5,
-      "amount": "6455.8亿"
+      "amount": "7078.2亿"
     },
     "alerts": [
       {
@@ -465,11 +529,6 @@
       {
         "name": "元件",
         "lead": "天津普林",
-        "chg_pct": null
-      },
-      {
-        "name": "影视院线",
-        "lead": "慈文传媒",
         "chg_pct": null
       },
       {
@@ -485,6 +544,11 @@
       {
         "name": "饲料",
         "lead": "百洋股份",
+        "chg_pct": null
+      },
+      {
+        "name": "影视院线",
+        "lead": "慈文传媒",
         "chg_pct": null
       }
     ]
