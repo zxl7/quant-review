@@ -1,11 +1,11 @@
 {
   "schema": "intraday_runtime_v1",
   "date": "2026-10-15",
-  "updated_at": "2026-10-15 10:30:05",
+  "updated_at": "2026-10-15 10:40:04",
   "source": "必盈(实时)+必盈(实时)",
   "latest": {
-    "time": "10:30:05",
-    "ts_bj": "2026-10-15 10:30:05",
+    "time": "10:40:04",
+    "ts_bj": "2026-10-15 10:40:04",
     "date": "2026-10-15",
     "source": "intraday_live",
     "provider": "必盈(实时)+必盈(实时)",
@@ -16,18 +16,18 @@
       "dtgc": "valid"
     },
     "pool_errors": {},
-    "zt": 28,
-    "dt": 9,
-    "zab": 4,
-    "zb": 12.5,
-    "fb": 87.5,
-    "jj": 21.4,
+    "zt": 27,
+    "dt": 12,
+    "zab": 5,
+    "zb": 15.6,
+    "fb": 84.4,
+    "jj": 22.2,
     "lianban": 6,
     "max_lb": 5,
-    "amount": "7604.7亿",
+    "amount": "8045.6亿",
     "bf": 0,
-    "heat": 57,
-    "risk": 22,
+    "heat": 56,
+    "risk": 29,
     "headline": "修复",
     "concepts": [
       {
@@ -60,11 +60,15 @@
       {
         "level": "info",
         "text": "盘中模式：强制实时拉取"
+      },
+      {
+        "level": "warn",
+        "text": "跌停偏多（12）→ 控制追高"
       }
     ],
-    "shift_score": 66,
+    "shift_score": 62,
     "shift_label": "修复",
-    "note": "情绪边际修复，但仍需确认持续性。"
+    "note": "情绪略有回落，注意午后分歧。"
   },
   "snapshots": [
     {
@@ -503,40 +507,107 @@
       "shift_score": 66,
       "shift_label": "修复",
       "note": "情绪边际修复，但仍需确认持续性。"
+    },
+    {
+      "time": "10:40:04",
+      "ts_bj": "2026-10-15 10:40:04",
+      "date": "2026-10-15",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid"
+      },
+      "pool_errors": {},
+      "zt": 27,
+      "dt": 12,
+      "zab": 5,
+      "zb": 15.6,
+      "fb": 84.4,
+      "jj": 22.2,
+      "lianban": 6,
+      "max_lb": 5,
+      "amount": "8045.6亿",
+      "bf": 0,
+      "heat": 56,
+      "risk": 29,
+      "headline": "修复",
+      "concepts": [
+        {
+          "name": "元件",
+          "lead": "澳弘电子",
+          "chg_pct": null
+        },
+        {
+          "name": "影视院线",
+          "lead": "慈文传媒",
+          "chg_pct": null
+        },
+        {
+          "name": "化学制药",
+          "lead": "华北制药",
+          "chg_pct": null
+        },
+        {
+          "name": "医疗服务",
+          "lead": "百花医药",
+          "chg_pct": null
+        },
+        {
+          "name": "电力",
+          "lead": "湖南发展",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        },
+        {
+          "level": "warn",
+          "text": "跌停偏多（12）→ 控制追高"
+        }
+      ],
+      "shift_score": 62,
+      "shift_label": "修复",
+      "note": "情绪略有回落，注意午后分歧。"
     }
   ],
   "indices": [
     {
       "name": "上证指数",
       "code": "000001.SH",
-      "val": 3708.843,
-      "chg": -1.5497871511326506,
-      "cje": 349156723800.0,
-      "t": "2026-10-15 10:30:00"
+      "val": 3701.706,
+      "chg": -1.7392368445012667,
+      "cje": 371127545200.0,
+      "t": "2026-10-15 10:40:06"
     },
     {
       "name": "深证成指",
       "code": "399001.SZ",
-      "val": 11877.469,
-      "chg": -1.924943217056882,
-      "cje": 410736353500.0,
-      "t": "2026-10-15 10:30:00"
+      "val": 11830.306,
+      "chg": -2.314379207422659,
+      "cje": 433146685500.0,
+      "t": "2026-10-15 10:40:03"
     },
     {
       "name": "创业板指",
       "code": "399006.SZ",
-      "val": 2795.997,
-      "chg": -2.46849844231979,
-      "cje": 200271996100.0,
-      "t": "2026-10-15 10:30:00"
+      "val": 2783.79,
+      "chg": -2.8943097144758725,
+      "cje": 210923973100.0,
+      "t": "2026-10-15 10:40:03"
     }
   ],
   "asOf": {
-    "indices": "10:30:00"
+    "indices": "10:40:03"
   },
   "health": {
     "status": "valid",
-    "last_valid_at": "2026-10-15 10:30:05",
+    "last_valid_at": "2026-10-15 10:40:04",
     "rejected_reason": "",
     "source": {
       "status": "valid",
@@ -554,8 +625,8 @@
       "message": "intraday_coverage_collecting",
       "date": "2026-10-15",
       "expected_count": 26,
-      "due_count": 7,
-      "observed_count": 7,
+      "due_count": 8,
+      "observed_count": 8,
       "observed_slots": [
         "09:30",
         "09:40",
@@ -563,30 +634,35 @@
         "10:00",
         "10:10",
         "10:20",
-        "10:30"
+        "10:30",
+        "10:40"
       ],
       "missing_slots": [],
       "duplicate_slots": [],
       "out_of_session": [],
       "monotonic": true,
-      "morning_coverage": 7,
+      "morning_coverage": 8,
       "afternoon_coverage": 0
     }
   },
   "live": {
     "market": {
-      "zt": 28,
-      "dt": 9,
-      "zab": 4,
-      "zab_rate": 12.5,
+      "zt": 27,
+      "dt": 12,
+      "zab": 5,
+      "zab_rate": 15.6,
       "lianban": 6,
       "max_lianban": 5,
-      "amount": "7604.7亿"
+      "amount": "8045.6亿"
     },
     "alerts": [
       {
         "level": "info",
         "text": "盘中模式：强制实时拉取"
+      },
+      {
+        "level": "warn",
+        "text": "跌停偏多（12）→ 控制追高"
       }
     ],
     "concepts": [
