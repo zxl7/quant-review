@@ -1,6 +1,6 @@
 {
   "schema": "watchlist_v2",
-  "generated_at_bj": "2026-10-15 20:46:41",
+  "generated_at_bj": "2026-10-15 21:38:04",
   "data_date": "2026-10-15",
   "pools_date": "2026-10-15",
   "sector_resolution": {
@@ -17152,12 +17152,12 @@
         "prev_zt": 2,
         "pre_prev_zt": 1,
         "resilience": -50.0,
-        "strength": 53.0,
+        "strength": null,
         "strength_rank": null,
-        "strength_score": 53.0,
-        "strength_source": "sector_heatmap",
-        "tide_score": 23,
-        "confidence": "high",
+        "strength_score": null,
+        "strength_source": "",
+        "tide_score": 22,
+        "confidence": "medium",
         "warning_level": "watch",
         "action_hint": "弱于市场：降低主线权重"
       },
@@ -19192,12 +19192,12 @@
         "prev_zt": null,
         "pre_prev_zt": null,
         "resilience": null,
-        "strength": null,
+        "strength": 53.0,
         "strength_rank": null,
-        "strength_score": null,
-        "strength_source": "",
-        "tide_score": 50,
-        "confidence": "low",
+        "strength_score": 53.0,
+        "strength_source": "sector_heatmap",
+        "tide_score": 51,
+        "confidence": "medium",
         "warning_level": "none",
         "action_hint": "潮汐中性，按梯队和辨识度判断"
       },
@@ -22841,6 +22841,39 @@
         "action_hint": "券商相关核心潮汐中性，按梯队和个股辨识度处理。"
       },
       {
+        "name": "合成生物",
+        "canonical_name": "合成生物",
+        "status": "neutral_wait",
+        "base_tide_status": "neutral",
+        "action": "watch",
+        "tide_zone": "neutral",
+        "tide_phase": "neutral",
+        "core_score": 55,
+        "ebb_score": 41,
+        "tide_score": 51,
+        "emotion_score": 56,
+        "strength_score": 53,
+        "volume_score": 72,
+        "news_score": 50,
+        "market_score": 53,
+        "structure_score": 70,
+        "confidence": "low",
+        "confirms": {
+          "emotion": true,
+          "strength": false,
+          "volume": true,
+          "news": false,
+          "market": false
+        },
+        "reasons": [
+          "低位连板承接"
+        ],
+        "cautions": [
+          "市场分歧"
+        ],
+        "action_hint": "合成生物核心潮汐中性，按梯队和个股辨识度处理。"
+      },
+      {
         "name": "智慧物流",
         "canonical_name": "智慧物流",
         "status": "observe_candidate",
@@ -23914,39 +23947,6 @@
           "市场分歧"
         ],
         "action_hint": "参股新三板核心潮汐中性，按梯队和个股辨识度处理。"
-      },
-      {
-        "name": "合成生物",
-        "canonical_name": "合成生物",
-        "status": "neutral_wait",
-        "base_tide_status": "neutral",
-        "action": "watch",
-        "tide_zone": "neutral",
-        "tide_phase": "neutral",
-        "core_score": 53,
-        "ebb_score": 42,
-        "tide_score": 50,
-        "emotion_score": 56,
-        "strength_score": 47,
-        "volume_score": 72,
-        "news_score": 50,
-        "market_score": 53,
-        "structure_score": 70,
-        "confidence": "low",
-        "confirms": {
-          "emotion": true,
-          "strength": false,
-          "volume": true,
-          "news": false,
-          "market": false
-        },
-        "reasons": [
-          "低位连板承接"
-        ],
-        "cautions": [
-          "市场分歧"
-        ],
-        "action_hint": "合成生物核心潮汐中性，按梯队和个股辨识度处理。"
       },
       {
         "name": "大基金概念",
@@ -29090,40 +29090,6 @@
         "action_hint": "节能环保核心潮汐偏弱，降低权重，避免追高。"
       },
       {
-        "name": "垃圾分类",
-        "canonical_name": "垃圾分类",
-        "status": "avoid_weak",
-        "base_tide_status": "weak",
-        "action": "avoid",
-        "tide_zone": "ebbing",
-        "tide_phase": "ebbing",
-        "core_score": 45,
-        "ebb_score": 66,
-        "tide_score": 23,
-        "emotion_score": 56,
-        "strength_score": 53,
-        "volume_score": 72,
-        "news_score": 50,
-        "market_score": 53,
-        "structure_score": 70,
-        "confidence": "medium",
-        "confirms": {
-          "emotion": true,
-          "strength": false,
-          "volume": true,
-          "news": false,
-          "market": false
-        },
-        "reasons": [
-          "低位连板承接"
-        ],
-        "cautions": [
-          "潮汐偏弱",
-          "市场分歧"
-        ],
-        "action_hint": "垃圾分类核心潮汐偏弱，降低权重，避免追高。"
-      },
-      {
         "name": "太阳能（光伏）",
         "canonical_name": "太阳能（光伏）",
         "status": "avoid_weak",
@@ -29399,6 +29365,40 @@
           "市场分歧"
         ],
         "action_hint": "出海概念核心潮汐偏弱，降低权重，避免追高。"
+      },
+      {
+        "name": "垃圾分类",
+        "canonical_name": "垃圾分类",
+        "status": "avoid_weak",
+        "base_tide_status": "weak",
+        "action": "avoid",
+        "tide_zone": "ebbing",
+        "tide_phase": "ebbing",
+        "core_score": 43,
+        "ebb_score": 67,
+        "tide_score": 22,
+        "emotion_score": 56,
+        "strength_score": 47,
+        "volume_score": 72,
+        "news_score": 50,
+        "market_score": 53,
+        "structure_score": 70,
+        "confidence": "low",
+        "confirms": {
+          "emotion": true,
+          "strength": false,
+          "volume": true,
+          "news": false,
+          "market": false
+        },
+        "reasons": [
+          "低位连板承接"
+        ],
+        "cautions": [
+          "潮汐偏弱",
+          "市场分歧"
+        ],
+        "action_hint": "垃圾分类核心潮汐偏弱，降低权重，避免追高。"
       },
       {
         "name": "字节跳动概念",
@@ -32393,7 +32393,7 @@
         "summary": "半导体主线暂无明确买入标的",
         "diagnostics": {
           "member_count": 5,
-          "avg_score": 33.0,
+          "avg_score": 32.4,
           "env_gate": "休息优先",
           "relay_hits": 0,
           "line_penalty": 6,
@@ -32414,7 +32414,7 @@
         "summary": "文化传媒主线暂无明确买入标的",
         "diagnostics": {
           "member_count": 4,
-          "avg_score": 20.8,
+          "avg_score": 21.8,
           "env_gate": "休息优先",
           "relay_hits": 0,
           "line_penalty": 4,
@@ -32461,7 +32461,7 @@
         "summary": "新能源主线暂无明确买入标的",
         "diagnostics": {
           "member_count": 2,
-          "avg_score": 9.0,
+          "avg_score": 12.0,
           "env_gate": "休息优先",
           "relay_hits": 0,
           "line_penalty": 13,
