@@ -1,56 +1,78 @@
 {
   "schema": "intraday_runtime_v1",
   "date": "2026-10-16",
-  "updated_at": "2026-10-16 14:30:50",
-  "source": "unknown",
+  "updated_at": "2026-10-16 14:40:04",
+  "source": "必盈(实时)+必盈(实时)",
   "latest": {
-    "time": "14:30:50",
-    "ts_bj": "2026-10-16 14:30:50",
+    "time": "14:40:04",
+    "ts_bj": "2026-10-16 14:40:04",
     "date": "2026-10-16",
     "source": "intraday_live",
-    "provider": "unknown",
-    "data_quality": "unavailable",
+    "provider": "必盈(实时)+必盈(实时)",
+    "data_quality": "valid",
     "pool_status": {
-      "ztgc": "failed",
-      "zbgc": "failed",
-      "dtgc": "failed"
+      "ztgc": "valid",
+      "zbgc": "valid",
+      "dtgc": "valid"
     },
-    "pool_errors": {
-      "ztgc": "HTTP Error 429: Too Many Requests",
-      "zbgc": "HTTP Error 429: Too Many Requests",
-      "dtgc": "HTTP Error 429: Too Many Requests"
-    },
-    "zt": null,
-    "dt": null,
-    "zab": null,
-    "zb": null,
-    "fb": null,
-    "jj": null,
-    "lianban": null,
-    "max_lb": null,
-    "amount": "",
+    "pool_errors": {},
+    "zt": 67,
+    "dt": 8,
+    "zab": 42,
+    "zb": 38.5,
+    "fb": 61.5,
+    "jj": 10.4,
+    "lianban": 7,
+    "max_lb": 11,
+    "amount": "13912.2亿",
     "bf": 0,
-    "heat": null,
-    "risk": null,
-    "headline": "数据暂缺",
-    "concepts": [],
+    "heat": 57,
+    "risk": 48,
+    "headline": "分歧",
+    "concepts": [
+      {
+        "name": "汽车零部",
+        "lead": "均胜电子",
+        "chg_pct": null
+      },
+      {
+        "name": "通用设备",
+        "lead": "冰山冷热",
+        "chg_pct": null
+      },
+      {
+        "name": "专用设备",
+        "lead": "上工申贝",
+        "chg_pct": null
+      },
+      {
+        "name": "出版",
+        "lead": "新华传媒",
+        "chg_pct": null
+      },
+      {
+        "name": "航空装备",
+        "lead": "晨曦航空",
+        "chg_pct": null
+      }
+    ],
     "alerts": [
       {
         "level": "info",
         "text": "盘中模式：强制实时拉取"
       },
       {
-        "level": "warn",
-        "text": "盘中三池响应不完整，保留最近有效数据"
+        "level": "danger",
+        "text": "炸板率高（38.5%）→ 分歧偏强，谨慎接力"
       },
       {
         "level": "warn",
-        "text": "三池请求均超时，本槽位跳过板块补抓并等待下一节点"
+        "text": "高度11板 + 分歧不低 → 高位兑现/炸板风险"
       }
     ],
-    "shift_score": null,
-    "shift_label": "数据暂缺",
-    "note": "本槽位三池请求均未成功，已记录数据暂缺；等待下一节点自动恢复。"
+    "shift_score": 55,
+    "shift_label": "分歧",
+    "note": "承接增强、分歧收敛，情绪明显回暖。"
   },
   "snapshots": [
     {
@@ -976,38 +998,130 @@
       "shift_score": null,
       "shift_label": "数据暂缺",
       "note": "本槽位三池请求均未成功，已记录数据暂缺；等待下一节点自动恢复。"
+    },
+    {
+      "time": "14:40:04",
+      "ts_bj": "2026-10-16 14:40:04",
+      "date": "2026-10-16",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid"
+      },
+      "pool_errors": {},
+      "zt": 67,
+      "dt": 8,
+      "zab": 42,
+      "zb": 38.5,
+      "fb": 61.5,
+      "jj": 10.4,
+      "lianban": 7,
+      "max_lb": 11,
+      "amount": "13912.2亿",
+      "bf": 0,
+      "heat": 57,
+      "risk": 48,
+      "headline": "分歧",
+      "concepts": [
+        {
+          "name": "汽车零部",
+          "lead": "均胜电子",
+          "chg_pct": null
+        },
+        {
+          "name": "通用设备",
+          "lead": "冰山冷热",
+          "chg_pct": null
+        },
+        {
+          "name": "专用设备",
+          "lead": "上工申贝",
+          "chg_pct": null
+        },
+        {
+          "name": "出版",
+          "lead": "新华传媒",
+          "chg_pct": null
+        },
+        {
+          "name": "航空装备",
+          "lead": "晨曦航空",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        },
+        {
+          "level": "danger",
+          "text": "炸板率高（38.5%）→ 分歧偏强，谨慎接力"
+        },
+        {
+          "level": "warn",
+          "text": "高度11板 + 分歧不低 → 高位兑现/炸板风险"
+        }
+      ],
+      "shift_score": 55,
+      "shift_label": "分歧",
+      "note": "承接增强、分歧收敛，情绪明显回暖。"
     }
   ],
-  "indices": [],
+  "indices": [
+    {
+      "name": "上证指数",
+      "code": "000001.SH",
+      "val": 3684.478,
+      "chg": -0.6203141975834785,
+      "cje": 647803672500.0,
+      "t": "2026-10-16 14:40:03"
+    },
+    {
+      "name": "深证成指",
+      "code": "399001.SZ",
+      "val": 11712.526,
+      "chg": -0.8823293705252824,
+      "cje": 743414989200.0,
+      "t": "2026-10-16 14:40:00"
+    },
+    {
+      "name": "创业板指",
+      "code": "399006.SZ",
+      "val": 2747.43,
+      "chg": -1.2843245573850133,
+      "cje": 357102454900.0,
+      "t": "2026-10-16 14:40:00"
+    }
+  ],
   "asOf": {
-    "indices": ""
+    "indices": "14:40:00"
   },
   "health": {
-    "status": "degraded",
-    "last_valid_at": "2026-10-16 14:30:50",
+    "status": "valid",
+    "last_valid_at": "2026-10-16 14:40:04",
     "rejected_reason": "",
     "source": {
-      "status": "partial",
+      "status": "valid",
       "pool_status": {
-        "ztgc": "failed",
-        "zbgc": "failed",
-        "dtgc": "failed"
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid"
       },
-      "pool_errors": {
-        "ztgc": "HTTP Error 429: Too Many Requests",
-        "zbgc": "HTTP Error 429: Too Many Requests",
-        "dtgc": "HTTP Error 429: Too Many Requests"
-      }
+      "pool_errors": {}
     },
-    "indices_status": "unavailable",
+    "indices_status": "valid",
     "coverage": {
       "ok": false,
       "status": "degraded",
       "message": "intraday_coverage_incomplete",
       "date": "2026-10-16",
       "expected_count": 26,
-      "due_count": 23,
-      "observed_count": 14,
+      "due_count": 24,
+      "observed_count": 15,
       "observed_slots": [
         "09:30",
         "09:40",
@@ -1022,7 +1136,8 @@
         "11:10",
         "11:20",
         "11:30",
-        "14:30"
+        "14:30",
+        "14:40"
       ],
       "missing_slots": [
         "13:00",
@@ -1039,18 +1154,18 @@
       "out_of_session": [],
       "monotonic": true,
       "morning_coverage": 13,
-      "afternoon_coverage": 1
+      "afternoon_coverage": 2
     }
   },
   "live": {
     "market": {
-      "zt": null,
-      "dt": null,
-      "zab": null,
-      "zab_rate": null,
-      "lianban": null,
-      "max_lianban": null,
-      "amount": ""
+      "zt": 67,
+      "dt": 8,
+      "zab": 42,
+      "zab_rate": 38.5,
+      "lianban": 7,
+      "max_lianban": 11,
+      "amount": "13912.2亿"
     },
     "alerts": [
       {
@@ -1058,14 +1173,40 @@
         "text": "盘中模式：强制实时拉取"
       },
       {
-        "level": "warn",
-        "text": "盘中三池响应不完整，保留最近有效数据"
+        "level": "danger",
+        "text": "炸板率高（38.5%）→ 分歧偏强，谨慎接力"
       },
       {
         "level": "warn",
-        "text": "三池请求均超时，本槽位跳过板块补抓并等待下一节点"
+        "text": "高度11板 + 分歧不低 → 高位兑现/炸板风险"
       }
     ],
-    "concepts": []
+    "concepts": [
+      {
+        "name": "汽车零部",
+        "lead": "均胜电子",
+        "chg_pct": null
+      },
+      {
+        "name": "通用设备",
+        "lead": "冰山冷热",
+        "chg_pct": null
+      },
+      {
+        "name": "专用设备",
+        "lead": "上工申贝",
+        "chg_pct": null
+      },
+      {
+        "name": "出版",
+        "lead": "新华传媒",
+        "chg_pct": null
+      },
+      {
+        "name": "航空装备",
+        "lead": "晨曦航空",
+        "chg_pct": null
+      }
+    ]
   }
 }
