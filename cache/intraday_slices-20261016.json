@@ -2,7 +2,7 @@
   "schema": "intraday_snapshot_v1",
   "render_mode": "snapshot_stream",
   "date": "2026-10-16",
-  "count": 16,
+  "count": 17,
   "interval_min": null,
   "simulated": false,
   "snapshots": [
@@ -1071,11 +1071,86 @@
       "shift_score": 49,
       "shift_label": "分歧",
       "note": "炸板/跌停抬升，情绪明显走弱。"
+    },
+    {
+      "time": "15:00:07",
+      "ts_bj": "2026-10-16 15:00:07",
+      "date": "2026-10-16",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid"
+      },
+      "pool_errors": {},
+      "zt": 59,
+      "dt": 10,
+      "zab": 49,
+      "zb": 45.4,
+      "fb": 54.6,
+      "jj": 10.2,
+      "lianban": 6,
+      "max_lb": 11,
+      "amount": "15554.2亿",
+      "bf": 0,
+      "heat": 53,
+      "risk": 55,
+      "headline": "分歧",
+      "concepts": [
+        {
+          "name": "汽车零部",
+          "lead": "均胜电子",
+          "chg_pct": null
+        },
+        {
+          "name": "通用设备",
+          "lead": "冰山冷热",
+          "chg_pct": null
+        },
+        {
+          "name": "专用设备",
+          "lead": "上工申贝",
+          "chg_pct": null
+        },
+        {
+          "name": "出版",
+          "lead": "新华传媒",
+          "chg_pct": null
+        },
+        {
+          "name": "航空装备",
+          "lead": "晨曦航空",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        },
+        {
+          "level": "warn",
+          "text": "跌停偏多（10）→ 控制追高"
+        },
+        {
+          "level": "danger",
+          "text": "炸板率高（45.4%）→ 分歧偏强，谨慎接力"
+        },
+        {
+          "level": "warn",
+          "text": "高度11板 + 分歧不低 → 高位兑现/炸板风险"
+        }
+      ],
+      "shift_score": 50,
+      "shift_label": "分歧",
+      "note": "情绪整体平稳，维持当前节奏。"
     }
   ],
   "latest": {
-    "time": "14:50:04",
-    "ts_bj": "2026-10-16 14:50:04",
+    "time": "15:00:07",
+    "ts_bj": "2026-10-16 15:00:07",
     "date": "2026-10-16",
     "source": "intraday_live",
     "provider": "必盈(实时)+必盈(实时)",
@@ -1086,23 +1161,23 @@
       "dtgc": "valid"
     },
     "pool_errors": {},
-    "zt": 56,
-    "dt": 8,
-    "zab": 53,
-    "zb": 48.6,
-    "fb": 51.4,
-    "jj": 10.7,
+    "zt": 59,
+    "dt": 10,
+    "zab": 49,
+    "zb": 45.4,
+    "fb": 54.6,
+    "jj": 10.2,
     "lianban": 6,
     "max_lb": 11,
-    "amount": "14714.5亿",
+    "amount": "15554.2亿",
     "bf": 0,
-    "heat": 51,
-    "risk": 54,
+    "heat": 53,
+    "risk": 55,
     "headline": "分歧",
     "concepts": [
       {
         "name": "汽车零部",
-        "lead": "万丰奥威",
+        "lead": "均胜电子",
         "chg_pct": null
       },
       {
@@ -1121,8 +1196,8 @@
         "chg_pct": null
       },
       {
-        "name": "化学制品",
-        "lead": "广东宏大",
+        "name": "航空装备",
+        "lead": "晨曦航空",
         "chg_pct": null
       }
     ],
@@ -1132,23 +1207,27 @@
         "text": "盘中模式：强制实时拉取"
       },
       {
+        "level": "warn",
+        "text": "跌停偏多（10）→ 控制追高"
+      },
+      {
         "level": "danger",
-        "text": "炸板率高（48.6%）→ 分歧偏强，谨慎接力"
+        "text": "炸板率高（45.4%）→ 分歧偏强，谨慎接力"
       },
       {
         "level": "warn",
         "text": "高度11板 + 分歧不低 → 高位兑现/炸板风险"
       }
     ],
-    "shift_score": 49,
+    "shift_score": 50,
     "shift_label": "分歧",
-    "note": "炸板/跌停抬升，情绪明显走弱。"
+    "note": "情绪整体平稳，维持当前节奏。"
   },
-  "updated_at": "2026-10-16 14:50:04",
-  "snapshot_sig": "2026-10-16|2026-10-16 14:50:04|16",
+  "updated_at": "2026-10-16 15:00:07",
+  "snapshot_sig": "2026-10-16|2026-10-16 15:00:07|17",
   "health": {
     "status": "valid",
-    "last_valid_at": "2026-10-16 14:50:04",
+    "last_valid_at": "2026-10-16 15:00:07",
     "rejected_reason": "",
     "source": {
       "status": "valid",
