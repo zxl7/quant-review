@@ -2,7 +2,7 @@
   "schema": "intraday_snapshot_v1",
   "render_mode": "snapshot_stream",
   "date": "2026-10-16",
-  "count": 7,
+  "count": 8,
   "interval_min": null,
   "simulated": false,
   "snapshots": [
@@ -486,11 +486,82 @@
       "shift_score": 64,
       "shift_label": "修复",
       "note": "情绪边际修复，但仍需确认持续性。"
+    },
+    {
+      "time": "10:40:05",
+      "ts_bj": "2026-10-16 10:40:05",
+      "date": "2026-10-16",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid_empty"
+      },
+      "pool_errors": {},
+      "zt": 47,
+      "dt": 0,
+      "zab": 18,
+      "zb": 27.7,
+      "fb": 72.3,
+      "jj": 10.6,
+      "lianban": 5,
+      "max_lb": 11,
+      "amount": "7413.7亿",
+      "bf": 0,
+      "heat": 58,
+      "risk": 23,
+      "headline": "修复",
+      "concepts": [
+        {
+          "name": "通用设备",
+          "lead": "冰山冷热",
+          "chg_pct": null
+        },
+        {
+          "name": "出版",
+          "lead": "新华传媒",
+          "chg_pct": null
+        },
+        {
+          "name": "房地产开",
+          "lead": "深物业A",
+          "chg_pct": null
+        },
+        {
+          "name": "汽车零部",
+          "lead": "万丰奥威",
+          "chg_pct": null
+        },
+        {
+          "name": "化学制品",
+          "lead": "广东宏大",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        },
+        {
+          "level": "warn",
+          "text": "炸板率偏高（27.7%）→ 注意回封质量"
+        },
+        {
+          "level": "warn",
+          "text": "高度11板 + 分歧不低 → 高位兑现/炸板风险"
+        }
+      ],
+      "shift_score": 66,
+      "shift_label": "修复",
+      "note": "情绪边际修复，但仍需确认持续性。"
     }
   ],
   "latest": {
-    "time": "10:30:05",
-    "ts_bj": "2026-10-16 10:30:05",
+    "time": "10:40:05",
+    "ts_bj": "2026-10-16 10:40:05",
     "date": "2026-10-16",
     "source": "intraday_live",
     "provider": "必盈(实时)+必盈(实时)",
@@ -501,28 +572,33 @@
       "dtgc": "valid_empty"
     },
     "pool_errors": {},
-    "zt": 40,
+    "zt": 47,
     "dt": 0,
-    "zab": 19,
-    "zb": 32.2,
-    "fb": 67.8,
-    "jj": 12.5,
+    "zab": 18,
+    "zb": 27.7,
+    "fb": 72.3,
+    "jj": 10.6,
     "lianban": 5,
     "max_lb": 11,
-    "amount": "6899.4亿",
+    "amount": "7413.7亿",
     "bf": 0,
-    "heat": 56,
-    "risk": 26,
+    "heat": 58,
+    "risk": 23,
     "headline": "修复",
     "concepts": [
+      {
+        "name": "通用设备",
+        "lead": "冰山冷热",
+        "chg_pct": null
+      },
       {
         "name": "出版",
         "lead": "新华传媒",
         "chg_pct": null
       },
       {
-        "name": "通用设备",
-        "lead": "冰山冷热",
+        "name": "房地产开",
+        "lead": "深物业A",
         "chg_pct": null
       },
       {
@@ -534,11 +610,6 @@
         "name": "化学制品",
         "lead": "广东宏大",
         "chg_pct": null
-      },
-      {
-        "name": "水泥",
-        "lead": "尖峰集团",
-        "chg_pct": null
       }
     ],
     "alerts": [
@@ -548,22 +619,22 @@
       },
       {
         "level": "warn",
-        "text": "炸板率偏高（32.2%）→ 注意回封质量"
+        "text": "炸板率偏高（27.7%）→ 注意回封质量"
       },
       {
         "level": "warn",
         "text": "高度11板 + 分歧不低 → 高位兑现/炸板风险"
       }
     ],
-    "shift_score": 64,
+    "shift_score": 66,
     "shift_label": "修复",
     "note": "情绪边际修复，但仍需确认持续性。"
   },
-  "updated_at": "2026-10-16 10:30:05",
-  "snapshot_sig": "2026-10-16|2026-10-16 10:30:05|7",
+  "updated_at": "2026-10-16 10:40:05",
+  "snapshot_sig": "2026-10-16|2026-10-16 10:40:05|8",
   "health": {
     "status": "valid",
-    "last_valid_at": "2026-10-16 10:30:05",
+    "last_valid_at": "2026-10-16 10:40:05",
     "rejected_reason": "",
     "source": {
       "status": "valid",
