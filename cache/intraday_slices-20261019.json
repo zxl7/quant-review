@@ -2,7 +2,7 @@
   "schema": "intraday_snapshot_v1",
   "render_mode": "snapshot_stream",
   "date": "2026-10-19",
-  "count": 5,
+  "count": 6,
   "interval_min": null,
   "simulated": false,
   "snapshots": [
@@ -328,11 +328,78 @@
       "shift_score": 59,
       "shift_label": "分歧",
       "note": "情绪略有回落，注意午后分歧。"
+    },
+    {
+      "time": "10:20:05",
+      "ts_bj": "2026-10-19 10:20:05",
+      "date": "2026-10-19",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid"
+      },
+      "pool_errors": {},
+      "zt": 20,
+      "dt": 7,
+      "zab": 10,
+      "zb": 33.3,
+      "fb": 66.7,
+      "jj": 45.0,
+      "lianban": 9,
+      "max_lb": 3,
+      "amount": "6356.7亿",
+      "bf": 0,
+      "heat": 48,
+      "risk": 33,
+      "headline": "分歧",
+      "concepts": [
+        {
+          "name": "汽车零部",
+          "lead": "万丰奥威",
+          "chg_pct": null
+        },
+        {
+          "name": "IT服务Ⅱ",
+          "lead": "德生科技",
+          "chg_pct": null
+        },
+        {
+          "name": "电力",
+          "lead": "浙江新能",
+          "chg_pct": null
+        },
+        {
+          "name": "软件开发",
+          "lead": "吉大正元",
+          "chg_pct": null
+        },
+        {
+          "name": "地面兵装",
+          "lead": "甘化科工",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        },
+        {
+          "level": "warn",
+          "text": "炸板率偏高（33.3%）→ 注意回封质量"
+        }
+      ],
+      "shift_score": 56,
+      "shift_label": "分歧",
+      "note": "情绪略有回落，注意午后分歧。"
     }
   ],
   "latest": {
-    "time": "10:10:04",
-    "ts_bj": "2026-10-19 10:10:04",
+    "time": "10:20:05",
+    "ts_bj": "2026-10-19 10:20:05",
     "date": "2026-10-19",
     "source": "intraday_live",
     "provider": "必盈(实时)+必盈(实时)",
@@ -343,18 +410,18 @@
       "dtgc": "valid"
     },
     "pool_errors": {},
-    "zt": 19,
-    "dt": 4,
-    "zab": 9,
-    "zb": 32.1,
-    "fb": 67.9,
-    "jj": 47.4,
+    "zt": 20,
+    "dt": 7,
+    "zab": 10,
+    "zb": 33.3,
+    "fb": 66.7,
+    "jj": 45.0,
     "lianban": 9,
     "max_lb": 3,
-    "amount": "5628.9亿",
+    "amount": "6356.7亿",
     "bf": 0,
-    "heat": 49,
-    "risk": 28,
+    "heat": 48,
+    "risk": 33,
     "headline": "分歧",
     "concepts": [
       {
@@ -364,7 +431,12 @@
       },
       {
         "name": "IT服务Ⅱ",
-        "lead": "久远银海",
+        "lead": "德生科技",
+        "chg_pct": null
+      },
+      {
+        "name": "电力",
+        "lead": "浙江新能",
         "chg_pct": null
       },
       {
@@ -376,11 +448,6 @@
         "name": "地面兵装",
         "lead": "甘化科工",
         "chg_pct": null
-      },
-      {
-        "name": "照明设备",
-        "lead": "海洋王",
-        "chg_pct": null
       }
     ],
     "alerts": [
@@ -390,18 +457,18 @@
       },
       {
         "level": "warn",
-        "text": "炸板率偏高（32.1%）→ 注意回封质量"
+        "text": "炸板率偏高（33.3%）→ 注意回封质量"
       }
     ],
-    "shift_score": 59,
+    "shift_score": 56,
     "shift_label": "分歧",
     "note": "情绪略有回落，注意午后分歧。"
   },
-  "updated_at": "2026-10-19 10:10:04",
-  "snapshot_sig": "2026-10-19|2026-10-19 10:10:04|5",
+  "updated_at": "2026-10-19 10:20:05",
+  "snapshot_sig": "2026-10-19|2026-10-19 10:20:05|6",
   "health": {
     "status": "valid",
-    "last_valid_at": "2026-10-19 10:10:04",
+    "last_valid_at": "2026-10-19 10:20:05",
     "rejected_reason": "",
     "source": {
       "status": "valid",
