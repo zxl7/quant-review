@@ -1,11 +1,11 @@
 {
   "schema": "intraday_runtime_v1",
   "date": "2026-10-19",
-  "updated_at": "2026-10-19 10:50:03",
+  "updated_at": "2026-10-19 11:00:04",
   "source": "必盈(实时)+必盈(实时)",
   "latest": {
-    "time": "10:50:03",
-    "ts_bj": "2026-10-19 10:50:03",
+    "time": "11:00:04",
+    "ts_bj": "2026-10-19 11:00:04",
     "date": "2026-10-19",
     "source": "intraday_live",
     "provider": "必盈(实时)+必盈(实时)",
@@ -16,18 +16,18 @@
       "dtgc": "valid"
     },
     "pool_errors": {},
-    "zt": 26,
-    "dt": 8,
-    "zab": 13,
-    "zb": 33.3,
-    "fb": 66.7,
-    "jj": 38.5,
+    "zt": 29,
+    "dt": 7,
+    "zab": 16,
+    "zb": 35.6,
+    "fb": 64.4,
+    "jj": 34.5,
     "lianban": 10,
     "max_lb": 3,
-    "amount": "8149.8亿",
+    "amount": "8712.3亿",
     "bf": 0,
-    "heat": 48,
-    "risk": 36,
+    "heat": 46,
+    "risk": 37,
     "headline": "分歧",
     "concepts": [
       {
@@ -42,17 +42,17 @@
       },
       {
         "name": "电力",
-        "lead": "浙江新能",
+        "lead": "芯能科技",
+        "chg_pct": null
+      },
+      {
+        "name": "家居用品",
+        "lead": "华瓷股份",
         "chg_pct": null
       },
       {
         "name": "IT服务Ⅱ",
         "lead": "久远银海",
-        "chg_pct": null
-      },
-      {
-        "name": "物流",
-        "lead": "东方嘉盛",
         "chg_pct": null
       }
     ],
@@ -62,13 +62,13 @@
         "text": "盘中模式：强制实时拉取"
       },
       {
-        "level": "warn",
-        "text": "炸板率偏高（33.3%）→ 注意回封质量"
+        "level": "danger",
+        "text": "炸板率高（35.6%）→ 分歧偏强，谨慎接力"
       }
     ],
-    "shift_score": 55,
+    "shift_score": 53,
     "shift_label": "分歧",
-    "note": "情绪整体平稳，维持当前节奏。"
+    "note": "情绪略有回落，注意午后分歧。"
   },
   "snapshots": [
     {
@@ -661,40 +661,107 @@
       "shift_score": 55,
       "shift_label": "分歧",
       "note": "情绪整体平稳，维持当前节奏。"
+    },
+    {
+      "time": "11:00:04",
+      "ts_bj": "2026-10-19 11:00:04",
+      "date": "2026-10-19",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid"
+      },
+      "pool_errors": {},
+      "zt": 29,
+      "dt": 7,
+      "zab": 16,
+      "zb": 35.6,
+      "fb": 64.4,
+      "jj": 34.5,
+      "lianban": 10,
+      "max_lb": 3,
+      "amount": "8712.3亿",
+      "bf": 0,
+      "heat": 46,
+      "risk": 37,
+      "headline": "分歧",
+      "concepts": [
+        {
+          "name": "汽车零部",
+          "lead": "万丰奥威",
+          "chg_pct": null
+        },
+        {
+          "name": "塑料",
+          "lead": "肯特股份",
+          "chg_pct": null
+        },
+        {
+          "name": "电力",
+          "lead": "芯能科技",
+          "chg_pct": null
+        },
+        {
+          "name": "家居用品",
+          "lead": "华瓷股份",
+          "chg_pct": null
+        },
+        {
+          "name": "IT服务Ⅱ",
+          "lead": "久远银海",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        },
+        {
+          "level": "danger",
+          "text": "炸板率高（35.6%）→ 分歧偏强，谨慎接力"
+        }
+      ],
+      "shift_score": 53,
+      "shift_label": "分歧",
+      "note": "情绪略有回落，注意午后分歧。"
     }
   ],
   "indices": [
     {
       "name": "上证指数",
       "code": "000001.SH",
-      "val": 3721.804,
-      "chg": 0.14853547253116237,
-      "cje": 385917785800.0,
-      "t": "2026-10-19 10:50:03"
+      "val": 3730.839,
+      "chg": 0.39165467440055274,
+      "cje": 412545997800.0,
+      "t": "2026-10-19 11:00:03"
     },
     {
       "name": "深证成指",
       "code": "399001.SZ",
-      "val": 11801.269,
-      "chg": -0.010082644642108134,
-      "cje": 428721274700.0,
-      "t": "2026-10-19 10:49:51"
+      "val": 11846.25,
+      "chg": 0.3710328500187906,
+      "cje": 458299449400.0,
+      "t": "2026-10-19 10:59:57"
     },
     {
       "name": "创业板指",
       "code": "399006.SZ",
-      "val": 2750.712,
-      "chg": -0.7817098930018362,
-      "cje": 204592724600.0,
-      "t": "2026-10-19 10:50:00"
+      "val": 2765.936,
+      "chg": -0.23257961379086972,
+      "cje": 219064876800.0,
+      "t": "2026-10-19 10:59:57"
     }
   ],
   "asOf": {
-    "indices": "10:50:00"
+    "indices": "10:59:57"
   },
   "health": {
     "status": "valid",
-    "last_valid_at": "2026-10-19 10:50:03",
+    "last_valid_at": "2026-10-19 11:00:04",
     "rejected_reason": "",
     "source": {
       "status": "valid",
@@ -712,8 +779,8 @@
       "message": "intraday_coverage_collecting",
       "date": "2026-10-19",
       "expected_count": 26,
-      "due_count": 9,
-      "observed_count": 9,
+      "due_count": 10,
+      "observed_count": 10,
       "observed_slots": [
         "09:30",
         "09:40",
@@ -723,25 +790,26 @@
         "10:20",
         "10:30",
         "10:40",
-        "10:50"
+        "10:50",
+        "11:00"
       ],
       "missing_slots": [],
       "duplicate_slots": [],
       "out_of_session": [],
       "monotonic": true,
-      "morning_coverage": 9,
+      "morning_coverage": 10,
       "afternoon_coverage": 0
     }
   },
   "live": {
     "market": {
-      "zt": 26,
-      "dt": 8,
-      "zab": 13,
-      "zab_rate": 33.3,
+      "zt": 29,
+      "dt": 7,
+      "zab": 16,
+      "zab_rate": 35.6,
       "lianban": 10,
       "max_lianban": 3,
-      "amount": "8149.8亿"
+      "amount": "8712.3亿"
     },
     "alerts": [
       {
@@ -749,8 +817,8 @@
         "text": "盘中模式：强制实时拉取"
       },
       {
-        "level": "warn",
-        "text": "炸板率偏高（33.3%）→ 注意回封质量"
+        "level": "danger",
+        "text": "炸板率高（35.6%）→ 分歧偏强，谨慎接力"
       }
     ],
     "concepts": [
@@ -766,17 +834,17 @@
       },
       {
         "name": "电力",
-        "lead": "浙江新能",
+        "lead": "芯能科技",
+        "chg_pct": null
+      },
+      {
+        "name": "家居用品",
+        "lead": "华瓷股份",
         "chg_pct": null
       },
       {
         "name": "IT服务Ⅱ",
         "lead": "久远银海",
-        "chg_pct": null
-      },
-      {
-        "name": "物流",
-        "lead": "东方嘉盛",
         "chg_pct": null
       }
     ]
