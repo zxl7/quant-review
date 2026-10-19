@@ -2,7 +2,7 @@
   "schema": "intraday_snapshot_v1",
   "render_mode": "snapshot_stream",
   "date": "2026-10-19",
-  "count": 1,
+  "count": 2,
   "interval_min": null,
   "simulated": false,
   "snapshots": [
@@ -68,11 +68,74 @@
       "shift_score": 72,
       "shift_label": "走强",
       "note": "盘中实时切片已接入，可逐点观察情绪变化。"
+    },
+    {
+      "time": "09:40:03",
+      "ts_bj": "2026-10-19 09:40:03",
+      "date": "2026-10-19",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid"
+      },
+      "pool_errors": {},
+      "zt": 13,
+      "dt": 5,
+      "zab": 4,
+      "zb": 23.5,
+      "fb": 76.5,
+      "jj": 69.2,
+      "lianban": 9,
+      "max_lb": 3,
+      "amount": "2423.0亿",
+      "bf": 0,
+      "heat": 57,
+      "risk": 22,
+      "headline": "修复",
+      "concepts": [
+        {
+          "name": "汽车零部",
+          "lead": "万丰奥威",
+          "chg_pct": null
+        },
+        {
+          "name": "IT服务Ⅱ",
+          "lead": "德生科技",
+          "chg_pct": null
+        },
+        {
+          "name": "软件开发",
+          "lead": "吉大正元",
+          "chg_pct": null
+        },
+        {
+          "name": "地面兵装",
+          "lead": "甘化科工",
+          "chg_pct": null
+        },
+        {
+          "name": "照明设备",
+          "lead": "海洋王",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        }
+      ],
+      "shift_score": 66,
+      "shift_label": "修复",
+      "note": "炸板/跌停抬升，情绪明显走弱。"
     }
   ],
   "latest": {
-    "time": "09:30:44",
-    "ts_bj": "2026-10-19 09:30:44",
+    "time": "09:40:03",
+    "ts_bj": "2026-10-19 09:40:03",
     "date": "2026-10-19",
     "source": "intraday_live",
     "provider": "必盈(实时)+必盈(实时)",
@@ -83,23 +146,28 @@
       "dtgc": "valid"
     },
     "pool_errors": {},
-    "zt": 9,
-    "dt": 4,
-    "zab": 2,
-    "zb": 18.2,
-    "fb": 81.8,
-    "jj": 88.9,
-    "lianban": 8,
+    "zt": 13,
+    "dt": 5,
+    "zab": 4,
+    "zb": 23.5,
+    "fb": 76.5,
+    "jj": 69.2,
+    "lianban": 9,
     "max_lb": 3,
-    "amount": "564.4亿",
+    "amount": "2423.0亿",
     "bf": 0,
-    "heat": 64,
-    "risk": 17,
-    "headline": "走强",
+    "heat": 57,
+    "risk": 22,
+    "headline": "修复",
     "concepts": [
       {
         "name": "汽车零部",
-        "lead": "东安动力",
+        "lead": "万丰奥威",
+        "chg_pct": null
+      },
+      {
+        "name": "IT服务Ⅱ",
+        "lead": "德生科技",
         "chg_pct": null
       },
       {
@@ -116,11 +184,6 @@
         "name": "照明设备",
         "lead": "海洋王",
         "chg_pct": null
-      },
-      {
-        "name": "通用设备",
-        "lead": "京城股份",
-        "chg_pct": null
       }
     ],
     "alerts": [
@@ -129,15 +192,15 @@
         "text": "盘中模式：强制实时拉取"
       }
     ],
-    "shift_score": 72,
-    "shift_label": "走强",
-    "note": "盘中实时切片已接入，可逐点观察情绪变化。"
+    "shift_score": 66,
+    "shift_label": "修复",
+    "note": "炸板/跌停抬升，情绪明显走弱。"
   },
-  "updated_at": "2026-10-19 09:30:44",
-  "snapshot_sig": "2026-10-19|2026-10-19 09:30:44|1",
+  "updated_at": "2026-10-19 09:40:03",
+  "snapshot_sig": "2026-10-19|2026-10-19 09:40:03|2",
   "health": {
     "status": "valid",
-    "last_valid_at": "2026-10-19 09:30:44",
+    "last_valid_at": "2026-10-19 09:40:03",
     "rejected_reason": "",
     "source": {
       "status": "valid",
