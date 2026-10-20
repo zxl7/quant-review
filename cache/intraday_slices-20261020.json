@@ -2,7 +2,7 @@
   "schema": "intraday_snapshot_v1",
   "render_mode": "snapshot_stream",
   "date": "2026-10-20",
-  "count": 4,
+  "count": 5,
   "interval_min": null,
   "simulated": false,
   "snapshots": [
@@ -261,11 +261,74 @@
       "shift_score": 64,
       "shift_label": "修复",
       "note": "情绪略有回落，注意午后分歧。"
+    },
+    {
+      "time": "10:10:04",
+      "ts_bj": "2026-10-20 10:10:04",
+      "date": "2026-10-20",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid"
+      },
+      "pool_errors": {},
+      "zt": 32,
+      "dt": 1,
+      "zab": 10,
+      "zb": 23.8,
+      "fb": 76.2,
+      "jj": 40.6,
+      "lianban": 13,
+      "max_lb": 4,
+      "amount": "5233.5亿",
+      "bf": 0,
+      "heat": 56,
+      "risk": 19,
+      "headline": "修复",
+      "concepts": [
+        {
+          "name": "元件",
+          "lead": "协和电子",
+          "chg_pct": null
+        },
+        {
+          "name": "通用设备",
+          "lead": "京城股份",
+          "chg_pct": null
+        },
+        {
+          "name": "照明设备",
+          "lead": "海洋王",
+          "chg_pct": null
+        },
+        {
+          "name": "汽车零部",
+          "lead": "东安动力",
+          "chg_pct": null
+        },
+        {
+          "name": "通信设备",
+          "lead": "移远通信",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        }
+      ],
+      "shift_score": 66,
+      "shift_label": "修复",
+      "note": "情绪边际修复，但仍需确认持续性。"
     }
   ],
   "latest": {
-    "time": "10:00:05",
-    "ts_bj": "2026-10-20 10:00:05",
+    "time": "10:10:04",
+    "ts_bj": "2026-10-20 10:10:04",
     "date": "2026-10-20",
     "source": "intraday_live",
     "provider": "必盈(实时)+必盈(实时)",
@@ -276,28 +339,28 @@
       "dtgc": "valid"
     },
     "pool_errors": {},
-    "zt": 27,
+    "zt": 32,
     "dt": 1,
-    "zab": 9,
-    "zb": 25.0,
-    "fb": 75.0,
-    "jj": 40.7,
-    "lianban": 11,
-    "max_lb": 3,
-    "amount": "4422.3亿",
+    "zab": 10,
+    "zb": 23.8,
+    "fb": 76.2,
+    "jj": 40.6,
+    "lianban": 13,
+    "max_lb": 4,
+    "amount": "5233.5亿",
     "bf": 0,
-    "heat": 52,
+    "heat": 56,
     "risk": 19,
     "headline": "修复",
     "concepts": [
       {
-        "name": "通用设备",
-        "lead": "京城股份",
+        "name": "元件",
+        "lead": "协和电子",
         "chg_pct": null
       },
       {
-        "name": "元件",
-        "lead": "协和电子",
+        "name": "通用设备",
+        "lead": "京城股份",
         "chg_pct": null
       },
       {
@@ -306,13 +369,13 @@
         "chg_pct": null
       },
       {
-        "name": "出版",
-        "lead": "粤 传 媒",
+        "name": "汽车零部",
+        "lead": "东安动力",
         "chg_pct": null
       },
       {
-        "name": "汽车零部",
-        "lead": "东安动力",
+        "name": "通信设备",
+        "lead": "移远通信",
         "chg_pct": null
       }
     ],
@@ -320,21 +383,17 @@
       {
         "level": "info",
         "text": "盘中模式：强制实时拉取"
-      },
-      {
-        "level": "warn",
-        "text": "炸板率偏高（25.0%）→ 注意回封质量"
       }
     ],
-    "shift_score": 64,
+    "shift_score": 66,
     "shift_label": "修复",
-    "note": "情绪略有回落，注意午后分歧。"
+    "note": "情绪边际修复，但仍需确认持续性。"
   },
-  "updated_at": "2026-10-20 10:00:05",
-  "snapshot_sig": "2026-10-20|2026-10-20 10:00:05|4",
+  "updated_at": "2026-10-20 10:10:04",
+  "snapshot_sig": "2026-10-20|2026-10-20 10:10:04|5",
   "health": {
     "status": "valid",
-    "last_valid_at": "2026-10-20 10:00:05",
+    "last_valid_at": "2026-10-20 10:10:04",
     "rejected_reason": "",
     "source": {
       "status": "valid",
