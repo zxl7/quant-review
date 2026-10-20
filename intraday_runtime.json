@@ -1,70 +1,56 @@
 {
   "schema": "intraday_runtime_v1",
   "date": "2026-10-20",
-  "updated_at": "2026-10-20 11:30:05",
-  "source": "必盈(实时)+必盈(实时)",
+  "updated_at": "2026-10-20 14:40:51",
+  "source": "unknown",
   "latest": {
-    "time": "11:30:05",
-    "ts_bj": "2026-10-20 11:30:05",
+    "time": "14:40:51",
+    "ts_bj": "2026-10-20 14:40:51",
     "date": "2026-10-20",
     "source": "intraday_live",
-    "provider": "必盈(实时)+必盈(实时)",
-    "data_quality": "valid",
+    "provider": "unknown",
+    "data_quality": "unavailable",
     "pool_status": {
-      "ztgc": "valid",
-      "zbgc": "valid",
-      "dtgc": "valid"
+      "ztgc": "failed",
+      "zbgc": "failed",
+      "dtgc": "failed"
     },
-    "pool_errors": {},
-    "zt": 56,
-    "dt": 1,
-    "zab": 15,
-    "zb": 21.1,
-    "fb": 78.9,
-    "jj": 23.2,
-    "lianban": 13,
-    "max_lb": 4,
-    "amount": "9334.7亿",
+    "pool_errors": {
+      "ztgc": "HTTP Error 429: Too Many Requests",
+      "zbgc": "HTTP Error 429: Too Many Requests",
+      "dtgc": "HTTP Error 429: Too Many Requests"
+    },
+    "zt": null,
+    "dt": null,
+    "zab": null,
+    "zb": null,
+    "fb": null,
+    "jj": null,
+    "lianban": null,
+    "max_lb": null,
+    "amount": "",
     "bf": 0,
-    "heat": 56,
-    "risk": 20,
-    "headline": "修复",
-    "concepts": [
-      {
-        "name": "通用设备",
-        "lead": "京城股份",
-        "chg_pct": null
-      },
-      {
-        "name": "汽车零部",
-        "lead": "东安动力",
-        "chg_pct": null
-      },
-      {
-        "name": "元件",
-        "lead": "协和电子",
-        "chg_pct": null
-      },
-      {
-        "name": "半导体",
-        "lead": "瑞芯微",
-        "chg_pct": null
-      },
-      {
-        "name": "照明设备",
-        "lead": "海洋王",
-        "chg_pct": null
-      }
-    ],
+    "heat": null,
+    "risk": null,
+    "headline": "数据暂缺",
+    "concepts": [],
     "alerts": [
       {
         "level": "info",
         "text": "盘中模式：强制实时拉取"
+      },
+      {
+        "level": "warn",
+        "text": "盘中三池响应不完整，保留最近有效数据"
+      },
+      {
+        "level": "warn",
+        "text": "三池请求均超时，本槽位跳过板块补抓并等待下一节点"
       }
     ],
-    "shift_score": 66,
-    "shift_label": "修复",
-    "note": "情绪整体平稳，维持当前节奏。"
+    "shift_score": null,
+    "shift_label": "数据暂缺",
+    "note": "本槽位三池请求均未成功，已记录数据暂缺；等待下一节点自动恢复。"
   },
   "snapshots": [
     {
@@ -893,59 +879,87 @@
       "shift_score": 66,
       "shift_label": "修复",
       "note": "情绪整体平稳，维持当前节奏。"
-    }
-  ],
-  "indices": [
-    {
-      "name": "上证指数",
-      "code": "000001.SH",
-      "val": 3727.754,
-      "chg": -0.08485842633988848,
-      "cje": 441850134900.0,
-      "t": "2026-10-20 11:30:03"
     },
     {
-      "name": "深证成指",
-      "code": "399001.SZ",
-      "val": 11838.917,
-      "chg": 0.1818839860433089,
-      "cje": 491609470900.0,
-      "t": "2026-10-20 11:30:00"
-    },
-    {
-      "name": "创业板指",
-      "code": "399006.SZ",
-      "val": 2753.814,
-      "chg": 0.27393309740299493,
-      "cje": 244423129900.0,
-      "t": "2026-10-20 11:30:03"
+      "time": "14:40:51",
+      "ts_bj": "2026-10-20 14:40:51",
+      "date": "2026-10-20",
+      "source": "intraday_live",
+      "provider": "unknown",
+      "data_quality": "unavailable",
+      "pool_status": {
+        "ztgc": "failed",
+        "zbgc": "failed",
+        "dtgc": "failed"
+      },
+      "pool_errors": {
+        "ztgc": "HTTP Error 429: Too Many Requests",
+        "zbgc": "HTTP Error 429: Too Many Requests",
+        "dtgc": "HTTP Error 429: Too Many Requests"
+      },
+      "zt": null,
+      "dt": null,
+      "zab": null,
+      "zb": null,
+      "fb": null,
+      "jj": null,
+      "lianban": null,
+      "max_lb": null,
+      "amount": "",
+      "bf": 0,
+      "heat": null,
+      "risk": null,
+      "headline": "数据暂缺",
+      "concepts": [],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        },
+        {
+          "level": "warn",
+          "text": "盘中三池响应不完整，保留最近有效数据"
+        },
+        {
+          "level": "warn",
+          "text": "三池请求均超时，本槽位跳过板块补抓并等待下一节点"
+        }
+      ],
+      "shift_score": null,
+      "shift_label": "数据暂缺",
+      "note": "本槽位三池请求均未成功，已记录数据暂缺；等待下一节点自动恢复。"
     }
   ],
+  "indices": [],
   "asOf": {
-    "indices": "11:30:03"
+    "indices": ""
   },
   "health": {
-    "status": "valid",
-    "last_valid_at": "2026-10-20 11:30:05",
+    "status": "degraded",
+    "last_valid_at": "2026-10-20 14:40:51",
     "rejected_reason": "",
     "source": {
-      "status": "valid",
+      "status": "partial",
       "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid"
+        "ztgc": "failed",
+        "zbgc": "failed",
+        "dtgc": "failed"
       },
-      "pool_errors": {}
+      "pool_errors": {
+        "ztgc": "HTTP Error 429: Too Many Requests",
+        "zbgc": "HTTP Error 429: Too Many Requests",
+        "dtgc": "HTTP Error 429: Too Many Requests"
+      }
     },
-    "indices_status": "valid",
+    "indices_status": "unavailable",
     "coverage": {
-      "ok": true,
-      "status": "collecting",
-      "message": "intraday_coverage_collecting",
+      "ok": false,
+      "status": "degraded",
+      "message": "intraday_coverage_incomplete",
       "date": "2026-10-20",
       "expected_count": 26,
-      "due_count": 13,
-      "observed_count": 13,
+      "due_count": 24,
+      "observed_count": 14,
       "observed_slots": [
         "09:30",
         "09:40",
@@ -959,58 +973,52 @@
         "11:00",
         "11:10",
         "11:20",
-        "11:30"
+        "11:30",
+        "14:40"
       ],
-      "missing_slots": [],
+      "missing_slots": [
+        "13:00",
+        "13:10",
+        "13:20",
+        "13:30",
+        "13:40",
+        "13:50",
+        "14:00",
+        "14:10",
+        "14:20",
+        "14:30"
+      ],
       "duplicate_slots": [],
       "out_of_session": [],
       "monotonic": true,
       "morning_coverage": 13,
-      "afternoon_coverage": 0
+      "afternoon_coverage": 1
     }
   },
   "live": {
     "market": {
-      "zt": 56,
-      "dt": 1,
-      "zab": 15,
-      "zab_rate": 21.1,
-      "lianban": 13,
-      "max_lianban": 4,
-      "amount": "9334.7亿"
+      "zt": null,
+      "dt": null,
+      "zab": null,
+      "zab_rate": null,
+      "lianban": null,
+      "max_lianban": null,
+      "amount": ""
     },
     "alerts": [
       {
         "level": "info",
         "text": "盘中模式：强制实时拉取"
+      },
+      {
+        "level": "warn",
+        "text": "盘中三池响应不完整，保留最近有效数据"
+      },
+      {
+        "level": "warn",
+        "text": "三池请求均超时，本槽位跳过板块补抓并等待下一节点"
       }
     ],
-    "concepts": [
-      {
-        "name": "通用设备",
-        "lead": "京城股份",
-        "chg_pct": null
-      },
-      {
-        "name": "汽车零部",
-        "lead": "东安动力",
-        "chg_pct": null
-      },
-      {
-        "name": "元件",
-        "lead": "协和电子",
-        "chg_pct": null
-      },
-      {
-        "name": "半导体",
-        "lead": "瑞芯微",
-        "chg_pct": null
-      },
-      {
-        "name": "照明设备",
-        "lead": "海洋王",
-        "chg_pct": null
-      }
-    ]
+    "concepts": []
   }
 }
