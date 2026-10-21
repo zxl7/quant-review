@@ -1,11 +1,11 @@
 {
   "schema": "intraday_runtime_v1",
   "date": "2026-10-21",
-  "updated_at": "2026-10-21 11:00:04",
+  "updated_at": "2026-10-21 11:10:04",
   "source": "必盈(实时)+必盈(实时)",
   "latest": {
-    "time": "11:00:04",
-    "ts_bj": "2026-10-21 11:00:04",
+    "time": "11:10:04",
+    "ts_bj": "2026-10-21 11:10:04",
     "date": "2026-10-21",
     "source": "intraday_live",
     "provider": "必盈(实时)+必盈(实时)",
@@ -16,15 +16,15 @@
       "dtgc": "valid_empty"
     },
     "pool_errors": {},
-    "zt": 36,
+    "zt": 37,
     "dt": 0,
     "zab": 17,
-    "zb": 32.1,
-    "fb": 67.9,
-    "jj": 36.1,
-    "lianban": 13,
+    "zb": 31.5,
+    "fb": 68.5,
+    "jj": 37.8,
+    "lianban": 14,
     "max_lb": 4,
-    "amount": "8329.7亿",
+    "amount": "8689.5亿",
     "bf": 0,
     "heat": 52,
     "risk": 25,
@@ -41,6 +41,11 @@
         "chg_pct": null
       },
       {
+        "name": "IT服务Ⅱ",
+        "lead": "南威软件",
+        "chg_pct": null
+      },
+      {
         "name": "出版",
         "lead": "粤 传 媒",
         "chg_pct": null
@@ -48,11 +53,6 @@
       {
         "name": "通信设备",
         "lead": "日海智能",
-        "chg_pct": null
-      },
-      {
-        "name": "汽车零部",
-        "lead": "东安动力",
         "chg_pct": null
       }
     ],
@@ -63,7 +63,7 @@
       },
       {
         "level": "warn",
-        "text": "炸板率偏高（32.1%）→ 注意回封质量"
+        "text": "炸板率偏高（31.5%）→ 注意回封质量"
       }
     ],
     "shift_score": 62,
@@ -735,40 +735,107 @@
       "shift_score": 62,
       "shift_label": "修复",
       "note": "情绪整体平稳，维持当前节奏。"
+    },
+    {
+      "time": "11:10:04",
+      "ts_bj": "2026-10-21 11:10:04",
+      "date": "2026-10-21",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid_empty"
+      },
+      "pool_errors": {},
+      "zt": 37,
+      "dt": 0,
+      "zab": 17,
+      "zb": 31.5,
+      "fb": 68.5,
+      "jj": 37.8,
+      "lianban": 14,
+      "max_lb": 4,
+      "amount": "8689.5亿",
+      "bf": 0,
+      "heat": 52,
+      "risk": 25,
+      "headline": "修复",
+      "concepts": [
+        {
+          "name": "通用设备",
+          "lead": "大业股份",
+          "chg_pct": null
+        },
+        {
+          "name": "照明设备",
+          "lead": "海洋王",
+          "chg_pct": null
+        },
+        {
+          "name": "IT服务Ⅱ",
+          "lead": "南威软件",
+          "chg_pct": null
+        },
+        {
+          "name": "出版",
+          "lead": "粤 传 媒",
+          "chg_pct": null
+        },
+        {
+          "name": "通信设备",
+          "lead": "日海智能",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        },
+        {
+          "level": "warn",
+          "text": "炸板率偏高（31.5%）→ 注意回封质量"
+        }
+      ],
+      "shift_score": 62,
+      "shift_label": "修复",
+      "note": "情绪整体平稳，维持当前节奏。"
     }
   ],
   "indices": [
     {
       "name": "上证指数",
       "code": "000001.SH",
-      "val": 3719.584,
-      "chg": -0.42260873755478195,
-      "cje": 370422284900.0,
-      "t": "2026-10-21 11:00:03"
+      "val": 3717.746,
+      "chg": -0.47181403716364906,
+      "cje": 386372704300.0,
+      "t": "2026-10-21 11:10:03"
     },
     {
       "name": "深证成指",
       "code": "399001.SZ",
-      "val": 11776.697,
-      "chg": -0.2083924723483683,
-      "cje": 462287169100.0,
-      "t": "2026-10-21 11:00:00"
+      "val": 11747.534,
+      "chg": -0.4555095248061968,
+      "cje": 482485601900.0,
+      "t": "2026-10-21 11:10:00"
     },
     {
       "name": "创业板指",
       "code": "399006.SZ",
-      "val": 2718.239,
-      "chg": -0.7653321057256415,
-      "cje": 238407365400.0,
-      "t": "2026-10-21 11:00:00"
+      "val": 2707.39,
+      "chg": -1.161396216344685,
+      "cje": 247991123700.0,
+      "t": "2026-10-21 11:10:00"
     }
   ],
   "asOf": {
-    "indices": "11:00:00"
+    "indices": "11:10:00"
   },
   "health": {
     "status": "valid",
-    "last_valid_at": "2026-10-21 11:00:04",
+    "last_valid_at": "2026-10-21 11:10:04",
     "rejected_reason": "",
     "source": {
       "status": "valid",
@@ -786,8 +853,8 @@
       "message": "intraday_coverage_collecting",
       "date": "2026-10-21",
       "expected_count": 26,
-      "due_count": 10,
-      "observed_count": 10,
+      "due_count": 11,
+      "observed_count": 11,
       "observed_slots": [
         "09:30",
         "09:40",
@@ -798,25 +865,26 @@
         "10:30",
         "10:40",
         "10:50",
-        "11:00"
+        "11:00",
+        "11:10"
       ],
       "missing_slots": [],
       "duplicate_slots": [],
       "out_of_session": [],
       "monotonic": true,
-      "morning_coverage": 10,
+      "morning_coverage": 11,
       "afternoon_coverage": 0
     }
   },
   "live": {
     "market": {
-      "zt": 36,
+      "zt": 37,
       "dt": 0,
       "zab": 17,
-      "zab_rate": 32.1,
-      "lianban": 13,
+      "zab_rate": 31.5,
+      "lianban": 14,
       "max_lianban": 4,
-      "amount": "8329.7亿"
+      "amount": "8689.5亿"
     },
     "alerts": [
       {
@@ -825,7 +893,7 @@
       },
       {
         "level": "warn",
-        "text": "炸板率偏高（32.1%）→ 注意回封质量"
+        "text": "炸板率偏高（31.5%）→ 注意回封质量"
       }
     ],
     "concepts": [
@@ -840,6 +908,11 @@
         "chg_pct": null
       },
       {
+        "name": "IT服务Ⅱ",
+        "lead": "南威软件",
+        "chg_pct": null
+      },
+      {
         "name": "出版",
         "lead": "粤 传 媒",
         "chg_pct": null
@@ -847,11 +920,6 @@
       {
         "name": "通信设备",
         "lead": "日海智能",
-        "chg_pct": null
-      },
-      {
-        "name": "汽车零部",
-        "lead": "东安动力",
         "chg_pct": null
       }
     ]
