@@ -1,11 +1,11 @@
 {
   "schema": "intraday_runtime_v1",
   "date": "2026-10-21",
-  "updated_at": "2026-10-21 10:20:04",
+  "updated_at": "2026-10-21 10:30:04",
   "source": "必盈(实时)+必盈(实时)",
   "latest": {
-    "time": "10:20:04",
-    "ts_bj": "2026-10-21 10:20:04",
+    "time": "10:30:04",
+    "ts_bj": "2026-10-21 10:30:04",
     "date": "2026-10-21",
     "source": "intraday_live",
     "provider": "必盈(实时)+必盈(实时)",
@@ -18,16 +18,16 @@
     "pool_errors": {},
     "zt": 35,
     "dt": 0,
-    "zab": 14,
-    "zb": 28.6,
-    "fb": 71.4,
+    "zab": 18,
+    "zb": 34.0,
+    "fb": 66.0,
     "jj": 34.3,
     "lianban": 12,
     "max_lb": 4,
-    "amount": "6518.7亿",
+    "amount": "7085.6亿",
     "bf": 0,
-    "heat": 52,
-    "risk": 22,
+    "heat": 50,
+    "risk": 27,
     "headline": "修复",
     "concepts": [
       {
@@ -46,13 +46,13 @@
         "chg_pct": null
       },
       {
-        "name": "汽车零部",
-        "lead": "东安动力",
+        "name": "通信设备",
+        "lead": "日海智能",
         "chg_pct": null
       },
       {
-        "name": "通信服务",
-        "lead": "润建股份",
+        "name": "汽车零部",
+        "lead": "东安动力",
         "chg_pct": null
       }
     ],
@@ -63,12 +63,12 @@
       },
       {
         "level": "warn",
-        "text": "炸板率偏高（28.6%）→ 注意回封质量"
+        "text": "炸板率偏高（34.0%）→ 注意回封质量"
       }
     ],
-    "shift_score": 63,
+    "shift_score": 60,
     "shift_label": "修复",
-    "note": "情绪整体平稳，维持当前节奏。"
+    "note": "情绪略有回落，注意午后分歧。"
   },
   "snapshots": [
     {
@@ -467,40 +467,107 @@
       "shift_score": 63,
       "shift_label": "修复",
       "note": "情绪整体平稳，维持当前节奏。"
+    },
+    {
+      "time": "10:30:04",
+      "ts_bj": "2026-10-21 10:30:04",
+      "date": "2026-10-21",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid_empty"
+      },
+      "pool_errors": {},
+      "zt": 35,
+      "dt": 0,
+      "zab": 18,
+      "zb": 34.0,
+      "fb": 66.0,
+      "jj": 34.3,
+      "lianban": 12,
+      "max_lb": 4,
+      "amount": "7085.6亿",
+      "bf": 0,
+      "heat": 50,
+      "risk": 27,
+      "headline": "修复",
+      "concepts": [
+        {
+          "name": "通用设备",
+          "lead": "大业股份",
+          "chg_pct": null
+        },
+        {
+          "name": "照明设备",
+          "lead": "海洋王",
+          "chg_pct": null
+        },
+        {
+          "name": "出版",
+          "lead": "粤 传 媒",
+          "chg_pct": null
+        },
+        {
+          "name": "通信设备",
+          "lead": "日海智能",
+          "chg_pct": null
+        },
+        {
+          "name": "汽车零部",
+          "lead": "东安动力",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        },
+        {
+          "level": "warn",
+          "text": "炸板率偏高（34.0%）→ 注意回封质量"
+        }
+      ],
+      "shift_score": 60,
+      "shift_label": "修复",
+      "note": "情绪略有回落，注意午后分歧。"
     }
   ],
   "indices": [
     {
       "name": "上证指数",
       "code": "000001.SH",
-      "val": 3733.424,
-      "chg": -0.052096579455312673,
-      "cje": 290754379800.0,
-      "t": "2026-10-21 10:20:03"
+      "val": 3729.406,
+      "chg": -0.1596628981867912,
+      "cje": 315047597600.0,
+      "t": "2026-10-21 10:30:03"
     },
     {
       "name": "深证成指",
       "code": "399001.SZ",
-      "val": 11824.627,
-      "chg": 0.19774956805569166,
-      "cje": 360544778200.0,
-      "t": "2026-10-21 10:20:00"
+      "val": 11791.898,
+      "chg": -0.07958451999740404,
+      "cje": 393139721000.0,
+      "t": "2026-10-21 10:29:57"
     },
     {
       "name": "创业板指",
       "code": "399006.SZ",
-      "val": 2729.51,
-      "chg": -0.35386205403541676,
-      "cje": 185801308300.0,
-      "t": "2026-10-21 10:20:00"
+      "val": 2719.903,
+      "chg": -0.704584508705641,
+      "cje": 203281172800.0,
+      "t": "2026-10-21 10:30:00"
     }
   ],
   "asOf": {
-    "indices": "10:20:00"
+    "indices": "10:30:00"
   },
   "health": {
     "status": "valid",
-    "last_valid_at": "2026-10-21 10:20:04",
+    "last_valid_at": "2026-10-21 10:30:04",
     "rejected_reason": "",
     "source": {
       "status": "valid",
@@ -518,21 +585,22 @@
       "message": "intraday_coverage_collecting",
       "date": "2026-10-21",
       "expected_count": 26,
-      "due_count": 6,
-      "observed_count": 6,
+      "due_count": 7,
+      "observed_count": 7,
       "observed_slots": [
         "09:30",
         "09:40",
         "09:50",
         "10:00",
         "10:10",
-        "10:20"
+        "10:20",
+        "10:30"
       ],
       "missing_slots": [],
       "duplicate_slots": [],
       "out_of_session": [],
       "monotonic": true,
-      "morning_coverage": 6,
+      "morning_coverage": 7,
       "afternoon_coverage": 0
     }
   },
@@ -540,11 +608,11 @@
     "market": {
       "zt": 35,
       "dt": 0,
-      "zab": 14,
-      "zab_rate": 28.6,
+      "zab": 18,
+      "zab_rate": 34.0,
       "lianban": 12,
       "max_lianban": 4,
-      "amount": "6518.7亿"
+      "amount": "7085.6亿"
     },
     "alerts": [
       {
@@ -553,7 +621,7 @@
       },
       {
         "level": "warn",
-        "text": "炸板率偏高（28.6%）→ 注意回封质量"
+        "text": "炸板率偏高（34.0%）→ 注意回封质量"
       }
     ],
     "concepts": [
@@ -573,13 +641,13 @@
         "chg_pct": null
       },
       {
-        "name": "汽车零部",
-        "lead": "东安动力",
+        "name": "通信设备",
+        "lead": "日海智能",
         "chg_pct": null
       },
       {
-        "name": "通信服务",
-        "lead": "润建股份",
+        "name": "汽车零部",
+        "lead": "东安动力",
         "chg_pct": null
       }
     ]
