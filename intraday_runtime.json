@@ -1,41 +1,38 @@
 {
   "schema": "intraday_runtime_v1",
   "date": "2026-10-21",
-  "updated_at": "2026-10-21 09:30:50",
-  "source": "必盈(实时)",
+  "updated_at": "2026-10-21 09:40:04",
+  "source": "必盈(实时)+必盈(实时)",
   "latest": {
-    "time": "09:30:50",
-    "ts_bj": "2026-10-21 09:30:50",
+    "time": "09:40:04",
+    "ts_bj": "2026-10-21 09:40:04",
     "date": "2026-10-21",
     "source": "intraday_live",
-    "provider": "必盈(实时)",
-    "data_quality": "partial",
+    "provider": "必盈(实时)+必盈(实时)",
+    "data_quality": "valid",
     "pool_status": {
       "ztgc": "valid",
-      "zbgc": "failed",
-      "dtgc": "failed"
+      "zbgc": "valid",
+      "dtgc": "valid_empty"
     },
-    "pool_errors": {
-      "zbgc": "empty_response",
-      "dtgc": "empty_response"
-    },
-    "zt": 13,
-    "dt": null,
-    "zab": null,
-    "zb": null,
-    "fb": null,
-    "jj": 76.9,
-    "lianban": 10,
+    "pool_errors": {},
+    "zt": 20,
+    "dt": 0,
+    "zab": 3,
+    "zb": 13.0,
+    "fb": 87.0,
+    "jj": 45.0,
+    "lianban": 9,
     "max_lb": 4,
-    "amount": "",
+    "amount": "2534.1亿",
     "bf": 0,
-    "heat": null,
-    "risk": null,
-    "headline": "数据部分可用",
+    "heat": 59,
+    "risk": 8,
+    "headline": "走强",
     "concepts": [
       {
-        "name": "照明设备",
-        "lead": "海洋王",
+        "name": "汽车零部",
+        "lead": "东安动力",
         "chg_pct": null
       },
       {
@@ -44,13 +41,13 @@
         "chg_pct": null
       },
       {
-        "name": "汽车零部",
-        "lead": "东安动力",
+        "name": "照明设备",
+        "lead": "海洋王",
         "chg_pct": null
       },
       {
-        "name": "塑料",
-        "lead": "福莱新材",
+        "name": "出版",
+        "lead": "粤 传 媒",
         "chg_pct": null
       },
       {
@@ -63,15 +60,11 @@
       {
         "level": "info",
         "text": "盘中模式：强制实时拉取"
-      },
-      {
-        "level": "warn",
-        "text": "盘中三池响应不完整，保留最近有效数据"
       }
     ],
-    "shift_score": null,
-    "shift_label": "数据部分可用",
-    "note": "本槽位仅部分三池成功；节点已保留，缺失指标不参与判断。"
+    "shift_score": 73,
+    "shift_label": "走强",
+    "note": "承接增强、分歧收敛，情绪明显回暖。"
   },
   "snapshots": [
     {
@@ -143,52 +136,112 @@
       "shift_score": null,
       "shift_label": "数据部分可用",
       "note": "本槽位仅部分三池成功；节点已保留，缺失指标不参与判断。"
+    },
+    {
+      "time": "09:40:04",
+      "ts_bj": "2026-10-21 09:40:04",
+      "date": "2026-10-21",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid_empty"
+      },
+      "pool_errors": {},
+      "zt": 20,
+      "dt": 0,
+      "zab": 3,
+      "zb": 13.0,
+      "fb": 87.0,
+      "jj": 45.0,
+      "lianban": 9,
+      "max_lb": 4,
+      "amount": "2534.1亿",
+      "bf": 0,
+      "heat": 59,
+      "risk": 8,
+      "headline": "走强",
+      "concepts": [
+        {
+          "name": "汽车零部",
+          "lead": "东安动力",
+          "chg_pct": null
+        },
+        {
+          "name": "通用设备",
+          "lead": "大业股份",
+          "chg_pct": null
+        },
+        {
+          "name": "照明设备",
+          "lead": "海洋王",
+          "chg_pct": null
+        },
+        {
+          "name": "出版",
+          "lead": "粤 传 媒",
+          "chg_pct": null
+        },
+        {
+          "name": "工程机械",
+          "lead": "永达股份",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        }
+      ],
+      "shift_score": 73,
+      "shift_label": "走强",
+      "note": "承接增强、分歧收敛，情绪明显回暖。"
     }
   ],
   "indices": [
     {
       "name": "上证指数",
       "code": "000001.SH",
-      "val": 3732.425,
-      "chg": -0.07884091803488567,
-      "cje": 28629361800.0,
-      "t": "2026-10-21 09:30:48"
+      "val": 3733.46,
+      "chg": -0.05113281950649747,
+      "cje": 110089194600.0,
+      "t": "2026-10-21 09:40:03"
     },
     {
       "name": "深证成指",
       "code": "399001.SZ",
-      "val": 11861.555,
-      "chg": 0.5106645120999435,
-      "cje": 34369068500.0,
-      "t": "2026-10-21 09:30:45"
+      "val": 11837.094,
+      "chg": 0.3033905615402915,
+      "cje": 142458580700.0,
+      "t": "2026-10-21 09:39:57"
     },
     {
       "name": "创业板指",
       "code": "399006.SZ",
-      "val": 2751.802,
-      "chg": 0.4599513070042695,
-      "cje": 17387945400.0,
-      "t": "2026-10-21 09:30:45"
+      "val": 2739.407,
+      "chg": 0.007447421750055702,
+      "cje": 74180371200.0,
+      "t": "2026-10-21 09:39:57"
     }
   ],
   "asOf": {
-    "indices": "09:30:45"
+    "indices": "09:39:57"
   },
   "health": {
-    "status": "degraded",
-    "last_valid_at": "2026-10-21 09:30:50",
+    "status": "valid",
+    "last_valid_at": "2026-10-21 09:40:04",
     "rejected_reason": "",
     "source": {
-      "status": "partial",
+      "status": "valid",
       "pool_status": {
         "ztgc": "valid",
-        "zbgc": "failed",
-        "dtgc": "failed"
+        "zbgc": "valid",
+        "dtgc": "valid_empty"
       },
-      "pool_errors": {
-        "zbgc": "empty_response",
-        "dtgc": "empty_response"
-      }
+      "pool_errors": {}
     },
     "indices_status": "valid",
     "coverage": {
@@ -197,43 +250,40 @@
       "message": "intraday_coverage_collecting",
       "date": "2026-10-21",
       "expected_count": 26,
-      "due_count": 1,
-      "observed_count": 1,
+      "due_count": 2,
+      "observed_count": 2,
       "observed_slots": [
-        "09:30"
+        "09:30",
+        "09:40"
       ],
       "missing_slots": [],
       "duplicate_slots": [],
       "out_of_session": [],
       "monotonic": true,
-      "morning_coverage": 1,
+      "morning_coverage": 2,
       "afternoon_coverage": 0
     }
   },
   "live": {
     "market": {
-      "zt": 13,
-      "dt": null,
-      "zab": null,
-      "zab_rate": null,
-      "lianban": 10,
+      "zt": 20,
+      "dt": 0,
+      "zab": 3,
+      "zab_rate": 13.0,
+      "lianban": 9,
       "max_lianban": 4,
-      "amount": ""
+      "amount": "2534.1亿"
     },
     "alerts": [
       {
         "level": "info",
         "text": "盘中模式：强制实时拉取"
-      },
-      {
-        "level": "warn",
-        "text": "盘中三池响应不完整，保留最近有效数据"
       }
     ],
     "concepts": [
       {
-        "name": "照明设备",
-        "lead": "海洋王",
+        "name": "汽车零部",
+        "lead": "东安动力",
         "chg_pct": null
       },
       {
@@ -242,13 +292,13 @@
         "chg_pct": null
       },
       {
-        "name": "汽车零部",
-        "lead": "东安动力",
+        "name": "照明设备",
+        "lead": "海洋王",
         "chg_pct": null
       },
       {
-        "name": "塑料",
-        "lead": "福莱新材",
+        "name": "出版",
+        "lead": "粤 传 媒",
         "chg_pct": null
       },
       {
