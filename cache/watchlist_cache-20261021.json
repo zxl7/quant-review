@@ -1,6 +1,6 @@
 {
   "schema": "watchlist_v2",
-  "generated_at_bj": "2026-10-21 22:46:13",
+  "generated_at_bj": "2026-10-21 23:38:45",
   "data_date": "2026-10-21",
   "pools_date": "2026-10-21",
   "sector_resolution": {
@@ -20645,12 +20645,12 @@
         "prev_zt": 4,
         "pre_prev_zt": 7,
         "resilience": 32.41,
-        "strength": 61.0,
+        "strength": null,
         "strength_rank": null,
-        "strength_score": 61.0,
-        "strength_source": "sector_heatmap",
-        "tide_score": 71,
-        "confidence": "high",
+        "strength_score": null,
+        "strength_source": "",
+        "tide_score": 68,
+        "confidence": "medium",
         "warning_level": "none",
         "action_hint": "潮汐中性，按梯队和辨识度判断"
       },
@@ -20662,12 +20662,12 @@
         "prev_zt": 4,
         "pre_prev_zt": 3,
         "resilience": 32.41,
-        "strength": null,
+        "strength": 61.0,
         "strength_rank": null,
-        "strength_score": null,
-        "strength_source": "",
-        "tide_score": 68,
-        "confidence": "medium",
+        "strength_score": 61.0,
+        "strength_source": "sector_heatmap",
+        "tide_score": 71,
+        "confidence": "high",
         "warning_level": "none",
         "action_hint": "潮汐中性，按梯队和辨识度判断"
       },
@@ -22329,10 +22329,10 @@
         "pre_prev_zt": null,
         "resilience": 7.41,
         "strength": 2493.0,
-        "strength_rank": 6,
+        "strength_rank": 5,
         "strength_score": 34.11,
         "strength_source": "plate_rank",
-        "tide_score": 56,
+        "tide_score": 57,
         "confidence": "high",
         "warning_level": "none",
         "action_hint": "潮汐中性，按梯队和辨识度判断"
@@ -23926,11 +23926,11 @@
         "prev_zt": null,
         "pre_prev_zt": null,
         "resilience": null,
-        "strength": 2618.0,
-        "strength_rank": 5,
-        "strength_score": 35.82,
+        "strength": 2115.0,
+        "strength_rank": 6,
+        "strength_score": 28.94,
         "strength_source": "plate_rank",
-        "tide_score": 53,
+        "tide_score": 51,
         "confidence": "medium",
         "warning_level": "none",
         "action_hint": "潮汐中性，按梯队和辨识度判断"
@@ -23944,10 +23944,10 @@
         "pre_prev_zt": null,
         "resilience": null,
         "strength": 2493.0,
-        "strength_rank": 6,
+        "strength_rank": 5,
         "strength_score": 34.11,
         "strength_source": "plate_rank",
-        "tide_score": 52,
+        "tide_score": 53,
         "confidence": "medium",
         "warning_level": "none",
         "action_hint": "潮汐中性，按梯队和辨识度判断"
@@ -26251,8 +26251,8 @@
         "action_hint": "AI应用（游戏传媒）有观察价值，等待情绪/量能/消息继续共振。"
       },
       {
-        "name": "太阳能（光伏）",
-        "canonical_name": "太阳能（光伏）",
+        "name": "无人驾驶",
+        "canonical_name": "智能驾驶",
         "status": "observe_candidate",
         "base_tide_status": "neutral",
         "action": "watch",
@@ -26264,7 +26264,7 @@
         "emotion_score": 72,
         "strength_score": 61,
         "volume_score": 53,
-        "news_score": 50,
+        "news_score": 56,
         "market_score": 61,
         "structure_score": 70,
         "confidence": "medium",
@@ -26276,11 +26276,12 @@
           "market": true
         },
         "reasons": [
+          "消息催化",
           "中位承接活跃",
           "低位连板承接"
         ],
         "cautions": [],
-        "action_hint": "太阳能（光伏）有观察价值，等待情绪/量能/消息继续共振。"
+        "action_hint": "无人驾驶有观察价值，等待情绪/量能/消息继续共振。"
       },
       {
         "name": "物联网",
@@ -26315,38 +26316,6 @@
         ],
         "cautions": [],
         "action_hint": "物联网有观察价值，等待情绪/量能/消息继续共振。"
-      },
-      {
-        "name": "无人驾驶",
-        "canonical_name": "智能驾驶",
-        "status": "observe_candidate",
-        "base_tide_status": "neutral",
-        "action": "watch",
-        "tide_zone": "neutral",
-        "tide_phase": "neutral",
-        "core_score": 62,
-        "ebb_score": 36,
-        "tide_score": 68,
-        "emotion_score": 72,
-        "strength_score": 59,
-        "volume_score": 53,
-        "news_score": 56,
-        "market_score": 61,
-        "structure_score": 70,
-        "confidence": "medium",
-        "confirms": {
-          "emotion": true,
-          "strength": false,
-          "volume": false,
-          "news": false,
-          "market": true
-        },
-        "reasons": [
-          "消息催化",
-          "低位连板承接"
-        ],
-        "cautions": [],
-        "action_hint": "无人驾驶有观察价值，等待情绪/量能/消息继续共振。"
       },
       {
         "name": "北斗导航",
@@ -26412,6 +26381,37 @@
         ],
         "cautions": [],
         "action_hint": "一带一路有观察价值，等待情绪/量能/消息继续共振。"
+      },
+      {
+        "name": "太阳能（光伏）",
+        "canonical_name": "太阳能（光伏）",
+        "status": "observe_candidate",
+        "base_tide_status": "neutral",
+        "action": "watch",
+        "tide_zone": "neutral",
+        "tide_phase": "neutral",
+        "core_score": 61,
+        "ebb_score": 37,
+        "tide_score": 68,
+        "emotion_score": 72,
+        "strength_score": 59,
+        "volume_score": 53,
+        "news_score": 50,
+        "market_score": 61,
+        "structure_score": 70,
+        "confidence": "low",
+        "confirms": {
+          "emotion": true,
+          "strength": false,
+          "volume": false,
+          "news": false,
+          "market": true
+        },
+        "reasons": [
+          "低位连板承接"
+        ],
+        "cautions": [],
+        "action_hint": "太阳能（光伏）有观察价值，等待情绪/量能/消息继续共振。"
       },
       {
         "name": "区块链",
@@ -26956,6 +26956,39 @@
         ],
         "cautions": [],
         "action_hint": "知识产权核心潮汐中性，按梯队和个股辨识度处理。"
+      },
+      {
+        "name": "生物医药",
+        "canonical_name": "生物医药",
+        "status": "neutral_wait",
+        "base_tide_status": "neutral",
+        "action": "watch",
+        "tide_zone": "neutral",
+        "tide_phase": "neutral",
+        "core_score": 54,
+        "ebb_score": 42,
+        "tide_score": 57,
+        "emotion_score": 72,
+        "strength_score": 40,
+        "volume_score": 45,
+        "news_score": 64,
+        "market_score": 61,
+        "structure_score": 70,
+        "confidence": "high",
+        "confirms": {
+          "emotion": true,
+          "strength": false,
+          "volume": false,
+          "news": true,
+          "market": true
+        },
+        "reasons": [
+          "板块强度第5",
+          "消息催化",
+          "低位连板承接"
+        ],
+        "cautions": [],
+        "action_hint": "生物医药核心潮汐中性，按梯队和个股辨识度处理。"
       },
       {
         "name": "金融科技",
@@ -30854,11 +30887,11 @@
         "action": "avoid",
         "tide_zone": "ebbing",
         "tide_phase": "ebbing",
-        "core_score": 53,
-        "ebb_score": 57,
-        "tide_score": 52,
+        "core_score": 55,
+        "ebb_score": 56,
+        "tide_score": 53,
         "emotion_score": 72,
-        "strength_score": 34,
+        "strength_score": 40,
         "volume_score": 45,
         "news_score": 80,
         "market_score": 61,
@@ -30872,6 +30905,7 @@
           "market": true
         },
         "reasons": [
+          "板块强度第5",
           "消息催化",
           "低位连板承接"
         ],
@@ -30911,38 +30945,6 @@
           "潮汐偏弱"
         ],
         "action_hint": "边缘计算核心潮汐偏弱，降低权重，避免追高。"
-      },
-      {
-        "name": "生物医药",
-        "canonical_name": "生物医药",
-        "status": "avoid_weak",
-        "base_tide_status": "neutral",
-        "action": "avoid",
-        "tide_zone": "ebbing",
-        "tide_phase": "ebbing",
-        "core_score": 52,
-        "ebb_score": 57,
-        "tide_score": 56,
-        "emotion_score": 72,
-        "strength_score": 34,
-        "volume_score": 45,
-        "news_score": 64,
-        "market_score": 61,
-        "structure_score": 70,
-        "confidence": "high",
-        "confirms": {
-          "emotion": true,
-          "strength": false,
-          "volume": false,
-          "news": true,
-          "market": true
-        },
-        "reasons": [
-          "消息催化",
-          "低位连板承接"
-        ],
-        "cautions": [],
-        "action_hint": "生物医药核心潮汐偏弱，降低权重，避免追高。"
       },
       {
         "name": "染料涂料",
@@ -31009,38 +31011,6 @@
           "潮汐偏弱"
         ],
         "action_hint": "风能核心潮汐偏弱，降低权重，避免追高。"
-      },
-      {
-        "name": "北京市",
-        "canonical_name": "北京市",
-        "status": "avoid_weak",
-        "base_tide_status": "neutral",
-        "action": "avoid",
-        "tide_zone": "ebbing",
-        "tide_phase": "ebbing",
-        "core_score": 51,
-        "ebb_score": 56,
-        "tide_score": 53,
-        "emotion_score": 72,
-        "strength_score": 42,
-        "volume_score": 45,
-        "news_score": 50,
-        "market_score": 61,
-        "structure_score": 70,
-        "confidence": "low",
-        "confirms": {
-          "emotion": true,
-          "strength": false,
-          "volume": false,
-          "news": false,
-          "market": true
-        },
-        "reasons": [
-          "板块强度第5",
-          "低位连板承接"
-        ],
-        "cautions": [],
-        "action_hint": "北京市核心潮汐偏弱，降低权重，避免追高。"
       },
       {
         "name": "电子后视镜",
@@ -32325,6 +32295,37 @@
           "潮汐偏弱"
         ],
         "action_hint": "预盈预增核心潮汐偏弱，降低权重，避免追高。"
+      },
+      {
+        "name": "北京市",
+        "canonical_name": "北京市",
+        "status": "avoid_weak",
+        "base_tide_status": "neutral",
+        "action": "avoid",
+        "tide_zone": "ebbing",
+        "tide_phase": "ebbing",
+        "core_score": 47,
+        "ebb_score": 59,
+        "tide_score": 51,
+        "emotion_score": 72,
+        "strength_score": 29,
+        "volume_score": 45,
+        "news_score": 50,
+        "market_score": 61,
+        "structure_score": 70,
+        "confidence": "low",
+        "confirms": {
+          "emotion": true,
+          "strength": false,
+          "volume": false,
+          "news": false,
+          "market": true
+        },
+        "reasons": [
+          "低位连板承接"
+        ],
+        "cautions": [],
+        "action_hint": "北京市核心潮汐偏弱，降低权重，避免追高。"
       },
       {
         "name": "汽车电子",
@@ -34272,11 +34273,11 @@
         "机器人概念",
         "医药",
         "边缘计算",
-        "生物医药",
         "染料涂料",
         "风能",
-        "北京市",
-        "电子后视镜"
+        "电子后视镜",
+        "LCP概念",
+        "PEEK概念"
       ],
       "rising": [
         "华为概念"
@@ -34295,11 +34296,11 @@
         "机器人概念",
         "医药",
         "边缘计算",
-        "生物医药",
         "染料涂料",
         "风能",
-        "北京市",
-        "电子后视镜"
+        "电子后视镜",
+        "LCP概念",
+        "PEEK概念"
       ],
       "action_hint": "涨潮方向：华为概念，优先围绕最强核心做节奏。"
     }
