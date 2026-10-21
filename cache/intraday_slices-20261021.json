@@ -2,7 +2,7 @@
   "schema": "intraday_snapshot_v1",
   "render_mode": "snapshot_stream",
   "date": "2026-10-21",
-  "count": 2,
+  "count": 3,
   "interval_min": null,
   "simulated": false,
   "snapshots": [
@@ -138,11 +138,78 @@
       "shift_score": 73,
       "shift_label": "走强",
       "note": "承接增强、分歧收敛，情绪明显回暖。"
+    },
+    {
+      "time": "09:50:04",
+      "ts_bj": "2026-10-21 09:50:04",
+      "date": "2026-10-21",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid_empty"
+      },
+      "pool_errors": {},
+      "zt": 27,
+      "dt": 0,
+      "zab": 9,
+      "zb": 25.0,
+      "fb": 75.0,
+      "jj": 40.7,
+      "lianban": 11,
+      "max_lb": 4,
+      "amount": "3804.3亿",
+      "bf": 0,
+      "heat": 54,
+      "risk": 18,
+      "headline": "修复",
+      "concepts": [
+        {
+          "name": "汽车零部",
+          "lead": "东安动力",
+          "chg_pct": null
+        },
+        {
+          "name": "通用设备",
+          "lead": "大业股份",
+          "chg_pct": null
+        },
+        {
+          "name": "照明设备",
+          "lead": "海洋王",
+          "chg_pct": null
+        },
+        {
+          "name": "出版",
+          "lead": "粤 传 媒",
+          "chg_pct": null
+        },
+        {
+          "name": "通信服务",
+          "lead": "润建股份",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        },
+        {
+          "level": "warn",
+          "text": "炸板率偏高（25.0%）→ 注意回封质量"
+        }
+      ],
+      "shift_score": 66,
+      "shift_label": "修复",
+      "note": "炸板/跌停抬升，情绪明显走弱。"
     }
   ],
   "latest": {
-    "time": "09:40:04",
-    "ts_bj": "2026-10-21 09:40:04",
+    "time": "09:50:04",
+    "ts_bj": "2026-10-21 09:50:04",
     "date": "2026-10-21",
     "source": "intraday_live",
     "provider": "必盈(实时)+必盈(实时)",
@@ -153,19 +220,19 @@
       "dtgc": "valid_empty"
     },
     "pool_errors": {},
-    "zt": 20,
+    "zt": 27,
     "dt": 0,
-    "zab": 3,
-    "zb": 13.0,
-    "fb": 87.0,
-    "jj": 45.0,
-    "lianban": 9,
+    "zab": 9,
+    "zb": 25.0,
+    "fb": 75.0,
+    "jj": 40.7,
+    "lianban": 11,
     "max_lb": 4,
-    "amount": "2534.1亿",
+    "amount": "3804.3亿",
     "bf": 0,
-    "heat": 59,
-    "risk": 8,
-    "headline": "走强",
+    "heat": 54,
+    "risk": 18,
+    "headline": "修复",
     "concepts": [
       {
         "name": "汽车零部",
@@ -188,8 +255,8 @@
         "chg_pct": null
       },
       {
-        "name": "工程机械",
-        "lead": "永达股份",
+        "name": "通信服务",
+        "lead": "润建股份",
         "chg_pct": null
       }
     ],
@@ -197,17 +264,21 @@
       {
         "level": "info",
         "text": "盘中模式：强制实时拉取"
+      },
+      {
+        "level": "warn",
+        "text": "炸板率偏高（25.0%）→ 注意回封质量"
       }
     ],
-    "shift_score": 73,
-    "shift_label": "走强",
-    "note": "承接增强、分歧收敛，情绪明显回暖。"
+    "shift_score": 66,
+    "shift_label": "修复",
+    "note": "炸板/跌停抬升，情绪明显走弱。"
   },
-  "updated_at": "2026-10-21 09:40:04",
-  "snapshot_sig": "2026-10-21|2026-10-21 09:40:04|2",
+  "updated_at": "2026-10-21 09:50:04",
+  "snapshot_sig": "2026-10-21|2026-10-21 09:50:04|3",
   "health": {
     "status": "valid",
-    "last_valid_at": "2026-10-21 09:40:04",
+    "last_valid_at": "2026-10-21 09:50:04",
     "rejected_reason": "",
     "source": {
       "status": "valid",
