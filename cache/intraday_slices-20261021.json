@@ -2,7 +2,7 @@
   "schema": "intraday_snapshot_v1",
   "render_mode": "snapshot_stream",
   "date": "2026-10-21",
-  "count": 15,
+  "count": 16,
   "interval_min": null,
   "simulated": false,
   "snapshots": [
@@ -969,39 +969,128 @@
       "shift_score": null,
       "shift_label": "数据暂缺",
       "note": "本槽位三池请求均未成功，已记录数据暂缺；等待下一节点自动恢复。"
+    },
+    {
+      "time": "15:00:06",
+      "ts_bj": "2026-10-21 15:00:06",
+      "date": "2026-10-21",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid"
+      },
+      "pool_errors": {},
+      "zt": 50,
+      "dt": 5,
+      "zab": 20,
+      "zb": 28.6,
+      "fb": 71.4,
+      "jj": 32.0,
+      "lianban": 16,
+      "max_lb": 4,
+      "amount": "14293.5亿",
+      "bf": 0,
+      "heat": 54,
+      "risk": 32,
+      "headline": "修复",
+      "concepts": [
+        {
+          "name": "IT服务Ⅱ",
+          "lead": "南威软件",
+          "chg_pct": null
+        },
+        {
+          "name": "通用设备",
+          "lead": "大业股份",
+          "chg_pct": null
+        },
+        {
+          "name": "通信设备",
+          "lead": "移远通信",
+          "chg_pct": null
+        },
+        {
+          "name": "出版",
+          "lead": "粤 传 媒",
+          "chg_pct": null
+        },
+        {
+          "name": "照明设备",
+          "lead": "海洋王",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        },
+        {
+          "level": "warn",
+          "text": "炸板率偏高（28.6%）→ 注意回封质量"
+        }
+      ],
+      "shift_score": 60,
+      "shift_label": "修复",
+      "note": "承接增强、分歧收敛，情绪明显回暖。"
     }
   ],
   "latest": {
-    "time": "14:50:06",
-    "ts_bj": "2026-10-21 14:50:06",
+    "time": "15:00:06",
+    "ts_bj": "2026-10-21 15:00:06",
     "date": "2026-10-21",
     "source": "intraday_live",
-    "provider": "unknown",
-    "data_quality": "unavailable",
+    "provider": "必盈(实时)+必盈(实时)",
+    "data_quality": "valid",
     "pool_status": {
-      "ztgc": "failed",
-      "zbgc": "failed",
-      "dtgc": "failed"
+      "ztgc": "valid",
+      "zbgc": "valid",
+      "dtgc": "valid"
     },
-    "pool_errors": {
-      "ztgc": "HTTP Error 429: Too Many Requests",
-      "zbgc": "HTTP Error 429: Too Many Requests",
-      "dtgc": "HTTP Error 429: Too Many Requests"
-    },
-    "zt": null,
-    "dt": null,
-    "zab": null,
-    "zb": null,
-    "fb": null,
-    "jj": null,
-    "lianban": null,
-    "max_lb": null,
-    "amount": "",
+    "pool_errors": {},
+    "zt": 50,
+    "dt": 5,
+    "zab": 20,
+    "zb": 28.6,
+    "fb": 71.4,
+    "jj": 32.0,
+    "lianban": 16,
+    "max_lb": 4,
+    "amount": "14293.5亿",
     "bf": 0,
-    "heat": null,
-    "risk": null,
-    "headline": "数据暂缺",
-    "concepts": [],
+    "heat": 54,
+    "risk": 32,
+    "headline": "修复",
+    "concepts": [
+      {
+        "name": "IT服务Ⅱ",
+        "lead": "南威软件",
+        "chg_pct": null
+      },
+      {
+        "name": "通用设备",
+        "lead": "大业股份",
+        "chg_pct": null
+      },
+      {
+        "name": "通信设备",
+        "lead": "移远通信",
+        "chg_pct": null
+      },
+      {
+        "name": "出版",
+        "lead": "粤 传 媒",
+        "chg_pct": null
+      },
+      {
+        "name": "照明设备",
+        "lead": "海洋王",
+        "chg_pct": null
+      }
+    ],
     "alerts": [
       {
         "level": "info",
@@ -1009,35 +1098,27 @@
       },
       {
         "level": "warn",
-        "text": "盘中三池响应不完整，保留最近有效数据"
-      },
-      {
-        "level": "warn",
-        "text": "三池请求均超时，本槽位跳过板块补抓并等待下一节点"
+        "text": "炸板率偏高（28.6%）→ 注意回封质量"
       }
     ],
-    "shift_score": null,
-    "shift_label": "数据暂缺",
-    "note": "本槽位三池请求均未成功，已记录数据暂缺；等待下一节点自动恢复。"
+    "shift_score": 60,
+    "shift_label": "修复",
+    "note": "承接增强、分歧收敛，情绪明显回暖。"
   },
-  "updated_at": "2026-10-21 14:50:06",
-  "snapshot_sig": "2026-10-21|2026-10-21 14:50:06|15",
+  "updated_at": "2026-10-21 15:00:06",
+  "snapshot_sig": "2026-10-21|2026-10-21 15:00:06|16",
   "health": {
-    "status": "degraded",
-    "last_valid_at": "2026-10-21 14:50:06",
+    "status": "valid",
+    "last_valid_at": "2026-10-21 15:00:06",
     "rejected_reason": "",
     "source": {
-      "status": "partial",
+      "status": "valid",
       "pool_status": {
-        "ztgc": "failed",
-        "zbgc": "failed",
-        "dtgc": "failed"
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid"
       },
-      "pool_errors": {
-        "ztgc": "HTTP Error 429: Too Many Requests",
-        "zbgc": "HTTP Error 429: Too Many Requests",
-        "dtgc": "HTTP Error 429: Too Many Requests"
-      }
+      "pool_errors": {}
     }
   }
 }
