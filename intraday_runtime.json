@@ -1,58 +1,61 @@
 {
   "schema": "intraday_runtime_v1",
-  "date": "2026-10-20",
-  "updated_at": "2026-10-20 15:00:06",
-  "source": "必盈(实时)+必盈(实时)",
+  "date": "2026-10-21",
+  "updated_at": "2026-10-21 09:30:50",
+  "source": "必盈(实时)",
   "latest": {
-    "time": "15:00:06",
-    "ts_bj": "2026-10-20 15:00:06",
-    "date": "2026-10-20",
+    "time": "09:30:50",
+    "ts_bj": "2026-10-21 09:30:50",
+    "date": "2026-10-21",
     "source": "intraday_live",
-    "provider": "必盈(实时)+必盈(实时)",
-    "data_quality": "valid",
+    "provider": "必盈(实时)",
+    "data_quality": "partial",
     "pool_status": {
       "ztgc": "valid",
-      "zbgc": "valid",
-      "dtgc": "valid"
+      "zbgc": "failed",
+      "dtgc": "failed"
     },
-    "pool_errors": {},
-    "zt": 53,
-    "dt": 7,
-    "zab": 30,
-    "zb": 36.1,
-    "fb": 63.9,
-    "jj": 24.5,
-    "lianban": 13,
+    "pool_errors": {
+      "zbgc": "empty_response",
+      "dtgc": "empty_response"
+    },
+    "zt": 13,
+    "dt": null,
+    "zab": null,
+    "zb": null,
+    "fb": null,
+    "jj": 76.9,
+    "lianban": 10,
     "max_lb": 4,
-    "amount": "14561.1亿",
+    "amount": "",
     "bf": 0,
-    "heat": 50,
-    "risk": 44,
-    "headline": "分歧",
+    "heat": null,
+    "risk": null,
+    "headline": "数据部分可用",
     "concepts": [
-      {
-        "name": "通用设备",
-        "lead": "京城股份",
-        "chg_pct": null
-      },
       {
         "name": "照明设备",
         "lead": "海洋王",
         "chg_pct": null
       },
       {
-        "name": "消费电子",
-        "lead": "科森科技",
+        "name": "通用设备",
+        "lead": "大业股份",
         "chg_pct": null
       },
       {
-        "name": "化学制药",
-        "lead": "海正药业",
+        "name": "汽车零部",
+        "lead": "东安动力",
         "chg_pct": null
       },
       {
-        "name": "半导体",
-        "lead": "瑞芯微",
+        "name": "塑料",
+        "lead": "福莱新材",
+        "chg_pct": null
+      },
+      {
+        "name": "工程机械",
+        "lead": "永达股份",
         "chg_pct": null
       }
     ],
@@ -62,52 +65,45 @@
         "text": "盘中模式：强制实时拉取"
       },
       {
-        "level": "danger",
-        "text": "炸板率高（36.1%）→ 分歧偏强，谨慎接力"
+        "level": "warn",
+        "text": "盘中三池响应不完整，保留最近有效数据"
       }
     ],
-    "shift_score": 53,
-    "shift_label": "分歧",
-    "note": "承接增强、分歧收敛，情绪明显回暖。"
+    "shift_score": null,
+    "shift_label": "数据部分可用",
+    "note": "本槽位仅部分三池成功；节点已保留，缺失指标不参与判断。"
   },
   "snapshots": [
     {
-      "time": "09:30:49",
-      "ts_bj": "2026-10-20 09:30:49",
-      "date": "2026-10-20",
+      "time": "09:30:50",
+      "ts_bj": "2026-10-21 09:30:50",
+      "date": "2026-10-21",
       "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
+      "provider": "必盈(实时)",
+      "data_quality": "partial",
       "pool_status": {
         "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid_empty"
+        "zbgc": "failed",
+        "dtgc": "failed"
       },
-      "pool_errors": {},
-      "zt": 12,
-      "dt": 0,
-      "zab": 1,
-      "zb": 7.7,
-      "fb": 92.3,
-      "jj": 58.3,
-      "lianban": 7,
+      "pool_errors": {
+        "zbgc": "empty_response",
+        "dtgc": "empty_response"
+      },
+      "zt": 13,
+      "dt": null,
+      "zab": null,
+      "zb": null,
+      "fb": null,
+      "jj": 76.9,
+      "lianban": 10,
       "max_lb": 4,
-      "amount": "544.2亿",
+      "amount": "",
       "bf": 0,
-      "heat": 63,
-      "risk": 5,
-      "headline": "走强",
+      "heat": null,
+      "risk": null,
+      "headline": "数据部分可用",
       "concepts": [
-        {
-          "name": "汽车零部",
-          "lead": "长春一东",
-          "chg_pct": null
-        },
-        {
-          "name": "软件开发",
-          "lead": "吉大正元",
-          "chg_pct": null
-        },
         {
           "name": "照明设备",
           "lead": "海洋王",
@@ -116,819 +112,24 @@
         {
           "name": "通用设备",
           "lead": "大业股份",
+          "chg_pct": null
+        },
+        {
+          "name": "汽车零部",
+          "lead": "东安动力",
           "chg_pct": null
         },
         {
           "name": "塑料",
           "lead": "福莱新材",
           "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        }
-      ],
-      "shift_score": 76,
-      "shift_label": "走强",
-      "note": "盘中实时切片已接入，可逐点观察情绪变化。"
-    },
-    {
-      "time": "09:40:04",
-      "ts_bj": "2026-10-20 09:40:04",
-      "date": "2026-10-20",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid"
-      },
-      "pool_errors": {},
-      "zt": 17,
-      "dt": 1,
-      "zab": 5,
-      "zb": 22.7,
-      "fb": 77.3,
-      "jj": 52.9,
-      "lianban": 9,
-      "max_lb": 4,
-      "amount": "2196.4亿",
-      "bf": 0,
-      "heat": 57,
-      "risk": 16,
-      "headline": "修复",
-      "concepts": [
-        {
-          "name": "汽车零部",
-          "lead": "长春一东",
-          "chg_pct": null
         },
         {
-          "name": "通用设备",
-          "lead": "大业股份",
-          "chg_pct": null
-        },
-        {
-          "name": "软件开发",
-          "lead": "吉大正元",
-          "chg_pct": null
-        },
-        {
-          "name": "照明设备",
-          "lead": "海洋王",
-          "chg_pct": null
-        },
-        {
-          "name": "化学制药",
-          "lead": "海正药业",
+          "name": "工程机械",
+          "lead": "永达股份",
           "chg_pct": null
         }
       ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        }
-      ],
-      "shift_score": 68,
-      "shift_label": "修复",
-      "note": "炸板/跌停抬升，情绪明显走弱。"
-    },
-    {
-      "time": "09:50:05",
-      "ts_bj": "2026-10-20 09:50:05",
-      "date": "2026-10-20",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid"
-      },
-      "pool_errors": {},
-      "zt": 26,
-      "dt": 1,
-      "zab": 6,
-      "zb": 18.8,
-      "fb": 81.2,
-      "jj": 38.5,
-      "lianban": 10,
-      "max_lb": 4,
-      "amount": "3486.0亿",
-      "bf": 0,
-      "heat": 56,
-      "risk": 15,
-      "headline": "修复",
-      "concepts": [
-        {
-          "name": "照明设备",
-          "lead": "海洋王",
-          "chg_pct": null
-        },
-        {
-          "name": "通用设备",
-          "lead": "京城股份",
-          "chg_pct": null
-        },
-        {
-          "name": "元件",
-          "lead": "协和电子",
-          "chg_pct": null
-        },
-        {
-          "name": "出版",
-          "lead": "粤 传 媒",
-          "chg_pct": null
-        },
-        {
-          "name": "软件开发",
-          "lead": "吉大正元",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        }
-      ],
-      "shift_score": 68,
-      "shift_label": "修复",
-      "note": "情绪整体平稳，维持当前节奏。"
-    },
-    {
-      "time": "10:00:05",
-      "ts_bj": "2026-10-20 10:00:05",
-      "date": "2026-10-20",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid"
-      },
-      "pool_errors": {},
-      "zt": 27,
-      "dt": 1,
-      "zab": 9,
-      "zb": 25.0,
-      "fb": 75.0,
-      "jj": 40.7,
-      "lianban": 11,
-      "max_lb": 3,
-      "amount": "4422.3亿",
-      "bf": 0,
-      "heat": 52,
-      "risk": 19,
-      "headline": "修复",
-      "concepts": [
-        {
-          "name": "通用设备",
-          "lead": "京城股份",
-          "chg_pct": null
-        },
-        {
-          "name": "元件",
-          "lead": "协和电子",
-          "chg_pct": null
-        },
-        {
-          "name": "照明设备",
-          "lead": "海洋王",
-          "chg_pct": null
-        },
-        {
-          "name": "出版",
-          "lead": "粤 传 媒",
-          "chg_pct": null
-        },
-        {
-          "name": "汽车零部",
-          "lead": "东安动力",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        },
-        {
-          "level": "warn",
-          "text": "炸板率偏高（25.0%）→ 注意回封质量"
-        }
-      ],
-      "shift_score": 64,
-      "shift_label": "修复",
-      "note": "情绪略有回落，注意午后分歧。"
-    },
-    {
-      "time": "10:10:04",
-      "ts_bj": "2026-10-20 10:10:04",
-      "date": "2026-10-20",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid"
-      },
-      "pool_errors": {},
-      "zt": 32,
-      "dt": 1,
-      "zab": 10,
-      "zb": 23.8,
-      "fb": 76.2,
-      "jj": 40.6,
-      "lianban": 13,
-      "max_lb": 4,
-      "amount": "5233.5亿",
-      "bf": 0,
-      "heat": 56,
-      "risk": 19,
-      "headline": "修复",
-      "concepts": [
-        {
-          "name": "元件",
-          "lead": "协和电子",
-          "chg_pct": null
-        },
-        {
-          "name": "通用设备",
-          "lead": "京城股份",
-          "chg_pct": null
-        },
-        {
-          "name": "照明设备",
-          "lead": "海洋王",
-          "chg_pct": null
-        },
-        {
-          "name": "汽车零部",
-          "lead": "东安动力",
-          "chg_pct": null
-        },
-        {
-          "name": "通信设备",
-          "lead": "移远通信",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        }
-      ],
-      "shift_score": 66,
-      "shift_label": "修复",
-      "note": "情绪边际修复，但仍需确认持续性。"
-    },
-    {
-      "time": "10:20:05",
-      "ts_bj": "2026-10-20 10:20:05",
-      "date": "2026-10-20",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid"
-      },
-      "pool_errors": {},
-      "zt": 33,
-      "dt": 3,
-      "zab": 11,
-      "zb": 25.0,
-      "fb": 75.0,
-      "jj": 39.4,
-      "lianban": 13,
-      "max_lb": 4,
-      "amount": "5887.0亿",
-      "bf": 0,
-      "heat": 55,
-      "risk": 23,
-      "headline": "修复",
-      "concepts": [
-        {
-          "name": "通用设备",
-          "lead": "京城股份",
-          "chg_pct": null
-        },
-        {
-          "name": "元件",
-          "lead": "协和电子",
-          "chg_pct": null
-        },
-        {
-          "name": "照明设备",
-          "lead": "海洋王",
-          "chg_pct": null
-        },
-        {
-          "name": "汽车零部",
-          "lead": "东安动力",
-          "chg_pct": null
-        },
-        {
-          "name": "消费电子",
-          "lead": "科森科技",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        },
-        {
-          "level": "warn",
-          "text": "炸板率偏高（25.0%）→ 注意回封质量"
-        }
-      ],
-      "shift_score": 64,
-      "shift_label": "修复",
-      "note": "情绪略有回落，注意午后分歧。"
-    },
-    {
-      "time": "10:30:05",
-      "ts_bj": "2026-10-20 10:30:05",
-      "date": "2026-10-20",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid"
-      },
-      "pool_errors": {},
-      "zt": 40,
-      "dt": 3,
-      "zab": 12,
-      "zb": 23.1,
-      "fb": 76.9,
-      "jj": 32.5,
-      "lianban": 13,
-      "max_lb": 4,
-      "amount": "6463.1亿",
-      "bf": 0,
-      "heat": 55,
-      "risk": 23,
-      "headline": "修复",
-      "concepts": [
-        {
-          "name": "通用设备",
-          "lead": "京城股份",
-          "chg_pct": null
-        },
-        {
-          "name": "汽车零部",
-          "lead": "东安动力",
-          "chg_pct": null
-        },
-        {
-          "name": "消费电子",
-          "lead": "科森科技",
-          "chg_pct": null
-        },
-        {
-          "name": "元件",
-          "lead": "协和电子",
-          "chg_pct": null
-        },
-        {
-          "name": "通信设备",
-          "lead": "移远通信",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        }
-      ],
-      "shift_score": 64,
-      "shift_label": "修复",
-      "note": "情绪整体平稳，维持当前节奏。"
-    },
-    {
-      "time": "10:40:06",
-      "ts_bj": "2026-10-20 10:40:06",
-      "date": "2026-10-20",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid"
-      },
-      "pool_errors": {},
-      "zt": 43,
-      "dt": 2,
-      "zab": 14,
-      "zb": 24.6,
-      "fb": 75.4,
-      "jj": 30.2,
-      "lianban": 13,
-      "max_lb": 4,
-      "amount": "7035.8亿",
-      "bf": 0,
-      "heat": 54,
-      "risk": 23,
-      "headline": "修复",
-      "concepts": [
-        {
-          "name": "通用设备",
-          "lead": "京城股份",
-          "chg_pct": null
-        },
-        {
-          "name": "汽车零部",
-          "lead": "东安动力",
-          "chg_pct": null
-        },
-        {
-          "name": "消费电子",
-          "lead": "科森科技",
-          "chg_pct": null
-        },
-        {
-          "name": "元件",
-          "lead": "协和电子",
-          "chg_pct": null
-        },
-        {
-          "name": "通信设备",
-          "lead": "移远通信",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        }
-      ],
-      "shift_score": 64,
-      "shift_label": "修复",
-      "note": "情绪整体平稳，维持当前节奏。"
-    },
-    {
-      "time": "10:50:07",
-      "ts_bj": "2026-10-20 10:50:07",
-      "date": "2026-10-20",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid"
-      },
-      "pool_errors": {},
-      "zt": 47,
-      "dt": 2,
-      "zab": 11,
-      "zb": 19.0,
-      "fb": 81.0,
-      "jj": 27.7,
-      "lianban": 13,
-      "max_lb": 4,
-      "amount": "7764.0亿",
-      "bf": 0,
-      "heat": 57,
-      "risk": 18,
-      "headline": "修复",
-      "concepts": [
-        {
-          "name": "通用设备",
-          "lead": "京城股份",
-          "chg_pct": null
-        },
-        {
-          "name": "汽车零部",
-          "lead": "东安动力",
-          "chg_pct": null
-        },
-        {
-          "name": "元件",
-          "lead": "协和电子",
-          "chg_pct": null
-        },
-        {
-          "name": "消费电子",
-          "lead": "科森科技",
-          "chg_pct": null
-        },
-        {
-          "name": "通信设备",
-          "lead": "移远通信",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        }
-      ],
-      "shift_score": 68,
-      "shift_label": "修复",
-      "note": "情绪边际修复，但仍需确认持续性。"
-    },
-    {
-      "time": "11:00:06",
-      "ts_bj": "2026-10-20 11:00:06",
-      "date": "2026-10-20",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid"
-      },
-      "pool_errors": {},
-      "zt": 53,
-      "dt": 1,
-      "zab": 13,
-      "zb": 19.7,
-      "fb": 80.3,
-      "jj": 24.5,
-      "lianban": 13,
-      "max_lb": 4,
-      "amount": "8264.2亿",
-      "bf": 0,
-      "heat": 57,
-      "risk": 18,
-      "headline": "修复",
-      "concepts": [
-        {
-          "name": "通用设备",
-          "lead": "京城股份",
-          "chg_pct": null
-        },
-        {
-          "name": "汽车零部",
-          "lead": "东安动力",
-          "chg_pct": null
-        },
-        {
-          "name": "元件",
-          "lead": "协和电子",
-          "chg_pct": null
-        },
-        {
-          "name": "半导体",
-          "lead": "瑞芯微",
-          "chg_pct": null
-        },
-        {
-          "name": "消费电子",
-          "lead": "科森科技",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        }
-      ],
-      "shift_score": 68,
-      "shift_label": "修复",
-      "note": "情绪整体平稳，维持当前节奏。"
-    },
-    {
-      "time": "11:10:05",
-      "ts_bj": "2026-10-20 11:10:05",
-      "date": "2026-10-20",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid"
-      },
-      "pool_errors": {},
-      "zt": 54,
-      "dt": 1,
-      "zab": 12,
-      "zb": 18.2,
-      "fb": 81.8,
-      "jj": 24.1,
-      "lianban": 13,
-      "max_lb": 4,
-      "amount": "8661.3亿",
-      "bf": 0,
-      "heat": 57,
-      "risk": 17,
-      "headline": "修复",
-      "concepts": [
-        {
-          "name": "通用设备",
-          "lead": "京城股份",
-          "chg_pct": null
-        },
-        {
-          "name": "元件",
-          "lead": "协和电子",
-          "chg_pct": null
-        },
-        {
-          "name": "半导体",
-          "lead": "瑞芯微",
-          "chg_pct": null
-        },
-        {
-          "name": "照明设备",
-          "lead": "海洋王",
-          "chg_pct": null
-        },
-        {
-          "name": "汽车零部",
-          "lead": "东安动力",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        }
-      ],
-      "shift_score": 68,
-      "shift_label": "修复",
-      "note": "情绪整体平稳，维持当前节奏。"
-    },
-    {
-      "time": "11:20:05",
-      "ts_bj": "2026-10-20 11:20:05",
-      "date": "2026-10-20",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid"
-      },
-      "pool_errors": {},
-      "zt": 54,
-      "dt": 1,
-      "zab": 14,
-      "zb": 20.6,
-      "fb": 79.4,
-      "jj": 24.1,
-      "lianban": 13,
-      "max_lb": 4,
-      "amount": "9044.1亿",
-      "bf": 0,
-      "heat": 56,
-      "risk": 19,
-      "headline": "修复",
-      "concepts": [
-        {
-          "name": "通用设备",
-          "lead": "京城股份",
-          "chg_pct": null
-        },
-        {
-          "name": "汽车零部",
-          "lead": "东安动力",
-          "chg_pct": null
-        },
-        {
-          "name": "元件",
-          "lead": "协和电子",
-          "chg_pct": null
-        },
-        {
-          "name": "照明设备",
-          "lead": "海洋王",
-          "chg_pct": null
-        },
-        {
-          "name": "消费电子",
-          "lead": "科森科技",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        }
-      ],
-      "shift_score": 66,
-      "shift_label": "修复",
-      "note": "情绪略有回落，注意午后分歧。"
-    },
-    {
-      "time": "11:30:05",
-      "ts_bj": "2026-10-20 11:30:05",
-      "date": "2026-10-20",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid"
-      },
-      "pool_errors": {},
-      "zt": 56,
-      "dt": 1,
-      "zab": 15,
-      "zb": 21.1,
-      "fb": 78.9,
-      "jj": 23.2,
-      "lianban": 13,
-      "max_lb": 4,
-      "amount": "9334.7亿",
-      "bf": 0,
-      "heat": 56,
-      "risk": 20,
-      "headline": "修复",
-      "concepts": [
-        {
-          "name": "通用设备",
-          "lead": "京城股份",
-          "chg_pct": null
-        },
-        {
-          "name": "汽车零部",
-          "lead": "东安动力",
-          "chg_pct": null
-        },
-        {
-          "name": "元件",
-          "lead": "协和电子",
-          "chg_pct": null
-        },
-        {
-          "name": "半导体",
-          "lead": "瑞芯微",
-          "chg_pct": null
-        },
-        {
-          "name": "照明设备",
-          "lead": "海洋王",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        }
-      ],
-      "shift_score": 66,
-      "shift_label": "修复",
-      "note": "情绪整体平稳，维持当前节奏。"
-    },
-    {
-      "time": "14:40:51",
-      "ts_bj": "2026-10-20 14:40:51",
-      "date": "2026-10-20",
-      "source": "intraday_live",
-      "provider": "unknown",
-      "data_quality": "unavailable",
-      "pool_status": {
-        "ztgc": "failed",
-        "zbgc": "failed",
-        "dtgc": "failed"
-      },
-      "pool_errors": {
-        "ztgc": "HTTP Error 429: Too Many Requests",
-        "zbgc": "HTTP Error 429: Too Many Requests",
-        "dtgc": "HTTP Error 429: Too Many Requests"
-      },
-      "zt": null,
-      "dt": null,
-      "zab": null,
-      "zb": null,
-      "fb": null,
-      "jj": null,
-      "lianban": null,
-      "max_lb": null,
-      "amount": "",
-      "bf": 0,
-      "heat": null,
-      "risk": null,
-      "headline": "数据暂缺",
-      "concepts": [],
       "alerts": [
         {
           "level": "info",
@@ -937,230 +138,87 @@
         {
           "level": "warn",
           "text": "盘中三池响应不完整，保留最近有效数据"
-        },
-        {
-          "level": "warn",
-          "text": "三池请求均超时，本槽位跳过板块补抓并等待下一节点"
         }
       ],
       "shift_score": null,
-      "shift_label": "数据暂缺",
-      "note": "本槽位三池请求均未成功，已记录数据暂缺；等待下一节点自动恢复。"
-    },
-    {
-      "time": "14:50:04",
-      "ts_bj": "2026-10-20 14:50:04",
-      "date": "2026-10-20",
-      "source": "intraday_live",
-      "provider": "unknown",
-      "data_quality": "unavailable",
-      "pool_status": {
-        "ztgc": "failed",
-        "zbgc": "failed",
-        "dtgc": "failed"
-      },
-      "pool_errors": {
-        "ztgc": "HTTP Error 429: Too Many Requests",
-        "zbgc": "HTTP Error 429: Too Many Requests",
-        "dtgc": "HTTP Error 429: Too Many Requests"
-      },
-      "zt": null,
-      "dt": null,
-      "zab": null,
-      "zb": null,
-      "fb": null,
-      "jj": null,
-      "lianban": null,
-      "max_lb": null,
-      "amount": "",
-      "bf": 0,
-      "heat": null,
-      "risk": null,
-      "headline": "数据暂缺",
-      "concepts": [],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        },
-        {
-          "level": "warn",
-          "text": "盘中三池响应不完整，保留最近有效数据"
-        },
-        {
-          "level": "warn",
-          "text": "三池请求均超时，本槽位跳过板块补抓并等待下一节点"
-        }
-      ],
-      "shift_score": null,
-      "shift_label": "数据暂缺",
-      "note": "本槽位三池请求均未成功，已记录数据暂缺；等待下一节点自动恢复。"
-    },
-    {
-      "time": "15:00:06",
-      "ts_bj": "2026-10-20 15:00:06",
-      "date": "2026-10-20",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid"
-      },
-      "pool_errors": {},
-      "zt": 53,
-      "dt": 7,
-      "zab": 30,
-      "zb": 36.1,
-      "fb": 63.9,
-      "jj": 24.5,
-      "lianban": 13,
-      "max_lb": 4,
-      "amount": "14561.1亿",
-      "bf": 0,
-      "heat": 50,
-      "risk": 44,
-      "headline": "分歧",
-      "concepts": [
-        {
-          "name": "通用设备",
-          "lead": "京城股份",
-          "chg_pct": null
-        },
-        {
-          "name": "照明设备",
-          "lead": "海洋王",
-          "chg_pct": null
-        },
-        {
-          "name": "消费电子",
-          "lead": "科森科技",
-          "chg_pct": null
-        },
-        {
-          "name": "化学制药",
-          "lead": "海正药业",
-          "chg_pct": null
-        },
-        {
-          "name": "半导体",
-          "lead": "瑞芯微",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        },
-        {
-          "level": "danger",
-          "text": "炸板率高（36.1%）→ 分歧偏强，谨慎接力"
-        }
-      ],
-      "shift_score": 53,
-      "shift_label": "分歧",
-      "note": "承接增强、分歧收敛，情绪明显回暖。"
+      "shift_label": "数据部分可用",
+      "note": "本槽位仅部分三池成功；节点已保留，缺失指标不参与判断。"
     }
   ],
   "indices": [
     {
       "name": "上证指数",
       "code": "000001.SH",
-      "val": 3735.37,
-      "chg": 0.11927353038928248,
-      "cje": 699969753800.0,
-      "t": "2026-10-20 15:00:06"
+      "val": 3732.425,
+      "chg": -0.07884091803488567,
+      "cje": 28629361800.0,
+      "t": "2026-10-21 09:30:48"
     },
     {
       "name": "深证成指",
       "code": "399001.SZ",
-      "val": 11801.29,
-      "chg": -0.13651876555489137,
-      "cje": 756142478700.0,
-      "t": "2026-10-20 15:00:03"
+      "val": 11861.555,
+      "chg": 0.5106645120999435,
+      "cje": 34369068500.0,
+      "t": "2026-10-21 09:30:45"
     },
     {
       "name": "创业板指",
       "code": "399006.SZ",
-      "val": 2739.203,
-      "chg": -0.25809355235844245,
-      "cje": 376451301700.0,
-      "t": "2026-10-20 15:00:03"
+      "val": 2751.802,
+      "chg": 0.4599513070042695,
+      "cje": 17387945400.0,
+      "t": "2026-10-21 09:30:45"
     }
   ],
   "asOf": {
-    "indices": "15:00:03"
+    "indices": "09:30:45"
   },
   "health": {
-    "status": "valid",
-    "last_valid_at": "2026-10-20 15:00:06",
+    "status": "degraded",
+    "last_valid_at": "2026-10-21 09:30:50",
     "rejected_reason": "",
     "source": {
-      "status": "valid",
+      "status": "partial",
       "pool_status": {
         "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid"
+        "zbgc": "failed",
+        "dtgc": "failed"
       },
-      "pool_errors": {}
+      "pool_errors": {
+        "zbgc": "empty_response",
+        "dtgc": "empty_response"
+      }
     },
     "indices_status": "valid",
     "coverage": {
-      "ok": false,
-      "status": "degraded",
-      "message": "intraday_coverage_incomplete",
-      "date": "2026-10-20",
+      "ok": true,
+      "status": "collecting",
+      "message": "intraday_coverage_collecting",
+      "date": "2026-10-21",
       "expected_count": 26,
-      "due_count": 26,
-      "observed_count": 16,
+      "due_count": 1,
+      "observed_count": 1,
       "observed_slots": [
-        "09:30",
-        "09:40",
-        "09:50",
-        "10:00",
-        "10:10",
-        "10:20",
-        "10:30",
-        "10:40",
-        "10:50",
-        "11:00",
-        "11:10",
-        "11:20",
-        "11:30",
-        "14:40",
-        "14:50",
-        "15:00"
+        "09:30"
       ],
-      "missing_slots": [
-        "13:00",
-        "13:10",
-        "13:20",
-        "13:30",
-        "13:40",
-        "13:50",
-        "14:00",
-        "14:10",
-        "14:20",
-        "14:30"
-      ],
+      "missing_slots": [],
       "duplicate_slots": [],
       "out_of_session": [],
       "monotonic": true,
-      "morning_coverage": 13,
-      "afternoon_coverage": 3
+      "morning_coverage": 1,
+      "afternoon_coverage": 0
     }
   },
   "live": {
     "market": {
-      "zt": 53,
-      "dt": 7,
-      "zab": 30,
-      "zab_rate": 36.1,
-      "lianban": 13,
+      "zt": 13,
+      "dt": null,
+      "zab": null,
+      "zab_rate": null,
+      "lianban": 10,
       "max_lianban": 4,
-      "amount": "14561.1亿"
+      "amount": ""
     },
     "alerts": [
       {
@@ -1168,34 +226,34 @@
         "text": "盘中模式：强制实时拉取"
       },
       {
-        "level": "danger",
-        "text": "炸板率高（36.1%）→ 分歧偏强，谨慎接力"
+        "level": "warn",
+        "text": "盘中三池响应不完整，保留最近有效数据"
       }
     ],
     "concepts": [
-      {
-        "name": "通用设备",
-        "lead": "京城股份",
-        "chg_pct": null
-      },
       {
         "name": "照明设备",
         "lead": "海洋王",
         "chg_pct": null
       },
       {
-        "name": "消费电子",
-        "lead": "科森科技",
+        "name": "通用设备",
+        "lead": "大业股份",
         "chg_pct": null
       },
       {
-        "name": "化学制药",
-        "lead": "海正药业",
+        "name": "汽车零部",
+        "lead": "东安动力",
         "chg_pct": null
       },
       {
-        "name": "半导体",
-        "lead": "瑞芯微",
+        "name": "塑料",
+        "lead": "福莱新材",
+        "chg_pct": null
+      },
+      {
+        "name": "工程机械",
+        "lead": "永达股份",
         "chg_pct": null
       }
     ]
