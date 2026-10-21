@@ -2,7 +2,7 @@
   "schema": "intraday_snapshot_v1",
   "render_mode": "snapshot_stream",
   "date": "2026-10-21",
-  "count": 7,
+  "count": 8,
   "interval_min": null,
   "simulated": false,
   "snapshots": [
@@ -469,11 +469,78 @@
       "shift_score": 60,
       "shift_label": "修复",
       "note": "情绪略有回落，注意午后分歧。"
+    },
+    {
+      "time": "10:40:04",
+      "ts_bj": "2026-10-21 10:40:04",
+      "date": "2026-10-21",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid_empty"
+      },
+      "pool_errors": {},
+      "zt": 35,
+      "dt": 0,
+      "zab": 19,
+      "zb": 35.2,
+      "fb": 64.8,
+      "jj": 34.3,
+      "lianban": 12,
+      "max_lb": 4,
+      "amount": "7576.4亿",
+      "bf": 0,
+      "heat": 50,
+      "risk": 28,
+      "headline": "分歧",
+      "concepts": [
+        {
+          "name": "通用设备",
+          "lead": "大业股份",
+          "chg_pct": null
+        },
+        {
+          "name": "照明设备",
+          "lead": "海洋王",
+          "chg_pct": null
+        },
+        {
+          "name": "出版",
+          "lead": "粤 传 媒",
+          "chg_pct": null
+        },
+        {
+          "name": "通信设备",
+          "lead": "日海智能",
+          "chg_pct": null
+        },
+        {
+          "name": "汽车零部",
+          "lead": "东安动力",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        },
+        {
+          "level": "danger",
+          "text": "炸板率高（35.2%）→ 分歧偏强，谨慎接力"
+        }
+      ],
+      "shift_score": 59,
+      "shift_label": "分歧",
+      "note": "情绪整体平稳，维持当前节奏。"
     }
   ],
   "latest": {
-    "time": "10:30:04",
-    "ts_bj": "2026-10-21 10:30:04",
+    "time": "10:40:04",
+    "ts_bj": "2026-10-21 10:40:04",
     "date": "2026-10-21",
     "source": "intraday_live",
     "provider": "必盈(实时)+必盈(实时)",
@@ -486,17 +553,17 @@
     "pool_errors": {},
     "zt": 35,
     "dt": 0,
-    "zab": 18,
-    "zb": 34.0,
-    "fb": 66.0,
+    "zab": 19,
+    "zb": 35.2,
+    "fb": 64.8,
     "jj": 34.3,
     "lianban": 12,
     "max_lb": 4,
-    "amount": "7085.6亿",
+    "amount": "7576.4亿",
     "bf": 0,
     "heat": 50,
-    "risk": 27,
-    "headline": "修复",
+    "risk": 28,
+    "headline": "分歧",
     "concepts": [
       {
         "name": "通用设备",
@@ -530,19 +597,19 @@
         "text": "盘中模式：强制实时拉取"
       },
       {
-        "level": "warn",
-        "text": "炸板率偏高（34.0%）→ 注意回封质量"
+        "level": "danger",
+        "text": "炸板率高（35.2%）→ 分歧偏强，谨慎接力"
       }
     ],
-    "shift_score": 60,
-    "shift_label": "修复",
-    "note": "情绪略有回落，注意午后分歧。"
+    "shift_score": 59,
+    "shift_label": "分歧",
+    "note": "情绪整体平稳，维持当前节奏。"
   },
-  "updated_at": "2026-10-21 10:30:04",
-  "snapshot_sig": "2026-10-21|2026-10-21 10:30:04|7",
+  "updated_at": "2026-10-21 10:40:04",
+  "snapshot_sig": "2026-10-21|2026-10-21 10:40:04|8",
   "health": {
     "status": "valid",
-    "last_valid_at": "2026-10-21 10:30:04",
+    "last_valid_at": "2026-10-21 10:40:04",
     "rejected_reason": "",
     "source": {
       "status": "valid",
