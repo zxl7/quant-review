@@ -1,11 +1,11 @@
 {
   "schema": "intraday_runtime_v1",
   "date": "2026-10-22",
-  "updated_at": "2026-10-22 09:50:06",
+  "updated_at": "2026-10-22 10:00:05",
   "source": "必盈(实时)+必盈(实时)",
   "latest": {
-    "time": "09:50:06",
-    "ts_bj": "2026-10-22 09:50:06",
+    "time": "10:00:05",
+    "ts_bj": "2026-10-22 10:00:05",
     "date": "2026-10-22",
     "source": "intraday_live",
     "provider": "必盈(实时)+必盈(实时)",
@@ -16,18 +16,18 @@
       "dtgc": "valid"
     },
     "pool_errors": {},
-    "zt": 24,
+    "zt": 27,
     "dt": 1,
-    "zab": 7,
-    "zb": 22.6,
-    "fb": 77.4,
-    "jj": 25.0,
-    "lianban": 6,
+    "zab": 11,
+    "zb": 28.9,
+    "fb": 71.1,
+    "jj": 29.6,
+    "lianban": 8,
     "max_lb": 5,
-    "amount": "3578.7亿",
+    "amount": "4488.7亿",
     "bf": 0,
-    "heat": 53,
-    "risk": 17,
+    "heat": 52,
+    "risk": 22,
     "headline": "修复",
     "concepts": [
       {
@@ -51,8 +51,8 @@
         "chg_pct": null
       },
       {
-        "name": "炼化及贸",
-        "lead": "博汇股份",
+        "name": "工程机械",
+        "lead": "山河智能",
         "chg_pct": null
       }
     ],
@@ -60,11 +60,15 @@
       {
         "level": "info",
         "text": "盘中模式：强制实时拉取"
+      },
+      {
+        "level": "warn",
+        "text": "炸板率偏高（28.9%）→ 注意回封质量"
       }
     ],
-    "shift_score": 66,
+    "shift_score": 63,
     "shift_label": "修复",
-    "note": "承接增强、分歧收敛，情绪明显回暖。"
+    "note": "情绪略有回落，注意午后分歧。"
   },
   "snapshots": [
     {
@@ -259,40 +263,107 @@
       "shift_score": 66,
       "shift_label": "修复",
       "note": "承接增强、分歧收敛，情绪明显回暖。"
+    },
+    {
+      "time": "10:00:05",
+      "ts_bj": "2026-10-22 10:00:05",
+      "date": "2026-10-22",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid"
+      },
+      "pool_errors": {},
+      "zt": 27,
+      "dt": 1,
+      "zab": 11,
+      "zb": 28.9,
+      "fb": 71.1,
+      "jj": 29.6,
+      "lianban": 8,
+      "max_lb": 5,
+      "amount": "4488.7亿",
+      "bf": 0,
+      "heat": 52,
+      "risk": 22,
+      "headline": "修复",
+      "concepts": [
+        {
+          "name": "通用设备",
+          "lead": "大业股份",
+          "chg_pct": null
+        },
+        {
+          "name": "电机Ⅱ",
+          "lead": "兆威机电",
+          "chg_pct": null
+        },
+        {
+          "name": "照明设备",
+          "lead": "海洋王",
+          "chg_pct": null
+        },
+        {
+          "name": "专用设备",
+          "lead": "沈鼓集团",
+          "chg_pct": null
+        },
+        {
+          "name": "工程机械",
+          "lead": "山河智能",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        },
+        {
+          "level": "warn",
+          "text": "炸板率偏高（28.9%）→ 注意回封质量"
+        }
+      ],
+      "shift_score": 63,
+      "shift_label": "修复",
+      "note": "情绪略有回落，注意午后分歧。"
     }
   ],
   "indices": [
     {
       "name": "上证指数",
       "code": "000001.SH",
-      "val": 3683.209,
-      "chg": -0.803091169794571,
-      "cje": 151450015700.0,
-      "t": "2026-10-22 09:50:06"
+      "val": 3688.807,
+      "chg": -0.6523247333443217,
+      "cje": 191121807300.0,
+      "t": "2026-10-22 10:00:03"
     },
     {
       "name": "深证成指",
       "code": "399001.SZ",
-      "val": 11556.407,
-      "chg": -1.2640254442086627,
-      "cje": 205629785200.0,
-      "t": "2026-10-22 09:49:57"
+      "val": 11587.159,
+      "chg": -1.0012855900706303,
+      "cje": 256462070700.0,
+      "t": "2026-10-22 10:00:00"
     },
     {
       "name": "创业板指",
       "code": "399006.SZ",
-      "val": 2645.239,
-      "chg": -1.835965462741307,
-      "cje": 103829951300.0,
-      "t": "2026-10-22 09:50:03"
+      "val": 2648.637,
+      "chg": -1.7098666908127145,
+      "cje": 129243076400.0,
+      "t": "2026-10-22 10:00:03"
     }
   ],
   "asOf": {
-    "indices": "09:50:03"
+    "indices": "10:00:03"
   },
   "health": {
     "status": "valid",
-    "last_valid_at": "2026-10-22 09:50:06",
+    "last_valid_at": "2026-10-22 10:00:05",
     "rejected_reason": "",
     "source": {
       "status": "valid",
@@ -310,35 +381,40 @@
       "message": "intraday_coverage_collecting",
       "date": "2026-10-22",
       "expected_count": 26,
-      "due_count": 3,
-      "observed_count": 3,
+      "due_count": 4,
+      "observed_count": 4,
       "observed_slots": [
         "09:30",
         "09:40",
-        "09:50"
+        "09:50",
+        "10:00"
       ],
       "missing_slots": [],
       "duplicate_slots": [],
       "out_of_session": [],
       "monotonic": true,
-      "morning_coverage": 3,
+      "morning_coverage": 4,
       "afternoon_coverage": 0
     }
   },
   "live": {
     "market": {
-      "zt": 24,
+      "zt": 27,
       "dt": 1,
-      "zab": 7,
-      "zab_rate": 22.6,
-      "lianban": 6,
+      "zab": 11,
+      "zab_rate": 28.9,
+      "lianban": 8,
       "max_lianban": 5,
-      "amount": "3578.7亿"
+      "amount": "4488.7亿"
     },
     "alerts": [
       {
         "level": "info",
         "text": "盘中模式：强制实时拉取"
+      },
+      {
+        "level": "warn",
+        "text": "炸板率偏高（28.9%）→ 注意回封质量"
       }
     ],
     "concepts": [
@@ -363,8 +439,8 @@
         "chg_pct": null
       },
       {
-        "name": "炼化及贸",
-        "lead": "博汇股份",
+        "name": "工程机械",
+        "lead": "山河智能",
         "chg_pct": null
       }
     ]

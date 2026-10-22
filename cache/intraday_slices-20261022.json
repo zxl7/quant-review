@@ -2,7 +2,7 @@
   "schema": "intraday_snapshot_v1",
   "render_mode": "snapshot_stream",
   "date": "2026-10-22",
-  "count": 3,
+  "count": 4,
   "interval_min": null,
   "simulated": false,
   "snapshots": [
@@ -198,11 +198,78 @@
       "shift_score": 66,
       "shift_label": "修复",
       "note": "承接增强、分歧收敛，情绪明显回暖。"
+    },
+    {
+      "time": "10:00:05",
+      "ts_bj": "2026-10-22 10:00:05",
+      "date": "2026-10-22",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid"
+      },
+      "pool_errors": {},
+      "zt": 27,
+      "dt": 1,
+      "zab": 11,
+      "zb": 28.9,
+      "fb": 71.1,
+      "jj": 29.6,
+      "lianban": 8,
+      "max_lb": 5,
+      "amount": "4488.7亿",
+      "bf": 0,
+      "heat": 52,
+      "risk": 22,
+      "headline": "修复",
+      "concepts": [
+        {
+          "name": "通用设备",
+          "lead": "大业股份",
+          "chg_pct": null
+        },
+        {
+          "name": "电机Ⅱ",
+          "lead": "兆威机电",
+          "chg_pct": null
+        },
+        {
+          "name": "照明设备",
+          "lead": "海洋王",
+          "chg_pct": null
+        },
+        {
+          "name": "专用设备",
+          "lead": "沈鼓集团",
+          "chg_pct": null
+        },
+        {
+          "name": "工程机械",
+          "lead": "山河智能",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        },
+        {
+          "level": "warn",
+          "text": "炸板率偏高（28.9%）→ 注意回封质量"
+        }
+      ],
+      "shift_score": 63,
+      "shift_label": "修复",
+      "note": "情绪略有回落，注意午后分歧。"
     }
   ],
   "latest": {
-    "time": "09:50:06",
-    "ts_bj": "2026-10-22 09:50:06",
+    "time": "10:00:05",
+    "ts_bj": "2026-10-22 10:00:05",
     "date": "2026-10-22",
     "source": "intraday_live",
     "provider": "必盈(实时)+必盈(实时)",
@@ -213,18 +280,18 @@
       "dtgc": "valid"
     },
     "pool_errors": {},
-    "zt": 24,
+    "zt": 27,
     "dt": 1,
-    "zab": 7,
-    "zb": 22.6,
-    "fb": 77.4,
-    "jj": 25.0,
-    "lianban": 6,
+    "zab": 11,
+    "zb": 28.9,
+    "fb": 71.1,
+    "jj": 29.6,
+    "lianban": 8,
     "max_lb": 5,
-    "amount": "3578.7亿",
+    "amount": "4488.7亿",
     "bf": 0,
-    "heat": 53,
-    "risk": 17,
+    "heat": 52,
+    "risk": 22,
     "headline": "修复",
     "concepts": [
       {
@@ -248,8 +315,8 @@
         "chg_pct": null
       },
       {
-        "name": "炼化及贸",
-        "lead": "博汇股份",
+        "name": "工程机械",
+        "lead": "山河智能",
         "chg_pct": null
       }
     ],
@@ -257,17 +324,21 @@
       {
         "level": "info",
         "text": "盘中模式：强制实时拉取"
+      },
+      {
+        "level": "warn",
+        "text": "炸板率偏高（28.9%）→ 注意回封质量"
       }
     ],
-    "shift_score": 66,
+    "shift_score": 63,
     "shift_label": "修复",
-    "note": "承接增强、分歧收敛，情绪明显回暖。"
+    "note": "情绪略有回落，注意午后分歧。"
   },
-  "updated_at": "2026-10-22 09:50:06",
-  "snapshot_sig": "2026-10-22|2026-10-22 09:50:06|3",
+  "updated_at": "2026-10-22 10:00:05",
+  "snapshot_sig": "2026-10-22|2026-10-22 10:00:05|4",
   "health": {
     "status": "valid",
-    "last_valid_at": "2026-10-22 09:50:06",
+    "last_valid_at": "2026-10-22 10:00:05",
     "rejected_reason": "",
     "source": {
       "status": "valid",
