@@ -2,7 +2,7 @@
   "schema": "intraday_snapshot_v1",
   "render_mode": "snapshot_stream",
   "date": "2026-10-22",
-  "count": 9,
+  "count": 10,
   "interval_min": null,
   "simulated": false,
   "snapshots": [
@@ -600,11 +600,78 @@
       "shift_score": 55,
       "shift_label": "分歧",
       "note": "情绪整体平稳，维持当前节奏。"
+    },
+    {
+      "time": "11:00:05",
+      "ts_bj": "2026-10-22 11:00:05",
+      "date": "2026-10-22",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid"
+      },
+      "pool_errors": {},
+      "zt": 26,
+      "dt": 8,
+      "zab": 17,
+      "zb": 39.5,
+      "fb": 60.5,
+      "jj": 26.9,
+      "lianban": 7,
+      "max_lb": 5,
+      "amount": "8145.4亿",
+      "bf": 0,
+      "heat": 47,
+      "risk": 41,
+      "headline": "分歧",
+      "concepts": [
+        {
+          "name": "电机Ⅱ",
+          "lead": "大洋电机",
+          "chg_pct": null
+        },
+        {
+          "name": "照明设备",
+          "lead": "海洋王",
+          "chg_pct": null
+        },
+        {
+          "name": "专用设备",
+          "lead": "沈鼓集团",
+          "chg_pct": null
+        },
+        {
+          "name": "汽车零部",
+          "lead": "襄阳轴承",
+          "chg_pct": null
+        },
+        {
+          "name": "通用设备",
+          "lead": "大业股份",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        },
+        {
+          "level": "danger",
+          "text": "炸板率高（39.5%）→ 分歧偏强，谨慎接力"
+        }
+      ],
+      "shift_score": 52,
+      "shift_label": "分歧",
+      "note": "情绪略有回落，注意午后分歧。"
     }
   ],
   "latest": {
-    "time": "10:50:05",
-    "ts_bj": "2026-10-22 10:50:05",
+    "time": "11:00:05",
+    "ts_bj": "2026-10-22 11:00:05",
     "date": "2026-10-22",
     "source": "intraday_live",
     "provider": "必盈(实时)+必盈(实时)",
@@ -615,28 +682,23 @@
       "dtgc": "valid"
     },
     "pool_errors": {},
-    "zt": 27,
-    "dt": 6,
-    "zab": 15,
-    "zb": 35.7,
-    "fb": 64.3,
-    "jj": 25.9,
+    "zt": 26,
+    "dt": 8,
+    "zab": 17,
+    "zb": 39.5,
+    "fb": 60.5,
+    "jj": 26.9,
     "lianban": 7,
     "max_lb": 5,
-    "amount": "7770.1亿",
+    "amount": "8145.4亿",
     "bf": 0,
-    "heat": 48,
-    "risk": 35,
+    "heat": 47,
+    "risk": 41,
     "headline": "分歧",
     "concepts": [
       {
         "name": "电机Ⅱ",
         "lead": "大洋电机",
-        "chg_pct": null
-      },
-      {
-        "name": "通用设备",
-        "lead": "大业股份",
         "chg_pct": null
       },
       {
@@ -653,6 +715,11 @@
         "name": "汽车零部",
         "lead": "襄阳轴承",
         "chg_pct": null
+      },
+      {
+        "name": "通用设备",
+        "lead": "大业股份",
+        "chg_pct": null
       }
     ],
     "alerts": [
@@ -662,18 +729,18 @@
       },
       {
         "level": "danger",
-        "text": "炸板率高（35.7%）→ 分歧偏强，谨慎接力"
+        "text": "炸板率高（39.5%）→ 分歧偏强，谨慎接力"
       }
     ],
-    "shift_score": 55,
+    "shift_score": 52,
     "shift_label": "分歧",
-    "note": "情绪整体平稳，维持当前节奏。"
+    "note": "情绪略有回落，注意午后分歧。"
   },
-  "updated_at": "2026-10-22 10:50:05",
-  "snapshot_sig": "2026-10-22|2026-10-22 10:50:05|9",
+  "updated_at": "2026-10-22 11:00:05",
+  "snapshot_sig": "2026-10-22|2026-10-22 11:00:05|10",
   "health": {
     "status": "valid",
-    "last_valid_at": "2026-10-22 10:50:05",
+    "last_valid_at": "2026-10-22 11:00:05",
     "rejected_reason": "",
     "source": {
       "status": "valid",
