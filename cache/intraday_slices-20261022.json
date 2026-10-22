@@ -2,7 +2,7 @@
   "schema": "intraday_snapshot_v1",
   "render_mode": "snapshot_stream",
   "date": "2026-10-22",
-  "count": 1,
+  "count": 2,
   "interval_min": null,
   "simulated": false,
   "snapshots": [
@@ -68,11 +68,78 @@
       "shift_score": 72,
       "shift_label": "走强",
       "note": "盘中实时切片已接入，可逐点观察情绪变化。"
+    },
+    {
+      "time": "09:40:04",
+      "ts_bj": "2026-10-22 09:40:04",
+      "date": "2026-10-22",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid"
+      },
+      "pool_errors": {},
+      "zt": 13,
+      "dt": 1,
+      "zab": 8,
+      "zb": 38.1,
+      "fb": 61.9,
+      "jj": 53.8,
+      "lianban": 7,
+      "max_lb": 5,
+      "amount": "2313.0亿",
+      "bf": 0,
+      "heat": 52,
+      "risk": 26,
+      "headline": "修复",
+      "concepts": [
+        {
+          "name": "通用设备",
+          "lead": "大业股份",
+          "chg_pct": null
+        },
+        {
+          "name": "照明设备",
+          "lead": "海洋王",
+          "chg_pct": null
+        },
+        {
+          "name": "电机Ⅱ",
+          "lead": "兆威机电",
+          "chg_pct": null
+        },
+        {
+          "name": "专用设备",
+          "lead": "林州重机",
+          "chg_pct": null
+        },
+        {
+          "name": "饲料",
+          "lead": "百洋股份",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        },
+        {
+          "level": "danger",
+          "text": "炸板率高（38.1%）→ 分歧偏强，谨慎接力"
+        }
+      ],
+      "shift_score": 61,
+      "shift_label": "修复",
+      "note": "炸板/跌停抬升，情绪明显走弱。"
     }
   ],
   "latest": {
-    "time": "09:30:50",
-    "ts_bj": "2026-10-22 09:30:50",
+    "time": "09:40:04",
+    "ts_bj": "2026-10-22 09:40:04",
     "date": "2026-10-22",
     "source": "intraday_live",
     "provider": "必盈(实时)+必盈(实时)",
@@ -80,46 +147,46 @@
     "pool_status": {
       "ztgc": "valid",
       "zbgc": "valid",
-      "dtgc": "valid_empty"
+      "dtgc": "valid"
     },
     "pool_errors": {},
-    "zt": 9,
-    "dt": 0,
-    "zab": 2,
-    "zb": 18.2,
-    "fb": 81.8,
-    "jj": 55.6,
-    "lianban": 5,
+    "zt": 13,
+    "dt": 1,
+    "zab": 8,
+    "zb": 38.1,
+    "fb": 61.9,
+    "jj": 53.8,
+    "lianban": 7,
     "max_lb": 5,
-    "amount": "542.2亿",
+    "amount": "2313.0亿",
     "bf": 0,
-    "heat": 60,
-    "risk": 11,
-    "headline": "走强",
+    "heat": 52,
+    "risk": 26,
+    "headline": "修复",
     "concepts": [
+      {
+        "name": "通用设备",
+        "lead": "大业股份",
+        "chg_pct": null
+      },
       {
         "name": "照明设备",
         "lead": "海洋王",
         "chg_pct": null
       },
       {
-        "name": "玻璃玻纤",
-        "lead": "三峡新材",
+        "name": "电机Ⅱ",
+        "lead": "兆威机电",
         "chg_pct": null
       },
       {
-        "name": "电视广播",
-        "lead": "天威视讯",
+        "name": "专用设备",
+        "lead": "林州重机",
         "chg_pct": null
       },
       {
-        "name": "IT服务Ⅱ",
-        "lead": "海量数据",
-        "chg_pct": null
-      },
-      {
-        "name": "软件开发",
-        "lead": "天融信",
+        "name": "饲料",
+        "lead": "百洋股份",
         "chg_pct": null
       }
     ],
@@ -127,24 +194,28 @@
       {
         "level": "info",
         "text": "盘中模式：强制实时拉取"
+      },
+      {
+        "level": "danger",
+        "text": "炸板率高（38.1%）→ 分歧偏强，谨慎接力"
       }
     ],
-    "shift_score": 72,
-    "shift_label": "走强",
-    "note": "盘中实时切片已接入，可逐点观察情绪变化。"
+    "shift_score": 61,
+    "shift_label": "修复",
+    "note": "炸板/跌停抬升，情绪明显走弱。"
   },
-  "updated_at": "2026-10-22 09:30:50",
-  "snapshot_sig": "2026-10-22|2026-10-22 09:30:50|1",
+  "updated_at": "2026-10-22 09:40:04",
+  "snapshot_sig": "2026-10-22|2026-10-22 09:40:04|2",
   "health": {
     "status": "valid",
-    "last_valid_at": "2026-10-22 09:30:50",
+    "last_valid_at": "2026-10-22 09:40:04",
     "rejected_reason": "",
     "source": {
       "status": "valid",
       "pool_status": {
         "ztgc": "valid",
         "zbgc": "valid",
-        "dtgc": "valid_empty"
+        "dtgc": "valid"
       },
       "pool_errors": {}
     }

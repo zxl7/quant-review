@@ -1,11 +1,11 @@
 {
   "schema": "intraday_runtime_v1",
   "date": "2026-10-22",
-  "updated_at": "2026-10-22 09:30:50",
+  "updated_at": "2026-10-22 09:40:04",
   "source": "必盈(实时)+必盈(实时)",
   "latest": {
-    "time": "09:30:50",
-    "ts_bj": "2026-10-22 09:30:50",
+    "time": "09:40:04",
+    "ts_bj": "2026-10-22 09:40:04",
     "date": "2026-10-22",
     "source": "intraday_live",
     "provider": "必盈(实时)+必盈(实时)",
@@ -13,46 +13,46 @@
     "pool_status": {
       "ztgc": "valid",
       "zbgc": "valid",
-      "dtgc": "valid_empty"
+      "dtgc": "valid"
     },
     "pool_errors": {},
-    "zt": 9,
-    "dt": 0,
-    "zab": 2,
-    "zb": 18.2,
-    "fb": 81.8,
-    "jj": 55.6,
-    "lianban": 5,
+    "zt": 13,
+    "dt": 1,
+    "zab": 8,
+    "zb": 38.1,
+    "fb": 61.9,
+    "jj": 53.8,
+    "lianban": 7,
     "max_lb": 5,
-    "amount": "542.2亿",
+    "amount": "2313.0亿",
     "bf": 0,
-    "heat": 60,
-    "risk": 11,
-    "headline": "走强",
+    "heat": 52,
+    "risk": 26,
+    "headline": "修复",
     "concepts": [
+      {
+        "name": "通用设备",
+        "lead": "大业股份",
+        "chg_pct": null
+      },
       {
         "name": "照明设备",
         "lead": "海洋王",
         "chg_pct": null
       },
       {
-        "name": "玻璃玻纤",
-        "lead": "三峡新材",
+        "name": "电机Ⅱ",
+        "lead": "兆威机电",
         "chg_pct": null
       },
       {
-        "name": "电视广播",
-        "lead": "天威视讯",
+        "name": "专用设备",
+        "lead": "林州重机",
         "chg_pct": null
       },
       {
-        "name": "IT服务Ⅱ",
-        "lead": "海量数据",
-        "chg_pct": null
-      },
-      {
-        "name": "软件开发",
-        "lead": "天融信",
+        "name": "饲料",
+        "lead": "百洋股份",
         "chg_pct": null
       }
     ],
@@ -60,11 +60,15 @@
       {
         "level": "info",
         "text": "盘中模式：强制实时拉取"
+      },
+      {
+        "level": "danger",
+        "text": "炸板率高（38.1%）→ 分歧偏强，谨慎接力"
       }
     ],
-    "shift_score": 72,
-    "shift_label": "走强",
-    "note": "盘中实时切片已接入，可逐点观察情绪变化。"
+    "shift_score": 61,
+    "shift_label": "修复",
+    "note": "炸板/跌停抬升，情绪明显走弱。"
   },
   "snapshots": [
     {
@@ -129,47 +133,114 @@
       "shift_score": 72,
       "shift_label": "走强",
       "note": "盘中实时切片已接入，可逐点观察情绪变化。"
+    },
+    {
+      "time": "09:40:04",
+      "ts_bj": "2026-10-22 09:40:04",
+      "date": "2026-10-22",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid"
+      },
+      "pool_errors": {},
+      "zt": 13,
+      "dt": 1,
+      "zab": 8,
+      "zb": 38.1,
+      "fb": 61.9,
+      "jj": 53.8,
+      "lianban": 7,
+      "max_lb": 5,
+      "amount": "2313.0亿",
+      "bf": 0,
+      "heat": 52,
+      "risk": 26,
+      "headline": "修复",
+      "concepts": [
+        {
+          "name": "通用设备",
+          "lead": "大业股份",
+          "chg_pct": null
+        },
+        {
+          "name": "照明设备",
+          "lead": "海洋王",
+          "chg_pct": null
+        },
+        {
+          "name": "电机Ⅱ",
+          "lead": "兆威机电",
+          "chg_pct": null
+        },
+        {
+          "name": "专用设备",
+          "lead": "林州重机",
+          "chg_pct": null
+        },
+        {
+          "name": "饲料",
+          "lead": "百洋股份",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        },
+        {
+          "level": "danger",
+          "text": "炸板率高（38.1%）→ 分歧偏强，谨慎接力"
+        }
+      ],
+      "shift_score": 61,
+      "shift_label": "修复",
+      "note": "炸板/跌停抬升，情绪明显走弱。"
     }
   ],
   "indices": [
     {
       "name": "上证指数",
       "code": "000001.SH",
-      "val": 3706.883,
-      "chg": -0.16549834797906135,
-      "cje": 22453770800.0,
-      "t": "2026-10-22 09:30:48"
+      "val": 3687.46,
+      "chg": -0.6886024021364708,
+      "cje": 96554148700.0,
+      "t": "2026-10-22 09:40:03"
     },
     {
       "name": "深证成指",
       "code": "399001.SZ",
-      "val": 11670.508,
-      "chg": -0.28916591972234046,
-      "cje": 31248870800.0,
-      "t": "2026-10-22 09:30:45"
+      "val": 11585.75,
+      "chg": -1.0133238462647116,
+      "cje": 134358816100.0,
+      "t": "2026-10-22 09:40:00"
     },
     {
       "name": "创业板指",
       "code": "399006.SZ",
-      "val": 2683.436,
-      "chg": -0.4184861244963765,
-      "cje": 15498649600.0,
-      "t": "2026-10-22 09:30:45"
+      "val": 2652.162,
+      "chg": -1.579054986560735,
+      "cje": 66676793500.0,
+      "t": "2026-10-22 09:40:03"
     }
   ],
   "asOf": {
-    "indices": "09:30:45"
+    "indices": "09:40:03"
   },
   "health": {
     "status": "valid",
-    "last_valid_at": "2026-10-22 09:30:50",
+    "last_valid_at": "2026-10-22 09:40:04",
     "rejected_reason": "",
     "source": {
       "status": "valid",
       "pool_status": {
         "ztgc": "valid",
         "zbgc": "valid",
-        "dtgc": "valid_empty"
+        "dtgc": "valid"
       },
       "pool_errors": {}
     },
@@ -180,59 +251,64 @@
       "message": "intraday_coverage_collecting",
       "date": "2026-10-22",
       "expected_count": 26,
-      "due_count": 1,
-      "observed_count": 1,
+      "due_count": 2,
+      "observed_count": 2,
       "observed_slots": [
-        "09:30"
+        "09:30",
+        "09:40"
       ],
       "missing_slots": [],
       "duplicate_slots": [],
       "out_of_session": [],
       "monotonic": true,
-      "morning_coverage": 1,
+      "morning_coverage": 2,
       "afternoon_coverage": 0
     }
   },
   "live": {
     "market": {
-      "zt": 9,
-      "dt": 0,
-      "zab": 2,
-      "zab_rate": 18.2,
-      "lianban": 5,
+      "zt": 13,
+      "dt": 1,
+      "zab": 8,
+      "zab_rate": 38.1,
+      "lianban": 7,
       "max_lianban": 5,
-      "amount": "542.2亿"
+      "amount": "2313.0亿"
     },
     "alerts": [
       {
         "level": "info",
         "text": "盘中模式：强制实时拉取"
+      },
+      {
+        "level": "danger",
+        "text": "炸板率高（38.1%）→ 分歧偏强，谨慎接力"
       }
     ],
     "concepts": [
+      {
+        "name": "通用设备",
+        "lead": "大业股份",
+        "chg_pct": null
+      },
       {
         "name": "照明设备",
         "lead": "海洋王",
         "chg_pct": null
       },
       {
-        "name": "玻璃玻纤",
-        "lead": "三峡新材",
+        "name": "电机Ⅱ",
+        "lead": "兆威机电",
         "chg_pct": null
       },
       {
-        "name": "电视广播",
-        "lead": "天威视讯",
+        "name": "专用设备",
+        "lead": "林州重机",
         "chg_pct": null
       },
       {
-        "name": "IT服务Ⅱ",
-        "lead": "海量数据",
-        "chg_pct": null
-      },
-      {
-        "name": "软件开发",
-        "lead": "天融信",
+        "name": "饲料",
+        "lead": "百洋股份",
         "chg_pct": null
       }
     ]
