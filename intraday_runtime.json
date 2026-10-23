@@ -1,11 +1,11 @@
 {
   "schema": "intraday_runtime_v1",
   "date": "2026-10-23",
-  "updated_at": "2026-10-23 10:20:04",
+  "updated_at": "2026-10-23 10:30:04",
   "source": "必盈(实时)+必盈(实时)",
   "latest": {
-    "time": "10:20:04",
-    "ts_bj": "2026-10-23 10:20:04",
+    "time": "10:30:04",
+    "ts_bj": "2026-10-23 10:30:04",
     "date": "2026-10-23",
     "source": "intraday_live",
     "provider": "必盈(实时)+必盈(实时)",
@@ -16,18 +16,18 @@
       "dtgc": "valid"
     },
     "pool_errors": {},
-    "zt": 17,
-    "dt": 36,
+    "zt": 18,
+    "dt": 34,
     "zab": 9,
-    "zb": 34.6,
-    "fb": 65.4,
-    "jj": 52.9,
+    "zb": 33.3,
+    "fb": 66.7,
+    "jj": 50.0,
     "lianban": 9,
     "max_lb": 3,
-    "amount": "6925.3亿",
+    "amount": "7794.4亿",
     "bf": 0,
     "heat": 49,
-    "risk": 53,
+    "risk": 52,
     "headline": "分歧",
     "concepts": [
       {
@@ -63,14 +63,14 @@
       },
       {
         "level": "danger",
-        "text": "跌停偏多（36）→ 亏钱扩散风险上升"
+        "text": "跌停偏多（34）→ 亏钱扩散风险上升"
       },
       {
         "level": "warn",
-        "text": "炸板率偏高（34.6%）→ 注意回封质量"
+        "text": "炸板率偏高（33.3%）→ 注意回封质量"
       }
     ],
-    "shift_score": 48,
+    "shift_score": 49,
     "shift_label": "分歧",
     "note": "情绪整体平稳，维持当前节奏。"
   },
@@ -417,40 +417,111 @@
       "shift_score": 48,
       "shift_label": "分歧",
       "note": "情绪整体平稳，维持当前节奏。"
+    },
+    {
+      "time": "10:30:04",
+      "ts_bj": "2026-10-23 10:30:04",
+      "date": "2026-10-23",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid"
+      },
+      "pool_errors": {},
+      "zt": 18,
+      "dt": 34,
+      "zab": 9,
+      "zb": 33.3,
+      "fb": 66.7,
+      "jj": 50.0,
+      "lianban": 9,
+      "max_lb": 3,
+      "amount": "7794.4亿",
+      "bf": 0,
+      "heat": 49,
+      "risk": 52,
+      "headline": "分歧",
+      "concepts": [
+        {
+          "name": "电机Ⅱ",
+          "lead": "兆威机电",
+          "chg_pct": null
+        },
+        {
+          "name": "汽车零部",
+          "lead": "襄阳轴承",
+          "chg_pct": null
+        },
+        {
+          "name": "一般零售",
+          "lead": "上海九百",
+          "chg_pct": null
+        },
+        {
+          "name": "专用设备",
+          "lead": "林州重机",
+          "chg_pct": null
+        },
+        {
+          "name": "工程机械",
+          "lead": "南方路机",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        },
+        {
+          "level": "danger",
+          "text": "跌停偏多（34）→ 亏钱扩散风险上升"
+        },
+        {
+          "level": "warn",
+          "text": "炸板率偏高（33.3%）→ 注意回封质量"
+        }
+      ],
+      "shift_score": 49,
+      "shift_label": "分歧",
+      "note": "情绪整体平稳，维持当前节奏。"
     }
   ],
   "indices": [
     {
       "name": "上证指数",
       "code": "000001.SH",
-      "val": 3574.97,
-      "chg": -2.270514206295965,
-      "cje": 310726261500.0,
-      "t": "2026-10-23 10:20:03"
+      "val": 3583.581,
+      "chg": -2.035114020512695,
+      "cje": 351083144500.0,
+      "t": "2026-10-23 10:30:00"
     },
     {
       "name": "深证成指",
       "code": "399001.SZ",
-      "val": 11045.317,
-      "chg": -2.747153377733485,
-      "cje": 381340053200.0,
-      "t": "2026-10-23 10:19:54"
+      "val": 11050.216,
+      "chg": -2.7040182014771035,
+      "cje": 427571881100.0,
+      "t": "2026-10-23 10:29:57"
     },
     {
       "name": "创业板指",
       "code": "399006.SZ",
-      "val": 2494.3,
-      "chg": -3.205439401824116,
-      "cje": 185466335800.0,
-      "t": "2026-10-23 10:20:00"
+      "val": 2495.529,
+      "chg": -3.157746455917393,
+      "cje": 208674487100.0,
+      "t": "2026-10-23 10:29:57"
     }
   ],
   "asOf": {
-    "indices": "10:20:00"
+    "indices": "10:29:57"
   },
   "health": {
     "status": "valid",
-    "last_valid_at": "2026-10-23 10:20:04",
+    "last_valid_at": "2026-10-23 10:30:04",
     "rejected_reason": "",
     "source": {
       "status": "valid",
@@ -468,14 +539,15 @@
       "message": "intraday_coverage_incomplete",
       "date": "2026-10-23",
       "expected_count": 26,
-      "due_count": 6,
-      "observed_count": 5,
+      "due_count": 7,
+      "observed_count": 6,
       "observed_slots": [
         "09:40",
         "09:50",
         "10:00",
         "10:10",
-        "10:20"
+        "10:20",
+        "10:30"
       ],
       "missing_slots": [
         "09:30"
@@ -483,19 +555,19 @@
       "duplicate_slots": [],
       "out_of_session": [],
       "monotonic": true,
-      "morning_coverage": 5,
+      "morning_coverage": 6,
       "afternoon_coverage": 0
     }
   },
   "live": {
     "market": {
-      "zt": 17,
-      "dt": 36,
+      "zt": 18,
+      "dt": 34,
       "zab": 9,
-      "zab_rate": 34.6,
+      "zab_rate": 33.3,
       "lianban": 9,
       "max_lianban": 3,
-      "amount": "6925.3亿"
+      "amount": "7794.4亿"
     },
     "alerts": [
       {
@@ -504,11 +576,11 @@
       },
       {
         "level": "danger",
-        "text": "跌停偏多（36）→ 亏钱扩散风险上升"
+        "text": "跌停偏多（34）→ 亏钱扩散风险上升"
       },
       {
         "level": "warn",
-        "text": "炸板率偏高（34.6%）→ 注意回封质量"
+        "text": "炸板率偏高（33.3%）→ 注意回封质量"
       }
     ],
     "concepts": [
