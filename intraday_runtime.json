@@ -1,11 +1,11 @@
 {
   "schema": "intraday_runtime_v1",
   "date": "2026-10-23",
-  "updated_at": "2026-10-23 10:50:03",
+  "updated_at": "2026-10-23 11:00:03",
   "source": "必盈(实时)+必盈(实时)",
   "latest": {
-    "time": "10:50:03",
-    "ts_bj": "2026-10-23 10:50:03",
+    "time": "11:00:03",
+    "ts_bj": "2026-10-23 11:00:03",
     "date": "2026-10-23",
     "source": "intraday_live",
     "provider": "必盈(实时)+必盈(实时)",
@@ -16,20 +16,30 @@
       "dtgc": "valid"
     },
     "pool_errors": {},
-    "zt": 17,
-    "dt": 36,
+    "zt": 20,
+    "dt": 26,
     "zab": 10,
-    "zb": 37.0,
-    "fb": 63.0,
-    "jj": 41.2,
-    "lianban": 7,
+    "zb": 33.3,
+    "fb": 66.7,
+    "jj": 40.0,
+    "lianban": 8,
     "max_lb": 3,
-    "amount": "9116.7亿",
+    "amount": "9649.7亿",
     "bf": 0,
-    "heat": 46,
-    "risk": 55,
+    "heat": 47,
+    "risk": 53,
     "headline": "走弱",
     "concepts": [
+      {
+        "name": "汽车零部",
+        "lead": "襄阳轴承",
+        "chg_pct": null
+      },
+      {
+        "name": "其他电子",
+        "lead": "睿能科技",
+        "chg_pct": null
+      },
       {
         "name": "半导体",
         "lead": "粤芯半导-U",
@@ -44,16 +54,6 @@
         "name": "电机Ⅱ",
         "lead": "华阳智能",
         "chg_pct": null
-      },
-      {
-        "name": "汽车零部",
-        "lead": "正裕工业",
-        "chg_pct": null
-      },
-      {
-        "name": "专用设备",
-        "lead": "林州重机",
-        "chg_pct": null
       }
     ],
     "alerts": [
@@ -63,14 +63,14 @@
       },
       {
         "level": "danger",
-        "text": "跌停偏多（36）→ 亏钱扩散风险上升"
+        "text": "跌停偏多（26）→ 亏钱扩散风险上升"
       },
       {
-        "level": "danger",
-        "text": "炸板率高（37.0%）→ 分歧偏强，谨慎接力"
+        "level": "warn",
+        "text": "炸板率偏高（33.3%）→ 注意回封质量"
       }
     ],
-    "shift_score": 46,
+    "shift_score": 47,
     "shift_label": "走弱",
     "note": "情绪整体平稳，维持当前节奏。"
   },
@@ -630,40 +630,111 @@
       "shift_score": 46,
       "shift_label": "走弱",
       "note": "情绪整体平稳，维持当前节奏。"
+    },
+    {
+      "time": "11:00:03",
+      "ts_bj": "2026-10-23 11:00:03",
+      "date": "2026-10-23",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid"
+      },
+      "pool_errors": {},
+      "zt": 20,
+      "dt": 26,
+      "zab": 10,
+      "zb": 33.3,
+      "fb": 66.7,
+      "jj": 40.0,
+      "lianban": 8,
+      "max_lb": 3,
+      "amount": "9649.7亿",
+      "bf": 0,
+      "heat": 47,
+      "risk": 53,
+      "headline": "走弱",
+      "concepts": [
+        {
+          "name": "汽车零部",
+          "lead": "襄阳轴承",
+          "chg_pct": null
+        },
+        {
+          "name": "其他电子",
+          "lead": "睿能科技",
+          "chg_pct": null
+        },
+        {
+          "name": "半导体",
+          "lead": "粤芯半导-U",
+          "chg_pct": null
+        },
+        {
+          "name": "一般零售",
+          "lead": "上海九百",
+          "chg_pct": null
+        },
+        {
+          "name": "电机Ⅱ",
+          "lead": "华阳智能",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        },
+        {
+          "level": "danger",
+          "text": "跌停偏多（26）→ 亏钱扩散风险上升"
+        },
+        {
+          "level": "warn",
+          "text": "炸板率偏高（33.3%）→ 注意回封质量"
+        }
+      ],
+      "shift_score": 47,
+      "shift_label": "走弱",
+      "note": "情绪整体平稳，维持当前节奏。"
     }
   ],
   "indices": [
     {
       "name": "上证指数",
       "code": "000001.SH",
-      "val": 3600.104,
-      "chg": -1.5834223157517207,
-      "cje": 413096772100.0,
-      "t": "2026-10-23 10:50:00"
+      "val": 3620.725,
+      "chg": -1.0197029764140533,
+      "cje": 439344297200.0,
+      "t": "2026-10-23 11:00:00"
     },
     {
       "name": "深证成指",
       "code": "399001.SZ",
-      "val": 11110.799,
-      "chg": -2.170591301468998,
-      "cje": 498275748400.0,
-      "t": "2026-10-23 10:49:57"
+      "val": 11188.618,
+      "chg": -1.4854032465405511,
+      "cje": 525335555300.0,
+      "t": "2026-10-23 10:59:57"
     },
     {
       "name": "创业板指",
       "code": "399006.SZ",
-      "val": 2507.758,
-      "chg": -2.6831841813092563,
-      "cje": 244421406800.0,
-      "t": "2026-10-23 10:50:00"
+      "val": 2526.323,
+      "chg": -1.9627451733690964,
+      "cje": 257035816700.0,
+      "t": "2026-10-23 10:59:57"
     }
   ],
   "asOf": {
-    "indices": "10:50:00"
+    "indices": "10:59:57"
   },
   "health": {
     "status": "valid",
-    "last_valid_at": "2026-10-23 10:50:03",
+    "last_valid_at": "2026-10-23 11:00:03",
     "rejected_reason": "",
     "source": {
       "status": "valid",
@@ -681,8 +752,8 @@
       "message": "intraday_coverage_incomplete",
       "date": "2026-10-23",
       "expected_count": 26,
-      "due_count": 9,
-      "observed_count": 8,
+      "due_count": 10,
+      "observed_count": 9,
       "observed_slots": [
         "09:40",
         "09:50",
@@ -691,7 +762,8 @@
         "10:20",
         "10:30",
         "10:40",
-        "10:50"
+        "10:50",
+        "11:00"
       ],
       "missing_slots": [
         "09:30"
@@ -699,19 +771,19 @@
       "duplicate_slots": [],
       "out_of_session": [],
       "monotonic": true,
-      "morning_coverage": 8,
+      "morning_coverage": 9,
       "afternoon_coverage": 0
     }
   },
   "live": {
     "market": {
-      "zt": 17,
-      "dt": 36,
+      "zt": 20,
+      "dt": 26,
       "zab": 10,
-      "zab_rate": 37.0,
-      "lianban": 7,
+      "zab_rate": 33.3,
+      "lianban": 8,
       "max_lianban": 3,
-      "amount": "9116.7亿"
+      "amount": "9649.7亿"
     },
     "alerts": [
       {
@@ -720,14 +792,24 @@
       },
       {
         "level": "danger",
-        "text": "跌停偏多（36）→ 亏钱扩散风险上升"
+        "text": "跌停偏多（26）→ 亏钱扩散风险上升"
       },
       {
-        "level": "danger",
-        "text": "炸板率高（37.0%）→ 分歧偏强，谨慎接力"
+        "level": "warn",
+        "text": "炸板率偏高（33.3%）→ 注意回封质量"
       }
     ],
     "concepts": [
+      {
+        "name": "汽车零部",
+        "lead": "襄阳轴承",
+        "chg_pct": null
+      },
+      {
+        "name": "其他电子",
+        "lead": "睿能科技",
+        "chg_pct": null
+      },
       {
         "name": "半导体",
         "lead": "粤芯半导-U",
@@ -741,16 +823,6 @@
       {
         "name": "电机Ⅱ",
         "lead": "华阳智能",
-        "chg_pct": null
-      },
-      {
-        "name": "汽车零部",
-        "lead": "正裕工业",
-        "chg_pct": null
-      },
-      {
-        "name": "专用设备",
-        "lead": "林州重机",
         "chg_pct": null
       }
     ]
