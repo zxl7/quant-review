@@ -1,11 +1,11 @@
 {
   "schema": "intraday_runtime_v1",
   "date": "2026-10-23",
-  "updated_at": "2026-10-23 10:00:03",
+  "updated_at": "2026-10-23 10:10:03",
   "source": "必盈(实时)+必盈(实时)",
   "latest": {
-    "time": "10:00:03",
-    "ts_bj": "2026-10-23 10:00:03",
+    "time": "10:10:03",
+    "ts_bj": "2026-10-23 10:10:03",
     "date": "2026-10-23",
     "source": "intraday_live",
     "provider": "必盈(实时)+必盈(实时)",
@@ -16,33 +16,23 @@
       "dtgc": "valid"
     },
     "pool_errors": {},
-    "zt": 18,
-    "dt": 18,
-    "zab": 6,
-    "zb": 25.0,
-    "fb": 75.0,
-    "jj": 44.4,
+    "zt": 16,
+    "dt": 21,
+    "zab": 9,
+    "zb": 36.0,
+    "fb": 64.0,
+    "jj": 50.0,
     "lianban": 8,
     "max_lb": 3,
-    "amount": "5279.1亿",
+    "amount": "6147.1亿",
     "bf": 0,
-    "heat": 52,
-    "risk": 43,
-    "headline": "分歧",
+    "heat": 48,
+    "risk": 54,
+    "headline": "走弱",
     "concepts": [
       {
-        "name": "电机Ⅱ",
-        "lead": "兆威机电",
-        "chg_pct": null
-      },
-      {
-        "name": "专用设备",
-        "lead": "林州重机",
-        "chg_pct": null
-      },
-      {
-        "name": "IT服务Ⅱ",
-        "lead": "达实智能",
+        "name": "汽车零部",
+        "lead": "襄阳轴承",
         "chg_pct": null
       },
       {
@@ -51,8 +41,18 @@
         "chg_pct": null
       },
       {
-        "name": "汽车零部",
-        "lead": "正裕工业",
+        "name": "电机Ⅱ",
+        "lead": "华阳智能",
+        "chg_pct": null
+      },
+      {
+        "name": "专用设备",
+        "lead": "林州重机",
+        "chg_pct": null
+      },
+      {
+        "name": "工程机械",
+        "lead": "南方路机",
         "chg_pct": null
       }
     ],
@@ -62,17 +62,17 @@
         "text": "盘中模式：强制实时拉取"
       },
       {
-        "level": "warn",
-        "text": "跌停偏多（18）→ 控制追高"
+        "level": "danger",
+        "text": "跌停偏多（21）→ 亏钱扩散风险上升"
       },
       {
-        "level": "warn",
-        "text": "炸板率偏高（25.0%）→ 注意回封质量"
+        "level": "danger",
+        "text": "炸板率高（36.0%）→ 分歧偏强，谨慎接力"
       }
     ],
-    "shift_score": 54,
-    "shift_label": "分歧",
-    "note": "情绪略有回落，注意午后分歧。"
+    "shift_score": 47,
+    "shift_label": "走弱",
+    "note": "炸板/跌停抬升，情绪明显走弱。"
   },
   "snapshots": [
     {
@@ -275,40 +275,111 @@
       "shift_score": 54,
       "shift_label": "分歧",
       "note": "情绪略有回落，注意午后分歧。"
+    },
+    {
+      "time": "10:10:03",
+      "ts_bj": "2026-10-23 10:10:03",
+      "date": "2026-10-23",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid"
+      },
+      "pool_errors": {},
+      "zt": 16,
+      "dt": 21,
+      "zab": 9,
+      "zb": 36.0,
+      "fb": 64.0,
+      "jj": 50.0,
+      "lianban": 8,
+      "max_lb": 3,
+      "amount": "6147.1亿",
+      "bf": 0,
+      "heat": 48,
+      "risk": 54,
+      "headline": "走弱",
+      "concepts": [
+        {
+          "name": "汽车零部",
+          "lead": "襄阳轴承",
+          "chg_pct": null
+        },
+        {
+          "name": "一般零售",
+          "lead": "上海九百",
+          "chg_pct": null
+        },
+        {
+          "name": "电机Ⅱ",
+          "lead": "华阳智能",
+          "chg_pct": null
+        },
+        {
+          "name": "专用设备",
+          "lead": "林州重机",
+          "chg_pct": null
+        },
+        {
+          "name": "工程机械",
+          "lead": "南方路机",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        },
+        {
+          "level": "danger",
+          "text": "跌停偏多（21）→ 亏钱扩散风险上升"
+        },
+        {
+          "level": "danger",
+          "text": "炸板率高（36.0%）→ 分歧偏强，谨慎接力"
+        }
+      ],
+      "shift_score": 47,
+      "shift_label": "走弱",
+      "note": "炸板/跌停抬升，情绪明显走弱。"
     }
   ],
   "indices": [
     {
       "name": "上证指数",
       "code": "000001.SH",
-      "val": 3590.389,
-      "chg": -1.849002713485353,
-      "cje": 236427041500.0,
-      "t": "2026-10-23 10:00:03"
+      "val": 3590.711,
+      "chg": -1.8402001516665014,
+      "cje": 275219701600.0,
+      "t": "2026-10-23 10:10:03"
     },
     {
       "name": "深证成指",
       "code": "399001.SZ",
-      "val": 11132.949,
-      "chg": -1.975562896880595,
-      "cje": 290617411900.0,
-      "t": "2026-10-23 09:59:57"
+      "val": 11112.135,
+      "chg": -2.158827962934913,
+      "cje": 339187173900.0,
+      "t": "2026-10-23 10:09:57"
     },
     {
       "name": "创业板指",
       "code": "399006.SZ",
-      "val": 2517.301,
-      "chg": -2.3128556355094707,
-      "cje": 140712653900.0,
-      "t": "2026-10-23 10:00:00"
+      "val": 2510.241,
+      "chg": -2.5868281319305577,
+      "cje": 164622976600.0,
+      "t": "2026-10-23 10:09:57"
     }
   ],
   "asOf": {
-    "indices": "10:00:00"
+    "indices": "10:09:57"
   },
   "health": {
     "status": "valid",
-    "last_valid_at": "2026-10-23 10:00:03",
+    "last_valid_at": "2026-10-23 10:10:03",
     "rejected_reason": "",
     "source": {
       "status": "valid",
@@ -326,12 +397,13 @@
       "message": "intraday_coverage_incomplete",
       "date": "2026-10-23",
       "expected_count": 26,
-      "due_count": 4,
-      "observed_count": 3,
+      "due_count": 5,
+      "observed_count": 4,
       "observed_slots": [
         "09:40",
         "09:50",
-        "10:00"
+        "10:00",
+        "10:10"
       ],
       "missing_slots": [
         "09:30"
@@ -339,19 +411,19 @@
       "duplicate_slots": [],
       "out_of_session": [],
       "monotonic": true,
-      "morning_coverage": 3,
+      "morning_coverage": 4,
       "afternoon_coverage": 0
     }
   },
   "live": {
     "market": {
-      "zt": 18,
-      "dt": 18,
-      "zab": 6,
-      "zab_rate": 25.0,
+      "zt": 16,
+      "dt": 21,
+      "zab": 9,
+      "zab_rate": 36.0,
       "lianban": 8,
       "max_lianban": 3,
-      "amount": "5279.1亿"
+      "amount": "6147.1亿"
     },
     "alerts": [
       {
@@ -359,28 +431,18 @@
         "text": "盘中模式：强制实时拉取"
       },
       {
-        "level": "warn",
-        "text": "跌停偏多（18）→ 控制追高"
+        "level": "danger",
+        "text": "跌停偏多（21）→ 亏钱扩散风险上升"
       },
       {
-        "level": "warn",
-        "text": "炸板率偏高（25.0%）→ 注意回封质量"
+        "level": "danger",
+        "text": "炸板率高（36.0%）→ 分歧偏强，谨慎接力"
       }
     ],
     "concepts": [
       {
-        "name": "电机Ⅱ",
-        "lead": "兆威机电",
-        "chg_pct": null
-      },
-      {
-        "name": "专用设备",
-        "lead": "林州重机",
-        "chg_pct": null
-      },
-      {
-        "name": "IT服务Ⅱ",
-        "lead": "达实智能",
+        "name": "汽车零部",
+        "lead": "襄阳轴承",
         "chg_pct": null
       },
       {
@@ -389,8 +451,18 @@
         "chg_pct": null
       },
       {
-        "name": "汽车零部",
-        "lead": "正裕工业",
+        "name": "电机Ⅱ",
+        "lead": "华阳智能",
+        "chg_pct": null
+      },
+      {
+        "name": "专用设备",
+        "lead": "林州重机",
+        "chg_pct": null
+      },
+      {
+        "name": "工程机械",
+        "lead": "南方路机",
         "chg_pct": null
       }
     ]
