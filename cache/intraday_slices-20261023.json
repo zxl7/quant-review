@@ -2,7 +2,7 @@
   "schema": "intraday_snapshot_v1",
   "render_mode": "snapshot_stream",
   "date": "2026-10-23",
-  "count": 7,
+  "count": 8,
   "interval_min": null,
   "simulated": false,
   "snapshots": [
@@ -490,11 +490,82 @@
       "shift_score": 47,
       "shift_label": "走弱",
       "note": "情绪略有回落，注意午后分歧。"
+    },
+    {
+      "time": "10:50:03",
+      "ts_bj": "2026-10-23 10:50:03",
+      "date": "2026-10-23",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid"
+      },
+      "pool_errors": {},
+      "zt": 17,
+      "dt": 36,
+      "zab": 10,
+      "zb": 37.0,
+      "fb": 63.0,
+      "jj": 41.2,
+      "lianban": 7,
+      "max_lb": 3,
+      "amount": "9116.7亿",
+      "bf": 0,
+      "heat": 46,
+      "risk": 55,
+      "headline": "走弱",
+      "concepts": [
+        {
+          "name": "半导体",
+          "lead": "粤芯半导-U",
+          "chg_pct": null
+        },
+        {
+          "name": "一般零售",
+          "lead": "上海九百",
+          "chg_pct": null
+        },
+        {
+          "name": "电机Ⅱ",
+          "lead": "华阳智能",
+          "chg_pct": null
+        },
+        {
+          "name": "汽车零部",
+          "lead": "正裕工业",
+          "chg_pct": null
+        },
+        {
+          "name": "专用设备",
+          "lead": "林州重机",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        },
+        {
+          "level": "danger",
+          "text": "跌停偏多（36）→ 亏钱扩散风险上升"
+        },
+        {
+          "level": "danger",
+          "text": "炸板率高（37.0%）→ 分歧偏强，谨慎接力"
+        }
+      ],
+      "shift_score": 46,
+      "shift_label": "走弱",
+      "note": "情绪整体平稳，维持当前节奏。"
     }
   ],
   "latest": {
-    "time": "10:40:03",
-    "ts_bj": "2026-10-23 10:40:03",
+    "time": "10:50:03",
+    "ts_bj": "2026-10-23 10:50:03",
     "date": "2026-10-23",
     "source": "intraday_live",
     "provider": "必盈(实时)+必盈(实时)",
@@ -505,28 +576,23 @@
       "dtgc": "valid"
     },
     "pool_errors": {},
-    "zt": 18,
-    "dt": 38,
+    "zt": 17,
+    "dt": 36,
     "zab": 10,
-    "zb": 35.7,
-    "fb": 64.3,
-    "jj": 50.0,
-    "lianban": 9,
+    "zb": 37.0,
+    "fb": 63.0,
+    "jj": 41.2,
+    "lianban": 7,
     "max_lb": 3,
-    "amount": "8557.6亿",
+    "amount": "9116.7亿",
     "bf": 0,
-    "heat": 48,
-    "risk": 54,
+    "heat": 46,
+    "risk": 55,
     "headline": "走弱",
     "concepts": [
       {
-        "name": "电机Ⅱ",
-        "lead": "兆威机电",
-        "chg_pct": null
-      },
-      {
-        "name": "汽车零部",
-        "lead": "襄阳轴承",
+        "name": "半导体",
+        "lead": "粤芯半导-U",
         "chg_pct": null
       },
       {
@@ -535,13 +601,18 @@
         "chg_pct": null
       },
       {
-        "name": "专用设备",
-        "lead": "林州重机",
+        "name": "电机Ⅱ",
+        "lead": "华阳智能",
         "chg_pct": null
       },
       {
-        "name": "工程机械",
-        "lead": "南方路机",
+        "name": "汽车零部",
+        "lead": "正裕工业",
+        "chg_pct": null
+      },
+      {
+        "name": "专用设备",
+        "lead": "林州重机",
         "chg_pct": null
       }
     ],
@@ -552,22 +623,22 @@
       },
       {
         "level": "danger",
-        "text": "跌停偏多（38）→ 亏钱扩散风险上升"
+        "text": "跌停偏多（36）→ 亏钱扩散风险上升"
       },
       {
         "level": "danger",
-        "text": "炸板率高（35.7%）→ 分歧偏强，谨慎接力"
+        "text": "炸板率高（37.0%）→ 分歧偏强，谨慎接力"
       }
     ],
-    "shift_score": 47,
+    "shift_score": 46,
     "shift_label": "走弱",
-    "note": "情绪略有回落，注意午后分歧。"
+    "note": "情绪整体平稳，维持当前节奏。"
   },
-  "updated_at": "2026-10-23 10:40:03",
-  "snapshot_sig": "2026-10-23|2026-10-23 10:40:03|7",
+  "updated_at": "2026-10-23 10:50:03",
+  "snapshot_sig": "2026-10-23|2026-10-23 10:50:03|8",
   "health": {
     "status": "valid",
-    "last_valid_at": "2026-10-23 10:40:03",
+    "last_valid_at": "2026-10-23 10:50:03",
     "rejected_reason": "",
     "source": {
       "status": "valid",
