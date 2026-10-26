@@ -1,11 +1,11 @@
 {
   "schema": "intraday_runtime_v1",
   "date": "2026-10-26",
-  "updated_at": "2026-10-26 10:00:03",
+  "updated_at": "2026-10-26 10:10:04",
   "source": "必盈(实时)+必盈(实时)",
   "latest": {
-    "time": "10:00:03",
-    "ts_bj": "2026-10-26 10:00:03",
+    "time": "10:10:04",
+    "ts_bj": "2026-10-26 10:10:04",
     "date": "2026-10-26",
     "source": "intraday_live",
     "provider": "必盈(实时)+必盈(实时)",
@@ -16,20 +16,25 @@
       "dtgc": "valid"
     },
     "pool_errors": {},
-    "zt": 26,
+    "zt": 31,
     "dt": 15,
-    "zab": 16,
-    "zb": 38.1,
-    "fb": 61.9,
-    "jj": 46.2,
-    "lianban": 12,
-    "max_lb": 4,
-    "amount": "5567.4亿",
+    "zab": 14,
+    "zb": 31.1,
+    "fb": 68.9,
+    "jj": 41.9,
+    "lianban": 13,
+    "max_lb": 7,
+    "amount": "6434.1亿",
     "bf": 0,
-    "heat": 50,
-    "risk": 51,
+    "heat": 59,
+    "risk": 46,
     "headline": "分歧",
     "concepts": [
+      {
+        "name": "通用设备",
+        "lead": "大业股份",
+        "chg_pct": null
+      },
       {
         "name": "专用设备",
         "lead": "杰克科技",
@@ -46,13 +51,8 @@
         "chg_pct": null
       },
       {
-        "name": "通用设备",
-        "lead": "赛福天",
-        "chg_pct": null
-      },
-      {
-        "name": "医药商业",
-        "lead": "塞力医疗",
+        "name": "家电零部",
+        "lead": "奇精机械",
         "chg_pct": null
       }
     ],
@@ -66,13 +66,17 @@
         "text": "跌停偏多（15）→ 控制追高"
       },
       {
-        "level": "danger",
-        "text": "炸板率高（38.1%）→ 分歧偏强，谨慎接力"
+        "level": "warn",
+        "text": "炸板率偏高（31.1%）→ 注意回封质量"
+      },
+      {
+        "level": "warn",
+        "text": "高度7板 + 分歧不低 → 高位兑现/炸板风险"
       }
     ],
-    "shift_score": 50,
+    "shift_score": 57,
     "shift_label": "分歧",
-    "note": "炸板/跌停抬升，情绪明显走弱。"
+    "note": "承接增强、分歧收敛，情绪明显回暖。"
   },
   "snapshots": [
     {
@@ -342,40 +346,115 @@
       "shift_score": 50,
       "shift_label": "分歧",
       "note": "炸板/跌停抬升，情绪明显走弱。"
+    },
+    {
+      "time": "10:10:04",
+      "ts_bj": "2026-10-26 10:10:04",
+      "date": "2026-10-26",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid"
+      },
+      "pool_errors": {},
+      "zt": 31,
+      "dt": 15,
+      "zab": 14,
+      "zb": 31.1,
+      "fb": 68.9,
+      "jj": 41.9,
+      "lianban": 13,
+      "max_lb": 7,
+      "amount": "6434.1亿",
+      "bf": 0,
+      "heat": 59,
+      "risk": 46,
+      "headline": "分歧",
+      "concepts": [
+        {
+          "name": "通用设备",
+          "lead": "大业股份",
+          "chg_pct": null
+        },
+        {
+          "name": "专用设备",
+          "lead": "杰克科技",
+          "chg_pct": null
+        },
+        {
+          "name": "汽车零部",
+          "lead": "襄阳轴承",
+          "chg_pct": null
+        },
+        {
+          "name": "软件开发",
+          "lead": "多伦科技",
+          "chg_pct": null
+        },
+        {
+          "name": "家电零部",
+          "lead": "奇精机械",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        },
+        {
+          "level": "warn",
+          "text": "跌停偏多（15）→ 控制追高"
+        },
+        {
+          "level": "warn",
+          "text": "炸板率偏高（31.1%）→ 注意回封质量"
+        },
+        {
+          "level": "warn",
+          "text": "高度7板 + 分歧不低 → 高位兑现/炸板风险"
+        }
+      ],
+      "shift_score": 57,
+      "shift_label": "分歧",
+      "note": "承接增强、分歧收敛，情绪明显回暖。"
     }
   ],
   "indices": [
     {
       "name": "上证指数",
       "code": "000001.SH",
-      "val": 3672.058,
-      "chg": -0.4990414513036917,
-      "cje": 248165721400.0,
-      "t": "2026-10-26 10:00:03"
+      "val": 3674.132,
+      "chg": -0.4428427234976486,
+      "cje": 288699288300.0,
+      "t": "2026-10-26 10:10:03"
     },
     {
       "name": "深证成指",
       "code": "399001.SZ",
-      "val": 11505.304,
-      "chg": -1.4435884173706122,
-      "cje": 308359472700.0,
-      "t": "2026-10-26 09:59:57"
+      "val": 11486.714,
+      "chg": -1.6028335525987727,
+      "cje": 354271333800.0,
+      "t": "2026-10-26 10:09:57"
     },
     {
       "name": "创业板指",
       "code": "399006.SZ",
-      "val": 2621.731,
-      "chg": -2.323537487654134,
-      "cje": 154526328500.0,
-      "t": "2026-10-26 10:00:00"
+      "val": 2613.777,
+      "chg": -2.6198755112054504,
+      "cje": 177192714000.0,
+      "t": "2026-10-26 10:09:57"
     }
   ],
   "asOf": {
-    "indices": "10:00:00"
+    "indices": "10:09:57"
   },
   "health": {
     "status": "valid",
-    "last_valid_at": "2026-10-26 10:00:03",
+    "last_valid_at": "2026-10-26 10:10:04",
     "rejected_reason": "",
     "source": {
       "status": "valid",
@@ -393,31 +472,32 @@
       "message": "intraday_coverage_collecting",
       "date": "2026-10-26",
       "expected_count": 26,
-      "due_count": 4,
-      "observed_count": 4,
+      "due_count": 5,
+      "observed_count": 5,
       "observed_slots": [
         "09:30",
         "09:40",
         "09:50",
-        "10:00"
+        "10:00",
+        "10:10"
       ],
       "missing_slots": [],
       "duplicate_slots": [],
       "out_of_session": [],
       "monotonic": true,
-      "morning_coverage": 4,
+      "morning_coverage": 5,
       "afternoon_coverage": 0
     }
   },
   "live": {
     "market": {
-      "zt": 26,
+      "zt": 31,
       "dt": 15,
-      "zab": 16,
-      "zab_rate": 38.1,
-      "lianban": 12,
-      "max_lianban": 4,
-      "amount": "5567.4亿"
+      "zab": 14,
+      "zab_rate": 31.1,
+      "lianban": 13,
+      "max_lianban": 7,
+      "amount": "6434.1亿"
     },
     "alerts": [
       {
@@ -429,11 +509,20 @@
         "text": "跌停偏多（15）→ 控制追高"
       },
       {
-        "level": "danger",
-        "text": "炸板率高（38.1%）→ 分歧偏强，谨慎接力"
+        "level": "warn",
+        "text": "炸板率偏高（31.1%）→ 注意回封质量"
+      },
+      {
+        "level": "warn",
+        "text": "高度7板 + 分歧不低 → 高位兑现/炸板风险"
       }
     ],
     "concepts": [
+      {
+        "name": "通用设备",
+        "lead": "大业股份",
+        "chg_pct": null
+      },
       {
         "name": "专用设备",
         "lead": "杰克科技",
@@ -450,13 +539,8 @@
         "chg_pct": null
       },
       {
-        "name": "通用设备",
-        "lead": "赛福天",
-        "chg_pct": null
-      },
-      {
-        "name": "医药商业",
-        "lead": "塞力医疗",
+        "name": "家电零部",
+        "lead": "奇精机械",
         "chg_pct": null
       }
     ]
