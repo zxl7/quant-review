@@ -2,7 +2,7 @@
   "schema": "intraday_snapshot_v1",
   "render_mode": "snapshot_stream",
   "date": "2026-10-26",
-  "count": 10,
+  "count": 11,
   "interval_min": null,
   "simulated": false,
   "snapshots": [
@@ -703,11 +703,82 @@
       "shift_score": 45,
       "shift_label": "走弱",
       "note": "情绪整体平稳，维持当前节奏。"
+    },
+    {
+      "time": "11:10:04",
+      "ts_bj": "2026-10-26 11:10:04",
+      "date": "2026-10-26",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid"
+      },
+      "pool_errors": {},
+      "zt": 36,
+      "dt": 18,
+      "zab": 19,
+      "zb": 34.5,
+      "fb": 65.5,
+      "jj": 22.2,
+      "lianban": 8,
+      "max_lb": 4,
+      "amount": "9345.5亿",
+      "bf": 0,
+      "heat": 47,
+      "risk": 55,
+      "headline": "走弱",
+      "concepts": [
+        {
+          "name": "专用设备",
+          "lead": "杰克科技",
+          "chg_pct": null
+        },
+        {
+          "name": "汽车零部",
+          "lead": "襄阳轴承",
+          "chg_pct": null
+        },
+        {
+          "name": "通用设备",
+          "lead": "赛福天",
+          "chg_pct": null
+        },
+        {
+          "name": "休闲食品",
+          "lead": "桂发祥",
+          "chg_pct": null
+        },
+        {
+          "name": "软件开发",
+          "lead": "多伦科技",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        },
+        {
+          "level": "warn",
+          "text": "跌停偏多（18）→ 控制追高"
+        },
+        {
+          "level": "warn",
+          "text": "炸板率偏高（34.5%）→ 注意回封质量"
+        }
+      ],
+      "shift_score": 46,
+      "shift_label": "走弱",
+      "note": "情绪整体平稳，维持当前节奏。"
     }
   ],
   "latest": {
-    "time": "11:00:04",
-    "ts_bj": "2026-10-26 11:00:04",
+    "time": "11:10:04",
+    "ts_bj": "2026-10-26 11:10:04",
     "date": "2026-10-26",
     "source": "intraday_live",
     "provider": "必盈(实时)+必盈(实时)",
@@ -718,18 +789,18 @@
       "dtgc": "valid"
     },
     "pool_errors": {},
-    "zt": 34,
-    "dt": 21,
+    "zt": 36,
+    "dt": 18,
     "zab": 19,
-    "zb": 35.8,
-    "fb": 64.2,
-    "jj": 23.5,
+    "zb": 34.5,
+    "fb": 65.5,
+    "jj": 22.2,
     "lianban": 8,
     "max_lb": 4,
-    "amount": "8957.4亿",
+    "amount": "9345.5亿",
     "bf": 0,
     "heat": 47,
-    "risk": 58,
+    "risk": 55,
     "headline": "走弱",
     "concepts": [
       {
@@ -764,23 +835,23 @@
         "text": "盘中模式：强制实时拉取"
       },
       {
-        "level": "danger",
-        "text": "跌停偏多（21）→ 亏钱扩散风险上升"
+        "level": "warn",
+        "text": "跌停偏多（18）→ 控制追高"
       },
       {
-        "level": "danger",
-        "text": "炸板率高（35.8%）→ 分歧偏强，谨慎接力"
+        "level": "warn",
+        "text": "炸板率偏高（34.5%）→ 注意回封质量"
       }
     ],
-    "shift_score": 45,
+    "shift_score": 46,
     "shift_label": "走弱",
     "note": "情绪整体平稳，维持当前节奏。"
   },
-  "updated_at": "2026-10-26 11:00:04",
-  "snapshot_sig": "2026-10-26|2026-10-26 11:00:04|10",
+  "updated_at": "2026-10-26 11:10:04",
+  "snapshot_sig": "2026-10-26|2026-10-26 11:10:04|11",
   "health": {
     "status": "valid",
-    "last_valid_at": "2026-10-26 11:00:04",
+    "last_valid_at": "2026-10-26 11:10:04",
     "rejected_reason": "",
     "source": {
       "status": "valid",
