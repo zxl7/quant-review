@@ -1,11 +1,11 @@
 {
   "schema": "intraday_runtime_v1",
   "date": "2026-10-27",
-  "updated_at": "2026-10-27 11:00:05",
+  "updated_at": "2026-10-27 11:10:05",
   "source": "必盈(实时)+必盈(实时)",
   "latest": {
-    "time": "11:00:05",
-    "ts_bj": "2026-10-27 11:00:05",
+    "time": "11:10:05",
+    "ts_bj": "2026-10-27 11:10:05",
     "date": "2026-10-27",
     "source": "intraday_live",
     "provider": "必盈(实时)+必盈(实时)",
@@ -16,15 +16,15 @@
       "dtgc": "valid"
     },
     "pool_errors": {},
-    "zt": 44,
+    "zt": 43,
     "dt": 3,
     "zab": 13,
-    "zb": 22.8,
-    "fb": 77.2,
-    "jj": 29.5,
+    "zb": 23.2,
+    "fb": 76.8,
+    "jj": 30.2,
     "lianban": 13,
     "max_lb": 5,
-    "amount": "7871.4亿",
+    "amount": "8210.0亿",
     "bf": 0,
     "heat": 57,
     "risk": 23,
@@ -41,11 +41,6 @@
         "chg_pct": null
       },
       {
-        "name": "电机Ⅱ",
-        "lead": "大洋电机",
-        "chg_pct": null
-      },
-      {
         "name": "通用设备",
         "lead": "赛福天",
         "chg_pct": null
@@ -53,6 +48,11 @@
       {
         "name": "休闲食品",
         "lead": "桂发祥",
+        "chg_pct": null
+      },
+      {
+        "name": "电机Ⅱ",
+        "lead": "大洋电机",
         "chg_pct": null
       }
     ],
@@ -696,40 +696,103 @@
       "shift_score": 65,
       "shift_label": "修复",
       "note": "情绪整体平稳，维持当前节奏。"
+    },
+    {
+      "time": "11:10:05",
+      "ts_bj": "2026-10-27 11:10:05",
+      "date": "2026-10-27",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid"
+      },
+      "pool_errors": {},
+      "zt": 43,
+      "dt": 3,
+      "zab": 13,
+      "zb": 23.2,
+      "fb": 76.8,
+      "jj": 30.2,
+      "lianban": 13,
+      "max_lb": 5,
+      "amount": "8210.0亿",
+      "bf": 0,
+      "heat": 57,
+      "risk": 23,
+      "headline": "修复",
+      "concepts": [
+        {
+          "name": "汽车零部",
+          "lead": "襄阳轴承",
+          "chg_pct": null
+        },
+        {
+          "name": "一般零售",
+          "lead": "上海九百",
+          "chg_pct": null
+        },
+        {
+          "name": "通用设备",
+          "lead": "赛福天",
+          "chg_pct": null
+        },
+        {
+          "name": "休闲食品",
+          "lead": "桂发祥",
+          "chg_pct": null
+        },
+        {
+          "name": "电机Ⅱ",
+          "lead": "大洋电机",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        }
+      ],
+      "shift_score": 65,
+      "shift_label": "修复",
+      "note": "情绪整体平稳，维持当前节奏。"
     }
   ],
   "indices": [
     {
       "name": "上证指数",
       "code": "000001.SH",
-      "val": 3688.771,
-      "chg": -0.2366180575088112,
-      "cje": 349056427500.0,
-      "t": "2026-10-27 11:00:06"
+      "val": 3690.193,
+      "chg": -0.19815984768168315,
+      "cje": 364760361900.0,
+      "t": "2026-10-27 11:10:03"
     },
     {
       "name": "深证成指",
       "code": "399001.SZ",
-      "val": 11477.976,
-      "chg": -0.4889990176324208,
-      "cje": 438088131300.0,
-      "t": "2026-10-27 11:00:03"
+      "val": 11494.655,
+      "chg": -0.34439652104374374,
+      "cje": 456080799900.0,
+      "t": "2026-10-27 11:10:03"
     },
     {
       "name": "创业板指",
       "code": "399006.SZ",
-      "val": 2618.615,
-      "chg": -0.7435285234689623,
-      "cje": 215065901000.0,
-      "t": "2026-10-27 11:00:03"
+      "val": 2625.087,
+      "chg": -0.4982126280829932,
+      "cje": 223822211200.0,
+      "t": "2026-10-27 11:10:03"
     }
   ],
   "asOf": {
-    "indices": "11:00:03"
+    "indices": "11:10:03"
   },
   "health": {
     "status": "valid",
-    "last_valid_at": "2026-10-27 11:00:05",
+    "last_valid_at": "2026-10-27 11:10:05",
     "rejected_reason": "",
     "source": {
       "status": "valid",
@@ -747,8 +810,8 @@
       "message": "intraday_coverage_collecting",
       "date": "2026-10-27",
       "expected_count": 26,
-      "due_count": 10,
-      "observed_count": 10,
+      "due_count": 11,
+      "observed_count": 11,
       "observed_slots": [
         "09:30",
         "09:40",
@@ -759,25 +822,26 @@
         "10:30",
         "10:40",
         "10:50",
-        "11:00"
+        "11:00",
+        "11:10"
       ],
       "missing_slots": [],
       "duplicate_slots": [],
       "out_of_session": [],
       "monotonic": true,
-      "morning_coverage": 10,
+      "morning_coverage": 11,
       "afternoon_coverage": 0
     }
   },
   "live": {
     "market": {
-      "zt": 44,
+      "zt": 43,
       "dt": 3,
       "zab": 13,
-      "zab_rate": 22.8,
+      "zab_rate": 23.2,
       "lianban": 13,
       "max_lianban": 5,
-      "amount": "7871.4亿"
+      "amount": "8210.0亿"
     },
     "alerts": [
       {
@@ -797,11 +861,6 @@
         "chg_pct": null
       },
       {
-        "name": "电机Ⅱ",
-        "lead": "大洋电机",
-        "chg_pct": null
-      },
-      {
         "name": "通用设备",
         "lead": "赛福天",
         "chg_pct": null
@@ -809,6 +868,11 @@
       {
         "name": "休闲食品",
         "lead": "桂发祥",
+        "chg_pct": null
+      },
+      {
+        "name": "电机Ⅱ",
+        "lead": "大洋电机",
         "chg_pct": null
       }
     ]
