@@ -1,39 +1,63 @@
 {
   "schema": "intraday_runtime_v1",
-  "date": "2026-10-27",
-  "updated_at": "2026-10-27 15:00:04",
-  "source": "unknown",
+  "date": "2026-10-28",
+  "updated_at": "2026-10-28 09:31:20",
+  "source": "必盈(实时)",
   "latest": {
-    "time": "15:00:04",
-    "ts_bj": "2026-10-27 15:00:04",
-    "date": "2026-10-27",
+    "time": "09:31:20",
+    "ts_bj": "2026-10-28 09:31:20",
+    "date": "2026-10-28",
     "source": "intraday_live",
-    "provider": "unknown",
-    "data_quality": "unavailable",
+    "provider": "必盈(实时)",
+    "data_quality": "partial",
     "pool_status": {
-      "ztgc": "failed",
+      "ztgc": "valid",
       "zbgc": "failed",
-      "dtgc": "failed"
+      "dtgc": "valid"
     },
     "pool_errors": {
-      "ztgc": "HTTP Error 429: Too Many Requests",
-      "zbgc": "HTTP Error 429: Too Many Requests",
-      "dtgc": "HTTP Error 429: Too Many Requests"
+      "zbgc": "empty_response"
     },
-    "zt": null,
-    "dt": null,
+    "zt": 11,
+    "dt": 1,
     "zab": null,
     "zb": null,
     "fb": null,
-    "jj": null,
-    "lianban": null,
-    "max_lb": null,
+    "jj": 36.4,
+    "lianban": 4,
+    "max_lb": 3,
     "amount": "",
     "bf": 0,
     "heat": null,
     "risk": null,
-    "headline": "数据暂缺",
-    "concepts": [],
+    "headline": "数据部分可用",
+    "concepts": [
+      {
+        "name": "汽车零部",
+        "lead": "光洋股份",
+        "chg_pct": null
+      },
+      {
+        "name": "家电零部",
+        "lead": "东贝集团",
+        "chg_pct": null
+      },
+      {
+        "name": "休闲食品",
+        "lead": "青岛食品",
+        "chg_pct": null
+      },
+      {
+        "name": "一般零售",
+        "lead": "深 赛 格",
+        "chg_pct": null
+      },
+      {
+        "name": "元件",
+        "lead": "金安国纪",
+        "chg_pct": null
+      }
+    ],
     "alerts": [
       {
         "level": "info",
@@ -42,57 +66,50 @@
       {
         "level": "warn",
         "text": "盘中三池响应不完整，保留最近有效数据"
-      },
-      {
-        "level": "warn",
-        "text": "三池请求均超时，本槽位跳过板块补抓并等待下一节点"
       }
     ],
     "shift_score": null,
-    "shift_label": "数据暂缺",
-    "note": "本槽位三池请求均未成功，已记录数据暂缺；等待下一节点自动恢复。"
+    "shift_label": "数据部分可用",
+    "note": "本槽位仅部分三池成功；节点已保留，缺失指标不参与判断。"
   },
   "snapshots": [
     {
-      "time": "09:30:54",
-      "ts_bj": "2026-10-27 09:30:54",
-      "date": "2026-10-27",
+      "time": "09:31:20",
+      "ts_bj": "2026-10-28 09:31:20",
+      "date": "2026-10-28",
       "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
+      "provider": "必盈(实时)",
+      "data_quality": "partial",
       "pool_status": {
         "ztgc": "valid",
-        "zbgc": "valid",
+        "zbgc": "failed",
         "dtgc": "valid"
       },
-      "pool_errors": {},
-      "zt": 8,
-      "dt": 2,
-      "zab": 1,
-      "zb": 11.1,
-      "fb": 88.9,
-      "jj": 62.5,
-      "lianban": 5,
-      "max_lb": 4,
-      "amount": "699.8亿",
+      "pool_errors": {
+        "zbgc": "empty_response"
+      },
+      "zt": 11,
+      "dt": 1,
+      "zab": null,
+      "zb": null,
+      "fb": null,
+      "jj": 36.4,
+      "lianban": 4,
+      "max_lb": 3,
+      "amount": "",
       "bf": 0,
-      "heat": 62,
-      "risk": 10,
-      "headline": "走强",
+      "heat": null,
+      "risk": null,
+      "headline": "数据部分可用",
       "concepts": [
-        {
-          "name": "通用设备",
-          "lead": "赛福天",
-          "chg_pct": null
-        },
         {
           "name": "汽车零部",
           "lead": "光洋股份",
           "chg_pct": null
         },
         {
-          "name": "软件开发",
-          "lead": "多伦科技",
+          "name": "家电零部",
+          "lead": "东贝集团",
           "chg_pct": null
         },
         {
@@ -101,808 +118,16 @@
           "chg_pct": null
         },
         {
-          "name": "家电零部",
-          "lead": "盾安环境",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        }
-      ],
-      "shift_score": 74,
-      "shift_label": "走强",
-      "note": "盘中实时切片已接入，可逐点观察情绪变化。"
-    },
-    {
-      "time": "09:40:05",
-      "ts_bj": "2026-10-27 09:40:05",
-      "date": "2026-10-27",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid"
-      },
-      "pool_errors": {},
-      "zt": 20,
-      "dt": 5,
-      "zab": 3,
-      "zb": 13.0,
-      "fb": 87.0,
-      "jj": 40.0,
-      "lianban": 8,
-      "max_lb": 5,
-      "amount": "2623.4亿",
-      "bf": 0,
-      "heat": 60,
-      "risk": 16,
-      "headline": "修复",
-      "concepts": [
-        {
-          "name": "汽车零部",
-          "lead": "光洋股份",
-          "chg_pct": null
-        },
-        {
-          "name": "通用设备",
-          "lead": "赛福天",
-          "chg_pct": null
-        },
-        {
           "name": "一般零售",
-          "lead": "上海九百",
+          "lead": "深 赛 格",
           "chg_pct": null
         },
         {
-          "name": "家电零部",
-          "lead": "盾安环境",
-          "chg_pct": null
-        },
-        {
-          "name": "软件开发",
-          "lead": "多伦科技",
+          "name": "元件",
+          "lead": "金安国纪",
           "chg_pct": null
         }
       ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        }
-      ],
-      "shift_score": 70,
-      "shift_label": "修复",
-      "note": "情绪略有回落，注意午后分歧。"
-    },
-    {
-      "time": "09:50:06",
-      "ts_bj": "2026-10-27 09:50:06",
-      "date": "2026-10-27",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid"
-      },
-      "pool_errors": {},
-      "zt": 29,
-      "dt": 4,
-      "zab": 5,
-      "zb": 14.7,
-      "fb": 85.3,
-      "jj": 34.5,
-      "lianban": 10,
-      "max_lb": 5,
-      "amount": "3803.3亿",
-      "bf": 0,
-      "heat": 60,
-      "risk": 16,
-      "headline": "修复",
-      "concepts": [
-        {
-          "name": "汽车零部",
-          "lead": "襄阳轴承",
-          "chg_pct": null
-        },
-        {
-          "name": "一般零售",
-          "lead": "上海九百",
-          "chg_pct": null
-        },
-        {
-          "name": "通用设备",
-          "lead": "赛福天",
-          "chg_pct": null
-        },
-        {
-          "name": "半导体",
-          "lead": "中晶科技",
-          "chg_pct": null
-        },
-        {
-          "name": "家电零部",
-          "lead": "盾安环境",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        }
-      ],
-      "shift_score": 70,
-      "shift_label": "修复",
-      "note": "情绪整体平稳，维持当前节奏。"
-    },
-    {
-      "time": "10:00:04",
-      "ts_bj": "2026-10-27 10:00:04",
-      "date": "2026-10-27",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid"
-      },
-      "pool_errors": {},
-      "zt": 31,
-      "dt": 3,
-      "zab": 6,
-      "zb": 16.2,
-      "fb": 83.8,
-      "jj": 32.3,
-      "lianban": 10,
-      "max_lb": 5,
-      "amount": "4721.2亿",
-      "bf": 0,
-      "heat": 59,
-      "risk": 16,
-      "headline": "修复",
-      "concepts": [
-        {
-          "name": "汽车零部",
-          "lead": "襄阳轴承",
-          "chg_pct": null
-        },
-        {
-          "name": "一般零售",
-          "lead": "上海九百",
-          "chg_pct": null
-        },
-        {
-          "name": "通用设备",
-          "lead": "赛福天",
-          "chg_pct": null
-        },
-        {
-          "name": "家电零部",
-          "lead": "盾安环境",
-          "chg_pct": null
-        },
-        {
-          "name": "软件开发",
-          "lead": "多伦科技",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        }
-      ],
-      "shift_score": 70,
-      "shift_label": "修复",
-      "note": "情绪整体平稳，维持当前节奏。"
-    },
-    {
-      "time": "10:10:04",
-      "ts_bj": "2026-10-27 10:10:04",
-      "date": "2026-10-27",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid"
-      },
-      "pool_errors": {},
-      "zt": 33,
-      "dt": 3,
-      "zab": 9,
-      "zb": 21.4,
-      "fb": 78.6,
-      "jj": 30.3,
-      "lianban": 10,
-      "max_lb": 5,
-      "amount": "5485.1亿",
-      "bf": 0,
-      "heat": 56,
-      "risk": 20,
-      "headline": "修复",
-      "concepts": [
-        {
-          "name": "汽车零部",
-          "lead": "襄阳轴承",
-          "chg_pct": null
-        },
-        {
-          "name": "一般零售",
-          "lead": "上海九百",
-          "chg_pct": null
-        },
-        {
-          "name": "通用设备",
-          "lead": "赛福天",
-          "chg_pct": null
-        },
-        {
-          "name": "家电零部",
-          "lead": "盾安环境",
-          "chg_pct": null
-        },
-        {
-          "name": "软件开发",
-          "lead": "多伦科技",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        }
-      ],
-      "shift_score": 66,
-      "shift_label": "修复",
-      "note": "情绪略有回落，注意午后分歧。"
-    },
-    {
-      "time": "10:20:05",
-      "ts_bj": "2026-10-27 10:20:05",
-      "date": "2026-10-27",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid"
-      },
-      "pool_errors": {},
-      "zt": 37,
-      "dt": 3,
-      "zab": 11,
-      "zb": 22.9,
-      "fb": 77.1,
-      "jj": 32.4,
-      "lianban": 12,
-      "max_lb": 5,
-      "amount": "6137.6亿",
-      "bf": 0,
-      "heat": 57,
-      "risk": 22,
-      "headline": "修复",
-      "concepts": [
-        {
-          "name": "汽车零部",
-          "lead": "襄阳轴承",
-          "chg_pct": null
-        },
-        {
-          "name": "一般零售",
-          "lead": "上海九百",
-          "chg_pct": null
-        },
-        {
-          "name": "通用设备",
-          "lead": "赛福天",
-          "chg_pct": null
-        },
-        {
-          "name": "休闲食品",
-          "lead": "桂发祥",
-          "chg_pct": null
-        },
-        {
-          "name": "家电零部",
-          "lead": "盾安环境",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        }
-      ],
-      "shift_score": 66,
-      "shift_label": "修复",
-      "note": "情绪整体平稳，维持当前节奏。"
-    },
-    {
-      "time": "10:30:04",
-      "ts_bj": "2026-10-27 10:30:04",
-      "date": "2026-10-27",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid"
-      },
-      "pool_errors": {},
-      "zt": 41,
-      "dt": 2,
-      "zab": 10,
-      "zb": 19.6,
-      "fb": 80.4,
-      "jj": 31.7,
-      "lianban": 13,
-      "max_lb": 5,
-      "amount": "6663.9亿",
-      "bf": 0,
-      "heat": 59,
-      "risk": 18,
-      "headline": "修复",
-      "concepts": [
-        {
-          "name": "汽车零部",
-          "lead": "襄阳轴承",
-          "chg_pct": null
-        },
-        {
-          "name": "一般零售",
-          "lead": "上海九百",
-          "chg_pct": null
-        },
-        {
-          "name": "通用设备",
-          "lead": "赛福天",
-          "chg_pct": null
-        },
-        {
-          "name": "休闲食品",
-          "lead": "桂发祥",
-          "chg_pct": null
-        },
-        {
-          "name": "电机Ⅱ",
-          "lead": "大洋电机",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        }
-      ],
-      "shift_score": 69,
-      "shift_label": "修复",
-      "note": "情绪边际修复，但仍需确认持续性。"
-    },
-    {
-      "time": "10:40:04",
-      "ts_bj": "2026-10-27 10:40:04",
-      "date": "2026-10-27",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid"
-      },
-      "pool_errors": {},
-      "zt": 43,
-      "dt": 3,
-      "zab": 12,
-      "zb": 21.8,
-      "fb": 78.2,
-      "jj": 30.2,
-      "lianban": 13,
-      "max_lb": 5,
-      "amount": "7107.8亿",
-      "bf": 0,
-      "heat": 58,
-      "risk": 22,
-      "headline": "修复",
-      "concepts": [
-        {
-          "name": "汽车零部",
-          "lead": "襄阳轴承",
-          "chg_pct": null
-        },
-        {
-          "name": "一般零售",
-          "lead": "上海九百",
-          "chg_pct": null
-        },
-        {
-          "name": "通用设备",
-          "lead": "赛福天",
-          "chg_pct": null
-        },
-        {
-          "name": "休闲食品",
-          "lead": "桂发祥",
-          "chg_pct": null
-        },
-        {
-          "name": "电机Ⅱ",
-          "lead": "大洋电机",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        }
-      ],
-      "shift_score": 66,
-      "shift_label": "修复",
-      "note": "情绪略有回落，注意午后分歧。"
-    },
-    {
-      "time": "10:50:05",
-      "ts_bj": "2026-10-27 10:50:05",
-      "date": "2026-10-27",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid"
-      },
-      "pool_errors": {},
-      "zt": 43,
-      "dt": 3,
-      "zab": 12,
-      "zb": 21.8,
-      "fb": 78.2,
-      "jj": 30.2,
-      "lianban": 13,
-      "max_lb": 5,
-      "amount": "7518.4亿",
-      "bf": 0,
-      "heat": 58,
-      "risk": 22,
-      "headline": "修复",
-      "concepts": [
-        {
-          "name": "汽车零部",
-          "lead": "襄阳轴承",
-          "chg_pct": null
-        },
-        {
-          "name": "一般零售",
-          "lead": "上海九百",
-          "chg_pct": null
-        },
-        {
-          "name": "通用设备",
-          "lead": "赛福天",
-          "chg_pct": null
-        },
-        {
-          "name": "休闲食品",
-          "lead": "桂发祥",
-          "chg_pct": null
-        },
-        {
-          "name": "电机Ⅱ",
-          "lead": "大洋电机",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        }
-      ],
-      "shift_score": 66,
-      "shift_label": "修复",
-      "note": "情绪整体平稳，维持当前节奏。"
-    },
-    {
-      "time": "11:00:05",
-      "ts_bj": "2026-10-27 11:00:05",
-      "date": "2026-10-27",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid"
-      },
-      "pool_errors": {},
-      "zt": 44,
-      "dt": 3,
-      "zab": 13,
-      "zb": 22.8,
-      "fb": 77.2,
-      "jj": 29.5,
-      "lianban": 13,
-      "max_lb": 5,
-      "amount": "7871.4亿",
-      "bf": 0,
-      "heat": 57,
-      "risk": 23,
-      "headline": "修复",
-      "concepts": [
-        {
-          "name": "汽车零部",
-          "lead": "襄阳轴承",
-          "chg_pct": null
-        },
-        {
-          "name": "一般零售",
-          "lead": "上海九百",
-          "chg_pct": null
-        },
-        {
-          "name": "电机Ⅱ",
-          "lead": "大洋电机",
-          "chg_pct": null
-        },
-        {
-          "name": "通用设备",
-          "lead": "赛福天",
-          "chg_pct": null
-        },
-        {
-          "name": "休闲食品",
-          "lead": "桂发祥",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        }
-      ],
-      "shift_score": 65,
-      "shift_label": "修复",
-      "note": "情绪整体平稳，维持当前节奏。"
-    },
-    {
-      "time": "11:10:05",
-      "ts_bj": "2026-10-27 11:10:05",
-      "date": "2026-10-27",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid"
-      },
-      "pool_errors": {},
-      "zt": 43,
-      "dt": 3,
-      "zab": 13,
-      "zb": 23.2,
-      "fb": 76.8,
-      "jj": 30.2,
-      "lianban": 13,
-      "max_lb": 5,
-      "amount": "8210.0亿",
-      "bf": 0,
-      "heat": 57,
-      "risk": 23,
-      "headline": "修复",
-      "concepts": [
-        {
-          "name": "汽车零部",
-          "lead": "襄阳轴承",
-          "chg_pct": null
-        },
-        {
-          "name": "一般零售",
-          "lead": "上海九百",
-          "chg_pct": null
-        },
-        {
-          "name": "通用设备",
-          "lead": "赛福天",
-          "chg_pct": null
-        },
-        {
-          "name": "休闲食品",
-          "lead": "桂发祥",
-          "chg_pct": null
-        },
-        {
-          "name": "电机Ⅱ",
-          "lead": "大洋电机",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        }
-      ],
-      "shift_score": 65,
-      "shift_label": "修复",
-      "note": "情绪整体平稳，维持当前节奏。"
-    },
-    {
-      "time": "11:20:05",
-      "ts_bj": "2026-10-27 11:20:05",
-      "date": "2026-10-27",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid"
-      },
-      "pool_errors": {},
-      "zt": 46,
-      "dt": 4,
-      "zab": 13,
-      "zb": 22.0,
-      "fb": 78.0,
-      "jj": 28.3,
-      "lianban": 13,
-      "max_lb": 5,
-      "amount": "8463.1亿",
-      "bf": 0,
-      "heat": 58,
-      "risk": 24,
-      "headline": "修复",
-      "concepts": [
-        {
-          "name": "汽车零部",
-          "lead": "襄阳轴承",
-          "chg_pct": null
-        },
-        {
-          "name": "一般零售",
-          "lead": "上海九百",
-          "chg_pct": null
-        },
-        {
-          "name": "电机Ⅱ",
-          "lead": "大洋电机",
-          "chg_pct": null
-        },
-        {
-          "name": "通用设备",
-          "lead": "赛福天",
-          "chg_pct": null
-        },
-        {
-          "name": "休闲食品",
-          "lead": "桂发祥",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        }
-      ],
-      "shift_score": 66,
-      "shift_label": "修复",
-      "note": "情绪整体平稳，维持当前节奏。"
-    },
-    {
-      "time": "11:30:04",
-      "ts_bj": "2026-10-27 11:30:04",
-      "date": "2026-10-27",
-      "source": "intraday_live",
-      "provider": "必盈(实时)+必盈(实时)",
-      "data_quality": "valid",
-      "pool_status": {
-        "ztgc": "valid",
-        "zbgc": "valid",
-        "dtgc": "valid"
-      },
-      "pool_errors": {},
-      "zt": 46,
-      "dt": 3,
-      "zab": 13,
-      "zb": 22.0,
-      "fb": 78.0,
-      "jj": 28.3,
-      "lianban": 13,
-      "max_lb": 5,
-      "amount": "8699.9亿",
-      "bf": 0,
-      "heat": 58,
-      "risk": 22,
-      "headline": "修复",
-      "concepts": [
-        {
-          "name": "汽车零部",
-          "lead": "襄阳轴承",
-          "chg_pct": null
-        },
-        {
-          "name": "一般零售",
-          "lead": "上海九百",
-          "chg_pct": null
-        },
-        {
-          "name": "电机Ⅱ",
-          "lead": "大洋电机",
-          "chg_pct": null
-        },
-        {
-          "name": "通用设备",
-          "lead": "赛福天",
-          "chg_pct": null
-        },
-        {
-          "name": "休闲食品",
-          "lead": "桂发祥",
-          "chg_pct": null
-        }
-      ],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        }
-      ],
-      "shift_score": 66,
-      "shift_label": "修复",
-      "note": "情绪整体平稳，维持当前节奏。"
-    },
-    {
-      "time": "14:50:57",
-      "ts_bj": "2026-10-27 14:50:57",
-      "date": "2026-10-27",
-      "source": "intraday_live",
-      "provider": "unknown",
-      "data_quality": "unavailable",
-      "pool_status": {
-        "ztgc": "failed",
-        "zbgc": "failed",
-        "dtgc": "failed"
-      },
-      "pool_errors": {
-        "ztgc": "HTTP Error 429: Too Many Requests",
-        "zbgc": "HTTP Error 429: Too Many Requests",
-        "dtgc": "HTTP Error 429: Too Many Requests"
-      },
-      "zt": null,
-      "dt": null,
-      "zab": null,
-      "zb": null,
-      "fb": null,
-      "jj": null,
-      "lianban": null,
-      "max_lb": null,
-      "amount": "",
-      "bf": 0,
-      "heat": null,
-      "risk": null,
-      "headline": "数据暂缺",
-      "concepts": [],
       "alerts": [
         {
           "level": "info",
@@ -911,141 +136,85 @@
         {
           "level": "warn",
           "text": "盘中三池响应不完整，保留最近有效数据"
-        },
-        {
-          "level": "warn",
-          "text": "三池请求均超时，本槽位跳过板块补抓并等待下一节点"
         }
       ],
       "shift_score": null,
-      "shift_label": "数据暂缺",
-      "note": "本槽位三池请求均未成功，已记录数据暂缺；等待下一节点自动恢复。"
-    },
-    {
-      "time": "15:00:04",
-      "ts_bj": "2026-10-27 15:00:04",
-      "date": "2026-10-27",
-      "source": "intraday_live",
-      "provider": "unknown",
-      "data_quality": "unavailable",
-      "pool_status": {
-        "ztgc": "failed",
-        "zbgc": "failed",
-        "dtgc": "failed"
-      },
-      "pool_errors": {
-        "ztgc": "HTTP Error 429: Too Many Requests",
-        "zbgc": "HTTP Error 429: Too Many Requests",
-        "dtgc": "HTTP Error 429: Too Many Requests"
-      },
-      "zt": null,
-      "dt": null,
-      "zab": null,
-      "zb": null,
-      "fb": null,
-      "jj": null,
-      "lianban": null,
-      "max_lb": null,
-      "amount": "",
-      "bf": 0,
-      "heat": null,
-      "risk": null,
-      "headline": "数据暂缺",
-      "concepts": [],
-      "alerts": [
-        {
-          "level": "info",
-          "text": "盘中模式：强制实时拉取"
-        },
-        {
-          "level": "warn",
-          "text": "盘中三池响应不完整，保留最近有效数据"
-        },
-        {
-          "level": "warn",
-          "text": "三池请求均超时，本槽位跳过板块补抓并等待下一节点"
-        }
-      ],
-      "shift_score": null,
-      "shift_label": "数据暂缺",
-      "note": "本槽位三池请求均未成功，已记录数据暂缺；等待下一节点自动恢复。"
+      "shift_label": "数据部分可用",
+      "note": "本槽位仅部分三池成功；节点已保留，缺失指标不参与判断。"
     }
   ],
-  "indices": [],
+  "indices": [
+    {
+      "name": "上证指数",
+      "code": "000001.SH",
+      "val": 3665.496,
+      "chg": 0.4713152779883064,
+      "cje": 38874471000.0,
+      "t": "2026-10-28 09:31:18"
+    },
+    {
+      "name": "深证成指",
+      "code": "399001.SZ",
+      "val": 11352.372,
+      "chg": 0.9482708640042232,
+      "cje": 44134921500.0,
+      "t": "2026-10-28 09:31:15"
+    },
+    {
+      "name": "创业板指",
+      "code": "399006.SZ",
+      "val": 2583.757,
+      "chg": 1.397406509587947,
+      "cje": 21674229100.0,
+      "t": "2026-10-28 09:31:15"
+    }
+  ],
   "asOf": {
-    "indices": ""
+    "indices": "09:31:15"
   },
   "health": {
     "status": "degraded",
-    "last_valid_at": "2026-10-27 15:00:04",
+    "last_valid_at": "2026-10-28 09:31:20",
     "rejected_reason": "",
     "source": {
       "status": "partial",
       "pool_status": {
-        "ztgc": "failed",
+        "ztgc": "valid",
         "zbgc": "failed",
-        "dtgc": "failed"
+        "dtgc": "valid"
       },
       "pool_errors": {
-        "ztgc": "HTTP Error 429: Too Many Requests",
-        "zbgc": "HTTP Error 429: Too Many Requests",
-        "dtgc": "HTTP Error 429: Too Many Requests"
+        "zbgc": "empty_response"
       }
     },
-    "indices_status": "unavailable",
+    "indices_status": "valid",
     "coverage": {
-      "ok": false,
-      "status": "degraded",
-      "message": "intraday_coverage_incomplete",
-      "date": "2026-10-27",
+      "ok": true,
+      "status": "collecting",
+      "message": "intraday_coverage_collecting",
+      "date": "2026-10-28",
       "expected_count": 26,
-      "due_count": 26,
-      "observed_count": 15,
+      "due_count": 1,
+      "observed_count": 1,
       "observed_slots": [
-        "09:30",
-        "09:40",
-        "09:50",
-        "10:00",
-        "10:10",
-        "10:20",
-        "10:30",
-        "10:40",
-        "10:50",
-        "11:00",
-        "11:10",
-        "11:20",
-        "11:30",
-        "14:50",
-        "15:00"
+        "09:30"
       ],
-      "missing_slots": [
-        "13:00",
-        "13:10",
-        "13:20",
-        "13:30",
-        "13:40",
-        "13:50",
-        "14:00",
-        "14:10",
-        "14:20",
-        "14:30",
-        "14:40"
-      ],
+      "missing_slots": [],
       "duplicate_slots": [],
       "out_of_session": [],
       "monotonic": true,
-      "morning_coverage": 13,
-      "afternoon_coverage": 2
+      "morning_coverage": 1,
+      "afternoon_coverage": 0
     }
   },
   "live": {
     "market": {
-      "zt": null,
-      "dt": null,
+      "zt": 11,
+      "dt": 1,
       "zab": null,
       "zab_rate": null,
-      "lianban": null,
-      "max_lianban": null,
+      "lianban": 4,
+      "max_lianban": 3,
       "amount": ""
     },
     "alerts": [
@@ -1056,12 +225,34 @@
       {
         "level": "warn",
         "text": "盘中三池响应不完整，保留最近有效数据"
-      },
-      {
-        "level": "warn",
-        "text": "三池请求均超时，本槽位跳过板块补抓并等待下一节点"
       }
     ],
-    "concepts": []
+    "concepts": [
+      {
+        "name": "汽车零部",
+        "lead": "光洋股份",
+        "chg_pct": null
+      },
+      {
+        "name": "家电零部",
+        "lead": "东贝集团",
+        "chg_pct": null
+      },
+      {
+        "name": "休闲食品",
+        "lead": "青岛食品",
+        "chg_pct": null
+      },
+      {
+        "name": "一般零售",
+        "lead": "深 赛 格",
+        "chg_pct": null
+      },
+      {
+        "name": "元件",
+        "lead": "金安国纪",
+        "chg_pct": null
+      }
+    ]
   }
 }
