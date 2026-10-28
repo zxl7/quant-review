@@ -1,11 +1,11 @@
 {
   "schema": "intraday_runtime_v1",
   "date": "2026-10-28",
-  "updated_at": "2026-10-28 09:50:05",
+  "updated_at": "2026-10-28 10:00:03",
   "source": "必盈(实时)+必盈(实时)",
   "latest": {
-    "time": "09:50:05",
-    "ts_bj": "2026-10-28 09:50:05",
+    "time": "10:00:03",
+    "ts_bj": "2026-10-28 10:00:03",
     "date": "2026-10-28",
     "source": "intraday_live",
     "provider": "必盈(实时)+必盈(实时)",
@@ -13,21 +13,21 @@
     "pool_status": {
       "ztgc": "valid",
       "zbgc": "valid",
-      "dtgc": "valid"
+      "dtgc": "valid_empty"
     },
     "pool_errors": {},
-    "zt": 25,
-    "dt": 1,
-    "zab": 3,
-    "zb": 10.7,
-    "fb": 89.3,
-    "jj": 16.0,
+    "zt": 31,
+    "dt": 0,
+    "zab": 6,
+    "zb": 16.2,
+    "fb": 83.8,
+    "jj": 12.9,
     "lianban": 4,
     "max_lb": 5,
-    "amount": "4140.9亿",
+    "amount": "5101.8亿",
     "bf": 0,
-    "heat": 56,
-    "risk": 9,
+    "heat": 54,
+    "risk": 12,
     "headline": "修复",
     "concepts": [
       {
@@ -46,13 +46,13 @@
         "chg_pct": null
       },
       {
-        "name": "其他电子",
-        "lead": "盈方微",
+        "name": "元件",
+        "lead": "方正科技",
         "chg_pct": null
       },
       {
-        "name": "专用设备",
-        "lead": "大丰实业",
+        "name": "其他电子",
+        "lead": "盈方微",
         "chg_pct": null
       }
     ],
@@ -62,9 +62,9 @@
         "text": "盘中模式：强制实时拉取"
       }
     ],
-    "shift_score": 71,
+    "shift_score": 68,
     "shift_label": "修复",
-    "note": "承接增强、分歧收敛，情绪明显回暖。"
+    "note": "情绪略有回落，注意午后分歧。"
   },
   "snapshots": [
     {
@@ -261,47 +261,110 @@
       "shift_score": 71,
       "shift_label": "修复",
       "note": "承接增强、分歧收敛，情绪明显回暖。"
+    },
+    {
+      "time": "10:00:03",
+      "ts_bj": "2026-10-28 10:00:03",
+      "date": "2026-10-28",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid_empty"
+      },
+      "pool_errors": {},
+      "zt": 31,
+      "dt": 0,
+      "zab": 6,
+      "zb": 16.2,
+      "fb": 83.8,
+      "jj": 12.9,
+      "lianban": 4,
+      "max_lb": 5,
+      "amount": "5101.8亿",
+      "bf": 0,
+      "heat": 54,
+      "risk": 12,
+      "headline": "修复",
+      "concepts": [
+        {
+          "name": "汽车零部",
+          "lead": "襄阳轴承",
+          "chg_pct": null
+        },
+        {
+          "name": "通用设备",
+          "lead": "五洲新春",
+          "chg_pct": null
+        },
+        {
+          "name": "家电零部",
+          "lead": "东贝集团",
+          "chg_pct": null
+        },
+        {
+          "name": "元件",
+          "lead": "方正科技",
+          "chg_pct": null
+        },
+        {
+          "name": "其他电子",
+          "lead": "盈方微",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        }
+      ],
+      "shift_score": 68,
+      "shift_label": "修复",
+      "note": "情绪略有回落，注意午后分歧。"
     }
   ],
   "indices": [
     {
       "name": "上证指数",
       "code": "000001.SH",
-      "val": 3673.652,
-      "chg": 0.6948713935610059,
-      "cje": 188143532600.0,
-      "t": "2026-10-28 09:50:03"
+      "val": 3664.595,
+      "chg": 0.4466188508020547,
+      "cje": 232485370400.0,
+      "t": "2026-10-28 10:00:00"
     },
     {
       "name": "深证成指",
       "code": "399001.SZ",
-      "val": 11425.786,
-      "chg": 1.601087416986285,
-      "cje": 225666394300.0,
-      "t": "2026-10-28 09:50:00"
+      "val": 11385.211,
+      "chg": 1.2402838694715412,
+      "cje": 277526619500.0,
+      "t": "2026-10-28 09:59:57"
     },
     {
       "name": "创业板指",
       "code": "399006.SZ",
-      "val": 2610.649,
-      "chg": 2.452760807943335,
-      "cje": 115086246200.0,
-      "t": "2026-10-28 09:50:00"
+      "val": 2598.231,
+      "chg": 1.9654266685347026,
+      "cje": 142836858600.0,
+      "t": "2026-10-28 09:59:57"
     }
   ],
   "asOf": {
-    "indices": "09:50:00"
+    "indices": "09:59:57"
   },
   "health": {
     "status": "valid",
-    "last_valid_at": "2026-10-28 09:50:05",
+    "last_valid_at": "2026-10-28 10:00:03",
     "rejected_reason": "",
     "source": {
       "status": "valid",
       "pool_status": {
         "ztgc": "valid",
         "zbgc": "valid",
-        "dtgc": "valid"
+        "dtgc": "valid_empty"
       },
       "pool_errors": {}
     },
@@ -312,30 +375,31 @@
       "message": "intraday_coverage_collecting",
       "date": "2026-10-28",
       "expected_count": 26,
-      "due_count": 3,
-      "observed_count": 3,
+      "due_count": 4,
+      "observed_count": 4,
       "observed_slots": [
         "09:30",
         "09:40",
-        "09:50"
+        "09:50",
+        "10:00"
       ],
       "missing_slots": [],
       "duplicate_slots": [],
       "out_of_session": [],
       "monotonic": true,
-      "morning_coverage": 3,
+      "morning_coverage": 4,
       "afternoon_coverage": 0
     }
   },
   "live": {
     "market": {
-      "zt": 25,
-      "dt": 1,
-      "zab": 3,
-      "zab_rate": 10.7,
+      "zt": 31,
+      "dt": 0,
+      "zab": 6,
+      "zab_rate": 16.2,
       "lianban": 4,
       "max_lianban": 5,
-      "amount": "4140.9亿"
+      "amount": "5101.8亿"
     },
     "alerts": [
       {
@@ -360,13 +424,13 @@
         "chg_pct": null
       },
       {
-        "name": "其他电子",
-        "lead": "盈方微",
+        "name": "元件",
+        "lead": "方正科技",
         "chg_pct": null
       },
       {
-        "name": "专用设备",
-        "lead": "大丰实业",
+        "name": "其他电子",
+        "lead": "盈方微",
         "chg_pct": null
       }
     ]
