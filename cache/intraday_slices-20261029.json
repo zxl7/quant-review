@@ -2,7 +2,7 @@
   "schema": "intraday_snapshot_v1",
   "render_mode": "snapshot_stream",
   "date": "2026-10-29",
-  "count": 5,
+  "count": 6,
   "interval_min": null,
   "simulated": false,
   "snapshots": [
@@ -356,11 +356,78 @@
       "shift_score": 59,
       "shift_label": "分歧",
       "note": "情绪整体平稳，维持当前节奏。"
+    },
+    {
+      "time": "10:40:04",
+      "ts_bj": "2026-10-29 10:40:04",
+      "date": "2026-10-29",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid"
+      },
+      "pool_errors": {},
+      "zt": 36,
+      "dt": 9,
+      "zab": 19,
+      "zb": 34.5,
+      "fb": 65.5,
+      "jj": 27.8,
+      "lianban": 10,
+      "max_lb": 4,
+      "amount": "8102.2亿",
+      "bf": 0,
+      "heat": 49,
+      "risk": 41,
+      "headline": "分歧",
+      "concepts": [
+        {
+          "name": "专用设备",
+          "lead": "江顺科技",
+          "chg_pct": null
+        },
+        {
+          "name": "汽车零部",
+          "lead": "光洋股份",
+          "chg_pct": null
+        },
+        {
+          "name": "通用设备",
+          "lead": "上海沪工",
+          "chg_pct": null
+        },
+        {
+          "name": "食品加工",
+          "lead": "惠发食品",
+          "chg_pct": null
+        },
+        {
+          "name": "休闲食品",
+          "lead": "青岛食品",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        },
+        {
+          "level": "warn",
+          "text": "炸板率偏高（34.5%）→ 注意回封质量"
+        }
+      ],
+      "shift_score": 53,
+      "shift_label": "分歧",
+      "note": "炸板/跌停抬升，情绪明显走弱。"
     }
   ],
   "latest": {
-    "time": "10:30:04",
-    "ts_bj": "2026-10-29 10:30:04",
+    "time": "10:40:04",
+    "ts_bj": "2026-10-29 10:40:04",
     "date": "2026-10-29",
     "source": "intraday_live",
     "provider": "必盈(实时)+必盈(实时)",
@@ -371,28 +438,28 @@
       "dtgc": "valid"
     },
     "pool_errors": {},
-    "zt": 35,
-    "dt": 7,
-    "zab": 16,
-    "zb": 31.4,
-    "fb": 68.6,
-    "jj": 31.4,
-    "lianban": 11,
-    "max_lb": 6,
-    "amount": "7570.0亿",
+    "zt": 36,
+    "dt": 9,
+    "zab": 19,
+    "zb": 34.5,
+    "fb": 65.5,
+    "jj": 27.8,
+    "lianban": 10,
+    "max_lb": 4,
+    "amount": "8102.2亿",
     "bf": 0,
-    "heat": 55,
-    "risk": 35,
+    "heat": 49,
+    "risk": 41,
     "headline": "分歧",
     "concepts": [
       {
-        "name": "汽车零部",
-        "lead": "襄阳轴承",
+        "name": "专用设备",
+        "lead": "江顺科技",
         "chg_pct": null
       },
       {
-        "name": "专用设备",
-        "lead": "江顺科技",
+        "name": "汽车零部",
+        "lead": "光洋股份",
         "chg_pct": null
       },
       {
@@ -418,22 +485,18 @@
       },
       {
         "level": "warn",
-        "text": "炸板率偏高（31.4%）→ 注意回封质量"
-      },
-      {
-        "level": "warn",
-        "text": "高度6板 + 分歧不低 → 高位兑现/炸板风险"
+        "text": "炸板率偏高（34.5%）→ 注意回封质量"
       }
     ],
-    "shift_score": 59,
+    "shift_score": 53,
     "shift_label": "分歧",
-    "note": "情绪整体平稳，维持当前节奏。"
+    "note": "炸板/跌停抬升，情绪明显走弱。"
   },
-  "updated_at": "2026-10-29 10:30:04",
-  "snapshot_sig": "2026-10-29|2026-10-29 10:30:04|5",
+  "updated_at": "2026-10-29 10:40:04",
+  "snapshot_sig": "2026-10-29|2026-10-29 10:40:04|6",
   "health": {
     "status": "valid",
-    "last_valid_at": "2026-10-29 10:30:04",
+    "last_valid_at": "2026-10-29 10:40:04",
     "rejected_reason": "",
     "source": {
       "status": "valid",
