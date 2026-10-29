@@ -1,11 +1,11 @@
 {
   "schema": "intraday_runtime_v1",
   "date": "2026-10-29",
-  "updated_at": "2026-10-29 10:00:05",
+  "updated_at": "2026-10-29 10:10:08",
   "source": "必盈(实时)+必盈(实时)",
   "latest": {
-    "time": "10:00:05",
-    "ts_bj": "2026-10-29 10:00:05",
+    "time": "10:10:08",
+    "ts_bj": "2026-10-29 10:10:08",
     "date": "2026-10-29",
     "source": "intraday_live",
     "provider": "必盈(实时)+必盈(实时)",
@@ -16,23 +16,23 @@
       "dtgc": "valid"
     },
     "pool_errors": {},
-    "zt": 26,
-    "dt": 4,
-    "zab": 11,
-    "zb": 29.7,
-    "fb": 70.3,
-    "jj": 42.3,
-    "lianban": 11,
-    "max_lb": 6,
-    "amount": "5299.1亿",
+    "zt": 31,
+    "dt": 6,
+    "zab": 14,
+    "zb": 31.1,
+    "fb": 68.9,
+    "jj": 32.3,
+    "lianban": 10,
+    "max_lb": 4,
+    "amount": "6214.3亿",
     "bf": 0,
-    "heat": 57,
-    "risk": 27,
-    "headline": "修复",
+    "heat": 50,
+    "risk": 32,
+    "headline": "分歧",
     "concepts": [
       {
         "name": "汽车零部",
-        "lead": "襄阳轴承",
+        "lead": "光洋股份",
         "chg_pct": null
       },
       {
@@ -46,8 +46,8 @@
         "chg_pct": null
       },
       {
-        "name": "铁路公路",
-        "lead": "三羊马",
+        "name": "食品加工",
+        "lead": "惠发食品",
         "chg_pct": null
       },
       {
@@ -63,16 +63,12 @@
       },
       {
         "level": "warn",
-        "text": "炸板率偏高（29.7%）→ 注意回封质量"
-      },
-      {
-        "level": "warn",
-        "text": "高度6板 + 分歧不低 → 高位兑现/炸板风险"
+        "text": "炸板率偏高（31.1%）→ 注意回封质量"
       }
     ],
-    "shift_score": 64,
-    "shift_label": "修复",
-    "note": "情绪整体平稳，维持当前节奏。"
+    "shift_score": 58,
+    "shift_label": "分歧",
+    "note": "炸板/跌停抬升，情绪明显走弱。"
   },
   "snapshots": [
     {
@@ -216,40 +212,107 @@
       "shift_score": 64,
       "shift_label": "修复",
       "note": "情绪整体平稳，维持当前节奏。"
+    },
+    {
+      "time": "10:10:08",
+      "ts_bj": "2026-10-29 10:10:08",
+      "date": "2026-10-29",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid"
+      },
+      "pool_errors": {},
+      "zt": 31,
+      "dt": 6,
+      "zab": 14,
+      "zb": 31.1,
+      "fb": 68.9,
+      "jj": 32.3,
+      "lianban": 10,
+      "max_lb": 4,
+      "amount": "6214.3亿",
+      "bf": 0,
+      "heat": 50,
+      "risk": 32,
+      "headline": "分歧",
+      "concepts": [
+        {
+          "name": "汽车零部",
+          "lead": "光洋股份",
+          "chg_pct": null
+        },
+        {
+          "name": "通用设备",
+          "lead": "宁波东力",
+          "chg_pct": null
+        },
+        {
+          "name": "专用设备",
+          "lead": "山东矿机",
+          "chg_pct": null
+        },
+        {
+          "name": "食品加工",
+          "lead": "惠发食品",
+          "chg_pct": null
+        },
+        {
+          "name": "休闲食品",
+          "lead": "青岛食品",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        },
+        {
+          "level": "warn",
+          "text": "炸板率偏高（31.1%）→ 注意回封质量"
+        }
+      ],
+      "shift_score": 58,
+      "shift_label": "分歧",
+      "note": "炸板/跌停抬升，情绪明显走弱。"
     }
   ],
   "indices": [
     {
       "name": "上证指数",
       "code": "000001.SH",
-      "val": 3656.185,
-      "chg": -0.6867910608509838,
-      "cje": 234133932700.0,
-      "t": "2026-10-29 10:00:00"
+      "val": 3657.409,
+      "chg": -0.6535434632207944,
+      "cje": 276406899600.0,
+      "t": "2026-10-29 10:10:06"
     },
     {
       "name": "深证成指",
       "code": "399001.SZ",
-      "val": 11213.499,
-      "chg": -2.2633742345191177,
-      "cje": 294495949300.0,
-      "t": "2026-10-29 10:00:00"
+      "val": 11226.802,
+      "chg": -2.147425561178336,
+      "cje": 343800555800.0,
+      "t": "2026-10-29 10:10:03"
     },
     {
       "name": "创业板指",
       "code": "399006.SZ",
-      "val": 2543.866,
-      "chg": -3.449801879488083,
-      "cje": 151360817300.0,
-      "t": "2026-10-29 10:00:03"
+      "val": 2548.883,
+      "chg": -3.2593860541377735,
+      "cje": 176501944100.0,
+      "t": "2026-10-29 10:10:03"
     }
   ],
   "asOf": {
-    "indices": "10:00:03"
+    "indices": "10:10:03"
   },
   "health": {
     "status": "valid",
-    "last_valid_at": "2026-10-29 10:00:05",
+    "last_valid_at": "2026-10-29 10:10:08",
     "rejected_reason": "",
     "source": {
       "status": "valid",
@@ -267,11 +330,12 @@
       "message": "intraday_coverage_incomplete",
       "date": "2026-10-29",
       "expected_count": 26,
-      "due_count": 4,
-      "observed_count": 2,
+      "due_count": 5,
+      "observed_count": 3,
       "observed_slots": [
         "09:50",
-        "10:00"
+        "10:00",
+        "10:10"
       ],
       "missing_slots": [
         "09:30",
@@ -280,19 +344,19 @@
       "duplicate_slots": [],
       "out_of_session": [],
       "monotonic": true,
-      "morning_coverage": 2,
+      "morning_coverage": 3,
       "afternoon_coverage": 0
     }
   },
   "live": {
     "market": {
-      "zt": 26,
-      "dt": 4,
-      "zab": 11,
-      "zab_rate": 29.7,
-      "lianban": 11,
-      "max_lianban": 6,
-      "amount": "5299.1亿"
+      "zt": 31,
+      "dt": 6,
+      "zab": 14,
+      "zab_rate": 31.1,
+      "lianban": 10,
+      "max_lianban": 4,
+      "amount": "6214.3亿"
     },
     "alerts": [
       {
@@ -301,17 +365,13 @@
       },
       {
         "level": "warn",
-        "text": "炸板率偏高（29.7%）→ 注意回封质量"
-      },
-      {
-        "level": "warn",
-        "text": "高度6板 + 分歧不低 → 高位兑现/炸板风险"
+        "text": "炸板率偏高（31.1%）→ 注意回封质量"
       }
     ],
     "concepts": [
       {
         "name": "汽车零部",
-        "lead": "襄阳轴承",
+        "lead": "光洋股份",
         "chg_pct": null
       },
       {
@@ -325,8 +385,8 @@
         "chg_pct": null
       },
       {
-        "name": "铁路公路",
-        "lead": "三羊马",
+        "name": "食品加工",
+        "lead": "惠发食品",
         "chg_pct": null
       },
       {
