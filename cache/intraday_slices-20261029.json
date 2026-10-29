@@ -2,7 +2,7 @@
   "schema": "intraday_snapshot_v1",
   "render_mode": "snapshot_stream",
   "date": "2026-10-29",
-  "count": 1,
+  "count": 2,
   "interval_min": null,
   "simulated": false,
   "snapshots": [
@@ -76,11 +76,82 @@
       "shift_score": 65,
       "shift_label": "修复",
       "note": "盘中实时切片已接入，可逐点观察情绪变化。"
+    },
+    {
+      "time": "10:00:05",
+      "ts_bj": "2026-10-29 10:00:05",
+      "date": "2026-10-29",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid"
+      },
+      "pool_errors": {},
+      "zt": 26,
+      "dt": 4,
+      "zab": 11,
+      "zb": 29.7,
+      "fb": 70.3,
+      "jj": 42.3,
+      "lianban": 11,
+      "max_lb": 6,
+      "amount": "5299.1亿",
+      "bf": 0,
+      "heat": 57,
+      "risk": 27,
+      "headline": "修复",
+      "concepts": [
+        {
+          "name": "汽车零部",
+          "lead": "襄阳轴承",
+          "chg_pct": null
+        },
+        {
+          "name": "通用设备",
+          "lead": "宁波东力",
+          "chg_pct": null
+        },
+        {
+          "name": "专用设备",
+          "lead": "山东矿机",
+          "chg_pct": null
+        },
+        {
+          "name": "铁路公路",
+          "lead": "三羊马",
+          "chg_pct": null
+        },
+        {
+          "name": "休闲食品",
+          "lead": "青岛食品",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        },
+        {
+          "level": "warn",
+          "text": "炸板率偏高（29.7%）→ 注意回封质量"
+        },
+        {
+          "level": "warn",
+          "text": "高度6板 + 分歧不低 → 高位兑现/炸板风险"
+        }
+      ],
+      "shift_score": 64,
+      "shift_label": "修复",
+      "note": "情绪整体平稳，维持当前节奏。"
     }
   ],
   "latest": {
-    "time": "09:50:58",
-    "ts_bj": "2026-10-29 09:50:58",
+    "time": "10:00:05",
+    "ts_bj": "2026-10-29 10:00:05",
     "date": "2026-10-29",
     "source": "intraday_live",
     "provider": "必盈(实时)+必盈(实时)",
@@ -91,23 +162,28 @@
       "dtgc": "valid"
     },
     "pool_errors": {},
-    "zt": 25,
-    "dt": 3,
-    "zab": 9,
-    "zb": 26.5,
-    "fb": 73.5,
-    "jj": 36.0,
-    "lianban": 9,
+    "zt": 26,
+    "dt": 4,
+    "zab": 11,
+    "zb": 29.7,
+    "fb": 70.3,
+    "jj": 42.3,
+    "lianban": 11,
     "max_lb": 6,
-    "amount": "4203.2亿",
+    "amount": "5299.1亿",
     "bf": 0,
-    "heat": 56,
-    "risk": 23,
+    "heat": 57,
+    "risk": 27,
     "headline": "修复",
     "concepts": [
       {
         "name": "汽车零部",
         "lead": "襄阳轴承",
+        "chg_pct": null
+      },
+      {
+        "name": "通用设备",
+        "lead": "宁波东力",
         "chg_pct": null
       },
       {
@@ -124,11 +200,6 @@
         "name": "休闲食品",
         "lead": "青岛食品",
         "chg_pct": null
-      },
-      {
-        "name": "游戏Ⅱ",
-        "lead": "文投控股",
-        "chg_pct": null
       }
     ],
     "alerts": [
@@ -138,22 +209,22 @@
       },
       {
         "level": "warn",
-        "text": "炸板率偏高（26.5%）→ 注意回封质量"
+        "text": "炸板率偏高（29.7%）→ 注意回封质量"
       },
       {
         "level": "warn",
         "text": "高度6板 + 分歧不低 → 高位兑现/炸板风险"
       }
     ],
-    "shift_score": 65,
+    "shift_score": 64,
     "shift_label": "修复",
-    "note": "盘中实时切片已接入，可逐点观察情绪变化。"
+    "note": "情绪整体平稳，维持当前节奏。"
   },
-  "updated_at": "2026-10-29 09:50:58",
-  "snapshot_sig": "2026-10-29|2026-10-29 09:50:58|1",
+  "updated_at": "2026-10-29 10:00:05",
+  "snapshot_sig": "2026-10-29|2026-10-29 10:00:05|2",
   "health": {
     "status": "valid",
-    "last_valid_at": "2026-10-29 09:50:58",
+    "last_valid_at": "2026-10-29 10:00:05",
     "rejected_reason": "",
     "source": {
       "status": "valid",

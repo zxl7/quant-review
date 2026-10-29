@@ -1,11 +1,11 @@
 {
   "schema": "intraday_runtime_v1",
   "date": "2026-10-29",
-  "updated_at": "2026-10-29 09:50:58",
+  "updated_at": "2026-10-29 10:00:05",
   "source": "必盈(实时)+必盈(实时)",
   "latest": {
-    "time": "09:50:58",
-    "ts_bj": "2026-10-29 09:50:58",
+    "time": "10:00:05",
+    "ts_bj": "2026-10-29 10:00:05",
     "date": "2026-10-29",
     "source": "intraday_live",
     "provider": "必盈(实时)+必盈(实时)",
@@ -16,23 +16,28 @@
       "dtgc": "valid"
     },
     "pool_errors": {},
-    "zt": 25,
-    "dt": 3,
-    "zab": 9,
-    "zb": 26.5,
-    "fb": 73.5,
-    "jj": 36.0,
-    "lianban": 9,
+    "zt": 26,
+    "dt": 4,
+    "zab": 11,
+    "zb": 29.7,
+    "fb": 70.3,
+    "jj": 42.3,
+    "lianban": 11,
     "max_lb": 6,
-    "amount": "4203.2亿",
+    "amount": "5299.1亿",
     "bf": 0,
-    "heat": 56,
-    "risk": 23,
+    "heat": 57,
+    "risk": 27,
     "headline": "修复",
     "concepts": [
       {
         "name": "汽车零部",
         "lead": "襄阳轴承",
+        "chg_pct": null
+      },
+      {
+        "name": "通用设备",
+        "lead": "宁波东力",
         "chg_pct": null
       },
       {
@@ -49,11 +54,6 @@
         "name": "休闲食品",
         "lead": "青岛食品",
         "chg_pct": null
-      },
-      {
-        "name": "游戏Ⅱ",
-        "lead": "文投控股",
-        "chg_pct": null
       }
     ],
     "alerts": [
@@ -63,16 +63,16 @@
       },
       {
         "level": "warn",
-        "text": "炸板率偏高（26.5%）→ 注意回封质量"
+        "text": "炸板率偏高（29.7%）→ 注意回封质量"
       },
       {
         "level": "warn",
         "text": "高度6板 + 分歧不低 → 高位兑现/炸板风险"
       }
     ],
-    "shift_score": 65,
+    "shift_score": 64,
     "shift_label": "修复",
-    "note": "盘中实时切片已接入，可逐点观察情绪变化。"
+    "note": "情绪整体平稳，维持当前节奏。"
   },
   "snapshots": [
     {
@@ -145,40 +145,111 @@
       "shift_score": 65,
       "shift_label": "修复",
       "note": "盘中实时切片已接入，可逐点观察情绪变化。"
+    },
+    {
+      "time": "10:00:05",
+      "ts_bj": "2026-10-29 10:00:05",
+      "date": "2026-10-29",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid"
+      },
+      "pool_errors": {},
+      "zt": 26,
+      "dt": 4,
+      "zab": 11,
+      "zb": 29.7,
+      "fb": 70.3,
+      "jj": 42.3,
+      "lianban": 11,
+      "max_lb": 6,
+      "amount": "5299.1亿",
+      "bf": 0,
+      "heat": 57,
+      "risk": 27,
+      "headline": "修复",
+      "concepts": [
+        {
+          "name": "汽车零部",
+          "lead": "襄阳轴承",
+          "chg_pct": null
+        },
+        {
+          "name": "通用设备",
+          "lead": "宁波东力",
+          "chg_pct": null
+        },
+        {
+          "name": "专用设备",
+          "lead": "山东矿机",
+          "chg_pct": null
+        },
+        {
+          "name": "铁路公路",
+          "lead": "三羊马",
+          "chg_pct": null
+        },
+        {
+          "name": "休闲食品",
+          "lead": "青岛食品",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        },
+        {
+          "level": "warn",
+          "text": "炸板率偏高（29.7%）→ 注意回封质量"
+        },
+        {
+          "level": "warn",
+          "text": "高度6板 + 分歧不低 → 高位兑现/炸板风险"
+        }
+      ],
+      "shift_score": 64,
+      "shift_label": "修复",
+      "note": "情绪整体平稳，维持当前节奏。"
     }
   ],
   "indices": [
     {
       "name": "上证指数",
       "code": "000001.SH",
-      "val": 3649.736,
-      "chg": -0.8619656990185215,
-      "cje": 184667699100.0,
-      "t": "2026-10-29 09:50:57"
+      "val": 3656.185,
+      "chg": -0.6867910608509838,
+      "cje": 234133932700.0,
+      "t": "2026-10-29 10:00:00"
     },
     {
       "name": "深证成指",
       "code": "399001.SZ",
-      "val": 11223.42,
-      "chg": -2.1769030033521677,
-      "cje": 235144023000.0,
-      "t": "2026-10-29 09:50:51"
+      "val": 11213.499,
+      "chg": -2.2633742345191177,
+      "cje": 294495949300.0,
+      "t": "2026-10-29 10:00:00"
     },
     {
       "name": "创业板指",
       "code": "399006.SZ",
-      "val": 2549.209,
-      "chg": -3.2470130106727133,
-      "cje": 120308692300.0,
-      "t": "2026-10-29 09:50:54"
+      "val": 2543.866,
+      "chg": -3.449801879488083,
+      "cje": 151360817300.0,
+      "t": "2026-10-29 10:00:03"
     }
   ],
   "asOf": {
-    "indices": "09:50:54"
+    "indices": "10:00:03"
   },
   "health": {
     "status": "valid",
-    "last_valid_at": "2026-10-29 09:50:58",
+    "last_valid_at": "2026-10-29 10:00:05",
     "rejected_reason": "",
     "source": {
       "status": "valid",
@@ -196,10 +267,11 @@
       "message": "intraday_coverage_incomplete",
       "date": "2026-10-29",
       "expected_count": 26,
-      "due_count": 3,
-      "observed_count": 1,
+      "due_count": 4,
+      "observed_count": 2,
       "observed_slots": [
-        "09:50"
+        "09:50",
+        "10:00"
       ],
       "missing_slots": [
         "09:30",
@@ -208,19 +280,19 @@
       "duplicate_slots": [],
       "out_of_session": [],
       "monotonic": true,
-      "morning_coverage": 1,
+      "morning_coverage": 2,
       "afternoon_coverage": 0
     }
   },
   "live": {
     "market": {
-      "zt": 25,
-      "dt": 3,
-      "zab": 9,
-      "zab_rate": 26.5,
-      "lianban": 9,
+      "zt": 26,
+      "dt": 4,
+      "zab": 11,
+      "zab_rate": 29.7,
+      "lianban": 11,
       "max_lianban": 6,
-      "amount": "4203.2亿"
+      "amount": "5299.1亿"
     },
     "alerts": [
       {
@@ -229,7 +301,7 @@
       },
       {
         "level": "warn",
-        "text": "炸板率偏高（26.5%）→ 注意回封质量"
+        "text": "炸板率偏高（29.7%）→ 注意回封质量"
       },
       {
         "level": "warn",
@@ -240,6 +312,11 @@
       {
         "name": "汽车零部",
         "lead": "襄阳轴承",
+        "chg_pct": null
+      },
+      {
+        "name": "通用设备",
+        "lead": "宁波东力",
         "chg_pct": null
       },
       {
@@ -255,11 +332,6 @@
       {
         "name": "休闲食品",
         "lead": "青岛食品",
-        "chg_pct": null
-      },
-      {
-        "name": "游戏Ⅱ",
-        "lead": "文投控股",
         "chg_pct": null
       }
     ]
