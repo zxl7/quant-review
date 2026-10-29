@@ -1,11 +1,11 @@
 {
   "schema": "intraday_runtime_v1",
   "date": "2026-10-29",
-  "updated_at": "2026-10-29 10:10:08",
+  "updated_at": "2026-10-29 10:20:04",
   "source": "必盈(实时)+必盈(实时)",
   "latest": {
-    "time": "10:10:08",
-    "ts_bj": "2026-10-29 10:10:08",
+    "time": "10:20:04",
+    "ts_bj": "2026-10-29 10:20:04",
     "date": "2026-10-29",
     "source": "intraday_live",
     "provider": "必盈(实时)+必盈(实时)",
@@ -17,32 +17,32 @@
     },
     "pool_errors": {},
     "zt": 31,
-    "dt": 6,
-    "zab": 14,
-    "zb": 31.1,
-    "fb": 68.9,
+    "dt": 4,
+    "zab": 18,
+    "zb": 36.7,
+    "fb": 63.3,
     "jj": 32.3,
     "lianban": 10,
-    "max_lb": 4,
-    "amount": "6214.3亿",
+    "max_lb": 6,
+    "amount": "6960.8亿",
     "bf": 0,
-    "heat": 50,
-    "risk": 32,
+    "heat": 52,
+    "risk": 34,
     "headline": "分歧",
     "concepts": [
       {
         "name": "汽车零部",
-        "lead": "光洋股份",
-        "chg_pct": null
-      },
-      {
-        "name": "通用设备",
-        "lead": "宁波东力",
+        "lead": "襄阳轴承",
         "chg_pct": null
       },
       {
         "name": "专用设备",
         "lead": "山东矿机",
+        "chg_pct": null
+      },
+      {
+        "name": "通用设备",
+        "lead": "上海沪工",
         "chg_pct": null
       },
       {
@@ -62,13 +62,17 @@
         "text": "盘中模式：强制实时拉取"
       },
       {
+        "level": "danger",
+        "text": "炸板率高（36.7%）→ 分歧偏强，谨慎接力"
+      },
+      {
         "level": "warn",
-        "text": "炸板率偏高（31.1%）→ 注意回封质量"
+        "text": "高度6板 + 分歧不低 → 高位兑现/炸板风险"
       }
     ],
     "shift_score": 58,
     "shift_label": "分歧",
-    "note": "炸板/跌停抬升，情绪明显走弱。"
+    "note": "情绪整体平稳，维持当前节奏。"
   },
   "snapshots": [
     {
@@ -279,40 +283,111 @@
       "shift_score": 58,
       "shift_label": "分歧",
       "note": "炸板/跌停抬升，情绪明显走弱。"
+    },
+    {
+      "time": "10:20:04",
+      "ts_bj": "2026-10-29 10:20:04",
+      "date": "2026-10-29",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid"
+      },
+      "pool_errors": {},
+      "zt": 31,
+      "dt": 4,
+      "zab": 18,
+      "zb": 36.7,
+      "fb": 63.3,
+      "jj": 32.3,
+      "lianban": 10,
+      "max_lb": 6,
+      "amount": "6960.8亿",
+      "bf": 0,
+      "heat": 52,
+      "risk": 34,
+      "headline": "分歧",
+      "concepts": [
+        {
+          "name": "汽车零部",
+          "lead": "襄阳轴承",
+          "chg_pct": null
+        },
+        {
+          "name": "专用设备",
+          "lead": "山东矿机",
+          "chg_pct": null
+        },
+        {
+          "name": "通用设备",
+          "lead": "上海沪工",
+          "chg_pct": null
+        },
+        {
+          "name": "食品加工",
+          "lead": "惠发食品",
+          "chg_pct": null
+        },
+        {
+          "name": "休闲食品",
+          "lead": "青岛食品",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        },
+        {
+          "level": "danger",
+          "text": "炸板率高（36.7%）→ 分歧偏强，谨慎接力"
+        },
+        {
+          "level": "warn",
+          "text": "高度6板 + 分歧不低 → 高位兑现/炸板风险"
+        }
+      ],
+      "shift_score": 58,
+      "shift_label": "分歧",
+      "note": "情绪整体平稳，维持当前节奏。"
     }
   ],
   "indices": [
     {
       "name": "上证指数",
       "code": "000001.SH",
-      "val": 3657.409,
-      "chg": -0.6535434632207944,
-      "cje": 276406899600.0,
-      "t": "2026-10-29 10:10:06"
+      "val": 3653.656,
+      "chg": -0.7554864647780574,
+      "cje": 310655845700.0,
+      "t": "2026-10-29 10:20:03"
     },
     {
       "name": "深证成指",
       "code": "399001.SZ",
-      "val": 11226.802,
-      "chg": -2.147425561178336,
-      "cje": 343800555800.0,
-      "t": "2026-10-29 10:10:03"
+      "val": 11197.025,
+      "chg": -2.4069612783901295,
+      "cje": 384985634200.0,
+      "t": "2026-10-29 10:20:00"
     },
     {
       "name": "创业板指",
       "code": "399006.SZ",
-      "val": 2548.883,
-      "chg": -3.2593860541377735,
-      "cje": 176501944100.0,
-      "t": "2026-10-29 10:10:03"
+      "val": 2540.892,
+      "chg": -3.562677435515963,
+      "cje": 198031308700.0,
+      "t": "2026-10-29 10:20:03"
     }
   ],
   "asOf": {
-    "indices": "10:10:03"
+    "indices": "10:20:03"
   },
   "health": {
     "status": "valid",
-    "last_valid_at": "2026-10-29 10:10:08",
+    "last_valid_at": "2026-10-29 10:20:04",
     "rejected_reason": "",
     "source": {
       "status": "valid",
@@ -330,12 +405,13 @@
       "message": "intraday_coverage_incomplete",
       "date": "2026-10-29",
       "expected_count": 26,
-      "due_count": 5,
-      "observed_count": 3,
+      "due_count": 6,
+      "observed_count": 4,
       "observed_slots": [
         "09:50",
         "10:00",
-        "10:10"
+        "10:10",
+        "10:20"
       ],
       "missing_slots": [
         "09:30",
@@ -344,19 +420,19 @@
       "duplicate_slots": [],
       "out_of_session": [],
       "monotonic": true,
-      "morning_coverage": 3,
+      "morning_coverage": 4,
       "afternoon_coverage": 0
     }
   },
   "live": {
     "market": {
       "zt": 31,
-      "dt": 6,
-      "zab": 14,
-      "zab_rate": 31.1,
+      "dt": 4,
+      "zab": 18,
+      "zab_rate": 36.7,
       "lianban": 10,
-      "max_lianban": 4,
-      "amount": "6214.3亿"
+      "max_lianban": 6,
+      "amount": "6960.8亿"
     },
     "alerts": [
       {
@@ -364,24 +440,28 @@
         "text": "盘中模式：强制实时拉取"
       },
       {
+        "level": "danger",
+        "text": "炸板率高（36.7%）→ 分歧偏强，谨慎接力"
+      },
+      {
         "level": "warn",
-        "text": "炸板率偏高（31.1%）→ 注意回封质量"
+        "text": "高度6板 + 分歧不低 → 高位兑现/炸板风险"
       }
     ],
     "concepts": [
       {
         "name": "汽车零部",
-        "lead": "光洋股份",
-        "chg_pct": null
-      },
-      {
-        "name": "通用设备",
-        "lead": "宁波东力",
+        "lead": "襄阳轴承",
         "chg_pct": null
       },
       {
         "name": "专用设备",
         "lead": "山东矿机",
+        "chg_pct": null
+      },
+      {
+        "name": "通用设备",
+        "lead": "上海沪工",
         "chg_pct": null
       },
       {
