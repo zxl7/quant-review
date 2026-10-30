@@ -2,7 +2,7 @@
   "schema": "intraday_snapshot_v1",
   "render_mode": "snapshot_stream",
   "date": "2026-10-30",
-  "count": 9,
+  "count": 10,
   "interval_min": null,
   "simulated": false,
   "snapshots": [
@@ -636,11 +636,82 @@
       "shift_score": 47,
       "shift_label": "走弱",
       "note": "情绪整体平稳，维持当前节奏。"
+    },
+    {
+      "time": "11:30:07",
+      "ts_bj": "2026-10-30 11:30:07",
+      "date": "2026-10-30",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid"
+      },
+      "pool_errors": {},
+      "zt": 40,
+      "dt": 20,
+      "zab": 14,
+      "zb": 25.9,
+      "fb": 74.1,
+      "jj": 20.0,
+      "lianban": 8,
+      "max_lb": 5,
+      "amount": "10097.6亿",
+      "bf": 0,
+      "heat": 53,
+      "risk": 51,
+      "headline": "分歧",
+      "concepts": [
+        {
+          "name": "休闲食品",
+          "lead": "青岛食品",
+          "chg_pct": null
+        },
+        {
+          "name": "白酒Ⅱ",
+          "lead": "古井贡酒",
+          "chg_pct": null
+        },
+        {
+          "name": "医疗服务",
+          "lead": "澳洋健康",
+          "chg_pct": null
+        },
+        {
+          "name": "通用设备",
+          "lead": "上海沪工",
+          "chg_pct": null
+        },
+        {
+          "name": "中药Ⅱ",
+          "lead": "桂林三金",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        },
+        {
+          "level": "danger",
+          "text": "跌停偏多（20）→ 亏钱扩散风险上升"
+        },
+        {
+          "level": "warn",
+          "text": "炸板率偏高（25.9%）→ 注意回封质量"
+        }
+      ],
+      "shift_score": 51,
+      "shift_label": "分歧",
+      "note": "情绪边际修复，但仍需确认持续性。"
     }
   ],
   "latest": {
-    "time": "11:20:05",
-    "ts_bj": "2026-10-30 11:20:05",
+    "time": "11:30:07",
+    "ts_bj": "2026-10-30 11:30:07",
     "date": "2026-10-30",
     "source": "intraday_live",
     "provider": "必盈(实时)+必盈(实时)",
@@ -651,23 +722,28 @@
       "dtgc": "valid"
     },
     "pool_errors": {},
-    "zt": 35,
-    "dt": 24,
-    "zab": 18,
-    "zb": 34.0,
-    "fb": 66.0,
-    "jj": 22.9,
+    "zt": 40,
+    "dt": 20,
+    "zab": 14,
+    "zb": 25.9,
+    "fb": 74.1,
+    "jj": 20.0,
     "lianban": 8,
     "max_lb": 5,
-    "amount": "9619.4亿",
+    "amount": "10097.6亿",
     "bf": 0,
-    "heat": 50,
-    "risk": 57,
-    "headline": "走弱",
+    "heat": 53,
+    "risk": 51,
+    "headline": "分歧",
     "concepts": [
       {
         "name": "休闲食品",
         "lead": "青岛食品",
+        "chg_pct": null
+      },
+      {
+        "name": "白酒Ⅱ",
+        "lead": "古井贡酒",
         "chg_pct": null
       },
       {
@@ -684,11 +760,6 @@
         "name": "中药Ⅱ",
         "lead": "桂林三金",
         "chg_pct": null
-      },
-      {
-        "name": "元件",
-        "lead": "金安国纪",
-        "chg_pct": null
       }
     ],
     "alerts": [
@@ -698,22 +769,22 @@
       },
       {
         "level": "danger",
-        "text": "跌停偏多（24）→ 亏钱扩散风险上升"
+        "text": "跌停偏多（20）→ 亏钱扩散风险上升"
       },
       {
         "level": "warn",
-        "text": "炸板率偏高（34.0%）→ 注意回封质量"
+        "text": "炸板率偏高（25.9%）→ 注意回封质量"
       }
     ],
-    "shift_score": 47,
-    "shift_label": "走弱",
-    "note": "情绪整体平稳，维持当前节奏。"
+    "shift_score": 51,
+    "shift_label": "分歧",
+    "note": "情绪边际修复，但仍需确认持续性。"
   },
-  "updated_at": "2026-10-30 11:20:05",
-  "snapshot_sig": "2026-10-30|2026-10-30 11:20:05|9",
+  "updated_at": "2026-10-30 11:30:07",
+  "snapshot_sig": "2026-10-30|2026-10-30 11:30:07|10",
   "health": {
     "status": "valid",
-    "last_valid_at": "2026-10-30 11:20:05",
+    "last_valid_at": "2026-10-30 11:30:07",
     "rejected_reason": "",
     "source": {
       "status": "valid",
