@@ -1,6 +1,6 @@
 {
   "schema": "watchlist_v2",
-  "generated_at_bj": "2026-10-30 22:16:23",
+  "generated_at_bj": "2026-10-30 23:18:51",
   "data_date": "2026-10-30",
   "pools_date": "2026-10-30",
   "sector_resolution": {
@@ -27307,12 +27307,12 @@
         "prev_zt": null,
         "pre_prev_zt": null,
         "resilience": null,
-        "strength": null,
+        "strength": 53.0,
         "strength_rank": null,
-        "strength_score": null,
-        "strength_source": "",
-        "tide_score": 50,
-        "confidence": "low",
+        "strength_score": 53.0,
+        "strength_source": "sector_heatmap",
+        "tide_score": 51,
+        "confidence": "medium",
         "warning_level": "none",
         "action_hint": "潮汐中性，按梯队和辨识度判断"
       },
@@ -27681,12 +27681,12 @@
         "prev_zt": null,
         "pre_prev_zt": null,
         "resilience": null,
-        "strength": 53.0,
+        "strength": null,
         "strength_rank": null,
-        "strength_score": 53.0,
-        "strength_source": "sector_heatmap",
-        "tide_score": 51,
-        "confidence": "medium",
+        "strength_score": null,
+        "strength_source": "",
+        "tide_score": 50,
+        "confidence": "low",
         "warning_level": "none",
         "action_hint": "潮汐中性，按梯队和辨识度判断"
       },
@@ -30779,6 +30779,41 @@
         "action_hint": "白酒有观察价值，等待情绪/量能/消息继续共振。"
       },
       {
+        "name": "农村电商",
+        "canonical_name": "农村电商",
+        "status": "neutral_wait",
+        "base_tide_status": "neutral",
+        "action": "watch",
+        "tide_zone": "neutral",
+        "tide_phase": "neutral",
+        "core_score": 53,
+        "ebb_score": 41,
+        "tide_score": 51,
+        "emotion_score": 48,
+        "strength_score": 53,
+        "volume_score": 62,
+        "news_score": 58,
+        "market_score": 37,
+        "structure_score": 57,
+        "confidence": "low",
+        "confirms": {
+          "emotion": false,
+          "strength": false,
+          "volume": true,
+          "news": false,
+          "market": false
+        },
+        "reasons": [
+          "消息催化",
+          "低位连板承接"
+        ],
+        "cautions": [
+          "市场退潮",
+          "高位负反馈"
+        ],
+        "action_hint": "农村电商核心潮汐中性，按梯队和个股辨识度处理。"
+      },
+      {
         "name": "创投",
         "canonical_name": "创投",
         "status": "neutral_wait",
@@ -31096,40 +31131,6 @@
         "action_hint": "网红经济核心潮汐中性，按梯队和个股辨识度处理。"
       },
       {
-        "name": "植物蛋白",
-        "canonical_name": "植物蛋白",
-        "status": "neutral_wait",
-        "base_tide_status": "neutral",
-        "action": "watch",
-        "tide_zone": "neutral",
-        "tide_phase": "neutral",
-        "core_score": 51,
-        "ebb_score": 41,
-        "tide_score": 51,
-        "emotion_score": 48,
-        "strength_score": 53,
-        "volume_score": 62,
-        "news_score": 50,
-        "market_score": 37,
-        "structure_score": 57,
-        "confidence": "low",
-        "confirms": {
-          "emotion": false,
-          "strength": false,
-          "volume": true,
-          "news": false,
-          "market": false
-        },
-        "reasons": [
-          "低位连板承接"
-        ],
-        "cautions": [
-          "市场退潮",
-          "高位负反馈"
-        ],
-        "action_hint": "植物蛋白核心潮汐中性，按梯队和个股辨识度处理。"
-      },
-      {
         "name": "冷链物流",
         "canonical_name": "冷链物流",
         "status": "neutral_wait",
@@ -31443,41 +31444,6 @@
           "高位负反馈"
         ],
         "action_hint": "休闲食品核心潮汐偏弱，降低权重，避免追高。"
-      },
-      {
-        "name": "农村电商",
-        "canonical_name": "农村电商",
-        "status": "avoid_weak",
-        "base_tide_status": "neutral",
-        "action": "avoid",
-        "tide_zone": "ebbing",
-        "tide_phase": "ebbing",
-        "core_score": 51,
-        "ebb_score": 56,
-        "tide_score": 50,
-        "emotion_score": 48,
-        "strength_score": 47,
-        "volume_score": 62,
-        "news_score": 58,
-        "market_score": 37,
-        "structure_score": 57,
-        "confidence": "low",
-        "confirms": {
-          "emotion": false,
-          "strength": false,
-          "volume": true,
-          "news": false,
-          "market": false
-        },
-        "reasons": [
-          "消息催化",
-          "低位连板承接"
-        ],
-        "cautions": [
-          "市场退潮",
-          "高位负反馈"
-        ],
-        "action_hint": "农村电商核心潮汐偏弱，降低权重，避免追高。"
       },
       {
         "name": "数字货币",
@@ -34154,6 +34120,40 @@
           "高位负反馈"
         ],
         "action_hint": "核污染防治核心潮汐偏弱，降低权重，避免追高。"
+      },
+      {
+        "name": "植物蛋白",
+        "canonical_name": "植物蛋白",
+        "status": "avoid_weak",
+        "base_tide_status": "neutral",
+        "action": "avoid",
+        "tide_zone": "ebbing",
+        "tide_phase": "ebbing",
+        "core_score": 49,
+        "ebb_score": 56,
+        "tide_score": 50,
+        "emotion_score": 48,
+        "strength_score": 47,
+        "volume_score": 62,
+        "news_score": 50,
+        "market_score": 37,
+        "structure_score": 57,
+        "confidence": "low",
+        "confirms": {
+          "emotion": false,
+          "strength": false,
+          "volume": true,
+          "news": false,
+          "market": false
+        },
+        "reasons": [
+          "低位连板承接"
+        ],
+        "cautions": [
+          "市场退潮",
+          "高位负反馈"
+        ],
+        "action_hint": "植物蛋白核心潮汐偏弱，降低权重，避免追高。"
       },
       {
         "name": "毫米波雷达",
