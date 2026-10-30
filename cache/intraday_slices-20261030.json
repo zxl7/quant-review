@@ -2,7 +2,7 @@
   "schema": "intraday_snapshot_v1",
   "render_mode": "snapshot_stream",
   "date": "2026-10-30",
-  "count": 3,
+  "count": 4,
   "interval_min": null,
   "simulated": false,
   "snapshots": [
@@ -210,11 +210,82 @@
       "shift_score": 57,
       "shift_label": "分歧",
       "note": "承接增强、分歧收敛，情绪明显回暖。"
+    },
+    {
+      "time": "10:30:04",
+      "ts_bj": "2026-10-30 10:30:04",
+      "date": "2026-10-30",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid"
+      },
+      "pool_errors": {},
+      "zt": 35,
+      "dt": 14,
+      "zab": 13,
+      "zb": 27.1,
+      "fb": 72.9,
+      "jj": 22.9,
+      "lianban": 8,
+      "max_lb": 5,
+      "amount": "7815.5亿",
+      "bf": 0,
+      "heat": 53,
+      "risk": 42,
+      "headline": "分歧",
+      "concepts": [
+        {
+          "name": "休闲食品",
+          "lead": "青岛食品",
+          "chg_pct": null
+        },
+        {
+          "name": "元件",
+          "lead": "金安国纪",
+          "chg_pct": null
+        },
+        {
+          "name": "通用设备",
+          "lead": "上海沪工",
+          "chg_pct": null
+        },
+        {
+          "name": "中药Ⅱ",
+          "lead": "桂林三金",
+          "chg_pct": null
+        },
+        {
+          "name": "医疗器械",
+          "lead": "九安医疗",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        },
+        {
+          "level": "warn",
+          "text": "跌停偏多（14）→ 控制追高"
+        },
+        {
+          "level": "warn",
+          "text": "炸板率偏高（27.1%）→ 注意回封质量"
+        }
+      ],
+      "shift_score": 55,
+      "shift_label": "分歧",
+      "note": "情绪略有回落，注意午后分歧。"
     }
   ],
   "latest": {
-    "time": "10:20:07",
-    "ts_bj": "2026-10-30 10:20:07",
+    "time": "10:30:04",
+    "ts_bj": "2026-10-30 10:30:04",
     "date": "2026-10-30",
     "source": "intraday_live",
     "provider": "必盈(实时)+必盈(实时)",
@@ -225,23 +296,28 @@
       "dtgc": "valid"
     },
     "pool_errors": {},
-    "zt": 33,
-    "dt": 9,
+    "zt": 35,
+    "dt": 14,
     "zab": 13,
-    "zb": 28.3,
-    "fb": 71.7,
-    "jj": 24.2,
+    "zb": 27.1,
+    "fb": 72.9,
+    "jj": 22.9,
     "lianban": 8,
     "max_lb": 5,
-    "amount": "7222.9亿",
+    "amount": "7815.5亿",
     "bf": 0,
-    "heat": 52,
-    "risk": 35,
+    "heat": 53,
+    "risk": 42,
     "headline": "分歧",
     "concepts": [
       {
         "name": "休闲食品",
         "lead": "青岛食品",
+        "chg_pct": null
+      },
+      {
+        "name": "元件",
+        "lead": "金安国纪",
         "chg_pct": null
       },
       {
@@ -255,13 +331,8 @@
         "chg_pct": null
       },
       {
-        "name": "元件",
-        "lead": "金安国纪",
-        "chg_pct": null
-      },
-      {
-        "name": "白酒Ⅱ",
-        "lead": "皇台酒业",
+        "name": "医疗器械",
+        "lead": "九安医疗",
         "chg_pct": null
       }
     ],
@@ -272,18 +343,22 @@
       },
       {
         "level": "warn",
-        "text": "炸板率偏高（28.3%）→ 注意回封质量"
+        "text": "跌停偏多（14）→ 控制追高"
+      },
+      {
+        "level": "warn",
+        "text": "炸板率偏高（27.1%）→ 注意回封质量"
       }
     ],
-    "shift_score": 57,
+    "shift_score": 55,
     "shift_label": "分歧",
-    "note": "承接增强、分歧收敛，情绪明显回暖。"
+    "note": "情绪略有回落，注意午后分歧。"
   },
-  "updated_at": "2026-10-30 10:20:07",
-  "snapshot_sig": "2026-10-30|2026-10-30 10:20:07|3",
+  "updated_at": "2026-10-30 10:30:04",
+  "snapshot_sig": "2026-10-30|2026-10-30 10:30:04|4",
   "health": {
     "status": "valid",
-    "last_valid_at": "2026-10-30 10:20:07",
+    "last_valid_at": "2026-10-30 10:30:04",
     "rejected_reason": "",
     "source": {
       "status": "valid",
