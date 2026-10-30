@@ -2,7 +2,7 @@
   "schema": "intraday_snapshot_v1",
   "render_mode": "snapshot_stream",
   "date": "2026-10-30",
-  "count": 5,
+  "count": 6,
   "interval_min": null,
   "simulated": false,
   "snapshots": [
@@ -352,11 +352,82 @@
       "shift_score": 52,
       "shift_label": "分歧",
       "note": "情绪略有回落，注意午后分歧。"
+    },
+    {
+      "time": "10:50:04",
+      "ts_bj": "2026-10-30 10:50:04",
+      "date": "2026-10-30",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid"
+      },
+      "pool_errors": {},
+      "zt": 32,
+      "dt": 21,
+      "zab": 17,
+      "zb": 34.7,
+      "fb": 65.3,
+      "jj": 25.0,
+      "lianban": 8,
+      "max_lb": 5,
+      "amount": "8679.5亿",
+      "bf": 0,
+      "heat": 49,
+      "risk": 57,
+      "headline": "走弱",
+      "concepts": [
+        {
+          "name": "休闲食品",
+          "lead": "青岛食品",
+          "chg_pct": null
+        },
+        {
+          "name": "通用设备",
+          "lead": "上海沪工",
+          "chg_pct": null
+        },
+        {
+          "name": "中药Ⅱ",
+          "lead": "桂林三金",
+          "chg_pct": null
+        },
+        {
+          "name": "医疗器械",
+          "lead": "九安医疗",
+          "chg_pct": null
+        },
+        {
+          "name": "白酒Ⅱ",
+          "lead": "皇台酒业",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        },
+        {
+          "level": "danger",
+          "text": "跌停偏多（21）→ 亏钱扩散风险上升"
+        },
+        {
+          "level": "warn",
+          "text": "炸板率偏高（34.7%）→ 注意回封质量"
+        }
+      ],
+      "shift_score": 46,
+      "shift_label": "走弱",
+      "note": "炸板/跌停抬升，情绪明显走弱。"
     }
   ],
   "latest": {
-    "time": "10:40:05",
-    "ts_bj": "2026-10-30 10:40:05",
+    "time": "10:50:04",
+    "ts_bj": "2026-10-30 10:50:04",
     "date": "2026-10-30",
     "source": "intraday_live",
     "provider": "必盈(实时)+必盈(实时)",
@@ -368,18 +439,18 @@
     },
     "pool_errors": {},
     "zt": 32,
-    "dt": 13,
+    "dt": 21,
     "zab": 17,
     "zb": 34.7,
     "fb": 65.3,
-    "jj": 28.1,
-    "lianban": 9,
+    "jj": 25.0,
+    "lianban": 8,
     "max_lb": 5,
-    "amount": "8274.4亿",
+    "amount": "8679.5亿",
     "bf": 0,
-    "heat": 50,
-    "risk": 46,
-    "headline": "分歧",
+    "heat": 49,
+    "risk": 57,
+    "headline": "走弱",
     "concepts": [
       {
         "name": "休闲食品",
@@ -413,23 +484,23 @@
         "text": "盘中模式：强制实时拉取"
       },
       {
-        "level": "warn",
-        "text": "跌停偏多（13）→ 控制追高"
+        "level": "danger",
+        "text": "跌停偏多（21）→ 亏钱扩散风险上升"
       },
       {
         "level": "warn",
         "text": "炸板率偏高（34.7%）→ 注意回封质量"
       }
     ],
-    "shift_score": 52,
-    "shift_label": "分歧",
-    "note": "情绪略有回落，注意午后分歧。"
+    "shift_score": 46,
+    "shift_label": "走弱",
+    "note": "炸板/跌停抬升，情绪明显走弱。"
   },
-  "updated_at": "2026-10-30 10:40:05",
-  "snapshot_sig": "2026-10-30|2026-10-30 10:40:05|5",
+  "updated_at": "2026-10-30 10:50:04",
+  "snapshot_sig": "2026-10-30|2026-10-30 10:50:04|6",
   "health": {
     "status": "valid",
-    "last_valid_at": "2026-10-30 10:40:05",
+    "last_valid_at": "2026-10-30 10:50:04",
     "rejected_reason": "",
     "source": {
       "status": "valid",
