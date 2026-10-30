@@ -2,7 +2,7 @@
   "schema": "intraday_snapshot_v1",
   "render_mode": "snapshot_stream",
   "date": "2026-10-30",
-  "count": 7,
+  "count": 8,
   "interval_min": null,
   "simulated": false,
   "snapshots": [
@@ -494,11 +494,82 @@
       "shift_score": 49,
       "shift_label": "分歧",
       "note": "情绪边际修复，但仍需确认持续性。"
+    },
+    {
+      "time": "11:10:04",
+      "ts_bj": "2026-10-30 11:10:04",
+      "date": "2026-10-30",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid"
+      },
+      "pool_errors": {},
+      "zt": 36,
+      "dt": 22,
+      "zab": 17,
+      "zb": 32.1,
+      "fb": 67.9,
+      "jj": 22.2,
+      "lianban": 8,
+      "max_lb": 5,
+      "amount": "9331.1亿",
+      "bf": 0,
+      "heat": 50,
+      "risk": 55,
+      "headline": "分歧",
+      "concepts": [
+        {
+          "name": "休闲食品",
+          "lead": "青岛食品",
+          "chg_pct": null
+        },
+        {
+          "name": "通用设备",
+          "lead": "上海沪工",
+          "chg_pct": null
+        },
+        {
+          "name": "中药Ⅱ",
+          "lead": "桂林三金",
+          "chg_pct": null
+        },
+        {
+          "name": "元件",
+          "lead": "金安国纪",
+          "chg_pct": null
+        },
+        {
+          "name": "医疗器械",
+          "lead": "九安医疗",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        },
+        {
+          "level": "danger",
+          "text": "跌停偏多（22）→ 亏钱扩散风险上升"
+        },
+        {
+          "level": "warn",
+          "text": "炸板率偏高（32.1%）→ 注意回封质量"
+        }
+      ],
+      "shift_score": 48,
+      "shift_label": "分歧",
+      "note": "情绪整体平稳，维持当前节奏。"
     }
   ],
   "latest": {
-    "time": "11:00:05",
-    "ts_bj": "2026-10-30 11:00:05",
+    "time": "11:10:04",
+    "ts_bj": "2026-10-30 11:10:04",
     "date": "2026-10-30",
     "source": "intraday_live",
     "provider": "必盈(实时)+必盈(实时)",
@@ -509,28 +580,23 @@
       "dtgc": "valid"
     },
     "pool_errors": {},
-    "zt": 35,
+    "zt": 36,
     "dt": 22,
-    "zab": 16,
-    "zb": 31.4,
-    "fb": 68.6,
-    "jj": 22.9,
+    "zab": 17,
+    "zb": 32.1,
+    "fb": 67.9,
+    "jj": 22.2,
     "lianban": 8,
     "max_lb": 5,
-    "amount": "9015.7亿",
+    "amount": "9331.1亿",
     "bf": 0,
-    "heat": 51,
-    "risk": 54,
+    "heat": 50,
+    "risk": 55,
     "headline": "分歧",
     "concepts": [
       {
         "name": "休闲食品",
         "lead": "青岛食品",
-        "chg_pct": null
-      },
-      {
-        "name": "医疗服务",
-        "lead": "澳洋健康",
         "chg_pct": null
       },
       {
@@ -547,6 +613,11 @@
         "name": "元件",
         "lead": "金安国纪",
         "chg_pct": null
+      },
+      {
+        "name": "医疗器械",
+        "lead": "九安医疗",
+        "chg_pct": null
       }
     ],
     "alerts": [
@@ -560,18 +631,18 @@
       },
       {
         "level": "warn",
-        "text": "炸板率偏高（31.4%）→ 注意回封质量"
+        "text": "炸板率偏高（32.1%）→ 注意回封质量"
       }
     ],
-    "shift_score": 49,
+    "shift_score": 48,
     "shift_label": "分歧",
-    "note": "情绪边际修复，但仍需确认持续性。"
+    "note": "情绪整体平稳，维持当前节奏。"
   },
-  "updated_at": "2026-10-30 11:00:05",
-  "snapshot_sig": "2026-10-30|2026-10-30 11:00:05|7",
+  "updated_at": "2026-10-30 11:10:04",
+  "snapshot_sig": "2026-10-30|2026-10-30 11:10:04|8",
   "health": {
     "status": "valid",
-    "last_valid_at": "2026-10-30 11:00:05",
+    "last_valid_at": "2026-10-30 11:10:04",
     "rejected_reason": "",
     "source": {
       "status": "valid",
