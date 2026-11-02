@@ -1,11 +1,11 @@
 {
   "schema": "intraday_runtime_v1",
   "date": "2026-11-02",
-  "updated_at": "2026-11-02 10:40:05",
+  "updated_at": "2026-11-02 10:50:04",
   "source": "必盈(实时)+必盈(实时)",
   "latest": {
-    "time": "10:40:05",
-    "ts_bj": "2026-11-02 10:40:05",
+    "time": "10:50:04",
+    "ts_bj": "2026-11-02 10:50:04",
     "date": "2026-11-02",
     "source": "intraday_live",
     "provider": "必盈(实时)+必盈(实时)",
@@ -16,19 +16,19 @@
       "dtgc": "valid"
     },
     "pool_errors": {},
-    "zt": 47,
-    "dt": 15,
-    "zab": 14,
-    "zb": 23.0,
-    "fb": 77.0,
-    "jj": 21.3,
+    "zt": 51,
+    "dt": 12,
+    "zab": 16,
+    "zb": 23.9,
+    "fb": 76.1,
+    "jj": 19.6,
     "lianban": 10,
     "max_lb": 6,
-    "amount": "8677.9亿",
+    "amount": "9164.6亿",
     "bf": 0,
     "heat": 58,
-    "risk": 41,
-    "headline": "分歧",
+    "risk": 38,
+    "headline": "修复",
     "concepts": [
       {
         "name": "一般零售",
@@ -63,12 +63,12 @@
       },
       {
         "level": "warn",
-        "text": "跌停偏多（15）→ 控制追高"
+        "text": "跌停偏多（12）→ 控制追高"
       }
     ],
-    "shift_score": 58,
-    "shift_label": "分歧",
-    "note": "情绪整体平稳，维持当前节奏。"
+    "shift_score": 60,
+    "shift_label": "修复",
+    "note": "情绪边际修复，但仍需确认持续性。"
   },
   "snapshots": [
     {
@@ -614,40 +614,107 @@
       "shift_score": 58,
       "shift_label": "分歧",
       "note": "情绪整体平稳，维持当前节奏。"
+    },
+    {
+      "time": "10:50:04",
+      "ts_bj": "2026-11-02 10:50:04",
+      "date": "2026-11-02",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid"
+      },
+      "pool_errors": {},
+      "zt": 51,
+      "dt": 12,
+      "zab": 16,
+      "zb": 23.9,
+      "fb": 76.1,
+      "jj": 19.6,
+      "lianban": 10,
+      "max_lb": 6,
+      "amount": "9164.6亿",
+      "bf": 0,
+      "heat": 58,
+      "risk": 38,
+      "headline": "修复",
+      "concepts": [
+        {
+          "name": "一般零售",
+          "lead": "合百集团",
+          "chg_pct": null
+        },
+        {
+          "name": "白酒Ⅱ",
+          "lead": "皇台酒业",
+          "chg_pct": null
+        },
+        {
+          "name": "软件开发",
+          "lead": "银之杰",
+          "chg_pct": null
+        },
+        {
+          "name": "证券Ⅱ",
+          "lead": "太平洋",
+          "chg_pct": null
+        },
+        {
+          "name": "家居用品",
+          "lead": "华瓷股份",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        },
+        {
+          "level": "warn",
+          "text": "跌停偏多（12）→ 控制追高"
+        }
+      ],
+      "shift_score": 60,
+      "shift_label": "修复",
+      "note": "情绪边际修复，但仍需确认持续性。"
     }
   ],
   "indices": [
     {
       "name": "上证指数",
       "code": "000001.SH",
-      "val": 3612.136,
-      "chg": 0.36451619984012695,
-      "cje": 416632630100.0,
-      "t": "2026-11-02 10:40:03"
+      "val": 3610.287,
+      "chg": 0.31314106046178675,
+      "cje": 440054370700.0,
+      "t": "2026-11-02 10:50:03"
     },
     {
       "name": "深证成指",
       "code": "399001.SZ",
-      "val": 10931.078,
-      "chg": 0.898061102196609,
-      "cje": 450873626000.0,
-      "t": "2026-11-02 10:39:57"
+      "val": 10913.54,
+      "chg": 0.7361786057392433,
+      "cje": 476319982700.0,
+      "t": "2026-11-02 10:50:00"
     },
     {
       "name": "创业板指",
       "code": "399006.SZ",
-      "val": 2439.416,
-      "chg": 1.068391206767911,
-      "cje": 221946612100.0,
-      "t": "2026-11-02 10:39:57"
+      "val": 2432.525,
+      "chg": 0.7828875108809261,
+      "cje": 234405380700.0,
+      "t": "2026-11-02 10:50:00"
     }
   ],
   "asOf": {
-    "indices": "10:39:57"
+    "indices": "10:50:00"
   },
   "health": {
     "status": "valid",
-    "last_valid_at": "2026-11-02 10:40:05",
+    "last_valid_at": "2026-11-02 10:50:04",
     "rejected_reason": "",
     "source": {
       "status": "valid",
@@ -665,8 +732,8 @@
       "message": "intraday_coverage_collecting",
       "date": "2026-11-02",
       "expected_count": 26,
-      "due_count": 8,
-      "observed_count": 8,
+      "due_count": 9,
+      "observed_count": 9,
       "observed_slots": [
         "09:30",
         "09:40",
@@ -675,25 +742,26 @@
         "10:10",
         "10:20",
         "10:30",
-        "10:40"
+        "10:40",
+        "10:50"
       ],
       "missing_slots": [],
       "duplicate_slots": [],
       "out_of_session": [],
       "monotonic": true,
-      "morning_coverage": 8,
+      "morning_coverage": 9,
       "afternoon_coverage": 0
     }
   },
   "live": {
     "market": {
-      "zt": 47,
-      "dt": 15,
-      "zab": 14,
-      "zab_rate": 23.0,
+      "zt": 51,
+      "dt": 12,
+      "zab": 16,
+      "zab_rate": 23.9,
       "lianban": 10,
       "max_lianban": 6,
-      "amount": "8677.9亿"
+      "amount": "9164.6亿"
     },
     "alerts": [
       {
@@ -702,7 +770,7 @@
       },
       {
         "level": "warn",
-        "text": "跌停偏多（15）→ 控制追高"
+        "text": "跌停偏多（12）→ 控制追高"
       }
     ],
     "concepts": [
