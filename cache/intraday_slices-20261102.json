@@ -2,7 +2,7 @@
   "schema": "intraday_snapshot_v1",
   "render_mode": "snapshot_stream",
   "date": "2026-11-02",
-  "count": 1,
+  "count": 2,
   "interval_min": null,
   "simulated": false,
   "snapshots": [
@@ -68,11 +68,82 @@
       "shift_score": 68,
       "shift_label": "修复",
       "note": "盘中实时切片已接入，可逐点观察情绪变化。"
+    },
+    {
+      "time": "09:40:04",
+      "ts_bj": "2026-11-02 09:40:04",
+      "date": "2026-11-02",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid"
+      },
+      "pool_errors": {},
+      "zt": 17,
+      "dt": 18,
+      "zab": 8,
+      "zb": 32.0,
+      "fb": 68.0,
+      "jj": 35.3,
+      "lianban": 6,
+      "max_lb": 4,
+      "amount": "3048.1亿",
+      "bf": 0,
+      "heat": 48,
+      "risk": 48,
+      "headline": "分歧",
+      "concepts": [
+        {
+          "name": "化学制品",
+          "lead": "安迪苏",
+          "chg_pct": null
+        },
+        {
+          "name": "通用设备",
+          "lead": "上海沪工",
+          "chg_pct": null
+        },
+        {
+          "name": "农产品加",
+          "lead": "东方海洋",
+          "chg_pct": null
+        },
+        {
+          "name": "中药Ⅱ",
+          "lead": "桂林三金",
+          "chg_pct": null
+        },
+        {
+          "name": "照明设备",
+          "lead": "阳光照明",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        },
+        {
+          "level": "warn",
+          "text": "跌停偏多（18）→ 控制追高"
+        },
+        {
+          "level": "warn",
+          "text": "炸板率偏高（32.0%）→ 注意回封质量"
+        }
+      ],
+      "shift_score": 50,
+      "shift_label": "分歧",
+      "note": "炸板/跌停抬升，情绪明显走弱。"
     }
   ],
   "latest": {
-    "time": "09:31:02",
-    "ts_bj": "2026-11-02 09:31:02",
+    "time": "09:40:04",
+    "ts_bj": "2026-11-02 09:40:04",
     "date": "2026-11-02",
     "source": "intraday_live",
     "provider": "必盈(实时)+必盈(实时)",
@@ -83,20 +154,35 @@
       "dtgc": "valid"
     },
     "pool_errors": {},
-    "zt": 10,
-    "dt": 7,
-    "zab": 1,
-    "zb": 9.1,
-    "fb": 90.9,
-    "jj": 40.0,
-    "lianban": 4,
-    "max_lb": 3,
-    "amount": "802.3亿",
+    "zt": 17,
+    "dt": 18,
+    "zab": 8,
+    "zb": 32.0,
+    "fb": 68.0,
+    "jj": 35.3,
+    "lianban": 6,
+    "max_lb": 4,
+    "amount": "3048.1亿",
     "bf": 0,
-    "heat": 56,
-    "risk": 16,
-    "headline": "修复",
+    "heat": 48,
+    "risk": 48,
+    "headline": "分歧",
     "concepts": [
+      {
+        "name": "化学制品",
+        "lead": "安迪苏",
+        "chg_pct": null
+      },
+      {
+        "name": "通用设备",
+        "lead": "上海沪工",
+        "chg_pct": null
+      },
+      {
+        "name": "农产品加",
+        "lead": "东方海洋",
+        "chg_pct": null
+      },
       {
         "name": "中药Ⅱ",
         "lead": "桂林三金",
@@ -106,38 +192,31 @@
         "name": "照明设备",
         "lead": "阳光照明",
         "chg_pct": null
-      },
-      {
-        "name": "白酒Ⅱ",
-        "lead": "皇台酒业",
-        "chg_pct": null
-      },
-      {
-        "name": "农化制品",
-        "lead": "红太阳",
-        "chg_pct": null
-      },
-      {
-        "name": "小金属",
-        "lead": "中稀有色",
-        "chg_pct": null
       }
     ],
     "alerts": [
       {
         "level": "info",
         "text": "盘中模式：强制实时拉取"
+      },
+      {
+        "level": "warn",
+        "text": "跌停偏多（18）→ 控制追高"
+      },
+      {
+        "level": "warn",
+        "text": "炸板率偏高（32.0%）→ 注意回封质量"
       }
     ],
-    "shift_score": 68,
-    "shift_label": "修复",
-    "note": "盘中实时切片已接入，可逐点观察情绪变化。"
+    "shift_score": 50,
+    "shift_label": "分歧",
+    "note": "炸板/跌停抬升，情绪明显走弱。"
   },
-  "updated_at": "2026-11-02 09:31:02",
-  "snapshot_sig": "2026-11-02|2026-11-02 09:31:02|1",
+  "updated_at": "2026-11-02 09:40:04",
+  "snapshot_sig": "2026-11-02|2026-11-02 09:40:04|2",
   "health": {
     "status": "valid",
-    "last_valid_at": "2026-11-02 09:31:02",
+    "last_valid_at": "2026-11-02 09:40:04",
     "rejected_reason": "",
     "source": {
       "status": "valid",

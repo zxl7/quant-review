@@ -1,11 +1,11 @@
 {
   "schema": "intraday_runtime_v1",
   "date": "2026-11-02",
-  "updated_at": "2026-11-02 09:31:02",
+  "updated_at": "2026-11-02 09:40:04",
   "source": "必盈(实时)+必盈(实时)",
   "latest": {
-    "time": "09:31:02",
-    "ts_bj": "2026-11-02 09:31:02",
+    "time": "09:40:04",
+    "ts_bj": "2026-11-02 09:40:04",
     "date": "2026-11-02",
     "source": "intraday_live",
     "provider": "必盈(实时)+必盈(实时)",
@@ -16,20 +16,35 @@
       "dtgc": "valid"
     },
     "pool_errors": {},
-    "zt": 10,
-    "dt": 7,
-    "zab": 1,
-    "zb": 9.1,
-    "fb": 90.9,
-    "jj": 40.0,
-    "lianban": 4,
-    "max_lb": 3,
-    "amount": "802.3亿",
+    "zt": 17,
+    "dt": 18,
+    "zab": 8,
+    "zb": 32.0,
+    "fb": 68.0,
+    "jj": 35.3,
+    "lianban": 6,
+    "max_lb": 4,
+    "amount": "3048.1亿",
     "bf": 0,
-    "heat": 56,
-    "risk": 16,
-    "headline": "修复",
+    "heat": 48,
+    "risk": 48,
+    "headline": "分歧",
     "concepts": [
+      {
+        "name": "化学制品",
+        "lead": "安迪苏",
+        "chg_pct": null
+      },
+      {
+        "name": "通用设备",
+        "lead": "上海沪工",
+        "chg_pct": null
+      },
+      {
+        "name": "农产品加",
+        "lead": "东方海洋",
+        "chg_pct": null
+      },
       {
         "name": "中药Ⅱ",
         "lead": "桂林三金",
@@ -39,32 +54,25 @@
         "name": "照明设备",
         "lead": "阳光照明",
         "chg_pct": null
-      },
-      {
-        "name": "白酒Ⅱ",
-        "lead": "皇台酒业",
-        "chg_pct": null
-      },
-      {
-        "name": "农化制品",
-        "lead": "红太阳",
-        "chg_pct": null
-      },
-      {
-        "name": "小金属",
-        "lead": "中稀有色",
-        "chg_pct": null
       }
     ],
     "alerts": [
       {
         "level": "info",
         "text": "盘中模式：强制实时拉取"
+      },
+      {
+        "level": "warn",
+        "text": "跌停偏多（18）→ 控制追高"
+      },
+      {
+        "level": "warn",
+        "text": "炸板率偏高（32.0%）→ 注意回封质量"
       }
     ],
-    "shift_score": 68,
-    "shift_label": "修复",
-    "note": "盘中实时切片已接入，可逐点观察情绪变化。"
+    "shift_score": 50,
+    "shift_label": "分歧",
+    "note": "炸板/跌停抬升，情绪明显走弱。"
   },
   "snapshots": [
     {
@@ -129,40 +137,111 @@
       "shift_score": 68,
       "shift_label": "修复",
       "note": "盘中实时切片已接入，可逐点观察情绪变化。"
+    },
+    {
+      "time": "09:40:04",
+      "ts_bj": "2026-11-02 09:40:04",
+      "date": "2026-11-02",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid"
+      },
+      "pool_errors": {},
+      "zt": 17,
+      "dt": 18,
+      "zab": 8,
+      "zb": 32.0,
+      "fb": 68.0,
+      "jj": 35.3,
+      "lianban": 6,
+      "max_lb": 4,
+      "amount": "3048.1亿",
+      "bf": 0,
+      "heat": 48,
+      "risk": 48,
+      "headline": "分歧",
+      "concepts": [
+        {
+          "name": "化学制品",
+          "lead": "安迪苏",
+          "chg_pct": null
+        },
+        {
+          "name": "通用设备",
+          "lead": "上海沪工",
+          "chg_pct": null
+        },
+        {
+          "name": "农产品加",
+          "lead": "东方海洋",
+          "chg_pct": null
+        },
+        {
+          "name": "中药Ⅱ",
+          "lead": "桂林三金",
+          "chg_pct": null
+        },
+        {
+          "name": "照明设备",
+          "lead": "阳光照明",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        },
+        {
+          "level": "warn",
+          "text": "跌停偏多（18）→ 控制追高"
+        },
+        {
+          "level": "warn",
+          "text": "炸板率偏高（32.0%）→ 注意回封质量"
+        }
+      ],
+      "shift_score": 50,
+      "shift_label": "分歧",
+      "note": "炸板/跌停抬升，情绪明显走弱。"
     }
   ],
   "indices": [
     {
       "name": "上证指数",
       "code": "000001.SH",
-      "val": 3598.869,
-      "chg": -0.004112233979436149,
-      "cje": 38900688600.0,
-      "t": "2026-11-02 09:31:00"
+      "val": 3603.033,
+      "chg": 0.11158602473953518,
+      "cje": 146584911800.0,
+      "t": "2026-11-02 09:40:03"
     },
     {
       "name": "深证成指",
       "code": "399001.SZ",
-      "val": 10886.888,
-      "chg": 0.49017037814304937,
-      "cje": 37751232600.0,
-      "t": "2026-11-02 09:30:54"
+      "val": 10882.182,
+      "chg": 0.4467321851718758,
+      "cje": 157496956300.0,
+      "t": "2026-11-02 09:39:54"
     },
     {
       "name": "创业板指",
       "code": "399006.SZ",
-      "val": 2427.802,
-      "chg": 0.5872070645488694,
-      "cje": 17178342700.0,
-      "t": "2026-11-02 09:30:54"
+      "val": 2431.831,
+      "chg": 0.7541341274901912,
+      "cje": 76967013700.0,
+      "t": "2026-11-02 09:39:57"
     }
   ],
   "asOf": {
-    "indices": "09:30:54"
+    "indices": "09:39:57"
   },
   "health": {
     "status": "valid",
-    "last_valid_at": "2026-11-02 09:31:02",
+    "last_valid_at": "2026-11-02 09:40:04",
     "rejected_reason": "",
     "source": {
       "status": "valid",
@@ -180,36 +259,60 @@
       "message": "intraday_coverage_collecting",
       "date": "2026-11-02",
       "expected_count": 26,
-      "due_count": 1,
-      "observed_count": 1,
+      "due_count": 2,
+      "observed_count": 2,
       "observed_slots": [
-        "09:30"
+        "09:30",
+        "09:40"
       ],
       "missing_slots": [],
       "duplicate_slots": [],
       "out_of_session": [],
       "monotonic": true,
-      "morning_coverage": 1,
+      "morning_coverage": 2,
       "afternoon_coverage": 0
     }
   },
   "live": {
     "market": {
-      "zt": 10,
-      "dt": 7,
-      "zab": 1,
-      "zab_rate": 9.1,
-      "lianban": 4,
-      "max_lianban": 3,
-      "amount": "802.3亿"
+      "zt": 17,
+      "dt": 18,
+      "zab": 8,
+      "zab_rate": 32.0,
+      "lianban": 6,
+      "max_lianban": 4,
+      "amount": "3048.1亿"
     },
     "alerts": [
       {
         "level": "info",
         "text": "盘中模式：强制实时拉取"
+      },
+      {
+        "level": "warn",
+        "text": "跌停偏多（18）→ 控制追高"
+      },
+      {
+        "level": "warn",
+        "text": "炸板率偏高（32.0%）→ 注意回封质量"
       }
     ],
     "concepts": [
+      {
+        "name": "化学制品",
+        "lead": "安迪苏",
+        "chg_pct": null
+      },
+      {
+        "name": "通用设备",
+        "lead": "上海沪工",
+        "chg_pct": null
+      },
+      {
+        "name": "农产品加",
+        "lead": "东方海洋",
+        "chg_pct": null
+      },
       {
         "name": "中药Ⅱ",
         "lead": "桂林三金",
@@ -218,21 +321,6 @@
       {
         "name": "照明设备",
         "lead": "阳光照明",
-        "chg_pct": null
-      },
-      {
-        "name": "白酒Ⅱ",
-        "lead": "皇台酒业",
-        "chg_pct": null
-      },
-      {
-        "name": "农化制品",
-        "lead": "红太阳",
-        "chg_pct": null
-      },
-      {
-        "name": "小金属",
-        "lead": "中稀有色",
         "chg_pct": null
       }
     ]
