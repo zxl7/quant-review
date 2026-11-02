@@ -1,11 +1,11 @@
 {
   "schema": "intraday_runtime_v1",
   "date": "2026-11-02",
-  "updated_at": "2026-11-02 10:30:05",
+  "updated_at": "2026-11-02 10:40:05",
   "source": "必盈(实时)+必盈(实时)",
   "latest": {
-    "time": "10:30:05",
-    "ts_bj": "2026-11-02 10:30:05",
+    "time": "10:40:05",
+    "ts_bj": "2026-11-02 10:40:05",
     "date": "2026-11-02",
     "source": "intraday_live",
     "provider": "必盈(实时)+必盈(实时)",
@@ -16,18 +16,18 @@
       "dtgc": "valid"
     },
     "pool_errors": {},
-    "zt": 48,
+    "zt": 47,
     "dt": 15,
-    "zab": 13,
-    "zb": 21.3,
-    "fb": 78.7,
-    "jj": 20.8,
+    "zab": 14,
+    "zb": 23.0,
+    "fb": 77.0,
+    "jj": 21.3,
     "lianban": 10,
     "max_lb": 6,
-    "amount": "8146.8亿",
+    "amount": "8677.9亿",
     "bf": 0,
-    "heat": 59,
-    "risk": 40,
+    "heat": 58,
+    "risk": 41,
     "headline": "分歧",
     "concepts": [
       {
@@ -66,9 +66,9 @@
         "text": "跌停偏多（15）→ 控制追高"
       }
     ],
-    "shift_score": 59,
+    "shift_score": 58,
     "shift_label": "分歧",
-    "note": "情绪略有回落，注意午后分歧。"
+    "note": "情绪整体平稳，维持当前节奏。"
   },
   "snapshots": [
     {
@@ -547,40 +547,107 @@
       "shift_score": 59,
       "shift_label": "分歧",
       "note": "情绪略有回落，注意午后分歧。"
+    },
+    {
+      "time": "10:40:05",
+      "ts_bj": "2026-11-02 10:40:05",
+      "date": "2026-11-02",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid"
+      },
+      "pool_errors": {},
+      "zt": 47,
+      "dt": 15,
+      "zab": 14,
+      "zb": 23.0,
+      "fb": 77.0,
+      "jj": 21.3,
+      "lianban": 10,
+      "max_lb": 6,
+      "amount": "8677.9亿",
+      "bf": 0,
+      "heat": 58,
+      "risk": 41,
+      "headline": "分歧",
+      "concepts": [
+        {
+          "name": "一般零售",
+          "lead": "合百集团",
+          "chg_pct": null
+        },
+        {
+          "name": "白酒Ⅱ",
+          "lead": "皇台酒业",
+          "chg_pct": null
+        },
+        {
+          "name": "软件开发",
+          "lead": "银之杰",
+          "chg_pct": null
+        },
+        {
+          "name": "证券Ⅱ",
+          "lead": "太平洋",
+          "chg_pct": null
+        },
+        {
+          "name": "家居用品",
+          "lead": "华瓷股份",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        },
+        {
+          "level": "warn",
+          "text": "跌停偏多（15）→ 控制追高"
+        }
+      ],
+      "shift_score": 58,
+      "shift_label": "分歧",
+      "note": "情绪整体平稳，维持当前节奏。"
     }
   ],
   "indices": [
     {
       "name": "上证指数",
       "code": "000001.SH",
-      "val": 3611.983,
-      "chg": 0.3602650390370579,
-      "cje": 390916486700.0,
-      "t": "2026-11-02 10:30:03"
+      "val": 3612.136,
+      "chg": 0.36451619984012695,
+      "cje": 416632630100.0,
+      "t": "2026-11-02 10:40:03"
     },
     {
       "name": "深证成指",
       "code": "399001.SZ",
-      "val": 10940.492,
-      "chg": 0.9849559489094535,
-      "cje": 423215778800.0,
-      "t": "2026-11-02 10:30:00"
+      "val": 10931.078,
+      "chg": 0.898061102196609,
+      "cje": 450873626000.0,
+      "t": "2026-11-02 10:39:57"
     },
     {
       "name": "创业板指",
       "code": "399006.SZ",
-      "val": 2445.185,
-      "chg": 1.3074088851269206,
-      "cje": 208943225500.0,
-      "t": "2026-11-02 10:30:00"
+      "val": 2439.416,
+      "chg": 1.068391206767911,
+      "cje": 221946612100.0,
+      "t": "2026-11-02 10:39:57"
     }
   ],
   "asOf": {
-    "indices": "10:30:00"
+    "indices": "10:39:57"
   },
   "health": {
     "status": "valid",
-    "last_valid_at": "2026-11-02 10:30:05",
+    "last_valid_at": "2026-11-02 10:40:05",
     "rejected_reason": "",
     "source": {
       "status": "valid",
@@ -598,8 +665,8 @@
       "message": "intraday_coverage_collecting",
       "date": "2026-11-02",
       "expected_count": 26,
-      "due_count": 7,
-      "observed_count": 7,
+      "due_count": 8,
+      "observed_count": 8,
       "observed_slots": [
         "09:30",
         "09:40",
@@ -607,25 +674,26 @@
         "10:00",
         "10:10",
         "10:20",
-        "10:30"
+        "10:30",
+        "10:40"
       ],
       "missing_slots": [],
       "duplicate_slots": [],
       "out_of_session": [],
       "monotonic": true,
-      "morning_coverage": 7,
+      "morning_coverage": 8,
       "afternoon_coverage": 0
     }
   },
   "live": {
     "market": {
-      "zt": 48,
+      "zt": 47,
       "dt": 15,
-      "zab": 13,
-      "zab_rate": 21.3,
+      "zab": 14,
+      "zab_rate": 23.0,
       "lianban": 10,
       "max_lianban": 6,
-      "amount": "8146.8亿"
+      "amount": "8677.9亿"
     },
     "alerts": [
       {
