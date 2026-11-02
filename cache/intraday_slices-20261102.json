@@ -2,7 +2,7 @@
   "schema": "intraday_snapshot_v1",
   "render_mode": "snapshot_stream",
   "date": "2026-11-02",
-  "count": 9,
+  "count": 10,
   "interval_min": null,
   "simulated": false,
   "snapshots": [
@@ -616,11 +616,86 @@
       "shift_score": 60,
       "shift_label": "修复",
       "note": "情绪边际修复，但仍需确认持续性。"
+    },
+    {
+      "time": "11:00:04",
+      "ts_bj": "2026-11-02 11:00:04",
+      "date": "2026-11-02",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid"
+      },
+      "pool_errors": {},
+      "zt": 51,
+      "dt": 12,
+      "zab": 17,
+      "zb": 25.0,
+      "fb": 75.0,
+      "jj": 19.6,
+      "lianban": 10,
+      "max_lb": 6,
+      "amount": "9504.5亿",
+      "bf": 0,
+      "heat": 57,
+      "risk": 39,
+      "headline": "分歧",
+      "concepts": [
+        {
+          "name": "一般零售",
+          "lead": "合百集团",
+          "chg_pct": null
+        },
+        {
+          "name": "白酒Ⅱ",
+          "lead": "皇台酒业",
+          "chg_pct": null
+        },
+        {
+          "name": "软件开发",
+          "lead": "银之杰",
+          "chg_pct": null
+        },
+        {
+          "name": "证券Ⅱ",
+          "lead": "太平洋",
+          "chg_pct": null
+        },
+        {
+          "name": "家居用品",
+          "lead": "华瓷股份",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        },
+        {
+          "level": "warn",
+          "text": "跌停偏多（12）→ 控制追高"
+        },
+        {
+          "level": "warn",
+          "text": "炸板率偏高（25.0%）→ 注意回封质量"
+        },
+        {
+          "level": "warn",
+          "text": "高度6板 + 分歧不低 → 高位兑现/炸板风险"
+        }
+      ],
+      "shift_score": 59,
+      "shift_label": "分歧",
+      "note": "情绪整体平稳，维持当前节奏。"
     }
   ],
   "latest": {
-    "time": "10:50:04",
-    "ts_bj": "2026-11-02 10:50:04",
+    "time": "11:00:04",
+    "ts_bj": "2026-11-02 11:00:04",
     "date": "2026-11-02",
     "source": "intraday_live",
     "provider": "必盈(实时)+必盈(实时)",
@@ -633,17 +708,17 @@
     "pool_errors": {},
     "zt": 51,
     "dt": 12,
-    "zab": 16,
-    "zb": 23.9,
-    "fb": 76.1,
+    "zab": 17,
+    "zb": 25.0,
+    "fb": 75.0,
     "jj": 19.6,
     "lianban": 10,
     "max_lb": 6,
-    "amount": "9164.6亿",
+    "amount": "9504.5亿",
     "bf": 0,
-    "heat": 58,
-    "risk": 38,
-    "headline": "修复",
+    "heat": 57,
+    "risk": 39,
+    "headline": "分歧",
     "concepts": [
       {
         "name": "一般零售",
@@ -679,17 +754,25 @@
       {
         "level": "warn",
         "text": "跌停偏多（12）→ 控制追高"
+      },
+      {
+        "level": "warn",
+        "text": "炸板率偏高（25.0%）→ 注意回封质量"
+      },
+      {
+        "level": "warn",
+        "text": "高度6板 + 分歧不低 → 高位兑现/炸板风险"
       }
     ],
-    "shift_score": 60,
-    "shift_label": "修复",
-    "note": "情绪边际修复，但仍需确认持续性。"
+    "shift_score": 59,
+    "shift_label": "分歧",
+    "note": "情绪整体平稳，维持当前节奏。"
   },
-  "updated_at": "2026-11-02 10:50:04",
-  "snapshot_sig": "2026-11-02|2026-11-02 10:50:04|9",
+  "updated_at": "2026-11-02 11:00:04",
+  "snapshot_sig": "2026-11-02|2026-11-02 11:00:04|10",
   "health": {
     "status": "valid",
-    "last_valid_at": "2026-11-02 10:50:04",
+    "last_valid_at": "2026-11-02 11:00:04",
     "rejected_reason": "",
     "source": {
       "status": "valid",
