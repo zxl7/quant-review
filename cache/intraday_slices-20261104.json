@@ -2,7 +2,7 @@
   "schema": "intraday_snapshot_v1",
   "render_mode": "snapshot_stream",
   "date": "2026-11-04",
-  "count": 6,
+  "count": 7,
   "interval_min": null,
   "simulated": false,
   "snapshots": [
@@ -431,11 +431,82 @@
       "shift_score": 44,
       "shift_label": "走弱",
       "note": "情绪整体平稳，维持当前节奏。"
+    },
+    {
+      "time": "11:20:03",
+      "ts_bj": "2026-11-04 11:20:03",
+      "date": "2026-11-04",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid"
+      },
+      "pool_errors": {},
+      "zt": 31,
+      "dt": 16,
+      "zab": 21,
+      "zb": 40.4,
+      "fb": 59.6,
+      "jj": 32.3,
+      "lianban": 10,
+      "max_lb": 4,
+      "amount": "8920.9亿",
+      "bf": 0,
+      "heat": 46,
+      "risk": 56,
+      "headline": "走弱",
+      "concepts": [
+        {
+          "name": "光伏设备",
+          "lead": "永臻股份",
+          "chg_pct": null
+        },
+        {
+          "name": "一般零售",
+          "lead": "大东方",
+          "chg_pct": null
+        },
+        {
+          "name": "通用设备",
+          "lead": "上海沪工",
+          "chg_pct": null
+        },
+        {
+          "name": "装修装饰",
+          "lead": "德才股份",
+          "chg_pct": null
+        },
+        {
+          "name": "汽车零部",
+          "lead": "中马传动",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        },
+        {
+          "level": "warn",
+          "text": "跌停偏多（16）→ 控制追高"
+        },
+        {
+          "level": "danger",
+          "text": "炸板率高（40.4%）→ 分歧偏强，谨慎接力"
+        }
+      ],
+      "shift_score": 45,
+      "shift_label": "走弱",
+      "note": "情绪整体平稳，维持当前节奏。"
     }
   ],
   "latest": {
-    "time": "11:10:05",
-    "ts_bj": "2026-11-04 11:10:05",
+    "time": "11:20:03",
+    "ts_bj": "2026-11-04 11:20:03",
     "date": "2026-11-04",
     "source": "intraday_live",
     "provider": "必盈(实时)+必盈(实时)",
@@ -446,18 +517,18 @@
       "dtgc": "valid"
     },
     "pool_errors": {},
-    "zt": 30,
-    "dt": 17,
+    "zt": 31,
+    "dt": 16,
     "zab": 21,
-    "zb": 41.2,
-    "fb": 58.8,
-    "jj": 33.3,
+    "zb": 40.4,
+    "fb": 59.6,
+    "jj": 32.3,
     "lianban": 10,
     "max_lb": 4,
-    "amount": "8561.4亿",
+    "amount": "8920.9亿",
     "bf": 0,
     "heat": 46,
-    "risk": 58,
+    "risk": 56,
     "headline": "走弱",
     "concepts": [
       {
@@ -493,22 +564,22 @@
       },
       {
         "level": "warn",
-        "text": "跌停偏多（17）→ 控制追高"
+        "text": "跌停偏多（16）→ 控制追高"
       },
       {
         "level": "danger",
-        "text": "炸板率高（41.2%）→ 分歧偏强，谨慎接力"
+        "text": "炸板率高（40.4%）→ 分歧偏强，谨慎接力"
       }
     ],
-    "shift_score": 44,
+    "shift_score": 45,
     "shift_label": "走弱",
     "note": "情绪整体平稳，维持当前节奏。"
   },
-  "updated_at": "2026-11-04 11:10:05",
-  "snapshot_sig": "2026-11-04|2026-11-04 11:10:05|6",
+  "updated_at": "2026-11-04 11:20:03",
+  "snapshot_sig": "2026-11-04|2026-11-04 11:20:03|7",
   "health": {
     "status": "valid",
-    "last_valid_at": "2026-11-04 11:10:05",
+    "last_valid_at": "2026-11-04 11:20:03",
     "rejected_reason": "",
     "source": {
       "status": "valid",
