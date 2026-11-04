@@ -1,11 +1,11 @@
 {
   "schema": "intraday_runtime_v1",
   "date": "2026-11-04",
-  "updated_at": "2026-11-04 10:50:05",
+  "updated_at": "2026-11-04 11:00:04",
   "source": "必盈(实时)+必盈(实时)",
   "latest": {
-    "time": "10:50:05",
-    "ts_bj": "2026-11-04 10:50:05",
+    "time": "11:00:04",
+    "ts_bj": "2026-11-04 11:00:04",
     "date": "2026-11-04",
     "source": "intraday_live",
     "provider": "必盈(实时)+必盈(实时)",
@@ -16,25 +16,20 @@
       "dtgc": "valid"
     },
     "pool_errors": {},
-    "zt": 32,
-    "dt": 12,
-    "zab": 18,
-    "zb": 36.0,
-    "fb": 64.0,
-    "jj": 31.2,
+    "zt": 27,
+    "dt": 14,
+    "zab": 23,
+    "zb": 46.0,
+    "fb": 54.0,
+    "jj": 37.0,
     "lianban": 10,
     "max_lb": 4,
-    "amount": "7728.5亿",
+    "amount": "8126.3亿",
     "bf": 0,
-    "heat": 48,
-    "risk": 46,
-    "headline": "分歧",
+    "heat": 45,
+    "risk": 57,
+    "headline": "走弱",
     "concepts": [
-      {
-        "name": "通用设备",
-        "lead": "上海沪工",
-        "chg_pct": null
-      },
       {
         "name": "光伏设备",
         "lead": "永臻股份",
@@ -43,6 +38,11 @@
       {
         "name": "一般零售",
         "lead": "大东方",
+        "chg_pct": null
+      },
+      {
+        "name": "通用设备",
+        "lead": "上海沪工",
         "chg_pct": null
       },
       {
@@ -63,16 +63,16 @@
       },
       {
         "level": "warn",
-        "text": "跌停偏多（12）→ 控制追高"
+        "text": "跌停偏多（14）→ 控制追高"
       },
       {
         "level": "danger",
-        "text": "炸板率高（36.0%）→ 分歧偏强，谨慎接力"
+        "text": "炸板率高（46.0%）→ 分歧偏强，谨慎接力"
       }
     ],
-    "shift_score": 51,
-    "shift_label": "分歧",
-    "note": "情绪略有回落，注意午后分歧。"
+    "shift_score": 44,
+    "shift_label": "走弱",
+    "note": "炸板/跌停抬升，情绪明显走弱。"
   },
   "snapshots": [
     {
@@ -358,40 +358,111 @@
       "shift_score": 51,
       "shift_label": "分歧",
       "note": "情绪略有回落，注意午后分歧。"
+    },
+    {
+      "time": "11:00:04",
+      "ts_bj": "2026-11-04 11:00:04",
+      "date": "2026-11-04",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid"
+      },
+      "pool_errors": {},
+      "zt": 27,
+      "dt": 14,
+      "zab": 23,
+      "zb": 46.0,
+      "fb": 54.0,
+      "jj": 37.0,
+      "lianban": 10,
+      "max_lb": 4,
+      "amount": "8126.3亿",
+      "bf": 0,
+      "heat": 45,
+      "risk": 57,
+      "headline": "走弱",
+      "concepts": [
+        {
+          "name": "光伏设备",
+          "lead": "永臻股份",
+          "chg_pct": null
+        },
+        {
+          "name": "一般零售",
+          "lead": "大东方",
+          "chg_pct": null
+        },
+        {
+          "name": "通用设备",
+          "lead": "上海沪工",
+          "chg_pct": null
+        },
+        {
+          "name": "装修装饰",
+          "lead": "德才股份",
+          "chg_pct": null
+        },
+        {
+          "name": "白酒Ⅱ",
+          "lead": "皇台酒业",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        },
+        {
+          "level": "warn",
+          "text": "跌停偏多（14）→ 控制追高"
+        },
+        {
+          "level": "danger",
+          "text": "炸板率高（46.0%）→ 分歧偏强，谨慎接力"
+        }
+      ],
+      "shift_score": 44,
+      "shift_label": "走弱",
+      "note": "炸板/跌停抬升，情绪明显走弱。"
     }
   ],
   "indices": [
     {
       "name": "上证指数",
       "code": "000001.SH",
-      "val": 3600.945,
-      "chg": -0.1982484954676894,
-      "cje": 353707546500.0,
-      "t": "2026-11-04 10:50:03"
+      "val": 3592.019,
+      "chg": -0.4456364544422069,
+      "cje": 372096667600.0,
+      "t": "2026-11-04 11:00:03"
     },
     {
       "name": "深证成指",
       "code": "399001.SZ",
-      "val": 10894.144,
-      "chg": 0.15771828030717558,
-      "cje": 418990489300.0,
-      "t": "2026-11-04 10:50:00"
+      "val": 10855.646,
+      "chg": -0.19622158301345105,
+      "cje": 440314402700.0,
+      "t": "2026-11-04 10:59:57"
     },
     {
       "name": "创业板指",
       "code": "399006.SZ",
-      "val": 2397.455,
-      "chg": 0.24263563428123672,
-      "cje": 206376781000.0,
-      "t": "2026-11-04 10:50:00"
+      "val": 2387.303,
+      "chg": -0.1818408363758674,
+      "cje": 216661337200.0,
+      "t": "2026-11-04 10:59:57"
     }
   ],
   "asOf": {
-    "indices": "10:50:00"
+    "indices": "10:59:57"
   },
   "health": {
     "status": "valid",
-    "last_valid_at": "2026-11-04 10:50:05",
+    "last_valid_at": "2026-11-04 11:00:04",
     "rejected_reason": "",
     "source": {
       "status": "valid",
@@ -409,13 +480,14 @@
       "message": "intraday_coverage_incomplete",
       "date": "2026-11-04",
       "expected_count": 26,
-      "due_count": 9,
-      "observed_count": 4,
+      "due_count": 10,
+      "observed_count": 5,
       "observed_slots": [
         "10:20",
         "10:30",
         "10:40",
-        "10:50"
+        "10:50",
+        "11:00"
       ],
       "missing_slots": [
         "09:30",
@@ -427,19 +499,19 @@
       "duplicate_slots": [],
       "out_of_session": [],
       "monotonic": true,
-      "morning_coverage": 4,
+      "morning_coverage": 5,
       "afternoon_coverage": 0
     }
   },
   "live": {
     "market": {
-      "zt": 32,
-      "dt": 12,
-      "zab": 18,
-      "zab_rate": 36.0,
+      "zt": 27,
+      "dt": 14,
+      "zab": 23,
+      "zab_rate": 46.0,
       "lianban": 10,
       "max_lianban": 4,
-      "amount": "7728.5亿"
+      "amount": "8126.3亿"
     },
     "alerts": [
       {
@@ -448,19 +520,14 @@
       },
       {
         "level": "warn",
-        "text": "跌停偏多（12）→ 控制追高"
+        "text": "跌停偏多（14）→ 控制追高"
       },
       {
         "level": "danger",
-        "text": "炸板率高（36.0%）→ 分歧偏强，谨慎接力"
+        "text": "炸板率高（46.0%）→ 分歧偏强，谨慎接力"
       }
     ],
     "concepts": [
-      {
-        "name": "通用设备",
-        "lead": "上海沪工",
-        "chg_pct": null
-      },
       {
         "name": "光伏设备",
         "lead": "永臻股份",
@@ -469,6 +536,11 @@
       {
         "name": "一般零售",
         "lead": "大东方",
+        "chg_pct": null
+      },
+      {
+        "name": "通用设备",
+        "lead": "上海沪工",
         "chg_pct": null
       },
       {
