@@ -2,7 +2,7 @@
   "schema": "intraday_snapshot_v1",
   "render_mode": "snapshot_stream",
   "date": "2026-11-04",
-  "count": 3,
+  "count": 4,
   "interval_min": null,
   "simulated": false,
   "snapshots": [
@@ -218,11 +218,82 @@
       "shift_score": 54,
       "shift_label": "分歧",
       "note": "情绪整体平稳，维持当前节奏。"
+    },
+    {
+      "time": "10:50:05",
+      "ts_bj": "2026-11-04 10:50:05",
+      "date": "2026-11-04",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid"
+      },
+      "pool_errors": {},
+      "zt": 32,
+      "dt": 12,
+      "zab": 18,
+      "zb": 36.0,
+      "fb": 64.0,
+      "jj": 31.2,
+      "lianban": 10,
+      "max_lb": 4,
+      "amount": "7728.5亿",
+      "bf": 0,
+      "heat": 48,
+      "risk": 46,
+      "headline": "分歧",
+      "concepts": [
+        {
+          "name": "通用设备",
+          "lead": "上海沪工",
+          "chg_pct": null
+        },
+        {
+          "name": "光伏设备",
+          "lead": "永臻股份",
+          "chg_pct": null
+        },
+        {
+          "name": "一般零售",
+          "lead": "大东方",
+          "chg_pct": null
+        },
+        {
+          "name": "装修装饰",
+          "lead": "德才股份",
+          "chg_pct": null
+        },
+        {
+          "name": "白酒Ⅱ",
+          "lead": "皇台酒业",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        },
+        {
+          "level": "warn",
+          "text": "跌停偏多（12）→ 控制追高"
+        },
+        {
+          "level": "danger",
+          "text": "炸板率高（36.0%）→ 分歧偏强，谨慎接力"
+        }
+      ],
+      "shift_score": 51,
+      "shift_label": "分歧",
+      "note": "情绪略有回落，注意午后分歧。"
     }
   ],
   "latest": {
-    "time": "10:40:04",
-    "ts_bj": "2026-11-04 10:40:04",
+    "time": "10:50:05",
+    "ts_bj": "2026-11-04 10:50:05",
     "date": "2026-11-04",
     "source": "intraday_live",
     "provider": "必盈(实时)+必盈(实时)",
@@ -233,28 +304,33 @@
       "dtgc": "valid"
     },
     "pool_errors": {},
-    "zt": 33,
-    "dt": 13,
-    "zab": 14,
-    "zb": 29.8,
-    "fb": 70.2,
-    "jj": 30.3,
+    "zt": 32,
+    "dt": 12,
+    "zab": 18,
+    "zb": 36.0,
+    "fb": 64.0,
+    "jj": 31.2,
     "lianban": 10,
     "max_lb": 4,
-    "amount": "7272.9亿",
+    "amount": "7728.5亿",
     "bf": 0,
-    "heat": 51,
-    "risk": 42,
+    "heat": 48,
+    "risk": 46,
     "headline": "分歧",
     "concepts": [
       {
-        "name": "一般零售",
-        "lead": "大东方",
+        "name": "通用设备",
+        "lead": "上海沪工",
         "chg_pct": null
       },
       {
-        "name": "通用设备",
-        "lead": "冰山冷热",
+        "name": "光伏设备",
+        "lead": "永臻股份",
+        "chg_pct": null
+      },
+      {
+        "name": "一般零售",
+        "lead": "大东方",
         "chg_pct": null
       },
       {
@@ -266,11 +342,6 @@
         "name": "白酒Ⅱ",
         "lead": "皇台酒业",
         "chg_pct": null
-      },
-      {
-        "name": "出版",
-        "lead": "龙版传媒",
-        "chg_pct": null
       }
     ],
     "alerts": [
@@ -280,22 +351,22 @@
       },
       {
         "level": "warn",
-        "text": "跌停偏多（13）→ 控制追高"
+        "text": "跌停偏多（12）→ 控制追高"
       },
       {
-        "level": "warn",
-        "text": "炸板率偏高（29.8%）→ 注意回封质量"
+        "level": "danger",
+        "text": "炸板率高（36.0%）→ 分歧偏强，谨慎接力"
       }
     ],
-    "shift_score": 54,
+    "shift_score": 51,
     "shift_label": "分歧",
-    "note": "情绪整体平稳，维持当前节奏。"
+    "note": "情绪略有回落，注意午后分歧。"
   },
-  "updated_at": "2026-11-04 10:40:04",
-  "snapshot_sig": "2026-11-04|2026-11-04 10:40:04|3",
+  "updated_at": "2026-11-04 10:50:05",
+  "snapshot_sig": "2026-11-04|2026-11-04 10:50:05|4",
   "health": {
     "status": "valid",
-    "last_valid_at": "2026-11-04 10:40:04",
+    "last_valid_at": "2026-11-04 10:50:05",
     "rejected_reason": "",
     "source": {
       "status": "valid",
