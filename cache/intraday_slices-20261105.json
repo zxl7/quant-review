@@ -2,7 +2,7 @@
   "schema": "intraday_snapshot_v1",
   "render_mode": "snapshot_stream",
   "date": "2026-11-05",
-  "count": 4,
+  "count": 5,
   "interval_min": null,
   "simulated": false,
   "snapshots": [
@@ -257,11 +257,78 @@
       "shift_score": 69,
       "shift_label": "修复",
       "note": "情绪整体平稳，维持当前节奏。"
+    },
+    {
+      "time": "11:00:04",
+      "ts_bj": "2026-11-05 11:00:04",
+      "date": "2026-11-05",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid_empty"
+      },
+      "pool_errors": {},
+      "zt": 63,
+      "dt": 0,
+      "zab": 31,
+      "zb": 33.0,
+      "fb": 67.0,
+      "jj": 33.3,
+      "lianban": 21,
+      "max_lb": 4,
+      "amount": "13184.1亿",
+      "bf": 0,
+      "heat": 55,
+      "risk": 32,
+      "headline": "修复",
+      "concepts": [
+        {
+          "name": "光伏设备",
+          "lead": "永臻股份",
+          "chg_pct": null
+        },
+        {
+          "name": "半导体",
+          "lead": "有研新材",
+          "chg_pct": null
+        },
+        {
+          "name": "其他电子",
+          "lead": "新亚制程",
+          "chg_pct": null
+        },
+        {
+          "name": "通用设备",
+          "lead": "利欧股份",
+          "chg_pct": null
+        },
+        {
+          "name": "工业金属",
+          "lead": "闽发铝业",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        },
+        {
+          "level": "warn",
+          "text": "炸板率偏高（33.0%）→ 注意回封质量"
+        }
+      ],
+      "shift_score": 60,
+      "shift_label": "修复",
+      "note": "炸板/跌停抬升，情绪明显走弱。"
     }
   ],
   "latest": {
-    "time": "10:50:07",
-    "ts_bj": "2026-11-05 10:50:07",
+    "time": "11:00:04",
+    "ts_bj": "2026-11-05 11:00:04",
     "date": "2026-11-05",
     "source": "intraday_live",
     "provider": "必盈(实时)+必盈(实时)",
@@ -272,18 +339,18 @@
       "dtgc": "valid_empty"
     },
     "pool_errors": {},
-    "zt": 67,
+    "zt": 63,
     "dt": 0,
-    "zab": 19,
-    "zb": 22.1,
-    "fb": 77.9,
-    "jj": 37.3,
-    "lianban": 25,
+    "zab": 31,
+    "zb": 33.0,
+    "fb": 67.0,
+    "jj": 33.3,
+    "lianban": 21,
     "max_lb": 4,
-    "amount": "12515.9亿",
+    "amount": "13184.1亿",
     "bf": 0,
-    "heat": 61,
-    "risk": 21,
+    "heat": 55,
+    "risk": 32,
     "headline": "修复",
     "concepts": [
       {
@@ -293,7 +360,7 @@
       },
       {
         "name": "半导体",
-        "lead": "瑞芯微",
+        "lead": "有研新材",
         "chg_pct": null
       },
       {
@@ -316,17 +383,21 @@
       {
         "level": "info",
         "text": "盘中模式：强制实时拉取"
+      },
+      {
+        "level": "warn",
+        "text": "炸板率偏高（33.0%）→ 注意回封质量"
       }
     ],
-    "shift_score": 69,
+    "shift_score": 60,
     "shift_label": "修复",
-    "note": "情绪整体平稳，维持当前节奏。"
+    "note": "炸板/跌停抬升，情绪明显走弱。"
   },
-  "updated_at": "2026-11-05 10:50:07",
-  "snapshot_sig": "2026-11-05|2026-11-05 10:50:07|4",
+  "updated_at": "2026-11-05 11:00:04",
+  "snapshot_sig": "2026-11-05|2026-11-05 11:00:04|5",
   "health": {
     "status": "valid",
-    "last_valid_at": "2026-11-05 10:50:07",
+    "last_valid_at": "2026-11-05 11:00:04",
     "rejected_reason": "",
     "source": {
       "status": "valid",
