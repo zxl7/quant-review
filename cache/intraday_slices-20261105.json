@@ -2,7 +2,7 @@
   "schema": "intraday_snapshot_v1",
   "render_mode": "snapshot_stream",
   "date": "2026-11-05",
-  "count": 6,
+  "count": 7,
   "interval_min": null,
   "simulated": false,
   "snapshots": [
@@ -391,11 +391,78 @@
       "shift_score": 59,
       "shift_label": "分歧",
       "note": "情绪整体平稳，维持当前节奏。"
+    },
+    {
+      "time": "11:20:06",
+      "ts_bj": "2026-11-05 11:20:06",
+      "date": "2026-11-05",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid_empty"
+      },
+      "pool_errors": {},
+      "zt": 61,
+      "dt": 0,
+      "zab": 36,
+      "zb": 37.1,
+      "fb": 62.9,
+      "jj": 32.8,
+      "lianban": 20,
+      "max_lb": 4,
+      "amount": "14242.3亿",
+      "bf": 0,
+      "heat": 53,
+      "risk": 35,
+      "headline": "分歧",
+      "concepts": [
+        {
+          "name": "光伏设备",
+          "lead": "永臻股份",
+          "chg_pct": null
+        },
+        {
+          "name": "半导体",
+          "lead": "瑞芯微",
+          "chg_pct": null
+        },
+        {
+          "name": "广告营销",
+          "lead": "引力传媒",
+          "chg_pct": null
+        },
+        {
+          "name": "其他电子",
+          "lead": "新亚制程",
+          "chg_pct": null
+        },
+        {
+          "name": "工业金属",
+          "lead": "闽发铝业",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        },
+        {
+          "level": "danger",
+          "text": "炸板率高（37.1%）→ 分歧偏强，谨慎接力"
+        }
+      ],
+      "shift_score": 58,
+      "shift_label": "分歧",
+      "note": "情绪整体平稳，维持当前节奏。"
     }
   ],
   "latest": {
-    "time": "11:10:05",
-    "ts_bj": "2026-11-05 11:10:05",
+    "time": "11:20:06",
+    "ts_bj": "2026-11-05 11:20:06",
     "date": "2026-11-05",
     "source": "intraday_live",
     "provider": "必盈(实时)+必盈(实时)",
@@ -406,18 +473,18 @@
       "dtgc": "valid_empty"
     },
     "pool_errors": {},
-    "zt": 63,
+    "zt": 61,
     "dt": 0,
-    "zab": 33,
-    "zb": 34.4,
-    "fb": 65.6,
-    "jj": 33.3,
-    "lianban": 21,
+    "zab": 36,
+    "zb": 37.1,
+    "fb": 62.9,
+    "jj": 32.8,
+    "lianban": 20,
     "max_lb": 4,
-    "amount": "13726.7亿",
+    "amount": "14242.3亿",
     "bf": 0,
-    "heat": 54,
-    "risk": 34,
+    "heat": 53,
+    "risk": 35,
     "headline": "分歧",
     "concepts": [
       {
@@ -431,6 +498,11 @@
         "chg_pct": null
       },
       {
+        "name": "广告营销",
+        "lead": "引力传媒",
+        "chg_pct": null
+      },
+      {
         "name": "其他电子",
         "lead": "新亚制程",
         "chg_pct": null
@@ -438,11 +510,6 @@
       {
         "name": "工业金属",
         "lead": "闽发铝业",
-        "chg_pct": null
-      },
-      {
-        "name": "装修装饰",
-        "lead": "德才股份",
         "chg_pct": null
       }
     ],
@@ -452,19 +519,19 @@
         "text": "盘中模式：强制实时拉取"
       },
       {
-        "level": "warn",
-        "text": "炸板率偏高（34.4%）→ 注意回封质量"
+        "level": "danger",
+        "text": "炸板率高（37.1%）→ 分歧偏强，谨慎接力"
       }
     ],
-    "shift_score": 59,
+    "shift_score": 58,
     "shift_label": "分歧",
     "note": "情绪整体平稳，维持当前节奏。"
   },
-  "updated_at": "2026-11-05 11:10:05",
-  "snapshot_sig": "2026-11-05|2026-11-05 11:10:05|6",
+  "updated_at": "2026-11-05 11:20:06",
+  "snapshot_sig": "2026-11-05|2026-11-05 11:20:06|7",
   "health": {
     "status": "valid",
-    "last_valid_at": "2026-11-05 11:10:05",
+    "last_valid_at": "2026-11-05 11:20:06",
     "rejected_reason": "",
     "source": {
       "status": "valid",
