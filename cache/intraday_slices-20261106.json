@@ -2,7 +2,7 @@
   "schema": "intraday_snapshot_v1",
   "render_mode": "snapshot_stream",
   "date": "2026-11-06",
-  "count": 1,
+  "count": 2,
   "interval_min": null,
   "simulated": false,
   "snapshots": [
@@ -72,11 +72,78 @@
       "shift_score": 64,
       "shift_label": "修复",
       "note": "盘中实时切片已接入，可逐点观察情绪变化。"
+    },
+    {
+      "time": "10:30:04",
+      "ts_bj": "2026-11-06 10:30:04",
+      "date": "2026-11-06",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid_empty"
+      },
+      "pool_errors": {},
+      "zt": 23,
+      "dt": 0,
+      "zab": 9,
+      "zb": 28.1,
+      "fb": 71.9,
+      "jj": 43.5,
+      "lianban": 10,
+      "max_lb": 5,
+      "amount": "8754.9亿",
+      "bf": 0,
+      "heat": 55,
+      "risk": 20,
+      "headline": "修复",
+      "concepts": [
+        {
+          "name": "光伏设备",
+          "lead": "永臻股份",
+          "chg_pct": null
+        },
+        {
+          "name": "电力",
+          "lead": "立新能源",
+          "chg_pct": null
+        },
+        {
+          "name": "纺织制造",
+          "lead": "浙文影业",
+          "chg_pct": null
+        },
+        {
+          "name": "工业金属",
+          "lead": "闽发铝业",
+          "chg_pct": null
+        },
+        {
+          "name": "专用设备",
+          "lead": "海源复材",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        },
+        {
+          "level": "warn",
+          "text": "炸板率偏高（28.1%）→ 注意回封质量"
+        }
+      ],
+      "shift_score": 66,
+      "shift_label": "修复",
+      "note": "情绪边际修复，但仍需确认持续性。"
     }
   ],
   "latest": {
-    "time": "10:21:30",
-    "ts_bj": "2026-11-06 10:21:30",
+    "time": "10:30:04",
+    "ts_bj": "2026-11-06 10:30:04",
     "date": "2026-11-06",
     "source": "intraday_live",
     "provider": "必盈(实时)+必盈(实时)",
@@ -84,21 +151,21 @@
     "pool_status": {
       "ztgc": "valid",
       "zbgc": "valid",
-      "dtgc": "valid"
+      "dtgc": "valid_empty"
     },
     "pool_errors": {},
-    "zt": 21,
-    "dt": 2,
+    "zt": 23,
+    "dt": 0,
     "zab": 9,
-    "zb": 30.0,
-    "fb": 70.0,
-    "jj": 47.6,
+    "zb": 28.1,
+    "fb": 71.9,
+    "jj": 43.5,
     "lianban": 10,
     "max_lb": 5,
-    "amount": "8159.9亿",
+    "amount": "8754.9亿",
     "bf": 0,
     "heat": 55,
-    "risk": 24,
+    "risk": 20,
     "headline": "修复",
     "concepts": [
       {
@@ -134,25 +201,25 @@
       },
       {
         "level": "warn",
-        "text": "炸板率偏高（30.0%）→ 注意回封质量"
+        "text": "炸板率偏高（28.1%）→ 注意回封质量"
       }
     ],
-    "shift_score": 64,
+    "shift_score": 66,
     "shift_label": "修复",
-    "note": "盘中实时切片已接入，可逐点观察情绪变化。"
+    "note": "情绪边际修复，但仍需确认持续性。"
   },
-  "updated_at": "2026-11-06 10:21:30",
-  "snapshot_sig": "2026-11-06|2026-11-06 10:21:30|1",
+  "updated_at": "2026-11-06 10:30:04",
+  "snapshot_sig": "2026-11-06|2026-11-06 10:30:04|2",
   "health": {
     "status": "valid",
-    "last_valid_at": "2026-11-06 10:21:30",
+    "last_valid_at": "2026-11-06 10:30:04",
     "rejected_reason": "",
     "source": {
       "status": "valid",
       "pool_status": {
         "ztgc": "valid",
         "zbgc": "valid",
-        "dtgc": "valid"
+        "dtgc": "valid_empty"
       },
       "pool_errors": {}
     }
