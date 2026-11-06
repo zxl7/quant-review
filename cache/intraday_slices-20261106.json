@@ -2,7 +2,7 @@
   "schema": "intraday_snapshot_v1",
   "render_mode": "snapshot_stream",
   "date": "2026-11-06",
-  "count": 6,
+  "count": 7,
   "interval_min": null,
   "simulated": false,
   "snapshots": [
@@ -389,11 +389,78 @@
       "shift_score": 61,
       "shift_label": "修复",
       "note": "情绪整体平稳，维持当前节奏。"
+    },
+    {
+      "time": "11:20:05",
+      "ts_bj": "2026-11-06 11:20:05",
+      "date": "2026-11-06",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid"
+      },
+      "pool_errors": {},
+      "zt": 26,
+      "dt": 1,
+      "zab": 11,
+      "zb": 29.7,
+      "fb": 70.3,
+      "jj": 38.5,
+      "lianban": 10,
+      "max_lb": 5,
+      "amount": "10941.5亿",
+      "bf": 0,
+      "heat": 54,
+      "risk": 23,
+      "headline": "修复",
+      "concepts": [
+        {
+          "name": "光伏设备",
+          "lead": "永臻股份",
+          "chg_pct": null
+        },
+        {
+          "name": "电力",
+          "lead": "立新能源",
+          "chg_pct": null
+        },
+        {
+          "name": "消费电子",
+          "lead": "国光电器",
+          "chg_pct": null
+        },
+        {
+          "name": "种植业",
+          "lead": "万向德农",
+          "chg_pct": null
+        },
+        {
+          "name": "纺织制造",
+          "lead": "浙文影业",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        },
+        {
+          "level": "warn",
+          "text": "炸板率偏高（29.7%）→ 注意回封质量"
+        }
+      ],
+      "shift_score": 64,
+      "shift_label": "修复",
+      "note": "情绪边际修复，但仍需确认持续性。"
     }
   ],
   "latest": {
-    "time": "11:10:04",
-    "ts_bj": "2026-11-06 11:10:04",
+    "time": "11:20:05",
+    "ts_bj": "2026-11-06 11:20:05",
     "date": "2026-11-06",
     "source": "intraday_live",
     "provider": "必盈(实时)+必盈(实时)",
@@ -401,21 +468,21 @@
     "pool_status": {
       "ztgc": "valid",
       "zbgc": "valid",
-      "dtgc": "valid_empty"
+      "dtgc": "valid"
     },
     "pool_errors": {},
-    "zt": 23,
-    "dt": 0,
-    "zab": 13,
-    "zb": 36.1,
-    "fb": 63.9,
-    "jj": 39.1,
-    "lianban": 9,
+    "zt": 26,
+    "dt": 1,
+    "zab": 11,
+    "zb": 29.7,
+    "fb": 70.3,
+    "jj": 38.5,
+    "lianban": 10,
     "max_lb": 5,
-    "amount": "10691.9亿",
+    "amount": "10941.5亿",
     "bf": 0,
-    "heat": 51,
-    "risk": 26,
+    "heat": 54,
+    "risk": 23,
     "headline": "修复",
     "concepts": [
       {
@@ -429,6 +496,11 @@
         "chg_pct": null
       },
       {
+        "name": "消费电子",
+        "lead": "国光电器",
+        "chg_pct": null
+      },
+      {
         "name": "种植业",
         "lead": "万向德农",
         "chg_pct": null
@@ -436,11 +508,6 @@
       {
         "name": "纺织制造",
         "lead": "浙文影业",
-        "chg_pct": null
-      },
-      {
-        "name": "工业金属",
-        "lead": "闽发铝业",
         "chg_pct": null
       }
     ],
@@ -450,26 +517,26 @@
         "text": "盘中模式：强制实时拉取"
       },
       {
-        "level": "danger",
-        "text": "炸板率高（36.1%）→ 分歧偏强，谨慎接力"
+        "level": "warn",
+        "text": "炸板率偏高（29.7%）→ 注意回封质量"
       }
     ],
-    "shift_score": 61,
+    "shift_score": 64,
     "shift_label": "修复",
-    "note": "情绪整体平稳，维持当前节奏。"
+    "note": "情绪边际修复，但仍需确认持续性。"
   },
-  "updated_at": "2026-11-06 11:10:04",
-  "snapshot_sig": "2026-11-06|2026-11-06 11:10:04|6",
+  "updated_at": "2026-11-06 11:20:05",
+  "snapshot_sig": "2026-11-06|2026-11-06 11:20:05|7",
   "health": {
     "status": "valid",
-    "last_valid_at": "2026-11-06 11:10:04",
+    "last_valid_at": "2026-11-06 11:20:05",
     "rejected_reason": "",
     "source": {
       "status": "valid",
       "pool_status": {
         "ztgc": "valid",
         "zbgc": "valid",
-        "dtgc": "valid_empty"
+        "dtgc": "valid"
       },
       "pool_errors": {}
     }
