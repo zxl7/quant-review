@@ -2,7 +2,7 @@
   "schema": "intraday_snapshot_v1",
   "render_mode": "snapshot_stream",
   "date": "2026-11-06",
-  "count": 5,
+  "count": 6,
   "interval_min": null,
   "simulated": false,
   "snapshots": [
@@ -322,11 +322,78 @@
       "shift_score": 61,
       "shift_label": "修复",
       "note": "情绪略有回落，注意午后分歧。"
+    },
+    {
+      "time": "11:10:04",
+      "ts_bj": "2026-11-06 11:10:04",
+      "date": "2026-11-06",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid_empty"
+      },
+      "pool_errors": {},
+      "zt": 23,
+      "dt": 0,
+      "zab": 13,
+      "zb": 36.1,
+      "fb": 63.9,
+      "jj": 39.1,
+      "lianban": 9,
+      "max_lb": 5,
+      "amount": "10691.9亿",
+      "bf": 0,
+      "heat": 51,
+      "risk": 26,
+      "headline": "修复",
+      "concepts": [
+        {
+          "name": "光伏设备",
+          "lead": "永臻股份",
+          "chg_pct": null
+        },
+        {
+          "name": "电力",
+          "lead": "立新能源",
+          "chg_pct": null
+        },
+        {
+          "name": "种植业",
+          "lead": "万向德农",
+          "chg_pct": null
+        },
+        {
+          "name": "纺织制造",
+          "lead": "浙文影业",
+          "chg_pct": null
+        },
+        {
+          "name": "工业金属",
+          "lead": "闽发铝业",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        },
+        {
+          "level": "danger",
+          "text": "炸板率高（36.1%）→ 分歧偏强，谨慎接力"
+        }
+      ],
+      "shift_score": 61,
+      "shift_label": "修复",
+      "note": "情绪整体平稳，维持当前节奏。"
     }
   ],
   "latest": {
-    "time": "11:00:07",
-    "ts_bj": "2026-11-06 11:00:07",
+    "time": "11:10:04",
+    "ts_bj": "2026-11-06 11:10:04",
     "date": "2026-11-06",
     "source": "intraday_live",
     "provider": "必盈(实时)+必盈(实时)",
@@ -337,15 +404,15 @@
       "dtgc": "valid_empty"
     },
     "pool_errors": {},
-    "zt": 22,
+    "zt": 23,
     "dt": 0,
     "zab": 13,
-    "zb": 37.1,
-    "fb": 62.9,
-    "jj": 40.9,
+    "zb": 36.1,
+    "fb": 63.9,
+    "jj": 39.1,
     "lianban": 9,
     "max_lb": 5,
-    "amount": "10375.0亿",
+    "amount": "10691.9亿",
     "bf": 0,
     "heat": 51,
     "risk": 26,
@@ -362,6 +429,11 @@
         "chg_pct": null
       },
       {
+        "name": "种植业",
+        "lead": "万向德农",
+        "chg_pct": null
+      },
+      {
         "name": "纺织制造",
         "lead": "浙文影业",
         "chg_pct": null
@@ -369,11 +441,6 @@
       {
         "name": "工业金属",
         "lead": "闽发铝业",
-        "chg_pct": null
-      },
-      {
-        "name": "其他电子",
-        "lead": "新亚制程",
         "chg_pct": null
       }
     ],
@@ -384,18 +451,18 @@
       },
       {
         "level": "danger",
-        "text": "炸板率高（37.1%）→ 分歧偏强，谨慎接力"
+        "text": "炸板率高（36.1%）→ 分歧偏强，谨慎接力"
       }
     ],
     "shift_score": 61,
     "shift_label": "修复",
-    "note": "情绪略有回落，注意午后分歧。"
+    "note": "情绪整体平稳，维持当前节奏。"
   },
-  "updated_at": "2026-11-06 11:00:07",
-  "snapshot_sig": "2026-11-06|2026-11-06 11:00:07|5",
+  "updated_at": "2026-11-06 11:10:04",
+  "snapshot_sig": "2026-11-06|2026-11-06 11:10:04|6",
   "health": {
     "status": "valid",
-    "last_valid_at": "2026-11-06 11:00:07",
+    "last_valid_at": "2026-11-06 11:10:04",
     "rejected_reason": "",
     "source": {
       "status": "valid",
