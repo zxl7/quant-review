@@ -1,11 +1,11 @@
 {
   "schema": "intraday_runtime_v1",
   "date": "2026-11-09",
-  "updated_at": "2026-11-09 09:50:04",
+  "updated_at": "2026-11-09 10:00:04",
   "source": "必盈(实时)+必盈(实时)",
   "latest": {
-    "time": "09:50:04",
-    "ts_bj": "2026-11-09 09:50:04",
+    "time": "10:00:04",
+    "ts_bj": "2026-11-09 10:00:04",
     "date": "2026-11-09",
     "source": "intraday_live",
     "provider": "必盈(实时)+必盈(实时)",
@@ -16,18 +16,18 @@
       "dtgc": "valid"
     },
     "pool_errors": {},
-    "zt": 37,
+    "zt": 41,
     "dt": 1,
-    "zab": 8,
-    "zb": 17.8,
-    "fb": 82.2,
-    "jj": 21.6,
-    "lianban": 8,
+    "zab": 14,
+    "zb": 25.5,
+    "fb": 74.5,
+    "jj": 22.0,
+    "lianban": 9,
     "max_lb": 6,
-    "amount": "4174.1亿",
+    "amount": "5284.7亿",
     "bf": 0,
-    "heat": 59,
-    "risk": 15,
+    "heat": 56,
+    "risk": 22,
     "headline": "修复",
     "concepts": [
       {
@@ -46,13 +46,13 @@
         "chg_pct": null
       },
       {
-        "name": "塑料",
-        "lead": "上纬新材",
+        "name": "消费电子",
+        "lead": "信维通信",
         "chg_pct": null
       },
       {
-        "name": "化学制品",
-        "lead": "晶华新材",
+        "name": "通信设备",
+        "lead": "烽火通信",
         "chg_pct": null
       }
     ],
@@ -60,11 +60,19 @@
       {
         "level": "info",
         "text": "盘中模式：强制实时拉取"
+      },
+      {
+        "level": "warn",
+        "text": "炸板率偏高（25.5%）→ 注意回封质量"
+      },
+      {
+        "level": "warn",
+        "text": "高度6板 + 分歧不低 → 高位兑现/炸板风险"
       }
     ],
-    "shift_score": 70,
+    "shift_score": 65,
     "shift_label": "修复",
-    "note": "情绪边际修复，但仍需确认持续性。"
+    "note": "炸板/跌停抬升，情绪明显走弱。"
   },
   "snapshots": [
     {
@@ -192,40 +200,111 @@
       "shift_score": 70,
       "shift_label": "修复",
       "note": "情绪边际修复，但仍需确认持续性。"
+    },
+    {
+      "time": "10:00:04",
+      "ts_bj": "2026-11-09 10:00:04",
+      "date": "2026-11-09",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid"
+      },
+      "pool_errors": {},
+      "zt": 41,
+      "dt": 1,
+      "zab": 14,
+      "zb": 25.5,
+      "fb": 74.5,
+      "jj": 22.0,
+      "lianban": 9,
+      "max_lb": 6,
+      "amount": "5284.7亿",
+      "bf": 0,
+      "heat": 56,
+      "risk": 22,
+      "headline": "修复",
+      "concepts": [
+        {
+          "name": "汽车零部",
+          "lead": "光洋股份",
+          "chg_pct": null
+        },
+        {
+          "name": "通用设备",
+          "lead": "冰山冷热",
+          "chg_pct": null
+        },
+        {
+          "name": "光学光电",
+          "lead": "康冠科技",
+          "chg_pct": null
+        },
+        {
+          "name": "消费电子",
+          "lead": "信维通信",
+          "chg_pct": null
+        },
+        {
+          "name": "通信设备",
+          "lead": "烽火通信",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        },
+        {
+          "level": "warn",
+          "text": "炸板率偏高（25.5%）→ 注意回封质量"
+        },
+        {
+          "level": "warn",
+          "text": "高度6板 + 分歧不低 → 高位兑现/炸板风险"
+        }
+      ],
+      "shift_score": 65,
+      "shift_label": "修复",
+      "note": "炸板/跌停抬升，情绪明显走弱。"
     }
   ],
   "indices": [
     {
       "name": "上证指数",
       "code": "000001.SH",
-      "val": 3674.895,
-      "chg": 0.7047616489964681,
-      "cje": 188578183000.0,
-      "t": "2026-11-09 09:49:57"
+      "val": 3672.668,
+      "chg": 0.643734189928304,
+      "cje": 237861934500.0,
+      "t": "2026-11-09 09:59:54"
     },
     {
       "name": "深证成指",
       "code": "399001.SZ",
-      "val": 11289.218,
-      "chg": 1.0150252586374042,
-      "cje": 228828363900.0,
-      "t": "2026-11-09 09:49:57"
+      "val": 11267.766,
+      "chg": 0.8230744679051849,
+      "cje": 288849988100.0,
+      "t": "2026-11-09 09:59:51"
     },
     {
       "name": "创业板指",
       "code": "399006.SZ",
-      "val": 2499.55,
-      "chg": 1.3920799340589531,
-      "cje": 117864762000.0,
-      "t": "2026-11-09 09:49:57"
+      "val": 2494.524,
+      "chg": 1.1882045989991983,
+      "cje": 150361801900.0,
+      "t": "2026-11-09 10:00:03"
     }
   ],
   "asOf": {
-    "indices": "09:49:57"
+    "indices": "10:00:03"
   },
   "health": {
     "status": "valid",
-    "last_valid_at": "2026-11-09 09:50:04",
+    "last_valid_at": "2026-11-09 10:00:04",
     "rejected_reason": "",
     "source": {
       "status": "valid",
@@ -243,11 +322,12 @@
       "message": "intraday_coverage_incomplete",
       "date": "2026-11-09",
       "expected_count": 26,
-      "due_count": 3,
-      "observed_count": 2,
+      "due_count": 4,
+      "observed_count": 3,
       "observed_slots": [
         "09:40",
-        "09:50"
+        "09:50",
+        "10:00"
       ],
       "missing_slots": [
         "09:30"
@@ -255,24 +335,32 @@
       "duplicate_slots": [],
       "out_of_session": [],
       "monotonic": true,
-      "morning_coverage": 2,
+      "morning_coverage": 3,
       "afternoon_coverage": 0
     }
   },
   "live": {
     "market": {
-      "zt": 37,
+      "zt": 41,
       "dt": 1,
-      "zab": 8,
-      "zab_rate": 17.8,
-      "lianban": 8,
+      "zab": 14,
+      "zab_rate": 25.5,
+      "lianban": 9,
       "max_lianban": 6,
-      "amount": "4174.1亿"
+      "amount": "5284.7亿"
     },
     "alerts": [
       {
         "level": "info",
         "text": "盘中模式：强制实时拉取"
+      },
+      {
+        "level": "warn",
+        "text": "炸板率偏高（25.5%）→ 注意回封质量"
+      },
+      {
+        "level": "warn",
+        "text": "高度6板 + 分歧不低 → 高位兑现/炸板风险"
       }
     ],
     "concepts": [
@@ -292,13 +380,13 @@
         "chg_pct": null
       },
       {
-        "name": "塑料",
-        "lead": "上纬新材",
+        "name": "消费电子",
+        "lead": "信维通信",
         "chg_pct": null
       },
       {
-        "name": "化学制品",
-        "lead": "晶华新材",
+        "name": "通信设备",
+        "lead": "烽火通信",
         "chg_pct": null
       }
     ]
