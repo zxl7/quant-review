@@ -1,11 +1,11 @@
 {
   "schema": "intraday_runtime_v1",
   "date": "2026-11-09",
-  "updated_at": "2026-11-09 10:40:05",
+  "updated_at": "2026-11-09 10:50:05",
   "source": "必盈(实时)+必盈(实时)",
   "latest": {
-    "time": "10:40:05",
-    "ts_bj": "2026-11-09 10:40:05",
+    "time": "10:50:05",
+    "ts_bj": "2026-11-09 10:50:05",
     "date": "2026-11-09",
     "source": "intraday_live",
     "provider": "必盈(实时)+必盈(实时)",
@@ -16,18 +16,18 @@
       "dtgc": "valid"
     },
     "pool_errors": {},
-    "zt": 57,
+    "zt": 54,
     "dt": 1,
-    "zab": 17,
-    "zb": 23.0,
-    "fb": 77.0,
-    "jj": 21.1,
-    "lianban": 12,
+    "zab": 21,
+    "zb": 28.0,
+    "fb": 72.0,
+    "jj": 20.4,
+    "lianban": 11,
     "max_lb": 6,
-    "amount": "8082.5亿",
+    "amount": "8525.6亿",
     "bf": 0,
-    "heat": 59,
-    "risk": 22,
+    "heat": 57,
+    "risk": 26,
     "headline": "修复",
     "concepts": [
       {
@@ -51,8 +51,8 @@
         "chg_pct": null
       },
       {
-        "name": "塑料",
-        "lead": "上纬新材",
+        "name": "元件",
+        "lead": "超声电子",
         "chg_pct": null
       }
     ],
@@ -60,11 +60,19 @@
       {
         "level": "info",
         "text": "盘中模式：强制实时拉取"
+      },
+      {
+        "level": "warn",
+        "text": "炸板率偏高（28.0%）→ 注意回封质量"
+      },
+      {
+        "level": "warn",
+        "text": "高度6板 + 分歧不低 → 高位兑现/炸板风险"
       }
     ],
-    "shift_score": 67,
+    "shift_score": 64,
     "shift_label": "修复",
-    "note": "情绪边际修复，但仍需确认持续性。"
+    "note": "情绪略有回落，注意午后分歧。"
   },
   "snapshots": [
     {
@@ -531,40 +539,111 @@
       "shift_score": 67,
       "shift_label": "修复",
       "note": "情绪边际修复，但仍需确认持续性。"
+    },
+    {
+      "time": "10:50:05",
+      "ts_bj": "2026-11-09 10:50:05",
+      "date": "2026-11-09",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid"
+      },
+      "pool_errors": {},
+      "zt": 54,
+      "dt": 1,
+      "zab": 21,
+      "zb": 28.0,
+      "fb": 72.0,
+      "jj": 20.4,
+      "lianban": 11,
+      "max_lb": 6,
+      "amount": "8525.6亿",
+      "bf": 0,
+      "heat": 57,
+      "risk": 26,
+      "headline": "修复",
+      "concepts": [
+        {
+          "name": "汽车零部",
+          "lead": "光洋股份",
+          "chg_pct": null
+        },
+        {
+          "name": "通信设备",
+          "lead": "烽火通信",
+          "chg_pct": null
+        },
+        {
+          "name": "通用设备",
+          "lead": "上海沪工",
+          "chg_pct": null
+        },
+        {
+          "name": "光学光电",
+          "lead": "康冠科技",
+          "chg_pct": null
+        },
+        {
+          "name": "元件",
+          "lead": "超声电子",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        },
+        {
+          "level": "warn",
+          "text": "炸板率偏高（28.0%）→ 注意回封质量"
+        },
+        {
+          "level": "warn",
+          "text": "高度6板 + 分歧不低 → 高位兑现/炸板风险"
+        }
+      ],
+      "shift_score": 64,
+      "shift_label": "修复",
+      "note": "情绪略有回落，注意午后分歧。"
     }
   ],
   "indices": [
     {
       "name": "上证指数",
       "code": "000001.SH",
-      "val": 3671.705,
-      "chg": 0.6173446779917716,
-      "cje": 362212006000.0,
-      "t": "2026-11-09 10:39:51"
+      "val": 3669.588,
+      "chg": 0.5593315972341177,
+      "cje": 382722833900.0,
+      "t": "2026-11-09 10:49:57"
     },
     {
       "name": "深证成指",
       "code": "399001.SZ",
-      "val": 11229.777,
-      "chg": 0.48315191573635147,
-      "cje": 445659197000.0,
-      "t": "2026-11-09 10:40:00"
+      "val": 11223.135,
+      "chg": 0.4237198277238911,
+      "cje": 469837242600.0,
+      "t": "2026-11-09 10:49:57"
     },
     {
       "name": "创业板指",
       "code": "399006.SZ",
-      "val": 2485.62,
-      "chg": 0.8270215541579827,
-      "cje": 232319561200.0,
-      "t": "2026-11-09 10:40:00"
+      "val": 2481.67,
+      "chg": 0.6667932267632459,
+      "cje": 244530599100.0,
+      "t": "2026-11-09 10:49:57"
     }
   ],
   "asOf": {
-    "indices": "10:40:00"
+    "indices": "10:49:57"
   },
   "health": {
     "status": "valid",
-    "last_valid_at": "2026-11-09 10:40:05",
+    "last_valid_at": "2026-11-09 10:50:05",
     "rejected_reason": "",
     "source": {
       "status": "valid",
@@ -582,8 +661,8 @@
       "message": "intraday_coverage_incomplete",
       "date": "2026-11-09",
       "expected_count": 26,
-      "due_count": 8,
-      "observed_count": 7,
+      "due_count": 9,
+      "observed_count": 8,
       "observed_slots": [
         "09:40",
         "09:50",
@@ -591,7 +670,8 @@
         "10:10",
         "10:20",
         "10:30",
-        "10:40"
+        "10:40",
+        "10:50"
       ],
       "missing_slots": [
         "09:30"
@@ -599,24 +679,32 @@
       "duplicate_slots": [],
       "out_of_session": [],
       "monotonic": true,
-      "morning_coverage": 7,
+      "morning_coverage": 8,
       "afternoon_coverage": 0
     }
   },
   "live": {
     "market": {
-      "zt": 57,
+      "zt": 54,
       "dt": 1,
-      "zab": 17,
-      "zab_rate": 23.0,
-      "lianban": 12,
+      "zab": 21,
+      "zab_rate": 28.0,
+      "lianban": 11,
       "max_lianban": 6,
-      "amount": "8082.5亿"
+      "amount": "8525.6亿"
     },
     "alerts": [
       {
         "level": "info",
         "text": "盘中模式：强制实时拉取"
+      },
+      {
+        "level": "warn",
+        "text": "炸板率偏高（28.0%）→ 注意回封质量"
+      },
+      {
+        "level": "warn",
+        "text": "高度6板 + 分歧不低 → 高位兑现/炸板风险"
       }
     ],
     "concepts": [
@@ -641,8 +729,8 @@
         "chg_pct": null
       },
       {
-        "name": "塑料",
-        "lead": "上纬新材",
+        "name": "元件",
+        "lead": "超声电子",
         "chg_pct": null
       }
     ]
