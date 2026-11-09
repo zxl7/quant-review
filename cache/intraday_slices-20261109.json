@@ -2,7 +2,7 @@
   "schema": "intraday_snapshot_v1",
   "render_mode": "snapshot_stream",
   "date": "2026-11-09",
-  "count": 4,
+  "count": 5,
   "interval_min": null,
   "simulated": false,
   "snapshots": [
@@ -265,11 +265,82 @@
       "shift_score": 67,
       "shift_label": "修复",
       "note": "情绪边际修复，但仍需确认持续性。"
+    },
+    {
+      "time": "10:20:06",
+      "ts_bj": "2026-11-09 10:20:06",
+      "date": "2026-11-09",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid"
+      },
+      "pool_errors": {},
+      "zt": 50,
+      "dt": 1,
+      "zab": 17,
+      "zb": 25.4,
+      "fb": 74.6,
+      "jj": 22.0,
+      "lianban": 11,
+      "max_lb": 6,
+      "amount": "7026.0亿",
+      "bf": 0,
+      "heat": 58,
+      "risk": 23,
+      "headline": "修复",
+      "concepts": [
+        {
+          "name": "通信设备",
+          "lead": "烽火通信",
+          "chg_pct": null
+        },
+        {
+          "name": "汽车零部",
+          "lead": "光洋股份",
+          "chg_pct": null
+        },
+        {
+          "name": "通用设备",
+          "lead": "冰山冷热",
+          "chg_pct": null
+        },
+        {
+          "name": "光学光电",
+          "lead": "康冠科技",
+          "chg_pct": null
+        },
+        {
+          "name": "元件",
+          "lead": "超声电子",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        },
+        {
+          "level": "warn",
+          "text": "炸板率偏高（25.4%）→ 注意回封质量"
+        },
+        {
+          "level": "warn",
+          "text": "高度6板 + 分歧不低 → 高位兑现/炸板风险"
+        }
+      ],
+      "shift_score": 66,
+      "shift_label": "修复",
+      "note": "情绪整体平稳，维持当前节奏。"
     }
   ],
   "latest": {
-    "time": "10:10:06",
-    "ts_bj": "2026-11-09 10:10:06",
+    "time": "10:20:06",
+    "ts_bj": "2026-11-09 10:20:06",
     "date": "2026-11-09",
     "source": "intraday_live",
     "provider": "必盈(实时)+必盈(实时)",
@@ -280,20 +351,25 @@
       "dtgc": "valid"
     },
     "pool_errors": {},
-    "zt": 48,
+    "zt": 50,
     "dt": 1,
-    "zab": 15,
-    "zb": 23.8,
-    "fb": 76.2,
-    "jj": 22.9,
+    "zab": 17,
+    "zb": 25.4,
+    "fb": 74.6,
+    "jj": 22.0,
     "lianban": 11,
     "max_lb": 6,
-    "amount": "6281.3亿",
+    "amount": "7026.0亿",
     "bf": 0,
     "heat": 58,
-    "risk": 21,
+    "risk": 23,
     "headline": "修复",
     "concepts": [
+      {
+        "name": "通信设备",
+        "lead": "烽火通信",
+        "chg_pct": null
+      },
       {
         "name": "汽车零部",
         "lead": "光洋股份",
@@ -310,11 +386,6 @@
         "chg_pct": null
       },
       {
-        "name": "通信设备",
-        "lead": "烽火通信",
-        "chg_pct": null
-      },
-      {
         "name": "元件",
         "lead": "超声电子",
         "chg_pct": null
@@ -324,17 +395,25 @@
       {
         "level": "info",
         "text": "盘中模式：强制实时拉取"
+      },
+      {
+        "level": "warn",
+        "text": "炸板率偏高（25.4%）→ 注意回封质量"
+      },
+      {
+        "level": "warn",
+        "text": "高度6板 + 分歧不低 → 高位兑现/炸板风险"
       }
     ],
-    "shift_score": 67,
+    "shift_score": 66,
     "shift_label": "修复",
-    "note": "情绪边际修复，但仍需确认持续性。"
+    "note": "情绪整体平稳，维持当前节奏。"
   },
-  "updated_at": "2026-11-09 10:10:06",
-  "snapshot_sig": "2026-11-09|2026-11-09 10:10:06|4",
+  "updated_at": "2026-11-09 10:20:06",
+  "snapshot_sig": "2026-11-09|2026-11-09 10:20:06|5",
   "health": {
     "status": "valid",
-    "last_valid_at": "2026-11-09 10:10:06",
+    "last_valid_at": "2026-11-09 10:20:06",
     "rejected_reason": "",
     "source": {
       "status": "valid",
