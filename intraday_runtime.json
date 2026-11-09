@@ -1,11 +1,11 @@
 {
   "schema": "intraday_runtime_v1",
   "date": "2026-11-09",
-  "updated_at": "2026-11-09 11:00:06",
+  "updated_at": "2026-11-09 11:10:04",
   "source": "必盈(实时)+必盈(实时)",
   "latest": {
-    "time": "11:00:06",
-    "ts_bj": "2026-11-09 11:00:06",
+    "time": "11:10:04",
+    "ts_bj": "2026-11-09 11:10:04",
     "date": "2026-11-09",
     "source": "intraday_live",
     "provider": "必盈(实时)+必盈(实时)",
@@ -16,19 +16,19 @@
       "dtgc": "valid"
     },
     "pool_errors": {},
-    "zt": 52,
+    "zt": 53,
     "dt": 1,
-    "zab": 26,
-    "zb": 33.3,
-    "fb": 66.7,
-    "jj": 21.2,
-    "lianban": 11,
+    "zab": 29,
+    "zb": 35.4,
+    "fb": 64.6,
+    "jj": 24.5,
+    "lianban": 13,
     "max_lb": 6,
-    "amount": "8953.5亿",
+    "amount": "9335.3亿",
     "bf": 0,
     "heat": 54,
-    "risk": 32,
-    "headline": "修复",
+    "risk": 34,
+    "headline": "分歧",
     "concepts": [
       {
         "name": "汽车零部",
@@ -41,6 +41,11 @@
         "chg_pct": null
       },
       {
+        "name": "元件",
+        "lead": "超声电子",
+        "chg_pct": null
+      },
+      {
         "name": "通用设备",
         "lead": "冰山冷热",
         "chg_pct": null
@@ -48,11 +53,6 @@
       {
         "name": "光学光电",
         "lead": "康冠科技",
-        "chg_pct": null
-      },
-      {
-        "name": "元件",
-        "lead": "超声电子",
         "chg_pct": null
       }
     ],
@@ -62,17 +62,17 @@
         "text": "盘中模式：强制实时拉取"
       },
       {
-        "level": "warn",
-        "text": "炸板率偏高（33.3%）→ 注意回封质量"
+        "level": "danger",
+        "text": "炸板率高（35.4%）→ 分歧偏强，谨慎接力"
       },
       {
         "level": "warn",
         "text": "高度6板 + 分歧不低 → 高位兑现/炸板风险"
       }
     ],
-    "shift_score": 60,
-    "shift_label": "修复",
-    "note": "情绪略有回落，注意午后分歧。"
+    "shift_score": 59,
+    "shift_label": "分歧",
+    "note": "情绪整体平稳，维持当前节奏。"
   },
   "snapshots": [
     {
@@ -681,40 +681,111 @@
       "shift_score": 60,
       "shift_label": "修复",
       "note": "情绪略有回落，注意午后分歧。"
+    },
+    {
+      "time": "11:10:04",
+      "ts_bj": "2026-11-09 11:10:04",
+      "date": "2026-11-09",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid"
+      },
+      "pool_errors": {},
+      "zt": 53,
+      "dt": 1,
+      "zab": 29,
+      "zb": 35.4,
+      "fb": 64.6,
+      "jj": 24.5,
+      "lianban": 13,
+      "max_lb": 6,
+      "amount": "9335.3亿",
+      "bf": 0,
+      "heat": 54,
+      "risk": 34,
+      "headline": "分歧",
+      "concepts": [
+        {
+          "name": "汽车零部",
+          "lead": "光洋股份",
+          "chg_pct": null
+        },
+        {
+          "name": "通信设备",
+          "lead": "烽火通信",
+          "chg_pct": null
+        },
+        {
+          "name": "元件",
+          "lead": "超声电子",
+          "chg_pct": null
+        },
+        {
+          "name": "通用设备",
+          "lead": "冰山冷热",
+          "chg_pct": null
+        },
+        {
+          "name": "光学光电",
+          "lead": "康冠科技",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        },
+        {
+          "level": "danger",
+          "text": "炸板率高（35.4%）→ 分歧偏强，谨慎接力"
+        },
+        {
+          "level": "warn",
+          "text": "高度6板 + 分歧不低 → 高位兑现/炸板风险"
+        }
+      ],
+      "shift_score": 59,
+      "shift_label": "分歧",
+      "note": "情绪整体平稳，维持当前节奏。"
     }
   ],
   "indices": [
     {
       "name": "上证指数",
       "code": "000001.SH",
-      "val": 3665.054,
-      "chg": 0.4350844039628648,
-      "cje": 402153843400.0,
-      "t": "2026-11-09 11:00:00"
+      "val": 3665.229,
+      "chg": 0.4398800058204817,
+      "cje": 419521465300.0,
+      "t": "2026-11-09 11:09:51"
     },
     {
       "name": "深证成指",
       "code": "399001.SZ",
-      "val": 11207.207,
-      "chg": 0.2811973498764827,
-      "cje": 493200788000.0,
-      "t": "2026-11-09 11:00:00"
+      "val": 11200.725,
+      "chg": 0.22319692914526068,
+      "cje": 513504908500.0,
+      "t": "2026-11-09 11:09:51"
     },
     {
       "name": "创业板指",
       "code": "399006.SZ",
-      "val": 2477.352,
-      "chg": 0.4916372982339955,
-      "cje": 256082463600.0,
-      "t": "2026-11-09 11:00:00"
+      "val": 2476.918,
+      "chg": 0.47403246428734286,
+      "cje": 266189652700.0,
+      "t": "2026-11-09 11:10:03"
     }
   ],
   "asOf": {
-    "indices": "11:00:00"
+    "indices": "11:10:03"
   },
   "health": {
     "status": "valid",
-    "last_valid_at": "2026-11-09 11:00:06",
+    "last_valid_at": "2026-11-09 11:10:04",
     "rejected_reason": "",
     "source": {
       "status": "valid",
@@ -732,8 +803,8 @@
       "message": "intraday_coverage_incomplete",
       "date": "2026-11-09",
       "expected_count": 26,
-      "due_count": 10,
-      "observed_count": 9,
+      "due_count": 11,
+      "observed_count": 10,
       "observed_slots": [
         "09:40",
         "09:50",
@@ -743,7 +814,8 @@
         "10:30",
         "10:40",
         "10:50",
-        "11:00"
+        "11:00",
+        "11:10"
       ],
       "missing_slots": [
         "09:30"
@@ -751,19 +823,19 @@
       "duplicate_slots": [],
       "out_of_session": [],
       "monotonic": true,
-      "morning_coverage": 9,
+      "morning_coverage": 10,
       "afternoon_coverage": 0
     }
   },
   "live": {
     "market": {
-      "zt": 52,
+      "zt": 53,
       "dt": 1,
-      "zab": 26,
-      "zab_rate": 33.3,
-      "lianban": 11,
+      "zab": 29,
+      "zab_rate": 35.4,
+      "lianban": 13,
       "max_lianban": 6,
-      "amount": "8953.5亿"
+      "amount": "9335.3亿"
     },
     "alerts": [
       {
@@ -771,8 +843,8 @@
         "text": "盘中模式：强制实时拉取"
       },
       {
-        "level": "warn",
-        "text": "炸板率偏高（33.3%）→ 注意回封质量"
+        "level": "danger",
+        "text": "炸板率高（35.4%）→ 分歧偏强，谨慎接力"
       },
       {
         "level": "warn",
@@ -791,6 +863,11 @@
         "chg_pct": null
       },
       {
+        "name": "元件",
+        "lead": "超声电子",
+        "chg_pct": null
+      },
+      {
         "name": "通用设备",
         "lead": "冰山冷热",
         "chg_pct": null
@@ -798,11 +875,6 @@
       {
         "name": "光学光电",
         "lead": "康冠科技",
-        "chg_pct": null
-      },
-      {
-        "name": "元件",
-        "lead": "超声电子",
         "chg_pct": null
       }
     ]
