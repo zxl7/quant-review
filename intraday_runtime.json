@@ -1,11 +1,11 @@
 {
   "schema": "intraday_runtime_v1",
   "date": "2026-11-09",
-  "updated_at": "2026-11-09 09:42:21",
+  "updated_at": "2026-11-09 09:50:04",
   "source": "必盈(实时)+必盈(实时)",
   "latest": {
-    "time": "09:42:21",
-    "ts_bj": "2026-11-09 09:42:21",
+    "time": "09:50:04",
+    "ts_bj": "2026-11-09 09:50:04",
     "date": "2026-11-09",
     "source": "intraday_live",
     "provider": "必盈(实时)+必盈(实时)",
@@ -16,17 +16,17 @@
       "dtgc": "valid"
     },
     "pool_errors": {},
-    "zt": 29,
+    "zt": 37,
     "dt": 1,
-    "zab": 7,
-    "zb": 19.4,
-    "fb": 80.6,
-    "jj": 20.7,
-    "lianban": 6,
+    "zab": 8,
+    "zb": 17.8,
+    "fb": 82.2,
+    "jj": 21.6,
+    "lianban": 8,
     "max_lb": 6,
-    "amount": "3110.9亿",
+    "amount": "4174.1亿",
     "bf": 0,
-    "heat": 56,
+    "heat": 59,
     "risk": 15,
     "headline": "修复",
     "concepts": [
@@ -46,13 +46,13 @@
         "chg_pct": null
       },
       {
-        "name": "化学制品",
-        "lead": "晶华新材",
+        "name": "塑料",
+        "lead": "上纬新材",
         "chg_pct": null
       },
       {
-        "name": "工业金属",
-        "lead": "闽发铝业",
+        "name": "化学制品",
+        "lead": "晶华新材",
         "chg_pct": null
       }
     ],
@@ -62,9 +62,9 @@
         "text": "盘中模式：强制实时拉取"
       }
     ],
-    "shift_score": 68,
+    "shift_score": 70,
     "shift_label": "修复",
-    "note": "盘中实时切片已接入，可逐点观察情绪变化。"
+    "note": "情绪边际修复，但仍需确认持续性。"
   },
   "snapshots": [
     {
@@ -129,40 +129,103 @@
       "shift_score": 68,
       "shift_label": "修复",
       "note": "盘中实时切片已接入，可逐点观察情绪变化。"
+    },
+    {
+      "time": "09:50:04",
+      "ts_bj": "2026-11-09 09:50:04",
+      "date": "2026-11-09",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid"
+      },
+      "pool_errors": {},
+      "zt": 37,
+      "dt": 1,
+      "zab": 8,
+      "zb": 17.8,
+      "fb": 82.2,
+      "jj": 21.6,
+      "lianban": 8,
+      "max_lb": 6,
+      "amount": "4174.1亿",
+      "bf": 0,
+      "heat": 59,
+      "risk": 15,
+      "headline": "修复",
+      "concepts": [
+        {
+          "name": "汽车零部",
+          "lead": "光洋股份",
+          "chg_pct": null
+        },
+        {
+          "name": "通用设备",
+          "lead": "冰山冷热",
+          "chg_pct": null
+        },
+        {
+          "name": "光学光电",
+          "lead": "康冠科技",
+          "chg_pct": null
+        },
+        {
+          "name": "塑料",
+          "lead": "上纬新材",
+          "chg_pct": null
+        },
+        {
+          "name": "化学制品",
+          "lead": "晶华新材",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        }
+      ],
+      "shift_score": 70,
+      "shift_label": "修复",
+      "note": "情绪边际修复，但仍需确认持续性。"
     }
   ],
   "indices": [
     {
       "name": "上证指数",
       "code": "000001.SH",
-      "val": 3670.194,
-      "chg": 0.5759380813810846,
-      "cje": 139053106900.0,
-      "t": "2026-11-09 09:42:15"
+      "val": 3674.895,
+      "chg": 0.7047616489964681,
+      "cje": 188578183000.0,
+      "t": "2026-11-09 09:49:57"
     },
     {
       "name": "深证成指",
       "code": "399001.SZ",
-      "val": 11277.972,
-      "chg": 0.9143969446072618,
-      "cje": 170926701700.0,
-      "t": "2026-11-09 09:42:12"
+      "val": 11289.218,
+      "chg": 1.0150252586374042,
+      "cje": 228828363900.0,
+      "t": "2026-11-09 09:49:57"
     },
     {
       "name": "创业板指",
       "code": "399006.SZ",
-      "val": 2491.391,
-      "chg": 1.0611171686883873,
-      "cje": 87829077800.0,
-      "t": "2026-11-09 09:42:12"
+      "val": 2499.55,
+      "chg": 1.3920799340589531,
+      "cje": 117864762000.0,
+      "t": "2026-11-09 09:49:57"
     }
   ],
   "asOf": {
-    "indices": "09:42:12"
+    "indices": "09:49:57"
   },
   "health": {
     "status": "valid",
-    "last_valid_at": "2026-11-09 09:42:21",
+    "last_valid_at": "2026-11-09 09:50:04",
     "rejected_reason": "",
     "source": {
       "status": "valid",
@@ -180,10 +243,11 @@
       "message": "intraday_coverage_incomplete",
       "date": "2026-11-09",
       "expected_count": 26,
-      "due_count": 2,
-      "observed_count": 1,
+      "due_count": 3,
+      "observed_count": 2,
       "observed_slots": [
-        "09:40"
+        "09:40",
+        "09:50"
       ],
       "missing_slots": [
         "09:30"
@@ -191,19 +255,19 @@
       "duplicate_slots": [],
       "out_of_session": [],
       "monotonic": true,
-      "morning_coverage": 1,
+      "morning_coverage": 2,
       "afternoon_coverage": 0
     }
   },
   "live": {
     "market": {
-      "zt": 29,
+      "zt": 37,
       "dt": 1,
-      "zab": 7,
-      "zab_rate": 19.4,
-      "lianban": 6,
+      "zab": 8,
+      "zab_rate": 17.8,
+      "lianban": 8,
       "max_lianban": 6,
-      "amount": "3110.9亿"
+      "amount": "4174.1亿"
     },
     "alerts": [
       {
@@ -228,13 +292,13 @@
         "chg_pct": null
       },
       {
-        "name": "化学制品",
-        "lead": "晶华新材",
+        "name": "塑料",
+        "lead": "上纬新材",
         "chg_pct": null
       },
       {
-        "name": "工业金属",
-        "lead": "闽发铝业",
+        "name": "化学制品",
+        "lead": "晶华新材",
         "chg_pct": null
       }
     ]
