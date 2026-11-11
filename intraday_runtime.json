@@ -1,11 +1,11 @@
 {
   "schema": "intraday_runtime_v1",
   "date": "2026-11-11",
-  "updated_at": "2026-11-11 10:20:04",
+  "updated_at": "2026-11-11 10:30:04",
   "source": "必盈(实时)+必盈(实时)",
   "latest": {
-    "time": "10:20:04",
-    "ts_bj": "2026-11-11 10:20:04",
+    "time": "10:30:04",
+    "ts_bj": "2026-11-11 10:30:04",
     "date": "2026-11-11",
     "source": "intraday_live",
     "provider": "必盈(实时)+必盈(实时)",
@@ -16,28 +16,33 @@
       "dtgc": "valid_empty"
     },
     "pool_errors": {},
-    "zt": 37,
+    "zt": 40,
     "dt": 0,
-    "zab": 16,
-    "zb": 30.2,
-    "fb": 69.8,
-    "jj": 32.4,
-    "lianban": 12,
+    "zab": 12,
+    "zb": 23.1,
+    "fb": 76.9,
+    "jj": 32.5,
+    "lianban": 13,
     "max_lb": 4,
-    "amount": "6244.4亿",
+    "amount": "6742.0亿",
     "bf": 0,
-    "heat": 52,
-    "risk": 24,
+    "heat": 55,
+    "risk": 18,
     "headline": "修复",
     "concepts": [
+      {
+        "name": "通信设备",
+        "lead": "日海智能",
+        "chg_pct": null
+      },
       {
         "name": "汽车零部",
         "lead": "光洋股份",
         "chg_pct": null
       },
       {
-        "name": "通信设备",
-        "lead": "日海智能",
+        "name": "光伏设备",
+        "lead": "亚玛顿",
         "chg_pct": null
       },
       {
@@ -49,26 +54,17 @@
         "name": "一般零售",
         "lead": "大东方",
         "chg_pct": null
-      },
-      {
-        "name": "游戏Ⅱ",
-        "lead": "文投控股",
-        "chg_pct": null
       }
     ],
     "alerts": [
       {
         "level": "info",
         "text": "盘中模式：强制实时拉取"
-      },
-      {
-        "level": "warn",
-        "text": "炸板率偏高（30.2%）→ 注意回封质量"
       }
     ],
-    "shift_score": 62,
+    "shift_score": 66,
     "shift_label": "修复",
-    "note": "情绪整体平稳，维持当前节奏。"
+    "note": "情绪边际修复，但仍需确认持续性。"
   },
   "snapshots": [
     {
@@ -271,40 +267,103 @@
       "shift_score": 62,
       "shift_label": "修复",
       "note": "情绪整体平稳，维持当前节奏。"
+    },
+    {
+      "time": "10:30:04",
+      "ts_bj": "2026-11-11 10:30:04",
+      "date": "2026-11-11",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid_empty"
+      },
+      "pool_errors": {},
+      "zt": 40,
+      "dt": 0,
+      "zab": 12,
+      "zb": 23.1,
+      "fb": 76.9,
+      "jj": 32.5,
+      "lianban": 13,
+      "max_lb": 4,
+      "amount": "6742.0亿",
+      "bf": 0,
+      "heat": 55,
+      "risk": 18,
+      "headline": "修复",
+      "concepts": [
+        {
+          "name": "通信设备",
+          "lead": "日海智能",
+          "chg_pct": null
+        },
+        {
+          "name": "汽车零部",
+          "lead": "光洋股份",
+          "chg_pct": null
+        },
+        {
+          "name": "光伏设备",
+          "lead": "亚玛顿",
+          "chg_pct": null
+        },
+        {
+          "name": "专用设备",
+          "lead": "达 意 隆",
+          "chg_pct": null
+        },
+        {
+          "name": "一般零售",
+          "lead": "大东方",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        }
+      ],
+      "shift_score": 66,
+      "shift_label": "修复",
+      "note": "情绪边际修复，但仍需确认持续性。"
     }
   ],
   "indices": [
     {
       "name": "上证指数",
       "code": "000001.SH",
-      "val": 3654.916,
-      "chg": -0.24041112267190412,
-      "cje": 265969782600.0,
-      "t": "2026-11-11 10:20:03"
+      "val": 3659.01,
+      "chg": -0.12866689739729145,
+      "cje": 288228093200.0,
+      "t": "2026-11-11 10:30:03"
     },
     {
       "name": "深证成指",
       "code": "399001.SZ",
-      "val": 11201.767,
-      "chg": -0.35376838182967374,
-      "cje": 358016375600.0,
-      "t": "2026-11-11 10:19:57"
+      "val": 11210.12,
+      "chg": -0.2794635893173251,
+      "cje": 385697322000.0,
+      "t": "2026-11-11 10:29:57"
     },
     {
       "name": "创业板指",
       "code": "399006.SZ",
-      "val": 2500.869,
-      "chg": 0.25946150512529514,
-      "cje": 177973281900.0,
-      "t": "2026-11-11 10:20:00"
+      "val": 2503.656,
+      "chg": 0.3711919153206171,
+      "cje": 192116400700.0,
+      "t": "2026-11-11 10:30:00"
     }
   ],
   "asOf": {
-    "indices": "10:20:00"
+    "indices": "10:30:00"
   },
   "health": {
     "status": "valid",
-    "last_valid_at": "2026-11-11 10:20:04",
+    "last_valid_at": "2026-11-11 10:30:04",
     "rejected_reason": "",
     "source": {
       "status": "valid",
@@ -322,12 +381,13 @@
       "message": "intraday_coverage_incomplete",
       "date": "2026-11-11",
       "expected_count": 26,
-      "due_count": 6,
-      "observed_count": 3,
+      "due_count": 7,
+      "observed_count": 4,
       "observed_slots": [
         "10:00",
         "10:10",
-        "10:20"
+        "10:20",
+        "10:30"
       ],
       "missing_slots": [
         "09:30",
@@ -337,39 +397,40 @@
       "duplicate_slots": [],
       "out_of_session": [],
       "monotonic": true,
-      "morning_coverage": 3,
+      "morning_coverage": 4,
       "afternoon_coverage": 0
     }
   },
   "live": {
     "market": {
-      "zt": 37,
+      "zt": 40,
       "dt": 0,
-      "zab": 16,
-      "zab_rate": 30.2,
-      "lianban": 12,
+      "zab": 12,
+      "zab_rate": 23.1,
+      "lianban": 13,
       "max_lianban": 4,
-      "amount": "6244.4亿"
+      "amount": "6742.0亿"
     },
     "alerts": [
       {
         "level": "info",
         "text": "盘中模式：强制实时拉取"
-      },
-      {
-        "level": "warn",
-        "text": "炸板率偏高（30.2%）→ 注意回封质量"
       }
     ],
     "concepts": [
+      {
+        "name": "通信设备",
+        "lead": "日海智能",
+        "chg_pct": null
+      },
       {
         "name": "汽车零部",
         "lead": "光洋股份",
         "chg_pct": null
       },
       {
-        "name": "通信设备",
-        "lead": "日海智能",
+        "name": "光伏设备",
+        "lead": "亚玛顿",
         "chg_pct": null
       },
       {
@@ -380,11 +441,6 @@
       {
         "name": "一般零售",
         "lead": "大东方",
-        "chg_pct": null
-      },
-      {
-        "name": "游戏Ⅱ",
-        "lead": "文投控股",
         "chg_pct": null
       }
     ]
