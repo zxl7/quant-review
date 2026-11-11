@@ -2,7 +2,7 @@
   "schema": "intraday_snapshot_v1",
   "render_mode": "snapshot_stream",
   "date": "2026-11-11",
-  "count": 8,
+  "count": 9,
   "interval_min": null,
   "simulated": false,
   "snapshots": [
@@ -533,11 +533,78 @@
       "shift_score": 62,
       "shift_label": "修复",
       "note": "情绪整体平稳，维持当前节奏。"
+    },
+    {
+      "time": "11:20:03",
+      "ts_bj": "2026-11-11 11:20:03",
+      "date": "2026-11-11",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid_empty"
+      },
+      "pool_errors": {},
+      "zt": 46,
+      "dt": 0,
+      "zab": 19,
+      "zb": 29.2,
+      "fb": 70.8,
+      "jj": 32.6,
+      "lianban": 15,
+      "max_lb": 4,
+      "amount": "8867.7亿",
+      "bf": 0,
+      "heat": 54,
+      "risk": 25,
+      "headline": "修复",
+      "concepts": [
+        {
+          "name": "汽车零部",
+          "lead": "光洋股份",
+          "chg_pct": null
+        },
+        {
+          "name": "通用设备",
+          "lead": "锋龙股份",
+          "chg_pct": null
+        },
+        {
+          "name": "专用设备",
+          "lead": "达 意 隆",
+          "chg_pct": null
+        },
+        {
+          "name": "光伏设备",
+          "lead": "亚玛顿",
+          "chg_pct": null
+        },
+        {
+          "name": "通信设备",
+          "lead": "日海智能",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        },
+        {
+          "level": "warn",
+          "text": "炸板率偏高（29.2%）→ 注意回封质量"
+        }
+      ],
+      "shift_score": 63,
+      "shift_label": "修复",
+      "note": "情绪整体平稳，维持当前节奏。"
     }
   ],
   "latest": {
-    "time": "11:10:03",
-    "ts_bj": "2026-11-11 11:10:03",
+    "time": "11:20:03",
+    "ts_bj": "2026-11-11 11:20:03",
     "date": "2026-11-11",
     "source": "intraday_live",
     "provider": "必盈(实时)+必盈(实时)",
@@ -553,23 +620,23 @@
     "zab": 19,
     "zb": 29.2,
     "fb": 70.8,
-    "jj": 30.4,
-    "lianban": 14,
+    "jj": 32.6,
+    "lianban": 15,
     "max_lb": 4,
-    "amount": "8412.9亿",
+    "amount": "8867.7亿",
     "bf": 0,
-    "heat": 53,
+    "heat": 54,
     "risk": 25,
     "headline": "修复",
     "concepts": [
       {
-        "name": "通用设备",
-        "lead": "锋龙股份",
+        "name": "汽车零部",
+        "lead": "光洋股份",
         "chg_pct": null
       },
       {
-        "name": "汽车零部",
-        "lead": "光洋股份",
+        "name": "通用设备",
+        "lead": "锋龙股份",
         "chg_pct": null
       },
       {
@@ -598,15 +665,15 @@
         "text": "炸板率偏高（29.2%）→ 注意回封质量"
       }
     ],
-    "shift_score": 62,
+    "shift_score": 63,
     "shift_label": "修复",
     "note": "情绪整体平稳，维持当前节奏。"
   },
-  "updated_at": "2026-11-11 11:10:03",
-  "snapshot_sig": "2026-11-11|2026-11-11 11:10:03|8",
+  "updated_at": "2026-11-11 11:20:03",
+  "snapshot_sig": "2026-11-11|2026-11-11 11:20:03|9",
   "health": {
     "status": "valid",
-    "last_valid_at": "2026-11-11 11:10:03",
+    "last_valid_at": "2026-11-11 11:20:03",
     "rejected_reason": "",
     "source": {
       "status": "valid",
