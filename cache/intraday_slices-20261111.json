@@ -2,7 +2,7 @@
   "schema": "intraday_snapshot_v1",
   "render_mode": "snapshot_stream",
   "date": "2026-11-11",
-  "count": 4,
+  "count": 5,
   "interval_min": null,
   "simulated": false,
   "snapshots": [
@@ -269,11 +269,74 @@
       "shift_score": 66,
       "shift_label": "修复",
       "note": "情绪边际修复，但仍需确认持续性。"
+    },
+    {
+      "time": "10:40:04",
+      "ts_bj": "2026-11-11 10:40:04",
+      "date": "2026-11-11",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid_empty"
+      },
+      "pool_errors": {},
+      "zt": 43,
+      "dt": 0,
+      "zab": 14,
+      "zb": 24.6,
+      "fb": 75.4,
+      "jj": 32.6,
+      "lianban": 14,
+      "max_lb": 4,
+      "amount": "7278.1亿",
+      "bf": 0,
+      "heat": 55,
+      "risk": 20,
+      "headline": "修复",
+      "concepts": [
+        {
+          "name": "汽车零部",
+          "lead": "光洋股份",
+          "chg_pct": null
+        },
+        {
+          "name": "通信设备",
+          "lead": "日海智能",
+          "chg_pct": null
+        },
+        {
+          "name": "专用设备",
+          "lead": "达 意 隆",
+          "chg_pct": null
+        },
+        {
+          "name": "通用设备",
+          "lead": "锋龙股份",
+          "chg_pct": null
+        },
+        {
+          "name": "光伏设备",
+          "lead": "亚玛顿",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        }
+      ],
+      "shift_score": 66,
+      "shift_label": "修复",
+      "note": "情绪整体平稳，维持当前节奏。"
     }
   ],
   "latest": {
-    "time": "10:30:04",
-    "ts_bj": "2026-11-11 10:30:04",
+    "time": "10:40:04",
+    "ts_bj": "2026-11-11 10:40:04",
     "date": "2026-11-11",
     "source": "intraday_live",
     "provider": "必盈(实时)+必盈(实时)",
@@ -284,33 +347,28 @@
       "dtgc": "valid_empty"
     },
     "pool_errors": {},
-    "zt": 40,
+    "zt": 43,
     "dt": 0,
-    "zab": 12,
-    "zb": 23.1,
-    "fb": 76.9,
-    "jj": 32.5,
-    "lianban": 13,
+    "zab": 14,
+    "zb": 24.6,
+    "fb": 75.4,
+    "jj": 32.6,
+    "lianban": 14,
     "max_lb": 4,
-    "amount": "6742.0亿",
+    "amount": "7278.1亿",
     "bf": 0,
     "heat": 55,
-    "risk": 18,
+    "risk": 20,
     "headline": "修复",
     "concepts": [
-      {
-        "name": "通信设备",
-        "lead": "日海智能",
-        "chg_pct": null
-      },
       {
         "name": "汽车零部",
         "lead": "光洋股份",
         "chg_pct": null
       },
       {
-        "name": "光伏设备",
-        "lead": "亚玛顿",
+        "name": "通信设备",
+        "lead": "日海智能",
         "chg_pct": null
       },
       {
@@ -319,8 +377,13 @@
         "chg_pct": null
       },
       {
-        "name": "一般零售",
-        "lead": "大东方",
+        "name": "通用设备",
+        "lead": "锋龙股份",
+        "chg_pct": null
+      },
+      {
+        "name": "光伏设备",
+        "lead": "亚玛顿",
         "chg_pct": null
       }
     ],
@@ -332,13 +395,13 @@
     ],
     "shift_score": 66,
     "shift_label": "修复",
-    "note": "情绪边际修复，但仍需确认持续性。"
+    "note": "情绪整体平稳，维持当前节奏。"
   },
-  "updated_at": "2026-11-11 10:30:04",
-  "snapshot_sig": "2026-11-11|2026-11-11 10:30:04|4",
+  "updated_at": "2026-11-11 10:40:04",
+  "snapshot_sig": "2026-11-11|2026-11-11 10:40:04|5",
   "health": {
     "status": "valid",
-    "last_valid_at": "2026-11-11 10:30:04",
+    "last_valid_at": "2026-11-11 10:40:04",
     "rejected_reason": "",
     "source": {
       "status": "valid",
