@@ -1,11 +1,11 @@
 {
   "schema": "intraday_runtime_v1",
   "date": "2026-11-11",
-  "updated_at": "2026-11-11 10:01:02",
+  "updated_at": "2026-11-11 10:10:03",
   "source": "必盈(实时)+必盈(实时)",
   "latest": {
-    "time": "10:01:02",
-    "ts_bj": "2026-11-11 10:01:02",
+    "time": "10:10:03",
+    "ts_bj": "2026-11-11 10:10:03",
     "date": "2026-11-11",
     "source": "intraday_live",
     "provider": "必盈(实时)+必盈(实时)",
@@ -16,18 +16,18 @@
       "dtgc": "valid_empty"
     },
     "pool_errors": {},
-    "zt": 33,
+    "zt": 34,
     "dt": 0,
-    "zab": 15,
-    "zb": 31.2,
-    "fb": 68.8,
-    "jj": 33.3,
+    "zab": 14,
+    "zb": 29.2,
+    "fb": 70.8,
+    "jj": 32.4,
     "lianban": 11,
     "max_lb": 4,
-    "amount": "4735.9亿",
+    "amount": "5514.7亿",
     "bf": 0,
-    "heat": 51,
-    "risk": 24,
+    "heat": 52,
+    "risk": 22,
     "headline": "修复",
     "concepts": [
       {
@@ -46,13 +46,13 @@
         "chg_pct": null
       },
       {
-        "name": "通用设备",
-        "lead": "锋龙股份",
+        "name": "汽车零部",
+        "lead": "光洋股份",
         "chg_pct": null
       },
       {
-        "name": "光伏设备",
-        "lead": "亚玛顿",
+        "name": "通用设备",
+        "lead": "锋龙股份",
         "chg_pct": null
       }
     ],
@@ -63,12 +63,12 @@
       },
       {
         "level": "warn",
-        "text": "炸板率偏高（31.2%）→ 注意回封质量"
+        "text": "炸板率偏高（29.2%）→ 注意回封质量"
       }
     ],
-    "shift_score": 62,
+    "shift_score": 63,
     "shift_label": "修复",
-    "note": "盘中实时切片已接入，可逐点观察情绪变化。"
+    "note": "情绪整体平稳，维持当前节奏。"
   },
   "snapshots": [
     {
@@ -137,40 +137,107 @@
       "shift_score": 62,
       "shift_label": "修复",
       "note": "盘中实时切片已接入，可逐点观察情绪变化。"
+    },
+    {
+      "time": "10:10:03",
+      "ts_bj": "2026-11-11 10:10:03",
+      "date": "2026-11-11",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid_empty"
+      },
+      "pool_errors": {},
+      "zt": 34,
+      "dt": 0,
+      "zab": 14,
+      "zb": 29.2,
+      "fb": 70.8,
+      "jj": 32.4,
+      "lianban": 11,
+      "max_lb": 4,
+      "amount": "5514.7亿",
+      "bf": 0,
+      "heat": 52,
+      "risk": 22,
+      "headline": "修复",
+      "concepts": [
+        {
+          "name": "通信设备",
+          "lead": "日海智能",
+          "chg_pct": null
+        },
+        {
+          "name": "专用设备",
+          "lead": "达 意 隆",
+          "chg_pct": null
+        },
+        {
+          "name": "一般零售",
+          "lead": "大东方",
+          "chg_pct": null
+        },
+        {
+          "name": "汽车零部",
+          "lead": "光洋股份",
+          "chg_pct": null
+        },
+        {
+          "name": "通用设备",
+          "lead": "锋龙股份",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        },
+        {
+          "level": "warn",
+          "text": "炸板率偏高（29.2%）→ 注意回封质量"
+        }
+      ],
+      "shift_score": 63,
+      "shift_label": "修复",
+      "note": "情绪整体平稳，维持当前节奏。"
     }
   ],
   "indices": [
     {
       "name": "上证指数",
       "code": "000001.SH",
-      "val": 3662.263,
-      "chg": -0.039877458018132375,
-      "cje": 199728247200.0,
-      "t": "2026-11-11 10:00:57"
+      "val": 3654.562,
+      "chg": -0.2500734225613136,
+      "cje": 234157290400.0,
+      "t": "2026-11-11 10:10:03"
     },
     {
       "name": "深证成指",
       "code": "399001.SZ",
-      "val": 11244.446,
-      "chg": 0.025886142249598763,
-      "cje": 273860371400.0,
-      "t": "2026-11-11 10:00:54"
+      "val": 11195.653,
+      "chg": -0.4081559672984173,
+      "cje": 317084418000.0,
+      "t": "2026-11-11 10:09:57"
     },
     {
       "name": "创业板指",
       "code": "399006.SZ",
-      "val": 2512.45,
-      "chg": 0.7237420506839883,
-      "cje": 136191739400.0,
-      "t": "2026-11-11 10:00:54"
+      "val": 2498.091,
+      "chg": 0.1480919035742891,
+      "cje": 158145488700.0,
+      "t": "2026-11-11 10:09:57"
     }
   ],
   "asOf": {
-    "indices": "10:00:54"
+    "indices": "10:09:57"
   },
   "health": {
     "status": "valid",
-    "last_valid_at": "2026-11-11 10:01:02",
+    "last_valid_at": "2026-11-11 10:10:03",
     "rejected_reason": "",
     "source": {
       "status": "valid",
@@ -188,10 +255,11 @@
       "message": "intraday_coverage_incomplete",
       "date": "2026-11-11",
       "expected_count": 26,
-      "due_count": 4,
-      "observed_count": 1,
+      "due_count": 5,
+      "observed_count": 2,
       "observed_slots": [
-        "10:00"
+        "10:00",
+        "10:10"
       ],
       "missing_slots": [
         "09:30",
@@ -201,19 +269,19 @@
       "duplicate_slots": [],
       "out_of_session": [],
       "monotonic": true,
-      "morning_coverage": 1,
+      "morning_coverage": 2,
       "afternoon_coverage": 0
     }
   },
   "live": {
     "market": {
-      "zt": 33,
+      "zt": 34,
       "dt": 0,
-      "zab": 15,
-      "zab_rate": 31.2,
+      "zab": 14,
+      "zab_rate": 29.2,
       "lianban": 11,
       "max_lianban": 4,
-      "amount": "4735.9亿"
+      "amount": "5514.7亿"
     },
     "alerts": [
       {
@@ -222,7 +290,7 @@
       },
       {
         "level": "warn",
-        "text": "炸板率偏高（31.2%）→ 注意回封质量"
+        "text": "炸板率偏高（29.2%）→ 注意回封质量"
       }
     ],
     "concepts": [
@@ -242,13 +310,13 @@
         "chg_pct": null
       },
       {
-        "name": "通用设备",
-        "lead": "锋龙股份",
+        "name": "汽车零部",
+        "lead": "光洋股份",
         "chg_pct": null
       },
       {
-        "name": "光伏设备",
-        "lead": "亚玛顿",
+        "name": "通用设备",
+        "lead": "锋龙股份",
         "chg_pct": null
       }
     ]
