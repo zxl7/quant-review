@@ -2,7 +2,7 @@
   "schema": "intraday_snapshot_v1",
   "render_mode": "snapshot_stream",
   "date": "2026-11-11",
-  "count": 6,
+  "count": 7,
   "interval_min": null,
   "simulated": false,
   "snapshots": [
@@ -399,11 +399,78 @@
       "shift_score": 61,
       "shift_label": "修复",
       "note": "炸板/跌停抬升，情绪明显走弱。"
+    },
+    {
+      "time": "11:00:05",
+      "ts_bj": "2026-11-11 11:00:05",
+      "date": "2026-11-11",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid_empty"
+      },
+      "pool_errors": {},
+      "zt": 43,
+      "dt": 0,
+      "zab": 20,
+      "zb": 31.7,
+      "fb": 68.3,
+      "jj": 30.2,
+      "lianban": 13,
+      "max_lb": 4,
+      "amount": "8039.5亿",
+      "bf": 0,
+      "heat": 51,
+      "risk": 26,
+      "headline": "修复",
+      "concepts": [
+        {
+          "name": "汽车零部",
+          "lead": "光洋股份",
+          "chg_pct": null
+        },
+        {
+          "name": "通用设备",
+          "lead": "锋龙股份",
+          "chg_pct": null
+        },
+        {
+          "name": "专用设备",
+          "lead": "达 意 隆",
+          "chg_pct": null
+        },
+        {
+          "name": "光伏设备",
+          "lead": "亚玛顿",
+          "chg_pct": null
+        },
+        {
+          "name": "通信设备",
+          "lead": "日海智能",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        },
+        {
+          "level": "warn",
+          "text": "炸板率偏高（31.7%）→ 注意回封质量"
+        }
+      ],
+      "shift_score": 61,
+      "shift_label": "修复",
+      "note": "情绪整体平稳，维持当前节奏。"
     }
   ],
   "latest": {
-    "time": "10:50:04",
-    "ts_bj": "2026-11-11 10:50:04",
+    "time": "11:00:05",
+    "ts_bj": "2026-11-11 11:00:05",
     "date": "2026-11-11",
     "source": "intraday_live",
     "provider": "必盈(实时)+必盈(实时)",
@@ -422,7 +489,7 @@
     "jj": 30.2,
     "lianban": 13,
     "max_lb": 4,
-    "amount": "7702.9亿",
+    "amount": "8039.5亿",
     "bf": 0,
     "heat": 51,
     "risk": 26,
@@ -466,13 +533,13 @@
     ],
     "shift_score": 61,
     "shift_label": "修复",
-    "note": "炸板/跌停抬升，情绪明显走弱。"
+    "note": "情绪整体平稳，维持当前节奏。"
   },
-  "updated_at": "2026-11-11 10:50:04",
-  "snapshot_sig": "2026-11-11|2026-11-11 10:50:04|6",
+  "updated_at": "2026-11-11 11:00:05",
+  "snapshot_sig": "2026-11-11|2026-11-11 11:00:05|7",
   "health": {
     "status": "valid",
-    "last_valid_at": "2026-11-11 10:50:04",
+    "last_valid_at": "2026-11-11 11:00:05",
     "rejected_reason": "",
     "source": {
       "status": "valid",
