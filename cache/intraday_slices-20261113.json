@@ -2,7 +2,7 @@
   "schema": "intraday_snapshot_v1",
   "render_mode": "snapshot_stream",
   "date": "2026-11-13",
-  "count": 3,
+  "count": 4,
   "interval_min": null,
   "simulated": false,
   "snapshots": [
@@ -206,11 +206,74 @@
       "shift_score": 57,
       "shift_label": "分歧",
       "note": "情绪整体平稳，维持当前节奏。"
+    },
+    {
+      "time": "11:10:04",
+      "ts_bj": "2026-11-13 11:10:04",
+      "date": "2026-11-13",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid"
+      },
+      "pool_errors": {},
+      "zt": 36,
+      "dt": 9,
+      "zab": 11,
+      "zb": 23.4,
+      "fb": 76.6,
+      "jj": 19.4,
+      "lianban": 7,
+      "max_lb": 4,
+      "amount": "9148.5亿",
+      "bf": 0,
+      "heat": 51,
+      "risk": 31,
+      "headline": "分歧",
+      "concepts": [
+        {
+          "name": "汽车零部",
+          "lead": "天普股份",
+          "chg_pct": null
+        },
+        {
+          "name": "影视院线",
+          "lead": "中国电影",
+          "chg_pct": null
+        },
+        {
+          "name": "IT服务Ⅱ",
+          "lead": "华胜天成",
+          "chg_pct": null
+        },
+        {
+          "name": "游戏Ⅱ",
+          "lead": "文投控股",
+          "chg_pct": null
+        },
+        {
+          "name": "光伏设备",
+          "lead": "金辰股份",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        }
+      ],
+      "shift_score": 59,
+      "shift_label": "分歧",
+      "note": "情绪边际修复，但仍需确认持续性。"
     }
   ],
   "latest": {
-    "time": "11:00:03",
-    "ts_bj": "2026-11-13 11:00:03",
+    "time": "11:10:04",
+    "ts_bj": "2026-11-13 11:10:04",
     "date": "2026-11-13",
     "source": "intraday_live",
     "provider": "必盈(实时)+必盈(实时)",
@@ -221,18 +284,18 @@
       "dtgc": "valid"
     },
     "pool_errors": {},
-    "zt": 32,
+    "zt": 36,
     "dt": 9,
-    "zab": 12,
-    "zb": 27.3,
-    "fb": 72.7,
-    "jj": 21.9,
+    "zab": 11,
+    "zb": 23.4,
+    "fb": 76.6,
+    "jj": 19.4,
     "lianban": 7,
     "max_lb": 4,
-    "amount": "8790.4亿",
+    "amount": "9148.5亿",
     "bf": 0,
-    "heat": 50,
-    "risk": 34,
+    "heat": 51,
+    "risk": 31,
     "headline": "分歧",
     "concepts": [
       {
@@ -242,7 +305,12 @@
       },
       {
         "name": "影视院线",
-        "lead": "儒意电影",
+        "lead": "中国电影",
+        "chg_pct": null
+      },
+      {
+        "name": "IT服务Ⅱ",
+        "lead": "华胜天成",
         "chg_pct": null
       },
       {
@@ -254,32 +322,23 @@
         "name": "光伏设备",
         "lead": "金辰股份",
         "chg_pct": null
-      },
-      {
-        "name": "通信服务",
-        "lead": "北纬科技",
-        "chg_pct": null
       }
     ],
     "alerts": [
       {
         "level": "info",
         "text": "盘中模式：强制实时拉取"
-      },
-      {
-        "level": "warn",
-        "text": "炸板率偏高（27.3%）→ 注意回封质量"
       }
     ],
-    "shift_score": 57,
+    "shift_score": 59,
     "shift_label": "分歧",
-    "note": "情绪整体平稳，维持当前节奏。"
+    "note": "情绪边际修复，但仍需确认持续性。"
   },
-  "updated_at": "2026-11-13 11:00:03",
-  "snapshot_sig": "2026-11-13|2026-11-13 11:00:03|3",
+  "updated_at": "2026-11-13 11:10:04",
+  "snapshot_sig": "2026-11-13|2026-11-13 11:10:04|4",
   "health": {
     "status": "valid",
-    "last_valid_at": "2026-11-13 11:00:03",
+    "last_valid_at": "2026-11-13 11:10:04",
     "rejected_reason": "",
     "source": {
       "status": "valid",
