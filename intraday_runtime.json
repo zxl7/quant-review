@@ -1,11 +1,11 @@
 {
   "schema": "intraday_runtime_v1",
   "date": "2026-11-13",
-  "updated_at": "2026-11-13 10:41:03",
+  "updated_at": "2026-11-13 10:50:03",
   "source": "必盈(实时)+必盈(实时)",
   "latest": {
-    "time": "10:41:03",
-    "ts_bj": "2026-11-13 10:41:03",
+    "time": "10:50:03",
+    "ts_bj": "2026-11-13 10:50:03",
     "date": "2026-11-13",
     "source": "intraday_live",
     "provider": "必盈(实时)+必盈(实时)",
@@ -17,17 +17,17 @@
     },
     "pool_errors": {},
     "zt": 29,
-    "dt": 9,
+    "dt": 8,
     "zab": 12,
     "zb": 29.3,
     "fb": 70.7,
     "jj": 24.1,
     "lianban": 7,
     "max_lb": 4,
-    "amount": "7929.7亿",
+    "amount": "8376.2亿",
     "bf": 0,
     "heat": 49,
-    "risk": 35,
+    "risk": 34,
     "headline": "分歧",
     "concepts": [
       {
@@ -41,11 +41,6 @@
         "chg_pct": null
       },
       {
-        "name": "通用设备",
-        "lead": "锋龙股份",
-        "chg_pct": null
-      },
-      {
         "name": "游戏Ⅱ",
         "lead": "文投控股",
         "chg_pct": null
@@ -53,6 +48,11 @@
       {
         "name": "光伏设备",
         "lead": "金辰股份",
+        "chg_pct": null
+      },
+      {
+        "name": "通信服务",
+        "lead": "北纬科技",
         "chg_pct": null
       }
     ],
@@ -68,7 +68,7 @@
     ],
     "shift_score": 56,
     "shift_label": "分歧",
-    "note": "盘中实时切片已接入，可逐点观察情绪变化。"
+    "note": "情绪整体平稳，维持当前节奏。"
   },
   "snapshots": [
     {
@@ -137,40 +137,107 @@
       "shift_score": 56,
       "shift_label": "分歧",
       "note": "盘中实时切片已接入，可逐点观察情绪变化。"
+    },
+    {
+      "time": "10:50:03",
+      "ts_bj": "2026-11-13 10:50:03",
+      "date": "2026-11-13",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid"
+      },
+      "pool_errors": {},
+      "zt": 29,
+      "dt": 8,
+      "zab": 12,
+      "zb": 29.3,
+      "fb": 70.7,
+      "jj": 24.1,
+      "lianban": 7,
+      "max_lb": 4,
+      "amount": "8376.2亿",
+      "bf": 0,
+      "heat": 49,
+      "risk": 34,
+      "headline": "分歧",
+      "concepts": [
+        {
+          "name": "汽车零部",
+          "lead": "天普股份",
+          "chg_pct": null
+        },
+        {
+          "name": "影视院线",
+          "lead": "儒意电影",
+          "chg_pct": null
+        },
+        {
+          "name": "游戏Ⅱ",
+          "lead": "文投控股",
+          "chg_pct": null
+        },
+        {
+          "name": "光伏设备",
+          "lead": "金辰股份",
+          "chg_pct": null
+        },
+        {
+          "name": "通信服务",
+          "lead": "北纬科技",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        },
+        {
+          "level": "warn",
+          "text": "炸板率偏高（29.3%）→ 注意回封质量"
+        }
+      ],
+      "shift_score": 56,
+      "shift_label": "分歧",
+      "note": "情绪整体平稳，维持当前节奏。"
     }
   ],
   "indices": [
     {
       "name": "上证指数",
       "code": "000001.SH",
-      "val": 3668.735,
-      "chg": 0.3530252645843104,
-      "cje": 362309168400.0,
-      "t": "2026-11-13 10:41:00"
+      "val": 3665.842,
+      "chg": 0.27389136636314004,
+      "cje": 383497659700.0,
+      "t": "2026-11-13 10:49:57"
     },
     {
       "name": "深证成指",
       "code": "399001.SZ",
-      "val": 11180.671,
-      "chg": -0.15453685558890545,
-      "cje": 430660923100.0,
-      "t": "2026-11-13 10:41:00"
+      "val": 11156.245,
+      "chg": -0.3726655602762478,
+      "cje": 454122215100.0,
+      "t": "2026-11-13 10:49:57"
     },
     {
       "name": "创业板指",
       "code": "399006.SZ",
-      "val": 2488.85,
-      "chg": -0.8200670351701593,
-      "cje": 219585080200.0,
-      "t": "2026-11-13 10:41:00"
+      "val": 2478.22,
+      "chg": -1.243669376579305,
+      "cje": 231459267700.0,
+      "t": "2026-11-13 10:49:57"
     }
   ],
   "asOf": {
-    "indices": "10:41:00"
+    "indices": "10:49:57"
   },
   "health": {
     "status": "valid",
-    "last_valid_at": "2026-11-13 10:41:03",
+    "last_valid_at": "2026-11-13 10:50:03",
     "rejected_reason": "",
     "source": {
       "status": "valid",
@@ -188,10 +255,11 @@
       "message": "intraday_coverage_incomplete",
       "date": "2026-11-13",
       "expected_count": 26,
-      "due_count": 8,
-      "observed_count": 1,
+      "due_count": 9,
+      "observed_count": 2,
       "observed_slots": [
-        "10:40"
+        "10:40",
+        "10:50"
       ],
       "missing_slots": [
         "09:30",
@@ -205,19 +273,19 @@
       "duplicate_slots": [],
       "out_of_session": [],
       "monotonic": true,
-      "morning_coverage": 1,
+      "morning_coverage": 2,
       "afternoon_coverage": 0
     }
   },
   "live": {
     "market": {
       "zt": 29,
-      "dt": 9,
+      "dt": 8,
       "zab": 12,
       "zab_rate": 29.3,
       "lianban": 7,
       "max_lianban": 4,
-      "amount": "7929.7亿"
+      "amount": "8376.2亿"
     },
     "alerts": [
       {
@@ -241,11 +309,6 @@
         "chg_pct": null
       },
       {
-        "name": "通用设备",
-        "lead": "锋龙股份",
-        "chg_pct": null
-      },
-      {
         "name": "游戏Ⅱ",
         "lead": "文投控股",
         "chg_pct": null
@@ -253,6 +316,11 @@
       {
         "name": "光伏设备",
         "lead": "金辰股份",
+        "chg_pct": null
+      },
+      {
+        "name": "通信服务",
+        "lead": "北纬科技",
         "chg_pct": null
       }
     ]
