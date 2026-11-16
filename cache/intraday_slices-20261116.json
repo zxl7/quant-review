@@ -2,7 +2,7 @@
   "schema": "intraday_snapshot_v1",
   "render_mode": "snapshot_stream",
   "date": "2026-11-16",
-  "count": 3,
+  "count": 4,
   "interval_min": null,
   "simulated": false,
   "snapshots": [
@@ -213,11 +213,82 @@
       "shift_score": 57,
       "shift_label": "分歧",
       "note": "情绪边际修复，但仍需确认持续性。"
+    },
+    {
+      "time": "10:30:04",
+      "ts_bj": "2026-11-16 10:30:04",
+      "date": "2026-11-16",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid"
+      },
+      "pool_errors": {},
+      "zt": 22,
+      "dt": 14,
+      "zab": 8,
+      "zb": 26.7,
+      "fb": 73.3,
+      "jj": 36.4,
+      "lianban": 8,
+      "max_lb": 4,
+      "amount": "6913.3亿",
+      "bf": 0,
+      "heat": 52,
+      "risk": 39,
+      "headline": "分歧",
+      "concepts": [
+        {
+          "name": "一般零售",
+          "lead": "广百股份",
+          "chg_pct": null
+        },
+        {
+          "name": "电池",
+          "lead": "紫竹高科",
+          "chg_pct": null
+        },
+        {
+          "name": "汽车服务",
+          "lead": "上海物贸",
+          "chg_pct": null
+        },
+        {
+          "name": "通信服务",
+          "lead": "北纬科技",
+          "chg_pct": null
+        },
+        {
+          "name": "游戏Ⅱ",
+          "lead": "凯撒文化",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        },
+        {
+          "level": "warn",
+          "text": "跌停偏多（14）→ 控制追高"
+        },
+        {
+          "level": "warn",
+          "text": "炸板率偏高（26.7%）→ 注意回封质量"
+        }
+      ],
+      "shift_score": 56,
+      "shift_label": "分歧",
+      "note": "情绪整体平稳，维持当前节奏。"
     }
   ],
   "latest": {
-    "time": "10:20:03",
-    "ts_bj": "2026-11-16 10:20:03",
+    "time": "10:30:04",
+    "ts_bj": "2026-11-16 10:30:04",
     "date": "2026-11-16",
     "source": "intraday_live",
     "provider": "必盈(实时)+必盈(实时)",
@@ -229,22 +300,27 @@
     },
     "pool_errors": {},
     "zt": 22,
-    "dt": 13,
-    "zab": 7,
-    "zb": 24.1,
-    "fb": 75.9,
-    "jj": 31.8,
-    "lianban": 7,
+    "dt": 14,
+    "zab": 8,
+    "zb": 26.7,
+    "fb": 73.3,
+    "jj": 36.4,
+    "lianban": 8,
     "max_lb": 4,
-    "amount": "6356.3亿",
+    "amount": "6913.3亿",
     "bf": 0,
     "heat": 52,
-    "risk": 36,
+    "risk": 39,
     "headline": "分歧",
     "concepts": [
       {
         "name": "一般零售",
         "lead": "广百股份",
+        "chg_pct": null
+      },
+      {
+        "name": "电池",
+        "lead": "紫竹高科",
         "chg_pct": null
       },
       {
@@ -261,11 +337,6 @@
         "name": "游戏Ⅱ",
         "lead": "凯撒文化",
         "chg_pct": null
-      },
-      {
-        "name": "炼化及贸",
-        "lead": "岳阳兴长",
-        "chg_pct": null
       }
     ],
     "alerts": [
@@ -275,18 +346,22 @@
       },
       {
         "level": "warn",
-        "text": "跌停偏多（13）→ 控制追高"
+        "text": "跌停偏多（14）→ 控制追高"
+      },
+      {
+        "level": "warn",
+        "text": "炸板率偏高（26.7%）→ 注意回封质量"
       }
     ],
-    "shift_score": 57,
+    "shift_score": 56,
     "shift_label": "分歧",
-    "note": "情绪边际修复，但仍需确认持续性。"
+    "note": "情绪整体平稳，维持当前节奏。"
   },
-  "updated_at": "2026-11-16 10:20:03",
-  "snapshot_sig": "2026-11-16|2026-11-16 10:20:03|3",
+  "updated_at": "2026-11-16 10:30:04",
+  "snapshot_sig": "2026-11-16|2026-11-16 10:30:04|4",
   "health": {
     "status": "valid",
-    "last_valid_at": "2026-11-16 10:20:03",
+    "last_valid_at": "2026-11-16 10:30:04",
     "rejected_reason": "",
     "source": {
       "status": "valid",
