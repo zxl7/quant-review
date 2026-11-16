@@ -2,7 +2,7 @@
   "schema": "intraday_snapshot_v1",
   "render_mode": "snapshot_stream",
   "date": "2026-11-16",
-  "count": 6,
+  "count": 7,
   "interval_min": null,
   "simulated": false,
   "snapshots": [
@@ -426,11 +426,78 @@
       "shift_score": 54,
       "shift_label": "分歧",
       "note": "情绪整体平稳，维持当前节奏。"
+    },
+    {
+      "time": "11:00:04",
+      "ts_bj": "2026-11-16 11:00:04",
+      "date": "2026-11-16",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid"
+      },
+      "pool_errors": {},
+      "zt": 28,
+      "dt": 14,
+      "zab": 9,
+      "zb": 24.3,
+      "fb": 75.7,
+      "jj": 28.6,
+      "lianban": 8,
+      "max_lb": 4,
+      "amount": "8008.7亿",
+      "bf": 0,
+      "heat": 52,
+      "risk": 38,
+      "headline": "分歧",
+      "concepts": [
+        {
+          "name": "一般零售",
+          "lead": "广百股份",
+          "chg_pct": null
+        },
+        {
+          "name": "小家电",
+          "lead": "九阳股份",
+          "chg_pct": null
+        },
+        {
+          "name": "电池",
+          "lead": "领湃科技",
+          "chg_pct": null
+        },
+        {
+          "name": "电视广播",
+          "lead": "吉视传媒",
+          "chg_pct": null
+        },
+        {
+          "name": "汽车服务",
+          "lead": "上海物贸",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        },
+        {
+          "level": "warn",
+          "text": "跌停偏多（14）→ 控制追高"
+        }
+      ],
+      "shift_score": 56,
+      "shift_label": "分歧",
+      "note": "情绪边际修复，但仍需确认持续性。"
     }
   ],
   "latest": {
-    "time": "10:50:03",
-    "ts_bj": "2026-11-16 10:50:03",
+    "time": "11:00:04",
+    "ts_bj": "2026-11-16 11:00:04",
     "date": "2026-11-16",
     "source": "intraday_live",
     "provider": "必盈(实时)+必盈(实时)",
@@ -441,18 +508,18 @@
       "dtgc": "valid"
     },
     "pool_errors": {},
-    "zt": 26,
-    "dt": 13,
-    "zab": 11,
-    "zb": 29.7,
-    "fb": 70.3,
-    "jj": 34.6,
-    "lianban": 9,
+    "zt": 28,
+    "dt": 14,
+    "zab": 9,
+    "zb": 24.3,
+    "fb": 75.7,
+    "jj": 28.6,
+    "lianban": 8,
     "max_lb": 4,
-    "amount": "7710.0亿",
+    "amount": "8008.7亿",
     "bf": 0,
-    "heat": 51,
-    "risk": 41,
+    "heat": 52,
+    "risk": 38,
     "headline": "分歧",
     "concepts": [
       {
@@ -471,8 +538,8 @@
         "chg_pct": null
       },
       {
-        "name": "游戏Ⅱ",
-        "lead": "文投控股",
+        "name": "电视广播",
+        "lead": "吉视传媒",
         "chg_pct": null
       },
       {
@@ -488,22 +555,18 @@
       },
       {
         "level": "warn",
-        "text": "跌停偏多（13）→ 控制追高"
-      },
-      {
-        "level": "warn",
-        "text": "炸板率偏高（29.7%）→ 注意回封质量"
+        "text": "跌停偏多（14）→ 控制追高"
       }
     ],
-    "shift_score": 54,
+    "shift_score": 56,
     "shift_label": "分歧",
-    "note": "情绪整体平稳，维持当前节奏。"
+    "note": "情绪边际修复，但仍需确认持续性。"
   },
-  "updated_at": "2026-11-16 10:50:03",
-  "snapshot_sig": "2026-11-16|2026-11-16 10:50:03|6",
+  "updated_at": "2026-11-16 11:00:04",
+  "snapshot_sig": "2026-11-16|2026-11-16 11:00:04|7",
   "health": {
     "status": "valid",
-    "last_valid_at": "2026-11-16 10:50:03",
+    "last_valid_at": "2026-11-16 11:00:04",
     "rejected_reason": "",
     "source": {
       "status": "valid",
