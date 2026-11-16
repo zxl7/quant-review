@@ -2,7 +2,7 @@
   "schema": "intraday_snapshot_v1",
   "render_mode": "snapshot_stream",
   "date": "2026-11-16",
-  "count": 2,
+  "count": 3,
   "interval_min": null,
   "simulated": false,
   "snapshots": [
@@ -146,11 +146,78 @@
       "shift_score": 54,
       "shift_label": "分歧",
       "note": "承接增强、分歧收敛，情绪明显回暖。"
+    },
+    {
+      "time": "10:20:03",
+      "ts_bj": "2026-11-16 10:20:03",
+      "date": "2026-11-16",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid"
+      },
+      "pool_errors": {},
+      "zt": 22,
+      "dt": 13,
+      "zab": 7,
+      "zb": 24.1,
+      "fb": 75.9,
+      "jj": 31.8,
+      "lianban": 7,
+      "max_lb": 4,
+      "amount": "6356.3亿",
+      "bf": 0,
+      "heat": 52,
+      "risk": 36,
+      "headline": "分歧",
+      "concepts": [
+        {
+          "name": "一般零售",
+          "lead": "广百股份",
+          "chg_pct": null
+        },
+        {
+          "name": "汽车服务",
+          "lead": "上海物贸",
+          "chg_pct": null
+        },
+        {
+          "name": "通信服务",
+          "lead": "北纬科技",
+          "chg_pct": null
+        },
+        {
+          "name": "游戏Ⅱ",
+          "lead": "凯撒文化",
+          "chg_pct": null
+        },
+        {
+          "name": "炼化及贸",
+          "lead": "岳阳兴长",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        },
+        {
+          "level": "warn",
+          "text": "跌停偏多（13）→ 控制追高"
+        }
+      ],
+      "shift_score": 57,
+      "shift_label": "分歧",
+      "note": "情绪边际修复，但仍需确认持续性。"
     }
   ],
   "latest": {
-    "time": "10:10:03",
-    "ts_bj": "2026-11-16 10:10:03",
+    "time": "10:20:03",
+    "ts_bj": "2026-11-16 10:20:03",
     "date": "2026-11-16",
     "source": "intraday_live",
     "provider": "必盈(实时)+必盈(实时)",
@@ -161,18 +228,18 @@
       "dtgc": "valid"
     },
     "pool_errors": {},
-    "zt": 19,
-    "dt": 15,
+    "zt": 22,
+    "dt": 13,
     "zab": 7,
-    "zb": 26.9,
-    "fb": 73.1,
-    "jj": 31.6,
-    "lianban": 6,
+    "zb": 24.1,
+    "fb": 75.9,
+    "jj": 31.8,
+    "lianban": 7,
     "max_lb": 4,
-    "amount": "5740.8亿",
+    "amount": "6356.3亿",
     "bf": 0,
-    "heat": 50,
-    "risk": 40,
+    "heat": 52,
+    "risk": 36,
     "headline": "分歧",
     "concepts": [
       {
@@ -196,8 +263,8 @@
         "chg_pct": null
       },
       {
-        "name": "工程机械",
-        "lead": "华东重机",
+        "name": "炼化及贸",
+        "lead": "岳阳兴长",
         "chg_pct": null
       }
     ],
@@ -208,22 +275,18 @@
       },
       {
         "level": "warn",
-        "text": "跌停偏多（15）→ 控制追高"
-      },
-      {
-        "level": "warn",
-        "text": "炸板率偏高（26.9%）→ 注意回封质量"
+        "text": "跌停偏多（13）→ 控制追高"
       }
     ],
-    "shift_score": 54,
+    "shift_score": 57,
     "shift_label": "分歧",
-    "note": "承接增强、分歧收敛，情绪明显回暖。"
+    "note": "情绪边际修复，但仍需确认持续性。"
   },
-  "updated_at": "2026-11-16 10:10:03",
-  "snapshot_sig": "2026-11-16|2026-11-16 10:10:03|2",
+  "updated_at": "2026-11-16 10:20:03",
+  "snapshot_sig": "2026-11-16|2026-11-16 10:20:03|3",
   "health": {
     "status": "valid",
-    "last_valid_at": "2026-11-16 10:10:03",
+    "last_valid_at": "2026-11-16 10:20:03",
     "rejected_reason": "",
     "source": {
       "status": "valid",
