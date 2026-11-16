@@ -1,11 +1,11 @@
 {
   "schema": "intraday_runtime_v1",
   "date": "2026-11-16",
-  "updated_at": "2026-11-16 11:10:04",
+  "updated_at": "2026-11-16 11:20:03",
   "source": "必盈(实时)+必盈(实时)",
   "latest": {
-    "time": "11:10:04",
-    "ts_bj": "2026-11-16 11:10:04",
+    "time": "11:20:03",
+    "ts_bj": "2026-11-16 11:20:03",
     "date": "2026-11-16",
     "source": "intraday_live",
     "provider": "必盈(实时)+必盈(实时)",
@@ -16,18 +16,18 @@
       "dtgc": "valid"
     },
     "pool_errors": {},
-    "zt": 30,
+    "zt": 32,
     "dt": 14,
-    "zab": 9,
-    "zb": 23.1,
-    "fb": 76.9,
-    "jj": 30.0,
-    "lianban": 9,
+    "zab": 10,
+    "zb": 23.8,
+    "fb": 76.2,
+    "jj": 31.2,
+    "lianban": 10,
     "max_lb": 4,
-    "amount": "8326.3亿",
+    "amount": "8693.8亿",
     "bf": 0,
     "heat": 53,
-    "risk": 38,
+    "risk": 39,
     "headline": "分歧",
     "concepts": [
       {
@@ -66,7 +66,7 @@
         "text": "跌停偏多（14）→ 控制追高"
       }
     ],
-    "shift_score": 57,
+    "shift_score": 56,
     "shift_label": "分歧",
     "note": "情绪整体平稳，维持当前节奏。"
   },
@@ -625,40 +625,107 @@
       "shift_score": 57,
       "shift_label": "分歧",
       "note": "情绪整体平稳，维持当前节奏。"
+    },
+    {
+      "time": "11:20:03",
+      "ts_bj": "2026-11-16 11:20:03",
+      "date": "2026-11-16",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid"
+      },
+      "pool_errors": {},
+      "zt": 32,
+      "dt": 14,
+      "zab": 10,
+      "zb": 23.8,
+      "fb": 76.2,
+      "jj": 31.2,
+      "lianban": 10,
+      "max_lb": 4,
+      "amount": "8693.8亿",
+      "bf": 0,
+      "heat": 53,
+      "risk": 39,
+      "headline": "分歧",
+      "concepts": [
+        {
+          "name": "一般零售",
+          "lead": "广百股份",
+          "chg_pct": null
+        },
+        {
+          "name": "小家电",
+          "lead": "九阳股份",
+          "chg_pct": null
+        },
+        {
+          "name": "电池",
+          "lead": "领湃科技",
+          "chg_pct": null
+        },
+        {
+          "name": "游戏Ⅱ",
+          "lead": "文投控股",
+          "chg_pct": null
+        },
+        {
+          "name": "电视广播",
+          "lead": "吉视传媒",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        },
+        {
+          "level": "warn",
+          "text": "跌停偏多（14）→ 控制追高"
+        }
+      ],
+      "shift_score": 56,
+      "shift_label": "分歧",
+      "note": "情绪整体平稳，维持当前节奏。"
     }
   ],
   "indices": [
     {
       "name": "上证指数",
       "code": "000001.SH",
-      "val": 3615.45,
-      "chg": -0.5201200873993321,
-      "cje": 388843204900.0,
-      "t": "2026-11-16 11:09:57"
+      "val": 3619.048,
+      "chg": -0.4211203479684084,
+      "cje": 406434062900.0,
+      "t": "2026-11-16 11:20:00"
     },
     {
       "name": "深证成指",
       "code": "399001.SZ",
-      "val": 10794.221,
-      "chg": -1.5914795318753179,
-      "cje": 443784234300.0,
-      "t": "2026-11-16 11:09:57"
+      "val": 10824.1,
+      "chg": -1.3190793111398726,
+      "cje": 462947035800.0,
+      "t": "2026-11-16 11:20:00"
     },
     {
       "name": "创业板指",
       "code": "399006.SZ",
-      "val": 2359.918,
-      "chg": -2.7273158195199225,
-      "cje": 212632581600.0,
-      "t": "2026-11-16 11:09:57"
+      "val": 2368.693,
+      "chg": -2.3656219794442412,
+      "cje": 221557479000.0,
+      "t": "2026-11-16 11:20:00"
     }
   ],
   "asOf": {
-    "indices": "11:09:57"
+    "indices": "11:20:00"
   },
   "health": {
     "status": "valid",
-    "last_valid_at": "2026-11-16 11:10:04",
+    "last_valid_at": "2026-11-16 11:20:03",
     "rejected_reason": "",
     "source": {
       "status": "valid",
@@ -676,8 +743,8 @@
       "message": "intraday_coverage_incomplete",
       "date": "2026-11-16",
       "expected_count": 26,
-      "due_count": 11,
-      "observed_count": 8,
+      "due_count": 12,
+      "observed_count": 9,
       "observed_slots": [
         "10:00",
         "10:10",
@@ -686,7 +753,8 @@
         "10:40",
         "10:50",
         "11:00",
-        "11:10"
+        "11:10",
+        "11:20"
       ],
       "missing_slots": [
         "09:30",
@@ -696,19 +764,19 @@
       "duplicate_slots": [],
       "out_of_session": [],
       "monotonic": true,
-      "morning_coverage": 8,
+      "morning_coverage": 9,
       "afternoon_coverage": 0
     }
   },
   "live": {
     "market": {
-      "zt": 30,
+      "zt": 32,
       "dt": 14,
-      "zab": 9,
-      "zab_rate": 23.1,
-      "lianban": 9,
+      "zab": 10,
+      "zab_rate": 23.8,
+      "lianban": 10,
       "max_lianban": 4,
-      "amount": "8326.3亿"
+      "amount": "8693.8亿"
     },
     "alerts": [
       {
