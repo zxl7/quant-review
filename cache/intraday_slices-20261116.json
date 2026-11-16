@@ -2,7 +2,7 @@
   "schema": "intraday_snapshot_v1",
   "render_mode": "snapshot_stream",
   "date": "2026-11-16",
-  "count": 5,
+  "count": 6,
   "interval_min": null,
   "simulated": false,
   "snapshots": [
@@ -355,11 +355,82 @@
       "shift_score": 54,
       "shift_label": "分歧",
       "note": "情绪略有回落，注意午后分歧。"
+    },
+    {
+      "time": "10:50:03",
+      "ts_bj": "2026-11-16 10:50:03",
+      "date": "2026-11-16",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid"
+      },
+      "pool_errors": {},
+      "zt": 26,
+      "dt": 13,
+      "zab": 11,
+      "zb": 29.7,
+      "fb": 70.3,
+      "jj": 34.6,
+      "lianban": 9,
+      "max_lb": 4,
+      "amount": "7710.0亿",
+      "bf": 0,
+      "heat": 51,
+      "risk": 41,
+      "headline": "分歧",
+      "concepts": [
+        {
+          "name": "一般零售",
+          "lead": "广百股份",
+          "chg_pct": null
+        },
+        {
+          "name": "小家电",
+          "lead": "九阳股份",
+          "chg_pct": null
+        },
+        {
+          "name": "电池",
+          "lead": "领湃科技",
+          "chg_pct": null
+        },
+        {
+          "name": "游戏Ⅱ",
+          "lead": "文投控股",
+          "chg_pct": null
+        },
+        {
+          "name": "汽车服务",
+          "lead": "上海物贸",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        },
+        {
+          "level": "warn",
+          "text": "跌停偏多（13）→ 控制追高"
+        },
+        {
+          "level": "warn",
+          "text": "炸板率偏高（29.7%）→ 注意回封质量"
+        }
+      ],
+      "shift_score": 54,
+      "shift_label": "分歧",
+      "note": "情绪整体平稳，维持当前节奏。"
     }
   ],
   "latest": {
-    "time": "10:40:04",
-    "ts_bj": "2026-11-16 10:40:04",
+    "time": "10:50:03",
+    "ts_bj": "2026-11-16 10:50:03",
     "date": "2026-11-16",
     "source": "intraday_live",
     "provider": "必盈(实时)+必盈(实时)",
@@ -370,18 +441,18 @@
       "dtgc": "valid"
     },
     "pool_errors": {},
-    "zt": 23,
-    "dt": 16,
-    "zab": 9,
-    "zb": 28.1,
-    "fb": 71.9,
-    "jj": 39.1,
+    "zt": 26,
+    "dt": 13,
+    "zab": 11,
+    "zb": 29.7,
+    "fb": 70.3,
+    "jj": 34.6,
     "lianban": 9,
     "max_lb": 4,
-    "amount": "7320.1亿",
+    "amount": "7710.0亿",
     "bf": 0,
-    "heat": 52,
-    "risk": 44,
+    "heat": 51,
+    "risk": 41,
     "headline": "分歧",
     "concepts": [
       {
@@ -390,23 +461,23 @@
         "chg_pct": null
       },
       {
+        "name": "小家电",
+        "lead": "九阳股份",
+        "chg_pct": null
+      },
+      {
+        "name": "电池",
+        "lead": "领湃科技",
+        "chg_pct": null
+      },
+      {
         "name": "游戏Ⅱ",
         "lead": "文投控股",
         "chg_pct": null
       },
       {
-        "name": "电池",
-        "lead": "紫竹高科",
-        "chg_pct": null
-      },
-      {
         "name": "汽车服务",
         "lead": "上海物贸",
-        "chg_pct": null
-      },
-      {
-        "name": "通信服务",
-        "lead": "北纬科技",
         "chg_pct": null
       }
     ],
@@ -417,22 +488,22 @@
       },
       {
         "level": "warn",
-        "text": "跌停偏多（16）→ 控制追高"
+        "text": "跌停偏多（13）→ 控制追高"
       },
       {
         "level": "warn",
-        "text": "炸板率偏高（28.1%）→ 注意回封质量"
+        "text": "炸板率偏高（29.7%）→ 注意回封质量"
       }
     ],
     "shift_score": 54,
     "shift_label": "分歧",
-    "note": "情绪略有回落，注意午后分歧。"
+    "note": "情绪整体平稳，维持当前节奏。"
   },
-  "updated_at": "2026-11-16 10:40:04",
-  "snapshot_sig": "2026-11-16|2026-11-16 10:40:04|5",
+  "updated_at": "2026-11-16 10:50:03",
+  "snapshot_sig": "2026-11-16|2026-11-16 10:50:03|6",
   "health": {
     "status": "valid",
-    "last_valid_at": "2026-11-16 10:40:04",
+    "last_valid_at": "2026-11-16 10:50:03",
     "rejected_reason": "",
     "source": {
       "status": "valid",
