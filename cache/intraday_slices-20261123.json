@@ -2,7 +2,7 @@
   "schema": "intraday_snapshot_v1",
   "render_mode": "snapshot_stream",
   "date": "2026-11-23",
-  "count": 3,
+  "count": 4,
   "interval_min": null,
   "simulated": false,
   "snapshots": [
@@ -206,11 +206,78 @@
       "shift_score": 42,
       "shift_label": "走弱",
       "note": "情绪略有回落，注意午后分歧。"
+    },
+    {
+      "time": "11:10:04",
+      "ts_bj": "2026-11-23 11:10:04",
+      "date": "2026-11-23",
+      "source": "intraday_live",
+      "provider": "必盈(实时)+必盈(实时)",
+      "data_quality": "valid",
+      "pool_status": {
+        "ztgc": "valid",
+        "zbgc": "valid",
+        "dtgc": "valid"
+      },
+      "pool_errors": {},
+      "zt": 39,
+      "dt": 6,
+      "zab": 17,
+      "zb": 30.4,
+      "fb": 69.6,
+      "jj": 17.9,
+      "lianban": 7,
+      "max_lb": 3,
+      "amount": "8195.8亿",
+      "bf": 0,
+      "heat": 46,
+      "risk": 33,
+      "headline": "分歧",
+      "concepts": [
+        {
+          "name": "汽车零部",
+          "lead": "长华集团",
+          "chg_pct": null
+        },
+        {
+          "name": "通用设备",
+          "lead": "安培龙",
+          "chg_pct": null
+        },
+        {
+          "name": "计算机设",
+          "lead": "淳中科技",
+          "chg_pct": null
+        },
+        {
+          "name": "IT服务Ⅱ",
+          "lead": "荣联科技",
+          "chg_pct": null
+        },
+        {
+          "name": "影视院线",
+          "lead": "上海电影",
+          "chg_pct": null
+        }
+      ],
+      "alerts": [
+        {
+          "level": "info",
+          "text": "盘中模式：强制实时拉取"
+        },
+        {
+          "level": "warn",
+          "text": "炸板率偏高（30.4%）→ 注意回封质量"
+        }
+      ],
+      "shift_score": 55,
+      "shift_label": "分歧",
+      "note": "承接增强、分歧收敛，情绪明显回暖。"
     }
   ],
   "latest": {
-    "time": "11:00:05",
-    "ts_bj": "2026-11-23 11:00:05",
+    "time": "11:10:04",
+    "ts_bj": "2026-11-23 11:10:04",
     "date": "2026-11-23",
     "source": "intraday_live",
     "provider": "必盈(实时)+必盈(实时)",
@@ -221,19 +288,19 @@
       "dtgc": "valid"
     },
     "pool_errors": {},
-    "zt": 26,
-    "dt": 8,
-    "zab": 23,
-    "zb": 46.9,
-    "fb": 53.1,
-    "jj": 19.2,
-    "lianban": 5,
-    "max_lb": 2,
-    "amount": "7724.0亿",
+    "zt": 39,
+    "dt": 6,
+    "zab": 17,
+    "zb": 30.4,
+    "fb": 69.6,
+    "jj": 17.9,
+    "lianban": 7,
+    "max_lb": 3,
+    "amount": "8195.8亿",
     "bf": 0,
-    "heat": 35,
-    "risk": 48,
-    "headline": "走弱",
+    "heat": 46,
+    "risk": 33,
+    "headline": "分歧",
     "concepts": [
       {
         "name": "汽车零部",
@@ -242,7 +309,12 @@
       },
       {
         "name": "通用设备",
-        "lead": "锋龙股份",
+        "lead": "安培龙",
+        "chg_pct": null
+      },
+      {
+        "name": "计算机设",
+        "lead": "淳中科技",
         "chg_pct": null
       },
       {
@@ -254,11 +326,6 @@
         "name": "影视院线",
         "lead": "上海电影",
         "chg_pct": null
-      },
-      {
-        "name": "计算机设",
-        "lead": "淳中科技",
-        "chg_pct": null
       }
     ],
     "alerts": [
@@ -267,19 +334,19 @@
         "text": "盘中模式：强制实时拉取"
       },
       {
-        "level": "danger",
-        "text": "炸板率高（46.9%）→ 分歧偏强，谨慎接力"
+        "level": "warn",
+        "text": "炸板率偏高（30.4%）→ 注意回封质量"
       }
     ],
-    "shift_score": 42,
-    "shift_label": "走弱",
-    "note": "情绪略有回落，注意午后分歧。"
+    "shift_score": 55,
+    "shift_label": "分歧",
+    "note": "承接增强、分歧收敛，情绪明显回暖。"
   },
-  "updated_at": "2026-11-23 11:00:05",
-  "snapshot_sig": "2026-11-23|2026-11-23 11:00:05|3",
+  "updated_at": "2026-11-23 11:10:04",
+  "snapshot_sig": "2026-11-23|2026-11-23 11:10:04|4",
   "health": {
     "status": "valid",
-    "last_valid_at": "2026-11-23 11:00:05",
+    "last_valid_at": "2026-11-23 11:10:04",
     "rejected_reason": "",
     "source": {
       "status": "valid",
